@@ -1,0 +1,3 @@
+Dirtysock SDK
+Version 7.5.3
+June 23, 2009

@@ -1,0 +1,3 @@
+partial interface DedicatedWorkerGlobalScope {
+    [Conditional=WORKERS] attribute DedicatedWorkerGlobalScopeConstructor DedicatedWorkerGlobalScope;
+};

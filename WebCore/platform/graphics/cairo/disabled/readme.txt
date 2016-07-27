@@ -1,0 +1,2 @@
+01/21/2014
+Arpit Baldeva - Moved this file to disabled folder. This is because while we use Cairo in EA port, we use a separate font system. A non-platform specific name for FontCustomPlatformData.h is bad choice in this scenario because different source files see different structures. 

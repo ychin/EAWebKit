@@ -1,0 +1,3 @@
+core/source/dirtysock/ps3/dirtylibps3.c
+core/source/dirtysock/ps3/dirtynetps3.c
+

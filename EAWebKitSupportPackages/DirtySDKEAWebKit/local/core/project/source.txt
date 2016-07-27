@@ -1,0 +1,16 @@
+platform/plat-str.c
+platform/plat-time.c
+core/source/crypt/cryptarc4.c
+core/source/crypt/cryptmd2.c
+core/source/crypt/cryptmd5.c
+core/source/crypt/cryptrsa.c
+core/source/crypt/cryptsha1.c
+core/source/dirtysock/dirtylib.c
+core/source/dirtysock/dirtymem.c
+core/source/dirtysock/dirtynet.c
+core/source/dirtysock/platformsocketapi.c
+core/source/proto/protohttp.c
+core/source/proto/protohttpmanager.c
+core/source/proto/protossl.c
+core/source/util/lobbybase64.c
+

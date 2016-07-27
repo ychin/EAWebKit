@@ -1,0 +1,2 @@
+core/source/dirtysock/unix/dirtylibunix.c
+core/source/dirtysock/unix/dirtynetunix.c

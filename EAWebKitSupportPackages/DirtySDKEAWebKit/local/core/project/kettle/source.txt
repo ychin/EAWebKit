@@ -1,0 +1,3 @@
+core/source/dirtysock/kettle/dirtylibkettle.c
+core/source/dirtysock/kettle/dirtynetkettle.c
+

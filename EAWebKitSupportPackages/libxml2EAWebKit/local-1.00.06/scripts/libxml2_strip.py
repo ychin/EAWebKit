@@ -1,0 +1,4 @@
+import SimpleCodeStripper
+
+SimpleCodeStripper.Strip()
+

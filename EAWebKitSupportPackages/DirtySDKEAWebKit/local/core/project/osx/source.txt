@@ -1,0 +1,3 @@
+core/source/dirtysock/osx/dirtylibosx.c
+core/source/dirtysock/osx/dirtynetosx.c
+
