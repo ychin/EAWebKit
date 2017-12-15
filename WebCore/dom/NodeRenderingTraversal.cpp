@@ -29,7 +29,6 @@
 #include "NodeRenderingTraversal.h"
 
 #include "InsertionPoint.h"
-#include "PseudoElement.h"
 #include "ShadowRoot.h"
 
 namespace WebCore {
@@ -53,7 +52,7 @@ static inline bool nodeCanBeDistributed(const Node* node)
     if (parent->isShadowRoot())
         return false;
 
-    if (parent->isElementNode() && toElement(parent)->shadowRoot())
+    if (is<Element>(*parent) && downcast<Element>(*parent).shadowRoot())
         return true;
     
     return false;
@@ -73,8 +72,8 @@ static Node* findFirstEnteringInsertionPoints(const Node* node)
     ASSERT(node);
     if (!isActiveInsertionPoint(node))
         return const_cast<Node*>(node);
-    const InsertionPoint* insertionPoint = toInsertionPoint(node);
-    if (Node* found = findFirstFromDistributedNode(insertionPoint->firstDistributed(), insertionPoint))
+    const InsertionPoint& insertionPoint = downcast<InsertionPoint>(*node);
+    if (Node* found = findFirstFromDistributedNode(insertionPoint.firstDistributed(), &insertionPoint))
         return found;
     return findFirstSiblingEnteringInsertionPoints(node->firstChild());
 }
@@ -102,8 +101,8 @@ static Node* findLastEnteringInsertionPoints(const Node* node)
     ASSERT(node);
     if (!isActiveInsertionPoint(node))
         return const_cast<Node*>(node);
-    const InsertionPoint* insertionPoint = toInsertionPoint(node);
-    if (Node* found = findLastFromDistributedNode(insertionPoint->lastDistributed(), insertionPoint))
+    const InsertionPoint& insertionPoint = downcast<InsertionPoint>(*node);
+    if (Node* found = findLastFromDistributedNode(insertionPoint.lastDistributed(), &insertionPoint))
         return found;
     return findLastSiblingEnteringInsertionPoints(node->lastChild());
 }
@@ -121,11 +120,8 @@ enum ShadowRootCrossing { CrossShadowRoot, DontCrossShadowRoot };
 
 static ContainerNode* traverseParent(const Node* node, ShadowRootCrossing shadowRootCrossing)
 {
-    if (node->isPseudoElement())
-        return toPseudoElement(node)->hostElement();
-
     if (shadowRootCrossing == DontCrossShadowRoot  && node->isShadowRoot())
-        return 0;
+        return nullptr;
 
     if (nodeCanBeDistributed(node)) {
         if (InsertionPoint* insertionPoint = findInsertionPointOf(node))
@@ -136,14 +132,14 @@ static ContainerNode* traverseParent(const Node* node, ShadowRootCrossing shadow
     if (!parent)
         return nullptr;
 
-    if (parent->isShadowRoot())
-        return shadowRootCrossing == CrossShadowRoot ? toShadowRoot(parent)->hostElement() : parent;
+    if (is<ShadowRoot>(*parent))
+        return shadowRootCrossing == CrossShadowRoot ? downcast<ShadowRoot>(parent)->hostElement() : parent;
 
-    if (parent->isInsertionPoint()) {
-        const InsertionPoint* insertionPoint = toInsertionPoint(parent);
-        if (insertionPoint->hasDistribution())
+    if (is<InsertionPoint>(*parent)) {
+        const InsertionPoint& insertionPoint = downcast<InsertionPoint>(*parent);
+        if (insertionPoint.hasDistribution())
             return nullptr;
-        if (insertionPoint->isActive())
+        if (insertionPoint.isActive())
             return traverseParent(parent, shadowRootCrossing);
     }
     return parent;
@@ -222,47 +218,25 @@ ContainerNode* parentSlow(const Node* node)
     return traverseParent(node, CrossShadowRoot);
 }
 
+Node* firstChildSlow(const Node* node)
+{
+    ASSERT(!node->isShadowRoot());
+
+    return traverseFirstChild(node, DontCrossShadowRoot);
+}
+
 Node* nextSiblingSlow(const Node* node)
 {
     ASSERT(!node->isShadowRoot());
 
-    // FIXME: Why do these functions deal with before/after when other code here doesn't?
-    Node* nextSibling = 0;
-    if (node->isBeforePseudoElement()) {
-        nextSibling = traverseParent(node, CrossShadowRoot);
-        nextSibling = traverseFirstChild(nextSibling, CrossShadowRoot);
-    } else
-        nextSibling = traverseNextSibling(node);
-
-    if (nextSibling || node->isAfterPseudoElement())
-        return nextSibling;
-
-    Node* parent = traverseParent(node, CrossShadowRoot);
-    if (parent && parent->isElementNode())
-        return toElement(parent)->afterPseudoElement();
-
-    return 0;
+    return traverseNextSibling(node);
 }
 
 Node* previousSiblingSlow(const Node* node)
 {
     ASSERT(!node->isShadowRoot());
 
-    Node* previousSibling = 0;
-    if (node->isAfterPseudoElement()) {
-        ContainerNode* parent = traverseParent(node, CrossShadowRoot);
-        previousSibling = traverseLastChild(parent, CrossShadowRoot);
-    } else
-        previousSibling = traversePreviousSibling(node);
-
-    if (previousSibling || node->isBeforePseudoElement())
-        return previousSibling;
-
-    ContainerNode* parent = traverseParent(node, CrossShadowRoot);
-    if (parent && parent->isElementNode())
-        return toElement(parent)->beforePseudoElement();
-
-    return 0;
+    return traversePreviousSibling(node);
 }
 
 Node* nextInScope(const Node* node)

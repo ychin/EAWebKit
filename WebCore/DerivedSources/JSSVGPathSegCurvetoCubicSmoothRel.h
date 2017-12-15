@@ -21,29 +21,25 @@
 #ifndef JSSVGPathSegCurvetoCubicSmoothRel_h
 #define JSSVGPathSegCurvetoCubicSmoothRel_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGPathSeg.h"
 #include "SVGElement.h"
 #include "SVGPathSegCurvetoCubicSmoothRel.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGPathSegCurvetoCubicSmoothRel : public JSSVGPathSeg {
 public:
     typedef JSSVGPathSeg Base;
-    static JSSVGPathSegCurvetoCubicSmoothRel* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPathSegCurvetoCubicSmoothRel> impl)
+    static JSSVGPathSegCurvetoCubicSmoothRel* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPathSegCurvetoCubicSmoothRel>&& impl)
     {
-        JSSVGPathSegCurvetoCubicSmoothRel* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicSmoothRel>(globalObject->vm().heap)) JSSVGPathSegCurvetoCubicSmoothRel(structure, globalObject, impl);
+        JSSVGPathSegCurvetoCubicSmoothRel* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicSmoothRel>(globalObject->vm().heap)) JSSVGPathSegCurvetoCubicSmoothRel(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,73 +53,18 @@ public:
         return static_cast<SVGPathSegCurvetoCubicSmoothRel&>(Base::impl());
     }
 protected:
-    JSSVGPathSegCurvetoCubicSmoothRel(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPathSegCurvetoCubicSmoothRel>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGPathSegCurvetoCubicSmoothRel(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGPathSegCurvetoCubicSmoothRel>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGPathSegCurvetoCubicSmoothRelPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGPathSegCurvetoCubicSmoothRelPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGPathSegCurvetoCubicSmoothRelPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicSmoothRelPrototype>(vm.heap)) JSSVGPathSegCurvetoCubicSmoothRelPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGPathSegCurvetoCubicSmoothRelPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGPathSegCurvetoCubicSmoothRelConstructor : public DOMConstructorObject {
-private:
-    JSSVGPathSegCurvetoCubicSmoothRelConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGPathSegCurvetoCubicSmoothRelConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGPathSegCurvetoCubicSmoothRelConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicSmoothRelConstructor>(vm.heap)) JSSVGPathSegCurvetoCubicSmoothRelConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGPathSegCurvetoCubicSmoothRelX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGPathSegCurvetoCubicSmoothRelX(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGPathSegCurvetoCubicSmoothRelY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGPathSegCurvetoCubicSmoothRelY(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGPathSegCurvetoCubicSmoothRelX2(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGPathSegCurvetoCubicSmoothRelX2(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGPathSegCurvetoCubicSmoothRelY2(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGPathSegCurvetoCubicSmoothRelY2(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGPathSegCurvetoCubicSmoothRelConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

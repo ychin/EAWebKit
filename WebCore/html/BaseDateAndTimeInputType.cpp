@@ -40,12 +40,11 @@
 #include <wtf/CurrentTime.h>
 #include <wtf/DateMath.h>
 #include <wtf/MathExtras.h>
-#include <wtf/text/WTFString.h>
+#include <wtf/text/StringView.h>
 
 namespace WebCore {
 
 using namespace HTMLNames;
-using namespace std;
 
 static const int msecPerMinute = 60 * 1000;
 static const int msecPerSecond = 1000;
@@ -110,7 +109,7 @@ bool BaseDateAndTimeInputType::parseToDateComponents(const String& source, DateC
     DateComponents ignoredResult;
     if (!out)
         out = &ignoredResult;
-    return parseToDateComponentsInternal(source.characters(), source.length(), out);
+    return parseToDateComponentsInternal(StringView(source).upconvertedCharacters(), source.length(), out);
 }
 
 String BaseDateAndTimeInputType::serialize(const Decimal& value) const
@@ -174,6 +173,13 @@ bool BaseDateAndTimeInputType::valueMissing(const String& value) const
 {
     return element().isRequired() && value.isEmpty();
 }
+
+#if PLATFORM(IOS)
+bool BaseDateAndTimeInputType::isKeyboardFocusable(KeyboardEvent*) const
+{
+    return !element().isReadOnly() && element().isTextFormControlFocusable();
+}
+#endif
 
 } // namespace WebCore
 #endif

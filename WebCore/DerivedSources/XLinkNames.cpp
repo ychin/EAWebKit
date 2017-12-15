@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -30,7 +30,7 @@
 #include "config.h"
 
 #ifdef SKIP_STATIC_CONSTRUCTORS_ON_GCC
-#define DOM_XLinkNAMES_HIDE_GLOBALS 1
+#define DOM_XLink_NAMES_HIDE_GLOBALS 1
 #else
 #define QNAME_DEFAULT_CONSTRUCTOR 1
 #endif
@@ -44,78 +44,71 @@ namespace XLinkNames {
 
 using namespace WebCore;
 
-DEFINE_GLOBAL(AtomicString, xlinkNamespaceURI)
+WEBCORE_EXPORT DEFINE_GLOBAL(AtomicString, xlinkNamespaceURI)
 
-static const LChar showString8[] = "show";
 static const LChar actuateString8[] = "actuate";
-static const LChar hrefString8[] = "href";
-static const LChar typeString8[] = "type";
-static const LChar titleString8[] = "title";
-static const LChar roleString8[] = "role";
 static const LChar arcroleString8[] = "arcrole";
+static const LChar hrefString8[] = "href";
+static const LChar roleString8[] = "role";
+static const LChar showString8[] = "show";
+static const LChar titleString8[] = "title";
+static const LChar typeString8[] = "type";
 
-static StringImpl::StaticASCIILiteral showData = {
-    StringImpl::StaticASCIILiteral::s_initialRefCount,
-    4,
-    showString8,
-    0,
-    StringImpl::StaticASCIILiteral::s_initialFlags | (3191658 << StringImpl::StaticASCIILiteral::s_hashShift)
-};
 static StringImpl::StaticASCIILiteral actuateData = {
     StringImpl::StaticASCIILiteral::s_initialRefCount,
     7,
     actuateString8,
-    0,
     StringImpl::StaticASCIILiteral::s_initialFlags | (5578769 << StringImpl::StaticASCIILiteral::s_hashShift)
-};
-static StringImpl::StaticASCIILiteral hrefData = {
-    StringImpl::StaticASCIILiteral::s_initialRefCount,
-    4,
-    hrefString8,
-    0,
-    StringImpl::StaticASCIILiteral::s_initialFlags | (5797448 << StringImpl::StaticASCIILiteral::s_hashShift)
-};
-static StringImpl::StaticASCIILiteral typeData = {
-    StringImpl::StaticASCIILiteral::s_initialRefCount,
-    4,
-    typeString8,
-    0,
-    StringImpl::StaticASCIILiteral::s_initialFlags | (1916283 << StringImpl::StaticASCIILiteral::s_hashShift)
-};
-static StringImpl::StaticASCIILiteral titleData = {
-    StringImpl::StaticASCIILiteral::s_initialRefCount,
-    5,
-    titleString8,
-    0,
-    StringImpl::StaticASCIILiteral::s_initialFlags | (2337488 << StringImpl::StaticASCIILiteral::s_hashShift)
-};
-static StringImpl::StaticASCIILiteral roleData = {
-    StringImpl::StaticASCIILiteral::s_initialRefCount,
-    4,
-    roleString8,
-    0,
-    StringImpl::StaticASCIILiteral::s_initialFlags | (16084934 << StringImpl::StaticASCIILiteral::s_hashShift)
 };
 static StringImpl::StaticASCIILiteral arcroleData = {
     StringImpl::StaticASCIILiteral::s_initialRefCount,
     7,
     arcroleString8,
-    0,
     StringImpl::StaticASCIILiteral::s_initialFlags | (11561565 << StringImpl::StaticASCIILiteral::s_hashShift)
+};
+static StringImpl::StaticASCIILiteral hrefData = {
+    StringImpl::StaticASCIILiteral::s_initialRefCount,
+    4,
+    hrefString8,
+    StringImpl::StaticASCIILiteral::s_initialFlags | (5797448 << StringImpl::StaticASCIILiteral::s_hashShift)
+};
+static StringImpl::StaticASCIILiteral roleData = {
+    StringImpl::StaticASCIILiteral::s_initialRefCount,
+    4,
+    roleString8,
+    StringImpl::StaticASCIILiteral::s_initialFlags | (16084934 << StringImpl::StaticASCIILiteral::s_hashShift)
+};
+static StringImpl::StaticASCIILiteral showData = {
+    StringImpl::StaticASCIILiteral::s_initialRefCount,
+    4,
+    showString8,
+    StringImpl::StaticASCIILiteral::s_initialFlags | (3191658 << StringImpl::StaticASCIILiteral::s_hashShift)
+};
+static StringImpl::StaticASCIILiteral titleData = {
+    StringImpl::StaticASCIILiteral::s_initialRefCount,
+    5,
+    titleString8,
+    StringImpl::StaticASCIILiteral::s_initialFlags | (2337488 << StringImpl::StaticASCIILiteral::s_hashShift)
+};
+static StringImpl::StaticASCIILiteral typeData = {
+    StringImpl::StaticASCIILiteral::s_initialRefCount,
+    4,
+    typeString8,
+    StringImpl::StaticASCIILiteral::s_initialFlags | (1916283 << StringImpl::StaticASCIILiteral::s_hashShift)
 };
 
 
 // Attributes
-DEFINE_GLOBAL(QualifiedName, actuateAttr)
-DEFINE_GLOBAL(QualifiedName, arcroleAttr)
-DEFINE_GLOBAL(QualifiedName, hrefAttr)
-DEFINE_GLOBAL(QualifiedName, roleAttr)
-DEFINE_GLOBAL(QualifiedName, showAttr)
-DEFINE_GLOBAL(QualifiedName, titleAttr)
-DEFINE_GLOBAL(QualifiedName, typeAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, actuateAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, arcroleAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, hrefAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, roleAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, showAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, titleAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, typeAttr)
 
 
-const WebCore::QualifiedName* const * getXLinkAttrs()
+const WebCore::QualifiedName* const* getXLinkAttrs()
 {
     static const WebCore::QualifiedName* const XLinkAttrs[] = {
         reinterpret_cast<const WebCore::QualifiedName*>(&actuateAttr),
@@ -145,13 +138,13 @@ void init()
     new (NotNull, (void*)&xlinkNamespaceURI) AtomicString(xlinkNS);
 
 #ifndef NDEBUG
-    reinterpret_cast<StringImpl*>(&showData)->assertHashIsCorrect();
     reinterpret_cast<StringImpl*>(&actuateData)->assertHashIsCorrect();
-    reinterpret_cast<StringImpl*>(&hrefData)->assertHashIsCorrect();
-    reinterpret_cast<StringImpl*>(&typeData)->assertHashIsCorrect();
-    reinterpret_cast<StringImpl*>(&titleData)->assertHashIsCorrect();
-    reinterpret_cast<StringImpl*>(&roleData)->assertHashIsCorrect();
     reinterpret_cast<StringImpl*>(&arcroleData)->assertHashIsCorrect();
+    reinterpret_cast<StringImpl*>(&hrefData)->assertHashIsCorrect();
+    reinterpret_cast<StringImpl*>(&roleData)->assertHashIsCorrect();
+    reinterpret_cast<StringImpl*>(&showData)->assertHashIsCorrect();
+    reinterpret_cast<StringImpl*>(&titleData)->assertHashIsCorrect();
+    reinterpret_cast<StringImpl*>(&typeData)->assertHashIsCorrect();
 #endif // NDEBUG
 
 

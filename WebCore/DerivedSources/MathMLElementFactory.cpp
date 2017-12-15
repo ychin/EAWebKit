@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -35,10 +35,12 @@
 
 #include "MathMLNames.h"
 
-#include "MathMLMathElement.h"
-#include "MathMLInlineContainerElement.h"
 #include "MathMLTextElement.h"
+#include "MathMLInlineContainerElement.h"
+#include "MathMLSelectElement.h"
 #include "MathMLElement.h"
+#include "MathMLMathElement.h"
+#include "MathMLMencloseElement.h"
 #include "MathMLElement.h"
 
 #include "Document.h"
@@ -51,26 +53,36 @@ namespace WebCore {
 
 using namespace MathMLNames;
 
-typedef PassRefPtr<MathMLElement> (*MathMLConstructorFunction)(const QualifiedName&, Document&, bool createdByParser);
+typedef Ref<MathMLElement> (*MathMLConstructorFunction)(const QualifiedName&, Document&, bool createdByParser);
 
-static PassRefPtr<MathMLElement> mathConstructor(const QualifiedName& tagName, Document& document, bool)
-{
-    return MathMLMathElement::create(tagName, document);
-}
-
-static PassRefPtr<MathMLElement> inlinecontainerConstructor(const QualifiedName& tagName, Document& document, bool)
-{
-    return MathMLInlineContainerElement::create(tagName, document);
-}
-
-static PassRefPtr<MathMLElement> textConstructor(const QualifiedName& tagName, Document& document, bool)
+static Ref<MathMLElement> textConstructor(const QualifiedName& tagName, Document& document, bool)
 {
     return MathMLTextElement::create(tagName, document);
 }
 
-static PassRefPtr<MathMLElement> Constructor(const QualifiedName& tagName, Document& document, bool)
+static Ref<MathMLElement> inlinecontainerConstructor(const QualifiedName& tagName, Document& document, bool)
+{
+    return MathMLInlineContainerElement::create(tagName, document);
+}
+
+static Ref<MathMLElement> selectConstructor(const QualifiedName& tagName, Document& document, bool)
+{
+    return MathMLSelectElement::create(tagName, document);
+}
+
+static Ref<MathMLElement> Constructor(const QualifiedName& tagName, Document& document, bool)
 {
     return MathMLElement::create(tagName, document);
+}
+
+static Ref<MathMLElement> mathConstructor(const QualifiedName& tagName, Document& document, bool)
+{
+    return MathMLMathElement::create(tagName, document);
+}
+
+static Ref<MathMLElement> mencloseConstructor(const QualifiedName& tagName, Document& document, bool)
+{
+    return MathMLMencloseElement::create(tagName, document);
 }
 
 static NEVER_INLINE void populateMathMLFactoryMap(HashMap<AtomicStringImpl*, MathMLConstructorFunction>& map)
@@ -81,19 +93,39 @@ static NEVER_INLINE void populateMathMLFactoryMap(HashMap<AtomicStringImpl*, Mat
     };
 
     static const TableEntry table[] = {
+        { annotationTag, textConstructor },
+        { annotation_xmlTag, inlinecontainerConstructor },
+        { mactionTag, selectConstructor },
+        { maligngroupTag, Constructor },
+        { malignmarkTag, Constructor },
         { mathTag, mathConstructor },
+        { mencloseTag, mencloseConstructor },
+        { merrorTag, inlinecontainerConstructor },
         { mfencedTag, inlinecontainerConstructor },
         { mfracTag, inlinecontainerConstructor },
+        { mglyphTag, Constructor },
         { miTag, textConstructor },
+        { mlabeledtrTag, Constructor },
+        { mlongdivTag, Constructor },
         { mmultiscriptsTag, inlinecontainerConstructor },
         { mnTag, textConstructor },
         { moTag, textConstructor },
         { moverTag, inlinecontainerConstructor },
+        { mpaddedTag, Constructor },
+        { mphantomTag, inlinecontainerConstructor },
         { mprescriptsTag, inlinecontainerConstructor },
         { mrootTag, inlinecontainerConstructor },
         { mrowTag, inlinecontainerConstructor },
+        { msTag, textConstructor },
+        { mscarriesTag, Constructor },
+        { mscarryTag, Constructor },
+        { msgroupTag, Constructor },
+        { mslineTag, Constructor },
         { mspaceTag, textConstructor },
         { msqrtTag, inlinecontainerConstructor },
+        { msrowTag, Constructor },
+        { mstackTag, Constructor },
+        { mstyleTag, inlinecontainerConstructor },
         { msubTag, inlinecontainerConstructor },
         { msubsupTag, inlinecontainerConstructor },
         { msupTag, inlinecontainerConstructor },
@@ -104,27 +136,21 @@ static NEVER_INLINE void populateMathMLFactoryMap(HashMap<AtomicStringImpl*, Mat
         { munderTag, inlinecontainerConstructor },
         { munderoverTag, inlinecontainerConstructor },
         { noneTag, inlinecontainerConstructor },
+        { semanticsTag, selectConstructor },
     };
 
     for (unsigned i = 0; i < WTF_ARRAY_LENGTH(table); ++i)
         map.add(table[i].name.localName().impl(), table[i].function);
 }
 
-PassRefPtr<MathMLElement> MathMLElementFactory::createElement(const QualifiedName& name, Document& document, bool createdByParser)
+Ref<MathMLElement> MathMLElementFactory::createElement(const QualifiedName& name, Document& document, bool createdByParser)
 {
-#if ENABLE(DASHBOARD_SUPPORT)
-    Settings* settings = document.settings();
-    if (settings && settings->usesDashboardBackwardCompatibilityMode())
-        return 0;
-#endif
     static NeverDestroyed<HashMap<AtomicStringImpl*, MathMLConstructorFunction>> functions;
     if (functions.get().isEmpty())
         populateMathMLFactoryMap(functions);
-    if (MathMLConstructorFunction function = functions.get().get(name.localName().impl())) {
-        if (RefPtr<MathMLElement> element = function(name, document, createdByParser))
-            return element.release();
-   }
-   return MathMLElement::create(name, document);
+    if (MathMLConstructorFunction function = functions.get().get(name.localName().impl()))
+        return function(name, document, createdByParser);
+    return MathMLElement::create(name, document);
 }
 
 } // namespace WebCore

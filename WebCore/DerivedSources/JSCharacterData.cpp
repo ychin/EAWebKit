@@ -22,8 +22,10 @@
 #include "JSCharacterData.h"
 
 #include "CharacterData.h"
+#include "Element.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
+#include "JSElement.h"
 #include "URL.h"
 #include <runtime/Error.h>
 #include <runtime/JSString.h>
@@ -33,26 +35,74 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSCharacterDataTableValues[] =
-{
-    { "data", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataData), (intptr_t)setJSCharacterDataData },
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataLength), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionSubstringData(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAppendData(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionInsertData(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionDeleteData(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceData(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionBefore(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAfter(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceWith(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionRemove(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsCharacterDataData(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSCharacterDataData(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsCharacterDataLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCharacterDataPreviousElementSibling(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCharacterDataNextElementSibling(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCharacterDataConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCharacterDataPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCharacterDataPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCharacterDataPrototype* ptr = new (NotNull, JSC::allocateCell<JSCharacterDataPrototype>(vm.heap)) JSCharacterDataPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCharacterDataPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCharacterDataTable = { 9, 7, JSCharacterDataTableValues, 0 };
-/* Hash table for constructor */
+class JSCharacterDataConstructor : public DOMConstructorObject {
+private:
+    JSCharacterDataConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSCharacterDataConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSCharacterDataConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCharacterDataConstructor* ptr = new (NotNull, JSC::allocateCell<JSCharacterDataConstructor>(vm.heap)) JSCharacterDataConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSCharacterDataConstructorTable = { 1, 0, JSCharacterDataConstructorTableValues, 0 };
-const ClassInfo JSCharacterDataConstructor::s_info = { "CharacterDataConstructor", &Base::s_info, &JSCharacterDataConstructorTable, 0, CREATE_METHOD_TABLE(JSCharacterDataConstructor) };
+const ClassInfo JSCharacterDataConstructor::s_info = { "CharacterDataConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCharacterDataConstructor) };
 
 JSCharacterDataConstructor::JSCharacterDataConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,108 +113,148 @@ void JSCharacterDataConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globa
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCharacterDataPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSCharacterDataConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSCharacterDataConstructor, JSDOMWrapper>(exec, JSCharacterDataConstructorTable, jsCast<JSCharacterDataConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSCharacterData::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("CharacterData"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSCharacterDataPrototypeTableValues[] =
 {
-    { "substringData", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionSubstringData), (intptr_t)0 },
-    { "appendData", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionAppendData), (intptr_t)0 },
-    { "insertData", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionInsertData), (intptr_t)0 },
-    { "deleteData", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionDeleteData), (intptr_t)0 },
-    { "replaceData", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionReplaceData), (intptr_t)0 },
-    { "remove", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionRemove), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "data", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataData), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSCharacterDataData) },
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "previousElementSibling", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataPreviousElementSibling), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "nextElementSibling", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCharacterDataNextElementSibling), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "substringData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionSubstringData), (intptr_t) (0) },
+    { "appendData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionAppendData), (intptr_t) (0) },
+    { "insertData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionInsertData), (intptr_t) (0) },
+    { "deleteData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionDeleteData), (intptr_t) (0) },
+    { "replaceData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionReplaceData), (intptr_t) (0) },
+    { "before", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionBefore), (intptr_t) (1) },
+    { "after", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionAfter), (intptr_t) (1) },
+    { "replaceWith", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionReplaceWith), (intptr_t) (1) },
+    { "remove", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionRemove), (intptr_t) (0) },
 };
 
-static const HashTable JSCharacterDataPrototypeTable = { 16, 15, JSCharacterDataPrototypeTableValues, 0 };
-const ClassInfo JSCharacterDataPrototype::s_info = { "CharacterDataPrototype", &Base::s_info, &JSCharacterDataPrototypeTable, 0, CREATE_METHOD_TABLE(JSCharacterDataPrototype) };
+const ClassInfo JSCharacterDataPrototype::s_info = { "CharacterDataPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCharacterDataPrototype) };
 
-JSObject* JSCharacterDataPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCharacterData>(vm, globalObject);
-}
-
-bool JSCharacterDataPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSCharacterDataPrototype* thisObject = jsCast<JSCharacterDataPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSCharacterDataPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSCharacterData::s_info = { "CharacterData", &Base::s_info, &JSCharacterDataTable, 0 , CREATE_METHOD_TABLE(JSCharacterData) };
-
-JSCharacterData::JSCharacterData(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CharacterData> impl)
-    : JSNode(structure, globalObject, impl)
-{
-}
-
-void JSCharacterData::finishCreation(VM& vm)
+void JSCharacterDataPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCharacterDataPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCharacterData::s_info = { "CharacterData", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCharacterData) };
+
+JSCharacterData::JSCharacterData(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CharacterData>&& impl)
+    : JSNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSCharacterData::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCharacterDataPrototype::create(vm, globalObject, JSCharacterDataPrototype::createStructure(vm, globalObject, JSNodePrototype::self(vm, globalObject)));
+    return JSCharacterDataPrototype::create(vm, globalObject, JSCharacterDataPrototype::createStructure(vm, globalObject, JSNode::getPrototype(vm, globalObject)));
 }
 
-bool JSCharacterData::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSCharacterData::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSCharacterData* thisObject = jsCast<JSCharacterData*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCharacterData, Base>(exec, JSCharacterDataTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSCharacterData>(vm, globalObject);
 }
 
-JSValue jsCharacterDataData(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCharacterDataData(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CharacterData& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCharacterDataPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CharacterData", "data");
+        return throwGetterTypeError(*exec, "CharacterData", "data");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.data());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCharacterDataLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCharacterDataLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CharacterData& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCharacterDataPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CharacterData", "length");
+        return throwGetterTypeError(*exec, "CharacterData", "length");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCharacterDataConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSCharacterData* domObject = jsCast<JSCharacterData*>(asObject(slotBase));
-    return JSCharacterData::getConstructor(exec->vm(), domObject->globalObject());
-}
-
-void JSCharacterData::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSCharacterData* thisObject = jsCast<JSCharacterData*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSCharacterData, Base>(exec, propertyName, value, JSCharacterDataTable, thisObject, slot);
-}
-
-void setJSCharacterDataData(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsCharacterDataPreviousElementSibling(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(thisObject);
-    CharacterData& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCharacterDataPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CharacterData", "previousElementSibling");
+        return throwGetterTypeError(*exec, "CharacterData", "previousElementSibling");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.previousElementSibling()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsCharacterDataNextElementSibling(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCharacterDataPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CharacterData", "nextElementSibling");
+        return throwGetterTypeError(*exec, "CharacterData", "nextElementSibling");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.nextElementSibling()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsCharacterDataConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
+{
+    JSCharacterDataPrototype* domObject = jsDynamicCast<JSCharacterDataPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSCharacterData::getConstructor(exec->vm(), domObject->globalObject()));
+}
+
+void setJSCharacterDataData(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCharacterDataPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "CharacterData", "data");
+        else
+            throwSetterTypeError(*exec, "CharacterData", "data");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setData(nativeValue, ec);
     setDOMException(exec, ec);
@@ -178,44 +268,44 @@ JSValue JSCharacterData::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionSubstringData(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCharacterData::info()))
-        return throwVMTypeError(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "substringData");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int length(toUInt32(exec, exec->argument(1), NormalConversion));
+    int length = toUInt32(exec, exec->argument(1), NormalConversion);
     if (length < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsStringOrNull(exec, impl.substringData(offset, length, ec));
 
-    JSC::JSValue result = jsStringOrNull(exec, impl.substringData(offset, length, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAppendData(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCharacterData::info()))
-        return throwVMTypeError(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "appendData");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    const String& data(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String data = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.appendData(data, ec);
     setDOMException(exec, ec);
@@ -224,22 +314,22 @@ EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAppendData(ExecStat
 
 EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionInsertData(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCharacterData::info()))
-        return throwVMTypeError(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "insertData");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& data(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String data = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.insertData(offset, data, ec);
     setDOMException(exec, ec);
@@ -248,26 +338,26 @@ EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionInsertData(ExecStat
 
 EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionDeleteData(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCharacterData::info()))
-        return throwVMTypeError(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "deleteData");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int length(toUInt32(exec, exec->argument(1), NormalConversion));
+    int length = toUInt32(exec, exec->argument(1), NormalConversion);
     if (length < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.deleteData(offset, length, ec);
     setDOMException(exec, ec);
@@ -276,43 +366,73 @@ EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionDeleteData(ExecStat
 
 EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceData(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCharacterData::info()))
-        return throwVMTypeError(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "replaceData");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int length(toUInt32(exec, exec->argument(1), NormalConversion));
+    int length = toUInt32(exec, exec->argument(1), NormalConversion);
     if (length < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& data(exec->argument(2).isEmpty() ? String() : exec->argument(2).toString(exec)->value(exec));
-    if (exec->hadException())
+    String data = exec->argument(2).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.replaceData(offset, length, data, ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }
 
+EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionBefore(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "before");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
+    return JSValue::encode(castedThis->before(exec));
+}
+
+EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAfter(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "after");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
+    return JSValue::encode(castedThis->after(exec));
+}
+
+EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceWith(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "replaceWith");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
+    return JSValue::encode(castedThis->replaceWith(exec));
+}
+
 EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionRemove(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCharacterData::info()))
-        return throwVMTypeError(exec);
-    JSCharacterData* castedThis = jsCast<JSCharacterData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CharacterData", "remove");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     impl.remove(ec);
     setDOMException(exec, ec);

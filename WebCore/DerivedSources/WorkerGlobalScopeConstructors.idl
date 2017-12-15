@@ -1,13 +1,14 @@
 partial interface WorkerGlobalScope {
-    [EnabledAtRuntime, Conditional=WEB_SOCKETS] attribute WebSocketConstructor WebSocket;
+    [Conditional=WEB_SOCKETS, EnabledAtRuntime] attribute WebSocketConstructor WebSocket;
     [Conditional=CHANNEL_MESSAGING] attribute MessageChannelConstructor MessageChannel;
     attribute MessageEventConstructor MessageEvent;
     attribute BlobConstructor Blob;
-    [Conditional=BLOB] attribute FileReaderConstructor FileReader;
-    [Conditional=BLOB] attribute FileReaderSyncConstructor FileReaderSync;
-    [Conditional=BLOB] attribute DOMURLConstructor URL;
+    attribute FileReaderConstructor FileReader;
+    attribute FileReaderSyncConstructor FileReaderSync;
+    attribute DOMURLConstructor URL;
+    attribute ImageDataConstructor ImageData;
     attribute EventSourceConstructor EventSource;
-    [Conditional=WORKERS] attribute WorkerGlobalScopeConstructor WorkerGlobalScope;
-    [Conditional=WORKERS] attribute WorkerLocationConstructor WorkerLocation;
+    attribute WorkerGlobalScopeConstructor WorkerGlobalScope;
+    attribute WorkerLocationConstructor WorkerLocation;
     attribute XMLHttpRequestConstructor XMLHttpRequest;
 };

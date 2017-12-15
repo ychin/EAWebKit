@@ -23,26 +23,26 @@
 
 #if ENABLE(MEDIA_SOURCE)
 
-#include "JSDOMBinding.h"
 #include "JSEventTarget.h"
 #include "MediaSource.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaSource : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSMediaSource* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaSource> impl)
+    static JSMediaSource* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaSource>&& impl)
     {
-        JSMediaSource* ptr = new (NotNull, JSC::allocateCell<JSMediaSource>(globalObject->vm().heap)) JSMediaSource(structure, globalObject, impl);
+        JSMediaSource* ptr = new (NotNull, JSC::allocateCell<JSMediaSource>(globalObject->vm().heap)) JSMediaSource(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaSource* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,9 +58,14 @@ public:
         return static_cast<MediaSource&>(Base::impl());
     }
 protected:
-    JSMediaSource(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaSource>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSMediaSource(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaSource>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaSourceOwner : public JSC::WeakHandleOwner {
@@ -71,81 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaSource*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaSourceOwner, jsMediaSourceOwner, ());
-    return &jsMediaSourceOwner;
+    static NeverDestroyed<JSMediaSourceOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, MediaSource*)
-{
-    return &world;
-}
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaSource*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaSource& impl) { return toJS(exec, globalObject, &impl); }
 
-MediaSource* toMediaSource(JSC::JSValue);
-
-class JSMediaSourcePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaSourcePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaSourcePrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaSourcePrototype>(vm.heap)) JSMediaSourcePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaSourcePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSMediaSourceConstructor : public DOMConstructorObject {
-private:
-    JSMediaSourceConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaSourceConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaSourceConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaSourceConstructor>(vm.heap)) JSMediaSourceConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMediaSource(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaSourcePrototypeFunctionAddSourceBuffer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaSourcePrototypeFunctionRemoveSourceBuffer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaSourcePrototypeFunctionEndOfStream(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaSourceConstructorFunctionIsTypeSupported(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMediaSourceSourceBuffers(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaSourceActiveSourceBuffers(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaSourceDuration(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaSourceDuration(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaSourceReadyState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaSourceConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

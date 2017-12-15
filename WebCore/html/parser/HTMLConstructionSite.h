@@ -56,7 +56,7 @@ struct HTMLConstructionSiteTask {
         // It's sort of ugly, but we store the |oldParent| in the |child| field
         // of the task so that we don't bloat the HTMLConstructionSiteTask
         // object in the common case of the Insert operation.
-        return toContainerNode(child.get());
+        return downcast<ContainerNode>(child.get());
     }
 
     Operation operation;
@@ -138,17 +138,16 @@ public:
     bool inQuirksMode();
 
     bool isEmpty() const { return !m_openElements.stackDepth(); }
-    HTMLElementStack::ElementRecord* currentElementRecord() const { return m_openElements.topRecord(); }
-    Element* currentElement() const { return m_openElements.top(); }
-    ContainerNode* currentNode() const { return m_openElements.topNode(); }
-    HTMLStackItem* currentStackItem() const { return m_openElements.topStackItem(); }
+    Element& currentElement() const { return m_openElements.top(); }
+    ContainerNode& currentNode() const { return m_openElements.topNode(); }
+    HTMLStackItem& currentStackItem() const { return m_openElements.topStackItem(); }
     HTMLStackItem* oneBelowTop() const { return m_openElements.oneBelowTop(); }
     Document& ownerDocumentForCurrentNode();
-    HTMLElementStack* openElements() const { return &m_openElements; }
-    HTMLFormattingElementList* activeFormattingElements() const { return &m_activeFormattingElements; }
-    bool currentIsRootNode() { return m_openElements.topNode() == m_openElements.rootNode(); }
+    HTMLElementStack& openElements() const { return m_openElements; }
+    HTMLFormattingElementList& activeFormattingElements() const { return m_activeFormattingElements; }
+    bool currentIsRootNode() { return &m_openElements.topNode() == &m_openElements.rootNode(); }
 
-    Element* head() const { return m_head->element(); }
+    Element& head() const { return m_head->element(); }
     HTMLStackItem* headStackItem() const { return m_head.get(); }
 
     void setForm(HTMLFormElement*);
@@ -156,6 +155,10 @@ public:
     PassRefPtr<HTMLFormElement> takeForm();
 
     ParserContentPolicy parserContentPolicy() { return m_parserContentPolicy; }
+
+#if ENABLE(TELEPHONE_NUMBER_DETECTION)
+    bool isTelephoneNumberParsingEnabled() { return m_document->isTelephoneNumberParsingEnabled(); }
+#endif
 
     class RedirectToFosterParentGuard {
         WTF_MAKE_NONCOPYABLE(RedirectToFosterParentGuard);
@@ -182,7 +185,7 @@ private:
     // tokens produce only one DOM mutation.
     typedef Vector<HTMLConstructionSiteTask, 1> TaskQueue;
 
-    void setCompatibilityMode(Document::CompatibilityMode);
+    void setCompatibilityMode(DocumentCompatibilityMode);
     void setCompatibilityModeFromDoctype(const String& name, const String& publicId, const String& systemId);
 
     void attachLater(ContainerNode* parent, PassRefPtr<Node> child, bool selfClosing = false);

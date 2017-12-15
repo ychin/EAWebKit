@@ -2,7 +2,7 @@
  * This file is part of the WebKit project.
  *
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  *               2006 Dirk Mueller <mueller@kde.org>
@@ -51,13 +51,12 @@
 #include "StyleResolver.h"
 #include "RenderBox.h"
 #include "RenderObject.h"
-#if ENABLE(PROGRESS_ELEMENT)
 #include "RenderProgress.h"
-#endif
 #include "RenderSlider.h"
 #include "RenderTheme.h"
 #include "TimeRanges.h"
 #include "UserAgentStyleSheets.h"
+#include "UserAgentStyleSheetsAndScriptsEA.h"
 #include <EAWebKit/EAWebKit.h>
 #include <internal/include/EAWebkit_p.h>
 #include <internal/include/EAWebKitAssert.h>
@@ -66,6 +65,7 @@
 #include "Element.h"
 #include "Frame.h"
 #include "FrameSelection.h"
+
 
 namespace ThemeEA
 {
@@ -120,9 +120,9 @@ static void FillRectWithoutBorder(const PaintInfo& i, const IntRect& r, const Co
 	i.context->restore();
 }
 
-PassRefPtr<RenderTheme> RenderThemeEA::create(Page* page)
+Ref<RenderTheme> RenderThemeEA::create(Page* page)
 {
-    return adoptRef(new RenderThemeEA(page));
+    return adoptRef(*new RenderThemeEA(page));
 }
 
 PassRefPtr<RenderTheme> RenderTheme::themeForPage(Page* page)
@@ -130,8 +130,8 @@ PassRefPtr<RenderTheme> RenderTheme::themeForPage(Page* page)
     if (page)
         return RenderThemeEA::create(page);
 
-    static RenderTheme* fallback = RenderThemeEA::create(0).leakRef();
-    return fallback;
+    static RenderTheme& fallback = RenderThemeEA::create(0).leakRef();
+    return &fallback;
 }
 
 RenderThemeEA::RenderThemeEA(Page* /*page*/)
@@ -144,38 +144,38 @@ RenderThemeEA::~RenderThemeEA()
 {
 }
 
-void RenderThemeEA::addIntrinsicMargins(RenderStyle* style) const
+void RenderThemeEA::addIntrinsicMargins(RenderStyle& style) const
 {
     // addIntrinsicMargins code is taken from RenderThemeAndroid.cpp
     // Cut out the intrinsic margins completely if we end up using a small font size
-    if (style->fontSize() < 11)
+    if (style.fontSize() < 11)
         return;
     
     // Intrinsic margin value.
     const int m = 2;
     
     // FIXME: Using width/height alone and not also dealing with min-width/max-width is flawed.
-    if (style->width().isIntrinsicOrAuto()) {
-        if (style->marginLeft().quirk())
-            style->setMarginLeft(Length(m, Fixed));
-        if (style->marginRight().quirk())
-            style->setMarginRight(Length(m, Fixed));
+    if (style.width().isIntrinsicOrAuto()) {
+        if (style.marginLeft().hasQuirk())
+            style.setMarginLeft(Length(m, Fixed));
+		if (style.marginRight().hasQuirk())
+            style.setMarginRight(Length(m, Fixed));
     }
 
-    if (style->height().isAuto()) {
-        if (style->marginTop().quirk())
-            style->setMarginTop(Length(m, Fixed));
-        if (style->marginBottom().quirk())
-            style->setMarginBottom(Length(m, Fixed));
+    if (style.height().isAuto()) {
+		if (style.marginTop().hasQuirk())
+            style.setMarginTop(Length(m, Fixed));
+		if (style.marginBottom().hasQuirk())
+            style.setMarginBottom(Length(m, Fixed));
     }
 }
 
-bool RenderThemeEA::supportsHover(const RenderStyle*) const
+bool RenderThemeEA::supportsHover(const RenderStyle&) const
 {
     return true;
 }
 
-bool RenderThemeEA::supportsFocusRing(const RenderStyle* style) const
+bool RenderThemeEA::supportsFocusRing(const RenderStyle& style) const
 {
 	// Following is unintuitive (negating focus ring enable bool) but correct thing to do. In fact, this fixes a bug due to which the focus ring does not show up around an input
 	// element unless you customize css. 
@@ -186,23 +186,20 @@ bool RenderThemeEA::supportsFocusRing(const RenderStyle* style) const
 	return !EA::WebKit::GetThemeParameters().mEnableFocusRingDraw;
 }
 
-int RenderThemeEA::baselinePosition(const RenderObject* o) const
+int RenderThemeEA::baselinePosition(const RenderBox& o) const
 {
-    if (!o->isBox())
-        return 0;
-
-    if (o->style()->appearance() == CheckboxPart || o->style()->appearance() == RadioPart)
-        return toRenderBox(o)->marginTop() + toRenderBox(o)->height() - 2; // Same as in old khtml
+    if (o.style().appearance() == CheckboxPart || o.style().appearance() == RadioPart)
+        return o.marginTop() + o.height() - 2; // Same as in old khtml
     return RenderTheme::baselinePosition(o);
 }
 
-bool RenderThemeEA::controlSupportsTints(const RenderObject* o) const
+bool RenderThemeEA::controlSupportsTints(const RenderObject& o) const
 {
     if (!isEnabled(o))
         return false;
 
     // Checkboxes only have tint when checked.
-    if (o->style()->appearance() == CheckboxPart)
+    if (o.style().appearance() == CheckboxPart)
         return isChecked(o);
 
     // For now assume other controls have tint if enabled.
@@ -268,7 +265,7 @@ Color RenderThemeEA::platformInactiveListBoxSelectionForegroundColor() const
     return Color(Color::transparent);
 }
 
-void RenderThemeEA::systemFont(CSSValueID propId, FontDescription& fd) const
+void RenderThemeEA::updateCachedSystemFontDescription(CSSValueID propId, FontDescription& fd) const
 {
     // This function is called to retrieve system font information. System fonts
     // refer to "operating system" fonts used in operating system GUI elements such
@@ -288,30 +285,29 @@ void RenderThemeEA::systemFont(CSSValueID propId, FontDescription& fd) const
         fd.setOneFamily(param.mSystemFont);
         fd.setSpecifiedSize((float)param.mSystemFontSize);
         fd.setIsAbsoluteSize(true);
-        fd.setSmallCaps(false);
+		fd.setSmallCaps(FontSmallCapsOff);
         fd.setWeight(param.mSystemFontBold ? WebCore::FontWeightBold : WebCore::FontWeightNormal);
-        fd.setItalic(param.mSystemFontItalic);
-        fd.setGenericFamily(WebCore::FontDescription::NoFamily); // enum GenericFamilyType { NoFamily, StandardFamily, SerifFamily, SansSerifFamily, MonospaceFamily, CursiveFamily, FantasyFamily };
+		fd.setItalic(param.mSystemFontItalic ? FontItalicOn : FontItalicOff);
     }
 }
 
-int RenderThemeEA::minimumMenuListSize(RenderStyle*) const
+int RenderThemeEA::minimumMenuListSize(RenderStyle&) const
 {
     // 0 is the default but leaving here in case we want our own values.
     return 0;   
 }
 
-void RenderThemeEA::setCheckboxSize(RenderStyle* style) const
+void RenderThemeEA::setCheckboxSize(RenderStyle& style) const
 {
     // If the width and height are both specified, then we have nothing to do.
-    if (!style->width().isIntrinsicOrAuto() && !style->height().isAuto())
+    if (!style.width().isIntrinsicOrAuto() && !style.height().isAuto())
         return;
     const Length length((int) EA::WebKit::GetThemeParameters().mCheckBoxSize, Fixed);
-    style->setWidth(length);
-    style->setHeight(length);
+    style.setWidth(length);
+    style.setHeight(length);
 }
 
-bool RenderThemeEA::paintCheckbox(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintCheckbox(const RenderObject& o, const PaintInfo& i, const IntRect& r)
 {
     const bool checkedFlag = isChecked(o);
 	const bool enabledFlag = isEnabled(o);
@@ -360,17 +356,17 @@ bool RenderThemeEA::paintCheckbox(RenderObject* o, const PaintInfo& i, const Int
     return false;
 }
 
-void RenderThemeEA::setRadioSize(RenderStyle* style) const
+void RenderThemeEA::setRadioSize(RenderStyle& style) const
 {
      // If the width and height are both specified, then we have nothing to do.
-    if (!style->width().isIntrinsicOrAuto() && !style->height().isAuto())
+    if (!style.width().isIntrinsicOrAuto() && !style.height().isAuto())
         return;
     const Length length((int)EA::WebKit::GetThemeParameters().mRadioButtonSize, Fixed);
-    style->setWidth(length);
-    style->setHeight(length);
+    style.setWidth(length);
+    style.setHeight(length);
 }
 
-bool RenderThemeEA::paintRadio(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintRadio(const RenderObject& o, const PaintInfo& i, const IntRect& r)
 {
     const bool checkedFlag = isChecked(o);
 	const bool enabledFlag = isEnabled(o);
@@ -425,23 +421,27 @@ bool RenderThemeEA::paintRadio(RenderObject* o, const PaintInfo& i, const IntRec
     return false;
 }
 
-void RenderThemeEA::adjustButtonStyle(StyleResolver* resolver, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustButtonStyle(StyleResolver& resolver, RenderStyle& style, Element*) const
 {
     // White-space is locked to pre
-    style->setWhiteSpace(PRE);
+    style.setWhiteSpace(PRE);
 
-    FontDescription fontDescription = style->fontDescription();
+    FontDescription fontDescription = style.fontDescription();
     fontDescription.setIsAbsoluteSize(true);
-    fontDescription.setSpecifiedSize(style->fontSize());
-    fontDescription.setComputedSize(style->fontSize());
+    fontDescription.setSpecifiedSize(style.fontSize());
+    fontDescription.setComputedSize(style.fontSize());
 
     if(!fontDescription.familyCount())
 		fontDescription.setOneFamily(m_buttonFontFamily);
 
-    style->setFontDescription(fontDescription);
-    style->font().update(resolver->fontSelector());
+	if (style.setFontDescription(fontDescription))
+	{
+		//Note this looks weird, but compare to RenderMathMLToken line 95
+		//Seems we need to manually update after modifying the description
+		style.fontCascade().update(style.fontCascade().fontSelector());
+	}
 
-    style->setLineHeight(RenderStyle::initialLineHeight());
+    style.setLineHeight(RenderStyle::initialLineHeight());
     setButtonSize(style);
     addIntrinsicMargins(style);
   
@@ -449,10 +449,10 @@ void RenderThemeEA::adjustButtonStyle(StyleResolver* resolver, RenderStyle* styl
     const int kBorderCorner = 3;
     WebCore::Length length(kBorderCorner,Fixed);
     LengthSize rad(length,length);
-    style->setBorderRadius(rad);
+    style.setBorderRadius(rad);
 }
 
-void RenderThemeEA::paintEdgeHighligths(GraphicsContext* context,const IntRect& r)
+void RenderThemeEA::paintEdgeHighlights(GraphicsContext* context,const IntRect& r)
 {
 	context->save();
 	
@@ -473,167 +473,152 @@ void RenderThemeEA::paintEdgeHighligths(GraphicsContext* context,const IntRect& 
 	
 	context->restore();
 }
-bool RenderThemeEA::paintButton(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintButton(const RenderObject& o, const PaintInfo& i, const IntRect& r)
 {
-	if(RenderStyle* pStyle = o->style())
+	i.context->save();
+	i.context->setFillColor(o.style().visitedDependentColor(CSSPropertyBackgroundColor), ColorSpaceDeviceRGB);
+	if(isHovered(o))
 	{
-		i.context->save();
-		i.context->setFillColor(pStyle->visitedDependentColor(CSSPropertyBackgroundColor), ColorSpaceDeviceRGB);   
-		if(isHovered(o))
-		{
-			i.context->setStrokeColor(EA::WebKit::GetThemeParameters().mHoverHighlightColor, ColorSpaceDeviceRGB);
-			i.context->setStrokeStyle(SolidStroke);
-		}
-		else
-		{
-			i.context->setStrokeStyle(NoStroke);
-		}
-		//resizing the rect to a smaller rect gives the "click" effect.
-		WebCore::IntRect rect = isPressed(o) ? WebCore::IntRect(r.x() + 1, r.y() + 1, r.width() - 2, r.height() - 2) : r;
-		i.context->drawRect(rect);
-		paintEdgeHighligths(i.context,rect);//this gives a slightly raised effect to the button
-		i.context->restore();
-		return false;
+		i.context->setStrokeColor(EA::WebKit::GetThemeParameters().mHoverHighlightColor, ColorSpaceDeviceRGB);
+		i.context->setStrokeStyle(SolidStroke);
 	}
+	else
+	{
+		i.context->setStrokeStyle(NoStroke);
+	}
+	//resizing the rect to a smaller rect gives the "click" effect.
+	WebCore::IntRect rect = isPressed(o) ? WebCore::IntRect(r.x() + 1, r.y() + 1, r.width() - 2, r.height() - 2) : r;
+	i.context->drawRect(rect);
+	paintEdgeHighlights(i.context,rect);//this gives a slightly raised effect to the button
+	i.context->restore();
 
-	return true;
+	return false;
 }
 
-void RenderThemeEA::adjustTextFieldStyle(StyleResolver*, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustTextFieldStyle(StyleResolver&, RenderStyle& style, Element*) const
 {
 	// Note: Resetting the borders here caused the text field to appear too small on some sites so we leave the default settings.  
-    style->setWhiteSpace(PRE);
+    style.setWhiteSpace(PRE);
 
     // We add some padding to the top and bottom of the text field to resolve a caret centering issue on Google.com
     // QT does something similar, probably the extra padding forces a caret to be more centered and sidesteps centering layout bugs.
     // There is a fixme note in webcore RenderTextControlSingleLine::layout() which might indicate some issues with centering text fields.
 	// This does however cause misalignment of graphics with text on some sites.
-    style->setPaddingTop(Length(ThemeEA::kTextFieldCursorPaddingVertical, Fixed)); 
-    style->setPaddingBottom(Length(ThemeEA::kTextFieldCursorPaddingVertical, Fixed));
+    style.setPaddingTop(Length(ThemeEA::kTextFieldCursorPaddingVertical, Fixed)); 
+    style.setPaddingBottom(Length(ThemeEA::kTextFieldCursorPaddingVertical, Fixed));
     // Set up the border style
     addIntrinsicMargins(style);
     const EBorderStyle v = INSET; 
-    style->setBorderTopStyle(v);
-    style->setBorderLeftStyle(v);
-    style->setBorderBottomStyle(v);
-    style->setBorderRightStyle(v);
+    style.setBorderTopStyle(v);
+    style.setBorderLeftStyle(v);
+    style.setBorderBottomStyle(v);
+    style.setBorderRightStyle(v);
     const uint32_t textFieldBorderWidth = EA::WebKit::GetThemeParameters().mTextFieldBorderWidth;
-    style->setBorderTopWidth(textFieldBorderWidth);
-    style->setBorderLeftWidth(textFieldBorderWidth);
-    style->setBorderBottomWidth(textFieldBorderWidth);
-    style->setBorderRightWidth(textFieldBorderWidth);
+    style.setBorderTopWidth(textFieldBorderWidth);
+    style.setBorderLeftWidth(textFieldBorderWidth);
+    style.setBorderBottomWidth(textFieldBorderWidth);
+    style.setBorderRightWidth(textFieldBorderWidth);
 }
 
-bool RenderThemeEA::paintTextField(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintTextField(const RenderObject& o, const PaintInfo& i, const FloatRect& r)
 {
-    if(RenderStyle* pStyle = o->style())
-    {
-        Color c = isEnabled(o) ? o->style()->visitedDependentColor(CSSPropertyBackgroundColor) : EA::WebKit::GetThemeParameters().mBoxDisabledFillColor;
+    Color c = isEnabled(o) ? o.style().visitedDependentColor(CSSPropertyBackgroundColor) : EA::WebKit::GetThemeParameters().mBoxDisabledFillColor;
         
-		i.context->save();
+	i.context->save();
 		
-		i.context->setFillColor(c, ColorSpaceDeviceRGB);   
-		i.context->setStrokeColor(ThemeEA::kTextFieldBorderColor, ColorSpaceDeviceRGB);
-		i.context->setStrokeStyle(SolidStroke);
-		i.context->drawRect(r); 
+	i.context->setFillColor(c, ColorSpaceDeviceRGB);   
+	i.context->setStrokeColor(ThemeEA::kTextFieldBorderColor, ColorSpaceDeviceRGB);
+	i.context->setStrokeStyle(SolidStroke);
+	i.context->drawRect(r); 
 		
-		i.context->restore();
-		return false;
-    }
-
-	return true;
+	i.context->restore();
+	return false;
 }
 
-void RenderThemeEA::adjustTextAreaStyle(StyleResolver* resolver, RenderStyle* style, Element* element) const
+void RenderThemeEA::adjustTextAreaStyle(StyleResolver& resolver, RenderStyle& style, Element* element) const
 {
     adjustTextFieldStyle(resolver, style, element);
 }
 
-bool RenderThemeEA::paintTextArea(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintTextArea(const RenderObject& o, const PaintInfo& i, const FloatRect& r)
 {
     return paintTextField(o, i, r);
 }
 
-void RenderThemeEA::adjustMenuListStyle(StyleResolver*, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustMenuListStyle(StyleResolver&, RenderStyle& style, Element*) const
 {
 	// Note: If the height is locked to auto, the Y size can be smaller than other browsers so we don't change the setting here.
-    style->resetBorder();
-    style->resetPadding();
+    style.resetBorder();
+    style.resetPadding();
     // White-space is locked to pre
-    style->setWhiteSpace(PRE);
+    style.setWhiteSpace(PRE);
 
-	style->setPaddingLeft(Length(ThemeEA::kPopupMenuBorderPadding, Fixed));
+	style.setPaddingLeft(Length(ThemeEA::kPopupMenuBorderPadding, Fixed));
     
     // Reserve enough room for a scroll bar
 	int rightAdjust = ThemeEA::kScrollThickness;
     if(rightAdjust < ThemeEA::kPopupMenuArrowSize)
         rightAdjust = ThemeEA::kPopupMenuArrowSize;
     
-	style->setPaddingRight(Length(ThemeEA::kPopupMenuBorderPadding + rightAdjust, Fixed));  // Add space for the dropdown arrow graphic.
+	style.setPaddingRight(Length(ThemeEA::kPopupMenuBorderPadding + rightAdjust, Fixed));  // Add space for the dropdown arrow graphic.
 
     const EBorderStyle v = INSET; 
-    style->setBorderTopStyle(v);
-    style->setBorderLeftStyle(v);
-    style->setBorderBottomStyle(v);
-    style->setBorderRightStyle(v);
+    style.setBorderTopStyle(v);
+    style.setBorderLeftStyle(v);
+    style.setBorderBottomStyle(v);
+    style.setBorderRightStyle(v);
     const uint32_t menuListBorderWidth = EA::WebKit::GetThemeParameters().mMenuListBorderWidth;
-	style->setBorderTopWidth(menuListBorderWidth);
-    style->setBorderLeftWidth(menuListBorderWidth);
-    style->setBorderBottomWidth(menuListBorderWidth);
-    style->setBorderRightWidth(menuListBorderWidth);
+	style.setBorderTopWidth(menuListBorderWidth);
+    style.setBorderLeftWidth(menuListBorderWidth);
+    style.setBorderBottomWidth(menuListBorderWidth);
+    style.setBorderRightWidth(menuListBorderWidth);
 }
 
-bool RenderThemeEA::paintMenuList(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMenuList(const RenderObject& o, const PaintInfo& i, const FloatRect& r)
 {
-    if(RenderStyle* pStyle = o->style())
-    {
-        i.context->save();
-        i.context->setStrokeStyle(SolidStroke);
-        i.context->setStrokeColor(Color::black, ColorSpaceDeviceRGB);
-		i.context->setFillColor(pStyle->visitedDependentColor(CSSPropertyBackgroundColor), ColorSpaceDeviceRGB);   
-		i.context->drawRect(r);
+    i.context->save();
+    i.context->setStrokeStyle(SolidStroke);
+    i.context->setStrokeColor(Color::black, ColorSpaceDeviceRGB);
+	i.context->setFillColor(o.style().visitedDependentColor(CSSPropertyBackgroundColor), ColorSpaceDeviceRGB);   
+	i.context->drawRect(r);
 		
-		// Fill in arrow background color as a square.
-		Color fillCol = isHovered(o) ? EA::WebKit::GetThemeParameters().mBoxDisabledFillColor : Color::lightGray;
-        WebCore::IntRect rect(r.x() + r.width() - ThemeEA::kPopupMenuArrowSize, r.y() , ThemeEA::kPopupMenuArrowSize, r.height());
-		i.context->setFillColor(fillCol, ColorSpaceDeviceRGB);   
-		i.context->drawRect(rect);
-		paintEdgeHighligths(i.context,rect);
+	// Fill in arrow background color as a square.
+	Color fillCol = isHovered(o) ? EA::WebKit::GetThemeParameters().mBoxDisabledFillColor : Color::lightGray;
+    WebCore::IntRect rect(r.x() + r.width() - ThemeEA::kPopupMenuArrowSize, r.y() , ThemeEA::kPopupMenuArrowSize, r.height());
+	i.context->setFillColor(fillCol, ColorSpaceDeviceRGB);   
+	i.context->drawRect(rect);
+	paintEdgeHighlights(i.context,rect);
 		
-        // Draw arrow
-        float arrowW  = ((float)ThemeEA::kPopupMenuArrowSize)/4.0f;
-        float arrowX   = (float) (r.x() + r.width()  - (ThemeEA::kPopupMenuArrowSize/2));
-        float arrowY   = (float) (r.y() + ( (r.height() - arrowW)/2 ));
+    // Draw arrow
+    float arrowW  = ((float)ThemeEA::kPopupMenuArrowSize)/4.0f;
+    float arrowX   = (float) (r.x() + r.width()  - (ThemeEA::kPopupMenuArrowSize/2));
+    float arrowY   = (float) (r.y() + ( (r.height() - arrowW)/2 ));
        
-        FloatPoint pts[3];
-        pts[0].set(arrowX - arrowW, arrowY);
-        pts[1].set(arrowX + arrowW, arrowY);
-        pts[2].set(arrowX, arrowY + arrowW);
+    FloatPoint pts[3];
+    pts[0].set(arrowX - arrowW, arrowY);
+    pts[1].set(arrowX + arrowW, arrowY);
+    pts[2].set(arrowX, arrowY + arrowW);
 
-        i.context->setFillColor(Color::black, ColorSpaceDeviceRGB);
-        i.context->drawConvexPolygon(3, pts, true);
-        i.context->restore();
-        return false;  
-    }
-    
-	return true;
+    i.context->setFillColor(Color::black, ColorSpaceDeviceRGB);
+    i.context->drawConvexPolygon(3, pts, true);
+    i.context->restore();
+    return false;  
 }
 
-void RenderThemeEA::adjustMenuListButtonStyle(StyleResolver* styleSelect, RenderStyle* style, Element*element) const
+void RenderThemeEA::adjustMenuListButtonStyle(StyleResolver& styleSelect, RenderStyle& style, Element*element) const
 {
     adjustMenuListStyle(styleSelect, style,element);
 }
 
-bool RenderThemeEA::paintMenuListButton(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMenuListButtonDecorations(const RenderBox& renderer, const PaintInfo& paintInfo, const FloatRect& rect)
 {
-    paintMenuList(o,i,r);
-    return false;
+	    paintMenuList(renderer, paintInfo, rect);
+	    return false;
 }
 
-#if ENABLE(PROGRESS_ELEMENT)
-double RenderThemeEA::animationRepeatIntervalForProgressBar(RenderProgress* renderProgress) const
+double RenderThemeEA::animationRepeatIntervalForProgressBar(RenderProgress& renderProgress) const
 {
-    if (renderProgress->position() >= 0)
+    if (renderProgress.position() >= 0)
         return 0;
 
     // FIXME: Use hard-coded value until http://bugreports.qt.nokia.com/browse/QTBUG-9171 is fixed.
@@ -641,37 +626,37 @@ double RenderThemeEA::animationRepeatIntervalForProgressBar(RenderProgress* rend
     return 0.1;
 }
 
-double RenderThemeEA::animationDurationForProgressBar(RenderProgress* renderProgress) const
+double RenderThemeEA::animationDurationForProgressBar(RenderProgress& renderProgress) const
 {
     return 0;
 }
 
-IntRect RenderThemeEA::progressBarRectForBounds(const RenderObject*, const IntRect& bounds) const
+IntRect RenderThemeEA::progressBarRectForBounds(const RenderObject&, const IntRect& bounds) const
 {
 	return bounds;
 }
 
-void RenderThemeEA::adjustProgressBarStyle(StyleResolver*, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustProgressBarStyle(StyleResolver&, RenderStyle& style, Element*) const
 {
-    style->setBoxShadow(adoptPtr<ShadowData>(0));
+    style.setBoxShadow(nullptr);
 }
 
-bool RenderThemeEA::paintProgressBar(RenderObject* o, const PaintInfo& pi, const IntRect& r)
+bool RenderThemeEA::paintProgressBar(const RenderObject& o, const PaintInfo& pi, const IntRect& r)
 {
-    if (!o->isProgress())
+    if (!o.isProgress())
         return true;
 
     notImplemented();
 
     return false;
 }
-#endif
 
-bool RenderThemeEA::paintSliderTrack(RenderObject* o, const PaintInfo& pi,
+
+bool RenderThemeEA::paintSliderTrack(const RenderObject& o, const PaintInfo& pi,
                                      const IntRect& r)
 {
     // Fill the background
-    Color fillColor = o->style()->visitedDependentColor(CSSPropertyBackgroundColor);
+    Color fillColor = o.style().visitedDependentColor(CSSPropertyBackgroundColor);
     FillRectWithoutBorder(pi,r,fillColor);
 
     const int offsetH = (r.height() >> 1) - 2; // -2 for thickness adjustment. 
@@ -700,12 +685,12 @@ bool RenderThemeEA::paintSliderTrack(RenderObject* o, const PaintInfo& pi,
     return false;
 }
 
-void RenderThemeEA::adjustSliderTrackStyle(StyleResolver*, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustSliderTrackStyle(StyleResolver&, RenderStyle& style, Element*) const
 {
-    style->setBoxShadow(adoptPtr<ShadowData>(0));
+    style.setBoxShadow(nullptr);
 }
 
-bool RenderThemeEA::paintSliderThumb(RenderObject* o, const PaintInfo& pi,
+bool RenderThemeEA::paintSliderThumb(const RenderObject& o, const PaintInfo& pi,
                                      const IntRect& r)
 {
     pi.context->save();
@@ -728,14 +713,14 @@ bool RenderThemeEA::paintSliderThumb(RenderObject* o, const PaintInfo& pi,
     return false;
 }
 
-void RenderThemeEA::adjustSliderThumbStyle(StyleResolver*, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustSliderThumbStyle(StyleResolver&, RenderStyle& style, Element*) const
 {
     //style->setBoxShadow(adoptPtr<ShadowData>(0));
-    ControlPart part = style->appearance();
+    ControlPart part = style.appearance();
     if (part != MediaSliderThumbPart)   // Other options are MediaVolumeSliderThumbPart, SliderThumbVerticalPart and SliderThumbHorizontalPart. 
     {
-        style->setWidth(Length((ThemeEA::kSliderThumbWidth), Fixed));
-        style->setHeight(Length(ThemeEA::kSliderThumbHeight, Fixed));
+        style.setWidth(Length((ThemeEA::kSliderThumbWidth), Fixed));
+        style.setHeight(Length(ThemeEA::kSliderThumbHeight, Fixed));
     }
 }
 
@@ -768,33 +753,33 @@ int RenderThemeEA::sliderTickOffsetFromTrackCenter() const
 #endif
 
 // The search field related code is ported from RenderThemeWin.cpp. We do not use a drop down for the search results though.
-bool RenderThemeEA::paintSearchField(RenderObject* o, const PaintInfo& pi, const IntRect& r)
+bool RenderThemeEA::paintSearchField(const RenderObject& o, const PaintInfo& pi, const IntRect& r)
 {
     return paintTextField(o, pi, r);
 }
 
-void RenderThemeEA::adjustSearchFieldStyle(StyleResolver* resolver, RenderStyle* style,
+void RenderThemeEA::adjustSearchFieldStyle(StyleResolver& resolver, RenderStyle& style,
                                            Element* e) const
 {
 	// Override paddingSize to match AppKit text positioning.
 	const int padding = 1;
-	style->setPaddingLeft(Length(padding, Fixed));
-	style->setPaddingRight(Length(padding, Fixed));
-	style->setPaddingTop(Length(padding, Fixed));
-	style->setPaddingBottom(Length(padding, Fixed));
+	style.setPaddingLeft(Length(padding, Fixed));
+	style.setPaddingRight(Length(padding, Fixed));
+	style.setPaddingTop(Length(padding, Fixed));
+	style.setPaddingBottom(Length(padding, Fixed));
 	if (e && e->focused() && e->document().frame()->selection().isFocusedAndActive())
-		style->setOutlineOffset(-2);
+		style.setOutlineOffset(-2);
 }
 
-bool RenderThemeEA::paintSearchFieldCancelButton(RenderObject* o, const PaintInfo& pi,
+bool RenderThemeEA::paintSearchFieldCancelButton(const RenderObject& o, const PaintInfo& pi,
                                                  const IntRect& r)
 {
 	IntRect bounds = r;
-	ASSERT(o->parent());
-	if (!o->parent() || !o->parent()->isBox())
+	ASSERT(o.parent());
+	if (!o.parent() || !o.parent()->isBox())
 		return false;
 
-	RenderBox* parentRenderBox = toRenderBox(o->parent());
+	RenderBox* parentRenderBox = downcast<RenderBox>(o.parent());
 
 	IntRect parentBox = parentRenderBox->absoluteContentBox();
 
@@ -808,48 +793,48 @@ bool RenderThemeEA::paintSearchFieldCancelButton(RenderObject* o, const PaintInf
 
 	static Image* cancelImage = Image::loadPlatformResource("searchCancel").leakRef();
 	static Image* cancelPressedImage = Image::loadPlatformResource("searchCancelPressed").leakRef();
-	pi.context->drawImage(isPressed(o) ? cancelPressedImage : cancelImage, o->style()->colorSpace(), bounds);
+	pi.context->drawImage(isPressed(o) ? cancelPressedImage : cancelImage, o.style().colorSpace(), bounds);
 	return false;
 }
 
-void RenderThemeEA::adjustSearchFieldCancelButtonStyle(StyleResolver* resolver, RenderStyle* style,
+void RenderThemeEA::adjustSearchFieldCancelButtonStyle(StyleResolver& resolver, RenderStyle& style,
                                                        Element* e) const
 {
 	// Scale the button size based on the font size
-	float fontScale = style->fontSize() / EA::WebKit::GetParameters().mSystemFontSize;
+	float fontScale = style.fontSize() / EA::WebKit::GetParameters().mSystemFontSize;
 	int cancelButtonSize = lroundf(std::min(std::max(ThemeEA::kMinCancelButtonSize, ThemeEA::kDefaultCancelButtonSize * fontScale), ThemeEA::kMaxCancelButtonSize));
-	style->setWidth(Length(cancelButtonSize, Fixed));
-	style->setHeight(Length(cancelButtonSize, Fixed));
+	style.setWidth(Length(cancelButtonSize, Fixed));
+	style.setHeight(Length(cancelButtonSize, Fixed));
 }
 
-void RenderThemeEA::adjustSearchFieldDecorationStyle(StyleResolver* resolver, RenderStyle* style,
+void RenderThemeEA::adjustSearchFieldDecorationPartStyle(StyleResolver& resolver, RenderStyle& style,
                                                      Element* e) const
 {
 	IntSize emptySize(1, 11);
-	style->setWidth(Length(emptySize.width(), Fixed));
-	style->setHeight(Length(emptySize.height(), Fixed));
+	style.setWidth(Length(emptySize.width(), Fixed));
+	style.setHeight(Length(emptySize.height(), Fixed));
 }
 
-void RenderThemeEA::adjustSearchFieldResultsDecorationStyle(StyleResolver* resolver, RenderStyle* style,
+void RenderThemeEA::adjustSearchFieldResultsDecorationPartStyle(StyleResolver& resolver, RenderStyle& style,
 															Element* e) const
 {
 	// Scale the decoration size based on the font size
-	float fontScale = style->fontSize() / EA::WebKit::GetParameters().mSystemFontSize;;
+	float fontScale = style.fontSize() / EA::WebKit::GetParameters().mSystemFontSize;;
 	int magnifierSize = lroundf(std::min(std::max(ThemeEA::kMinSearchFieldResultsDecorationSize, ThemeEA::kDefaultSearchFieldResultsDecorationSize * fontScale), 
 		ThemeEA::kMaxSearchFieldResultsDecorationSize));
-	style->setWidth(Length(magnifierSize, Fixed));
-	style->setHeight(Length(magnifierSize, Fixed));
+	style.setWidth(Length(magnifierSize, Fixed));
+	style.setHeight(Length(magnifierSize, Fixed));
 }
 
-bool RenderThemeEA::paintSearchFieldResultsDecoration(RenderObject* o, const PaintInfo& pi,
+bool RenderThemeEA::paintSearchFieldResultsDecorationPart(const RenderObject& o, const PaintInfo& pi,
 													  const IntRect& r)
 {
 	IntRect bounds = r;
-	ASSERT(o->parent());
-	if (!o->parent() || !o->parent()->isBox())
+	ASSERT(o.parent());
+	if (!o.parent() || !o.parent()->isBox())
 		return false;
 
-	RenderBox* parentRenderBox = toRenderBox(o->parent());
+	RenderBox* parentRenderBox = downcast<RenderBox>(o.parent());
 	IntRect parentBox = parentRenderBox->absoluteContentBox();
 
 	// Make sure the scaled decoration stays square and will fit in its parent's box
@@ -861,31 +846,31 @@ bool RenderThemeEA::paintSearchFieldResultsDecoration(RenderObject* o, const Pai
 	bounds.setY(parentBox.y() + (parentBox.height() - bounds.height() + 1) / 2);
 
 	static Image* magnifierImage = Image::loadPlatformResource("searchMagnifier").leakRef();
-	pi.context->drawImage(magnifierImage, o->style()->colorSpace(), bounds);
+	pi.context->drawImage(magnifierImage, o.style().colorSpace(), bounds);
 	return false;
 }
 
-void RenderThemeEA::adjustSearchFieldResultsButtonStyle(StyleResolver*, RenderStyle* style, Element*) const
+void RenderThemeEA::adjustSearchFieldResultsButtonStyle(StyleResolver&, RenderStyle& style, Element*) const
 {
 	// Scale the button size based on the font size
-	float fontScale = style->fontSize() / EA::WebKit::GetParameters().mSystemFontSize;;
+	float fontScale = style.fontSize() / EA::WebKit::GetParameters().mSystemFontSize;;
 	int magnifierHeight = lroundf(std::min(std::max(ThemeEA::kMinSearchFieldResultsDecorationSize, ThemeEA::kDefaultSearchFieldResultsDecorationSize * fontScale), 
 		ThemeEA::kMaxSearchFieldResultsDecorationSize));
 	int magnifierWidth = lroundf(magnifierHeight * ThemeEA::kDefaultSearchFieldResultsButtonWidth / ThemeEA::kDefaultSearchFieldResultsDecorationSize);
-	style->setWidth(Length(magnifierWidth, Fixed));
-	style->setHeight(Length(magnifierHeight, Fixed));
+	style.setWidth(Length(magnifierWidth, Fixed));
+	style.setHeight(Length(magnifierHeight, Fixed));
 }
 
-bool RenderThemeEA::paintSearchFieldResultsButton(RenderObject* o, const PaintInfo& paintInfo, const IntRect& r)
+bool RenderThemeEA::paintSearchFieldResultsButton(const RenderObject& o, const PaintInfo& paintInfo, const IntRect& r)
 {
 	IntRect bounds = r;
-	ASSERT(o->parent());
-	if (!o->parent())
+	ASSERT(o.parent());
+	if (!o.parent())
 		return false;
-	if (!o->parent() || !o->parent()->isBox())
+	if (!o.parent() || !o.parent()->isBox())
 		return false;
 
-	RenderBox* parentRenderBox = toRenderBox(o->parent());
+	RenderBox* parentRenderBox = downcast<RenderBox>(o.parent());
 	IntRect parentBox = parentRenderBox->absoluteContentBox();
 
 	// Make sure the scaled decoration will fit in its parent's box
@@ -897,27 +882,22 @@ bool RenderThemeEA::paintSearchFieldResultsButton(RenderObject* o, const PaintIn
 	bounds.setY(parentBox.y() + (parentBox.height() - bounds.height() + 1) / 2);
 
 	static Image* magnifierImage = Image::loadPlatformResource("searchMagnifier"/*"searchMagnifierResults"*/).leakRef();
-	paintInfo.context->drawImage(magnifierImage, o->style()->colorSpace(), bounds);
+	paintInfo.context->drawImage(magnifierImage, o.style().colorSpace(), bounds);
 	return false;
 }
 
-bool RenderThemeEA::paintSearchFieldDecoration(RenderObject* o, const PaintInfo& pi,
+bool RenderThemeEA::paintSearchFieldDecorations(const RenderObject& o, const PaintInfo& pi,
                                                const IntRect& r)
 {
 	return false;
 }
 
-
-
-
-
-
-void RenderThemeEA::adjustSliderThumbSize(RenderStyle* style, Element*) const
+void RenderThemeEA::adjustSliderThumbSize(RenderStyle& style, Element*) const
 {
 
 }
 
-bool RenderThemeEA::paintMediaFullscreenButton(RenderObject*, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaFullscreenButton(const RenderObject&, const PaintInfo& i, const IntRect& r)
 { 
     FillRectWithSolidBorder(i, r);
    
@@ -930,7 +910,7 @@ bool RenderThemeEA::paintMediaFullscreenButton(RenderObject*, const PaintInfo& i
     FillRectWithSolidBorder(i, box, c);
     return false;       // We return false if painted 
 }
-bool RenderThemeEA::paintMediaPlayButton(RenderObject* o, const PaintInfo& i, const IntRect& r) 
+bool RenderThemeEA::paintMediaPlayButton(const RenderObject& o, const PaintInfo& i, const IntRect& r) 
 { 
     // This displays a pause when playing and a play when paused.
 
@@ -941,7 +921,7 @@ bool RenderThemeEA::paintMediaPlayButton(RenderObject* o, const PaintInfo& i, co
     const IntPoint center(r.center());
     
     bool paused = false;
-    HTMLMediaElement* pMediaElement = parentMediaElement(*o);
+    HTMLMediaElement* pMediaElement = parentMediaElement(o);
     EAW_ASSERT(pMediaElement);
     
     if (pMediaElement)
@@ -977,7 +957,7 @@ bool RenderThemeEA::paintMediaPlayButton(RenderObject* o, const PaintInfo& i, co
     return false;
 }
 
-bool RenderThemeEA::paintMediaMuteButton(RenderObject* obj, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaMuteButton(const RenderObject& obj, const PaintInfo& i, const IntRect& r)
 { 
     
     const int kMutedColor = 0xffaa0000;     // Red
@@ -995,7 +975,7 @@ bool RenderThemeEA::paintMediaMuteButton(RenderObject* obj, const PaintInfo& i, 
     pts[1].set(center.x() + offsetW, center.y() + offsetH);
 
     Color c;
-    HTMLMediaElement* pMediaElement = parentMediaElement(*obj);
+    HTMLMediaElement* pMediaElement = parentMediaElement(obj);
     EAW_ASSERT(pMediaElement);
     if (pMediaElement->muted())
     {
@@ -1020,7 +1000,7 @@ bool RenderThemeEA::paintMediaMuteButton(RenderObject* obj, const PaintInfo& i, 
 
     return false; 
 }
-bool RenderThemeEA::paintMediaSeekBackButton(RenderObject* o , const PaintInfo& i , const IntRect& r) 
+bool RenderThemeEA::paintMediaSeekBackButton(const RenderObject& o , const PaintInfo& i , const IntRect& r) 
 { 
 
     FillRectWithSolidBorder(i, r);
@@ -1042,7 +1022,7 @@ bool RenderThemeEA::paintMediaSeekBackButton(RenderObject* o , const PaintInfo& 
 
     return false;    
 }
-bool RenderThemeEA::paintMediaSeekForwardButton(RenderObject* o, const PaintInfo& i , const IntRect& r) 
+bool RenderThemeEA::paintMediaSeekForwardButton(const RenderObject& o, const PaintInfo& i , const IntRect& r) 
 { 
     FillRectWithSolidBorder(i, r);
     
@@ -1063,13 +1043,13 @@ bool RenderThemeEA::paintMediaSeekForwardButton(RenderObject* o, const PaintInfo
    
     return false;    
 }
-bool RenderThemeEA::paintMediaSliderTrack(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaSliderTrack(const RenderObject& o, const PaintInfo& i, const IntRect& r)
 { 
     const int kEdgeOffsetX = 4;
     const int kPlayedColor = 0xff444444;
     const int kRemainColor = 0xffeeeeee;
 
-    HTMLMediaElement* pMediaElement = parentMediaElement(*o);
+    HTMLMediaElement* pMediaElement = parentMediaElement(o);
     EAW_ASSERT(pMediaElement);
     float ratio = 0.0f;
     if (pMediaElement)
@@ -1077,8 +1057,8 @@ bool RenderThemeEA::paintMediaSliderTrack(RenderObject* o, const PaintInfo& i, c
         MediaPlayer* pPlayer = pMediaElement->player();
         if(pPlayer)
 		{
-			const float min = pPlayer->currentTime(); 
-			const float max = pPlayer->duration();    
+			const float min = pPlayer->currentTime().toFloat(); 
+			const float max = pPlayer->duration().toFloat();    
 
 			if (max > 0.f)  
 			{
@@ -1111,53 +1091,53 @@ bool RenderThemeEA::paintMediaSliderTrack(RenderObject* o, const PaintInfo& i, c
     }
     return false;    
 }
-bool RenderThemeEA::paintMediaSliderThumb(RenderObject*, const PaintInfo& i, const IntRect& r) 
+bool RenderThemeEA::paintMediaSliderThumb(const RenderObject&, const PaintInfo& i, const IntRect& r) 
 { 
     // We don't want to draw a media slider currently.
     return false;    
 }
-bool RenderThemeEA::paintMediaVolumeSliderContainer(RenderObject*, const PaintInfo& i, const IntRect& r) 
+bool RenderThemeEA::paintMediaVolumeSliderContainer(const RenderObject&, const PaintInfo& i, const IntRect& r) 
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaVolumeSliderTrack(RenderObject*, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaVolumeSliderTrack(const RenderObject&, const PaintInfo& i, const IntRect& r)
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaVolumeSliderThumb(RenderObject*, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaVolumeSliderThumb(const RenderObject&, const PaintInfo& i, const IntRect& r)
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaRewindButton(RenderObject*, const PaintInfo& i, const IntRect& r) 
+bool RenderThemeEA::paintMediaRewindButton(const RenderObject&, const PaintInfo& i, const IntRect& r) 
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaReturnToRealtimeButton(RenderObject*, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaReturnToRealtimeButton(const RenderObject&, const PaintInfo& i, const IntRect& r)
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaToggleClosedCaptionsButton(RenderObject*, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaToggleClosedCaptionsButton(const RenderObject&, const PaintInfo& i, const IntRect& r)
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaControlsBackground(RenderObject* o, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaControlsBackground(const RenderObject& o, const PaintInfo& i, const IntRect& r)
 { 
     FillRectWithSolidBorder(i, r);
     return false;    
 }
-bool RenderThemeEA::paintMediaCurrentTime(RenderObject*, const PaintInfo& i , const IntRect& r) 
+bool RenderThemeEA::paintMediaCurrentTime(const RenderObject&, const PaintInfo& i , const IntRect& r) 
 { 
     FillRectWithSolidBorder(i, r);
 
     return false;    
 }
-bool RenderThemeEA::paintMediaTimeRemaining(RenderObject*, const PaintInfo& i, const IntRect& r)
+bool RenderThemeEA::paintMediaTimeRemaining(const RenderObject&, const PaintInfo& i, const IntRect& r)
 { 
    FillRectWithSolidBorder(i, r);
    return false;    
@@ -1170,22 +1150,46 @@ double RenderThemeEA::caretBlinkInterval() const
 
 #if ENABLE(VIDEO)
 // To modify the slider location. 
-IntPoint RenderThemeEA::volumeSliderOffsetFromMuteButton(RenderBox* muteButtonBox, const IntSize& size) const
+LayoutPoint RenderThemeEA::volumeSliderOffsetFromMuteButton(const RenderBox& muteButtonBox, const LayoutSize& size) const const
 {
     int y = -size.height();
-    FloatPoint absPoint = muteButtonBox->localToAbsolute(FloatPoint(muteButtonBox->offsetLeft(), y), IsFixed | UseTransforms);
+    FloatPoint absPoint = muteButtonBox.localToAbsolute(FloatPoint(muteButtonBox.offsetLeft(), y), IsFixed | UseTransforms);
     if (absPoint.y() < 0)
-        y = muteButtonBox->height();
+        y = muteButtonBox.height();
     return IntPoint(0, y);
 }
 
 String RenderThemeEA::extraMediaControlsStyleSheet()
 {
-    String result = String(mediaControlsEAUserAgentStyleSheet, sizeof(mediaControlsEAUserAgentStyleSheet));
+	String result = String(mediaControlsUserAgentStyleSheetEA, sizeof(mediaControlsUserAgentStyleSheetEA));
     return result;
 }
 #endif
 
+String RenderThemeEA::mediaControlsStyleSheet()
+{
+#if ENABLE(MEDIA_CONTROLS_SCRIPT)
+	if (m_mediaControlsStyleSheet.isEmpty())
+		m_mediaControlsStyleSheet = String(mediaControlsStyleSheetApple, sizeof(mediaControlsStyleSheetApple));
 
+	return m_mediaControlsStyleSheet;
+#else
+	return emptyString();
+#endif
+}
+
+String RenderThemeEA::mediaControlsScript()
+{
+#if ENABLE(MEDIA_CONTROLS_SCRIPT)
+	if (m_mediaControlsScript.isEmpty()) {
+		StringBuilder scriptBuilder;
+		scriptBuilder.append(String(mediaControlsLocalizedStringsJavaScript, sizeof(mediaControlsLocalizedStringsJavaScript)));
+		scriptBuilder.append(String(mediaControlsJavascriptApple, sizeof(mediaControlsJavascriptApple)));
+		m_mediaControlsScript = scriptBuilder.toString();
+	}
+	return m_mediaControlsScript;
+#else
+	return emptyString();
+#endif
+}
 } // WebCore namespace
-

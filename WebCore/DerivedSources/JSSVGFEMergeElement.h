@@ -21,33 +21,30 @@
 #ifndef JSSVGFEMergeElement_h
 #define JSSVGFEMergeElement_h
 
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGFEMergeElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGFEMergeElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGFEMergeElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEMergeElement> impl)
+    static JSSVGFEMergeElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEMergeElement>&& impl)
     {
-        JSSVGFEMergeElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEMergeElement>(globalObject->vm().heap)) JSSVGFEMergeElement(structure, globalObject, impl);
+        JSSVGFEMergeElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEMergeElement>(globalObject->vm().heap)) JSSVGFEMergeElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,80 +53,18 @@ public:
         return static_cast<SVGFEMergeElement&>(Base::impl());
     }
 protected:
-    JSSVGFEMergeElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGFEMergeElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGFEMergeElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGFEMergeElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGFEMergeElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGFEMergeElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGFEMergeElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEMergeElementPrototype>(vm.heap)) JSSVGFEMergeElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGFEMergeElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGFEMergeElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGFEMergeElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGFEMergeElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGFEMergeElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEMergeElementConstructor>(vm.heap)) JSSVGFEMergeElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEMergeElementX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEMergeElementY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEMergeElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEMergeElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEMergeElementResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGFEMergeElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)
 
 #endif

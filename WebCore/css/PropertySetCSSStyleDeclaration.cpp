@@ -2,7 +2,6 @@
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2012 Apple Inc. All rights reserved.
  * Copyright (C) 2011 Research In Motion Limited. All rights reserved.
- * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,10 +28,8 @@
 #include "InspectorInstrumentation.h"
 #include "MutationObserverInterestGroup.h"
 #include "MutationRecord.h"
-#include "StylePropertySet.h"
+#include "StyleProperties.h"
 #include "StyledElement.h"
-
-using namespace std;
 
 namespace WebCore {
 
@@ -91,7 +88,7 @@ public:
         s_currentDecl = 0;
         s_shouldNotifyInspector = false;
         if (localCopyStyleDecl->parentElement())
-            InspectorInstrumentation::didInvalidateStyleAttr(&localCopyStyleDecl->parentElement()->document(), localCopyStyleDecl->parentElement());
+            InspectorInstrumentation::didInvalidateStyleAttr(localCopyStyleDecl->parentElement()->document(), *localCopyStyleDecl->parentElement());
     }
 
     void enqueueMutationRecord()
@@ -110,7 +107,7 @@ private:
     static bool s_shouldNotifyInspector;
     static bool s_shouldDeliver;
 
-    OwnPtr<MutationObserverInterestGroup> m_mutationRecipients;
+    std::unique_ptr<MutationObserverInterestGroup> m_mutationRecipients;
     RefPtr<MutationRecord> m_mutation;
 };
 
@@ -151,11 +148,8 @@ String PropertySetCSSStyleDeclaration::cssText() const
 void PropertySetCSSStyleDeclaration::setCssText(const String& text, ExceptionCode& ec)
 {
     StyleAttributeMutationScope mutationScope(this);
-	//+EAWebKitChange
-	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
-	if (!willMutate()) 
-		return; 
-	//-EAWebKitChange
+    if (!willMutate())
+        return;
 
     ec = 0;
     // FIXME: Detect syntax errors and set ec.
@@ -166,15 +160,15 @@ void PropertySetCSSStyleDeclaration::setCssText(const String& text, ExceptionCod
     mutationScope.enqueueMutationRecord();    
 }
 
-PassRefPtr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue(const String& propertyName)
+RefPtr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue(const String& propertyName)
 {
     CSSPropertyID propertyID = cssPropertyID(propertyName);
     if (!propertyID)
-        return 0;
+        return nullptr;
     return cloneAndCacheForCSSOM(m_propertySet->getPropertyCSSValue(propertyID).get());
 }
 
-String PropertySetCSSStyleDeclaration::getPropertyValue(const String &propertyName)
+String PropertySetCSSStyleDeclaration::getPropertyValue(const String& propertyName)
 {
     CSSPropertyID propertyID = cssPropertyID(propertyName);
     if (!propertyID)
@@ -213,11 +207,8 @@ void PropertySetCSSStyleDeclaration::setProperty(const String& propertyName, con
     if (!propertyID)
         return;
 
-	//+EAWebKitChange
-	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
-	if (!willMutate()) 
-		return; 
-	//-EAWebKitChange
+    if (!willMutate())
+        return;
 
     bool important = priority.find("important", 0, false) != notFound;
 
@@ -240,11 +231,8 @@ String PropertySetCSSStyleDeclaration::removeProperty(const String& propertyName
     if (!propertyID)
         return String();
 
-	//+EAWebKitChange
-	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
-	if (!willMutate()) 
-		return String(); 
-	//-EAWebKitChange
+    if (!willMutate())
+        return String();
 
     ec = 0;
     String result;
@@ -257,7 +245,7 @@ String PropertySetCSSStyleDeclaration::removeProperty(const String& propertyName
     return result;
 }
 
-PassRefPtr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValueInternal(CSSPropertyID propertyID)
+RefPtr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValueInternal(CSSPropertyID propertyID)
 {
     return m_propertySet->getPropertyCSSValue(propertyID);
 }
@@ -267,14 +255,11 @@ String PropertySetCSSStyleDeclaration::getPropertyValueInternal(CSSPropertyID pr
     return m_propertySet->getPropertyValue(propertyID);
 }
 
-void PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropertyID propertyID, const String& value, bool important, ExceptionCode& ec)
+bool PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropertyID propertyID, const String& value, bool important, ExceptionCode& ec)
 { 
     StyleAttributeMutationScope mutationScope(this);
-	//+EAWebKitChange
-	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
-	if (!willMutate()) 
-		return; 
-	//-EAWebKitChange
+    if (!willMutate())
+        return false;
 
     ec = 0;
     bool changed = m_propertySet->setProperty(propertyID, value, important, contextStyleSheet());
@@ -283,6 +268,7 @@ void PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropertyID propertyI
 
     if (changed)
         mutationScope.enqueueMutationRecord();
+    return changed;
 }
 
 CSSValue* PropertySetCSSStyleDeclaration::cloneAndCacheForCSSOM(CSSValue* internalValue)
@@ -293,7 +279,7 @@ CSSValue* PropertySetCSSStyleDeclaration::cloneAndCacheForCSSOM(CSSValue* intern
     // The map is here to maintain the object identity of the CSSValues over multiple invocations.
     // FIXME: It is likely that the identity is not important for web compatibility and this code should be removed.
     if (!m_cssomCSSValueClones)
-        m_cssomCSSValueClones = adoptPtr(new HashMap<CSSValue*, RefPtr<CSSValue> >);
+        m_cssomCSSValueClones = std::make_unique<HashMap<CSSValue*, RefPtr<CSSValue>>>();
     
     RefPtr<CSSValue>& clonedValue = m_cssomCSSValueClones->add(internalValue, RefPtr<CSSValue>()).iterator->value;
     if (!clonedValue)
@@ -304,18 +290,18 @@ CSSValue* PropertySetCSSStyleDeclaration::cloneAndCacheForCSSOM(CSSValue* intern
 StyleSheetContents* PropertySetCSSStyleDeclaration::contextStyleSheet() const
 { 
     CSSStyleSheet* cssStyleSheet = parentStyleSheet();
-    return cssStyleSheet ? cssStyleSheet->contents() : 0;
+    return cssStyleSheet ? &cssStyleSheet->contents() : 0;
 }
 
-PassRefPtr<MutableStylePropertySet> PropertySetCSSStyleDeclaration::copyProperties() const
+Ref<MutableStyleProperties> PropertySetCSSStyleDeclaration::copyProperties() const
 {
     return m_propertySet->mutableCopy();
 }
     
-StyleRuleCSSStyleDeclaration::StyleRuleCSSStyleDeclaration(MutableStylePropertySet* propertySet, CSSRule* parentRule)
-    : PropertySetCSSStyleDeclaration(propertySet)
+StyleRuleCSSStyleDeclaration::StyleRuleCSSStyleDeclaration(MutableStyleProperties& propertySet, CSSRule& parentRule)
+    : PropertySetCSSStyleDeclaration(&propertySet)
     , m_refCount(1)
-    , m_parentRule(parentRule) 
+    , m_parentRule(&parentRule)
 {
     m_propertySet->ref();
 }
@@ -337,30 +323,24 @@ void StyleRuleCSSStyleDeclaration::deref()
         delete this;
 }
 
-//+EAWebKitChange
-//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
-bool StyleRuleCSSStyleDeclaration::willMutate() 
-{ 
-	if (!m_parentRule || !m_parentRule->parentStyleSheet()) 
-		return false; 
-	m_parentRule->parentStyleSheet()->willMutateRules(); 
-	return true; 
-} 
-//-EAWebKitChange
+bool StyleRuleCSSStyleDeclaration::willMutate()
+{
+    if (!m_parentRule || !m_parentRule->parentStyleSheet())
+        return false;
+    m_parentRule->parentStyleSheet()->willMutateRules();
+    return true;
+}
 
 void StyleRuleCSSStyleDeclaration::didMutate(MutationType type)
 {
-	//+EAWebKitChange
-	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
-	ASSERT(m_parentRule); 
-	ASSERT(m_parentRule->parentStyleSheet()); 
+    ASSERT(m_parentRule);
+    ASSERT(m_parentRule->parentStyleSheet());
 
     if (type == PropertyChanged)
-        m_cssomCSSValueClones.clear();
+        m_cssomCSSValueClones = nullptr;
 
     // Style sheet mutation needs to be signaled even if the change failed. willMutate*/didMutate* must pair.
-	m_parentRule->parentStyleSheet()->didMutateRuleFromCSSStyleDeclaration(); 
-	//-EAWebKitChange
+    m_parentRule->parentStyleSheet()->didMutateRuleFromCSSStyleDeclaration();
 }
 
 CSSStyleSheet* StyleRuleCSSStyleDeclaration::parentStyleSheet() const
@@ -368,11 +348,10 @@ CSSStyleSheet* StyleRuleCSSStyleDeclaration::parentStyleSheet() const
     return m_parentRule ? m_parentRule->parentStyleSheet() : 0;
 }
 
-void StyleRuleCSSStyleDeclaration::reattach(MutableStylePropertySet* propertySet)
+void StyleRuleCSSStyleDeclaration::reattach(MutableStyleProperties& propertySet)
 {
-    ASSERT(propertySet);
     m_propertySet->deref();
-    m_propertySet = propertySet;
+    m_propertySet = &propertySet;
     m_propertySet->ref();
 }
 
@@ -381,7 +360,7 @@ void InlineCSSStyleDeclaration::didMutate(MutationType type)
     if (type == NoChanges)
         return;
 
-    m_cssomCSSValueClones.clear();
+    m_cssomCSSValueClones = nullptr;
 
     if (!m_parentElement)
         return;

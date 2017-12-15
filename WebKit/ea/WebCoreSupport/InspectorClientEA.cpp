@@ -2,7 +2,7 @@
  * Copyright (C) 2007 Apple Inc.  All rights reserved.
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) 2008 Holger Hans Peter Freyther
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,7 +34,7 @@
 
 #include "FrameView.h"
 #include "InspectorController.h"
-#include "InspectorFrontend.h"
+#include "InspectorAgentBase.h"
 #include "MainFrame.h"
 #include "NotImplemented.h"
 #include "Page.h"
@@ -51,7 +51,6 @@
 #include <EAWebKit/EAWebKitFileSystem.h>
 #include <internal/include/EAWebKitAssert.h>
 
-#if ENABLE(INSPECTOR)
 
 // The set up here and management of object ownership is overly complex and pretty much like a spaghetti. Not making any changes because it works.
 namespace WebCore {
@@ -107,7 +106,7 @@ WebCore::InspectorFrontendChannel*  InspectorClientEA::openInspectorFrontend(Web
 
             // Create the frontend client
             mInspectorPageClient = new InspectorFrontendClientEA(mInspectedPage, inspectorView, this);
-            EA::WebKit::WebPagePrivate::core(inspectorView->Page())->inspectorController()->setInspectorFrontendClient(adoptPtr(mInspectorPageClient));
+            EA::WebKit::WebPagePrivate::core(inspectorView->Page())->inspectorController().setInspectorFrontendClient(mInspectorPageClient);
             mInspectorPage = inspectorPage;
 			mInspectorPage->handle()->page->setGroupName("__WebInspectorPageGroup__");
             inspector->SetFrontendClient(mInspectorPageClient);
@@ -178,7 +177,7 @@ public:
 };
 
 InspectorFrontendClientEA::InspectorFrontendClientEA(EA::WebKit::WebPage* inspectedWebPage, EA::WebKit::View *inspectorView, InspectorClientEA* inspectorClient)
-    : InspectorFrontendClientLocal(inspectedWebPage->d->page->inspectorController(), inspectorView->Page()->d->page, adoptPtr(new InspectorFrontendSettingsEA())) 
+	: InspectorFrontendClientLocal(&inspectedWebPage->d->page->inspectorController(), inspectorView->Page()->d->page, std::make_unique<InspectorFrontendSettingsEA>())
     , mInspectedWebPage(inspectedWebPage)
     , mInspectorView(inspectorView)
     , mDestroyingInspectorView(false)
@@ -197,7 +196,7 @@ InspectorFrontendClientEA::~InspectorFrontendClientEA(void)
 void InspectorFrontendClientEA::frontendLoaded(void)
 {
     InspectorFrontendClientLocal::frontendLoaded();
-    setAttachedWindow(DOCKED_TO_BOTTOM);
+    setAttachedWindow(DockSide::Bottom);
 }
 
 String InspectorFrontendClientEA::localizedStringsURL(void)
@@ -279,7 +278,7 @@ void InspectorFrontendClientEA::destroyInspectorView(bool notifyInspectorControl
     }
 
     if (notifyInspectorController && (mInspectedWebPage))
-        mInspectedWebPage->d->page->inspectorController()->disconnectFrontend();
+		mInspectedWebPage->d->page->inspectorController().disconnectFrontend(Inspector::DisconnectReason::InspectorDestroyed);
 
     if (mInspectorClient)
         mInspectorClient->releaseFrontendPage();
@@ -454,4 +453,4 @@ void InspectorSettingsEA::saveSettingsToFile()
 }
 }
 
-#endif
+

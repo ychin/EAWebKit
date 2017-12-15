@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,41 +29,49 @@
 #if ENABLE(FTL_JIT)
 
 #include "FTLSaveRestore.h"
+#include "RegisterSet.h"
 #include <wtf/CommaPrinter.h>
 #include <wtf/DataLog.h>
 #include <wtf/ListDump.h>
 
 namespace JSC { namespace FTL {
 
-Location Location::forStackmaps(const StackMaps& stackmaps, const StackMaps::Location& location)
+Location Location::forStackmaps(const StackMaps* stackmaps, const StackMaps::Location& location)
 {
     switch (location.kind) {
     case StackMaps::Location::Unprocessed:
-        return Location();
+        RELEASE_ASSERT_NOT_REACHED();
+        break;
         
     case StackMaps::Location::Register:
-        return forRegister(location.dwarfRegNum);
+    case StackMaps::Location::Direct:
+        return forRegister(location.dwarfReg, location.offset);
         
     case StackMaps::Location::Indirect:
-        return forIndirect(location.dwarfRegNum, location.offset);
+        return forIndirect(location.dwarfReg, location.offset);
         
     case StackMaps::Location::Constant:
         return forConstant(location.offset);
         
     case StackMaps::Location::ConstantIndex:
-        return forConstant(stackmaps.constants[location.offset].integer);
+        ASSERT(stackmaps);
+        return forConstant(stackmaps->constants[location.offset].integer);
     }
     
     RELEASE_ASSERT_NOT_REACHED();
+
+    return Location();
 }
 
 void Location::dump(PrintStream& out) const
 {
     out.print("(", kind());
-    if (hasDwarfRegNum())
-        out.print(", reg", dwarfRegNum());
+    if (hasDwarfReg())
+        out.print(", ", dwarfReg());
     if (hasOffset())
         out.print(", ", offset());
+    if (hasAddend())
+        out.print(", ", addend());
     if (hasConstant())
         out.print(", ", constant());
     out.print(")");
@@ -74,84 +82,72 @@ bool Location::involvesGPR() const
     return isGPR() || kind() == Indirect;
 }
 
-#if CPU(X86_64) // CPU cases for Location methods
-// This decodes Dwarf flavour 0 for x86-64.
 bool Location::isGPR() const
 {
-    return kind() == Register && dwarfRegNum() < 16;
+    return kind() == Register && dwarfReg().reg().isGPR();
 }
 
 GPRReg Location::gpr() const
 {
-    // Stupidly, Dwarf doesn't number the registers in the same way as the architecture;
-    // for example, the architecture encodes CX as 1 and DX as 2 while Dwarf does the
-    // opposite. Hence we need the switch.
-    
-    ASSERT(involvesGPR());
-    
-    switch (dwarfRegNum()) {
-    case 0:
-        return X86Registers::eax;
-    case 1:
-        return X86Registers::edx;
-    case 2:
-        return X86Registers::ecx;
-    case 3:
-        return X86Registers::ebx;
-    case 4:
-        return X86Registers::esi;
-    case 5:
-        return X86Registers::edi;
-    case 6:
-        return X86Registers::ebp;
-    case 7:
-        return X86Registers::esp;
-    default:
-        RELEASE_ASSERT(dwarfRegNum() < 16);
-        // Registers r8..r15 are numbered sensibly.
-        return static_cast<GPRReg>(dwarfRegNum());
-    }
+    return dwarfReg().reg().gpr();
 }
 
 bool Location::isFPR() const
 {
-    return kind() == Register && dwarfRegNum() >= 17 && dwarfRegNum() <= 32;
+    return kind() == Register && dwarfReg().reg().isFPR();
 }
 
 FPRReg Location::fpr() const
 {
-    ASSERT(isFPR());
-    return static_cast<FPRReg>(dwarfRegNum() - 17);
+    return dwarfReg().reg().fpr();
 }
 
-void Location::restoreInto(MacroAssembler& jit, char* savedRegisters, GPRReg result) const
+void Location::restoreInto(MacroAssembler& jit, char* savedRegisters, GPRReg result, unsigned numFramesToPop) const
 {
-    if (isGPR()) {
-        if (MacroAssembler::isStackRelated(gpr())) {
-            // These don't get saved.
+    if (involvesGPR() && RegisterSet::stackRegisters().get(gpr())) {
+        // Make the result GPR contain the appropriate stack register.
+        if (numFramesToPop) {
+            jit.move(MacroAssembler::framePointerRegister, result);
+            
+            for (unsigned i = numFramesToPop - 1; i--;)
+                jit.loadPtr(result, result);
+            
+            if (gpr() == MacroAssembler::framePointerRegister)
+                jit.loadPtr(result, result);
+            else
+                jit.addPtr(MacroAssembler::TrustedImmPtr(sizeof(void*) * 2), result);
+        } else
             jit.move(gpr(), result);
-            return;
-        }
+    }
+    
+    if (isGPR()) {
+        if (RegisterSet::stackRegisters().get(gpr())) {
+            // Already restored into result.
+        } else
+            jit.load64(savedRegisters + offsetOfGPR(gpr()), result);
         
-        jit.load64(savedRegisters + offsetOfGPR(gpr()), result);
+        if (addend())
+            jit.add64(MacroAssembler::TrustedImm32(addend()), result);
         return;
     }
     
     if (isFPR()) {
         jit.load64(savedRegisters + offsetOfFPR(fpr()), result);
+        ASSERT(!addend());
         return;
     }
     
     switch (kind()) {
     case Register:
         // LLVM used some register that we don't know about!
+        dataLog("Unrecognized location: ", *this, "\n");
         RELEASE_ASSERT_NOT_REACHED();
         return;
         
     case Indirect:
-        if (MacroAssembler::isStackRelated(gpr())) {
-            // These don't get saved.
-            jit.load64(MacroAssembler::Address(gpr(), offset()), result);
+        if (RegisterSet::stackRegisters().get(gpr())) {
+            // The stack register is already recovered into result.
+            jit.load64(MacroAssembler::Address(result, offset()), result);
             return;
         }
         
@@ -172,9 +168,12 @@ void Location::restoreInto(MacroAssembler& jit, char* savedRegisters, GPRReg res
     
     RELEASE_ASSERT_NOT_REACHED();
 }
-#else // CPU cases for Location methods
-#error "CPU architecture not supported."
-#endif // CPU cases for Location methods
+
+GPRReg Location::directGPR() const
+{
+    RELEASE_ASSERT(!addend());
+    return gpr();
+}
 
 } } // namespace JSC::FTL
 

@@ -39,8 +39,8 @@ public:
     bool hasSelfPaintingLayer() const;
     RenderLayer* layer() const { return m_layer.get(); }
 
-    virtual void styleWillChange(StyleDifference, const RenderStyle* newStyle) OVERRIDE;
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
+    virtual void styleWillChange(StyleDifference, const RenderStyle& newStyle) override;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
     virtual void updateFromStyle() { }
 
     virtual bool requiresLayer() const = 0;
@@ -49,13 +49,13 @@ public:
     // The query rect is given in local coordinate system.
     virtual bool backgroundIsKnownToBeOpaqueInRect(const LayoutRect&) const { return false; }
 
+    virtual bool isScrollableOrRubberbandableBox() const { return false; }
+
 protected:
-    RenderLayerModelObject(Element&, unsigned baseTypeFlags);
-    RenderLayerModelObject(Document&, unsigned baseTypeFlags);
+    RenderLayerModelObject(Element&, Ref<RenderStyle>&&, unsigned baseTypeFlags);
+    RenderLayerModelObject(Document&, Ref<RenderStyle>&&, unsigned baseTypeFlags);
 
-    void ensureLayer();
-
-    virtual void willBeDestroyed() OVERRIDE;
+    void createLayer();
 
 private:
     std::unique_ptr<RenderLayer> m_layer;
@@ -67,21 +67,8 @@ private:
     static bool s_layerWasSelfPainting;
 };
 
-inline RenderLayerModelObject* toRenderLayerModelObject(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isRenderLayerModelObject());
-    return static_cast<RenderLayerModelObject*>(object);
-}
-
-inline const RenderLayerModelObject* toRenderLayerModelObject(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isRenderLayerModelObject());
-    return static_cast<const RenderLayerModelObject*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderLayerModelObject(const RenderLayerModelObject*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderLayerModelObject, isRenderLayerModelObject())
 
 #endif // RenderLayerModelObject_h

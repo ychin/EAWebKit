@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2011 Apple Inc. All Rights Reserved.
  * Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,16 +28,13 @@
 #ifndef WebSocketServer_h
 #define WebSocketServer_h
 
-#if ENABLE(INSPECTOR_SERVER)
-
 #include <wtf/Deque.h>
-#include <wtf/OwnPtr.h>
 #include <wtf/text/WTFString.h>
 #include <EAWebKit/EAWebKitTransport.h>
 
 #if USE(SOUP)
 #include <gio/gio.h>
-#include <wtf/gobject/GRefPtr.h>
+#include <wtf/glib/GRefPtr.h>
 #endif
 
 namespace WebCore {
@@ -68,7 +65,7 @@ public:
     void close();
 
     WebSocketServerClient* client() const { return m_client; }
-    void didAcceptConnection(PassOwnPtr<WebSocketServerConnection>);
+    void didAcceptConnection(std::unique_ptr<WebSocketServerConnection>);
 
 private:
     void didCloseWebSocketServerConnection(WebSocketServerConnection*);
@@ -78,7 +75,7 @@ private:
     void platformClose();
 
     ServerState m_state;
-    Deque<OwnPtr<WebSocketServerConnection> > m_connections;
+    Deque<std::unique_ptr<WebSocketServerConnection>> m_connections;
     WebSocketServerClient* m_client;
     String m_bindAddress;
     unsigned short m_port;
@@ -91,6 +88,6 @@ private:
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+
 
 #endif // WebSocketServer_h

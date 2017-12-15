@@ -24,24 +24,24 @@
 #if ENABLE(DEVICE_ORIENTATION)
 
 #include "DeviceMotionEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDeviceMotionEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSDeviceMotionEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DeviceMotionEvent> impl)
+    static JSDeviceMotionEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DeviceMotionEvent>&& impl)
     {
-        JSDeviceMotionEvent* ptr = new (NotNull, JSC::allocateCell<JSDeviceMotionEvent>(globalObject->vm().heap)) JSDeviceMotionEvent(structure, globalObject, impl);
+        JSDeviceMotionEvent* ptr = new (NotNull, JSC::allocateCell<JSDeviceMotionEvent>(globalObject->vm().heap)) JSDeviceMotionEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -63,71 +63,20 @@ public:
     {
         return static_cast<DeviceMotionEvent&>(Base::impl());
     }
-protected:
-    JSDeviceMotionEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DeviceMotionEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSDeviceMotionEventPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDeviceMotionEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDeviceMotionEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSDeviceMotionEventPrototype>(vm.heap)) JSDeviceMotionEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDeviceMotionEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
     static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDeviceMotionEventConstructor : public DOMConstructorObject {
-private:
-    JSDeviceMotionEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDeviceMotionEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDeviceMotionEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSDeviceMotionEventConstructor>(vm.heap)) JSDeviceMotionEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
+    JSDeviceMotionEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<DeviceMotionEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-// Functions
 
-JSC::EncodedJSValue JSC_HOST_CALL jsDeviceMotionEventPrototypeFunctionInitDeviceMotionEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDeviceMotionEventAcceleration(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceMotionEventAccelerationIncludingGravity(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceMotionEventRotationRate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceMotionEventInterval(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceMotionEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

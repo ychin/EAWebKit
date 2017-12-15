@@ -24,25 +24,23 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
 #include "WaveShaperNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSWaveShaperNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSWaveShaperNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WaveShaperNode> impl)
+    static JSWaveShaperNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WaveShaperNode>&& impl)
     {
-        JSWaveShaperNode* ptr = new (NotNull, JSC::allocateCell<JSWaveShaperNode>(globalObject->vm().heap)) JSWaveShaperNode(structure, globalObject, impl);
+        JSWaveShaperNode* ptr = new (NotNull, JSC::allocateCell<JSWaveShaperNode>(globalObject->vm().heap)) JSWaveShaperNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,67 +54,19 @@ public:
         return static_cast<WaveShaperNode&>(Base::impl());
     }
 protected:
-    JSWaveShaperNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WaveShaperNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWaveShaperNode(JSC::Structure*, JSDOMGlobalObject*, Ref<WaveShaperNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WaveShaperNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WaveShaperNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWaveShaperNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWaveShaperNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWaveShaperNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSWaveShaperNodePrototype>(vm.heap)) JSWaveShaperNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWaveShaperNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWaveShaperNodeConstructor : public DOMConstructorObject {
-private:
-    JSWaveShaperNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWaveShaperNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWaveShaperNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSWaveShaperNodeConstructor>(vm.heap)) JSWaveShaperNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsWaveShaperNodeCurve(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWaveShaperNodeCurve(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWaveShaperNodeOversample(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWaveShaperNodeOversample(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWaveShaperNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

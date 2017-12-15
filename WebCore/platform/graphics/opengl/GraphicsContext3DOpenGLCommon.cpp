@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Apple Inc. All rights reserved.
+ * Copyright (C) 2010, 2014 Apple Inc. All rights reserved.
  * Copyright (C) 2011 Google Inc. All rights reserved.
  * Copyright (C) 2012 ChangSeok Oh <shivamidow@gmail.com>
  * Copyright (C) 2012 Research In Motion Limited. All rights reserved.
@@ -13,61 +13,73 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "config.h"
 
-#if USE(3D_GRAPHICS)
+#if ENABLE(GRAPHICS_CONTEXT_3D)
 
 #include "GraphicsContext3D.h"
+#if PLATFORM(IOS)
+#include "GraphicsContext3DIOS.h"
+#endif
 
 #if USE(OPENGL_ES_2)
 #include "Extensions3DOpenGLES.h"
 #else
 #include "Extensions3DOpenGL.h"
 #endif
+#include "ANGLEWebKitBridge.h"
 #include "GraphicsContext.h"
 #include "ImageBuffer.h"
 #include "ImageData.h"
 #include "IntRect.h"
 #include "IntSize.h"
 #include "Logging.h"
-#include "NotImplemented.h"
+#include "TemporaryOpenGLSetting.h"
+#include "WebGLRenderingContextBase.h"
 #include <cstring>
 #include <runtime/ArrayBuffer.h>
 #include <runtime/ArrayBufferView.h>
 #include <runtime/Float32Array.h>
 #include <runtime/Int32Array.h>
 #include <runtime/Uint8Array.h>
+#include <wtf/HexNumber.h>
 #include <wtf/MainThread.h>
 #include <wtf/text/CString.h>
+#include <wtf/text/StringBuilder.h>
+#include <yarr/RegularExpression.h>
 
+#if PLATFORM(IOS)
+#import <OpenGLES/ES2/glext.h>
+// From <OpenGLES/glext.h>
+#define GL_RGBA32F_ARB                      0x8814
+#define GL_RGB32F_ARB                       0x8815
+#else
 #if USE(OPENGL_ES_2)
 #include "OpenGLESShims.h"
 #elif PLATFORM(MAC)
 #include <OpenGL/gl.h>
-#elif PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(WIN) || PLATFORM(NIX)
+#elif PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(WIN)
 #include "OpenGLShims.h"
 #endif
-
-#if PLATFORM(BLACKBERRY)
-#include <BlackBerryPlatformLog.h>
 #endif
+
 
 namespace WebCore {
 
-static ShaderNameHash* currentNameHashMapForShader;
+static ShaderNameHash* currentNameHashMapForShader = nullptr;
 
 // Hash function used by the ANGLE translator/compiler to do
 // symbol name mangling. Since this is a static method, before
@@ -133,7 +145,7 @@ bool GraphicsContext3D::isResourceSafe()
     return false;
 }
 
-void GraphicsContext3D::paintRenderingResultsToCanvas(ImageBuffer* imageBuffer, DrawingBuffer*)
+void GraphicsContext3D::paintRenderingResultsToCanvas(ImageBuffer* imageBuffer)
 {
     int rowBytes = m_currentWidth * 4;
     int totalBytes = rowBytes * m_currentHeight;
@@ -153,12 +165,16 @@ void GraphicsContext3D::paintRenderingResultsToCanvas(ImageBuffer* imageBuffer, 
         }
     }
 
-#if PLATFORM(BLACKBERRY) || USE(CG)
+#if USE(CG)
     paintToCanvas(pixels.get(), m_currentWidth, m_currentHeight,
                   imageBuffer->internalSize().width(), imageBuffer->internalSize().height(), imageBuffer->context());
 #else
     paintToCanvas(pixels.get(), m_currentWidth, m_currentHeight,
                   imageBuffer->internalSize().width(), imageBuffer->internalSize().height(), imageBuffer->context()->platformContext());
+#endif
+
+#if PLATFORM(IOS)
+    endPaint();
 #endif
 }
 
@@ -168,7 +184,7 @@ bool GraphicsContext3D::paintCompositedResultsToCanvas(ImageBuffer*)
     return false;
 }
 
-PassRefPtr<ImageData> GraphicsContext3D::paintRenderingResultsToImageData(DrawingBuffer*)
+PassRefPtr<ImageData> GraphicsContext3D::paintRenderingResultsToImageData()
 {
     // Reading premultiplied alpha would involve unpremultiplying, which is
     // lossy.
@@ -188,13 +204,16 @@ PassRefPtr<ImageData> GraphicsContext3D::paintRenderingResultsToImageData(Drawin
     return imageData.release();
 }
 
-#if !PLATFORM(BLACKBERRY)
 void GraphicsContext3D::prepareTexture()
 {
     if (m_layerComposited)
         return;
 
     makeContextCurrent();
+
+    TemporaryOpenGLSetting scopedScissor(GL_SCISSOR_TEST, GL_FALSE);
+    TemporaryOpenGLSetting scopedDither(GL_DITHER, GL_FALSE);
+    
     if (m_attrs.antialias)
         resolveMultisamplingIfNecessary();
 
@@ -206,10 +225,8 @@ void GraphicsContext3D::prepareTexture()
     ::glActiveTexture(m_state.activeTexture);
     if (m_state.boundFBO != m_fbo)
         ::glBindFramebufferEXT(GraphicsContext3D::FRAMEBUFFER, m_state.boundFBO);
-    ::glFinish();
-    m_layerComposited = true;
+    ::glFlush();
 }
-#endif
 
 void GraphicsContext3D::readRenderingResults(unsigned char *pixels, int pixelsSize)
 {
@@ -255,7 +272,9 @@ void GraphicsContext3D::reshape(int width, int height)
     if (width == m_currentWidth && height == m_currentHeight)
         return;
 
-#if (PLATFORM(EFL) || PLATFORM(NIX)) && USE(GRAPHICS_SURFACE)
+    markContextChanged();
+
+#if PLATFORM(EFL) && USE(GRAPHICS_SURFACE)
     ::glFlush(); // Make sure all GL calls have been committed before resizing.
     createGraphicsSurfaces(IntSize(width, height));
 #endif
@@ -266,15 +285,16 @@ void GraphicsContext3D::reshape(int width, int height)
     makeContextCurrent();
     validateAttributes();
 
+    TemporaryOpenGLSetting scopedScissor(GL_SCISSOR_TEST, GL_FALSE);
+    TemporaryOpenGLSetting scopedDither(GL_DITHER, GL_FALSE);
+    
     bool mustRestoreFBO = reshapeFBOs(IntSize(width, height));
 
     // Initialize renderbuffers to 0.
     GLfloat clearColor[] = {0, 0, 0, 0}, clearDepth = 0;
     GLint clearStencil = 0;
     GLboolean colorMask[] = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE}, depthMask = GL_TRUE;
-    GLuint stencilMask = 0xffffffff;
-    GLboolean isScissorEnabled = GL_FALSE;
-    GLboolean isDitherEnabled = GL_FALSE;
+    GLuint stencilMask = 0xffffffff, stencilMaskBack = 0xffffffff;
     GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
     ::glGetFloatv(GL_COLOR_CLEAR_VALUE, clearColor);
     ::glClearColor(0, 0, 0, 0);
@@ -291,13 +311,11 @@ void GraphicsContext3D::reshape(int width, int height)
         ::glGetIntegerv(GL_STENCIL_CLEAR_VALUE, &clearStencil);
         ::glClearStencil(0);
         ::glGetIntegerv(GL_STENCIL_WRITEMASK, reinterpret_cast<GLint*>(&stencilMask));
+        ::glGetIntegerv(GL_STENCIL_BACK_WRITEMASK, reinterpret_cast<GLint*>(&stencilMaskBack));
         ::glStencilMaskSeparate(GL_FRONT, 0xffffffff);
+        ::glStencilMaskSeparate(GL_BACK, 0xffffffff);
         clearMask |= GL_STENCIL_BUFFER_BIT;
     }
-    isScissorEnabled = ::glIsEnabled(GL_SCISSOR_TEST);
-    ::glDisable(GL_SCISSOR_TEST);
-    isDitherEnabled = ::glIsEnabled(GL_DITHER);
-    ::glDisable(GL_DITHER);
 
     ::glClear(clearMask);
 
@@ -310,20 +328,87 @@ void GraphicsContext3D::reshape(int width, int height)
     if (m_attrs.stencil) {
         ::glClearStencil(clearStencil);
         ::glStencilMaskSeparate(GL_FRONT, stencilMask);
+        ::glStencilMaskSeparate(GL_BACK, stencilMaskBack);
     }
-    if (isScissorEnabled)
-        ::glEnable(GL_SCISSOR_TEST);
-    else
-        ::glDisable(GL_SCISSOR_TEST);
-    if (isDitherEnabled)
-        ::glEnable(GL_DITHER);
-    else
-        ::glDisable(GL_DITHER);
 
     if (mustRestoreFBO)
         ::glBindFramebufferEXT(GraphicsContext3D::FRAMEBUFFER, m_state.boundFBO);
 
     ::glFlush();
+}
+
+bool GraphicsContext3D::checkVaryingsPacking(Platform3DObject vertexShader, Platform3DObject fragmentShader) const
+{
+    ASSERT(m_shaderSourceMap.contains(vertexShader));
+    ASSERT(m_shaderSourceMap.contains(fragmentShader));
+    const auto& vertexEntry = m_shaderSourceMap.find(vertexShader)->value;
+    const auto& fragmentEntry = m_shaderSourceMap.find(fragmentShader)->value;
+
+    HashMap<String, ShVariableInfo> combinedVaryings;
+    for (const auto& vertexSymbol : vertexEntry.varyingMap) {
+        const String& symbolName = vertexSymbol.key;
+        // The varying map includes variables for each index of an array variable.
+        // We only want a single variable to represent the array.
+        if (symbolName.endsWith("]"))
+            continue;
+
+        // Don't count built in varyings.
+        if (symbolName == "gl_FragCoord" || symbolName == "gl_FrontFacing" || symbolName == "gl_PointCoord")
+            continue;
+
+        const auto& fragmentSymbol = fragmentEntry.varyingMap.find(symbolName);
+        if (fragmentSymbol != fragmentEntry.varyingMap.end()) {
+            ShVariableInfo symbolInfo;
+            symbolInfo.type = (fragmentSymbol->value).type;
+            // The arrays are already split up.
+            symbolInfo.size = (fragmentSymbol->value).size;
+            combinedVaryings.add(symbolName, symbolInfo);
+        }
+    }
+
+    size_t numVaryings = combinedVaryings.size();
+    if (!numVaryings)
+        return true;
+
+    ShVariableInfo* variables = new ShVariableInfo[numVaryings];
+    int index = 0;
+    for (const auto& varyingSymbol : combinedVaryings) {
+        variables[index] = varyingSymbol.value;
+        index++;
+    }
+
+    GC3Dint maxVaryingVectors = 0;
+#if !PLATFORM(IOS) && !((PLATFORM(WIN) || PLATFORM(GTK)) && USE(OPENGL_ES_2))
+    GC3Dint maxVaryingFloats = 0;
+    ::glGetIntegerv(GL_MAX_VARYING_FLOATS, &maxVaryingFloats);
+    maxVaryingVectors = maxVaryingFloats / 4;
+#else
+    ::glGetIntegerv(MAX_VARYING_VECTORS, &maxVaryingVectors);
+#endif
+    int result = ShCheckVariablesWithinPackingLimits(maxVaryingVectors, variables, numVaryings);
+    delete[] variables;
+    return result;
+}
+
+bool GraphicsContext3D::precisionsMatch(Platform3DObject vertexShader, Platform3DObject fragmentShader) const
+{
+    ASSERT(m_shaderSourceMap.contains(vertexShader));
+    ASSERT(m_shaderSourceMap.contains(fragmentShader));
+    const auto& vertexEntry = m_shaderSourceMap.find(vertexShader)->value;
+    const auto& fragmentEntry = m_shaderSourceMap.find(fragmentShader)->value;
+
+    HashMap<String, sh::GLenum> vertexSymbolPrecisionMap;
+
+    for (const auto& entry : vertexEntry.uniformMap)
+        vertexSymbolPrecisionMap.add(entry.value.mappedName, entry.value.precision);
+
+    for (const auto& entry : fragmentEntry.uniformMap) {
+        const auto& vertexSymbol = vertexSymbolPrecisionMap.find(entry.value.mappedName);
+        if (vertexSymbol != vertexSymbolPrecisionMap.end() && vertexSymbol->value != entry.value.precision)
+            return false;
+    }
+
+    return true;
 }
 
 IntSize GraphicsContext3D::getInternalFramebufferSize() const
@@ -343,6 +428,7 @@ void GraphicsContext3D::attachShader(Platform3DObject program, Platform3DObject 
     ASSERT(program);
     ASSERT(shader);
     makeContextCurrent();
+    m_shaderProgramSymbolCountMap.remove(program);
     ::glAttachShader(program, shader);
 }
 
@@ -369,11 +455,7 @@ void GraphicsContext3D::bindFramebuffer(GC3Denum target, Platform3DObject buffer
     if (buffer)
         fbo = buffer;
     else
-#if PLATFORM(BLACKBERRY)
-        fbo = m_fbo;
-#else
         fbo = (m_attrs.antialias ? m_multisampleFBO : m_fbo);
-#endif
     if (fbo != m_state.boundFBO) {
         ::glBindFramebufferEXT(target, fbo);
         m_state.boundFBO = fbo;
@@ -486,7 +568,7 @@ void GraphicsContext3D::compileShader(Platform3DObject shader)
     ANGLEResources.HashFunction = nameHashForShader;
 
     if (!nameHashMapForShaders)
-        nameHashMapForShaders = adoptPtr(new ShaderNameHash);
+        nameHashMapForShaders = std::make_unique<ShaderNameHash>();
     currentNameHashMapForShader = nameHashMapForShaders.get();
     m_compiler.setResources(ANGLEResources);
 
@@ -526,48 +608,38 @@ void GraphicsContext3D::compileShader(Platform3DObject shader)
         auto info = std::make_unique<GLchar[]>(length);
         ::glGetShaderInfoLog(shader, length, &size, info.get());
 
-        entry.log = info.get();
+        Platform3DObject shaders[2] = { shader, 0 };
+        entry.log = getUnmangledInfoLog(shaders, 1, String(info.get()));
     }
 
     if (GLCompileSuccess != GL_TRUE) {
         entry.isValid = false;
         LOG(WebGL, "Error: shader translator produced a shader that OpenGL would not compile.");
-#if PLATFORM(BLACKBERRY) && !defined(NDEBUG)
-        BBLOG(BlackBerry::Platform::LogLevelWarn, "The shader validated, but didn't compile.\n");
-#endif
     }
 }
 
 void GraphicsContext3D::copyTexImage2D(GC3Denum target, GC3Dint level, GC3Denum internalformat, GC3Dint x, GC3Dint y, GC3Dsizei width, GC3Dsizei height, GC3Dint border)
 {
     makeContextCurrent();
-#if !PLATFORM(BLACKBERRY)
     if (m_attrs.antialias && m_state.boundFBO == m_multisampleFBO) {
         resolveMultisamplingIfNecessary(IntRect(x, y, width, height));
         ::glBindFramebufferEXT(GraphicsContext3D::FRAMEBUFFER, m_fbo);
     }
-#endif
     ::glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
-#if !PLATFORM(BLACKBERRY)
     if (m_attrs.antialias && m_state.boundFBO == m_multisampleFBO)
         ::glBindFramebufferEXT(GraphicsContext3D::FRAMEBUFFER, m_multisampleFBO);
-#endif
 }
 
 void GraphicsContext3D::copyTexSubImage2D(GC3Denum target, GC3Dint level, GC3Dint xoffset, GC3Dint yoffset, GC3Dint x, GC3Dint y, GC3Dsizei width, GC3Dsizei height)
 {
     makeContextCurrent();
-#if !PLATFORM(BLACKBERRY)
     if (m_attrs.antialias && m_state.boundFBO == m_multisampleFBO) {
         resolveMultisamplingIfNecessary(IntRect(x, y, width, height));
         ::glBindFramebufferEXT(GraphicsContext3D::FRAMEBUFFER, m_fbo);
     }
-#endif
     ::glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
-#if !PLATFORM(BLACKBERRY)
     if (m_attrs.antialias && m_state.boundFBO == m_multisampleFBO)
         ::glBindFramebufferEXT(GraphicsContext3D::FRAMEBUFFER, m_multisampleFBO);
-#endif
 }
 
 void GraphicsContext3D::cullFace(GC3Denum mode)
@@ -593,6 +665,7 @@ void GraphicsContext3D::detachShader(Platform3DObject program, Platform3DObject 
     ASSERT(program);
     ASSERT(shader);
     makeContextCurrent();
+    m_shaderProgramSymbolCountMap.remove(program);
     ::glDetachShader(program, shader);
 }
 
@@ -612,12 +685,14 @@ void GraphicsContext3D::drawArrays(GC3Denum mode, GC3Dint first, GC3Dsizei count
 {
     makeContextCurrent();
     ::glDrawArrays(mode, first, count);
+    checkGPUStatusIfNecessary();
 }
 
 void GraphicsContext3D::drawElements(GC3Denum mode, GC3Dsizei count, GC3Denum type, GC3Dintptr offset)
 {
     makeContextCurrent();
     ::glDrawElements(mode, count, type, reinterpret_cast<GLvoid*>(static_cast<intptr_t>(offset)));
+    checkGPUStatusIfNecessary();
 }
 
 void GraphicsContext3D::enable(GC3Denum cap)
@@ -665,10 +740,10 @@ void GraphicsContext3D::frontFace(GC3Denum mode)
 void GraphicsContext3D::generateMipmap(GC3Denum target)
 {
     makeContextCurrent();
-    ::glGenerateMipmapEXT(target);
+    ::glGenerateMipmap(target);
 }
 
-bool GraphicsContext3D::getActiveAttrib(Platform3DObject program, GC3Duint index, ActiveInfo& info)
+bool GraphicsContext3D::getActiveAttribImpl(Platform3DObject program, GC3Duint index, ActiveInfo& info)
 {
     if (!program) {
         synthesizeGLError(INVALID_VALUE);
@@ -687,13 +762,33 @@ bool GraphicsContext3D::getActiveAttrib(Platform3DObject program, GC3Duint index
     
     String originalName = originalSymbolName(program, SHADER_SYMBOL_TYPE_ATTRIBUTE, String(name.get(), nameLength));
     
+#ifndef NDEBUG
+    String uniformName(name.get(), nameLength);
+    LOG(WebGL, "Program %d is mapping active attribute %d from '%s' to '%s'", program, index, uniformName.utf8().data(), originalName.utf8().data());
+#endif
+
     info.name = originalName;
     info.type = type;
     info.size = size;
     return true;
 }
 
-bool GraphicsContext3D::getActiveUniform(Platform3DObject program, GC3Duint index, ActiveInfo& info)
+bool GraphicsContext3D::getActiveAttrib(Platform3DObject program, GC3Duint index, ActiveInfo& info)
+{
+    GC3Dint symbolCount;
+    auto result = m_shaderProgramSymbolCountMap.find(program);
+    if (result == m_shaderProgramSymbolCountMap.end()) {
+        getNonBuiltInActiveSymbolCount(program, GraphicsContext3D::ACTIVE_ATTRIBUTES, &symbolCount);
+        result = m_shaderProgramSymbolCountMap.find(program);
+    }
+    
+    ActiveShaderSymbolCounts& symbolCounts = result->value;
+    GC3Duint rawIndex = (index < symbolCounts.filteredToActualAttributeIndexMap.size()) ? symbolCounts.filteredToActualAttributeIndexMap[index] : -1;
+
+    return getActiveAttribImpl(program, rawIndex, info);
+}
+
+bool GraphicsContext3D::getActiveUniformImpl(Platform3DObject program, GC3Duint index, ActiveInfo& info)
 {
     if (!program) {
         synthesizeGLError(INVALID_VALUE);
@@ -714,12 +809,32 @@ bool GraphicsContext3D::getActiveUniform(Platform3DObject program, GC3Duint inde
     
     String originalName = originalSymbolName(program, SHADER_SYMBOL_TYPE_UNIFORM, String(name.get(), nameLength));
     
+#ifndef NDEBUG
+    String uniformName(name.get(), nameLength);
+    LOG(WebGL, "Program %d is mapping active uniform %d from '%s' to '%s'", program, index, uniformName.utf8().data(), originalName.utf8().data());
+#endif
+    
     info.name = originalName;
     info.type = type;
     info.size = size;
     return true;
 }
+
+bool GraphicsContext3D::getActiveUniform(Platform3DObject program, GC3Duint index, ActiveInfo& info)
+{
+    GC3Dint symbolCount;
+    auto result = m_shaderProgramSymbolCountMap.find(program);
+    if (result == m_shaderProgramSymbolCountMap.end()) {
+        getNonBuiltInActiveSymbolCount(program, GraphicsContext3D::ACTIVE_UNIFORMS, &symbolCount);
+        result = m_shaderProgramSymbolCountMap.find(program);
+    }
     
+    ActiveShaderSymbolCounts& symbolCounts = result->value;
+    GC3Duint rawIndex = (index < symbolCounts.filteredToActualUniformIndexMap.size()) ? symbolCounts.filteredToActualUniformIndexMap[index] : -1;
+    
+    return getActiveUniformImpl(program, rawIndex, info);
+}
+
 void GraphicsContext3D::getAttachedShaders(Platform3DObject program, GC3Dsizei maxCount, GC3Dsizei* count, Platform3DObject* shaders)
 {
     if (!program) {
@@ -730,10 +845,21 @@ void GraphicsContext3D::getAttachedShaders(Platform3DObject program, GC3Dsizei m
     ::glGetAttachedShaders(program, maxCount, count, shaders);
 }
 
+static String generateHashedName(const String& name)
+{
+    if (name.isEmpty())
+        return name;
+    uint64_t number = nameHashForShader(name.utf8().data(), name.length());
+    StringBuilder builder;
+    builder.appendLiteral("webgl_");
+    appendUnsigned64AsHex(number, builder, Lowercase);
+    return builder.toString();
+}
+
 String GraphicsContext3D::mappedSymbolName(Platform3DObject program, ANGLEShaderSymbolType symbolType, const String& name)
 {
     GC3Dsizei count;
-    Platform3DObject shaders[2];
+    Platform3DObject shaders[2] = { };
     getAttachedShaders(program, 2, &count, shaders);
 
     for (GC3Dsizei i = 0; i < count; ++i) {
@@ -746,6 +872,23 @@ String GraphicsContext3D::mappedSymbolName(Platform3DObject program, ANGLEShader
         if (symbolEntry != symbolMap.end())
             return symbolEntry->value.mappedName;
     }
+
+    if (symbolType == SHADER_SYMBOL_TYPE_ATTRIBUTE && !name.isEmpty()) {
+        // Attributes are a special case: they may be requested before any shaders have been compiled,
+        // and aren't even required to be used in any shader program.
+        if (!nameHashMapForShaders)
+            nameHashMapForShaders = std::make_unique<ShaderNameHash>();
+        currentNameHashMapForShader = nameHashMapForShaders.get();
+
+        String generatedName = generateHashedName(name);
+
+        currentNameHashMapForShader = nullptr;
+
+        m_possiblyUnusedAttributeMap.set(generatedName, name);
+
+        return generatedName;
+    }
+
     return name;
 }
     
@@ -761,10 +904,37 @@ String GraphicsContext3D::originalSymbolName(Platform3DObject program, ANGLEShad
             continue;
         
         const ShaderSymbolMap& symbolMap = result->value.symbolMap(symbolType);
-        ShaderSymbolMap::const_iterator symbolEntry;
-        for (symbolEntry = symbolMap.begin(); symbolEntry != symbolMap.end(); ++symbolEntry) {
-            if (symbolEntry->value.mappedName == name)
-                return symbolEntry->key;
+        for (const auto& symbolEntry : symbolMap) {
+            if (symbolEntry.value.mappedName == name)
+                return symbolEntry.key;
+        }
+    }
+
+    if (symbolType == SHADER_SYMBOL_TYPE_ATTRIBUTE && !name.isEmpty()) {
+        // Attributes are a special case: they may be requested before any shaders have been compiled,
+        // and aren't even required to be used in any shader program.
+
+        const auto& cached = m_possiblyUnusedAttributeMap.find(name);
+        if (cached != m_possiblyUnusedAttributeMap.end())
+            return cached->value;
+    }
+
+    return name;
+}
+
+String GraphicsContext3D::mappedSymbolName(Platform3DObject shaders[2], size_t count, const String& name)
+{
+    for (size_t symbolType = 0; symbolType <= static_cast<size_t>(SHADER_SYMBOL_TYPE_VARYING); ++symbolType) {
+        for (size_t i = 0; i < count; ++i) {
+            ShaderSourceMap::iterator result = m_shaderSourceMap.find(shaders[i]);
+            if (result == m_shaderSourceMap.end())
+                continue;
+            
+            const ShaderSymbolMap& symbolMap = result->value.symbolMap(static_cast<enum ANGLEShaderSymbolType>(symbolType));
+            for (const auto& symbolEntry : symbolMap) {
+                if (symbolEntry.value.mappedName == name)
+                    return symbolEntry.key;
+            }
         }
     }
     return name;
@@ -778,7 +948,7 @@ int GraphicsContext3D::getAttribLocation(Platform3DObject program, const String&
     makeContextCurrent();
 
     String mappedName = mappedSymbolName(program, SHADER_SYMBOL_TYPE_ATTRIBUTE, name);
-    LOG(WebGL, "::getAttribLocation is mapping %s to %s", name.utf8().data(), mappedName.utf8().data());
+    LOG(WebGL, "::glGetAttribLocation is mapping %s to %s", name.utf8().data(), mappedName.utf8().data());
     return ::glGetAttribLocation(program, mappedName.utf8().data());
 }
 
@@ -787,13 +957,33 @@ GraphicsContext3D::Attributes GraphicsContext3D::getContextAttributes()
     return m_attrs;
 }
 
+bool GraphicsContext3D::moveErrorsToSyntheticErrorList()
+{
+    makeContextCurrent();
+    bool movedAnError = false;
+
+    // Set an arbitrary limit of 100 here to avoid creating a hang if
+    // a problem driver has a bug that causes it to never clear the error.
+    // Otherwise, we would just loop until we got NO_ERROR.
+    for (unsigned i = 0; i < 100; ++i) {
+        GC3Denum error = glGetError();
+        if (error == NO_ERROR)
+            break;
+        m_syntheticErrors.add(error);
+        movedAnError = true;
+    }
+
+    return movedAnError;
+}
+
 GC3Denum GraphicsContext3D::getError()
 {
-    if (m_syntheticErrors.size() > 0) {
-        ListHashSet<GC3Denum>::iterator iter = m_syntheticErrors.begin();
-        GC3Denum err = *iter;
-        m_syntheticErrors.remove(iter);
-        return err;
+    if (!m_syntheticErrors.isEmpty()) {
+        // Need to move the current errors to the synthetic error list in case
+        // that error is already there, since the expected behavior of both
+        // glGetError and getError is to only report each error code once.
+        moveErrorsToSyntheticErrorList();
+        return m_syntheticErrors.takeFirst();
     }
 
     makeContextCurrent();
@@ -1167,6 +1357,57 @@ void GraphicsContext3D::viewport(GC3Dint x, GC3Dint y, GC3Dsizei width, GC3Dsize
     ::glViewport(x, y, width, height);
 }
 
+Platform3DObject GraphicsContext3D::createVertexArray()
+{
+    makeContextCurrent();
+    GLuint array = 0;
+#if !USE(OPENGL_ES_2) && (PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(WIN) || PLATFORM(IOS))
+    glGenVertexArrays(1, &array);
+#elif defined(GL_APPLE_vertex_array_object) && GL_APPLE_vertex_array_object
+    glGenVertexArraysAPPLE(1, &array);
+#endif
+    return array;
+}
+
+void GraphicsContext3D::deleteVertexArray(Platform3DObject array)
+{
+    if (!array)
+        return;
+    
+    makeContextCurrent();
+#if !USE(OPENGL_ES_2) && (PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(WIN) || PLATFORM(IOS))
+    glDeleteVertexArrays(1, &array);
+#elif defined(GL_APPLE_vertex_array_object) && GL_APPLE_vertex_array_object
+    glDeleteVertexArraysAPPLE(1, &array);
+#endif
+}
+
+GC3Dboolean GraphicsContext3D::isVertexArray(Platform3DObject array)
+{
+    if (!array)
+        return GL_FALSE;
+    
+    makeContextCurrent();
+#if !USE(OPENGL_ES_2) && (PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(WIN) || PLATFORM(IOS))
+    return glIsVertexArray(array);
+#elif defined(GL_APPLE_vertex_array_object) && GL_APPLE_vertex_array_object
+    return glIsVertexArrayAPPLE(array);
+#endif
+    return GL_FALSE;
+}
+
+void GraphicsContext3D::bindVertexArray(Platform3DObject array)
+{
+    makeContextCurrent();
+#if !USE(OPENGL_ES_2) && (PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(WIN) || PLATFORM(IOS))
+    glBindVertexArray(array);
+#elif defined(GL_APPLE_vertex_array_object) && GL_APPLE_vertex_array_object
+    glBindVertexArrayAPPLE(array);
+#else
+    UNUSED_PARAM(array);
+#endif
+}
+
 void GraphicsContext3D::getBooleanv(GC3Denum pname, GC3Dboolean* value)
 {
     makeContextCurrent();
@@ -1184,6 +1425,15 @@ void GraphicsContext3D::getFloatv(GC3Denum pname, GC3Dfloat* value)
     makeContextCurrent();
     ::glGetFloatv(pname, value);
 }
+    
+void GraphicsContext3D::getInteger64v(GC3Denum pname, GC3Dint64* value)
+{
+    UNUSED_PARAM(pname);
+    makeContextCurrent();
+    *value = 0;
+    // FIXME 141178: Before enabling this we must first switch over to using gl3.h and creating and initialing the WebGL2 context using OpenGL ES 3.0.
+    // ::glGetInteger64v(pname, value);
+}
 
 void GraphicsContext3D::getFramebufferAttachmentParameteriv(GC3Denum target, GC3Denum attachment, GC3Denum pname, GC3Dint* value)
 {
@@ -1197,6 +1447,80 @@ void GraphicsContext3D::getProgramiv(Platform3DObject program, GC3Denum pname, G
 {
     makeContextCurrent();
     ::glGetProgramiv(program, pname, value);
+}
+
+void GraphicsContext3D::getNonBuiltInActiveSymbolCount(Platform3DObject program, GC3Denum pname, GC3Dint* value)
+{
+    ASSERT(ACTIVE_ATTRIBUTES == pname || ACTIVE_UNIFORMS == pname);
+    if (!value)
+        return;
+
+    makeContextCurrent();
+    const auto& result = m_shaderProgramSymbolCountMap.find(program);
+    if (result != m_shaderProgramSymbolCountMap.end()) {
+        *value = result->value.countForType(pname);
+        return;
+    }
+
+    m_shaderProgramSymbolCountMap.set(program, ActiveShaderSymbolCounts());
+    ActiveShaderSymbolCounts& symbolCounts = m_shaderProgramSymbolCountMap.find(program)->value;
+
+    // Retrieve the active attributes, build a filtered count, and a mapping of
+    // our internal attributes indexes to the real unfiltered indexes inside OpenGL.
+    GC3Dint attributeCount = 0;
+    ::glGetProgramiv(program, ACTIVE_ATTRIBUTES, &attributeCount);
+    for (GC3Dint i = 0; i < attributeCount; ++i) {
+        ActiveInfo info;
+        getActiveAttribImpl(program, i, info);
+        if (info.name.startsWith("gl_"))
+            continue;
+
+        symbolCounts.filteredToActualAttributeIndexMap.append(i);
+    }
+    
+    // Do the same for uniforms.
+    GC3Dint uniformCount = 0;
+    ::glGetProgramiv(program, ACTIVE_UNIFORMS, &uniformCount);
+    for (GC3Dint i = 0; i < uniformCount; ++i) {
+        ActiveInfo info;
+        getActiveUniformImpl(program, i, info);
+        if (info.name.startsWith("gl_"))
+            continue;
+        
+        symbolCounts.filteredToActualUniformIndexMap.append(i);
+    }
+    
+    *value = symbolCounts.countForType(pname);
+}
+
+String GraphicsContext3D::getUnmangledInfoLog(Platform3DObject shaders[2], GC3Dsizei count, const String& log)
+{
+    LOG(WebGL, "Was: %s", log.utf8().data());
+
+    JSC::Yarr::RegularExpression regExp("webgl_[0123456789abcdefABCDEF]+", TextCaseSensitive);
+
+    StringBuilder processedLog;
+    
+    int startFrom = 0;
+    int matchedLength = 0;
+    do {
+        int start = regExp.match(log, startFrom, &matchedLength);
+        if (start == -1)
+            break;
+
+        processedLog.append(log.substring(startFrom, start - startFrom));
+        startFrom = start + matchedLength;
+
+        const String& mangledSymbol = log.substring(start, matchedLength);
+        const String& mappedSymbol = mappedSymbolName(shaders, count, mangledSymbol);
+        LOG(WebGL, "Demangling: %s to %s", mangledSymbol.utf8().data(), mappedSymbol.utf8().data());
+        processedLog.append(mappedSymbol);
+    } while (startFrom < static_cast<int>(log.length()));
+
+    processedLog.append(log.substring(startFrom, log.length() - startFrom));
+
+    LOG(WebGL, "-->: %s", processedLog.toString().utf8().data());
+    return processedLog.toString();
 }
 
 String GraphicsContext3D::getProgramInfoLog(Platform3DObject program)
@@ -1213,7 +1537,11 @@ String GraphicsContext3D::getProgramInfoLog(Platform3DObject program)
     auto info = std::make_unique<GLchar[]>(length);
     ::glGetProgramInfoLog(program, length, &size, info.get());
 
-    return String(info.get());
+    GC3Dsizei count;
+    Platform3DObject shaders[2];
+    getAttachedShaders(program, 2, &count, shaders);
+
+    return getUnmangledInfoLog(shaders, count, String(info.get()));
 }
 
 void GraphicsContext3D::getRenderbufferParameteriv(GC3Denum target, GC3Denum pname, GC3Dint* value)
@@ -1228,7 +1556,7 @@ void GraphicsContext3D::getShaderiv(Platform3DObject shader, GC3Denum pname, GC3
 
     makeContextCurrent();
 
-    ShaderSourceMap::iterator result = m_shaderSourceMap.find(shader);
+    const auto& result = m_shaderSourceMap.find(shader);
     
     switch (pname) {
     case DELETE_STATUS:
@@ -1263,11 +1591,11 @@ String GraphicsContext3D::getShaderInfoLog(Platform3DObject shader)
 
     makeContextCurrent();
 
-    ShaderSourceMap::iterator result = m_shaderSourceMap.find(shader);
+    const auto& result = m_shaderSourceMap.find(shader);
     if (result == m_shaderSourceMap.end())
         return String(); 
 
-    ShaderSourceEntry entry = result->value;
+    const ShaderSourceEntry& entry = result->value;
     if (!entry.isValid)
         return entry.log;
 
@@ -1280,7 +1608,8 @@ String GraphicsContext3D::getShaderInfoLog(Platform3DObject shader)
     auto info = std::make_unique<GLchar[]>(length);
     ::glGetShaderInfoLog(shader, length, &size, info.get());
 
-    return String(info.get());
+    Platform3DObject shaders[2] = { shader, 0 };
+    return getUnmangledInfoLog(shaders, 1, String(info.get()));
 }
 
 String GraphicsContext3D::getShaderSource(Platform3DObject shader)
@@ -1289,7 +1618,7 @@ String GraphicsContext3D::getShaderSource(Platform3DObject shader)
 
     makeContextCurrent();
 
-    ShaderSourceMap::iterator result = m_shaderSourceMap.find(shader);
+    const auto& result = m_shaderSourceMap.find(shader);
     if (result == m_shaderSourceMap.end())
         return String(); 
 
@@ -1356,6 +1685,11 @@ GC3Dsizeiptr GraphicsContext3D::getVertexAttribOffset(GC3Duint index, GC3Denum p
 void GraphicsContext3D::texSubImage2D(GC3Denum target, GC3Dint level, GC3Dint xoff, GC3Dint yoff, GC3Dsizei width, GC3Dsizei height, GC3Denum format, GC3Denum type, const void* pixels)
 {
     makeContextCurrent();
+
+#if !PLATFORM(IOS) && !USE(OPENGL_ES_2)
+    if (type == HALF_FLOAT_OES)
+        type = GL_HALF_FLOAT_ARB;
+#endif
 
     // FIXME: we will need to deal with PixelStore params when dealing with image buffers that differ from the subimage size.
     ::glTexSubImage2D(target, level, xoff, yoff, width, height, format, type, pixels);
@@ -1462,6 +1796,10 @@ void GraphicsContext3D::deleteTexture(Platform3DObject texture)
 
 void GraphicsContext3D::synthesizeGLError(GC3Denum error)
 {
+    // Need to move the current errors to the synthetic error list to
+    // preserve the order of errors, so a caller to getError will get
+    // any errors from glError before the error we are synthesizing.
+    moveErrorsToSyntheticErrorList();
     m_syntheticErrors.add(error);
 }
 
@@ -1480,12 +1818,35 @@ bool GraphicsContext3D::layerComposited() const
     return m_layerComposited;
 }
 
+void GraphicsContext3D::forceContextLost()
+{
+#if ENABLE(WEBGL)
+    if (m_webglContext)
+        m_webglContext->forceLostContext(WebGLRenderingContextBase::RealLostContext);
+#endif
+}
+
 void GraphicsContext3D::texImage2DDirect(GC3Denum target, GC3Dint level, GC3Denum internalformat, GC3Dsizei width, GC3Dsizei height, GC3Dint border, GC3Denum format, GC3Denum type, const void* pixels)
 {
     makeContextCurrent();
     ::glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
 
+void GraphicsContext3D::drawArraysInstanced(GC3Denum mode, GC3Dint first, GC3Dsizei count, GC3Dsizei primcount)
+{
+    getExtensions()->drawArraysInstanced(mode, first, count, primcount);
 }
 
-#endif // USE(3D_GRAPHICS)
+void GraphicsContext3D::drawElementsInstanced(GC3Denum mode, GC3Dsizei count, GC3Denum type, GC3Dintptr offset, GC3Dsizei primcount)
+{
+    getExtensions()->drawElementsInstanced(mode, count, type, offset, primcount);
+}
+
+void GraphicsContext3D::vertexAttribDivisor(GC3Duint index, GC3Duint divisor)
+{
+    getExtensions()->vertexAttribDivisor(index, divisor);
+}
+
+}
+
+#endif // ENABLE(GRAPHICS_CONTEXT_3D)

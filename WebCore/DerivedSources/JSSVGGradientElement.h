@@ -21,33 +21,30 @@
 #ifndef JSSVGGradientElement_h
 #define JSSVGGradientElement_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGGradientElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGGradientElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGGradientElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGGradientElement> impl)
+    static JSSVGGradientElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGGradientElement>&& impl)
     {
-        JSSVGGradientElement* ptr = new (NotNull, JSC::allocateCell<JSSVGGradientElement>(globalObject->vm().heap)) JSSVGGradientElement(structure, globalObject, impl);
+        JSSVGGradientElement* ptr = new (NotNull, JSC::allocateCell<JSSVGGradientElement>(globalObject->vm().heap)) JSSVGGradientElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,81 +53,18 @@ public:
         return static_cast<SVGGradientElement&>(Base::impl());
     }
 protected:
-    JSSVGGradientElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGGradientElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGGradientElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGGradientElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGGradientElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGGradientElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGGradientElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGGradientElementPrototype>(vm.heap)) JSSVGGradientElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGGradientElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGGradientElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGGradientElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGGradientElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGGradientElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGGradientElementConstructor>(vm.heap)) JSSVGGradientElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGGradientElementGradientUnits(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGGradientElementGradientTransform(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGGradientElementSpreadMethod(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::JSValue jsSVGGradientElementExternalResourcesRequired(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGGradientElementHref(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGGradientElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGGradientElementSVG_SPREADMETHOD_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGGradientElementSVG_SPREADMETHOD_PAD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGGradientElementSVG_SPREADMETHOD_REFLECT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGGradientElementSVG_SPREADMETHOD_REPEAT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

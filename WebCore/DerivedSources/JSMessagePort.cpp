@@ -22,7 +22,6 @@
 #include "JSMessagePort.h"
 
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSEvent.h"
@@ -35,30 +34,68 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSMessagePortTableValues[] =
-{
-    { "onmessage", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMessagePortOnmessage), (intptr_t)setJSMessagePortOnmessage },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMessagePortConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionPostMessage(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionStart(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionClose(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsMessagePortOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSMessagePortOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsMessagePortConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMessagePortPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMessagePortPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMessagePortPrototype* ptr = new (NotNull, JSC::allocateCell<JSMessagePortPrototype>(vm.heap)) JSMessagePortPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMessagePortPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMessagePortTable = { 4, 3, JSMessagePortTableValues, 0 };
-/* Hash table for constructor */
+class JSMessagePortConstructor : public DOMConstructorObject {
+private:
+    JSMessagePortConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMessagePortConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMessagePortConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMessagePortConstructor* ptr = new (NotNull, JSC::allocateCell<JSMessagePortConstructor>(vm.heap)) JSMessagePortConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSMessagePortConstructorTable = { 1, 0, JSMessagePortConstructorTableValues, 0 };
-static const HashTable& getJSMessagePortConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSMessagePortConstructorTable);
-}
-
-const ClassInfo JSMessagePortConstructor::s_info = { "MessagePortConstructor", &Base::s_info, 0, getJSMessagePortConstructorTable, CREATE_METHOD_TABLE(JSMessagePortConstructor) };
+const ClassInfo JSMessagePortConstructor::s_info = { "MessagePortConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMessagePortConstructor) };
 
 JSMessagePortConstructor::JSMessagePortConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -69,69 +106,49 @@ void JSMessagePortConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMessagePortPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMessagePortConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMessagePortConstructor, JSDOMWrapper>(exec, getJSMessagePortConstructorTable(exec), jsCast<JSMessagePortConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMessagePort::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("MessagePort"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSMessagePortPrototypeTableValues[] =
 {
-    { "postMessage", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionPostMessage), (intptr_t)1 },
-    { "start", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionStart), (intptr_t)0 },
-    { "close", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionClose), (intptr_t)0 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMessagePortConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onmessage", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMessagePortOnmessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSMessagePortOnmessage) },
+    { "postMessage", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionPostMessage), (intptr_t) (1) },
+    { "start", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionStart), (intptr_t) (0) },
+    { "close", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionClose), (intptr_t) (0) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMessagePortPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSMessagePortPrototypeTable = { 17, 15, JSMessagePortPrototypeTableValues, 0 };
-static const HashTable& getJSMessagePortPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSMessagePortPrototypeTable);
-}
+const ClassInfo JSMessagePortPrototype::s_info = { "MessagePortPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMessagePortPrototype) };
 
-const ClassInfo JSMessagePortPrototype::s_info = { "MessagePortPrototype", &Base::s_info, 0, getJSMessagePortPrototypeTable, CREATE_METHOD_TABLE(JSMessagePortPrototype) };
-
-JSObject* JSMessagePortPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMessagePort>(vm, globalObject);
-}
-
-bool JSMessagePortPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSMessagePortPrototype* thisObject = jsCast<JSMessagePortPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, getJSMessagePortPrototypeTable(exec), thisObject, propertyName, slot);
-}
-
-static const HashTable& getJSMessagePortTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSMessagePortTable);
-}
-
-const ClassInfo JSMessagePort::s_info = { "MessagePort", &Base::s_info, 0, getJSMessagePortTable , CREATE_METHOD_TABLE(JSMessagePort) };
-
-JSMessagePort::JSMessagePort(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MessagePort> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMessagePort::finishCreation(VM& vm)
+void JSMessagePortPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMessagePortPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMessagePort::s_info = { "MessagePort", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMessagePort) };
+
+JSMessagePort::JSMessagePort(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MessagePort>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMessagePort::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMessagePortPrototype::create(vm, globalObject, JSMessagePortPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMessagePort::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMessagePort>(vm, globalObject);
 }
 
 void JSMessagePort::destroy(JSC::JSCell* cell)
@@ -142,51 +159,46 @@ void JSMessagePort::destroy(JSC::JSCell* cell)
 
 JSMessagePort::~JSMessagePort()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSMessagePort::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsMessagePortOnmessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMessagePort* thisObject = jsCast<JSMessagePort*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMessagePort, Base>(exec, getJSMessagePortTable(exec), thisObject, propertyName, slot);
-}
-
-JSValue jsMessagePortOnmessage(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MessagePort& impl = castedThis->impl();
-    if (EventListener* listener = impl.onmessage()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMessagePortPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MessagePort", "onmessage");
+        return throwGetterTypeError(*exec, "MessagePort", "onmessage");
     }
-    return jsNull();
-}
-
-
-JSValue jsMessagePortConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMessagePort* domObject = jsCast<JSMessagePort*>(asObject(slotBase));
-    return JSMessagePort::getConstructor(exec->vm(), domObject->globalObject());
-}
-
-void JSMessagePort::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSMessagePort* thisObject = jsCast<JSMessagePort*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSMessagePort, Base>(exec, propertyName, value, getJSMessagePortTable(exec), thisObject, slot);
-}
-
-void setJSMessagePortOnmessage(ExecState* exec, JSObject* thisObject, JSValue value)
-{
     UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(thisObject);
-    MessagePort& impl = castedThis->impl();
-    impl.setOnmessage(createJSAttributeEventListener(exec, value, thisObject));
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().messageEvent));
+}
+
+
+EncodedJSValue jsMessagePortConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
+{
+    JSMessagePortPrototype* domObject = jsDynamicCast<JSMessagePortPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMessagePort::getConstructor(exec->vm(), domObject->globalObject()));
+}
+
+void setJSMessagePortOnmessage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMessagePortPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "MessagePort", "onmessage");
+        else
+            throwSetterTypeError(*exec, "MessagePort", "onmessage");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().messageEvent, value);
 }
 
 
@@ -197,116 +209,113 @@ JSValue JSMessagePort::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionPostMessage(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMessagePort::info()))
-        return throwVMTypeError(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MessagePort", "postMessage");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMessagePort::info());
     return JSValue::encode(castedThis->postMessage(exec));
 }
 
 EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionStart(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMessagePort::info()))
-        return throwVMTypeError(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MessagePort", "start");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMessagePort::info());
-    MessagePort& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.start();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionClose(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMessagePort::info()))
-        return throwVMTypeError(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MessagePort", "close");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMessagePort::info());
-    MessagePort& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.close();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMessagePort::info()))
-        return throwVMTypeError(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MessagePort", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMessagePort::info());
-    MessagePort& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMessagePort::info()))
-        return throwVMTypeError(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MessagePort", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMessagePort::info());
-    MessagePort& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMessagePortPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMessagePort::info()))
-        return throwVMTypeError(exec);
-    JSMessagePort* castedThis = jsCast<JSMessagePort*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMessagePort* castedThis = jsDynamicCast<JSMessagePort*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MessagePort", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMessagePort::info());
-    MessagePort& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* evt(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(evt, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-static inline bool isObservable(JSMessagePort* jsMessagePort)
+void JSMessagePort::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    if (jsMessagePort->hasCustomProperties())
-        return true;
-    if (jsMessagePort->impl().hasEventListeners())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSMessagePort*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->impl().visitJSEventListeners(visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSMessagePortOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMessagePort* jsMessagePort = jsCast<JSMessagePort*>(handle.get().asCell());
+    auto* jsMessagePort = jsCast<JSMessagePort*>(handle.slot()->asCell());
     if (jsMessagePort->impl().hasPendingActivity())
         return true;
     if (jsMessagePort->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsMessagePort))
-        return false;
     MessagePort* root = &jsMessagePort->impl();
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSMessagePortOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMessagePort* jsMessagePort = jsCast<JSMessagePort*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMessagePort = jsCast<JSMessagePort*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMessagePort->impl(), jsMessagePort);
-    jsMessagePort->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -317,11 +326,11 @@ extern "C" { extern void (*const __identifier("??_7MessagePort@WebCore@@6B@")[])
 extern "C" { extern void* _ZTVN7WebCore11MessagePortE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MessagePort* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MessagePort* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMessagePort>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMessagePort>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -342,13 +351,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Message
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<MessagePort>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMessagePort>(exec, globalObject, impl);
+    return createNewWrapper<JSMessagePort>(globalObject, impl);
 }
 
-MessagePort* toMessagePort(JSC::JSValue value)
+MessagePort* JSMessagePort::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMessagePort::info()) ? &jsCast<JSMessagePort*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMessagePort*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

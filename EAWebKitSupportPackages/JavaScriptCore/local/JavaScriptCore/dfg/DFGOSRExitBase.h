@@ -26,8 +26,6 @@
 #ifndef DFGOSRExitBase_h
 #define DFGOSRExitBase_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "CodeOrigin.h"
@@ -48,6 +46,8 @@ struct OSRExitBase {
         , m_codeOrigin(origin)
         , m_codeOriginForExitProfile(originForProfile)
     {
+        ASSERT(m_codeOrigin.isSet());
+        ASSERT(m_codeOriginForExitProfile.isSet());
     }
     
     ExitKind m_kind;
@@ -56,20 +56,15 @@ struct OSRExitBase {
     CodeOrigin m_codeOrigin;
     CodeOrigin m_codeOriginForExitProfile;
 
-    bool considerAddingAsFrequentExitSite(CodeBlock* profiledCodeBlock)
+protected:
+    void considerAddingAsFrequentExitSite(CodeBlock* profiledCodeBlock, ExitingJITType jitType)
     {
-        if (!m_count)
-            return false;
-        return considerAddingAsFrequentExitSiteSlow(profiledCodeBlock);
+        if (m_count)
+            considerAddingAsFrequentExitSiteSlow(profiledCodeBlock, jitType);
     }
-    
-    // Returns true if the forward conversion is really needed.
-    bool doSearchForForwardConversion(
-        BasicBlock*, Node* currentNode, unsigned nodeIndex, bool hasValueRecovery,
-        Node*& nextBCNode, Node*& lastMovHint);
 
 private:
-    bool considerAddingAsFrequentExitSiteSlow(CodeBlock* profiledCodeBlock);
+    void considerAddingAsFrequentExitSiteSlow(CodeBlock* profiledCodeBlock, ExitingJITType);
 };
 
 } } // namespace JSC::DFG

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -33,65 +33,24 @@
 
 namespace WebCore {
 
-RefPtr<MediaSourceStates> MediaSourceStates::create(const MediaStreamSourceStates& states)
+Ref<MediaSourceStates> MediaSourceStates::create(const RealtimeMediaSourceStates& states)
 {
-    return adoptRef(new MediaSourceStates(states));
+    return adoptRef(*new MediaSourceStates(states));
 }
 
-MediaSourceStates::MediaSourceStates(const MediaStreamSourceStates& states)
-    : m_SourceStates(states)
+MediaSourceStates::MediaSourceStates(const RealtimeMediaSourceStates& states)
+    : m_sourceStates(states)
 {
-}
-
-const AtomicString& MediaSourceStates::facingMode(MediaStreamSourceStates::VideoFacingMode mode)
-{
-    static NeverDestroyed<AtomicString> userFacing("user", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> environmentFacing("environment", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> leftFacing("left", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> rightFacing("right", AtomicString::ConstructFromLiteral);
-    
-    switch (mode) {
-    case MediaStreamSourceStates::User:
-        return userFacing;
-    case MediaStreamSourceStates::Environment:
-        return environmentFacing;
-    case MediaStreamSourceStates::Left:
-        return leftFacing;
-    case MediaStreamSourceStates::Right:
-        return rightFacing;
-    }
-
-    ASSERT_NOT_REACHED();
-    return emptyAtom;
-}
-
-const AtomicString& MediaSourceStates::sourceType(MediaStreamSourceStates::SourceType sourceType)
-{
-    static NeverDestroyed<AtomicString> none("none", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> camera("camera", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> microphone("microphone", AtomicString::ConstructFromLiteral);
-
-    switch (sourceType) {
-    case MediaStreamSourceStates::None:
-        return none;
-    case MediaStreamSourceStates::Camera:
-        return camera;
-    case MediaStreamSourceStates::Microphone:
-        return microphone;
-    }
-
-    ASSERT_NOT_REACHED();
-    return emptyAtom;
 }
 
 const AtomicString& MediaSourceStates::sourceType() const
 {
-    return MediaSourceStates::sourceType(m_SourceStates.sourceType);
+    return RealtimeMediaSourceStates::sourceType(m_sourceStates.sourceType());
 }
 
 const AtomicString& MediaSourceStates::facingMode() const
 {
-    return MediaSourceStates::facingMode(m_SourceStates.facingMode);
+    return RealtimeMediaSourceStates::facingMode(m_sourceStates.facingMode());
 }
 
 

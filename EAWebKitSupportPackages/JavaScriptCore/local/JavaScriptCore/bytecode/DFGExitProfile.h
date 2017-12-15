@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,10 +26,12 @@
 #ifndef DFGExitProfile_h
 #define DFGExitProfile_h
 
+#if ENABLE(DFG_JIT)
+
 #include "ConcurrentJITLock.h"
 #include "ExitKind.h"
+#include "ExitingJITType.h"
 #include <wtf/HashSet.h>
-#include <wtf/OwnPtr.h>
 #include <wtf/Vector.h>
 
 namespace JSC { namespace DFG {
@@ -39,18 +41,21 @@ public:
     FrequentExitSite()
         : m_bytecodeOffset(0) // 0 = empty value
         , m_kind(ExitKindUnset)
+        , m_jitType(ExitFromAnything)
     {
     }
     
     FrequentExitSite(WTF::HashTableDeletedValueType)
         : m_bytecodeOffset(1) // 1 = deleted value
         , m_kind(ExitKindUnset)
+        , m_jitType(ExitFromAnything)
     {
     }
     
-    explicit FrequentExitSite(unsigned bytecodeOffset, ExitKind kind)
+    explicit FrequentExitSite(unsigned bytecodeOffset, ExitKind kind, ExitingJITType jitType = ExitFromAnything)
         : m_bytecodeOffset(bytecodeOffset)
         , m_kind(kind)
+        , m_jitType(jitType)
     {
         if (m_kind == ArgumentsEscaped) {
             // Count this one globally. It doesn't matter where in the code block the arguments excaped;
@@ -61,9 +66,10 @@ public:
     
     // Use this constructor if you wish for the exit site to be counted globally within its
     // code block.
-    explicit FrequentExitSite(ExitKind kind)
+    explicit FrequentExitSite(ExitKind kind, ExitingJITType jitType = ExitFromAnything)
         : m_bytecodeOffset(0)
         , m_kind(kind)
+        , m_jitType(jitType)
     {
     }
     
@@ -75,16 +81,36 @@ public:
     bool operator==(const FrequentExitSite& other) const
     {
         return m_bytecodeOffset == other.m_bytecodeOffset
-            && m_kind == other.m_kind;
+            && m_kind == other.m_kind
+            && m_jitType == other.m_jitType;
+    }
+    
+    bool subsumes(const FrequentExitSite& other) const
+    {
+        if (m_bytecodeOffset != other.m_bytecodeOffset)
+            return false;
+        if (m_kind != other.m_kind)
+            return false;
+        if (m_jitType == ExitFromAnything)
+            return true;
+        return m_jitType == other.m_jitType;
     }
     
     unsigned hash() const
     {
-        return WTF::intHash(m_bytecodeOffset) + m_kind;
+        return WTF::intHash(m_bytecodeOffset) + m_kind + m_jitType * 7;
     }
     
     unsigned bytecodeOffset() const { return m_bytecodeOffset; }
     ExitKind kind() const { return m_kind; }
+    ExitingJITType jitType() const { return m_jitType; }
+    
+    FrequentExitSite withJITType(ExitingJITType jitType) const
+    {
+        FrequentExitSite result = *this;
+        result.m_jitType = jitType;
+        return result;
+    }
 
     bool isHashTableDeletedValue() const
     {
@@ -94,6 +120,7 @@ public:
 private:
     unsigned m_bytecodeOffset;
     ExitKind m_kind;
+    ExitingJITType m_jitType;
 };
 
 struct FrequentExitSiteHash {
@@ -103,6 +130,7 @@ struct FrequentExitSiteHash {
 };
 
 } } // namespace JSC::DFG
+
 
 namespace WTF {
 
@@ -154,7 +182,7 @@ public:
 private:
     friend class QueryableExitProfile;
     
-    OwnPtr<Vector<FrequentExitSite> > m_frequentExitSites;
+    std::unique_ptr<Vector<FrequentExitSite>> m_frequentExitSites;
 };
 
 class QueryableExitProfile {
@@ -166,6 +194,10 @@ public:
 
     bool hasExitSite(const FrequentExitSite& site) const
     {
+        if (site.jitType() == ExitFromAnything) {
+            return hasExitSite(site.withJITType(ExitFromDFG))
+                || hasExitSite(site.withJITType(ExitFromFTL));
+        }
         return m_frequentExitSites.find(site) != m_frequentExitSites.end();
     }
     
@@ -183,5 +215,7 @@ private:
 };
 
 } } // namespace JSC::DFG
+
+#endif // ENABLE(DFG_JIT)
 
 #endif // DFGExitProfile_h

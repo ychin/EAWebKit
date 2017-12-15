@@ -21,31 +21,30 @@
 #ifndef JSSVGAnimatedLengthList_h
 #define JSSVGAnimatedLengthList_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAnimatedLengthList.h"
 #include "SVGElement.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGAnimatedLengthList : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGAnimatedLengthList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGAnimatedLengthList> impl)
+    static JSSVGAnimatedLengthList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGAnimatedLengthList>&& impl)
     {
-        JSSVGAnimatedLengthList* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedLengthList>(globalObject->vm().heap)) JSSVGAnimatedLengthList(structure, globalObject, impl);
+        JSSVGAnimatedLengthList* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedLengthList>(globalObject->vm().heap)) JSSVGAnimatedLengthList(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGAnimatedLengthList* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSSVGAnimatedLengthList();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +54,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     SVGAnimatedLengthList& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SVGAnimatedLengthList* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSSVGAnimatedLengthList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGAnimatedLengthList>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGAnimatedLengthList(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGAnimatedLengthList>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGAnimatedLengthListOwner : public JSC::WeakHandleOwner {
@@ -81,73 +79,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGAnimatedLengthList*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGAnimatedLengthListOwner, jsSVGAnimatedLengthListOwner, ());
-    return &jsSVGAnimatedLengthListOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SVGAnimatedLengthList*)
-{
-    return &world;
+    static NeverDestroyed<JSSVGAnimatedLengthListOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGAnimatedLengthList*);
-SVGAnimatedLengthList* toSVGAnimatedLengthList(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGAnimatedLengthList& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSVGAnimatedLengthListPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGAnimatedLengthListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGAnimatedLengthListPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedLengthListPrototype>(vm.heap)) JSSVGAnimatedLengthListPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGAnimatedLengthListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGAnimatedLengthListConstructor : public DOMConstructorObject {
-private:
-    JSSVGAnimatedLengthListConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGAnimatedLengthListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGAnimatedLengthListConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedLengthListConstructor>(vm.heap)) JSSVGAnimatedLengthListConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGAnimatedLengthListBaseVal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAnimatedLengthListAnimVal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAnimatedLengthListConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

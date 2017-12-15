@@ -34,35 +34,75 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSHashChangeEventTableValues[] =
-{
-    { "oldURL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHashChangeEventOldURL), (intptr_t)0 },
-    { "newURL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHashChangeEventNewURL), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHashChangeEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsHashChangeEventPrototypeFunctionInitHashChangeEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsHashChangeEventOldURL(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHashChangeEventNewURL(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHashChangeEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHashChangeEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHashChangeEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHashChangeEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSHashChangeEventPrototype>(vm.heap)) JSHashChangeEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHashChangeEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHashChangeEventTable = { 8, 7, JSHashChangeEventTableValues, 0 };
-/* Hash table for constructor */
+class JSHashChangeEventConstructor : public DOMConstructorObject {
+private:
+    JSHashChangeEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHashChangeEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHashChangeEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHashChangeEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSHashChangeEventConstructor>(vm.heap)) JSHashChangeEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSHashChangeEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSHashChangeEventConstructorTable = { 1, 0, JSHashChangeEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSHashChangeEventConstructor::constructJSHashChangeEvent(ExecState* exec)
 {
-    JSHashChangeEventConstructor* jsConstructor = jsCast<JSHashChangeEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSHashChangeEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     HashChangeEventInit eventInit;
@@ -96,7 +136,7 @@ bool fillHashChangeEventInit(HashChangeEventInit& eventInit, JSDictionary& dicti
     return true;
 }
 
-const ClassInfo JSHashChangeEventConstructor::s_info = { "HashChangeEventConstructor", &Base::s_info, &JSHashChangeEventConstructorTable, 0, CREATE_METHOD_TABLE(JSHashChangeEventConstructor) };
+const ClassInfo JSHashChangeEventConstructor::s_info = { "HashChangeEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHashChangeEventConstructor) };
 
 JSHashChangeEventConstructor::JSHashChangeEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -107,13 +147,9 @@ void JSHashChangeEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHashChangeEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHashChangeEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHashChangeEventConstructor, JSDOMWrapper>(exec, JSHashChangeEventConstructorTable, jsCast<JSHashChangeEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHashChangeEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HashChangeEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSHashChangeEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -126,73 +162,77 @@ ConstructType JSHashChangeEventConstructor::getConstructData(JSCell*, ConstructD
 
 static const HashTableValue JSHashChangeEventPrototypeTableValues[] =
 {
-    { "initHashChangeEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHashChangeEventPrototypeFunctionInitHashChangeEvent), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHashChangeEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "oldURL", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHashChangeEventOldURL), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "newURL", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHashChangeEventNewURL), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "initHashChangeEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHashChangeEventPrototypeFunctionInitHashChangeEvent), (intptr_t) (0) },
 };
 
-static const HashTable JSHashChangeEventPrototypeTable = { 2, 1, JSHashChangeEventPrototypeTableValues, 0 };
-const ClassInfo JSHashChangeEventPrototype::s_info = { "HashChangeEventPrototype", &Base::s_info, &JSHashChangeEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSHashChangeEventPrototype) };
+const ClassInfo JSHashChangeEventPrototype::s_info = { "HashChangeEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHashChangeEventPrototype) };
 
-JSObject* JSHashChangeEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHashChangeEvent>(vm, globalObject);
-}
-
-bool JSHashChangeEventPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSHashChangeEventPrototype* thisObject = jsCast<JSHashChangeEventPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSHashChangeEventPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSHashChangeEvent::s_info = { "HashChangeEvent", &Base::s_info, &JSHashChangeEventTable, 0 , CREATE_METHOD_TABLE(JSHashChangeEvent) };
-
-JSHashChangeEvent::JSHashChangeEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HashChangeEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSHashChangeEvent::finishCreation(VM& vm)
+void JSHashChangeEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHashChangeEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHashChangeEvent::s_info = { "HashChangeEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHashChangeEvent) };
+
+JSHashChangeEvent::JSHashChangeEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HashChangeEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHashChangeEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHashChangeEventPrototype::create(vm, globalObject, JSHashChangeEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSHashChangeEventPrototype::create(vm, globalObject, JSHashChangeEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSHashChangeEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHashChangeEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHashChangeEvent* thisObject = jsCast<JSHashChangeEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHashChangeEvent, Base>(exec, JSHashChangeEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHashChangeEvent>(vm, globalObject);
 }
 
-JSValue jsHashChangeEventOldURL(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHashChangeEventOldURL(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHashChangeEvent* castedThis = jsCast<JSHashChangeEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HashChangeEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHashChangeEvent* castedThis = jsDynamicCast<JSHashChangeEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHashChangeEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HashChangeEvent", "oldURL");
+        return throwGetterTypeError(*exec, "HashChangeEvent", "oldURL");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.oldURL());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHashChangeEventNewURL(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHashChangeEventNewURL(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHashChangeEvent* castedThis = jsCast<JSHashChangeEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HashChangeEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHashChangeEvent* castedThis = jsDynamicCast<JSHashChangeEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHashChangeEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HashChangeEvent", "newURL");
+        return throwGetterTypeError(*exec, "HashChangeEvent", "newURL");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.newURL());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHashChangeEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHashChangeEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHashChangeEvent* domObject = jsCast<JSHashChangeEvent*>(asObject(slotBase));
-    return JSHashChangeEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSHashChangeEventPrototype* domObject = jsDynamicCast<JSHashChangeEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHashChangeEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSHashChangeEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -202,26 +242,26 @@ JSValue JSHashChangeEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsHashChangeEventPrototypeFunctionInitHashChangeEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHashChangeEvent::info()))
-        return throwVMTypeError(exec);
-    JSHashChangeEvent* castedThis = jsCast<JSHashChangeEvent*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHashChangeEvent* castedThis = jsDynamicCast<JSHashChangeEvent*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HashChangeEvent", "initHashChangeEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHashChangeEvent::info());
-    HashChangeEvent& impl = castedThis->impl();
-    const String& type(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String type = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool canBubble(exec->argument(1).toBoolean(exec));
-    if (exec->hadException())
+    bool canBubble = exec->argument(1).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool cancelable(exec->argument(2).toBoolean(exec));
-    if (exec->hadException())
+    bool cancelable = exec->argument(2).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& oldURL(exec->argument(3).isEmpty() ? String() : exec->argument(3).toString(exec)->value(exec));
-    if (exec->hadException())
+    String oldURL = exec->argument(3).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& newURL(exec->argument(4).isEmpty() ? String() : exec->argument(4).toString(exec)->value(exec));
-    if (exec->hadException())
+    String newURL = exec->argument(4).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.initHashChangeEvent(type, canBubble, cancelable, oldURL, newURL);
     return JSValue::encode(jsUndefined());

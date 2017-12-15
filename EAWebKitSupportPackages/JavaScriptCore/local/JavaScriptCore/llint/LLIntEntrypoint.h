@@ -26,10 +26,6 @@
 #ifndef LLIntEntrypoint_h
 #define LLIntEntrypoint_h
 
-#include <wtf/Platform.h>
-
-#if ENABLE(LLINT)
-
 #include "CodeSpecializationKind.h"
 
 namespace JSC {
@@ -41,8 +37,8 @@ namespace LLInt {
 
 void setEntrypoint(VM&, CodeBlock*);
 
-} } // namespace JSC::LLInt
+unsigned frameRegisterCountFor(CodeBlock*);
 
-#endif // ENABLE(LLINT)
+} } // namespace JSC::LLInt
 
 #endif // LLIntEntrypoint_h

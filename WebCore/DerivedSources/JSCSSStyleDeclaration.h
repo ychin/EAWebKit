@@ -22,32 +22,33 @@
 #define JSCSSStyleDeclaration_h
 
 #include "CSSStyleDeclaration.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSCSSStyleDeclaration : public JSDOMWrapper {
+class WEBCORE_EXPORT JSCSSStyleDeclaration : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSCSSStyleDeclaration* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSStyleDeclaration> impl)
+    static JSCSSStyleDeclaration* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSStyleDeclaration>&& impl)
     {
-        JSCSSStyleDeclaration* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleDeclaration>(globalObject->vm().heap)) JSCSSStyleDeclaration(structure, globalObject, impl);
+        JSCSSStyleDeclaration* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleDeclaration>(globalObject->vm().heap)) JSCSSStyleDeclaration(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static CSSStyleDeclaration* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
     bool getOwnPropertySlotDelegate(JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
     static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void putByIndex(JSC::JSCell*, JSC::ExecState*, unsigned propertyName, JSC::JSValue, bool shouldThrow);
     bool putDelegate(JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSCSSStyleDeclaration();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,31 +56,30 @@ public:
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
-    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode mode = JSC::ExcludeDontEnumProperties);
+    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode = JSC::EnumerationMode());
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
 
     // Custom functions
     JSC::JSValue getPropertyCSSValue(JSC::ExecState*);
     CSSStyleDeclaration& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     CSSStyleDeclaration* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesGetPropertyNames | Base::StructureFlags;
 protected:
-    JSCSSStyleDeclaration(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSStyleDeclaration>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
-    static JSC::JSValue indexGetter(JSC::ExecState*, JSC::JSValue, unsigned);
+    JSCSSStyleDeclaration(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSStyleDeclaration>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSCSSStyleDeclarationOwner : public JSC::WeakHandleOwner {
@@ -90,83 +90,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, CSSStyleDeclaration*)
 {
-    DEFINE_STATIC_LOCAL(JSCSSStyleDeclarationOwner, jsCSSStyleDeclarationOwner, ());
-    return &jsCSSStyleDeclarationOwner;
+    static NeverDestroyed<JSCSSStyleDeclarationOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, CSSStyleDeclaration*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, CSSStyleDeclaration*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, CSSStyleDeclaration& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, CSSStyleDeclaration*);
-CSSStyleDeclaration* toCSSStyleDeclaration(JSC::JSValue);
-
-class JSCSSStyleDeclarationPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSStyleDeclarationPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSStyleDeclarationPrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleDeclarationPrototype>(vm.heap)) JSCSSStyleDeclarationPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSStyleDeclarationPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSCSSStyleDeclarationConstructor : public DOMConstructorObject {
-private:
-    JSCSSStyleDeclarationConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSStyleDeclarationConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSStyleDeclarationConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleDeclarationConstructor>(vm.heap)) JSCSSStyleDeclarationConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionGetPropertyValue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionGetPropertyCSSValue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionRemoveProperty(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionGetPropertyPriority(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionSetProperty(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionGetPropertyShorthand(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleDeclarationPrototypeFunctionIsPropertyImplicit(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsCSSStyleDeclarationCssText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSCSSStyleDeclarationCssText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsCSSStyleDeclarationLength(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSStyleDeclarationParentRule(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSStyleDeclarationConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

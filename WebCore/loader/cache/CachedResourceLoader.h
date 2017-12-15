@@ -46,7 +46,6 @@ class CachedFont;
 class CachedImage;
 class CachedRawResource;
 class CachedScript;
-class CachedShader;
 class CachedTextTrack;
 class CachedXSLStyleSheet;
 class Document;
@@ -69,20 +68,17 @@ friend class ImageLoader;
 friend class ResourceCacheValidationSuppressor;
 
 public:
-    static PassRefPtr<CachedResourceLoader> create(DocumentLoader* documentLoader) { return adoptRef(new CachedResourceLoader(documentLoader)); }
+    static Ref<CachedResourceLoader> create(DocumentLoader* documentLoader) { return adoptRef(*new CachedResourceLoader(documentLoader)); }
     ~CachedResourceLoader();
 
     CachedResourceHandle<CachedImage> requestImage(CachedResourceRequest&);
     CachedResourceHandle<CachedCSSStyleSheet> requestCSSStyleSheet(CachedResourceRequest&);
     CachedResourceHandle<CachedCSSStyleSheet> requestUserCSSStyleSheet(CachedResourceRequest&);
     CachedResourceHandle<CachedScript> requestScript(CachedResourceRequest&);
-    CachedResourceHandle<CachedFont> requestFont(CachedResourceRequest&);
+    CachedResourceHandle<CachedFont> requestFont(CachedResourceRequest&, bool isSVG);
     CachedResourceHandle<CachedRawResource> requestRawResource(CachedResourceRequest&);
     CachedResourceHandle<CachedRawResource> requestMainResource(CachedResourceRequest&);
-
-#if ENABLE(SVG)
     CachedResourceHandle<CachedSVGDocument> requestSVGDocument(CachedResourceRequest&);
-#endif
 #if ENABLE(XSLT)
     CachedResourceHandle<CachedXSLStyleSheet> requestXSLStyleSheet(CachedResourceRequest&);
 #endif
@@ -92,9 +88,6 @@ public:
 #if ENABLE(VIDEO_TRACK)
     CachedResourceHandle<CachedTextTrack> requestTextTrack(CachedResourceRequest&);
 #endif
-#if ENABLE(CSS_SHADERS)
-    CachedResourceHandle<CachedShader> requestShader(CachedResourceRequest&);
-#endif
 
     // Logs an access denied message to the console for the specified URL.
     void printAccessDeniedMessage(const URL& url) const;
@@ -102,7 +95,7 @@ public:
     CachedResource* cachedResource(const String& url) const;
     CachedResource* cachedResource(const URL& url) const;
     
-    typedef HashMap<String, CachedResourceHandle<CachedResource> > DocumentResourceMap;
+    typedef HashMap<String, CachedResourceHandle<CachedResource>> DocumentResourceMap;
     const DocumentResourceMap& allCachedResources() const { return m_documentResources; }
 
     bool autoLoadImages() const { return m_autoLoadImages; }
@@ -111,6 +104,7 @@ public:
     void setImagesEnabled(bool);
 
     bool shouldDeferImageLoad(const URL&) const;
+    bool shouldPerformImageLoad(const URL&) const;
     
     CachePolicy cachePolicy(CachedResource::Type) const;
     
@@ -118,16 +112,19 @@ public:
     Document* document() const { return m_document; } // Can be null
     void setDocument(Document* document) { m_document = document; }
     void clearDocumentLoader() { m_documentLoader = 0; }
+    SessionID sessionID() const;
 
-    void removeCachedResource(CachedResource*) const;
-    void loadDone(CachedResource*);
-    void garbageCollectDocumentResources();
+    void removeCachedResource(CachedResource&);
+
+    void loadDone(CachedResource*, bool shouldPerformPostLoadActions = true);
+
+    WEBCORE_EXPORT void garbageCollectDocumentResources();
     
     void incrementRequestCount(const CachedResource*);
     void decrementRequestCount(const CachedResource*);
     int requestCount() const { return m_requestCount; }
 
-    bool isPreloaded(const String& urlString) const;
+    WEBCORE_EXPORT bool isPreloaded(const String& urlString) const;
     void clearPreloads();
     void clearPendingPreloads();
     void preload(CachedResource::Type, CachedResourceRequest&, const String& charset);
@@ -137,12 +134,14 @@ public:
 
     static const ResourceLoaderOptions& defaultCachedResourceOptions();
 
+    void documentDidFinishLoadEvent();
+
 private:
     explicit CachedResourceLoader(DocumentLoader*);
 
     CachedResourceHandle<CachedResource> requestResource(CachedResource::Type, CachedResourceRequest&);
     CachedResourceHandle<CachedResource> revalidateResource(const CachedResourceRequest&, CachedResource*);
-    CachedResourceHandle<CachedResource> loadResource(CachedResource::Type, CachedResourceRequest&, const String& charset);
+    CachedResourceHandle<CachedResource> loadResource(CachedResource::Type, CachedResourceRequest&);
 #if ENABLE(RESOURCE_TIMING)
     void storeResourceTimingInitiatorInformation(const CachedResourceHandle<CachedResource>&, const CachedResourceRequest&);
 #endif
@@ -151,10 +150,9 @@ private:
     enum RevalidationPolicy { Use, Revalidate, Reload, Load };
     RevalidationPolicy determineRevalidationPolicy(CachedResource::Type, CachedResourceRequest&, CachedResource* existingResource) const;
     
-    bool shouldContinueAfterNotifyingLoadedFromMemoryCache(CachedResource*);
+    bool shouldContinueAfterNotifyingLoadedFromMemoryCache(const CachedResourceRequest&, CachedResource*);
     bool checkInsecureContent(CachedResource::Type, const URL&) const;
 
-    void garbageCollectDocumentResourcesTimerFired(Timer<CachedResourceLoader>*);
     void performPostLoadActions();
 
     bool clientDefersImage(const URL&) const;
@@ -167,7 +165,7 @@ private:
     
     int m_requestCount;
     
-    OwnPtr<ListHashSet<CachedResource*> > m_preloads;
+    std::unique_ptr<ListHashSet<CachedResource*>> m_preloads;
     struct PendingPreload {
         CachedResource::Type m_type;
         CachedResourceRequest m_request;
@@ -175,7 +173,7 @@ private:
     };
     Deque<PendingPreload> m_pendingPreloads;
 
-    Timer<CachedResourceLoader> m_garbageCollectDocumentResourcesTimer;
+    Timer m_garbageCollectDocumentResourcesTimer;
 
 #if ENABLE(RESOURCE_TIMING)
     struct InitiatorInfo {
@@ -195,22 +193,18 @@ class ResourceCacheValidationSuppressor {
     WTF_MAKE_NONCOPYABLE(ResourceCacheValidationSuppressor);
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    ResourceCacheValidationSuppressor(CachedResourceLoader* loader)
+    ResourceCacheValidationSuppressor(CachedResourceLoader& loader)
         : m_loader(loader)
-        , m_previousState(false)
+        , m_previousState(m_loader.m_allowStaleResources)
     {
-        if (m_loader) {
-            m_previousState = m_loader->m_allowStaleResources;
-            m_loader->m_allowStaleResources = true;
-        }
+        m_loader.m_allowStaleResources = true;
     }
     ~ResourceCacheValidationSuppressor()
     {
-        if (m_loader)
-            m_loader->m_allowStaleResources = m_previousState;
+        m_loader.m_allowStaleResources = m_previousState;
     }
 private:
-    CachedResourceLoader* m_loader;
+    CachedResourceLoader& m_loader;
     bool m_previousState;
 };
 

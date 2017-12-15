@@ -36,37 +36,107 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetPosition(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetOrientation(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetVelocity(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsPannerNodePanningModel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodePanningModel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeDistanceModel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeDistanceModel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeRefDistance(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeRefDistance(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeMaxDistance(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeMaxDistance(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeRolloffFactor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeRolloffFactor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeConeInnerAngle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeConeInnerAngle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeConeOuterAngle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeConeOuterAngle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeConeOuterGain(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSPannerNodeConeOuterGain(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsPannerNodeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSPannerNodePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSPannerNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSPannerNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSPannerNodePrototype>(vm.heap)) JSPannerNodePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSPannerNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSPannerNodeConstructor : public DOMConstructorObject {
+private:
+    JSPannerNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSPannerNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSPannerNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSPannerNodeConstructor>(vm.heap)) JSPannerNodeConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSPannerNodeTableIndex[4] = {
+    { 0, -1 },
+    { 1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSPannerNodeTableValues[] =
 {
-    { "panningModel", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodePanningModel), (intptr_t)setJSPannerNodePanningModel },
-    { "distanceModel", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeDistanceModel), (intptr_t)setJSPannerNodeDistanceModel },
-    { "refDistance", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeRefDistance), (intptr_t)setJSPannerNodeRefDistance },
-    { "maxDistance", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeMaxDistance), (intptr_t)setJSPannerNodeMaxDistance },
-    { "rolloffFactor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeRolloffFactor), (intptr_t)setJSPannerNodeRolloffFactor },
-    { "coneInnerAngle", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConeInnerAngle), (intptr_t)setJSPannerNodeConeInnerAngle },
-    { "coneOuterAngle", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConeOuterAngle), (intptr_t)setJSPannerNodeConeOuterAngle },
-    { "coneOuterGain", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConeOuterGain), (intptr_t)setJSPannerNodeConeOuterGain },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "panningModel", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodePanningModel), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodePanningModel) },
+    { "distanceModel", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeDistanceModel), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeDistanceModel) },
 };
 
-static const HashTable JSPannerNodeTable = { 34, 31, JSPannerNodeTableValues, 0 };
+static const HashTable JSPannerNodeTable = { 2, 3, true, JSPannerNodeTableValues, 0, JSPannerNodeTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSPannerNodeConstructorTableValues[] =
 {
-    { "EQUALPOWER", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeEQUALPOWER), (intptr_t)0 },
-    { "HRTF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeHRTF), (intptr_t)0 },
-    { "SOUNDFIELD", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeSOUNDFIELD), (intptr_t)0 },
-    { "LINEAR_DISTANCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeLINEAR_DISTANCE), (intptr_t)0 },
-    { "INVERSE_DISTANCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeINVERSE_DISTANCE), (intptr_t)0 },
-    { "EXPONENTIAL_DISTANCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeEXPONENTIAL_DISTANCE), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "EQUALPOWER", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "HRTF", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SOUNDFIELD", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "LINEAR_DISTANCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "INVERSE_DISTANCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "EXPONENTIAL_DISTANCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
 };
 
-static const HashTable JSPannerNodeConstructorTable = { 16, 15, JSPannerNodeConstructorTableValues, 0 };
 
 COMPILE_ASSERT(0 == PannerNode::EQUALPOWER, PannerNodeEnumEQUALPOWERIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(1 == PannerNode::HRTF, PannerNodeEnumHRTFIsWrongUseDoNotCheckConstants);
@@ -75,7 +145,7 @@ COMPILE_ASSERT(0 == PannerNode::LINEAR_DISTANCE, PannerNodeEnumLINEAR_DISTANCEIs
 COMPILE_ASSERT(1 == PannerNode::INVERSE_DISTANCE, PannerNodeEnumINVERSE_DISTANCEIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(2 == PannerNode::EXPONENTIAL_DISTANCE, PannerNodeEnumEXPONENTIAL_DISTANCEIsWrongUseDoNotCheckConstants);
 
-const ClassInfo JSPannerNodeConstructor::s_info = { "webkitAudioPannerNodeConstructor", &Base::s_info, &JSPannerNodeConstructorTable, 0, CREATE_METHOD_TABLE(JSPannerNodeConstructor) };
+const ClassInfo JSPannerNodeConstructor::s_info = { "webkitAudioPannerNodeConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSPannerNodeConstructor) };
 
 JSPannerNodeConstructor::JSPannerNodeConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -86,244 +156,339 @@ void JSPannerNodeConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSPannerNodePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSPannerNodeConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSPannerNodeConstructor, JSDOMWrapper>(exec, JSPannerNodeConstructorTable, jsCast<JSPannerNodeConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSPannerNode::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("webkitAudioPannerNode"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSPannerNodeConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSPannerNodePrototypeTableValues[] =
 {
-    { "EQUALPOWER", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeEQUALPOWER), (intptr_t)0 },
-    { "HRTF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeHRTF), (intptr_t)0 },
-    { "SOUNDFIELD", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeSOUNDFIELD), (intptr_t)0 },
-    { "LINEAR_DISTANCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeLINEAR_DISTANCE), (intptr_t)0 },
-    { "INVERSE_DISTANCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeINVERSE_DISTANCE), (intptr_t)0 },
-    { "EXPONENTIAL_DISTANCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeEXPONENTIAL_DISTANCE), (intptr_t)0 },
-    { "setPosition", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsPannerNodePrototypeFunctionSetPosition), (intptr_t)3 },
-    { "setOrientation", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsPannerNodePrototypeFunctionSetOrientation), (intptr_t)3 },
-    { "setVelocity", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsPannerNodePrototypeFunctionSetVelocity), (intptr_t)3 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "refDistance", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeRefDistance), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeRefDistance) },
+    { "maxDistance", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeMaxDistance), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeMaxDistance) },
+    { "rolloffFactor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeRolloffFactor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeRolloffFactor) },
+    { "coneInnerAngle", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConeInnerAngle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeConeInnerAngle) },
+    { "coneOuterAngle", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConeOuterAngle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeConeOuterAngle) },
+    { "coneOuterGain", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPannerNodeConeOuterGain), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSPannerNodeConeOuterGain) },
+    { "EQUALPOWER", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "HRTF", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SOUNDFIELD", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "LINEAR_DISTANCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "INVERSE_DISTANCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "EXPONENTIAL_DISTANCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "setPosition", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsPannerNodePrototypeFunctionSetPosition), (intptr_t) (3) },
+    { "setOrientation", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsPannerNodePrototypeFunctionSetOrientation), (intptr_t) (3) },
+    { "setVelocity", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsPannerNodePrototypeFunctionSetVelocity), (intptr_t) (3) },
 };
 
-static const HashTable JSPannerNodePrototypeTable = { 33, 31, JSPannerNodePrototypeTableValues, 0 };
-const ClassInfo JSPannerNodePrototype::s_info = { "webkitAudioPannerNodePrototype", &Base::s_info, &JSPannerNodePrototypeTable, 0, CREATE_METHOD_TABLE(JSPannerNodePrototype) };
+const ClassInfo JSPannerNodePrototype::s_info = { "webkitAudioPannerNodePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSPannerNodePrototype) };
 
-JSObject* JSPannerNodePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSPannerNode>(vm, globalObject);
-}
-
-bool JSPannerNodePrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSPannerNodePrototype* thisObject = jsCast<JSPannerNodePrototype*>(object);
-    return getStaticPropertySlot<JSPannerNodePrototype, JSObject>(exec, JSPannerNodePrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSPannerNode::s_info = { "webkitAudioPannerNode", &Base::s_info, &JSPannerNodeTable, 0 , CREATE_METHOD_TABLE(JSPannerNode) };
-
-JSPannerNode::JSPannerNode(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<PannerNode> impl)
-    : JSAudioNode(structure, globalObject, impl)
-{
-}
-
-void JSPannerNode::finishCreation(VM& vm)
+void JSPannerNodePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSPannerNodePrototypeTableValues, *this);
+}
+
+const ClassInfo JSPannerNode::s_info = { "webkitAudioPannerNode", &Base::s_info, &JSPannerNodeTable, CREATE_METHOD_TABLE(JSPannerNode) };
+
+JSPannerNode::JSPannerNode(Structure* structure, JSDOMGlobalObject* globalObject, Ref<PannerNode>&& impl)
+    : JSAudioNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSPannerNode::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSPannerNodePrototype::create(vm, globalObject, JSPannerNodePrototype::createStructure(vm, globalObject, JSAudioNodePrototype::self(vm, globalObject)));
+    return JSPannerNodePrototype::create(vm, globalObject, JSPannerNodePrototype::createStructure(vm, globalObject, JSAudioNode::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSPannerNode::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSPannerNode>(vm, globalObject);
 }
 
 bool JSPannerNode::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSPannerNode* thisObject = jsCast<JSPannerNode*>(object);
+    auto* thisObject = jsCast<JSPannerNode*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSPannerNode, Base>(exec, JSPannerNodeTable, thisObject, propertyName, slot);
 }
 
-JSValue jsPannerNodePanningModel(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodePanningModel(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSPannerNode*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.panningModel());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeDistanceModel(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeDistanceModel(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSPannerNode*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.distanceModel());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeRefDistance(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeRefDistance(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PannerNode", "refDistance");
+        return throwGetterTypeError(*exec, "PannerNode", "refDistance");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.refDistance());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeMaxDistance(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeMaxDistance(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PannerNode", "maxDistance");
+        return throwGetterTypeError(*exec, "PannerNode", "maxDistance");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.maxDistance());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeRolloffFactor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeRolloffFactor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PannerNode", "rolloffFactor");
+        return throwGetterTypeError(*exec, "PannerNode", "rolloffFactor");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.rolloffFactor());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeConeInnerAngle(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeConeInnerAngle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PannerNode", "coneInnerAngle");
+        return throwGetterTypeError(*exec, "PannerNode", "coneInnerAngle");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.coneInnerAngle());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeConeOuterAngle(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeConeOuterAngle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PannerNode", "coneOuterAngle");
+        return throwGetterTypeError(*exec, "PannerNode", "coneOuterAngle");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.coneOuterAngle());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeConeOuterGain(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeConeOuterGain(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PannerNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PannerNode", "coneOuterGain");
+        return throwGetterTypeError(*exec, "PannerNode", "coneOuterGain");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.coneOuterGain());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPannerNodeConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPannerNodeConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSPannerNode* domObject = jsCast<JSPannerNode*>(asObject(slotBase));
-    return JSPannerNode::getConstructor(exec->vm(), domObject->globalObject());
+    JSPannerNodePrototype* domObject = jsDynamicCast<JSPannerNodePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSPannerNode::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSPannerNode::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSPannerNodePanningModel(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSPannerNode* thisObject = jsCast<JSPannerNode*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSPannerNode, Base>(exec, propertyName, value, JSPannerNodeTable, thisObject, slot);
-}
-
-void setJSPannerNodePanningModel(ExecState* exec, JSObject* thisObject, JSValue value)
-{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSPannerNode*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSPannerNode*>(thisObject)->setPanningModel(exec, value);
+    castedThis->setPanningModel(exec, value);
 }
 
 
-void setJSPannerNodeDistanceModel(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeDistanceModel(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSPannerNode*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSPannerNode*>(thisObject)->setDistanceModel(exec, value);
+    castedThis->setDistanceModel(exec, value);
 }
 
 
-void setJSPannerNodeRefDistance(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeRefDistance(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(thisObject);
-    PannerNode& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "PannerNode", "refDistance");
+        else
+            throwSetterTypeError(*exec, "PannerNode", "refDistance");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setRefDistance(nativeValue);
 }
 
 
-void setJSPannerNodeMaxDistance(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeMaxDistance(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(thisObject);
-    PannerNode& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "PannerNode", "maxDistance");
+        else
+            throwSetterTypeError(*exec, "PannerNode", "maxDistance");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setMaxDistance(nativeValue);
 }
 
 
-void setJSPannerNodeRolloffFactor(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeRolloffFactor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(thisObject);
-    PannerNode& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "PannerNode", "rolloffFactor");
+        else
+            throwSetterTypeError(*exec, "PannerNode", "rolloffFactor");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setRolloffFactor(nativeValue);
 }
 
 
-void setJSPannerNodeConeInnerAngle(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeConeInnerAngle(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(thisObject);
-    PannerNode& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "PannerNode", "coneInnerAngle");
+        else
+            throwSetterTypeError(*exec, "PannerNode", "coneInnerAngle");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setConeInnerAngle(nativeValue);
 }
 
 
-void setJSPannerNodeConeOuterAngle(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeConeOuterAngle(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(thisObject);
-    PannerNode& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "PannerNode", "coneOuterAngle");
+        else
+            throwSetterTypeError(*exec, "PannerNode", "coneOuterAngle");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setConeOuterAngle(nativeValue);
 }
 
 
-void setJSPannerNodeConeOuterGain(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSPannerNodeConeOuterGain(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(thisObject);
-    PannerNode& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPannerNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "PannerNode", "coneOuterGain");
+        else
+            throwSetterTypeError(*exec, "PannerNode", "coneOuterGain");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setConeOuterGain(nativeValue);
 }
@@ -336,22 +501,22 @@ JSValue JSPannerNode::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetPosition(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSPannerNode::info()))
-        return throwVMTypeError(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "PannerNode", "setPosition");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSPannerNode::info());
-    PannerNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 3)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 3))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float z(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    float z = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setPosition(x, y, z);
     return JSValue::encode(jsUndefined());
@@ -359,22 +524,22 @@ EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetPosition(ExecState*
 
 EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetOrientation(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSPannerNode::info()))
-        return throwVMTypeError(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "PannerNode", "setOrientation");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSPannerNode::info());
-    PannerNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 3)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 3))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float z(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    float z = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setOrientation(x, y, z);
     return JSValue::encode(jsUndefined());
@@ -382,63 +547,25 @@ EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetOrientation(ExecSta
 
 EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetVelocity(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSPannerNode::info()))
-        return throwVMTypeError(exec);
-    JSPannerNode* castedThis = jsCast<JSPannerNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSPannerNode* castedThis = jsDynamicCast<JSPannerNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "PannerNode", "setVelocity");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSPannerNode::info());
-    PannerNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 3)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 3))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float z(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    float z = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setVelocity(x, y, z);
     return JSValue::encode(jsUndefined());
-}
-
-// Constant getters
-
-JSValue jsPannerNodeEQUALPOWER(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsPannerNodeHRTF(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsPannerNodeSOUNDFIELD(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsPannerNodeLINEAR_DISTANCE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsPannerNodeINVERSE_DISTANCE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsPannerNodeEXPONENTIAL_DISTANCE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -449,11 +576,11 @@ extern "C" { extern void (*const __identifier("??_7PannerNode@WebCore@@6B@")[])(
 extern "C" { extern void* _ZTVN7WebCore10PannerNodeE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, PannerNode* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, PannerNode* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSPannerNode>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSPannerNode>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -474,8 +601,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, PannerN
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<PannerNode>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSPannerNode>(exec, globalObject, impl);
+    return createNewWrapper<JSPannerNode>(globalObject, impl);
 }
 
 

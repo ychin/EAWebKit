@@ -22,36 +22,104 @@
 #include "JSClientRect.h"
 
 #include "ClientRect.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
+// Attributes
+
+JSC::EncodedJSValue jsClientRectTop(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsClientRectRight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsClientRectBottom(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsClientRectLeft(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsClientRectWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsClientRectHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsClientRectConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSClientRectPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSClientRectPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSClientRectPrototype* ptr = new (NotNull, JSC::allocateCell<JSClientRectPrototype>(vm.heap)) JSClientRectPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSClientRectPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSClientRectConstructor : public DOMConstructorObject {
+private:
+    JSClientRectConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSClientRectConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSClientRectConstructor* ptr = new (NotNull, JSC::allocateCell<JSClientRectConstructor>(vm.heap)) JSClientRectConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSClientRectTableIndex[17] = {
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 3, 16 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+    { 0, -1 },
+    { -1, -1 },
+    { 5, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 2, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 4, -1 },
+};
+
 
 static const HashTableValue JSClientRectTableValues[] =
 {
-    { "top", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectTop), (intptr_t)0 },
-    { "right", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectRight), (intptr_t)0 },
-    { "bottom", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectBottom), (intptr_t)0 },
-    { "left", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectLeft), (intptr_t)0 },
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectWidth), (intptr_t)0 },
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectHeight), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "top", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectTop), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "right", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectRight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "bottom", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectBottom), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "left", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectLeft), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSClientRectTable = { 18, 15, JSClientRectTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSClientRectConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSClientRectConstructorTable = { 1, 0, JSClientRectConstructorTableValues, 0 };
-const ClassInfo JSClientRectConstructor::s_info = { "ClientRectConstructor", &Base::s_info, &JSClientRectConstructorTable, 0, CREATE_METHOD_TABLE(JSClientRectConstructor) };
+static const HashTable JSClientRectTable = { 6, 15, true, JSClientRectTableValues, 0, JSClientRectTableIndex };
+const ClassInfo JSClientRectConstructor::s_info = { "ClientRectConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSClientRectConstructor) };
 
 JSClientRectConstructor::JSClientRectConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,47 +130,42 @@ void JSClientRectConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSClientRectPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSClientRectConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSClientRectConstructor, JSDOMWrapper>(exec, JSClientRectConstructorTable, jsCast<JSClientRectConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSClientRect::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("ClientRect"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSClientRectPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsClientRectConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSClientRectPrototypeTable = { 1, 0, JSClientRectPrototypeTableValues, 0 };
-const ClassInfo JSClientRectPrototype::s_info = { "ClientRectPrototype", &Base::s_info, &JSClientRectPrototypeTable, 0, CREATE_METHOD_TABLE(JSClientRectPrototype) };
+const ClassInfo JSClientRectPrototype::s_info = { "ClientRectPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSClientRectPrototype) };
 
-JSObject* JSClientRectPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSClientRect>(vm, globalObject);
-}
-
-const ClassInfo JSClientRect::s_info = { "ClientRect", &Base::s_info, &JSClientRectTable, 0 , CREATE_METHOD_TABLE(JSClientRect) };
-
-JSClientRect::JSClientRect(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ClientRect> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSClientRect::finishCreation(VM& vm)
+void JSClientRectPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSClientRectPrototypeTableValues, *this);
+}
+
+const ClassInfo JSClientRect::s_info = { "ClientRect", &Base::s_info, &JSClientRectTable, CREATE_METHOD_TABLE(JSClientRect) };
+
+JSClientRect::JSClientRect(Structure* structure, JSDOMGlobalObject* globalObject, Ref<ClientRect>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSClientRect::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSClientRectPrototype::create(vm, globalObject, JSClientRectPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSClientRect::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSClientRect>(vm, globalObject);
 }
 
 void JSClientRect::destroy(JSC::JSCell* cell)
@@ -113,80 +176,112 @@ void JSClientRect::destroy(JSC::JSCell* cell)
 
 JSClientRect::~JSClientRect()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSClientRect::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSClientRect* thisObject = jsCast<JSClientRect*>(object);
+    auto* thisObject = jsCast<JSClientRect*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSClientRect, Base>(exec, JSClientRectTable, thisObject, propertyName, slot);
 }
 
-JSValue jsClientRectTop(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectTop(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSClientRect* castedThis = jsCast<JSClientRect*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ClientRect& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSClientRect*>(slotBase);
+    JSClientRect* castedThisObject = jsDynamicCast<JSClientRect*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "ClientRect", "top");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.top());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsClientRectRight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectRight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSClientRect* castedThis = jsCast<JSClientRect*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ClientRect& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSClientRect*>(slotBase);
+    JSClientRect* castedThisObject = jsDynamicCast<JSClientRect*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "ClientRect", "right");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.right());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsClientRectBottom(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectBottom(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSClientRect* castedThis = jsCast<JSClientRect*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ClientRect& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSClientRect*>(slotBase);
+    JSClientRect* castedThisObject = jsDynamicCast<JSClientRect*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "ClientRect", "bottom");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.bottom());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsClientRectLeft(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectLeft(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSClientRect* castedThis = jsCast<JSClientRect*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ClientRect& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSClientRect*>(slotBase);
+    JSClientRect* castedThisObject = jsDynamicCast<JSClientRect*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "ClientRect", "left");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.left());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsClientRectWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSClientRect* castedThis = jsCast<JSClientRect*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ClientRect& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSClientRect*>(slotBase);
+    JSClientRect* castedThisObject = jsDynamicCast<JSClientRect*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "ClientRect", "width");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.width());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsClientRectHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSClientRect* castedThis = jsCast<JSClientRect*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ClientRect& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSClientRect*>(slotBase);
+    JSClientRect* castedThisObject = jsDynamicCast<JSClientRect*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "ClientRect", "height");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.height());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsClientRectConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsClientRectConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSClientRect* domObject = jsCast<JSClientRect*>(asObject(slotBase));
-    return JSClientRect::getConstructor(exec->vm(), domObject->globalObject());
+    JSClientRectPrototype* domObject = jsDynamicCast<JSClientRectPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSClientRect::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSClientRect::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -194,35 +289,25 @@ JSValue JSClientRect::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSClientRectConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSClientRect* jsClientRect)
-{
-    if (jsClientRect->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSClientRectOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSClientRect* jsClientRect = jsCast<JSClientRect*>(handle.get().asCell());
-    if (!isObservable(jsClientRect))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSClientRectOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSClientRect* jsClientRect = jsCast<JSClientRect*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsClientRect = jsCast<JSClientRect*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsClientRect->impl(), jsClientRect);
-    jsClientRect->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ClientRect* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, ClientRect* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSClientRect>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSClientRect>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -231,13 +316,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ClientR
     // attribute to ClientRect.
     COMPILE_ASSERT(!__is_polymorphic(ClientRect), ClientRect_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<ClientRect>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSClientRect>(exec, globalObject, impl);
+    return createNewWrapper<JSClientRect>(globalObject, impl);
 }
 
-ClientRect* toClientRect(JSC::JSValue value)
+ClientRect* JSClientRect::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSClientRect::info()) ? &jsCast<JSClientRect*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSClientRect*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

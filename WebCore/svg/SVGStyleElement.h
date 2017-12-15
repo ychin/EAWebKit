@@ -22,15 +22,14 @@
 #ifndef SVGStyleElement_h
 #define SVGStyleElement_h
 
-#if ENABLE(SVG)
 #include "InlineStyleSheetOwner.h"
 #include "SVGElement.h"
 
 namespace WebCore {
 
-class SVGStyleElement FINAL : public SVGElement {
+class SVGStyleElement final : public SVGElement {
 public:
-    static PassRefPtr<SVGStyleElement> create(const QualifiedName&, Document&, bool createdByParser);
+    static Ref<SVGStyleElement> create(const QualifiedName&, Document&, bool createdByParser);
     virtual ~SVGStyleElement();
 
     CSSStyleSheet* sheet() const { return m_styleSheetOwner.sheet(); }
@@ -44,34 +43,30 @@ public:
     const AtomicString& media() const;
     void setMedia(const AtomicString&, ExceptionCode&);
 
-    String title() const;
+    String title() const override;
     void setTitle(const AtomicString&, ExceptionCode&);
 
 private:
     SVGStyleElement(const QualifiedName&, Document&, bool createdByParser);
 
-    bool isSupportedAttribute(const QualifiedName&);
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
-    virtual void removedFrom(ContainerNode&) OVERRIDE;
-    virtual void childrenChanged(const ChildChange&) OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
+    virtual void removedFrom(ContainerNode&) override;
+    virtual void childrenChanged(const ChildChange&) override;
 
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE { return false; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 
-    virtual void finishParsingChildren();
+    virtual void finishParsingChildren() override;
 
     virtual bool isLoading() const { return m_styleSheetOwner.isLoading(); }
-    virtual bool sheetLoaded() OVERRIDE { return m_styleSheetOwner.sheetLoaded(document()); }
-    virtual void startLoadingDynamicSheet() OVERRIDE { m_styleSheetOwner.startLoadingDynamicSheet(document()); }
-    virtual Timer<SVGElement>* svgLoadEventTimer() OVERRIDE { return &m_svgLoadEventTimer; }
+    virtual bool sheetLoaded() override { return m_styleSheetOwner.sheetLoaded(document()); }
+    virtual void startLoadingDynamicSheet() override { m_styleSheetOwner.startLoadingDynamicSheet(document()); }
+    virtual Timer* svgLoadEventTimer() override { return &m_svgLoadEventTimer; }
 
     InlineStyleSheetOwner m_styleSheetOwner;
-    Timer<SVGElement> m_svgLoadEventTimer;
+    Timer m_svgLoadEventTimer;
 };
-
-NODE_TYPE_CASTS(SVGStyleElement)
 
 } // namespace WebCore
 
-#endif // ENABLE(SVG)
 #endif // SVGStyleElement_h

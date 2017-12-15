@@ -9,6 +9,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic ignored "-Wdeprecated-register"
+#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
 #endif
 
 namespace WebCore {
@@ -77,6 +78,7 @@ large, CSSValueLarge
 x-large, CSSValueXLarge
 xx-large, CSSValueXxLarge
 -webkit-xxx-large, CSSValueWebkitXxxLarge
+-webkit-ruby-text, CSSValueWebkitRubyText
 smaller, CSSValueSmaller
 larger, CSSValueLarger
 wider, CSSValueWider
@@ -125,6 +127,7 @@ buttonface, CSSValueButtonface
 buttonhighlight, CSSValueButtonhighlight
 buttonshadow, CSSValueButtonshadow
 buttontext, CSSValueButtontext
+activebuttontext, CSSValueActivebuttontext
 captiontext, CSSValueCaptiontext
 graytext, CSSValueGraytext
 highlight, CSSValueHighlight
@@ -145,6 +148,16 @@ threedshadow, CSSValueThreedshadow
 window, CSSValueWindow
 windowframe, CSSValueWindowframe
 windowtext, CSSValueWindowtext
+-apple-wireless-playback-target-active, CSSValueAppleWirelessPlaybackTargetActive
+-apple-system-blue, CSSValueAppleSystemBlue
+-apple-system-brown, CSSValueAppleSystemBrown
+-apple-system-gray, CSSValueAppleSystemGray
+-apple-system-green, CSSValueAppleSystemGreen
+-apple-system-orange, CSSValueAppleSystemOrange
+-apple-system-pink, CSSValueAppleSystemPink
+-apple-system-purple, CSSValueAppleSystemPurple
+-apple-system-red, CSSValueAppleSystemRed
+-apple-system-yellow, CSSValueAppleSystemYellow
 -webkit-focus-ring-color, CSSValueWebkitFocusRingColor
 currentcolor, CSSValueCurrentcolor
 grey, CSSValueGrey
@@ -185,10 +198,7 @@ justify, CSSValueJustify
 -webkit-center, CSSValueWebkitCenter
 -webkit-match-parent, CSSValueWebkitMatchParent
 inter-word, CSSValueInterWord
-inter-ideograph, CSSValueInterIdeograph
-inter-cluster, CSSValueInterCluster
 distribute, CSSValueDistribute
-kashida, CSSValueKashida
 outside, CSSValueOutside
 inside, CSSValueInside
 disc, CSSValueDisc
@@ -274,7 +284,6 @@ katakana-iroha, CSSValueKatakanaIroha
 inline, CSSValueInline
 block, CSSValueBlock
 list-item, CSSValueListItem
-run-in, CSSValueRunIn
 compact, CSSValueCompact
 inline-block, CSSValueInlineBlock
 table, CSSValueTable
@@ -289,7 +298,9 @@ table-cell, CSSValueTableCell
 table-caption, CSSValueTableCaption
 -webkit-box, CSSValueWebkitBox
 -webkit-inline-box, CSSValueWebkitInlineBox
+flex, CSSValueFlex
 -webkit-flex, CSSValueWebkitFlex
+inline-flex, CSSValueInlineFlex
 -webkit-inline-flex, CSSValueWebkitInlineFlex
 -webkit-grid, CSSValueWebkitGrid
 -webkit-inline-grid, CSSValueWebkitInlineGrid
@@ -305,8 +316,8 @@ alias, CSSValueAlias
 progress, CSSValueProgress
 no-drop, CSSValueNoDrop
 not-allowed, CSSValueNotAllowed
--webkit-zoom-in, CSSValueWebkitZoomIn
--webkit-zoom-out, CSSValueWebkitZoomOut
+zoom-in, CSSValueZoomIn
+zoom-out, CSSValueZoomOut
 e-resize, CSSValueEResize
 ne-resize, CSSValueNeResize
 nw-resize, CSSValueNwResize
@@ -327,6 +338,8 @@ help, CSSValueHelp
 all-scroll, CSSValueAllScroll
 -webkit-grab, CSSValueWebkitGrab
 -webkit-grabbing, CSSValueWebkitGrabbing
+-webkit-zoom-in, CSSValueWebkitZoomIn
+-webkit-zoom-out, CSSValueWebkitZoomOut
 auto-hide, CSSValueAutoHide
 ltr, CSSValueLtr
 rtl, CSSValueRtl
@@ -357,6 +370,7 @@ hand, CSSValueHand
 hide, CSSValueHide
 higher, CSSValueHigher
 invert, CSSValueInvert
+inverted, CSSValueInverted
 -webkit-isolate, CSSValueWebkitIsolate
 -webkit-isolate-override, CSSValueWebkitIsolateOverride
 -webkit-plaintext, CSSValueWebkitPlaintext
@@ -389,6 +403,9 @@ static, CSSValueStatic
 thick, CSSValueThick
 thin, CSSValueThin
 underline, CSSValueUnderline
+wavy, CSSValueWavy
+ink, CSSValueInk
+objects, CSSValueObjects
 -webkit-nowrap, CSSValueWebkitNowrap
 stretch, CSSValueStretch
 start, CSSValueStart
@@ -406,6 +423,13 @@ flex-start, CSSValueFlexStart
 flex-end, CSSValueFlexEnd
 space-between, CSSValueSpaceBetween
 space-around, CSSValueSpaceAround
+space-evenly, CSSValueSpaceEvenly
+last-baseline, CSSValueLastBaseline
+self-start, CSSValueSelfStart
+self-end, CSSValueSelfEnd
+true, CSSValueTrue
+safe, CSSValueSafe
+legacy, CSSValueLegacy
 row, CSSValueRow
 row-reverse, CSSValueRowReverse
 column, CSSValueColumn
@@ -441,6 +465,7 @@ wave, CSSValueWave
 continuous, CSSValueContinuous
 skip-white-space, CSSValueSkipWhiteSpace
 break-all, CSSValueBreakAll
+keep-all, CSSValueKeepAll
 break-word, CSSValueBreakWord
 space, CSSValueSpace
 loose, CSSValueLoose
@@ -454,31 +479,32 @@ button, CSSValueButton
 button-bevel, CSSValueButtonBevel
 default-button, CSSValueDefaultButton
 inner-spin-button, CSSValueInnerSpinButton
--webkit-input-speech-button, CSSValueWebkitInputSpeechButton
 listbox, CSSValueListbox
 listitem, CSSValueListitem
+media-controls-background, CSSValueMediaControlsBackground
+media-controls-dark-bar-background, CSSValueMediaControlsDarkBarBackground
+media-controls-fullscreen-background, CSSValueMediaControlsFullscreenBackground
+media-controls-light-bar-background, CSSValueMediaControlsLightBarBackground
+media-current-time-display, CSSValueMediaCurrentTimeDisplay
 media-enter-fullscreen-button, CSSValueMediaEnterFullscreenButton
 media-exit-fullscreen-button, CSSValueMediaExitFullscreenButton
 media-fullscreen-volume-slider, CSSValueMediaFullscreenVolumeSlider
 media-fullscreen-volume-slider-thumb, CSSValueMediaFullscreenVolumeSliderThumb
 media-mute-button, CSSValueMediaMuteButton
-media-play-button, CSSValueMediaPlayButton
 media-overlay-play-button, CSSValueMediaOverlayPlayButton
+media-play-button, CSSValueMediaPlayButton
+media-return-to-realtime-button, CSSValueMediaReturnToRealtimeButton
+media-rewind-button, CSSValueMediaRewindButton
 media-seek-back-button, CSSValueMediaSeekBackButton
 media-seek-forward-button, CSSValueMediaSeekForwardButton
-media-rewind-button, CSSValueMediaRewindButton
-media-return-to-realtime-button, CSSValueMediaReturnToRealtimeButton
-media-toggle-closed-captions-button, CSSValueMediaToggleClosedCaptionsButton
 media-slider, CSSValueMediaSlider
 media-sliderthumb, CSSValueMediaSliderthumb
-media-volume-slider-container, CSSValueMediaVolumeSliderContainer
-media-volume-slider, CSSValueMediaVolumeSlider
-media-volume-sliderthumb, CSSValueMediaVolumeSliderthumb
-media-volume-slider-mute-button, CSSValueMediaVolumeSliderMuteButton
-media-controls-background, CSSValueMediaControlsBackground
-media-controls-fullscreen-background, CSSValueMediaControlsFullscreenBackground
-media-current-time-display, CSSValueMediaCurrentTimeDisplay
 media-time-remaining-display, CSSValueMediaTimeRemainingDisplay
+media-toggle-closed-captions-button, CSSValueMediaToggleClosedCaptionsButton
+media-volume-slider, CSSValueMediaVolumeSlider
+media-volume-slider-container, CSSValueMediaVolumeSliderContainer
+media-volume-slider-mute-button, CSSValueMediaVolumeSliderMuteButton
+media-volume-sliderthumb, CSSValueMediaVolumeSliderthumb
 menulist, CSSValueMenulist
 menulist-button, CSSValueMenulistButton
 menulist-text, CSSValueMenulistText
@@ -503,6 +529,7 @@ continuous-capacity-level-indicator, CSSValueContinuousCapacityLevelIndicator
 discrete-capacity-level-indicator, CSSValueDiscreteCapacityLevelIndicator
 rating-level-indicator, CSSValueRatingLevelIndicator
 textarea, CSSValueTextarea
+attachment, CSSValueAttachment
 caps-lock-indicator, CSSValueCapsLockIndicator
 round, CSSValueRound
 border, CSSValueBorder
@@ -511,6 +538,8 @@ content, CSSValueContent
 content-box, CSSValueContentBox
 padding, CSSValuePadding
 padding-box, CSSValuePaddingBox
+margin-box, CSSValueMarginBox
+view-box, CSSValueViewBox
 contain, CSSValueContain
 cover, CSSValueCover
 logical, CSSValueLogical
@@ -547,7 +576,11 @@ optimizelegibility, CSSValueOptimizelegibility
 geometricprecision, CSSValueGeometricprecision
 economy, CSSValueEconomy
 exact, CSSValueExact
-srgb, CSSValueSrgb
+floating, CSSValueFloating
+fullscreen, CSSValueFullscreen
+maximized, CSSValueMaximized
+minimized, CSSValueMinimized
+windowed, CSSValueWindowed
 no-limit, CSSValueNoLimit
 manual, CSSValueManual
 lr, CSSValueLr
@@ -562,6 +595,7 @@ vertical-lr, CSSValueVerticalLr
 horizontal-bt, CSSValueHorizontalBt
 after, CSSValueAfter
 before, CSSValueBefore
+inter-character, CSSValueInterCharacter
 over, CSSValueOver
 under, CSSValueUnder
 filled, CSSValueFilled
@@ -582,6 +616,7 @@ vertical-right, CSSValueVerticalRight
 font, CSSValueFont
 glyphs, CSSValueGlyphs
 inline-box, CSSValueInlineBox
+initial-letter, CSSValueInitialLetter
 replaced, CSSValueReplaced
 on, CSSValueOn
 off, CSSValueOff
@@ -590,15 +625,16 @@ optimizequality, CSSValueOptimizequality
 -webkit-optimize-contrast, CSSValueWebkitOptimizeContrast
 nonzero, CSSValueNonzero
 evenodd, CSSValueEvenodd
-outside-shape, CSSValueOutsideShape
+at, CSSValueAt
 break, CSSValueBreak
-maximum, CSSValueMaximum
 wrap, CSSValueWrap
 edges, CSSValueEdges
 alphabetic, CSSValueAlphabetic
 -webkit-sticky, CSSValueWebkitSticky
 coarse, CSSValueCoarse
 fine, CSSValueFine
+hover, CSSValueHover
+on-demand, CSSValueOnDemand
 multiply, CSSValueMultiply
 screen, CSSValueScreen
 darken, CSSValueDarken
@@ -613,10 +649,20 @@ hue, CSSValueHue
 saturation, CSSValueSaturation
 color, CSSValueColor
 luminosity, CSSValueLuminosity
+isolate, CSSValueIsolate
 scale-down, CSSValueScaleDown
 -webkit-paged-x, CSSValueWebkitPagedX
 -webkit-paged-y, CSSValueWebkitPagedY
+markers, CSSValueMarkers
 span, CSSValueSpan
+dense, CSSValueDense
+balance, CSSValueBalance
+from-dimensions, CSSValueFromDimensions
+from-intrinsic, CSSValueFromIntrinsic
+weight, CSSValueWeight
+style, CSSValueStyle
+scroll-position, CSSValueScrollPosition
+contents, CSSValueContents
 aliceblue, CSSValueAliceblue
 antiquewhite, CSSValueAntiquewhite
 aquamarine, CSSValueAquamarine
@@ -723,6 +769,7 @@ peru, CSSValuePeru
 pink, CSSValuePink
 plum, CSSValuePlum
 powderblue, CSSValuePowderblue
+rebeccapurple, CSSValueRebeccapurple
 rosybrown, CSSValueRosybrown
 royalblue, CSSValueRoyalblue
 saddlebrown, CSSValueSaddlebrown
@@ -748,6 +795,7 @@ whitesmoke, CSSValueWhitesmoke
 yellowgreen, CSSValueYellowgreen
 accumulate, CSSValueAccumulate
 new, CSSValueNew
+srgb, CSSValueSrgb
 linearrgb, CSSValueLinearrgb
 crispedges, CSSValueCrispedges
 butt, CSSValueButt
@@ -821,6 +869,7 @@ static const char* const valueList[] = {
     "x-large",
     "xx-large",
     "-webkit-xxx-large",
+    "-webkit-ruby-text",
     "smaller",
     "larger",
     "wider",
@@ -869,6 +918,7 @@ static const char* const valueList[] = {
     "buttonhighlight",
     "buttonshadow",
     "buttontext",
+    "activebuttontext",
     "captiontext",
     "graytext",
     "highlight",
@@ -889,6 +939,16 @@ static const char* const valueList[] = {
     "window",
     "windowframe",
     "windowtext",
+    "-apple-wireless-playback-target-active",
+    "-apple-system-blue",
+    "-apple-system-brown",
+    "-apple-system-gray",
+    "-apple-system-green",
+    "-apple-system-orange",
+    "-apple-system-pink",
+    "-apple-system-purple",
+    "-apple-system-red",
+    "-apple-system-yellow",
     "-webkit-focus-ring-color",
     "currentcolor",
     "grey",
@@ -929,10 +989,7 @@ static const char* const valueList[] = {
     "-webkit-center",
     "-webkit-match-parent",
     "inter-word",
-    "inter-ideograph",
-    "inter-cluster",
     "distribute",
-    "kashida",
     "outside",
     "inside",
     "disc",
@@ -1018,7 +1075,6 @@ static const char* const valueList[] = {
     "inline",
     "block",
     "list-item",
-    "run-in",
     "compact",
     "inline-block",
     "table",
@@ -1033,7 +1089,9 @@ static const char* const valueList[] = {
     "table-caption",
     "-webkit-box",
     "-webkit-inline-box",
+    "flex",
     "-webkit-flex",
+    "inline-flex",
     "-webkit-inline-flex",
     "-webkit-grid",
     "-webkit-inline-grid",
@@ -1049,8 +1107,8 @@ static const char* const valueList[] = {
     "progress",
     "no-drop",
     "not-allowed",
-    "-webkit-zoom-in",
-    "-webkit-zoom-out",
+    "zoom-in",
+    "zoom-out",
     "e-resize",
     "ne-resize",
     "nw-resize",
@@ -1071,6 +1129,8 @@ static const char* const valueList[] = {
     "all-scroll",
     "-webkit-grab",
     "-webkit-grabbing",
+    "-webkit-zoom-in",
+    "-webkit-zoom-out",
     "auto-hide",
     "ltr",
     "rtl",
@@ -1101,6 +1161,7 @@ static const char* const valueList[] = {
     "hide",
     "higher",
     "invert",
+    "inverted",
     "-webkit-isolate",
     "-webkit-isolate-override",
     "-webkit-plaintext",
@@ -1133,6 +1194,9 @@ static const char* const valueList[] = {
     "thick",
     "thin",
     "underline",
+    "wavy",
+    "ink",
+    "objects",
     "-webkit-nowrap",
     "stretch",
     "start",
@@ -1150,6 +1214,13 @@ static const char* const valueList[] = {
     "flex-end",
     "space-between",
     "space-around",
+    "space-evenly",
+    "last-baseline",
+    "self-start",
+    "self-end",
+    "true",
+    "safe",
+    "legacy",
     "row",
     "row-reverse",
     "column",
@@ -1185,6 +1256,7 @@ static const char* const valueList[] = {
     "continuous",
     "skip-white-space",
     "break-all",
+    "keep-all",
     "break-word",
     "space",
     "loose",
@@ -1198,31 +1270,32 @@ static const char* const valueList[] = {
     "button-bevel",
     "default-button",
     "inner-spin-button",
-    "-webkit-input-speech-button",
     "listbox",
     "listitem",
+    "media-controls-background",
+    "media-controls-dark-bar-background",
+    "media-controls-fullscreen-background",
+    "media-controls-light-bar-background",
+    "media-current-time-display",
     "media-enter-fullscreen-button",
     "media-exit-fullscreen-button",
     "media-fullscreen-volume-slider",
     "media-fullscreen-volume-slider-thumb",
     "media-mute-button",
-    "media-play-button",
     "media-overlay-play-button",
+    "media-play-button",
+    "media-return-to-realtime-button",
+    "media-rewind-button",
     "media-seek-back-button",
     "media-seek-forward-button",
-    "media-rewind-button",
-    "media-return-to-realtime-button",
-    "media-toggle-closed-captions-button",
     "media-slider",
     "media-sliderthumb",
-    "media-volume-slider-container",
-    "media-volume-slider",
-    "media-volume-sliderthumb",
-    "media-volume-slider-mute-button",
-    "media-controls-background",
-    "media-controls-fullscreen-background",
-    "media-current-time-display",
     "media-time-remaining-display",
+    "media-toggle-closed-captions-button",
+    "media-volume-slider",
+    "media-volume-slider-container",
+    "media-volume-slider-mute-button",
+    "media-volume-sliderthumb",
     "menulist",
     "menulist-button",
     "menulist-text",
@@ -1247,6 +1320,7 @@ static const char* const valueList[] = {
     "discrete-capacity-level-indicator",
     "rating-level-indicator",
     "textarea",
+    "attachment",
     "caps-lock-indicator",
     "round",
     "border",
@@ -1255,6 +1329,8 @@ static const char* const valueList[] = {
     "content-box",
     "padding",
     "padding-box",
+    "margin-box",
+    "view-box",
     "contain",
     "cover",
     "logical",
@@ -1291,7 +1367,11 @@ static const char* const valueList[] = {
     "geometricprecision",
     "economy",
     "exact",
-    "srgb",
+    "floating",
+    "fullscreen",
+    "maximized",
+    "minimized",
+    "windowed",
     "no-limit",
     "manual",
     "lr",
@@ -1306,6 +1386,7 @@ static const char* const valueList[] = {
     "horizontal-bt",
     "after",
     "before",
+    "inter-character",
     "over",
     "under",
     "filled",
@@ -1326,6 +1407,7 @@ static const char* const valueList[] = {
     "font",
     "glyphs",
     "inline-box",
+    "initial-letter",
     "replaced",
     "on",
     "off",
@@ -1334,15 +1416,16 @@ static const char* const valueList[] = {
     "-webkit-optimize-contrast",
     "nonzero",
     "evenodd",
-    "outside-shape",
+    "at",
     "break",
-    "maximum",
     "wrap",
     "edges",
     "alphabetic",
     "-webkit-sticky",
     "coarse",
     "fine",
+    "hover",
+    "on-demand",
     "multiply",
     "screen",
     "darken",
@@ -1357,10 +1440,20 @@ static const char* const valueList[] = {
     "saturation",
     "color",
     "luminosity",
+    "isolate",
     "scale-down",
     "-webkit-paged-x",
     "-webkit-paged-y",
+    "markers",
     "span",
+    "dense",
+    "balance",
+    "from-dimensions",
+    "from-intrinsic",
+    "weight",
+    "style",
+    "scroll-position",
+    "contents",
     "aliceblue",
     "antiquewhite",
     "aquamarine",
@@ -1467,6 +1560,7 @@ static const char* const valueList[] = {
     "pink",
     "plum",
     "powderblue",
+    "rebeccapurple",
     "rosybrown",
     "royalblue",
     "saddlebrown",
@@ -1492,6 +1586,7 @@ static const char* const valueList[] = {
     "yellowgreen",
     "accumulate",
     "new",
+    "srgb",
     "linearrgb",
     "crispedges",
     "butt",

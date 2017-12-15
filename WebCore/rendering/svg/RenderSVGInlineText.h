@@ -22,8 +22,7 @@
 #ifndef RenderSVGInlineText_h
 #define RenderSVGInlineText_h
 
-#if ENABLE(SVG)
-#include "Font.h"
+#include "FontCascade.h"
 #include "RenderText.h"
 #include "SVGTextLayoutAttributes.h"
 #include "Text.h"
@@ -32,71 +31,46 @@ namespace WebCore {
 
 class SVGInlineTextBox;
 
-class RenderSVGInlineText FINAL : public RenderText {
+class RenderSVGInlineText final : public RenderText {
 public:
     RenderSVGInlineText(Text&, const String&);
 
-    Text& textNode() const { return toText(nodeForNonAnonymous()); }
+    Text& textNode() const { return downcast<Text>(nodeForNonAnonymous()); }
 
     bool characterStartsNewTextChunk(int position) const;
     SVGTextLayoutAttributes* layoutAttributes() { return &m_layoutAttributes; }
 
     float scalingFactor() const { return m_scalingFactor; }
-    const Font& scaledFont() const { return m_scaledFont; }
+    const FontCascade& scaledFont() const { return m_scaledFont; }
     void updateScaledFont();
-    static void computeNewScaledFontForStyle(RenderObject*, const RenderStyle*, float& scalingFactor, Font& scaledFont);
+    static void computeNewScaledFontForStyle(const RenderObject&, const RenderStyle&, float& scalingFactor, FontCascade& scaledFont);
 
     // Preserves floating point precision for the use in DRT. It knows how to round and does a better job than enclosingIntRect.
     FloatRect floatLinesBoundingBox() const;
 
 private:
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGInlineText"; }
+    virtual const char* renderName() const override { return "RenderSVGInlineText"; }
 
-    virtual void setTextInternal(const String&) OVERRIDE;
-    virtual void styleDidChange(StyleDifference, const RenderStyle*) OVERRIDE;
+    virtual String originalText() const override;
+    virtual void setRenderedText(const String&) override;
+    virtual void styleDidChange(StyleDifference, const RenderStyle*) override;
 
-    virtual FloatRect objectBoundingBox() const OVERRIDE { return floatLinesBoundingBox(); }
+    virtual FloatRect objectBoundingBox() const override { return floatLinesBoundingBox(); }
 
-    virtual bool isSVGInlineText() const OVERRIDE { return true; }
+    virtual bool isSVGInlineText() const override { return true; }
 
-    virtual VisiblePosition positionForPoint(const LayoutPoint&) OVERRIDE;
-    virtual LayoutRect localCaretRect(InlineBox*, int caretOffset, LayoutUnit* extraWidthToEndOfLine = 0) OVERRIDE;
-    virtual IntRect linesBoundingBox() const OVERRIDE;
-    virtual InlineTextBox* createTextBox() OVERRIDE;
+    virtual VisiblePosition positionForPoint(const LayoutPoint&, const RenderRegion*) override;
+    virtual LayoutRect localCaretRect(InlineBox*, int caretOffset, LayoutUnit* extraWidthToEndOfLine = 0) override;
+    virtual IntRect linesBoundingBox() const override;
+    virtual std::unique_ptr<InlineTextBox> createTextBox() override;
 
     float m_scalingFactor;
-    Font m_scaledFont;
+    FontCascade m_scaledFont;
     SVGTextLayoutAttributes m_layoutAttributes;
 };
 
-inline RenderSVGInlineText& toRenderSVGInlineText(RenderObject& object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isSVGInlineText());
-    return static_cast<RenderSVGInlineText&>(object);
-}
+} // namespace WebCore
 
-inline const RenderSVGInlineText& toRenderSVGInlineText(const RenderObject& object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isSVGInlineText());
-    return static_cast<const RenderSVGInlineText&>(object);
-}
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSVGInlineText, isSVGInlineText())
 
-inline RenderSVGInlineText* toRenderSVGInlineText(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGInlineText());
-    return static_cast<RenderSVGInlineText*>(object);
-}
-
-inline const RenderSVGInlineText* toRenderSVGInlineText(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGInlineText());
-    return static_cast<const RenderSVGInlineText*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderSVGInlineText(const RenderSVGInlineText*);
-
-}
-
-#endif // ENABLE(SVG)
 #endif // RenderSVGInlineText_h

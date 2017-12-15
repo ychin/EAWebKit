@@ -1393,7 +1393,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			#else
 				#define EA_SSE 0
 			#endif
-		#elif (defined(EA_SSE3) && EA_SSE3) || defined CS_UNDEFINED_STRING
+		#elif (defined(EA_SSE3) && EA_SSE3) || defined EA_PLATFORM_CAPILANO
 			#define EA_SSE 3
 		#elif defined(EA_SSE2) && EA_SSE2
 			#define EA_SSE 2
@@ -1433,35 +1433,35 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		#endif
 	#endif
 	#ifndef EA_SSSE3
-		#if defined __SSSE3__ || defined CS_UNDEFINED_STRING
+		#if defined __SSSE3__ || defined EA_PLATFORM_CAPILANO
 			#define EA_SSSE3 1
 		#else
 			#define EA_SSSE3 0
 		#endif
 	#endif
 	#ifndef EA_SSE4_1
-		#if defined __SSE4_1__ || defined CS_UNDEFINED_STRING
+		#if defined __SSE4_1__ || defined EA_PLATFORM_CAPILANO
 			#define EA_SSE4_1 1
 		#else
 			#define EA_SSE4_1 0
 		#endif
 	#endif
 	#ifndef EA_SSE4_2
-		#if defined __SSE4_2__ || defined CS_UNDEFINED_STRING
+		#if defined __SSE4_2__ || defined EA_PLATFORM_CAPILANO
 			#define EA_SSE4_2 1
 		#else
 			#define EA_SSE4_2 0
 		#endif
 	#endif
 	#ifndef EA_SSE4A
-		#if defined __SSE4A__ || defined CS_UNDEFINED_STRING
+		#if defined __SSE4A__ || defined EA_PLATFORM_CAPILANO
 			#define EA_SSE4A 1
 		#else
 			#define EA_SSE4A 0
 		#endif
 	#endif
 	#ifndef EA_AVX
-		#if defined __AVX__ || defined CS_UNDEFINED_STRING
+		#if defined __AVX__ || defined EA_PLATFORM_CAPILANO
 			#define EA_AVX 1
 		#else
 			#define EA_AVX 0
@@ -1470,7 +1470,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	// EA_FP16C may be used to determine the existence of float <-> half conversion operations on an x86 CPU.
 	// (For example to determine if _mm_cvtph_ps or _mm_cvtps_ph could be used.)
 	#ifndef EA_FP16C
-		#if defined __F16C__ || defined CS_UNDEFINED_STRING
+		#if defined __F16C__ || defined EA_PLATFORM_CAPILANO
 			#define EA_FP16C 1
 		#else
 			#define EA_FP16C 0

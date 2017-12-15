@@ -37,14 +37,14 @@ namespace WebCore {
 
 const QualifiedName& pseudoElementTagName()
 {
-    DEFINE_STATIC_LOCAL(QualifiedName, name, (nullAtom, "<pseudo>", nullAtom));
+    DEPRECATED_DEFINE_STATIC_LOCAL(QualifiedName, name, (nullAtom, "<pseudo>", nullAtom));
     return name;
 }
 
 String PseudoElement::pseudoElementNameForEvents(PseudoId pseudoId)
 {
-    DEFINE_STATIC_LOCAL(const String, after, (ASCIILiteral("::after")));
-    DEFINE_STATIC_LOCAL(const String, before, (ASCIILiteral("::before")));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const String, after, (ASCIILiteral("::after")));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const String, before, (ASCIILiteral("::before")));
     switch (pseudoId) {
     case AFTER:
         return after;
@@ -55,9 +55,9 @@ String PseudoElement::pseudoElementNameForEvents(PseudoId pseudoId)
     }
 }
 
-PseudoElement::PseudoElement(Element* host, PseudoId pseudoId)
-    : Element(pseudoElementTagName(), host->document(), CreatePseudoElement)
-    , m_hostElement(host)
+PseudoElement::PseudoElement(Element& host, PseudoId pseudoId)
+    : Element(pseudoElementTagName(), host.document(), CreatePseudoElement)
+    , m_hostElement(&host)
     , m_pseudoId(pseudoId)
 {
     ASSERT(pseudoId == BEFORE || pseudoId == AFTER);
@@ -67,33 +67,37 @@ PseudoElement::PseudoElement(Element* host, PseudoId pseudoId)
 PseudoElement::~PseudoElement()
 {
     ASSERT(!m_hostElement);
-#if USE(ACCELERATED_COMPOSITING)
-    InspectorInstrumentation::pseudoElementDestroyed(document().page(), this);
-#endif
 }
 
-PassRefPtr<RenderStyle> PseudoElement::customStyleForRenderer()
+void PseudoElement::clearHostElement()
 {
-    return m_hostElement->renderer()->getCachedPseudoStyle(m_pseudoId);
+    InspectorInstrumentation::pseudoElementDestroyed(document().page(), *this);
+
+    m_hostElement = nullptr;
+}
+
+RefPtr<RenderStyle> PseudoElement::customStyleForRenderer(RenderStyle& parentStyle)
+{
+    return m_hostElement->renderer()->getCachedPseudoStyle(m_pseudoId, &parentStyle);
 }
 
 void PseudoElement::didAttachRenderers()
 {
     RenderElement* renderer = this->renderer();
-    if (!renderer || !renderer->style()->regionThread().isEmpty())
+    if (!renderer || renderer->style().hasFlowFrom())
         return;
 
-    RenderStyle* style = renderer->style();
-    ASSERT(style->contentData());
+    const RenderStyle& style = renderer->style();
+    ASSERT(style.contentData());
 
-    for (const ContentData* content = style->contentData(); content; content = content->next()) {
-        RenderObject* child = content->createRenderer(document(), *style);
-        if (renderer->isChildAllowed(child, style)) {
-            renderer->addChild(child);
-            if (child->isQuote())
-                toRenderQuote(child)->attachQuote();
-        } else
-            child->destroy();
+    for (const ContentData* content = style.contentData(); content; content = content->next()) {
+        auto child = content->createContentRenderer(document(), style);
+        if (renderer->isChildAllowed(*child, style)) {
+            auto* childPtr = child.get();
+            renderer->addChild(child.leakPtr());
+            if (is<RenderQuote>(*childPtr))
+                downcast<RenderQuote>(*childPtr).attachQuote();
+        }
     }
 }
 
@@ -109,12 +113,13 @@ void PseudoElement::didRecalcStyle(Style::Change)
 
     // The renderers inside pseudo elements are anonymous so they don't get notified of recalcStyle and must have
     // the style propagated downward manually similar to RenderObject::propagateStyleToAnonymousChildren.
-    RenderObject* renderer = this->renderer();
-    for (RenderObject* child = renderer->nextInPreOrder(renderer); child; child = child->nextInPreOrder(renderer)) {
+    RenderElement& renderer = *this->renderer();
+    for (RenderObject* child = renderer.nextInPreOrder(&renderer); child; child = child->nextInPreOrder(&renderer)) {
         // We only manage the style for the generated content which must be images or text.
-        if (!child->isRenderImage())
+        if (!is<RenderImage>(*child) && !is<RenderQuote>(*child))
             continue;
-        toRenderImage(child)->setPseudoStyle(renderer->style());
+        Ref<RenderStyle> createdStyle = RenderStyle::createStyleInheritingFromPseudoStyle(renderer.style());
+        downcast<RenderElement>(*child).setStyle(WTF::move(createdStyle));
     }
 }
 

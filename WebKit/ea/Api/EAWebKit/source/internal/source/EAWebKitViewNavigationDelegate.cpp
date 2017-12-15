@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,6 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/include/InputBinding/EAWebKitDOMWalker.h>
 
 #include "Frame.h"
+#include "RenderElement.h"
 
 namespace EA
 {
@@ -274,8 +275,7 @@ void ViewNavigationDelegate::MoveMouseCursorToNode(WebCore::Node* node, bool scr
 	if (node)
 	{
 		WebCore::HTMLElement* element = (WebCore::HTMLElement*)node;
-
-		WebCore::LayoutRect rect  = element->boundingBox();
+		WebCore::LayoutRect rect = element->renderer()->absoluteBoundingBoxRect();
 		WebCore::IntPoint frameOffset;
 		WebCore::IntPoint scrollOffset;
 

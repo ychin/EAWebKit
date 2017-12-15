@@ -21,28 +21,28 @@
 #ifndef JSNodeFilter_h
 #define JSNodeFilter_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "NodeFilter.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSNodeFilter : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSNodeFilter* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<NodeFilter> impl)
+    static JSNodeFilter* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<NodeFilter>&& impl)
     {
-        JSNodeFilter* ptr = new (NotNull, JSC::allocateCell<JSNodeFilter>(globalObject->vm().heap)) JSNodeFilter(structure, globalObject, impl);
+        JSNodeFilter* ptr = new (NotNull, JSC::allocateCell<JSNodeFilter>(globalObject->vm().heap)) JSNodeFilter(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RefPtr<NodeFilter> toWrapped(JSC::VM&, JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSNodeFilter();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,24 +52,22 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
     NodeFilter& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     NodeFilter* m_impl;
 protected:
-    JSNodeFilter(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<NodeFilter>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSNodeFilter(JSC::Structure*, JSDOMGlobalObject*, Ref<NodeFilter>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSNodeFilterOwner : public JSC::WeakHandleOwner {
@@ -80,90 +78,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, NodeFilter*)
 {
-    DEFINE_STATIC_LOCAL(JSNodeFilterOwner, jsNodeFilterOwner, ());
-    return &jsNodeFilterOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, NodeFilter*)
-{
-    return &world;
+    static NeverDestroyed<JSNodeFilterOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, NodeFilter*);
-PassRefPtr<NodeFilter> toNodeFilter(JSC::VM&, JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, NodeFilter& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSNodeFilterPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSNodeFilterPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSNodeFilterPrototype* ptr = new (NotNull, JSC::allocateCell<JSNodeFilterPrototype>(vm.heap)) JSNodeFilterPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSNodeFilterPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSNodeFilterConstructor : public DOMConstructorObject {
-private:
-    JSNodeFilterConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSNodeFilterConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSNodeFilterConstructor* ptr = new (NotNull, JSC::allocateCell<JSNodeFilterConstructor>(vm.heap)) JSNodeFilterConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsNodeFilterPrototypeFunctionAcceptNode(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsNodeFilterConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsNodeFilterFILTER_ACCEPT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterFILTER_REJECT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterFILTER_SKIP(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_ALL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_ELEMENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_ATTRIBUTE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_TEXT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_CDATA_SECTION(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_ENTITY_REFERENCE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_ENTITY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_PROCESSING_INSTRUCTION(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_COMMENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_DOCUMENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_DOCUMENT_TYPE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_DOCUMENT_FRAGMENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNodeFilterSHOW_NOTATION(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

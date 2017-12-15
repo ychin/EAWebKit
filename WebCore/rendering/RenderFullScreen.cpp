@@ -30,17 +30,14 @@
 
 #include "RenderBlockFlow.h"
 #include "RenderLayer.h"
-
-#if USE(ACCELERATED_COMPOSITING)
 #include "RenderLayerCompositor.h"
-#endif
 
-using namespace WebCore;
+namespace WebCore {
 
-class RenderFullScreenPlaceholder FINAL : public RenderBlockFlow {
+class RenderFullScreenPlaceholder final : public RenderBlockFlow {
 public:
-    RenderFullScreenPlaceholder(RenderFullScreen& owner)
-        : RenderBlockFlow(owner.document())
+    RenderFullScreenPlaceholder(RenderFullScreen& owner, Ref<RenderStyle>&& style)
+        : RenderBlockFlow(owner.document(), WTF::move(style))
         , m_owner(owner) 
     {
     }
@@ -54,11 +51,11 @@ private:
 void RenderFullScreenPlaceholder::willBeDestroyed()
 {
     m_owner.setPlaceholder(0);
-    RenderBlock::willBeDestroyed();
+    RenderBlockFlow::willBeDestroyed();
 }
 
-RenderFullScreen::RenderFullScreen(Document& document)
-    : RenderFlexibleBox(document)
+RenderFullScreen::RenderFullScreen(Document& document, Ref<RenderStyle>&& style)
+    : RenderFlexibleBox(document, WTF::move(style))
     , m_placeholder(0)
 {
     setReplaced(false); 
@@ -81,37 +78,37 @@ void RenderFullScreen::willBeDestroyed()
     RenderFlexibleBox::willBeDestroyed();
 }
 
-static PassRefPtr<RenderStyle> createFullScreenStyle()
+static Ref<RenderStyle> createFullScreenStyle()
 {
-    RefPtr<RenderStyle> fullscreenStyle = RenderStyle::createDefaultStyle();
+    auto fullscreenStyle = RenderStyle::createDefaultStyle();
 
     // Create a stacking context:
-    fullscreenStyle->setZIndex(INT_MAX);
+    fullscreenStyle.get().setZIndex(INT_MAX);
 
-    fullscreenStyle->setFontDescription(FontDescription());
-    fullscreenStyle->font().update(0);
+    fullscreenStyle.get().setFontDescription(FontDescription());
+    fullscreenStyle.get().fontCascade().update(nullptr);
 
-    fullscreenStyle->setDisplay(FLEX);
-    fullscreenStyle->setJustifyContent(JustifyCenter);
-    fullscreenStyle->setAlignItems(AlignCenter);
-    fullscreenStyle->setFlexDirection(FlowColumn);
+    fullscreenStyle.get().setDisplay(FLEX);
+    fullscreenStyle.get().setJustifyContentPosition(ContentPositionCenter);
+    fullscreenStyle.get().setAlignItemsPosition(ItemPositionCenter);
+    fullscreenStyle.get().setFlexDirection(FlowColumn);
     
-    fullscreenStyle->setPosition(FixedPosition);
-    fullscreenStyle->setWidth(Length(100.0, Percent));
-    fullscreenStyle->setHeight(Length(100.0, Percent));
-    fullscreenStyle->setLeft(Length(0, WebCore::Fixed));
-    fullscreenStyle->setTop(Length(0, WebCore::Fixed));
+    fullscreenStyle.get().setPosition(FixedPosition);
+    fullscreenStyle.get().setWidth(Length(100.0, Percent));
+    fullscreenStyle.get().setHeight(Length(100.0, Percent));
+    fullscreenStyle.get().setLeft(Length(0, WebCore::Fixed));
+    fullscreenStyle.get().setTop(Length(0, WebCore::Fixed));
     
-    fullscreenStyle->setBackgroundColor(Color::black);
-    
-    return fullscreenStyle.release();
+    fullscreenStyle.get().setBackgroundColor(Color::black);
+
+    return fullscreenStyle;
 }
 
 RenderFullScreen* RenderFullScreen::wrapRenderer(RenderObject* object, RenderElement* parent, Document& document)
 {
-    RenderFullScreen* fullscreenRenderer = new (*document.renderArena()) RenderFullScreen(document);
-    fullscreenRenderer->setStyle(createFullScreenStyle());
-    if (parent && !parent->isChildAllowed(fullscreenRenderer, fullscreenRenderer->style())) {
+    RenderFullScreen* fullscreenRenderer = new RenderFullScreen(document, createFullScreenStyle());
+    fullscreenRenderer->initializeStyle();
+    if (parent && !parent->isChildAllowed(*fullscreenRenderer, fullscreenRenderer->style())) {
         fullscreenRenderer->destroy();
         return 0;
     }
@@ -123,7 +120,7 @@ RenderFullScreen* RenderFullScreen::wrapRenderer(RenderObject* object, RenderEle
             ASSERT(containingBlock);
             // Since we are moving the |object| to a new parent |fullscreenRenderer|,
             // the line box tree underneath our |containingBlock| is not longer valid.
-            containingBlock->deleteLineBoxTree();
+            containingBlock->deleteLines();
 
             parent->addChild(fullscreenRenderer, object);
             object->removeFromParent();
@@ -141,16 +138,37 @@ RenderFullScreen* RenderFullScreen::wrapRenderer(RenderObject* object, RenderEle
     return fullscreenRenderer;
 }
 
-void RenderFullScreen::unwrapRenderer()
+void RenderFullScreen::unwrapRenderer(bool& requiresRenderTreeRebuild)
 {
+    requiresRenderTreeRebuild = false;
     if (parent()) {
-        RenderObject* child;
+        auto* child = firstChild();
+        // Things can get very complicated with anonymous block generation.
+        // We can restore correctly without rebuild in simple cases only.
+        // FIXME: We should have a mechanism for removing a block without reconstructing the tree.
+        if (child != lastChild())
+            requiresRenderTreeRebuild = true;
+        else if (child && child->isAnonymousBlock()) {
+            auto& anonymousBlock = downcast<RenderBlock>(*child);
+            if (anonymousBlock.firstChild() != anonymousBlock.lastChild())
+                requiresRenderTreeRebuild = true;
+        }
+
         while ((child = firstChild())) {
+            if (child->isAnonymousBlock() && !requiresRenderTreeRebuild) {
+                if (auto* nonAnonymousChild = downcast<RenderBlock>(*child).firstChild())
+                    child = nonAnonymousChild;
+                else {
+                    child->removeFromParent();
+                    child->destroy();
+                    continue;
+                }
+            }
             // We have to clear the override size, because as a flexbox, we
             // may have set one on the child, and we don't want to leave that
             // lying around on the child.
-            if (child->isBox())
-                toRenderBox(child)->clearOverrideSize();
+            if (is<RenderBox>(*child))
+                downcast<RenderBox>(*child).clearOverrideSize();
             child->removeFromParent();
             parent()->addChild(child, this);
             parent()->setNeedsLayoutAndPrefWidthsRecalc();
@@ -167,22 +185,26 @@ void RenderFullScreen::setPlaceholder(RenderBlock* placeholder)
     m_placeholder = placeholder;
 }
 
-void RenderFullScreen::createPlaceholder(PassRefPtr<RenderStyle> style, const LayoutRect& frameRect)
+void RenderFullScreen::createPlaceholder(Ref<RenderStyle>&& style, const LayoutRect& frameRect)
 {
-    if (style->width().isAuto())
-        style->setWidth(Length(frameRect.width(), Fixed));
-    if (style->height().isAuto())
-        style->setHeight(Length(frameRect.height(), Fixed));
+    if (style.get().width().isAuto())
+        style.get().setWidth(Length(frameRect.width(), Fixed));
+    if (style.get().height().isAuto())
+        style.get().setHeight(Length(frameRect.height(), Fixed));
 
-    if (!m_placeholder) {
-        m_placeholder = new (renderArena()) RenderFullScreenPlaceholder(*this);
-        m_placeholder->setStyle(style);
-        if (parent()) {
-            parent()->addChild(m_placeholder, this);
-            parent()->setNeedsLayoutAndPrefWidthsRecalc();
-        }
-    } else
-        m_placeholder->setStyle(style);
+    if (m_placeholder) {
+        m_placeholder->setStyle(WTF::move(style));
+        return;
+    }
+
+    m_placeholder = new RenderFullScreenPlaceholder(*this, WTF::move(style));
+    m_placeholder->initializeStyle();
+    if (parent()) {
+        parent()->addChild(m_placeholder, this);
+        parent()->setNeedsLayoutAndPrefWidthsRecalc();
+    }
+}
+
 }
 
 #endif

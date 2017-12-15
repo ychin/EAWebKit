@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -71,28 +71,33 @@ EAClass::~EAClass()
 Method* EAClass::methodNamed(PropertyName propertyName, Instance* instance) const
 {
     String name(propertyName.publicName());
-	
-    if (Method* method = mMethods.get(name.impl())) 
-        return method;
+    if (name.isNull())
+        return nullptr;
 
-	CString nameStr = name.ascii();
-	const char *pName = nameStr.data(); 
+    if (Method* method = mMethods.get(name.impl()))
+        return method;
+    
+    CString nameStr = name.ascii();
+    const char *pName = nameStr.data();
 
     EA::WebKit::IJSBoundObject *obj = static_cast<const EAInstance*>(instance)->getBoundObject();
     if (obj->hasMethod(pName)) 
     {
-        Method* eaMethod = new EAMethod(pName);
-        mMethods.set(name.impl(), adoptPtr(eaMethod));
-        return eaMethod;
+        auto method = std::make_unique<EAMethod>(pName);
+        EAMethod* ret = method.get();
+        mMethods.set(name.impl(), WTF::move(method));
+        return ret;
     }
 
-    return 0;
+    return nullptr;
 }
 
 // Query the bound object if it has the field identified by propertyName. If yes, return it and cache it for future look ups. 
 Field* EAClass::fieldNamed(PropertyName propertyName, Instance* instance) const
 {
     String name(propertyName.publicName());
+    if (name.isNull())
+        return nullptr;
 	
     if (Field* aField = mFields.get(name.impl()))
 		return aField;
@@ -100,7 +105,7 @@ Field* EAClass::fieldNamed(PropertyName propertyName, Instance* instance) const
 	// Turns out that JSC always checks for field first and method next (if the field is not found). So in case of a method call, we'll unnecessarily go
 	// through all the fields across the dll boundary. So optimize that look up from O(n) to O(1) where n is the number of fields.
 	if (Method* method = mMethods.get(name.impl())) 
-		return 0; //not a typo
+		return nullptr; //not a typo
 
 	CString nameStr = name.ascii();
 	const char *pName = nameStr.data();  
@@ -108,12 +113,13 @@ Field* EAClass::fieldNamed(PropertyName propertyName, Instance* instance) const
     EA::WebKit::IJSBoundObject *obj = static_cast<const EAInstance*>(instance)->getBoundObject();
     if (obj->hasProperty(pName))
     {
-        Field* aField = new EAField(pName);
-        mFields.set(name.impl(), adoptPtr(aField));
-		return aField;
+        auto field = std::make_unique<EAField>(pName);
+        EAField* ret = field.get();
+        mFields.set(name.impl(), WTF::move(field));
+        return ret;
     }
 
-    return 0;
+    return nullptr;
 }
 
 }}

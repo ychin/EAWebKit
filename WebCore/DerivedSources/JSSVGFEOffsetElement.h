@@ -21,33 +21,30 @@
 #ifndef JSSVGFEOffsetElement_h
 #define JSSVGFEOffsetElement_h
 
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGFEOffsetElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGFEOffsetElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGFEOffsetElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEOffsetElement> impl)
+    static JSSVGFEOffsetElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEOffsetElement>&& impl)
     {
-        JSSVGFEOffsetElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEOffsetElement>(globalObject->vm().heap)) JSSVGFEOffsetElement(structure, globalObject, impl);
+        JSSVGFEOffsetElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEOffsetElement>(globalObject->vm().heap)) JSSVGFEOffsetElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,83 +53,18 @@ public:
         return static_cast<SVGFEOffsetElement&>(Base::impl());
     }
 protected:
-    JSSVGFEOffsetElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGFEOffsetElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGFEOffsetElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGFEOffsetElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGFEOffsetElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGFEOffsetElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGFEOffsetElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEOffsetElementPrototype>(vm.heap)) JSSVGFEOffsetElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGFEOffsetElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGFEOffsetElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGFEOffsetElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGFEOffsetElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGFEOffsetElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEOffsetElementConstructor>(vm.heap)) JSSVGFEOffsetElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGFEOffsetElementIn1(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEOffsetElementDx(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEOffsetElementDy(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEOffsetElementX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEOffsetElementY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEOffsetElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEOffsetElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEOffsetElementResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGFEOffsetElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)
 
 #endif

@@ -21,28 +21,28 @@
 #ifndef JSRGBColor_h
 #define JSRGBColor_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RGBColor.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRGBColor : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRGBColor* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RGBColor> impl)
+    static JSRGBColor* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RGBColor>&& impl)
     {
-        JSRGBColor* ptr = new (NotNull, JSC::allocateCell<JSRGBColor>(globalObject->vm().heap)) JSRGBColor(structure, globalObject, impl);
+        JSRGBColor* ptr = new (NotNull, JSC::allocateCell<JSRGBColor>(globalObject->vm().heap)) JSRGBColor(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RGBColor* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRGBColor();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     RGBColor& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RGBColor* m_impl;
 protected:
-    JSRGBColor(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RGBColor>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRGBColor(JSC::Structure*, JSDOMGlobalObject*, Ref<RGBColor>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRGBColorOwner : public JSC::WeakHandleOwner {
@@ -78,71 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RGBColor*)
 {
-    DEFINE_STATIC_LOCAL(JSRGBColorOwner, jsRGBColorOwner, ());
-    return &jsRGBColorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RGBColor*)
-{
-    return &world;
+    static NeverDestroyed<JSRGBColorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RGBColor*);
-RGBColor* toRGBColor(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RGBColor& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRGBColorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRGBColorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRGBColorPrototype* ptr = new (NotNull, JSC::allocateCell<JSRGBColorPrototype>(vm.heap)) JSRGBColorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRGBColorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSRGBColorConstructor : public DOMConstructorObject {
-private:
-    JSRGBColorConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSRGBColorConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSRGBColorConstructor* ptr = new (NotNull, JSC::allocateCell<JSRGBColorConstructor>(vm.heap)) JSRGBColorConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsRGBColorRed(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRGBColorGreen(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRGBColorBlue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRGBColorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

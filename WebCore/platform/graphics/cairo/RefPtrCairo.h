@@ -20,6 +20,8 @@
 #ifndef RefPtrCairo_h
 #define RefPtrCairo_h
 
+#if USE(CAIRO)
+
 #include <wtf/RefPtr.h>
 
 typedef struct _cairo cairo_t;
@@ -31,6 +33,7 @@ typedef struct _cairo_region cairo_region_t;
 
 #if USE(FREETYPE)
 typedef struct _FcPattern FcPattern;
+typedef struct _FcConfig FcConfig;
 #endif
 
 namespace WTF {
@@ -56,8 +59,13 @@ template<> void derefIfNotNull(cairo_region_t*);
 #if USE(FREETYPE)
 template<> void refIfNotNull(FcPattern* ptr);
 template<> void derefIfNotNull(FcPattern* ptr);
+
+template<> void refIfNotNull(FcConfig* ptr);
+template<> void derefIfNotNull(FcConfig* ptr);
 #endif
 
-}
+} // namespace WTF
+
+#endif // USE(CAIRO)
 
 #endif // RefPtrCairo_h

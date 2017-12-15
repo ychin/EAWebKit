@@ -18,9 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-[
-    OperationsNotDeletable
-] interface HTMLIFrameElement : HTMLElement {
+interface HTMLIFrameElement : HTMLElement {
     [Reflect] attribute DOMString align;
     [Reflect] attribute DOMString frameBorder;
     [Reflect] attribute DOMString height;
@@ -29,7 +27,6 @@
     [Reflect] attribute DOMString marginWidth;
     [Reflect] attribute DOMString name;
     [Reflect] attribute DOMString sandbox;
-    [Reflect, Conditional=IFRAME_SEAMLESS] attribute boolean seamless;
     [Reflect] attribute DOMString scrolling;
     [Reflect, URL] attribute DOMString src;
     [Reflect] attribute DOMString srcdoc;
@@ -41,10 +38,8 @@
     // Extensions
     readonly attribute DOMWindow contentWindow;
 
-#if defined(ENABLE_SVG) && ENABLE_SVG
 #if !defined(LANGUAGE_OBJECTIVE_C) || !LANGUAGE_OBJECTIVE_C
     [CheckSecurityForNode, RaisesException] SVGDocument getSVGDocument();
-#endif
 #endif
 };
 

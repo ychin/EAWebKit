@@ -22,10 +22,8 @@
 #define JSEvent_h
 
 #include "Event.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
@@ -34,18 +32,20 @@ class JSDictionary;
 class JSEvent : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Event> impl)
+    static JSEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Event>&& impl)
     {
-        JSEvent* ptr = new (NotNull, JSC::allocateCell<JSEvent>(globalObject->vm().heap)) JSEvent(structure, globalObject, impl);
+        JSEvent* ptr = new (NotNull, JSC::allocateCell<JSEvent>(globalObject->vm().heap)) JSEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Event* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSEvent();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,22 +58,21 @@ public:
     // Custom attributes
     JSC::JSValue clipboardData(JSC::ExecState*) const;
     Event& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Event* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Event>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<Event>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSEventOwner : public JSC::WeakHandleOwner {
@@ -84,115 +83,15 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Event*)
 {
-    DEFINE_STATIC_LOCAL(JSEventOwner, jsEventOwner, ());
-    return &jsEventOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Event*)
-{
-    return &world;
+    static NeverDestroyed<JSEventOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Event*);
-Event* toEvent(JSC::JSValue);
-
-class JSEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSEventPrototype>(vm.heap)) JSEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSEventConstructor : public DOMConstructorObject {
-private:
-    JSEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSEventConstructor>(vm.heap)) JSEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Event& impl) { return toJS(exec, globalObject, &impl); }
 
 bool fillEventInit(EventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsEventPrototypeFunctionStopPropagation(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsEventPrototypeFunctionPreventDefault(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsEventPrototypeFunctionInitEvent(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsEventPrototypeFunctionStopImmediatePropagation(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsEventType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventCurrentTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventEventPhase(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventBubbles(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventCancelable(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventTimeStamp(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventDefaultPrevented(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventSrcElement(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventReturnValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSEventReturnValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsEventCancelBubble(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSEventCancelBubble(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsEventClipboardData(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsEventNONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventCAPTURING_PHASE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventAT_TARGET(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventBUBBLING_PHASE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventMOUSEDOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventMOUSEUP(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventMOUSEOVER(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventMOUSEOUT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventMOUSEMOVE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventMOUSEDRAG(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventCLICK(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventDBLCLICK(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventKEYDOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventKEYUP(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventKEYPRESS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventDRAGDROP(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventFOCUS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventBLUR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventSELECT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventCHANGE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

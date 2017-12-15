@@ -21,30 +21,28 @@
 #ifndef JSScriptProfileNode_h
 #define JSScriptProfileNode_h
 
-#if ENABLE(JAVASCRIPT_DEBUGGER)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "ScriptProfileNode.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSScriptProfileNode : public JSDOMWrapper {
+class WEBCORE_EXPORT JSScriptProfileNode : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSScriptProfileNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ScriptProfileNode> impl)
+    static JSScriptProfileNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ScriptProfileNode>&& impl)
     {
-        JSScriptProfileNode* ptr = new (NotNull, JSC::allocateCell<JSScriptProfileNode>(globalObject->vm().heap)) JSScriptProfileNode(structure, globalObject, impl);
+        JSScriptProfileNode* ptr = new (NotNull, JSC::allocateCell<JSScriptProfileNode>(globalObject->vm().heap)) JSScriptProfileNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static ScriptProfileNode* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSScriptProfileNode();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +51,19 @@ public:
     }
 
     ScriptProfileNode& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     ScriptProfileNode* m_impl;
 protected:
-    JSScriptProfileNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ScriptProfileNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSScriptProfileNode(JSC::Structure*, JSDOMGlobalObject*, Ref<ScriptProfileNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSScriptProfileNodeOwner : public JSC::WeakHandleOwner {
@@ -79,58 +74,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, ScriptProfileNode*)
 {
-    DEFINE_STATIC_LOCAL(JSScriptProfileNodeOwner, jsScriptProfileNodeOwner, ());
-    return &jsScriptProfileNodeOwner;
+    static NeverDestroyed<JSScriptProfileNodeOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, ScriptProfileNode*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ScriptProfileNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ScriptProfileNode& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ScriptProfileNode*);
-ScriptProfileNode* toScriptProfileNode(JSC::JSValue);
-
-class JSScriptProfileNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSScriptProfileNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSScriptProfileNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSScriptProfileNodePrototype>(vm.heap)) JSScriptProfileNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSScriptProfileNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsScriptProfileNodePrototypeFunctionChildren(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsScriptProfileNodeFunctionName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeUrl(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeLineNumber(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeTotalTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeSelfTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeNumberOfCalls(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeVisible(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileNodeCallUID(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(JAVASCRIPT_DEBUGGER)
 
 #endif

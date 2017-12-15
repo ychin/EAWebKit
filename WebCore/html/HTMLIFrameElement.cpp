@@ -25,7 +25,6 @@
 #include "config.h"
 #include "HTMLIFrameElement.h"
 
-#include "Attribute.h"
 #include "CSSPropertyNames.h"
 #include "Frame.h"
 #include "HTMLDocument.h"
@@ -41,22 +40,21 @@ inline HTMLIFrameElement::HTMLIFrameElement(const QualifiedName& tagName, Docume
     : HTMLFrameElementBase(tagName, document)
 {
     ASSERT(hasTagName(iframeTag));
-    setHasCustomStyleResolveCallbacks();
 }
 
-PassRefPtr<HTMLIFrameElement> HTMLIFrameElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLIFrameElement> HTMLIFrameElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLIFrameElement(tagName, document));
+    return adoptRef(*new HTMLIFrameElement(tagName, document));
 }
 
 bool HTMLIFrameElement::isPresentationAttribute(const QualifiedName& name) const
 {
-    if (name == widthAttr || name == heightAttr || name == alignAttr || name == frameborderAttr || name == seamlessAttr)
+    if (name == widthAttr || name == heightAttr || name == alignAttr || name == frameborderAttr)
         return true;
     return HTMLFrameElementBase::isPresentationAttribute(name);
 }
 
-void HTMLIFrameElement::collectStyleForPresentationAttribute(const QualifiedName& name, const AtomicString& value, MutableStylePropertySet* style)
+void HTMLIFrameElement::collectStyleForPresentationAttribute(const QualifiedName& name, const AtomicString& value, MutableStyleProperties& style)
 {
     if (name == widthAttr)
         addHTMLLengthToStyle(style, CSSPropertyWidth, value);
@@ -81,11 +79,7 @@ void HTMLIFrameElement::parseAttribute(const QualifiedName& name, const AtomicSt
         String invalidTokens;
         setSandboxFlags(value.isNull() ? SandboxNone : SecurityContext::parseSandboxPolicy(value, invalidTokens));
         if (!invalidTokens.isNull())
-            document().addConsoleMessage(OtherMessageSource, ErrorMessageLevel, "Error while parsing the 'sandbox' attribute: " + invalidTokens);
-    } else if (name == seamlessAttr) {
-        // If we're adding or removing the seamless attribute, we need to force the content document to recalculate its StyleResolver.
-        if (contentDocument())
-            contentDocument()->styleResolverChanged(DeferRecalcStyle);
+            document().addConsoleMessage(MessageSource::Other, MessageLevel::Error, "Error while parsing the 'sandbox' attribute: " + invalidTokens);
     } else
         HTMLFrameElementBase::parseAttribute(name, value);
 }
@@ -95,23 +89,9 @@ bool HTMLIFrameElement::rendererIsNeeded(const RenderStyle& style)
     return isURLAllowed() && style.display() != NONE;
 }
 
-RenderElement* HTMLIFrameElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> HTMLIFrameElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderIFrame(*this);
-}
-
-bool HTMLIFrameElement::shouldDisplaySeamlessly() const
-{
-    return contentDocument() && contentDocument()->shouldDisplaySeamlesslyWithParent();
-}
-
-void HTMLIFrameElement::didRecalcStyle(Style::Change styleChange)
-{
-    if (!shouldDisplaySeamlessly())
-        return;
-    Document* childDocument = contentDocument();
-    if (styleChange >= Style::Inherit || childDocument->childNeedsStyleRecalc() || childDocument->needsStyleRecalc())
-        contentDocument()->recalcStyle(styleChange == Style::Detach ? Style::Force : styleChange);
+    return createRenderer<RenderIFrame>(*this, WTF::move(style));
 }
 
 }

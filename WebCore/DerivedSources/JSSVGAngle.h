@@ -21,33 +21,30 @@
 #ifndef JSSVGAngle_h
 #define JSSVGAngle_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAngle.h"
 #include "SVGAnimatedPropertyTearOff.h"
 #include "SVGElement.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGAngle : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGAngle* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPropertyTearOff<SVGAngle> > impl)
+    static JSSVGAngle* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPropertyTearOff<SVGAngle>>&& impl)
     {
-        JSSVGAngle* ptr = new (NotNull, JSC::allocateCell<JSSVGAngle>(globalObject->vm().heap)) JSSVGAngle(structure, globalObject, impl);
+        JSSVGAngle* ptr = new (NotNull, JSC::allocateCell<JSSVGAngle>(globalObject->vm().heap)) JSSVGAngle(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGPropertyTearOff<SVGAngle>* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGAngle();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,23 +53,20 @@ public:
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
-    SVGPropertyTearOff<SVGAngle> & impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    SVGPropertyTearOff<SVGAngle>& impl() const { return *m_impl; }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
-    SVGPropertyTearOff<SVGAngle> * m_impl;
+    SVGPropertyTearOff<SVGAngle>* m_impl;
 protected:
-    JSSVGAngle(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPropertyTearOff<SVGAngle> >);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGAngle(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGPropertyTearOff<SVGAngle>>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGAngleOwner : public JSC::WeakHandleOwner {
@@ -81,92 +75,16 @@ public:
     virtual void finalize(JSC::Handle<JSC::Unknown>, void* context);
 };
 
-inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGPropertyTearOff<SVGAngle> *)
+inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGPropertyTearOff<SVGAngle>*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGAngleOwner, jsSVGAngleOwner, ());
-    return &jsSVGAngleOwner;
+    static NeverDestroyed<JSSVGAngleOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SVGPropertyTearOff<SVGAngle> *)
-{
-    return &world;
-}
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGPropertyTearOff<SVGAngle>*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGPropertyTearOff<SVGAngle>& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGPropertyTearOff<SVGAngle> *);
-SVGPropertyTearOff<SVGAngle> * toSVGAngle(JSC::JSValue);
-
-class JSSVGAnglePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGAnglePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGAnglePrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGAnglePrototype>(vm.heap)) JSSVGAnglePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGAnglePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGAngleConstructor : public DOMConstructorObject {
-private:
-    JSSVGAngleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGAngleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGAngleConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGAngleConstructor>(vm.heap)) JSSVGAngleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGAnglePrototypeFunctionNewValueSpecifiedUnits(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGAnglePrototypeFunctionConvertToSpecifiedUnits(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsSVGAngleUnitType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAngleValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGAngleValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGAngleValueInSpecifiedUnits(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGAngleValueInSpecifiedUnits(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGAngleValueAsString(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGAngleValueAsString(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGAngleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGAngleSVG_ANGLETYPE_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAngleSVG_ANGLETYPE_UNSPECIFIED(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAngleSVG_ANGLETYPE_DEG(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAngleSVG_ANGLETYPE_RAD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAngleSVG_ANGLETYPE_GRAD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

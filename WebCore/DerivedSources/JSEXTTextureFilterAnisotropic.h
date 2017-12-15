@@ -24,26 +24,27 @@
 #if ENABLE(WEBGL)
 
 #include "EXTTextureFilterAnisotropic.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSEXTTextureFilterAnisotropic : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSEXTTextureFilterAnisotropic* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EXTTextureFilterAnisotropic> impl)
+    static JSEXTTextureFilterAnisotropic* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<EXTTextureFilterAnisotropic>&& impl)
     {
-        JSEXTTextureFilterAnisotropic* ptr = new (NotNull, JSC::allocateCell<JSEXTTextureFilterAnisotropic>(globalObject->vm().heap)) JSEXTTextureFilterAnisotropic(structure, globalObject, impl);
+        JSEXTTextureFilterAnisotropic* ptr = new (NotNull, JSC::allocateCell<JSEXTTextureFilterAnisotropic>(globalObject->vm().heap)) JSEXTTextureFilterAnisotropic(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static EXTTextureFilterAnisotropic* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSEXTTextureFilterAnisotropic();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     EXTTextureFilterAnisotropic& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     EXTTextureFilterAnisotropic* m_impl;
 protected:
-    JSEXTTextureFilterAnisotropic(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<EXTTextureFilterAnisotropic>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSEXTTextureFilterAnisotropic(JSC::Structure*, JSDOMGlobalObject*, Ref<EXTTextureFilterAnisotropic>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSEXTTextureFilterAnisotropicOwner : public JSC::WeakHandleOwner {
@@ -78,46 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, EXTTextureFilterAnisotropic*)
 {
-    DEFINE_STATIC_LOCAL(JSEXTTextureFilterAnisotropicOwner, jsEXTTextureFilterAnisotropicOwner, ());
-    return &jsEXTTextureFilterAnisotropicOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, EXTTextureFilterAnisotropic*)
-{
-    return &world;
+    static NeverDestroyed<JSEXTTextureFilterAnisotropicOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, EXTTextureFilterAnisotropic*);
-EXTTextureFilterAnisotropic* toEXTTextureFilterAnisotropic(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EXTTextureFilterAnisotropic& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSEXTTextureFilterAnisotropicPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSEXTTextureFilterAnisotropicPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSEXTTextureFilterAnisotropicPrototype* ptr = new (NotNull, JSC::allocateCell<JSEXTTextureFilterAnisotropicPrototype>(vm.heap)) JSEXTTextureFilterAnisotropicPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSEXTTextureFilterAnisotropicPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Constants
-
-JSC::JSValue jsEXTTextureFilterAnisotropicTEXTURE_MAX_ANISOTROPY_EXT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEXTTextureFilterAnisotropicMAX_TEXTURE_MAX_ANISOTROPY_EXT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

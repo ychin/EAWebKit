@@ -18,11 +18,9 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGAnimatedNumberList.h"
 
-#include "SVGAnimateElement.h"
+#include "SVGAnimateElementBase.h"
 #include "SVGAnimatedNumber.h"
 
 namespace WebCore {
@@ -32,14 +30,14 @@ SVGAnimatedNumberListAnimator::SVGAnimatedNumberListAnimator(SVGAnimationElement
 {
 }
 
-PassOwnPtr<SVGAnimatedType> SVGAnimatedNumberListAnimator::constructFromString(const String& string)
+std::unique_ptr<SVGAnimatedType> SVGAnimatedNumberListAnimator::constructFromString(const String& string)
 {
-    OwnPtr<SVGAnimatedType> animtedType = SVGAnimatedType::createNumberList(new SVGNumberList);
-    animtedType->numberList().parse(string);
-    return animtedType.release();
+    auto animatedType = SVGAnimatedType::createNumberList(std::make_unique<SVGNumberList>());
+    animatedType->numberList().parse(string);
+    return animatedType;
 }
 
-PassOwnPtr<SVGAnimatedType> SVGAnimatedNumberListAnimator::startAnimValAnimation(const SVGElementAnimatedPropertyList& animatedTypes)
+std::unique_ptr<SVGAnimatedType> SVGAnimatedNumberListAnimator::startAnimValAnimation(const SVGElementAnimatedPropertyList& animatedTypes)
 {
     return SVGAnimatedType::createNumberList(constructFromBaseValue<SVGAnimatedNumberList>(animatedTypes));
 }
@@ -109,5 +107,3 @@ float SVGAnimatedNumberListAnimator::calculateDistance(const String&, const Stri
 }
 
 }
-
-#endif // ENABLE(SVG)

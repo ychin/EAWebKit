@@ -23,29 +23,28 @@
 
 #if ENABLE(VIDEO_TRACK)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "TextTrackCue.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSTextTrackCue : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSTextTrackCue* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TextTrackCue> impl)
+    static JSTextTrackCue* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TextTrackCue>&& impl)
     {
-        JSTextTrackCue* ptr = new (NotNull, JSC::allocateCell<JSTextTrackCue>(globalObject->vm().heap)) JSTextTrackCue(structure, globalObject, impl);
+        JSTextTrackCue* ptr = new (NotNull, JSC::allocateCell<JSTextTrackCue>(globalObject->vm().heap)) JSTextTrackCue(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static TextTrackCue* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSTextTrackCue();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,24 +54,22 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
     TextTrackCue& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     TextTrackCue* m_impl;
 protected:
-    JSTextTrackCue(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TextTrackCue>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSTextTrackCue(JSC::Structure*, JSDOMGlobalObject*, Ref<TextTrackCue>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSTextTrackCueOwner : public JSC::WeakHandleOwner {
@@ -83,104 +80,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, TextTrackCue*)
 {
-    DEFINE_STATIC_LOCAL(JSTextTrackCueOwner, jsTextTrackCueOwner, ());
-    return &jsTextTrackCueOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, TextTrackCue*)
-{
-    return &world;
+    static NeverDestroyed<JSTextTrackCueOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, TextTrackCue*);
-TextTrackCue* toTextTrackCue(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TextTrackCue& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSTextTrackCuePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTextTrackCuePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTextTrackCuePrototype* ptr = new (NotNull, JSC::allocateCell<JSTextTrackCuePrototype>(vm.heap)) JSTextTrackCuePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTextTrackCuePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSTextTrackCueConstructor : public DOMConstructorObject {
-private:
-    JSTextTrackCueConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTextTrackCueConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTextTrackCueConstructor* ptr = new (NotNull, JSC::allocateCell<JSTextTrackCueConstructor>(vm.heap)) JSTextTrackCueConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSTextTrackCue(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackCuePrototypeFunctionGetCueAsHTML(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackCuePrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackCuePrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackCuePrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsTextTrackCueTrack(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextTrackCueId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueId(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueStartTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueStartTime(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueEndTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueEndTime(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCuePauseOnExit(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCuePauseOnExit(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueVertical(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueVertical(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueSnapToLines(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueSnapToLines(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueLine(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueLine(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCuePosition(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCuePosition(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueSize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueAlign(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueAlign(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueOnenter(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueOnenter(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueOnexit(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackCueOnexit(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCueConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

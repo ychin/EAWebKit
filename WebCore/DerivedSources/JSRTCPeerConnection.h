@@ -23,29 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RTCPeerConnection.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRTCPeerConnection : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRTCPeerConnection* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCPeerConnection> impl)
+    static JSRTCPeerConnection* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCPeerConnection>&& impl)
     {
-        JSRTCPeerConnection* ptr = new (NotNull, JSC::allocateCell<JSRTCPeerConnection>(globalObject->vm().heap)) JSRTCPeerConnection(structure, globalObject, impl);
+        JSRTCPeerConnection* ptr = new (NotNull, JSC::allocateCell<JSRTCPeerConnection>(globalObject->vm().heap)) JSRTCPeerConnection(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RTCPeerConnection* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRTCPeerConnection();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     RTCPeerConnection& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RTCPeerConnection* m_impl;
 protected:
-    JSRTCPeerConnection(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCPeerConnection>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSRTCPeerConnection(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCPeerConnection>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRTCPeerConnectionOwner : public JSC::WeakHandleOwner {
@@ -83,110 +79,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RTCPeerConnection*)
 {
-    DEFINE_STATIC_LOCAL(JSRTCPeerConnectionOwner, jsRTCPeerConnectionOwner, ());
-    return &jsRTCPeerConnectionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RTCPeerConnection*)
-{
-    return &world;
+    static NeverDestroyed<JSRTCPeerConnectionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RTCPeerConnection*);
-RTCPeerConnection* toRTCPeerConnection(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCPeerConnection& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRTCPeerConnectionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCPeerConnectionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCPeerConnectionPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCPeerConnectionPrototype>(vm.heap)) JSRTCPeerConnectionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSRTCPeerConnection(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCPeerConnectionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSRTCPeerConnectionConstructor : public DOMConstructorObject {
-private:
-    JSRTCPeerConnectionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSRTCPeerConnectionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSRTCPeerConnectionConstructor* ptr = new (NotNull, JSC::allocateCell<JSRTCPeerConnectionConstructor>(vm.heap)) JSRTCPeerConnectionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSRTCPeerConnection(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionCreateOffer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionCreateAnswer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionSetLocalDescription(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionSetRemoteDescription(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionUpdateIce(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionAddIceCandidate(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionGetLocalStreams(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionGetRemoteStreams(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionGetStreamById(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionAddStream(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionRemoveStream(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionGetStats(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionCreateDataChannel(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionCreateDTMFSender(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionClose(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCPeerConnectionPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsRTCPeerConnectionLocalDescription(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCPeerConnectionRemoteDescription(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCPeerConnectionSignalingState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCPeerConnectionIceGatheringState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCPeerConnectionIceConnectionState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCPeerConnectionOnnegotiationneeded(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOnnegotiationneeded(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionOnicecandidate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOnicecandidate(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionOnsignalingstatechange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOnsignalingstatechange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionOnaddstream(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOnaddstream(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionOnremovestream(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOnremovestream(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionOniceconnectionstatechange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOniceconnectionstatechange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionOndatachannel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCPeerConnectionOndatachannel(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCPeerConnectionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -20,65 +20,61 @@
 #ifndef RenderSVGResourceClipper_h
 #define RenderSVGResourceClipper_h
 
-#if ENABLE(SVG)
-#include "FloatRect.h"
 #include "GraphicsContext.h"
 #include "ImageBuffer.h"
 #include "IntSize.h"
-#include "Path.h"
 #include "RenderSVGResourceContainer.h"
 #include "SVGClipPathElement.h"
 #include "SVGUnitTypes.h"
 
 #include <wtf/HashMap.h>
-#include <wtf/OwnPtr.h>
 
 namespace WebCore {
 
-struct ClipperData {
-    WTF_MAKE_FAST_ALLOCATED;
-public:
-    OwnPtr<ImageBuffer> clipMaskImage;
-};
+typedef std::unique_ptr<ImageBuffer> ClipperMaskImage;
 
-class RenderSVGResourceClipper FINAL : public RenderSVGResourceContainer {
+class RenderSVGResourceClipper final : public RenderSVGResourceContainer {
 public:
-    explicit RenderSVGResourceClipper(SVGClipPathElement&);
+    RenderSVGResourceClipper(SVGClipPathElement&, Ref<RenderStyle>&&);
     virtual ~RenderSVGResourceClipper();
 
-    SVGClipPathElement& clipPathElement() const { return toSVGClipPathElement(nodeForNonAnonymous()); }
+    SVGClipPathElement& clipPathElement() const { return downcast<SVGClipPathElement>(nodeForNonAnonymous()); }
 
-    virtual void removeAllClientsFromCache(bool markForInvalidation = true);
-    virtual void removeClientFromCache(RenderObject*, bool markForInvalidation = true);
+    virtual void removeAllClientsFromCache(bool markForInvalidation = true) override;
+    virtual void removeClientFromCache(RenderElement&, bool markForInvalidation = true) override;
 
-    virtual bool applyResource(RenderObject*, RenderStyle*, GraphicsContext*&, unsigned short resourceMode);
+    virtual bool applyResource(RenderElement&, const RenderStyle&, GraphicsContext*&, unsigned short resourceMode) override;
     // clipPath can be clipped too, but don't have a boundingBox or repaintRect. So we can't call
     // applyResource directly and use the rects from the object, since they are empty for RenderSVGResources
     // FIXME: We made applyClippingToContext public because we cannot call applyResource on HTML elements (it asserts on RenderObject::objectBoundingBox)
-    bool applyClippingToContext(RenderObject*, const FloatRect&, const FloatRect&, GraphicsContext*);
-    virtual FloatRect resourceBoundingBox(RenderObject*);
+    bool applyClippingToContext(RenderElement&, const FloatRect&, const FloatRect&, GraphicsContext*);
+    virtual FloatRect resourceBoundingBox(const RenderObject&) override;
 
-    virtual RenderSVGResourceType resourceType() const { return ClipperResourceType; }
+    virtual RenderSVGResourceType resourceType() const override { return ClipperResourceType; }
     
     bool hitTestClipContent(const FloatRect&, const FloatPoint&);
 
     SVGUnitTypes::SVGUnitType clipPathUnits() const { return clipPathElement().clipPathUnits(); }
 
-    static RenderSVGResourceType s_resourceType;
-private:
-    void element() const WTF_DELETED_FUNCTION;
+protected:
+    virtual bool selfNeedsClientInvalidation() const override { return (everHadLayout() || m_clipper.size()) && selfNeedsLayout(); }
 
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGResourceClipper"; }
+private:
+    void element() const = delete;
+
+    virtual const char* renderName() const override { return "RenderSVGResourceClipper"; }
 
     bool pathOnlyClipping(GraphicsContext*, const AffineTransform&, const FloatRect&);
-    bool drawContentIntoMaskImage(ClipperData*, const FloatRect& objectBoundingBox);
+    bool drawContentIntoMaskImage(const ClipperMaskImage&, const FloatRect& objectBoundingBox);
     void calculateClipContentRepaintRect();
+    ClipperMaskImage& addRendererToClipper(const RenderObject&);
 
     FloatRect m_clipBoundaries;
-    HashMap<RenderObject*, std::unique_ptr<ClipperData>> m_clipper;
+    HashMap<const RenderObject*, ClipperMaskImage> m_clipper;
 };
 
 }
 
-#endif
+SPECIALIZE_TYPE_TRAITS_RENDER_SVG_RESOURCE(RenderSVGResourceClipper, ClipperResourceType)
+
 #endif

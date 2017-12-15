@@ -21,33 +21,30 @@
 #ifndef JSSVGFEConvolveMatrixElement_h
 #define JSSVGFEConvolveMatrixElement_h
 
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGFEConvolveMatrixElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGFEConvolveMatrixElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGFEConvolveMatrixElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEConvolveMatrixElement> impl)
+    static JSSVGFEConvolveMatrixElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEConvolveMatrixElement>&& impl)
     {
-        JSSVGFEConvolveMatrixElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEConvolveMatrixElement>(globalObject->vm().heap)) JSSVGFEConvolveMatrixElement(structure, globalObject, impl);
+        JSSVGFEConvolveMatrixElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEConvolveMatrixElement>(globalObject->vm().heap)) JSSVGFEConvolveMatrixElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,99 +53,18 @@ public:
         return static_cast<SVGFEConvolveMatrixElement&>(Base::impl());
     }
 protected:
-    JSSVGFEConvolveMatrixElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGFEConvolveMatrixElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGFEConvolveMatrixElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGFEConvolveMatrixElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGFEConvolveMatrixElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGFEConvolveMatrixElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGFEConvolveMatrixElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEConvolveMatrixElementPrototype>(vm.heap)) JSSVGFEConvolveMatrixElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGFEConvolveMatrixElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGFEConvolveMatrixElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGFEConvolveMatrixElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGFEConvolveMatrixElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGFEConvolveMatrixElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEConvolveMatrixElementConstructor>(vm.heap)) JSSVGFEConvolveMatrixElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGFEConvolveMatrixElementIn1(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementOrderX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementOrderY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementKernelMatrix(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementDivisor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementBias(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementTargetX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementTargetY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementEdgeMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementKernelUnitLengthX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementKernelUnitLengthY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementPreserveAlpha(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEConvolveMatrixElementX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEConvolveMatrixElementY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEConvolveMatrixElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEConvolveMatrixElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEConvolveMatrixElementResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGFEConvolveMatrixElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGFEConvolveMatrixElementSVG_EDGEMODE_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementSVG_EDGEMODE_DUPLICATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementSVG_EDGEMODE_WRAP(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEConvolveMatrixElementSVG_EDGEMODE_NONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)
 
 #endif

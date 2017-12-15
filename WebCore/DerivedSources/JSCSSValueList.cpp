@@ -34,25 +34,80 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsCSSValueListPrototypeFunctionItem(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsCSSValueListLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCSSValueListConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCSSValueListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCSSValueListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCSSValueListPrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSValueListPrototype>(vm.heap)) JSCSSValueListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCSSValueListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSCSSValueListConstructor : public DOMConstructorObject {
+private:
+    JSCSSValueListConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSCSSValueListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCSSValueListConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSValueListConstructor>(vm.heap)) JSCSSValueListConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSCSSValueListTableIndex[5] = {
+    { -1, -1 },
+    { 0, 4 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSCSSValueListTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSValueListLength), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSValueListConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSValueListConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSValueListLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCSSValueListTable = { 5, 3, JSCSSValueListTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSCSSValueListConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSCSSValueListConstructorTable = { 1, 0, JSCSSValueListConstructorTableValues, 0 };
-const ClassInfo JSCSSValueListConstructor::s_info = { "CSSValueListConstructor", &Base::s_info, &JSCSSValueListConstructorTable, 0, CREATE_METHOD_TABLE(JSCSSValueListConstructor) };
+static const HashTable JSCSSValueListTable = { 2, 3, true, JSCSSValueListTableValues, 0, JSCSSValueListTableIndex };
+const ClassInfo JSCSSValueListConstructor::s_info = { "CSSValueListConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSValueListConstructor) };
 
 JSCSSValueListConstructor::JSCSSValueListConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,68 +118,57 @@ void JSCSSValueListConstructor::finishCreation(VM& vm, JSDOMGlobalObject* global
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCSSValueListPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSCSSValueListConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSCSSValueListConstructor, JSDOMWrapper>(exec, JSCSSValueListConstructorTable, jsCast<JSCSSValueListConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSCSSValueList::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("CSSValueList"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSCSSValueListPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCSSValueListPrototypeFunctionItem), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCSSValueListPrototypeFunctionItem), (intptr_t) (0) },
 };
 
-static const HashTable JSCSSValueListPrototypeTable = { 2, 1, JSCSSValueListPrototypeTableValues, 0 };
-const ClassInfo JSCSSValueListPrototype::s_info = { "CSSValueListPrototype", &Base::s_info, &JSCSSValueListPrototypeTable, 0, CREATE_METHOD_TABLE(JSCSSValueListPrototype) };
+const ClassInfo JSCSSValueListPrototype::s_info = { "CSSValueListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSValueListPrototype) };
 
-JSObject* JSCSSValueListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCSSValueList>(vm, globalObject);
-}
-
-bool JSCSSValueListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSCSSValueListPrototype* thisObject = jsCast<JSCSSValueListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSCSSValueListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSCSSValueList::s_info = { "CSSValueList", &Base::s_info, &JSCSSValueListTable, 0 , CREATE_METHOD_TABLE(JSCSSValueList) };
-
-JSCSSValueList::JSCSSValueList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSValueList> impl)
-    : JSCSSValue(structure, globalObject, impl)
-{
-}
-
-void JSCSSValueList::finishCreation(VM& vm)
+void JSCSSValueListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCSSValueListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCSSValueList::s_info = { "CSSValueList", &Base::s_info, &JSCSSValueListTable, CREATE_METHOD_TABLE(JSCSSValueList) };
+
+JSCSSValueList::JSCSSValueList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSValueList>&& impl)
+    : JSCSSValue(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSCSSValueList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCSSValueListPrototype::create(vm, globalObject, JSCSSValueListPrototype::createStructure(vm, globalObject, JSCSSValuePrototype::self(vm, globalObject)));
+    return JSCSSValueListPrototype::create(vm, globalObject, JSCSSValueListPrototype::createStructure(vm, globalObject, JSCSSValue::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSCSSValueList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCSSValueList>(vm, globalObject);
 }
 
 bool JSCSSValueList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSCSSValueList* thisObject = jsCast<JSCSSValueList*>(object);
+    auto* thisObject = jsCast<JSCSSValueList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSCSSValueList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSCSSValueList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSCSSValueList, Base>(exec, JSCSSValueListTable, thisObject, propertyName, slot);
@@ -132,39 +176,43 @@ bool JSCSSValueList::getOwnPropertySlot(JSObject* object, ExecState* exec, Prope
 
 bool JSCSSValueList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSCSSValueList* thisObject = jsCast<JSCSSValueList*>(object);
+    auto* thisObject = jsCast<JSCSSValueList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsCSSValueListLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCSSValueListLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCSSValueList* castedThis = jsCast<JSCSSValueList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CSSValueList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSCSSValueList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCSSValueListConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCSSValueListConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSCSSValueList* domObject = jsCast<JSCSSValueList*>(asObject(slotBase));
-    return JSCSSValueList::getConstructor(exec->vm(), domObject->globalObject());
+    JSCSSValueList* domObject = jsDynamicCast<JSCSSValueList*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSCSSValueList::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 void JSCSSValueList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSCSSValueList* thisObject = jsCast<JSCSSValueList*>(object);
+    auto* thisObject = jsCast<JSCSSValueList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 JSValue JSCSSValueList::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -174,26 +222,17 @@ JSValue JSCSSValueList::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsCSSValueListPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCSSValueList::info()))
-        return throwVMTypeError(exec);
-    JSCSSValueList* castedThis = jsCast<JSCSSValueList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCSSValueList* castedThis = jsDynamicCast<JSCSSValueList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CSSValueList", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCSSValueList::info());
-    CSSValueList& impl = castedThis->impl();
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
     return JSValue::encode(result);
-}
-
-
-JSValue JSCSSValueList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSCSSValueList* thisObj = jsCast<JSCSSValueList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
 }
 
 

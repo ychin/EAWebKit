@@ -21,33 +21,30 @@
 #ifndef JSSVGFEImageElement_h
 #define JSSVGFEImageElement_h
 
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGFEImageElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGFEImageElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGFEImageElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEImageElement> impl)
+    static JSSVGFEImageElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEImageElement>&& impl)
     {
-        JSSVGFEImageElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEImageElement>(globalObject->vm().heap)) JSSVGFEImageElement(structure, globalObject, impl);
+        JSSVGFEImageElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEImageElement>(globalObject->vm().heap)) JSSVGFEImageElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,87 +53,18 @@ public:
         return static_cast<SVGFEImageElement&>(Base::impl());
     }
 protected:
-    JSSVGFEImageElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGFEImageElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGFEImageElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGFEImageElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGFEImageElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGFEImageElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGFEImageElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEImageElementPrototype>(vm.heap)) JSSVGFEImageElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGFEImageElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGFEImageElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGFEImageElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGFEImageElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGFEImageElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEImageElementConstructor>(vm.heap)) JSSVGFEImageElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGFEImageElementPreserveAspectRatio(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementExternalResourcesRequired(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEImageElementHref(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGFEImageElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)
 
 #endif

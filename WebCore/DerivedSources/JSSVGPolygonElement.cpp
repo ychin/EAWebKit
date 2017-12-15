@@ -19,47 +19,73 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGPolygonElement.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedBoolean.h"
 #include "JSSVGPointList.h"
 #include "SVGPointList.h"
 #include "SVGPolygonElement.h"
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGPolygonElementTableValues[] =
-{
-    { "points", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementPoints), (intptr_t)0 },
-    { "animatedPoints", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementAnimatedPoints), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGPolygonElementPoints(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGPolygonElementAnimatedPoints(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGPolygonElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGPolygonElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGPolygonElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGPolygonElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGPolygonElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPolygonElementPrototype>(vm.heap)) JSSVGPolygonElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGPolygonElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGPolygonElementTable = { 9, 7, JSSVGPolygonElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGPolygonElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGPolygonElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGPolygonElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGPolygonElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGPolygonElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPolygonElementConstructor>(vm.heap)) JSSVGPolygonElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGPolygonElementConstructorTable = { 1, 0, JSSVGPolygonElementConstructorTableValues, 0 };
-const ClassInfo JSSVGPolygonElementConstructor::s_info = { "SVGPolygonElementConstructor", &Base::s_info, &JSSVGPolygonElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGPolygonElementConstructor) };
+const ClassInfo JSSVGPolygonElementConstructor::s_info = { "SVGPolygonElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPolygonElementConstructor) };
 
 JSSVGPolygonElementConstructor::JSSVGPolygonElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -70,92 +96,104 @@ void JSSVGPolygonElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGPolygonElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGPolygonElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGPolygonElementConstructor, JSDOMWrapper>(exec, JSSVGPolygonElementConstructorTable, jsCast<JSSVGPolygonElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGPolygonElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGPolygonElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGPolygonElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "points", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementPoints), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "animatedPoints", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementAnimatedPoints), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPolygonElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGPolygonElementPrototypeTable = { 1, 0, JSSVGPolygonElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGPolygonElementPrototype::s_info = { "SVGPolygonElementPrototype", &Base::s_info, &JSSVGPolygonElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPolygonElementPrototype) };
+const ClassInfo JSSVGPolygonElementPrototype::s_info = { "SVGPolygonElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPolygonElementPrototype) };
 
-JSObject* JSSVGPolygonElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGPolygonElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGPolygonElement::s_info = { "SVGPolygonElement", &Base::s_info, &JSSVGPolygonElementTable, 0 , CREATE_METHOD_TABLE(JSSVGPolygonElement) };
-
-JSSVGPolygonElement::JSSVGPolygonElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPolygonElement> impl)
-    : JSSVGGraphicsElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGPolygonElement::finishCreation(VM& vm)
+void JSSVGPolygonElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGPolygonElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGPolygonElement::s_info = { "SVGPolygonElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPolygonElement) };
+
+JSSVGPolygonElement::JSSVGPolygonElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPolygonElement>&& impl)
+    : JSSVGGraphicsElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGPolygonElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGPolygonElementPrototype::create(vm, globalObject, JSSVGPolygonElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElementPrototype::self(vm, globalObject)));
+    return JSSVGPolygonElementPrototype::create(vm, globalObject, JSSVGPolygonElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGPolygonElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGPolygonElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGPolygonElement* thisObject = jsCast<JSSVGPolygonElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGPolygonElement, Base>(exec, JSSVGPolygonElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGPolygonElement>(vm, globalObject);
 }
 
-JSValue jsSVGPolygonElementPoints(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPolygonElementPoints(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPolygonElement* castedThis = jsCast<JSSVGPolygonElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPolygonElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.points()));
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPolygonElement* castedThis = jsDynamicCast<JSSVGPolygonElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPolygonElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPolygonElement", "points");
+        return throwGetterTypeError(*exec, "SVGPolygonElement", "points");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(static_cast<SVGListPropertyTearOff<SVGPointList>*>(impl.points().get())));
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPolygonElementAnimatedPoints(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPolygonElementAnimatedPoints(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPolygonElement* castedThis = jsCast<JSSVGPolygonElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPolygonElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.animatedPoints()));
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPolygonElement* castedThis = jsDynamicCast<JSSVGPolygonElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPolygonElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPolygonElement", "animatedPoints");
+        return throwGetterTypeError(*exec, "SVGPolygonElement", "animatedPoints");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(static_cast<SVGListPropertyTearOff<SVGPointList>*>(impl.animatedPoints().get())));
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGPolygonElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPolygonElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPolygonElement* castedThis = jsCast<JSSVGPolygonElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPolygonElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPolygonElement* castedThis = jsDynamicCast<JSSVGPolygonElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPolygonElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPolygonElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGPolygonElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGPolygonElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPolygonElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGPolygonElement* domObject = jsCast<JSSVGPolygonElement*>(asObject(slotBase));
-    return JSSVGPolygonElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGPolygonElementPrototype* domObject = jsDynamicCast<JSSVGPolygonElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGPolygonElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGPolygonElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -165,5 +203,3 @@ JSValue JSSVGPolygonElement::getConstructor(VM& vm, JSGlobalObject* globalObject
 
 
 }
-
-#endif // ENABLE(SVG)

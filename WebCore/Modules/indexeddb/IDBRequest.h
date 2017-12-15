@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -37,11 +37,12 @@
 #include "DOMStringList.h"
 #include "Event.h"
 #include "EventListener.h"
-#include "EventNames.h"
 #include "EventTarget.h"
 #include "IDBAny.h"
 #include "IDBCallbacks.h"
 #include "IDBCursor.h"
+#include "IDBDatabaseBackend.h"
+#include "IDBDatabaseCallbacks.h"
 #include "ScriptWrappable.h"
 
 namespace WebCore {
@@ -52,8 +53,8 @@ typedef int ExceptionCode;
 
 class IDBRequest : public ScriptWrappable, public IDBCallbacks, public EventTargetWithInlineData, public ActiveDOMObject {
 public:
-    static PassRefPtr<IDBRequest> create(ScriptExecutionContext*, PassRefPtr<IDBAny> source, IDBTransaction*);
-    static PassRefPtr<IDBRequest> create(ScriptExecutionContext*, PassRefPtr<IDBAny> source, IDBDatabaseBackendInterface::TaskType, IDBTransaction*);
+    static Ref<IDBRequest> create(ScriptExecutionContext*, PassRefPtr<IDBAny> source, IDBTransaction*);
+    static Ref<IDBRequest> create(ScriptExecutionContext*, PassRefPtr<IDBAny> source, IDBDatabaseBackend::TaskType, IDBTransaction*);
     virtual ~IDBRequest();
 
     PassRefPtr<IDBAny> result(ExceptionCode&) const;
@@ -72,9 +73,6 @@ public:
 
     const String& readyState() const;
 
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(success);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-
     void markEarlyDeath();
     void setCursorDetails(IndexedDB::CursorType, IndexedDB::CursorDirection);
     void setPendingCursor(PassRefPtr<IDBCursor>);
@@ -82,43 +80,42 @@ public:
     void abort();
 
     // IDBCallbacks
-    virtual void onError(PassRefPtr<IDBDatabaseError>);
-    virtual void onSuccess(PassRefPtr<DOMStringList>);
-    virtual void onSuccess(PassRefPtr<IDBCursorBackendInterface>, PassRefPtr<IDBKey>, PassRefPtr<IDBKey> primaryKey, PassRefPtr<SharedBuffer>);
-    virtual void onSuccess(PassRefPtr<IDBKey>);
-    virtual void onSuccess(PassRefPtr<SharedBuffer>);
-    virtual void onSuccess(PassRefPtr<SharedBuffer>, PassRefPtr<IDBKey>, const IDBKeyPath&);
-    virtual void onSuccess(int64_t);
-    virtual void onSuccess();
-    virtual void onSuccess(PassRefPtr<IDBKey>, PassRefPtr<IDBKey> primaryKey, PassRefPtr<SharedBuffer>);
-    virtual void onSuccessWithPrefetch(const Vector<RefPtr<IDBKey> >&, const Vector<RefPtr<IDBKey> >&, const Vector<RefPtr<SharedBuffer> >&) { ASSERT_NOT_REACHED(); } // Not implemented. Callback should not reach the renderer side.
-
-    // ActiveDOMObject
-    virtual bool hasPendingActivity() const OVERRIDE;
+    virtual void onError(PassRefPtr<IDBDatabaseError>) override;
+    virtual void onSuccess(PassRefPtr<DOMStringList>) override;
+    virtual void onSuccess(PassRefPtr<IDBCursorBackend>) override;
+    virtual void onSuccess(PassRefPtr<IDBKey>) override;
+    virtual void onSuccess(PassRefPtr<SharedBuffer>) override;
+    virtual void onSuccess(PassRefPtr<SharedBuffer>, PassRefPtr<IDBKey>, const IDBKeyPath&) override;
+    virtual void onSuccess(int64_t) override;
+    virtual void onSuccess() override;
+    virtual void onSuccess(PassRefPtr<IDBKey>, PassRefPtr<IDBKey> primaryKey, PassRefPtr<SharedBuffer>) override;
 
     // EventTarget
-    virtual EventTargetInterface eventTargetInterface() const OVERRIDE;
-    virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE FINAL { return ActiveDOMObject::scriptExecutionContext(); }
-    virtual void uncaughtExceptionInEventHandler() OVERRIDE FINAL;
+    virtual EventTargetInterface eventTargetInterface() const override;
+    virtual ScriptExecutionContext* scriptExecutionContext() const override final { return ActiveDOMObject::scriptExecutionContext(); }
+    virtual void uncaughtExceptionInEventHandler() override final;
 
     using EventTarget::dispatchEvent;
-    virtual bool dispatchEvent(PassRefPtr<Event>) OVERRIDE;
+    virtual bool dispatchEvent(PassRefPtr<Event>) override;
 
     void transactionDidFinishAndDispatch();
 
     using RefCounted<IDBCallbacks>::ref;
     using RefCounted<IDBCallbacks>::deref;
 
-    IDBDatabaseBackendInterface::TaskType taskType() { return m_taskType; }
+    IDBDatabaseBackend::TaskType taskType() { return m_taskType; }
 
     DOMRequestState* requestState() { return &m_requestState; }
 
+    // ActiveDOMObject API.
+    bool hasPendingActivity() const override;
+
 protected:
-    IDBRequest(ScriptExecutionContext*, PassRefPtr<IDBAny> source, IDBDatabaseBackendInterface::TaskType, IDBTransaction*);
+    IDBRequest(ScriptExecutionContext*, PassRefPtr<IDBAny> source, IDBDatabaseBackend::TaskType, IDBTransaction*);
     void enqueueEvent(PassRefPtr<Event>);
     virtual bool shouldEnqueueEvent() const;
     void onSuccessInternal(PassRefPtr<SerializedScriptValue>);
-    void onSuccessInternal(const ScriptValue&);
+    void onSuccessInternal(const Deprecated::ScriptValue&);
 
     RefPtr<IDBAny> m_result;
     unsigned short m_errorCode;
@@ -130,21 +127,23 @@ protected:
     bool m_requestAborted; // May be aborted by transaction then receive async onsuccess; ignore vs. assert.
 
 private:
-    // ActiveDOMObject
-    virtual void stop() OVERRIDE;
+    // ActiveDOMObject API.
+    void stop() override;
+    const char* activeDOMObjectName() const override;
+    bool canSuspendForPageCache() const override;
 
-    // EventTarget
-    virtual void refEventTarget() OVERRIDE FINAL { ref(); }
-    virtual void derefEventTarget() OVERRIDE FINAL { deref(); }
+    // EventTarget API.
+    virtual void refEventTarget() override final { ref(); }
+    virtual void derefEventTarget() override final { deref(); }
 
-    PassRefPtr<IDBCursor> getResultCursor();
-    void setResultCursor(PassRefPtr<IDBCursor>, PassRefPtr<IDBKey>, PassRefPtr<IDBKey> primaryKey, const ScriptValue&);
+    RefPtr<IDBCursor> getResultCursor();
+    void setResultCursor(PassRefPtr<IDBCursor>, PassRefPtr<IDBKey>, PassRefPtr<IDBKey> primaryKey, const Deprecated::ScriptValue&);
 
     RefPtr<IDBAny> m_source;
-    const IDBDatabaseBackendInterface::TaskType m_taskType;
+    const IDBDatabaseBackend::TaskType m_taskType;
 
     bool m_hasPendingActivity;
-    Vector<RefPtr<Event> > m_enqueuedEvents;
+    Vector<RefPtr<Event>> m_enqueuedEvents;
 
     // Only used if the result type will be a cursor.
     IndexedDB::CursorType m_cursorType;
@@ -153,7 +152,7 @@ private:
     RefPtr<IDBCursor> m_pendingCursor;
     RefPtr<IDBKey> m_cursorKey;
     RefPtr<IDBKey> m_cursorPrimaryKey;
-    ScriptValue m_cursorValue;
+    Deprecated::ScriptValue m_cursorValue;
     bool m_didFireUpgradeNeededEvent;
     bool m_preventPropagation;
 

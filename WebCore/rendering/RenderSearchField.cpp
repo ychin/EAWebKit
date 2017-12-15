@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006, 2007, 2010 Apple Inc. All rights reserved.
+ * Copyright (C) 2006, 2007, 2010, 2015 Apple Inc. All rights reserved.
  *           (C) 2008 Torch Mobile Inc. All rights reserved. (http://www.torchmobile.com/) 
  * Copyright (C) 2010 Google Inc. All rights reserved.
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
@@ -27,6 +27,7 @@
 #include "CSSFontSelector.h"
 #include "CSSValueKeywords.h"
 #include "Chrome.h"
+#include "Font.h"
 #include "Frame.h"
 #include "FrameSelection.h"
 #include "FrameView.h"
@@ -42,18 +43,15 @@
 #include "RenderView.h"
 #include "SearchPopupMenu.h"
 #include "Settings.h"
-#include "SimpleFontData.h"
 #include "StyleResolver.h"
 #include "TextControlInnerElements.h"
-
-using namespace std;
 
 namespace WebCore {
 
 using namespace HTMLNames;
 
-RenderSearchField::RenderSearchField(HTMLInputElement& element)
-    : RenderTextControlSingleLine(element)
+RenderSearchField::RenderSearchField(HTMLInputElement& element, Ref<RenderStyle>&& style)
+    : RenderTextControlSingleLine(element, WTF::move(style))
     , m_searchPopupIsVisible(false)
     , m_searchPopup(0)
 {
@@ -64,7 +62,7 @@ RenderSearchField::~RenderSearchField()
 {
     if (m_searchPopup) {
         m_searchPopup->popupMenu()->disconnectClient();
-        m_searchPopup = 0;
+        m_searchPopup = nullptr;
     }
 }
 
@@ -87,15 +85,10 @@ void RenderSearchField::addSearchResult()
     if (value.isEmpty())
         return;
 
-    if (frame().settings().privateBrowsingEnabled())
+    if (frame().page()->usesEphemeralSession())
         return;
 
-    int size = static_cast<int>(m_recentSearches.size());
-    for (int i = size - 1; i >= 0; --i) {
-        if (m_recentSearches[i] == value)
-            m_recentSearches.remove(i);
-    }
-
+    m_recentSearches.removeAll(value);
     m_recentSearches.insert(0, value);
     while (static_cast<int>(m_recentSearches.size()) > inputElement().maxResults())
         m_recentSearches.removeLast();
@@ -132,7 +125,7 @@ void RenderSearchField::showPopup()
         m_searchPopup->saveRecentSearches(name, m_recentSearches);
     }
 
-    m_searchPopup->popupMenu()->show(pixelSnappedIntRect(absoluteBoundingBoxRect()), &view().frameView(), -1);
+    m_searchPopup->popupMenu()->show(snappedIntRect(absoluteBoundingBoxRect()), &view().frameView(), -1);
 }
 
 void RenderSearchField::hidePopup()
@@ -146,14 +139,14 @@ LayoutUnit RenderSearchField::computeControlLogicalHeight(LayoutUnit lineHeight,
     HTMLElement* resultsButton = resultsButtonElement();
     if (RenderBox* resultsRenderer = resultsButton ? resultsButton->renderBox() : 0) {
         resultsRenderer->updateLogicalHeight();
-        nonContentHeight = max(nonContentHeight, resultsRenderer->borderAndPaddingLogicalHeight() + resultsRenderer->marginLogicalHeight());
-        lineHeight = max(lineHeight, resultsRenderer->logicalHeight());
+        nonContentHeight = std::max(nonContentHeight, resultsRenderer->borderAndPaddingLogicalHeight() + resultsRenderer->marginLogicalHeight());
+        lineHeight = std::max(lineHeight, resultsRenderer->logicalHeight());
     }
     HTMLElement* cancelButton = cancelButtonElement();
     if (RenderBox* cancelRenderer = cancelButton ? cancelButton->renderBox() : 0) {
         cancelRenderer->updateLogicalHeight();
-        nonContentHeight = max(nonContentHeight, cancelRenderer->borderAndPaddingLogicalHeight() + cancelRenderer->marginLogicalHeight());
-        lineHeight = max(lineHeight, cancelRenderer->logicalHeight());
+        nonContentHeight = std::max(nonContentHeight, cancelRenderer->borderAndPaddingLogicalHeight() + cancelRenderer->marginLogicalHeight());
+        lineHeight = std::max(lineHeight, cancelRenderer->logicalHeight());
     }
 
     return lineHeight + nonContentHeight;
@@ -176,24 +169,24 @@ void RenderSearchField::updateCancelButtonVisibility() const
     if (!cancelButtonRenderer)
         return;
 
-    const RenderStyle* curStyle = cancelButtonRenderer->style();
+    const RenderStyle& curStyle = cancelButtonRenderer->style();
     EVisibility buttonVisibility = visibilityForCancelButton();
-    if (curStyle->visibility() == buttonVisibility)
+    if (curStyle.visibility() == buttonVisibility)
         return;
 
-    RefPtr<RenderStyle> cancelButtonStyle = RenderStyle::clone(curStyle);
-    cancelButtonStyle->setVisibility(buttonVisibility);
-    cancelButtonRenderer->setStyle(cancelButtonStyle);
+    auto cancelButtonStyle = RenderStyle::clone(&curStyle);
+    cancelButtonStyle.get().setVisibility(buttonVisibility);
+    cancelButtonRenderer->setStyle(WTF::move(cancelButtonStyle));
 }
 
 EVisibility RenderSearchField::visibilityForCancelButton() const
 {
-    return (style()->visibility() == HIDDEN || inputElement().value().isEmpty()) ? HIDDEN : VISIBLE;
+    return (style().visibility() == HIDDEN || inputElement().value().isEmpty()) ? HIDDEN : VISIBLE;
 }
 
 const AtomicString& RenderSearchField::autosaveName() const
 {
-    return inputElement().getAttribute(autosaveAttr);
+    return inputElement().fastGetAttribute(autosaveAttr);
 }
 
 // PopupMenuClient methods
@@ -220,6 +213,7 @@ void RenderSearchField::valueChanged(unsigned listIndex, bool fireEvents)
 
 String RenderSearchField::itemText(unsigned listIndex) const
 {
+#if !PLATFORM(IOS)
     int size = listSize();
     if (size == 1) {
         ASSERT(!listIndex);
@@ -227,10 +221,13 @@ String RenderSearchField::itemText(unsigned listIndex) const
     }
     if (!listIndex)
         return searchMenuRecentSearchesText();
+#endif
     if (itemIsSeparator(listIndex))
         return String();
+#if !PLATFORM(IOS)
     if (static_cast<int>(listIndex) == (size - 1))
         return searchMenuClearRecentSearchesText();
+#endif
     return m_recentSearches[listIndex - 1];
 }
 
@@ -258,8 +255,8 @@ PopupMenuStyle RenderSearchField::itemStyle(unsigned) const
 
 PopupMenuStyle RenderSearchField::menuStyle() const
 {
-    return PopupMenuStyle(style()->visitedDependentColor(CSSPropertyColor), style()->visitedDependentColor(CSSPropertyBackgroundColor), style()->font(), style()->visibility() == VISIBLE,
-        style()->display() == NONE, style()->textIndent(), style()->direction(), isOverride(style()->unicodeBidi()), PopupMenuStyle::CustomBackgroundColor);
+    return PopupMenuStyle(style().visitedDependentColor(CSSPropertyColor), style().visitedDependentColor(CSSPropertyBackgroundColor), style().fontCascade(), style().visibility() == VISIBLE,
+        style().display() == NONE, true, style().textIndent(), style().direction(), isOverride(style().unicodeBidi()), PopupMenuStyle::CustomBackgroundColor);
 }
 
 int RenderSearchField::clientInsetLeft() const
@@ -337,7 +334,7 @@ void RenderSearchField::setTextFromItem(unsigned listIndex)
 
 FontSelector* RenderSearchField::fontSelector() const
 {
-    return document().ensureStyleResolver().fontSelector();
+    return &document().fontSelector();
 }
 
 HostWindow* RenderSearchField::hostWindow() const
@@ -345,10 +342,10 @@ HostWindow* RenderSearchField::hostWindow() const
     return view().frameView().hostWindow();
 }
 
-PassRefPtr<Scrollbar> RenderSearchField::createScrollbar(ScrollableArea* scrollableArea, ScrollbarOrientation orientation, ScrollbarControlSize controlSize)
+PassRefPtr<Scrollbar> RenderSearchField::createScrollbar(ScrollableArea& scrollableArea, ScrollbarOrientation orientation, ScrollbarControlSize controlSize)
 {
     RefPtr<Scrollbar> widget;
-    bool hasCustomScrollbarStyle = style()->hasPseudoStyle(SCROLLBAR);
+    bool hasCustomScrollbarStyle = style().hasPseudoStyle(SCROLLBAR);
     if (hasCustomScrollbarStyle)
         widget = RenderScrollbar::createCustomScrollbar(scrollableArea, orientation, &inputElement());
     else
@@ -371,8 +368,7 @@ void RenderSearchField::centerContainerIfNeeded(RenderBox* containerRenderer) co
 
     // A quirk for find-in-page box on Safari Windows.
     // http://webkit.org/b/63157
-    LayoutUnit logicalHeightDiff = containerRenderer->logicalHeight() - contentLogicalHeight();
-    containerRenderer->setLogicalTop(containerRenderer->logicalTop() - (logicalHeightDiff / 2 + layoutMod(logicalHeightDiff, 2)));
+    centerRenderer(*containerRenderer);
 }
 
 }

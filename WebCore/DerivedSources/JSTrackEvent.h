@@ -23,10 +23,8 @@
 
 #if ENABLE(VIDEO_TRACK)
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "TrackEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -35,15 +33,17 @@ class JSDictionary;
 class JSTrackEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSTrackEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TrackEvent> impl)
+    static JSTrackEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TrackEvent>&& impl)
     {
-        JSTrackEvent* ptr = new (NotNull, JSC::allocateCell<JSTrackEvent>(globalObject->vm().heap)) JSTrackEvent(structure, globalObject, impl);
+        JSTrackEvent* ptr = new (NotNull, JSC::allocateCell<JSTrackEvent>(globalObject->vm().heap)) JSTrackEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -59,68 +59,22 @@ public:
     {
         return static_cast<TrackEvent&>(Base::impl());
     }
-protected:
-    JSTrackEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TrackEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSTrackEventPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTrackEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTrackEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSTrackEventPrototype>(vm.heap)) JSTrackEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTrackEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSTrackEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<TrackEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-class JSTrackEventConstructor : public DOMConstructorObject {
-private:
-    JSTrackEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTrackEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTrackEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSTrackEventConstructor>(vm.heap)) JSTrackEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSTrackEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillTrackEventInit(TrackEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsTrackEventTrack(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTrackEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

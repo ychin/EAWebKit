@@ -22,11 +22,37 @@
 #include "JSCSSUnknownRule.h"
 
 #include "CSSUnknownRule.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
+
+class JSCSSUnknownRulePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCSSUnknownRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCSSUnknownRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSUnknownRulePrototype>(vm.heap)) JSCSSUnknownRulePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCSSUnknownRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
 
 /* Hash table for prototype */
 
@@ -35,30 +61,29 @@ static const HashTableValue JSCSSUnknownRulePrototypeTableValues[] =
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSCSSUnknownRulePrototypeTable = { 1, 0, JSCSSUnknownRulePrototypeTableValues, 0 };
-const ClassInfo JSCSSUnknownRulePrototype::s_info = { "CSSUnknownRulePrototype", &Base::s_info, &JSCSSUnknownRulePrototypeTable, 0, CREATE_METHOD_TABLE(JSCSSUnknownRulePrototype) };
+const ClassInfo JSCSSUnknownRulePrototype::s_info = { "CSSUnknownRulePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSUnknownRulePrototype) };
 
-JSObject* JSCSSUnknownRulePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCSSUnknownRule>(vm, globalObject);
-}
-
-const ClassInfo JSCSSUnknownRule::s_info = { "CSSUnknownRule", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSCSSUnknownRule) };
-
-JSCSSUnknownRule::JSCSSUnknownRule(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSUnknownRule> impl)
-    : JSCSSRule(structure, globalObject, impl)
-{
-}
-
-void JSCSSUnknownRule::finishCreation(VM& vm)
+void JSCSSUnknownRulePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCSSUnknownRulePrototypeTableValues, *this);
+}
+
+const ClassInfo JSCSSUnknownRule::s_info = { "CSSUnknownRule", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSUnknownRule) };
+
+JSCSSUnknownRule::JSCSSUnknownRule(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSUnknownRule>&& impl)
+    : JSCSSRule(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSCSSUnknownRule::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCSSUnknownRulePrototype::create(vm, globalObject, JSCSSUnknownRulePrototype::createStructure(vm, globalObject, JSCSSRulePrototype::self(vm, globalObject)));
+    return JSCSSUnknownRulePrototype::create(vm, globalObject, JSCSSUnknownRulePrototype::createStructure(vm, globalObject, JSCSSRule::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSCSSUnknownRule::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCSSUnknownRule>(vm, globalObject);
 }
 
 

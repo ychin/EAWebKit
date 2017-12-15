@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "config.h"
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 
 #include "TileEA.h"
 
@@ -183,8 +183,10 @@ void TiledBackingStoreBackend::paintCheckerPattern(GraphicsContext* context, con
 
 PassRefPtr<Tile> TiledBackingStoreBackend::createTile(TiledBackingStore* backingStore, const Tile::Coordinate& tileCoordinate)
 {
+	//EAWEBKITBUILDFIX - error C2440: 'static_cast' : cannot convert from 'WebCore::TiledBackingStoreClient *' to 'WebCore::Frame *'
+	// Related to Tile-backing-store changes
     // Looks like the only class that is a client is the Frame. If that changes this code will need to change.
-    WebCore::Frame *frame = static_cast<WebCore::Frame*>(backingStore->client());
+	WebCore::Frame *frame = nullptr;// static_cast<WebCore::Frame*>(backingStore->client());
     EA::WebKit::WebPage *eaPage = EA::WebKit::WebFramePrivate::kit(frame)->page();
     EA::WebKit::View *view = eaPage->view();
 

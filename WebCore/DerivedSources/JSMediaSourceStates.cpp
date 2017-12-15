@@ -24,6 +24,7 @@
 
 #include "JSMediaSourceStates.h"
 
+#include "JSDOMBinding.h"
 #include "MediaSourceStates.h"
 #include "URL.h"
 #include <runtime/JSString.h>
@@ -33,54 +34,107 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Attributes
+
+JSC::EncodedJSValue jsMediaSourceStatesSourceType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesSourceId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesFrameRate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesAspectRatio(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesFacingMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaSourceStatesVolume(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMediaSourceStatesPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaSourceStatesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaSourceStatesPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaSourceStatesPrototype>(vm.heap)) JSMediaSourceStatesPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaSourceStatesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSMediaSourceStatesTableIndex[16] = {
+    { -1, -1 },
+    { 5, -1 },
+    { -1, -1 },
+    { 0, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 3, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 4, -1 },
+    { 2, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSMediaSourceStatesTableValues[] =
 {
-    { "sourceType", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesSourceType), (intptr_t)0 },
-    { "sourceId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesSourceId), (intptr_t)0 },
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesWidth), (intptr_t)0 },
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesHeight), (intptr_t)0 },
-    { "frameRate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesFrameRate), (intptr_t)0 },
-    { "aspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesAspectRatio), (intptr_t)0 },
-    { "facingMode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesFacingMode), (intptr_t)0 },
-    { "volume", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesVolume), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "frameRate", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesFrameRate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "aspectRatio", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesAspectRatio), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "facingMode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesFacingMode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "volume", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesVolume), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMediaSourceStatesTable = { 17, 15, JSMediaSourceStatesTableValues, 0 };
+static const HashTable JSMediaSourceStatesTable = { 6, 15, true, JSMediaSourceStatesTableValues, 0, JSMediaSourceStatesTableIndex };
 /* Hash table for prototype */
 
 static const HashTableValue JSMediaSourceStatesPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "sourceType", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesSourceType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "sourceId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaSourceStatesSourceId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMediaSourceStatesPrototypeTable = { 1, 0, JSMediaSourceStatesPrototypeTableValues, 0 };
-const ClassInfo JSMediaSourceStatesPrototype::s_info = { "MediaSourceStatesPrototype", &Base::s_info, &JSMediaSourceStatesPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaSourceStatesPrototype) };
+const ClassInfo JSMediaSourceStatesPrototype::s_info = { "MediaSourceStatesPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaSourceStatesPrototype) };
 
-JSObject* JSMediaSourceStatesPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaSourceStates>(vm, globalObject);
-}
-
-const ClassInfo JSMediaSourceStates::s_info = { "MediaSourceStates", &Base::s_info, &JSMediaSourceStatesTable, 0 , CREATE_METHOD_TABLE(JSMediaSourceStates) };
-
-JSMediaSourceStates::JSMediaSourceStates(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaSourceStates> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMediaSourceStates::finishCreation(VM& vm)
+void JSMediaSourceStatesPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaSourceStatesPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaSourceStates::s_info = { "MediaSourceStates", &Base::s_info, &JSMediaSourceStatesTable, CREATE_METHOD_TABLE(JSMediaSourceStates) };
+
+JSMediaSourceStates::JSMediaSourceStates(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaSourceStates>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMediaSourceStates::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMediaSourceStatesPrototype::create(vm, globalObject, JSMediaSourceStatesPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMediaSourceStates::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMediaSourceStates>(vm, globalObject);
 }
 
 void JSMediaSourceStates::destroy(JSC::JSCell* cell)
@@ -91,107 +145,129 @@ void JSMediaSourceStates::destroy(JSC::JSCell* cell)
 
 JSMediaSourceStates::~JSMediaSourceStates()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSMediaSourceStates::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSMediaSourceStates* thisObject = jsCast<JSMediaSourceStates*>(object);
+    auto* thisObject = jsCast<JSMediaSourceStates*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSMediaSourceStates, Base>(exec, JSMediaSourceStatesTable, thisObject, propertyName, slot);
 }
 
-JSValue jsMediaSourceStatesSourceType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesSourceType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaSourceStates& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaSourceStates* castedThis = jsDynamicCast<JSMediaSourceStates*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaSourceStatesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaSourceStates", "sourceType");
+        return throwGetterTypeError(*exec, "MediaSourceStates", "sourceType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.sourceType());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaSourceStatesSourceId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesSourceId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaSourceStates& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaSourceStates* castedThis = jsDynamicCast<JSMediaSourceStates*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaSourceStatesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaSourceStates", "sourceId");
+        return throwGetterTypeError(*exec, "MediaSourceStates", "sourceId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.sourceId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaSourceStatesWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
-    return castedThis->width(exec);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSMediaSourceStates*>(slotBase);
+    return JSValue::encode(castedThis->width(exec));
 }
 
 
-JSValue jsMediaSourceStatesHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
-    return castedThis->height(exec);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSMediaSourceStates*>(slotBase);
+    return JSValue::encode(castedThis->height(exec));
 }
 
 
-JSValue jsMediaSourceStatesFrameRate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesFrameRate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
-    return castedThis->frameRate(exec);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSMediaSourceStates*>(slotBase);
+    return JSValue::encode(castedThis->frameRate(exec));
 }
 
 
-JSValue jsMediaSourceStatesAspectRatio(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesAspectRatio(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
-    return castedThis->aspectRatio(exec);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSMediaSourceStates*>(slotBase);
+    return JSValue::encode(castedThis->aspectRatio(exec));
 }
 
 
-JSValue jsMediaSourceStatesFacingMode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesFacingMode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
-    return castedThis->facingMode(exec);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSMediaSourceStates*>(slotBase);
+    return JSValue::encode(castedThis->facingMode(exec));
 }
 
 
-JSValue jsMediaSourceStatesVolume(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaSourceStatesVolume(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaSourceStates* castedThis = jsCast<JSMediaSourceStates*>(asObject(slotBase));
-    return castedThis->volume(exec);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSMediaSourceStates*>(slotBase);
+    return JSValue::encode(castedThis->volume(exec));
 }
 
-
-static inline bool isObservable(JSMediaSourceStates* jsMediaSourceStates)
-{
-    if (jsMediaSourceStates->hasCustomProperties())
-        return true;
-    return false;
-}
 
 bool JSMediaSourceStatesOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMediaSourceStates* jsMediaSourceStates = jsCast<JSMediaSourceStates*>(handle.get().asCell());
-    if (!isObservable(jsMediaSourceStates))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMediaSourceStatesOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMediaSourceStates* jsMediaSourceStates = jsCast<JSMediaSourceStates*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMediaSourceStates = jsCast<JSMediaSourceStates*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMediaSourceStates->impl(), jsMediaSourceStates);
-    jsMediaSourceStates->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaSourceStates* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MediaSourceStates* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMediaSourceStates>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMediaSourceStates>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -200,13 +276,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaSo
     // attribute to MediaSourceStates.
     COMPILE_ASSERT(!__is_polymorphic(MediaSourceStates), MediaSourceStates_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<MediaSourceStates>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMediaSourceStates>(exec, globalObject, impl);
+    return createNewWrapper<JSMediaSourceStates>(globalObject, impl);
 }
 
-MediaSourceStates* toMediaSourceStates(JSC::JSValue value)
+MediaSourceStates* JSMediaSourceStates::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMediaSourceStates::info()) ? &jsCast<JSMediaSourceStates*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMediaSourceStates*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

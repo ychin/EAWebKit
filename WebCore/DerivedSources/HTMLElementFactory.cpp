@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -61,9 +61,9 @@
 #include "HTMLHRElement.h"
 #include "HTMLHtmlElement.h"
 #include "HTMLIFrameElement.h"
+#include "HTMLUnknownElement.h"
 #include "HTMLImageElement.h"
 #include "HTMLInputElement.h"
-#include "HTMLUnknownElement.h"
 #include "HTMLKeygenElement.h"
 #include "HTMLLabelElement.h"
 #include "HTMLLegendElement.h"
@@ -81,6 +81,9 @@
 #include "HTMLOutputElement.h"
 #include "HTMLParagraphElement.h"
 #include "HTMLParamElement.h"
+#include "HTMLProgressElement.h"
+#include "RubyTextElement.h"
+#include "RubyElement.h"
 #include "HTMLScriptElement.h"
 #include "HTMLSelectElement.h"
 #include "HTMLSpanElement.h"
@@ -92,7 +95,12 @@
 #include "HTMLTitleElement.h"
 #include "HTMLTableRowElement.h"
 #include "HTMLUListElement.h"
+#include "HTMLWBRElement.h"
 #include "HTMLUnknownElement.h"
+
+#if ENABLE(ATTACHMENT_ELEMENT)
+#include "HTMLAttachmentElement.h"
+#endif
 
 #if ENABLE(DATALIST_ELEMENT)
 #include "HTMLDataListElement.h"
@@ -105,10 +113,6 @@
 
 #if ENABLE(METER_ELEMENT)
 #include "HTMLMeterElement.h"
-#endif
-
-#if ENABLE(PROGRESS_ELEMENT)
-#include "HTMLProgressElement.h"
 #endif
 
 #if ENABLE(TEMPLATE_ELEMENT)
@@ -135,393 +139,416 @@ namespace WebCore {
 
 using namespace HTMLNames;
 
-typedef PassRefPtr<HTMLElement> (*HTMLConstructorFunction)(const QualifiedName&, Document&, HTMLFormElement*, bool createdByParser);
+typedef Ref<HTMLElement> (*HTMLConstructorFunction)(const QualifiedName&, Document&, HTMLFormElement*, bool createdByParser);
 
-static PassRefPtr<HTMLElement> anchorConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> anchorConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLAnchorElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> Constructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> Constructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> appletConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> appletConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     return HTMLAppletElement::create(tagName, document, createdByParser);
 }
 
-static PassRefPtr<HTMLElement> areaConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> areaConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLAreaElement::create(tagName, document);
 }
 
+#if ENABLE(ATTACHMENT_ELEMENT)
+static Ref<HTMLElement> attachmentConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+{
+    Settings* settings = document.settings();
+    if (!settings || !settings->attachmentElementEnabled())
+        return HTMLUnknownElement::create(tagName, document);
+    return HTMLAttachmentElement::create(tagName, document);
+}
+#endif
+
 #if ENABLE(VIDEO)
-static PassRefPtr<HTMLElement> audioConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> audioConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     Settings* settings = document.settings();
     if (!MediaPlayer::isAvailable() || (settings && !settings->mediaEnabled()))
-        return 0;
+        return HTMLUnknownElement::create(tagName, document);
     
     return HTMLAudioElement::create(tagName, document, createdByParser);
 }
 #endif
 
-static PassRefPtr<HTMLElement> baseConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> baseConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLBaseElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> basefontConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> basefontConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLBaseFontElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> bdiConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> bdiConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLBDIElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> quoteConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> quoteConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLQuoteElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> bodyConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> bodyConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLBodyElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> brConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> brConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLBRElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> buttonConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+static Ref<HTMLElement> buttonConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
 {
     return HTMLButtonElement::create(tagName, document, formElement);
 }
 
-static PassRefPtr<HTMLElement> canvasConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> canvasConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLCanvasElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> tablecaptionConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> tablecaptionConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTableCaptionElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> tablecolConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> tablecolConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTableColElement::create(tagName, document);
 }
 
 #if ENABLE(DATALIST_ELEMENT)
-static PassRefPtr<HTMLElement> datalistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> datalistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLDataListElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> modConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> modConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLModElement::create(tagName, document);
 }
 
 #if ENABLE(DETAILS_ELEMENT)
-static PassRefPtr<HTMLElement> detailsConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> detailsConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLDetailsElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> directoryConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> directoryConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLDirectoryElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> divConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> divConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLDivElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> dlistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> dlistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLDListElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> embedConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> embedConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     return HTMLEmbedElement::create(tagName, document, createdByParser);
 }
 
-static PassRefPtr<HTMLElement> fieldsetConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+static Ref<HTMLElement> fieldsetConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
 {
     return HTMLFieldSetElement::create(tagName, document, formElement);
 }
 
-static PassRefPtr<HTMLElement> fontConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> fontConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLFontElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> formConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> formConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLFormElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> frameConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> frameConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLFrameElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> framesetConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> framesetConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLFrameSetElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> headingConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> headingConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLHeadingElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> headConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> headConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLHeadElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> hrConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> hrConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLHRElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> htmlConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> htmlConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLHtmlElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> iframeConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> iframeConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLIFrameElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> imageConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
-{
-    return HTMLImageElement::create(tagName, document, formElement);
-}
-
-static PassRefPtr<HTMLElement> inputConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool createdByParser)
-{
-    return HTMLInputElement::create(tagName, document, formElement, createdByParser);
-}
-
-static PassRefPtr<HTMLElement> unknownConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> unknownConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLUnknownElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> keygenConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+static Ref<HTMLElement> imageConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+{
+    return HTMLImageElement::create(tagName, document, formElement);
+}
+
+static Ref<HTMLElement> inputConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool createdByParser)
+{
+    return HTMLInputElement::create(tagName, document, formElement, createdByParser);
+}
+
+static Ref<HTMLElement> keygenConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
 {
     return HTMLKeygenElement::create(tagName, document, formElement);
 }
 
-static PassRefPtr<HTMLElement> labelConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> labelConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLLabelElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> legendConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> legendConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLLegendElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> liConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> liConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLLIElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> linkConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> linkConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     return HTMLLinkElement::create(tagName, document, createdByParser);
 }
 
-static PassRefPtr<HTMLElement> preConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> preConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLPreElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> mapConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> mapConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLMapElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> marqueeConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> marqueeConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLMarqueeElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> menuConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> menuConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLMenuElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> metaConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> metaConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLMetaElement::create(tagName, document);
 }
 
 #if ENABLE(METER_ELEMENT)
-static PassRefPtr<HTMLElement> meterConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> meterConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLMeterElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> objectConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool createdByParser)
+static Ref<HTMLElement> objectConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool createdByParser)
 {
     return HTMLObjectElement::create(tagName, document, formElement, createdByParser);
 }
 
-static PassRefPtr<HTMLElement> olistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> olistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLOListElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> optgroupConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> optgroupConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLOptGroupElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> optionConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> optionConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLOptionElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> outputConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+static Ref<HTMLElement> outputConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
 {
     return HTMLOutputElement::create(tagName, document, formElement);
 }
 
-static PassRefPtr<HTMLElement> paragraphConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> paragraphConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLParagraphElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> paramConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> paramConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLParamElement::create(tagName, document);
 }
 
-#if ENABLE(PROGRESS_ELEMENT)
-static PassRefPtr<HTMLElement> progressConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> progressConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLProgressElement::create(tagName, document);
 }
-#endif
 
-static PassRefPtr<HTMLElement> scriptConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> rubytextelementConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+{
+    return RubyTextElement::create(tagName, document);
+}
+
+static Ref<HTMLElement> rubyelementConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+{
+    return RubyElement::create(tagName, document);
+}
+
+static Ref<HTMLElement> scriptConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     return HTMLScriptElement::create(tagName, document, createdByParser);
 }
 
-static PassRefPtr<HTMLElement> selectConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+static Ref<HTMLElement> selectConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
 {
     return HTMLSelectElement::create(tagName, document, formElement);
 }
 
 #if ENABLE(VIDEO)
-static PassRefPtr<HTMLElement> sourceConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> sourceConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     Settings* settings = document.settings();
     if (!MediaPlayer::isAvailable() || (settings && !settings->mediaEnabled()))
-        return 0;
+        return HTMLUnknownElement::create(tagName, document);
     
     return HTMLSourceElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> spanConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> spanConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLSpanElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> styleConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> styleConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     return HTMLStyleElement::create(tagName, document, createdByParser);
 }
 
 #if ENABLE(DETAILS_ELEMENT)
-static PassRefPtr<HTMLElement> summaryConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> summaryConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLSummaryElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> tableConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> tableConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTableElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> tablesectionConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> tablesectionConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTableSectionElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> tablecellConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> tablecellConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTableCellElement::create(tagName, document);
 }
 
 #if ENABLE(TEMPLATE_ELEMENT)
-static PassRefPtr<HTMLElement> templateConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> templateConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTemplateElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> textareaConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
+static Ref<HTMLElement> textareaConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement* formElement, bool)
 {
     return HTMLTextAreaElement::create(tagName, document, formElement);
 }
 
-static PassRefPtr<HTMLElement> titleConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> titleConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTitleElement::create(tagName, document);
 }
 
-static PassRefPtr<HTMLElement> tablerowConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> tablerowConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLTableRowElement::create(tagName, document);
 }
 
 #if ENABLE(VIDEO_TRACK)
-static PassRefPtr<HTMLElement> trackConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> trackConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     Settings* settings = document.settings();
     if (!MediaPlayer::isAvailable() || (settings && !settings->mediaEnabled()))
-        return 0;
+        return HTMLUnknownElement::create(tagName, document);
     
     return HTMLTrackElement::create(tagName, document);
 }
 #endif
 
-static PassRefPtr<HTMLElement> ulistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+static Ref<HTMLElement> ulistConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
 {
     return HTMLUListElement::create(tagName, document);
 }
 
 #if ENABLE(VIDEO)
-static PassRefPtr<HTMLElement> videoConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
+static Ref<HTMLElement> videoConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool createdByParser)
 {
     Settings* settings = document.settings();
     if (!MediaPlayer::isAvailable() || (settings && !settings->mediaEnabled()))
-        return 0;
+        return HTMLUnknownElement::create(tagName, document);
     
     return HTMLVideoElement::create(tagName, document, createdByParser);
 }
 #endif
+
+static Ref<HTMLElement> wbrConstructor(const QualifiedName& tagName, Document& document, HTMLFormElement*, bool)
+{
+    return HTMLWBRElement::create(tagName, document);
+}
 
 static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLConstructorFunction>& map)
 {
@@ -539,6 +566,9 @@ static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLC
         { areaTag, areaConstructor },
         { articleTag, Constructor },
         { asideTag, Constructor },
+#if ENABLE(ATTACHMENT_ELEMENT)
+        { attachmentTag, attachmentConstructor },
+#endif
 #if ENABLE(VIDEO)
         { audioTag, audioConstructor },
 #endif
@@ -597,7 +627,7 @@ static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLC
         { htmlTag, htmlConstructor },
         { iTag, Constructor },
         { iframeTag, iframeConstructor },
-        { imageTag, Constructor },
+        { imageTag, unknownConstructor },
         { imgTag, imageConstructor },
         { inputTag, inputConstructor },
         { insTag, modConstructor },
@@ -634,13 +664,13 @@ static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLC
         { paramTag, paramConstructor },
         { plaintextTag, Constructor },
         { preTag, preConstructor },
-#if ENABLE(PROGRESS_ELEMENT)
         { progressTag, progressConstructor },
-#endif
         { qTag, quoteConstructor },
+        { rbTag, Constructor },
         { rpTag, Constructor },
-        { rtTag, Constructor },
-        { rubyTag, Constructor },
+        { rtTag, rubytextelementConstructor },
+        { rtcTag, Constructor },
+        { rubyTag, rubyelementConstructor },
         { sTag, Constructor },
         { sampTag, Constructor },
         { scriptTag, scriptConstructor },
@@ -669,6 +699,7 @@ static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLC
         { tfootTag, tablesectionConstructor },
         { thTag, tablecellConstructor },
         { theadTag, tablesectionConstructor },
+        { timeTag, Constructor },
         { titleTag, titleConstructor },
         { trTag, tablerowConstructor },
 #if ENABLE(VIDEO_TRACK)
@@ -681,7 +712,7 @@ static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLC
 #if ENABLE(VIDEO)
         { videoTag, videoConstructor },
 #endif
-        { wbrTag, Constructor },
+        { wbrTag, wbrConstructor },
         { xmpTag, preConstructor },
     };
 
@@ -689,16 +720,14 @@ static NEVER_INLINE void populateHTMLFactoryMap(HashMap<AtomicStringImpl*, HTMLC
         map.add(table[i].name.localName().impl(), table[i].function);
 }
 
-PassRefPtr<HTMLElement> HTMLElementFactory::createElement(const QualifiedName& name, Document& document, HTMLFormElement* formElement, bool createdByParser)
+Ref<HTMLElement> HTMLElementFactory::createElement(const QualifiedName& name, Document& document, HTMLFormElement* formElement, bool createdByParser)
 {
     static NeverDestroyed<HashMap<AtomicStringImpl*, HTMLConstructorFunction>> functions;
     if (functions.get().isEmpty())
         populateHTMLFactoryMap(functions);
-    if (HTMLConstructorFunction function = functions.get().get(name.localName().impl())) {
-        if (RefPtr<HTMLElement> element = function(name, document, formElement, createdByParser))
-            return element.release();
-   }
-   return HTMLUnknownElement::create(name, document);
+    if (HTMLConstructorFunction function = functions.get().get(name.localName().impl()))
+        return function(name, document, formElement, createdByParser);
+    return HTMLUnknownElement::create(name, document);
 }
 
 } // namespace WebCore

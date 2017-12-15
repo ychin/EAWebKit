@@ -22,25 +22,23 @@
 #define JSBeforeUnloadEvent_h
 
 #include "BeforeUnloadEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSBeforeUnloadEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSBeforeUnloadEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<BeforeUnloadEvent> impl)
+    static JSBeforeUnloadEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<BeforeUnloadEvent>&& impl)
     {
-        JSBeforeUnloadEvent* ptr = new (NotNull, JSC::allocateCell<JSBeforeUnloadEvent>(globalObject->vm().heap)) JSBeforeUnloadEvent(structure, globalObject, impl);
+        JSBeforeUnloadEvent* ptr = new (NotNull, JSC::allocateCell<JSBeforeUnloadEvent>(globalObject->vm().heap)) JSBeforeUnloadEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,64 +52,17 @@ public:
         return static_cast<BeforeUnloadEvent&>(Base::impl());
     }
 protected:
-    JSBeforeUnloadEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<BeforeUnloadEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSBeforeUnloadEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<BeforeUnloadEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSBeforeUnloadEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSBeforeUnloadEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSBeforeUnloadEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSBeforeUnloadEventPrototype>(vm.heap)) JSBeforeUnloadEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSBeforeUnloadEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSBeforeUnloadEventConstructor : public DOMConstructorObject {
-private:
-    JSBeforeUnloadEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSBeforeUnloadEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSBeforeUnloadEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSBeforeUnloadEventConstructor>(vm.heap)) JSBeforeUnloadEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsBeforeUnloadEventReturnValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSBeforeUnloadEventReturnValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsBeforeUnloadEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

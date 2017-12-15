@@ -31,41 +31,35 @@
 #ifndef WorkerRuntimeAgent_h
 #define WorkerRuntimeAgent_h
 
-#if ENABLE(INSPECTOR) && ENABLE(WORKERS)
-
-#include "InspectorRuntimeAgent.h"
-#include <wtf/PassOwnPtr.h>
+#include <inspector/agents/InspectorRuntimeAgent.h>
 
 namespace WebCore {
 
 class WorkerGlobalScope;
+typedef String ErrorString;
 
-class WorkerRuntimeAgent : public InspectorRuntimeAgent {
+class WorkerRuntimeAgent final : public Inspector::InspectorRuntimeAgent {
 public:
-    static PassOwnPtr<WorkerRuntimeAgent> create(InstrumentingAgents* instrumentingAgents, InspectorCompositeState* state, InjectedScriptManager* injectedScriptManager, WorkerGlobalScope* context)
-    {
-        return adoptPtr(new WorkerRuntimeAgent(instrumentingAgents, state, injectedScriptManager, context));
-    }
-    virtual ~WorkerRuntimeAgent();
+    WorkerRuntimeAgent(Inspector::InjectedScriptManager*, WorkerGlobalScope*);
+    virtual ~WorkerRuntimeAgent() { }
 
-    // Protocol commands.
-    virtual void run(ErrorString*);
+    virtual void didCreateFrontendAndBackend(Inspector::FrontendChannel*, Inspector::BackendDispatcher*) override;
+    virtual void willDestroyFrontendAndBackend(Inspector::DisconnectReason) override;
 
-#if ENABLE(JAVASCRIPT_DEBUGGER)
+    virtual void run(ErrorString&) override;
+
     void pauseWorkerGlobalScope(WorkerGlobalScope*);
-#endif // ENABLE(JAVASCRIPT_DEBUGGER)
 
 private:
-    WorkerRuntimeAgent(InstrumentingAgents*, InspectorCompositeState*, InjectedScriptManager*, WorkerGlobalScope*);
-    virtual InjectedScript injectedScriptForEval(ErrorString*, const int* executionContextId);
-    virtual void muteConsole();
-    virtual void unmuteConsole();
+    virtual JSC::VM& globalVM() override;
+    virtual Inspector::InjectedScript injectedScriptForEval(ErrorString&, const int* executionContextId) override;
+    virtual void muteConsole() override;
+    virtual void unmuteConsole() override;
     WorkerGlobalScope* m_workerGlobalScope;
+    RefPtr<Inspector::RuntimeBackendDispatcher> m_backendDispatcher;
     bool m_paused;
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(INSPECTOR)
 
 #endif // !defined(InspectorPagerAgent_h)

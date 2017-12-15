@@ -26,33 +26,37 @@
 #ifndef CopiedBlock_h
 #define CopiedBlock_h
 
-#include "BlockAllocator.h"
 #include "CopyWorkList.h"
-#include "HeapBlock.h"
 #include "JSCJSValue.h"
 #include "Options.h"
 #include <wtf/Atomics.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include <wtf/DoublyLinkedList.h>
+#include <wtf/Lock.h>
 
 namespace JSC {
 
 class CopiedSpace;
 
-class CopiedBlock : public HeapBlock<CopiedBlock> {
+class CopiedBlock : public DoublyLinkedListNode<CopiedBlock> {
+    friend class WTF::DoublyLinkedListNode<CopiedBlock>;
     friend class CopiedSpace;
     friend class CopiedAllocator;
 public:
-    static CopiedBlock* create(DeadBlock*);
-    static CopiedBlock* createNoZeroFill(DeadBlock*);
+    static CopiedBlock* create(size_t = blockSize);
+    static CopiedBlock* createNoZeroFill(size_t = blockSize);
+    static void destroy(CopiedBlock*);
 
     void pin();
     bool isPinned();
 
+    bool isOld();
     bool isOversize();
+    void didPromote();
 
     unsigned liveBytes();
-    void reportLiveBytes(JSCell*, CopyToken, unsigned);
+    bool shouldReportLiveBytes(LockHolder&, JSCell* owner);
+    void reportLiveBytes(LockHolder&, JSCell*, CopyToken, unsigned);
+    void reportLiveBytesDuringCopying(unsigned);
     void didSurviveGC();
     void didEvacuateBytes(unsigned);
     bool shouldEvacuate();
@@ -81,35 +85,45 @@ public:
 
     bool hasWorkList();
     CopyWorkList& workList();
+    Lock& workListLock() { return m_workListLock; }
 
 private:
-    CopiedBlock(Region*);
+    CopiedBlock(size_t);
     void zeroFillWilderness(); // Can be called at any time to zero-fill to the end of the block.
 
     void checkConsistency();
 
-#if ENABLE(PARALLEL_GC)
-    SpinLock m_workListLock;
-#endif
-    OwnPtr<CopyWorkList> m_workList;
+    CopiedBlock* m_prev;
+    CopiedBlock* m_next;
+
+    size_t m_capacity;
+
+    Lock m_workListLock;
+    std::unique_ptr<CopyWorkList> m_workList;
 
     size_t m_remaining;
-    uintptr_t m_isPinned;
+    bool m_isPinned : 1;
+    bool m_isOld : 1;
     unsigned m_liveBytes;
 #ifndef NDEBUG
     unsigned m_liveObjects;
 #endif
 };
 
-inline CopiedBlock* CopiedBlock::createNoZeroFill(DeadBlock* block)
+inline CopiedBlock* CopiedBlock::createNoZeroFill(size_t capacity)
 {
-    Region* region = block->region();
-    return new(NotNull, block) CopiedBlock(region);
+    return new(NotNull, fastAlignedMalloc(CopiedBlock::blockSize, capacity)) CopiedBlock(capacity);
 }
 
-inline CopiedBlock* CopiedBlock::create(DeadBlock* block)
+inline void CopiedBlock::destroy(CopiedBlock* copiedBlock)
 {
-    CopiedBlock* newBlock = createNoZeroFill(block);
+    copiedBlock->~CopiedBlock();
+    fastAlignedFree(copiedBlock);
+}
+
+inline CopiedBlock* CopiedBlock::create(size_t capacity)
+{
+    CopiedBlock* newBlock = createNoZeroFill(capacity);
     newBlock->zeroFillWilderness();
     return newBlock;
 }
@@ -126,36 +140,37 @@ inline void CopiedBlock::zeroFillWilderness()
 #endif
 }
 
-inline CopiedBlock::CopiedBlock(Region* region)
-    : HeapBlock<CopiedBlock>(region)
+inline CopiedBlock::CopiedBlock(size_t capacity)
+    : DoublyLinkedListNode<CopiedBlock>()
+    , m_capacity(capacity)
     , m_remaining(payloadCapacity())
     , m_isPinned(false)
+    , m_isOld(false)
     , m_liveBytes(0)
 #ifndef NDEBUG
     , m_liveObjects(0)
 #endif
 {
-#if ENABLE(PARALLEL_GC)
-    m_workListLock.Init();
-#endif
     ASSERT(is8ByteAligned(reinterpret_cast<void*>(m_remaining)));
 }
 
 inline void CopiedBlock::didSurviveGC()
 {
     checkConsistency();
+    ASSERT(isOld());
     m_liveBytes = 0;
 #ifndef NDEBUG
     m_liveObjects = 0;
 #endif
     m_isPinned = false;
     if (m_workList)
-        m_workList.clear();
+        m_workList = nullptr;
 }
 
 inline void CopiedBlock::didEvacuateBytes(unsigned bytes)
 {
     ASSERT(m_liveBytes >= bytes);
+    ASSERT(m_liveObjects);
     checkConsistency();
     m_liveBytes -= bytes;
 #ifndef NDEBUG
@@ -180,7 +195,7 @@ inline void CopiedBlock::pin()
 {
     m_isPinned = true;
     if (m_workList)
-        m_workList.clear();
+        m_workList = nullptr;
 }
 
 inline bool CopiedBlock::isPinned()
@@ -188,9 +203,19 @@ inline bool CopiedBlock::isPinned()
     return m_isPinned;
 }
 
+inline bool CopiedBlock::isOld()
+{
+    return m_isOld;
+}
+
+inline void CopiedBlock::didPromote()
+{
+    m_isOld = true;
+}
+
 inline bool CopiedBlock::isOversize()
 {
-    return region()->isCustomSize();
+    return m_capacity != blockSize;
 }
 
 inline unsigned CopiedBlock::liveBytes()
@@ -201,12 +226,12 @@ inline unsigned CopiedBlock::liveBytes()
 
 inline char* CopiedBlock::payload()
 {
-    return reinterpret_cast<char*>(this) + ((sizeof(CopiedBlock) + 7) & ~7);
+    return reinterpret_cast<char*>(this) + WTF::roundUpToMultipleOf<sizeof(double)>(sizeof(CopiedBlock));
 }
 
 inline char* CopiedBlock::payloadEnd()
 {
-    return reinterpret_cast<char*>(this) + region()->blockSize();
+    return reinterpret_cast<char*>(this) + m_capacity;
 }
 
 inline size_t CopiedBlock::payloadCapacity()
@@ -251,7 +276,7 @@ inline size_t CopiedBlock::size()
 
 inline size_t CopiedBlock::capacity()
 {
-    return region()->blockSize();
+    return m_capacity;
 }
 
 inline bool CopiedBlock::hasWorkList()

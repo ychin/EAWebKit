@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
+ * Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,22 +35,22 @@
 
 #include "RTCSessionDescriptionRequestImpl.h"
 
-#include "RTCErrorCallback.h"
 #include "RTCPeerConnection.h"
+#include "RTCPeerConnectionErrorCallback.h"
 #include "RTCSessionDescription.h"
 #include "RTCSessionDescriptionCallback.h"
 #include "RTCSessionDescriptionDescriptor.h"
 
 namespace WebCore {
 
-PassRefPtr<RTCSessionDescriptionRequestImpl> RTCSessionDescriptionRequestImpl::create(ScriptExecutionContext* context, PassRefPtr<RTCSessionDescriptionCallback> successCallback, PassRefPtr<RTCErrorCallback> errorCallback)
+Ref<RTCSessionDescriptionRequestImpl> RTCSessionDescriptionRequestImpl::create(ScriptExecutionContext* context, PassRefPtr<RTCSessionDescriptionCallback> successCallback, PassRefPtr<RTCPeerConnectionErrorCallback> errorCallback)
 {
-    RefPtr<RTCSessionDescriptionRequestImpl> request = adoptRef(new RTCSessionDescriptionRequestImpl(context, successCallback, errorCallback));
+    Ref<RTCSessionDescriptionRequestImpl> request = adoptRef(*new RTCSessionDescriptionRequestImpl(context, successCallback, errorCallback));
     request->suspendIfNeeded();
-    return request.release();
+    return request;
 }
 
-RTCSessionDescriptionRequestImpl::RTCSessionDescriptionRequestImpl(ScriptExecutionContext* context, PassRefPtr<RTCSessionDescriptionCallback> successCallback, PassRefPtr<RTCErrorCallback> errorCallback)
+RTCSessionDescriptionRequestImpl::RTCSessionDescriptionRequestImpl(ScriptExecutionContext* context, PassRefPtr<RTCSessionDescriptionCallback> successCallback, PassRefPtr<RTCPeerConnectionErrorCallback> errorCallback)
     : ActiveDOMObject(context)
     , m_successCallback(successCallback)
     , m_errorCallback(errorCallback)
@@ -73,7 +74,7 @@ void RTCSessionDescriptionRequestImpl::requestSucceeded(PassRefPtr<RTCSessionDes
 void RTCSessionDescriptionRequestImpl::requestFailed(const String& error)
 {
     if (m_errorCallback)
-        m_errorCallback->handleEvent(error);
+        m_errorCallback->handleEvent(DOMError::create(error).ptr());
 
     clear();
 }
@@ -83,10 +84,21 @@ void RTCSessionDescriptionRequestImpl::stop()
     clear();
 }
 
+const char* RTCSessionDescriptionRequestImpl::activeDOMObjectName() const
+{
+    return "RTCSessionDescriptionRequestImpl";
+}
+
+bool RTCSessionDescriptionRequestImpl::canSuspendForPageCache() const
+{
+    // FIXME: We should try and do better here.
+    return false;
+}
+
 void RTCSessionDescriptionRequestImpl::clear()
 {
-    m_successCallback.clear();
-    m_errorCallback.clear();
+    m_successCallback = nullptr;
+    m_errorCallback = nullptr;
 }
 
 } // namespace WebCore

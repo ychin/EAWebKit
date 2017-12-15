@@ -19,69 +19,96 @@
 */
 
 #include "config.h"
-
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
 #include "JSSVGFEGaussianBlurElement.h"
 
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSSVGAnimatedEnumeration.h"
+#include "JSSVGAnimatedLength.h"
 #include "JSSVGAnimatedNumber.h"
 #include "JSSVGAnimatedString.h"
 #include "SVGFEGaussianBlurElement.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedLength.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSSVGFEGaussianBlurElementTableValues[] =
-{
-    { "in1", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementIn1), (intptr_t)0 },
-    { "stdDeviationX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementStdDeviationX), (intptr_t)0 },
-    { "stdDeviationY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementStdDeviationY), (intptr_t)0 },
-    { "edgeMode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementEdgeMode), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "x", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementX), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "y", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementY), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementWidth), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementHeight), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "result", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementResult), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGFEGaussianBlurElementPrototypeFunctionSetStdDeviation(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementIn1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementStdDeviationX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementStdDeviationY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementEdgeMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementResult(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEGaussianBlurElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGFEGaussianBlurElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGFEGaussianBlurElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGFEGaussianBlurElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEGaussianBlurElementPrototype>(vm.heap)) JSSVGFEGaussianBlurElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGFEGaussianBlurElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGFEGaussianBlurElementTable = { 34, 31, JSSVGFEGaussianBlurElementTableValues, 0 };
+class JSSVGFEGaussianBlurElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGFEGaussianBlurElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGFEGaussianBlurElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGFEGaussianBlurElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEGaussianBlurElementConstructor>(vm.heap)) JSSVGFEGaussianBlurElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGFEGaussianBlurElementConstructorTableValues[] =
 {
-    { "SVG_EDGEMODE_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_UNKNOWN), (intptr_t)0 },
-    { "SVG_EDGEMODE_DUPLICATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_DUPLICATE), (intptr_t)0 },
-    { "SVG_EDGEMODE_WRAP", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_WRAP), (intptr_t)0 },
-    { "SVG_EDGEMODE_NONE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_NONE), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "SVG_EDGEMODE_UNKNOWN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SVG_EDGEMODE_DUPLICATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SVG_EDGEMODE_WRAP", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "SVG_EDGEMODE_NONE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGFEGaussianBlurElementConstructorTable = { 9, 7, JSSVGFEGaussianBlurElementConstructorTableValues, 0 };
-const ClassInfo JSSVGFEGaussianBlurElementConstructor::s_info = { "SVGFEGaussianBlurElementConstructor", &Base::s_info, &JSSVGFEGaussianBlurElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGFEGaussianBlurElementConstructor) };
+const ClassInfo JSSVGFEGaussianBlurElementConstructor::s_info = { "SVGFEGaussianBlurElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFEGaussianBlurElementConstructor) };
 
 JSSVGFEGaussianBlurElementConstructor::JSSVGFEGaussianBlurElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -92,179 +119,226 @@ void JSSVGFEGaussianBlurElementConstructor::finishCreation(VM& vm, JSDOMGlobalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGFEGaussianBlurElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGFEGaussianBlurElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGFEGaussianBlurElementConstructor, JSDOMWrapper>(exec, JSSVGFEGaussianBlurElementConstructorTable, jsCast<JSSVGFEGaussianBlurElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGFEGaussianBlurElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGFEGaussianBlurElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSSVGFEGaussianBlurElementConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGFEGaussianBlurElementPrototypeTableValues[] =
 {
-    { "SVG_EDGEMODE_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_UNKNOWN), (intptr_t)0 },
-    { "SVG_EDGEMODE_DUPLICATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_DUPLICATE), (intptr_t)0 },
-    { "SVG_EDGEMODE_WRAP", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_WRAP), (intptr_t)0 },
-    { "SVG_EDGEMODE_NONE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementSVG_EDGEMODE_NONE), (intptr_t)0 },
-    { "setStdDeviation", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGFEGaussianBlurElementPrototypeFunctionSetStdDeviation), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "in1", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementIn1), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "stdDeviationX", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementStdDeviationX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "stdDeviationY", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementStdDeviationY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "edgeMode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementEdgeMode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "y", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "result", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEGaussianBlurElementResult), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "SVG_EDGEMODE_UNKNOWN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SVG_EDGEMODE_DUPLICATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SVG_EDGEMODE_WRAP", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "SVG_EDGEMODE_NONE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "setStdDeviation", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGFEGaussianBlurElementPrototypeFunctionSetStdDeviation), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGFEGaussianBlurElementPrototypeTable = { 17, 15, JSSVGFEGaussianBlurElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGFEGaussianBlurElementPrototype::s_info = { "SVGFEGaussianBlurElementPrototype", &Base::s_info, &JSSVGFEGaussianBlurElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGFEGaussianBlurElementPrototype) };
+const ClassInfo JSSVGFEGaussianBlurElementPrototype::s_info = { "SVGFEGaussianBlurElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFEGaussianBlurElementPrototype) };
 
-JSObject* JSSVGFEGaussianBlurElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGFEGaussianBlurElement>(vm, globalObject);
-}
-
-bool JSSVGFEGaussianBlurElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGFEGaussianBlurElementPrototype* thisObject = jsCast<JSSVGFEGaussianBlurElementPrototype*>(object);
-    return getStaticPropertySlot<JSSVGFEGaussianBlurElementPrototype, JSObject>(exec, JSSVGFEGaussianBlurElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGFEGaussianBlurElement::s_info = { "SVGFEGaussianBlurElement", &Base::s_info, &JSSVGFEGaussianBlurElementTable, 0 , CREATE_METHOD_TABLE(JSSVGFEGaussianBlurElement) };
-
-JSSVGFEGaussianBlurElement::JSSVGFEGaussianBlurElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEGaussianBlurElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGFEGaussianBlurElement::finishCreation(VM& vm)
+void JSSVGFEGaussianBlurElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGFEGaussianBlurElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGFEGaussianBlurElement::s_info = { "SVGFEGaussianBlurElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFEGaussianBlurElement) };
+
+JSSVGFEGaussianBlurElement::JSSVGFEGaussianBlurElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEGaussianBlurElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGFEGaussianBlurElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGFEGaussianBlurElementPrototype::create(vm, globalObject, JSSVGFEGaussianBlurElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGFEGaussianBlurElementPrototype::create(vm, globalObject, JSSVGFEGaussianBlurElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGFEGaussianBlurElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGFEGaussianBlurElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGFEGaussianBlurElement* thisObject = jsCast<JSSVGFEGaussianBlurElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGFEGaussianBlurElement, Base>(exec, JSSVGFEGaussianBlurElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGFEGaussianBlurElement>(vm, globalObject);
 }
 
-JSValue jsSVGFEGaussianBlurElementIn1(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementIn1(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "in1");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "in1");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedString> obj = impl.in1Animated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGFEGaussianBlurElementStdDeviationX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementStdDeviationX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "stdDeviationX");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "stdDeviationX");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedNumber> obj = impl.stdDeviationXAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGFEGaussianBlurElementStdDeviationY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementStdDeviationY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "stdDeviationY");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "stdDeviationY");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedNumber> obj = impl.stdDeviationYAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGFEGaussianBlurElementEdgeMode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementEdgeMode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "edgeMode");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "edgeMode");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedEnumeration> obj = impl.edgeModeAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGFEGaussianBlurElementX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "x");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "x");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.xAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEGaussianBlurElementY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "y");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "y");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.yAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEGaussianBlurElementWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "width");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "width");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.widthAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEGaussianBlurElementHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "height");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "height");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.heightAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEGaussianBlurElementResult(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementResult(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEGaussianBlurElement", "result");
+        return throwGetterTypeError(*exec, "SVGFEGaussianBlurElement", "result");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedString> obj = impl.resultAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGFEGaussianBlurElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEGaussianBlurElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGFEGaussianBlurElement* domObject = jsCast<JSSVGFEGaussianBlurElement*>(asObject(slotBase));
-    return JSSVGFEGaussianBlurElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGFEGaussianBlurElementPrototype* domObject = jsDynamicCast<JSSVGFEGaussianBlurElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGFEGaussianBlurElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGFEGaussianBlurElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -274,49 +348,21 @@ JSValue JSSVGFEGaussianBlurElement::getConstructor(VM& vm, JSGlobalObject* globa
 
 EncodedJSValue JSC_HOST_CALL jsSVGFEGaussianBlurElementPrototypeFunctionSetStdDeviation(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGFEGaussianBlurElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGFEGaussianBlurElement* castedThis = jsCast<JSSVGFEGaussianBlurElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGFEGaussianBlurElement* castedThis = jsDynamicCast<JSSVGFEGaussianBlurElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGFEGaussianBlurElement", "setStdDeviation");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGFEGaussianBlurElement::info());
-    SVGFEGaussianBlurElement& impl = castedThis->impl();
-    float stdDeviationX(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    float stdDeviationX = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float stdDeviationY(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    float stdDeviationY = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setStdDeviation(stdDeviationX, stdDeviationY);
     return JSValue::encode(jsUndefined());
 }
 
-// Constant getters
-
-JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_UNKNOWN(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_DUPLICATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_WRAP(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_NONE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
 
 }
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)

@@ -22,30 +22,29 @@
 #define JSHTMLTableCaptionElement_h
 
 #include "HTMLTableCaptionElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLTableCaptionElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLTableCaptionElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLTableCaptionElement> impl)
+    static JSHTMLTableCaptionElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLTableCaptionElement>&& impl)
     {
-        JSHTMLTableCaptionElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableCaptionElement>(globalObject->vm().heap)) JSHTMLTableCaptionElement(structure, globalObject, impl);
+        JSHTMLTableCaptionElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableCaptionElement>(globalObject->vm().heap)) JSHTMLTableCaptionElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static HTMLTableCaptionElement* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,65 +53,17 @@ public:
         return static_cast<HTMLTableCaptionElement&>(Base::impl());
     }
 protected:
-    JSHTMLTableCaptionElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLTableCaptionElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLTableCaptionElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLTableCaptionElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-HTMLTableCaptionElement* toHTMLTableCaptionElement(JSC::JSValue);
 
-class JSHTMLTableCaptionElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLTableCaptionElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLTableCaptionElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableCaptionElementPrototype>(vm.heap)) JSHTMLTableCaptionElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLTableCaptionElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLTableCaptionElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLTableCaptionElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLTableCaptionElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLTableCaptionElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableCaptionElementConstructor>(vm.heap)) JSHTMLTableCaptionElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLTableCaptionElementAlign(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableCaptionElementAlign(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableCaptionElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

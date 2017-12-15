@@ -25,23 +25,22 @@
 
 #include "AudioDestinationNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSAudioDestinationNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSAudioDestinationNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioDestinationNode> impl)
+    static JSAudioDestinationNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioDestinationNode>&& impl)
     {
-        JSAudioDestinationNode* ptr = new (NotNull, JSC::allocateCell<JSAudioDestinationNode>(globalObject->vm().heap)) JSAudioDestinationNode(structure, globalObject, impl);
+        JSAudioDestinationNode* ptr = new (NotNull, JSC::allocateCell<JSAudioDestinationNode>(globalObject->vm().heap)) JSAudioDestinationNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,64 +54,19 @@ public:
         return static_cast<AudioDestinationNode&>(Base::impl());
     }
 protected:
-    JSAudioDestinationNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AudioDestinationNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAudioDestinationNode(JSC::Structure*, JSDOMGlobalObject*, Ref<AudioDestinationNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AudioDestinationNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioDestinationNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAudioDestinationNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAudioDestinationNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAudioDestinationNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioDestinationNodePrototype>(vm.heap)) JSAudioDestinationNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAudioDestinationNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSAudioDestinationNodeConstructor : public DOMConstructorObject {
-private:
-    JSAudioDestinationNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSAudioDestinationNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSAudioDestinationNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSAudioDestinationNodeConstructor>(vm.heap)) JSAudioDestinationNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsAudioDestinationNodeMaxChannelCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioDestinationNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

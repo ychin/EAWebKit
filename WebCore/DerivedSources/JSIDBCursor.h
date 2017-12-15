@@ -24,27 +24,27 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBCursor.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBCursor : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSIDBCursor* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBCursor> impl)
+    static JSIDBCursor* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBCursor>&& impl)
     {
-        JSIDBCursor* ptr = new (NotNull, JSC::allocateCell<JSIDBCursor>(globalObject->vm().heap)) JSIDBCursor(structure, globalObject, impl);
+        JSIDBCursor* ptr = new (NotNull, JSC::allocateCell<JSIDBCursor>(globalObject->vm().heap)) JSIDBCursor(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBCursor* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSIDBCursor();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     IDBCursor& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     IDBCursor* m_impl;
 protected:
-    JSIDBCursor(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBCursor>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSIDBCursor(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBCursor>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBCursorOwner : public JSC::WeakHandleOwner {
@@ -80,79 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBCursor*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBCursorOwner, jsIDBCursorOwner, ());
-    return &jsIDBCursorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBCursor*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBCursorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBCursor*);
-IDBCursor* toIDBCursor(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBCursor& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBCursorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBCursorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBCursorPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBCursorPrototype>(vm.heap)) JSIDBCursorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBCursorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSIDBCursorConstructor : public DOMConstructorObject {
-private:
-    JSIDBCursorConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBCursorConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBCursorConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBCursorConstructor>(vm.heap)) JSIDBCursorConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBCursorPrototypeFunctionUpdate(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBCursorPrototypeFunctionAdvance(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBCursorPrototypeFunctionContinue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBCursorPrototypeFunctionDelete(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsIDBCursorSource(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBCursorDirection(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBCursorKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBCursorPrimaryKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBCursorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

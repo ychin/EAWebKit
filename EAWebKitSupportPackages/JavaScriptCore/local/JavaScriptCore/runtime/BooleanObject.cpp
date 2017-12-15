@@ -22,13 +22,13 @@
 #include "BooleanObject.h"
 
 #include "JSScope.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 
 STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(BooleanObject);
 
-const ClassInfo BooleanObject::s_info = { "Boolean", &JSWrapperObject::s_info, 0, 0, CREATE_METHOD_TABLE(BooleanObject) };
+const ClassInfo BooleanObject::s_info = { "Boolean", &JSWrapperObject::s_info, 0, CREATE_METHOD_TABLE(BooleanObject) };
 
 BooleanObject::BooleanObject(VM& vm, Structure* structure)
     : JSWrapperObject(vm, structure)

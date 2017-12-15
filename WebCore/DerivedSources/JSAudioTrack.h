@@ -24,28 +24,28 @@
 #if ENABLE(VIDEO_TRACK)
 
 #include "AudioTrack.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSAudioTrack : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSAudioTrack* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioTrack> impl)
+    static JSAudioTrack* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioTrack>&& impl)
     {
-        JSAudioTrack* ptr = new (NotNull, JSC::allocateCell<JSAudioTrack>(globalObject->vm().heap)) JSAudioTrack(structure, globalObject, impl);
+        JSAudioTrack* ptr = new (NotNull, JSC::allocateCell<JSAudioTrack>(globalObject->vm().heap)) JSAudioTrack(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static AudioTrack* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSAudioTrack();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,24 +54,28 @@ public:
     }
 
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
+
+    // Custom attributes
+    void setKind(JSC::ExecState*, JSC::JSValue);
+    void setLanguage(JSC::ExecState*, JSC::JSValue);
     AudioTrack& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     AudioTrack* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSAudioTrack(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AudioTrack>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSAudioTrack(JSC::Structure*, JSDOMGlobalObject*, Ref<AudioTrack>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSAudioTrackOwner : public JSC::WeakHandleOwner {
@@ -82,49 +86,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, AudioTrack*)
 {
-    DEFINE_STATIC_LOCAL(JSAudioTrackOwner, jsAudioTrackOwner, ());
-    return &jsAudioTrackOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, AudioTrack*)
-{
-    return &world;
+    static NeverDestroyed<JSAudioTrackOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AudioTrack*);
-AudioTrack* toAudioTrack(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioTrack& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAudioTrackPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAudioTrackPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAudioTrackPrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioTrackPrototype>(vm.heap)) JSAudioTrackPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAudioTrackPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsAudioTrackId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioTrackKind(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioTrackLabel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioTrackLanguage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioTrackEnabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioTrackEnabled(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

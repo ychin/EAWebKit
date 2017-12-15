@@ -20,30 +20,38 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "config.h"
 
 #import "APICast.h"
-#import "APIShims.h"
 #import "DateInstance.h"
 #import "Error.h"
+#import "Exception.h"
 #import "JavaScriptCore.h"
 #import "JSContextInternal.h"
 #import "JSVirtualMachineInternal.h"
 #import "JSValueInternal.h"
 #import "JSWrapperMap.h"
 #import "ObjcRuntimeExtras.h"
-#import "Operations.h"
+#import "JSCInlines.h"
 #import "JSCJSValue.h"
+#import "Strong.h"
+#import "StrongInlines.h"
 #import <wtf/HashMap.h>
 #import <wtf/HashSet.h>
 #import <wtf/ObjcRuntimeExtras.h>
+#import <wtf/SpinLock.h>
 #import <wtf/Vector.h>
-#import <wtf/TCSpinLock.h>
 #import <wtf/text/WTFString.h>
 #import <wtf/text/StringHash.h>
+
+#if ENABLE(REMOTE_INSPECTOR)
+#import "CallFrame.h"
+#import "JSGlobalObject.h"
+#import "JSGlobalObjectInspectorController.h"
+#endif
 
 #if JSC_OBJC_API_ENABLED
 
@@ -349,6 +357,16 @@ NSString * const JSPropertyDescriptorSetKey = @"set";
     return JSValueIsObject([_context JSGlobalContextRef], m_value);
 }
 
+- (BOOL)isArray
+{
+    return JSValueIsArray([_context JSGlobalContextRef], m_value);
+}
+
+- (BOOL)isDate
+{
+    return JSValueIsDate([_context JSGlobalContextRef], m_value);
+}
+
 - (BOOL)isEqualToObject:(id)value
 {
     return JSValueIsStrictEqual([_context JSGlobalContextRef], m_value, objectToValue(_context, value));
@@ -452,8 +470,8 @@ NSString * const JSPropertyDescriptorSetKey = @"set";
 - (CGPoint)toPoint
 {
     return (CGPoint){
-        [self[@"x"] toDouble],
-        [self[@"y"] toDouble]
+        static_cast<CGFloat>([self[@"x"] toDouble]),
+        static_cast<CGFloat>([self[@"y"] toDouble])
     };
 }
 
@@ -476,8 +494,8 @@ NSString * const JSPropertyDescriptorSetKey = @"set";
 - (CGSize)toSize
 {
     return (CGSize){
-        [self[@"width"] toDouble],
-        [self[@"height"] toDouble]
+        static_cast<CGFloat>([self[@"width"] toDouble]),
+        static_cast<CGFloat>([self[@"height"] toDouble])
     };
 }
 
@@ -555,13 +573,13 @@ NSString * const JSPropertyDescriptorSetKey = @"set";
 
 inline bool isDate(JSObjectRef object, JSGlobalContextRef context)
 {
-    JSC::APIEntryShim entryShim(toJS(context));
+    JSC::JSLockHolder locker(toJS(context));
     return toJS(object)->inherits(JSC::DateInstance::info());
 }
 
 inline bool isArray(JSObjectRef object, JSGlobalContextRef context)
 {
-    JSC::APIEntryShim entryShim(toJS(context));
+    JSC::JSLockHolder locker(toJS(context));
     return toJS(object)->inherits(JSC::JSArray::info());
 }
 
@@ -595,6 +613,7 @@ private:
     JSGlobalContextRef m_context;
     HashMap<JSValueRef, id> m_objectMap;
     Vector<Task> m_worklist;
+    Vector<JSC::Strong<JSC::Unknown>> m_jsValues;
 };
 
 inline id JSContainerConvertor::convert(JSValueRef value)
@@ -611,6 +630,8 @@ inline id JSContainerConvertor::convert(JSValueRef value)
 
 void JSContainerConvertor::add(Task task)
 {
+    JSC::ExecState* exec = toJS(m_context);
+    m_jsValues.append(JSC::Strong<JSC::Unknown>(exec->vm(), toJSForGC(exec, task.js)));
     m_objectMap.add(task.js, task.objc);
     if (task.type != ContainerNone)
         m_worklist.append(task);
@@ -623,6 +644,15 @@ JSContainerConvertor::Task JSContainerConvertor::take()
     m_worklist.removeLast();
     return last;
 }
+
+#if ENABLE(REMOTE_INSPECTOR)
+static void reportExceptionToInspector(JSGlobalContextRef context, JSC::JSValue exceptionValue)
+{
+    JSC::ExecState* exec = toJS(context);
+    JSC::Exception* exception = JSC::Exception::create(exec->vm(), exceptionValue);
+    exec->vmEntryGlobalObject()->inspectorController().reportAPIException(exec, exception);
+}
+#endif
 
 static JSContainerConvertor::Task valueToObjectWithoutCopy(JSGlobalContextRef context, JSValueRef value)
 {
@@ -656,7 +686,7 @@ static JSContainerConvertor::Task valueToObjectWithoutCopy(JSGlobalContextRef co
         return (JSContainerConvertor::Task){ object, wrapped, ContainerNone };
 
     if (isDate(object, context))
-        return (JSContainerConvertor::Task){ object, [NSDate dateWithTimeIntervalSince1970:JSValueToNumber(context, object, 0)], ContainerNone };
+        return (JSContainerConvertor::Task){ object, [NSDate dateWithTimeIntervalSince1970:JSValueToNumber(context, object, 0) / 1000.0], ContainerNone };
 
     if (isArray(object, context))
         return (JSContainerConvertor::Task){ object, [NSMutableArray array], ContainerArray };
@@ -667,6 +697,7 @@ static JSContainerConvertor::Task valueToObjectWithoutCopy(JSGlobalContextRef co
 static id containerValueToObject(JSGlobalContextRef context, JSContainerConvertor::Task task)
 {
     ASSERT(task.type != ContainerNone);
+    JSC::JSLockHolder locker(toJS(context));
     JSContainerConvertor convertor(context);
     convertor.add(task);
     ASSERT(!convertor.isWorkListEmpty());
@@ -691,6 +722,8 @@ static id containerValueToObject(JSGlobalContextRef context, JSContainerConverto
         } else {
             ASSERT([current.objc isKindOfClass:[NSMutableDictionary class]]);
             NSMutableDictionary *dictionary = (NSMutableDictionary *)current.objc;
+
+            JSC::JSLockHolder locker(toJS(context));
 
             JSPropertyNameArrayRef propertyNameArray = JSObjectCopyPropertyNames(context, js);
             size_t length = JSPropertyNameArrayGetCount(propertyNameArray);
@@ -746,9 +779,9 @@ id valueToString(JSGlobalContextRef context, JSValueRef value, JSValueRef* excep
         return nil;
     }
 
-    NSString *stringNS = CFBridgingRelease(JSStringCopyCFString(kCFAllocatorDefault, jsstring));
+    RetainPtr<CFStringRef> stringCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, jsstring));
     JSStringRelease(jsstring);
-    return stringNS;
+    return (NSString *)stringCF.autorelease();
 }
 
 id valueToDate(JSGlobalContextRef context, JSValueRef value, JSValueRef* exception)
@@ -759,7 +792,7 @@ id valueToDate(JSGlobalContextRef context, JSValueRef value, JSValueRef* excepti
             return wrapped;
     }
 
-    double result = JSValueToNumber(context, value, exception);
+    double result = JSValueToNumber(context, value, exception) / 1000.0;
     return *exception ? nil : [NSDate dateWithTimeIntervalSince1970:result];
 }
 
@@ -774,8 +807,14 @@ id valueToArray(JSGlobalContextRef context, JSValueRef value, JSValueRef* except
     if (JSValueIsObject(context, value))
         return containerValueToObject(context, (JSContainerConvertor::Task){ value, [NSMutableArray array], ContainerArray});
 
-    if (!(JSValueIsNull(context, value) || JSValueIsUndefined(context, value)))
-        *exception = toRef(JSC::createTypeError(toJS(context), "Cannot convert primitive to NSArray"));
+    JSC::JSLockHolder locker(toJS(context));
+    if (!(JSValueIsNull(context, value) || JSValueIsUndefined(context, value))) {
+        JSC::JSObject* exceptionObject = JSC::createTypeError(toJS(context), ASCIILiteral("Cannot convert primitive to NSArray"));
+        *exception = toRef(exceptionObject);
+#if ENABLE(REMOTE_INSPECTOR)
+        reportExceptionToInspector(context, exceptionObject);
+#endif
+    }
     return nil;
 }
 
@@ -790,8 +829,14 @@ id valueToDictionary(JSGlobalContextRef context, JSValueRef value, JSValueRef* e
     if (JSValueIsObject(context, value))
         return containerValueToObject(context, (JSContainerConvertor::Task){ value, [NSMutableDictionary dictionary], ContainerDictionary});
 
-    if (!(JSValueIsNull(context, value) || JSValueIsUndefined(context, value)))
-        *exception = toRef(JSC::createTypeError(toJS(context), "Cannot convert primitive to NSDictionary"));
+    JSC::JSLockHolder locker(toJS(context));
+    if (!(JSValueIsNull(context, value) || JSValueIsUndefined(context, value))) {
+        JSC::JSObject* exceptionObject = JSC::createTypeError(toJS(context), ASCIILiteral("Cannot convert primitive to NSDictionary"));
+        *exception = toRef(exceptionObject);
+#if ENABLE(REMOTE_INSPECTOR)
+        reportExceptionToInspector(context, exceptionObject);
+#endif
+    }
     return nil;
 }
 
@@ -817,6 +862,7 @@ private:
     JSContext *m_context;
     HashMap<id, JSValueRef> m_objectMap;
     Vector<Task> m_worklist;
+    Vector<JSC::Strong<JSC::Unknown>> m_jsValues;
 };
 
 JSValueRef ObjcContainerConvertor::convert(id object)
@@ -834,6 +880,8 @@ JSValueRef ObjcContainerConvertor::convert(id object)
 
 void ObjcContainerConvertor::add(ObjcContainerConvertor::Task task)
 {
+    JSC::ExecState* exec = toJS(m_context.JSGlobalContextRef);
+    m_jsValues.append(JSC::Strong<JSC::Unknown>(exec->vm(), toJSForGC(exec, task.js)));
     m_objectMap.add(task.objc, task.js);
     if (task.type != ContainerNone)
         m_worklist.append(task);
@@ -889,7 +937,7 @@ static ObjcContainerConvertor::Task objectToValueWithoutCopy(JSContext *context,
         }
 
         if ([object isKindOfClass:[NSDate class]]) {
-            JSValueRef argument = JSValueMakeNumber(contextRef, [object timeIntervalSince1970]);
+            JSValueRef argument = JSValueMakeNumber(contextRef, [object timeIntervalSince1970] * 1000.0);
             JSObjectRef result = JSObjectMakeDate(contextRef, 1, &argument, 0);
             return (ObjcContainerConvertor::Task){ object, result, ContainerNone };
         }
@@ -913,6 +961,7 @@ JSValueRef objectToValue(JSContext *context, id object)
     if (task.type == ContainerNone)
         return task.js;
 
+    JSC::JSLockHolder locker(toJS(contextRef));
     ObjcContainerConvertor convertor(context);
     convertor.add(task);
     ASSERT(!convertor.isWorkListEmpty());
@@ -1065,7 +1114,7 @@ static StructHandlers* createStructHandlerMap()
 
 static StructTagHandler* handerForStructTag(const char* encodedType)
 {
-    static SpinLock handerForStructTagLock = SPINLOCK_INITIALIZER;
+    static StaticSpinLock handerForStructTagLock;
     SpinLockHolder lockHolder(&handerForStructTagLock);
 
     static StructHandlers* structHandlers = createStructHandlerMap();

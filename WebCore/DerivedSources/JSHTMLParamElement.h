@@ -22,30 +22,28 @@
 #define JSHTMLParamElement_h
 
 #include "HTMLParamElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLParamElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLParamElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLParamElement> impl)
+    static JSHTMLParamElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLParamElement>&& impl)
     {
-        JSHTMLParamElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLParamElement>(globalObject->vm().heap)) JSHTMLParamElement(structure, globalObject, impl);
+        JSHTMLParamElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLParamElement>(globalObject->vm().heap)) JSHTMLParamElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,70 +52,17 @@ public:
         return static_cast<HTMLParamElement&>(Base::impl());
     }
 protected:
-    JSHTMLParamElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLParamElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLParamElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLParamElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSHTMLParamElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLParamElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLParamElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLParamElementPrototype>(vm.heap)) JSHTMLParamElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLParamElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLParamElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLParamElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLParamElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLParamElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLParamElementConstructor>(vm.heap)) JSHTMLParamElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLParamElementName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLParamElementName(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLParamElementType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLParamElementType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLParamElementValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLParamElementValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLParamElementValueType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLParamElementValueType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLParamElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

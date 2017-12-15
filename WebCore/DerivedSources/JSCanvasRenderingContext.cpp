@@ -22,55 +22,77 @@
 #include "JSCanvasRenderingContext.h"
 
 #include "CanvasRenderingContext.h"
+#include "Element.h"
 #include "HTMLCanvasElement.h"
+#include "JSDOMBinding.h"
 #include "JSHTMLCanvasElement.h"
+#include "JSNodeCustom.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSCanvasRenderingContextTableValues[] =
-{
-    { "canvas", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCanvasRenderingContextCanvas), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsCanvasRenderingContextCanvas(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCanvasRenderingContextPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCanvasRenderingContextPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCanvasRenderingContextPrototype* ptr = new (NotNull, JSC::allocateCell<JSCanvasRenderingContextPrototype>(vm.heap)) JSCanvasRenderingContextPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCanvasRenderingContextPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCanvasRenderingContextTable = { 2, 1, JSCanvasRenderingContextTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSCanvasRenderingContextPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "canvas", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCanvasRenderingContextCanvas), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCanvasRenderingContextPrototypeTable = { 1, 0, JSCanvasRenderingContextPrototypeTableValues, 0 };
-const ClassInfo JSCanvasRenderingContextPrototype::s_info = { "CanvasRenderingContextPrototype", &Base::s_info, &JSCanvasRenderingContextPrototypeTable, 0, CREATE_METHOD_TABLE(JSCanvasRenderingContextPrototype) };
+const ClassInfo JSCanvasRenderingContextPrototype::s_info = { "CanvasRenderingContextPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCanvasRenderingContextPrototype) };
 
-JSObject* JSCanvasRenderingContextPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCanvasRenderingContext>(vm, globalObject);
-}
-
-const ClassInfo JSCanvasRenderingContext::s_info = { "CanvasRenderingContext", &Base::s_info, &JSCanvasRenderingContextTable, 0 , CREATE_METHOD_TABLE(JSCanvasRenderingContext) };
-
-JSCanvasRenderingContext::JSCanvasRenderingContext(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CanvasRenderingContext> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSCanvasRenderingContext::finishCreation(VM& vm)
+void JSCanvasRenderingContextPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCanvasRenderingContextPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCanvasRenderingContext::s_info = { "CanvasRenderingContext", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCanvasRenderingContext) };
+
+JSCanvasRenderingContext::JSCanvasRenderingContext(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CanvasRenderingContext>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSCanvasRenderingContext::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSCanvasRenderingContextPrototype::create(vm, globalObject, JSCanvasRenderingContextPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSCanvasRenderingContext::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCanvasRenderingContext>(vm, globalObject);
 }
 
 void JSCanvasRenderingContext::destroy(JSC::JSCell* cell)
@@ -81,53 +103,53 @@ void JSCanvasRenderingContext::destroy(JSC::JSCell* cell)
 
 JSCanvasRenderingContext::~JSCanvasRenderingContext()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSCanvasRenderingContext::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsCanvasRenderingContextCanvas(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCanvasRenderingContext* thisObject = jsCast<JSCanvasRenderingContext*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCanvasRenderingContext, Base>(exec, JSCanvasRenderingContextTable, thisObject, propertyName, slot);
-}
-
-JSValue jsCanvasRenderingContextCanvas(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSCanvasRenderingContext* castedThis = jsCast<JSCanvasRenderingContext*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CanvasRenderingContext& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCanvasRenderingContext* castedThis = jsDynamicCast<JSCanvasRenderingContext*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCanvasRenderingContextPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CanvasRenderingContext", "canvas");
+        return throwGetterTypeError(*exec, "CanvasRenderingContext", "canvas");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.canvas()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-static inline bool isObservable(JSCanvasRenderingContext* jsCanvasRenderingContext)
+void JSCanvasRenderingContext::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    if (jsCanvasRenderingContext->hasCustomProperties())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSCanvasRenderingContext*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSCanvasRenderingContextOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSCanvasRenderingContext* jsCanvasRenderingContext = jsCast<JSCanvasRenderingContext*>(handle.get().asCell());
-    if (!isObservable(jsCanvasRenderingContext))
-        return false;
+    auto* jsCanvasRenderingContext = jsCast<JSCanvasRenderingContext*>(handle.slot()->asCell());
     void* root = WebCore::root(jsCanvasRenderingContext->impl().canvas());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSCanvasRenderingContextOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSCanvasRenderingContext* jsCanvasRenderingContext = jsCast<JSCanvasRenderingContext*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsCanvasRenderingContext = jsCast<JSCanvasRenderingContext*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsCanvasRenderingContext->impl(), jsCanvasRenderingContext);
-    jsCanvasRenderingContext->releaseImpl();
 }
 
-CanvasRenderingContext* toCanvasRenderingContext(JSC::JSValue value)
+CanvasRenderingContext* JSCanvasRenderingContext::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSCanvasRenderingContext::info()) ? &jsCast<JSCanvasRenderingContext*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSCanvasRenderingContext*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

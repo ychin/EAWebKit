@@ -22,27 +22,27 @@
 #define JSBlob_h
 
 #include "Blob.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSBlob : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSBlob* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Blob> impl)
+    static JSBlob* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Blob>&& impl)
     {
-        JSBlob* ptr = new (NotNull, JSC::allocateCell<JSBlob>(globalObject->vm().heap)) JSBlob(structure, globalObject, impl);
+        JSBlob* ptr = new (NotNull, JSC::allocateCell<JSBlob>(globalObject->vm().heap)) JSBlob(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Blob* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSBlob();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     Blob& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Blob* m_impl;
 protected:
-    JSBlob(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Blob>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSBlob(JSC::Structure*, JSDOMGlobalObject*, Ref<Blob>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSBlobOwner : public JSC::WeakHandleOwner {
@@ -78,72 +75,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Blob*)
 {
-    DEFINE_STATIC_LOCAL(JSBlobOwner, jsBlobOwner, ());
-    return &jsBlobOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Blob*)
-{
-    return &world;
+    static NeverDestroyed<JSBlobOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Blob*);
-Blob* toBlob(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Blob& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSBlobPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSBlobPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSBlobPrototype* ptr = new (NotNull, JSC::allocateCell<JSBlobPrototype>(vm.heap)) JSBlobPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSBlob(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSBlobPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSBlobConstructor : public DOMConstructorObject {
-private:
-    JSBlobConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSBlobConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSBlobConstructor* ptr = new (NotNull, JSC::allocateCell<JSBlobConstructor>(vm.heap)) JSBlobConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSBlob(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Attributes
-
-JSC::JSValue jsBlobSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBlobType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBlobConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -25,31 +25,65 @@
 #include "JSAudioDestinationNode.h"
 
 #include "AudioDestinationNode.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSAudioDestinationNodeTableValues[] =
-{
-    { "maxChannelCount", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioDestinationNodeMaxChannelCount), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioDestinationNodeConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsAudioDestinationNodeMaxChannelCount(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAudioDestinationNodeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSAudioDestinationNodePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSAudioDestinationNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSAudioDestinationNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioDestinationNodePrototype>(vm.heap)) JSAudioDestinationNodePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSAudioDestinationNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSAudioDestinationNodeTable = { 5, 3, JSAudioDestinationNodeTableValues, 0 };
-/* Hash table for constructor */
+class JSAudioDestinationNodeConstructor : public DOMConstructorObject {
+private:
+    JSAudioDestinationNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSAudioDestinationNodeConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSAudioDestinationNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSAudioDestinationNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSAudioDestinationNodeConstructor>(vm.heap)) JSAudioDestinationNodeConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSAudioDestinationNodeConstructorTable = { 1, 0, JSAudioDestinationNodeConstructorTableValues, 0 };
-const ClassInfo JSAudioDestinationNodeConstructor::s_info = { "AudioDestinationNodeConstructor", &Base::s_info, &JSAudioDestinationNodeConstructorTable, 0, CREATE_METHOD_TABLE(JSAudioDestinationNodeConstructor) };
+const ClassInfo JSAudioDestinationNodeConstructor::s_info = { "AudioDestinationNodeConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAudioDestinationNodeConstructor) };
 
 JSAudioDestinationNodeConstructor::JSAudioDestinationNodeConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -60,69 +94,67 @@ void JSAudioDestinationNodeConstructor::finishCreation(VM& vm, JSDOMGlobalObject
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSAudioDestinationNodePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSAudioDestinationNodeConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSAudioDestinationNodeConstructor, JSDOMWrapper>(exec, JSAudioDestinationNodeConstructorTable, jsCast<JSAudioDestinationNodeConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSAudioDestinationNode::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("AudioDestinationNode"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSAudioDestinationNodePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioDestinationNodeConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "maxChannelCount", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioDestinationNodeMaxChannelCount), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSAudioDestinationNodePrototypeTable = { 1, 0, JSAudioDestinationNodePrototypeTableValues, 0 };
-const ClassInfo JSAudioDestinationNodePrototype::s_info = { "AudioDestinationNodePrototype", &Base::s_info, &JSAudioDestinationNodePrototypeTable, 0, CREATE_METHOD_TABLE(JSAudioDestinationNodePrototype) };
+const ClassInfo JSAudioDestinationNodePrototype::s_info = { "AudioDestinationNodePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAudioDestinationNodePrototype) };
 
-JSObject* JSAudioDestinationNodePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSAudioDestinationNode>(vm, globalObject);
-}
-
-const ClassInfo JSAudioDestinationNode::s_info = { "AudioDestinationNode", &Base::s_info, &JSAudioDestinationNodeTable, 0 , CREATE_METHOD_TABLE(JSAudioDestinationNode) };
-
-JSAudioDestinationNode::JSAudioDestinationNode(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioDestinationNode> impl)
-    : JSAudioNode(structure, globalObject, impl)
-{
-}
-
-void JSAudioDestinationNode::finishCreation(VM& vm)
+void JSAudioDestinationNodePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSAudioDestinationNodePrototypeTableValues, *this);
+}
+
+const ClassInfo JSAudioDestinationNode::s_info = { "AudioDestinationNode", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAudioDestinationNode) };
+
+JSAudioDestinationNode::JSAudioDestinationNode(Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioDestinationNode>&& impl)
+    : JSAudioNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSAudioDestinationNode::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSAudioDestinationNodePrototype::create(vm, globalObject, JSAudioDestinationNodePrototype::createStructure(vm, globalObject, JSAudioNodePrototype::self(vm, globalObject)));
+    return JSAudioDestinationNodePrototype::create(vm, globalObject, JSAudioDestinationNodePrototype::createStructure(vm, globalObject, JSAudioNode::getPrototype(vm, globalObject)));
 }
 
-bool JSAudioDestinationNode::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSAudioDestinationNode::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSAudioDestinationNode* thisObject = jsCast<JSAudioDestinationNode*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSAudioDestinationNode, Base>(exec, JSAudioDestinationNodeTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSAudioDestinationNode>(vm, globalObject);
 }
 
-JSValue jsAudioDestinationNodeMaxChannelCount(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAudioDestinationNodeMaxChannelCount(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAudioDestinationNode* castedThis = jsCast<JSAudioDestinationNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AudioDestinationNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAudioDestinationNode* castedThis = jsDynamicCast<JSAudioDestinationNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAudioDestinationNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AudioDestinationNode", "maxChannelCount");
+        return throwGetterTypeError(*exec, "AudioDestinationNode", "maxChannelCount");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.maxChannelCount());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAudioDestinationNodeConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAudioDestinationNodeConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSAudioDestinationNode* domObject = jsCast<JSAudioDestinationNode*>(asObject(slotBase));
-    return JSAudioDestinationNode::getConstructor(exec->vm(), domObject->globalObject());
+    JSAudioDestinationNodePrototype* domObject = jsDynamicCast<JSAudioDestinationNodePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSAudioDestinationNode::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSAudioDestinationNode::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -130,14 +162,13 @@ JSValue JSAudioDestinationNode::getConstructor(VM& vm, JSGlobalObject* globalObj
     return getDOMConstructor<JSAudioDestinationNodeConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioDestinationNode* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, AudioDestinationNode* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSAudioDestinationNode>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSAudioDestinationNode>(globalObject, impl))
         return result;
-    ReportMemoryCost<AudioDestinationNode>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSAudioDestinationNode>(exec, globalObject, impl);
+    return createNewWrapper<JSAudioDestinationNode>(globalObject, impl);
 }
 
 

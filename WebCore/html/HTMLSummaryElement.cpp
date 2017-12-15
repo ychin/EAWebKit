@@ -24,22 +24,21 @@
 #if ENABLE(DETAILS_ELEMENT)
 #include "DetailsMarkerControl.h"
 #include "HTMLDetailsElement.h"
-#include "HTMLNames.h"
+#include "HTMLFormControlElement.h"
 #include "InsertionPoint.h"
 #include "KeyboardEvent.h"
 #include "MouseEvent.h"
 #include "NodeRenderingTraversal.h"
 #include "PlatformMouseEvent.h"
 #include "RenderBlockFlow.h"
-#include "ShadowRoot.h"
 
 namespace WebCore {
 
 using namespace HTMLNames;
 
-class SummaryContentElement : public InsertionPoint {
+class SummaryContentElement final : public InsertionPoint {
 public:
-    static PassRefPtr<SummaryContentElement> create(Document&);
+    static Ref<SummaryContentElement> create(Document&);
 
 private:
     SummaryContentElement(Document& document)
@@ -48,16 +47,16 @@ private:
     }
 };
 
-PassRefPtr<SummaryContentElement> SummaryContentElement::create(Document& document)
+Ref<SummaryContentElement> SummaryContentElement::create(Document& document)
 {
-    return adoptRef(new SummaryContentElement(document));
+    return adoptRef(*new SummaryContentElement(document));
 }
 
-PassRefPtr<HTMLSummaryElement> HTMLSummaryElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLSummaryElement> HTMLSummaryElement::create(const QualifiedName& tagName, Document& document)
 {
-    RefPtr<HTMLSummaryElement> summary = adoptRef(new HTMLSummaryElement(tagName, document));
+    Ref<HTMLSummaryElement> summary = adoptRef(*new HTMLSummaryElement(tagName, document));
     summary->ensureUserAgentShadowRoot();
-    return summary.release();
+    return summary;
 }
 
 HTMLSummaryElement::HTMLSummaryElement(const QualifiedName& tagName, Document& document)
@@ -66,14 +65,14 @@ HTMLSummaryElement::HTMLSummaryElement(const QualifiedName& tagName, Document& d
     ASSERT(hasTagName(summaryTag));
 }
 
-RenderElement* HTMLSummaryElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> HTMLSummaryElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderBlockFlow(*this);
+    return createRenderer<RenderBlockFlow>(*this, WTF::move(style));
 }
 
-bool HTMLSummaryElement::childShouldCreateRenderer(const Node* child) const
+bool HTMLSummaryElement::childShouldCreateRenderer(const Node& child) const
 {
-    if (child->isPseudoElement())
+    if (child.isPseudoElement())
         return HTMLElement::childShouldCreateRenderer(child);
 
     return hasShadowRootOrActiveInsertionPointParent(child) && HTMLElement::childShouldCreateRenderer(child);
@@ -81,16 +80,16 @@ bool HTMLSummaryElement::childShouldCreateRenderer(const Node* child) const
 
 void HTMLSummaryElement::didAddUserAgentShadowRoot(ShadowRoot* root)
 {
-    root->appendChild(DetailsMarkerControl::create(document()), ASSERT_NO_EXCEPTION, AttachLazily);
-    root->appendChild(SummaryContentElement::create(document()), ASSERT_NO_EXCEPTION, AttachLazily);
+    root->appendChild(DetailsMarkerControl::create(document()), ASSERT_NO_EXCEPTION);
+    root->appendChild(SummaryContentElement::create(document()), ASSERT_NO_EXCEPTION);
 }
 
 HTMLDetailsElement* HTMLSummaryElement::detailsElement() const
 {
     Node* mayDetails = NodeRenderingTraversal::parent(this);
     if (!mayDetails || !mayDetails->hasTagName(detailsTag))
-        return 0;
-    return static_cast<HTMLDetailsElement*>(mayDetails);
+        return nullptr;
+    return downcast<HTMLDetailsElement>(mayDetails);
 }
 
 bool HTMLSummaryElement::isMainSummary() const
@@ -103,13 +102,14 @@ bool HTMLSummaryElement::isMainSummary() const
 
 static bool isClickableControl(Node* node)
 {
-    if (!node->isElementNode())
+    ASSERT(node);
+    if (!is<Element>(*node))
         return false;
-    Element* element = toElement(node);
-    if (element->isFormControlElement())
+    Element& element = downcast<Element>(*node);
+    if (is<HTMLFormControlElement>(element))
         return true;
-    Element* host = element->shadowHost();
-    return host && host->isFormControlElement();
+    Element* host = element.shadowHost();
+    return host && is<HTMLFormControlElement>(host);
 }
 
 bool HTMLSummaryElement::supportsFocus() const
@@ -127,28 +127,29 @@ void HTMLSummaryElement::defaultEventHandler(Event* event)
             return;
         }
 
-        if (event->isKeyboardEvent()) {
-            if (event->type() == eventNames().keydownEvent && static_cast<KeyboardEvent*>(event)->keyIdentifier() == "U+0020") {
+        if (is<KeyboardEvent>(*event)) {
+            KeyboardEvent& keyboardEvent = downcast<KeyboardEvent>(*event);
+            if (keyboardEvent.type() == eventNames().keydownEvent && keyboardEvent.keyIdentifier() == "U+0020") {
                 setActive(true, true);
                 // No setDefaultHandled() - IE dispatches a keypress in this case.
                 return;
             }
-            if (event->type() == eventNames().keypressEvent) {
-                switch (static_cast<KeyboardEvent*>(event)->charCode()) {
+            if (keyboardEvent.type() == eventNames().keypressEvent) {
+                switch (keyboardEvent.charCode()) {
                 case '\r':
                     dispatchSimulatedClick(event);
-                    event->setDefaultHandled();
+                    keyboardEvent.setDefaultHandled();
                     return;
                 case ' ':
                     // Prevent scrolling down the page.
-                    event->setDefaultHandled();
+                    keyboardEvent.setDefaultHandled();
                     return;
                 }
             }
-            if (event->type() == eventNames().keyupEvent && static_cast<KeyboardEvent*>(event)->keyIdentifier() == "U+0020") {
+            if (keyboardEvent.type() == eventNames().keyupEvent && keyboardEvent.keyIdentifier() == "U+0020") {
                 if (active())
                     dispatchSimulatedClick(event);
-                event->setDefaultHandled();
+                keyboardEvent.setDefaultHandled();
                 return;
             }
         }

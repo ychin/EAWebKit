@@ -37,6 +37,7 @@
 #include "HTMLDocument.h"
 #include "Page.h"
 #include "SecurityOrigin.h"
+#include "SecurityOriginPolicy.h"
 #include "Text.h"
 #include "TextResourceDecoder.h"
 #include "markup.h"
@@ -67,7 +68,7 @@ XSLTProcessor::~XSLTProcessor()
     ASSERT(!m_stylesheetRootNode || !m_stylesheet || m_stylesheet->hasOneRef());
 }
 
-PassRefPtr<Document> XSLTProcessor::createDocumentFromSource(const String& sourceString,
+Ref<Document> XSLTProcessor::createDocumentFromSource(const String& sourceString,
     const String& sourceEncoding, const String& sourceMIMEType, Node* sourceNode, Frame* frame)
 {
     Ref<Document> ownerDocument(sourceNode->document());
@@ -76,10 +77,10 @@ PassRefPtr<Document> XSLTProcessor::createDocumentFromSource(const String& sourc
 
     RefPtr<Document> result;
     if (sourceMIMEType == "text/plain") {
-        result = Document::create(frame, sourceIsDocument ? ownerDocument->url() : URL());
+        result = Document::createXHTML(frame, sourceIsDocument ? ownerDocument->url() : URL());
         transformTextStringToXHTMLDocumentString(documentSource);
     } else
-        result = DOMImplementation::createDocument(sourceMIMEType, frame, sourceIsDocument ? ownerDocument->url() : URL(), false);
+        result = DOMImplementation::createDocument(sourceMIMEType, frame, sourceIsDocument ? ownerDocument->url() : URL());
 
     // Before parsing, we need to save & detach the old document and get the new document
     // in place. We have to do this only if we're rendering the result document.
@@ -90,13 +91,13 @@ PassRefPtr<Document> XSLTProcessor::createDocumentFromSource(const String& sourc
         if (Document* oldDocument = frame->document()) {
             result->setTransformSourceDocument(oldDocument);
             result->takeDOMWindowFrom(oldDocument);
-            result->setSecurityOrigin(oldDocument->securityOrigin());
+            result->setSecurityOriginPolicy(oldDocument->securityOriginPolicy());
             result->setCookieURL(oldDocument->cookieURL());
             result->setFirstPartyForCookies(oldDocument->firstPartyForCookies());
             result->contentSecurityPolicy()->copyStateFrom(oldDocument->contentSecurityPolicy());
         }
 
-        frame->setDocument(result);
+        frame->setDocument(result.copyRef());
     }
 
     RefPtr<TextResourceDecoder> decoder = TextResourceDecoder::create(sourceMIMEType);
@@ -105,7 +106,7 @@ PassRefPtr<Document> XSLTProcessor::createDocumentFromSource(const String& sourc
 
     result->setContent(documentSource);
 
-    return result.release();
+    return result.releaseNonNull();
 }
 
 PassRefPtr<Document> XSLTProcessor::transformToDocument(Node* sourceNode)
@@ -161,8 +162,8 @@ void XSLTProcessor::removeParameter(const String& /*namespaceURI*/, const String
 
 void XSLTProcessor::reset()
 {
-    m_stylesheet.clear();
-    m_stylesheetRootNode.clear();
+    m_stylesheet = nullptr;
+    m_stylesheetRootNode = nullptr;
     m_parameters.clear();
 }
 

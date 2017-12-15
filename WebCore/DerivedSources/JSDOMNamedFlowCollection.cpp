@@ -38,55 +38,88 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMNamedFlowCollectionPrototypeFunctionItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMNamedFlowCollectionPrototypeFunctionNamedItem(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsDOMNamedFlowCollectionLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSDOMNamedFlowCollectionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDOMNamedFlowCollectionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDOMNamedFlowCollectionPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMNamedFlowCollectionPrototype>(vm.heap)) JSDOMNamedFlowCollectionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDOMNamedFlowCollectionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSDOMNamedFlowCollectionTableIndex[4] = {
+    { -1, -1 },
+    { 0, -1 },
+    { -1, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSDOMNamedFlowCollectionTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMNamedFlowCollectionLength), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMNamedFlowCollectionLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSDOMNamedFlowCollectionTable = { 2, 1, JSDOMNamedFlowCollectionTableValues, 0 };
+static const HashTable JSDOMNamedFlowCollectionTable = { 1, 3, true, JSDOMNamedFlowCollectionTableValues, 0, JSDOMNamedFlowCollectionTableIndex };
 /* Hash table for prototype */
 
 static const HashTableValue JSDOMNamedFlowCollectionPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMNamedFlowCollectionPrototypeFunctionItem), (intptr_t)1 },
-    { "namedItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMNamedFlowCollectionPrototypeFunctionNamedItem), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMNamedFlowCollectionPrototypeFunctionItem), (intptr_t) (1) },
+    { "namedItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMNamedFlowCollectionPrototypeFunctionNamedItem), (intptr_t) (1) },
 };
 
-static const HashTable JSDOMNamedFlowCollectionPrototypeTable = { 5, 3, JSDOMNamedFlowCollectionPrototypeTableValues, 0 };
-const ClassInfo JSDOMNamedFlowCollectionPrototype::s_info = { "WebKitNamedFlowCollectionPrototype", &Base::s_info, &JSDOMNamedFlowCollectionPrototypeTable, 0, CREATE_METHOD_TABLE(JSDOMNamedFlowCollectionPrototype) };
+const ClassInfo JSDOMNamedFlowCollectionPrototype::s_info = { "WebKitNamedFlowCollectionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMNamedFlowCollectionPrototype) };
 
-JSObject* JSDOMNamedFlowCollectionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDOMNamedFlowCollection>(vm, globalObject);
-}
-
-bool JSDOMNamedFlowCollectionPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDOMNamedFlowCollectionPrototype* thisObject = jsCast<JSDOMNamedFlowCollectionPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDOMNamedFlowCollectionPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSDOMNamedFlowCollection::s_info = { "WebKitNamedFlowCollection", &Base::s_info, &JSDOMNamedFlowCollectionTable, 0 , CREATE_METHOD_TABLE(JSDOMNamedFlowCollection) };
-
-JSDOMNamedFlowCollection::JSDOMNamedFlowCollection(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMNamedFlowCollection> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSDOMNamedFlowCollection::finishCreation(VM& vm)
+void JSDOMNamedFlowCollectionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDOMNamedFlowCollectionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSDOMNamedFlowCollection::s_info = { "WebKitNamedFlowCollection", &Base::s_info, &JSDOMNamedFlowCollectionTable, CREATE_METHOD_TABLE(JSDOMNamedFlowCollection) };
+
+JSDOMNamedFlowCollection::JSDOMNamedFlowCollection(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMNamedFlowCollection>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSDOMNamedFlowCollection::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSDOMNamedFlowCollectionPrototype::create(vm, globalObject, JSDOMNamedFlowCollectionPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSDOMNamedFlowCollection::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSDOMNamedFlowCollection>(vm, globalObject);
 }
 
 void JSDOMNamedFlowCollection::destroy(JSC::JSCell* cell)
@@ -97,22 +130,23 @@ void JSDOMNamedFlowCollection::destroy(JSC::JSCell* cell)
 
 JSDOMNamedFlowCollection::~JSDOMNamedFlowCollection()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSDOMNamedFlowCollection::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSDOMNamedFlowCollection* thisObject = jsCast<JSDOMNamedFlowCollection*>(object);
+    auto* thisObject = jsCast<JSDOMNamedFlowCollection*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSDOMNamedFlowCollection>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSDOMNamedFlowCollection>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     if (canGetItemsForName(exec, &thisObject->impl(), propertyName)) {
@@ -124,14 +158,14 @@ bool JSDOMNamedFlowCollection::getOwnPropertySlot(JSObject* object, ExecState* e
 
 bool JSDOMNamedFlowCollection::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSDOMNamedFlowCollection* thisObject = jsCast<JSDOMNamedFlowCollection*>(object);
+    auto* thisObject = jsCast<JSDOMNamedFlowCollection*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
-    PropertyName propertyName = Identifier::from(exec, index);
+    Identifier propertyName = Identifier::from(exec, index);
     if (canGetItemsForName(exec, &thisObject->impl(), propertyName)) {
         slot.setCustom(thisObject, ReadOnly | DontDelete | DontEnum, thisObject->nameGetter);
         return true;
@@ -139,67 +173,59 @@ bool JSDOMNamedFlowCollection::getOwnPropertySlotByIndex(JSObject* object, ExecS
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsDOMNamedFlowCollectionLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMNamedFlowCollectionLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMNamedFlowCollection* castedThis = jsCast<JSDOMNamedFlowCollection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMNamedFlowCollection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSDOMNamedFlowCollection*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
 void JSDOMNamedFlowCollection::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSDOMNamedFlowCollection* thisObject = jsCast<JSDOMNamedFlowCollection*>(object);
+    auto* thisObject = jsCast<JSDOMNamedFlowCollection*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMNamedFlowCollectionPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMNamedFlowCollection::info()))
-        return throwVMTypeError(exec);
-    JSDOMNamedFlowCollection* castedThis = jsCast<JSDOMNamedFlowCollection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMNamedFlowCollection* castedThis = jsDynamicCast<JSDOMNamedFlowCollection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMNamedFlowCollection", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMNamedFlowCollection::info());
-    DOMNamedFlowCollection& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMNamedFlowCollectionPrototypeFunctionNamedItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMNamedFlowCollection::info()))
-        return throwVMTypeError(exec);
-    JSDOMNamedFlowCollection* castedThis = jsCast<JSDOMNamedFlowCollection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMNamedFlowCollection* castedThis = jsDynamicCast<JSDOMNamedFlowCollection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMNamedFlowCollection", "namedItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMNamedFlowCollection::info());
-    DOMNamedFlowCollection& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& name(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String name = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.namedItem(name)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.namedItem(name)));
     return JSValue::encode(result);
-}
-
-
-JSValue JSDOMNamedFlowCollection::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSDOMNamedFlowCollection* thisObj = jsCast<JSDOMNamedFlowCollection*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
 }
 
 bool JSDOMNamedFlowCollection::canGetItemsForName(ExecState*, DOMNamedFlowCollection* collection, PropertyName propertyName)
@@ -207,41 +233,31 @@ bool JSDOMNamedFlowCollection::canGetItemsForName(ExecState*, DOMNamedFlowCollec
     return collection->hasNamedItem(propertyNameToAtomicString(propertyName));
 }
 
-JSValue JSDOMNamedFlowCollection::nameGetter(ExecState* exec, JSValue slotBase, PropertyName propertyName)
+EncodedJSValue JSDOMNamedFlowCollection::nameGetter(ExecState* exec, JSObject* slotBase, EncodedJSValue, PropertyName propertyName)
 {
-    JSDOMNamedFlowCollection* thisObj = jsCast<JSDOMNamedFlowCollection*>(asObject(slotBase));
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().namedItem(propertyNameToAtomicString(propertyName)));
-}
-
-static inline bool isObservable(JSDOMNamedFlowCollection* jsDOMNamedFlowCollection)
-{
-    if (jsDOMNamedFlowCollection->hasCustomProperties())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSDOMNamedFlowCollection*>(slotBase);
+    return JSValue::encode(toJS(exec, thisObject->globalObject(), thisObject->impl().namedItem(propertyNameToAtomicString(propertyName))));
 }
 
 bool JSDOMNamedFlowCollectionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSDOMNamedFlowCollection* jsDOMNamedFlowCollection = jsCast<JSDOMNamedFlowCollection*>(handle.get().asCell());
-    if (!isObservable(jsDOMNamedFlowCollection))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSDOMNamedFlowCollectionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSDOMNamedFlowCollection* jsDOMNamedFlowCollection = jsCast<JSDOMNamedFlowCollection*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsDOMNamedFlowCollection = jsCast<JSDOMNamedFlowCollection*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsDOMNamedFlowCollection->impl(), jsDOMNamedFlowCollection);
-    jsDOMNamedFlowCollection->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMNamedFlowCollection* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DOMNamedFlowCollection* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDOMNamedFlowCollection>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDOMNamedFlowCollection>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -250,13 +266,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMName
     // attribute to DOMNamedFlowCollection.
     COMPILE_ASSERT(!__is_polymorphic(DOMNamedFlowCollection), DOMNamedFlowCollection_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<DOMNamedFlowCollection>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDOMNamedFlowCollection>(exec, globalObject, impl);
+    return createNewWrapper<JSDOMNamedFlowCollection>(globalObject, impl);
 }
 
-DOMNamedFlowCollection* toDOMNamedFlowCollection(JSC::JSValue value)
+DOMNamedFlowCollection* JSDOMNamedFlowCollection::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSDOMNamedFlowCollection::info()) ? &jsCast<JSDOMNamedFlowCollection*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSDOMNamedFlowCollection*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

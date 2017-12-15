@@ -23,6 +23,7 @@
 
 #include "EventTarget.h"
 #include "FocusEvent.h"
+#include "JSDOMBinding.h"
 #include "JSDictionary.h"
 #include "JSEventTarget.h"
 #include <runtime/Error.h>
@@ -32,34 +33,72 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSFocusEventTableValues[] =
-{
-    { "relatedTarget", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsFocusEventRelatedTarget), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsFocusEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsFocusEventRelatedTarget(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsFocusEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSFocusEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSFocusEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSFocusEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSFocusEventPrototype>(vm.heap)) JSFocusEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSFocusEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSFocusEventTable = { 4, 3, JSFocusEventTableValues, 0 };
-/* Hash table for constructor */
+class JSFocusEventConstructor : public DOMConstructorObject {
+private:
+    JSFocusEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSFocusEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSFocusEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSFocusEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSFocusEventConstructor>(vm.heap)) JSFocusEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSFocusEvent(JSC::ExecState*);
+#if ENABLE(DOM4_EVENTS_CONSTRUCTOR)
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
+#endif // ENABLE(DOM4_EVENTS_CONSTRUCTOR)
 };
 
-static const HashTable JSFocusEventConstructorTable = { 1, 0, JSFocusEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSFocusEventConstructor::constructJSFocusEvent(ExecState* exec)
 {
-    JSFocusEventConstructor* jsConstructor = jsCast<JSFocusEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSFocusEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     FocusEventInit eventInit;
@@ -91,7 +130,7 @@ bool fillFocusEventInit(FocusEventInit& eventInit, JSDictionary& dictionary)
     return true;
 }
 
-const ClassInfo JSFocusEventConstructor::s_info = { "FocusEventConstructor", &Base::s_info, &JSFocusEventConstructorTable, 0, CREATE_METHOD_TABLE(JSFocusEventConstructor) };
+const ClassInfo JSFocusEventConstructor::s_info = { "FocusEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSFocusEventConstructor) };
 
 JSFocusEventConstructor::JSFocusEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -102,13 +141,9 @@ void JSFocusEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSFocusEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSFocusEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSFocusEventConstructor, JSDOMWrapper>(exec, JSFocusEventConstructorTable, jsCast<JSFocusEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSFocusEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("FocusEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 #if ENABLE(DOM4_EVENTS_CONSTRUCTOR)
@@ -123,56 +158,58 @@ ConstructType JSFocusEventConstructor::getConstructData(JSCell*, ConstructData& 
 
 static const HashTableValue JSFocusEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsFocusEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "relatedTarget", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsFocusEventRelatedTarget), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSFocusEventPrototypeTable = { 1, 0, JSFocusEventPrototypeTableValues, 0 };
-const ClassInfo JSFocusEventPrototype::s_info = { "FocusEventPrototype", &Base::s_info, &JSFocusEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSFocusEventPrototype) };
+const ClassInfo JSFocusEventPrototype::s_info = { "FocusEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSFocusEventPrototype) };
 
-JSObject* JSFocusEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSFocusEvent>(vm, globalObject);
-}
-
-const ClassInfo JSFocusEvent::s_info = { "FocusEvent", &Base::s_info, &JSFocusEventTable, 0 , CREATE_METHOD_TABLE(JSFocusEvent) };
-
-JSFocusEvent::JSFocusEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<FocusEvent> impl)
-    : JSUIEvent(structure, globalObject, impl)
-{
-}
-
-void JSFocusEvent::finishCreation(VM& vm)
+void JSFocusEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSFocusEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSFocusEvent::s_info = { "FocusEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSFocusEvent) };
+
+JSFocusEvent::JSFocusEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<FocusEvent>&& impl)
+    : JSUIEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSFocusEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSFocusEventPrototype::create(vm, globalObject, JSFocusEventPrototype::createStructure(vm, globalObject, JSUIEventPrototype::self(vm, globalObject)));
+    return JSFocusEventPrototype::create(vm, globalObject, JSFocusEventPrototype::createStructure(vm, globalObject, JSUIEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSFocusEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSFocusEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSFocusEvent* thisObject = jsCast<JSFocusEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSFocusEvent, Base>(exec, JSFocusEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSFocusEvent>(vm, globalObject);
 }
 
-JSValue jsFocusEventRelatedTarget(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsFocusEventRelatedTarget(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSFocusEvent* castedThis = jsCast<JSFocusEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    FocusEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSFocusEvent* castedThis = jsDynamicCast<JSFocusEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSFocusEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "FocusEvent", "relatedTarget");
+        return throwGetterTypeError(*exec, "FocusEvent", "relatedTarget");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.relatedTarget()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsFocusEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsFocusEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSFocusEvent* domObject = jsCast<JSFocusEvent*>(asObject(slotBase));
-    return JSFocusEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSFocusEventPrototype* domObject = jsDynamicCast<JSFocusEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSFocusEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSFocusEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

@@ -21,29 +21,29 @@
 #ifndef JSXMLHttpRequestUpload_h
 #define JSXMLHttpRequestUpload_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "XMLHttpRequestUpload.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSXMLHttpRequestUpload : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSXMLHttpRequestUpload* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XMLHttpRequestUpload> impl)
+    static JSXMLHttpRequestUpload* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<XMLHttpRequestUpload>&& impl)
     {
-        JSXMLHttpRequestUpload* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestUpload>(globalObject->vm().heap)) JSXMLHttpRequestUpload(structure, globalObject, impl);
+        JSXMLHttpRequestUpload* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestUpload>(globalObject->vm().heap)) JSXMLHttpRequestUpload(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static XMLHttpRequestUpload* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSXMLHttpRequestUpload();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +55,21 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     XMLHttpRequestUpload& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     XMLHttpRequestUpload* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSXMLHttpRequestUpload(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<XMLHttpRequestUpload>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSXMLHttpRequestUpload(JSC::Structure*, JSDOMGlobalObject*, Ref<XMLHttpRequestUpload>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSXMLHttpRequestUploadOwner : public JSC::WeakHandleOwner {
@@ -81,86 +80,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, XMLHttpRequestUpload*)
 {
-    DEFINE_STATIC_LOCAL(JSXMLHttpRequestUploadOwner, jsXMLHttpRequestUploadOwner, ());
-    return &jsXMLHttpRequestUploadOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, XMLHttpRequestUpload*)
-{
-    return &world;
+    static NeverDestroyed<JSXMLHttpRequestUploadOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, XMLHttpRequestUpload*);
-XMLHttpRequestUpload* toXMLHttpRequestUpload(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, XMLHttpRequestUpload& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSXMLHttpRequestUploadPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSXMLHttpRequestUploadPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSXMLHttpRequestUploadPrototype* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestUploadPrototype>(vm.heap)) JSXMLHttpRequestUploadPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSXMLHttpRequestUploadPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSXMLHttpRequestUploadConstructor : public DOMConstructorObject {
-private:
-    JSXMLHttpRequestUploadConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSXMLHttpRequestUploadConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSXMLHttpRequestUploadConstructor* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestUploadConstructor>(vm.heap)) JSXMLHttpRequestUploadConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestUploadPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestUploadPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestUploadPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsXMLHttpRequestUploadOnabort(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestUploadOnabort(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUploadOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestUploadOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUploadOnload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestUploadOnload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUploadOnloadend(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestUploadOnloadend(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUploadOnloadstart(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestUploadOnloadstart(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUploadOnprogress(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestUploadOnprogress(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUploadConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

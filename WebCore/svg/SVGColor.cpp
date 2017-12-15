@@ -20,8 +20,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGColor.h"
 
 #include "CSSParser.h"
@@ -42,7 +40,7 @@ SVGColor::SVGColor(ClassType classType, const SVGColorType& colorType)
 {
 }
 
-PassRefPtr<RGBColor> SVGColor::rgbColor() const
+Ref<RGBColor> SVGColor::rgbColor() const
 {
     return RGBColor::create(m_color.rgb());
 }
@@ -99,9 +97,9 @@ SVGColor::SVGColor(ClassType classType, const SVGColor& cloneFrom)
 {
 }
 
-PassRefPtr<SVGColor> SVGColor::cloneForCSSOM() const
+Ref<SVGColor> SVGColor::cloneForCSSOM() const
 {
-    return adoptRef(new SVGColor(SVGColorClass, *this));
+    return adoptRef(*new SVGColor(SVGColorClass, *this));
 }
 
 bool SVGColor::equals(const SVGColor& other) const
@@ -110,5 +108,3 @@ bool SVGColor::equals(const SVGColor& other) const
 }
 
 }
-
-#endif // ENABLE(SVG)

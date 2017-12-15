@@ -24,28 +24,27 @@
 #if ENABLE(FONT_LOAD_EVENTS)
 
 #include "FontLoader.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSFontLoader : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSFontLoader* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<FontLoader> impl)
+    static JSFontLoader* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<FontLoader>&& impl)
     {
-        JSFontLoader* ptr = new (NotNull, JSC::allocateCell<JSFontLoader>(globalObject->vm().heap)) JSFontLoader(structure, globalObject, impl);
+        JSFontLoader* ptr = new (NotNull, JSC::allocateCell<JSFontLoader>(globalObject->vm().heap)) JSFontLoader(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static FontLoader* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSFontLoader();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,22 +55,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     FontLoader& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     FontLoader* m_impl;
 protected:
-    JSFontLoader(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<FontLoader>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSFontLoader(JSC::Structure*, JSDOMGlobalObject*, Ref<FontLoader>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSFontLoaderOwner : public JSC::WeakHandleOwner {
@@ -82,63 +78,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, FontLoader*)
 {
-    DEFINE_STATIC_LOCAL(JSFontLoaderOwner, jsFontLoaderOwner, ());
-    return &jsFontLoaderOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, FontLoader*)
-{
-    return &world;
+    static NeverDestroyed<JSFontLoaderOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, FontLoader*);
-FontLoader* toFontLoader(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, FontLoader& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSFontLoaderPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSFontLoaderPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSFontLoaderPrototype* ptr = new (NotNull, JSC::allocateCell<JSFontLoaderPrototype>(vm.heap)) JSFontLoaderPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSFontLoaderPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsFontLoaderPrototypeFunctionCheckFont(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFontLoaderPrototypeFunctionLoadFont(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFontLoaderPrototypeFunctionNotifyWhenFontsReady(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFontLoaderPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFontLoaderPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFontLoaderPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsFontLoaderOnloading(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFontLoaderOnloading(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFontLoaderOnloadingdone(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFontLoaderOnloadingdone(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFontLoaderOnloadstart(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFontLoaderOnloadstart(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFontLoaderOnload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFontLoaderOnload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFontLoaderOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFontLoaderOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFontLoaderLoading(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

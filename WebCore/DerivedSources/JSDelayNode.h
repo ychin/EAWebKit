@@ -25,23 +25,22 @@
 
 #include "DelayNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDelayNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSDelayNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DelayNode> impl)
+    static JSDelayNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DelayNode>&& impl)
     {
-        JSDelayNode* ptr = new (NotNull, JSC::allocateCell<JSDelayNode>(globalObject->vm().heap)) JSDelayNode(structure, globalObject, impl);
+        JSDelayNode* ptr = new (NotNull, JSC::allocateCell<JSDelayNode>(globalObject->vm().heap)) JSDelayNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,64 +54,19 @@ public:
         return static_cast<DelayNode&>(Base::impl());
     }
 protected:
-    JSDelayNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DelayNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDelayNode(JSC::Structure*, JSDOMGlobalObject*, Ref<DelayNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DelayNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DelayNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDelayNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDelayNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDelayNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSDelayNodePrototype>(vm.heap)) JSDelayNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDelayNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSDelayNodeConstructor : public DOMConstructorObject {
-private:
-    JSDelayNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDelayNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDelayNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSDelayNodeConstructor>(vm.heap)) JSDelayNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsDelayNodeDelayTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDelayNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

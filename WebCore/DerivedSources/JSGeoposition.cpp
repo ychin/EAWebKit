@@ -27,54 +27,75 @@
 #include "Coordinates.h"
 #include "Geoposition.h"
 #include "JSCoordinates.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSGeopositionTableValues[] =
-{
-    { "coords", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsGeopositionCoords), (intptr_t)0 },
-    { "timestamp", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsGeopositionTimestamp), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsGeopositionCoords(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsGeopositionTimestamp(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSGeopositionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSGeopositionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSGeopositionPrototype* ptr = new (NotNull, JSC::allocateCell<JSGeopositionPrototype>(vm.heap)) JSGeopositionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSGeopositionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSGeopositionTable = { 4, 3, JSGeopositionTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSGeopositionPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "coords", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsGeopositionCoords), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "timestamp", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsGeopositionTimestamp), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSGeopositionPrototypeTable = { 1, 0, JSGeopositionPrototypeTableValues, 0 };
-const ClassInfo JSGeopositionPrototype::s_info = { "GeopositionPrototype", &Base::s_info, &JSGeopositionPrototypeTable, 0, CREATE_METHOD_TABLE(JSGeopositionPrototype) };
+const ClassInfo JSGeopositionPrototype::s_info = { "GeopositionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSGeopositionPrototype) };
 
-JSObject* JSGeopositionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSGeoposition>(vm, globalObject);
-}
-
-const ClassInfo JSGeoposition::s_info = { "Geoposition", &Base::s_info, &JSGeopositionTable, 0 , CREATE_METHOD_TABLE(JSGeoposition) };
-
-JSGeoposition::JSGeoposition(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Geoposition> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSGeoposition::finishCreation(VM& vm)
+void JSGeopositionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSGeopositionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSGeoposition::s_info = { "Geoposition", &Base::s_info, 0, CREATE_METHOD_TABLE(JSGeoposition) };
+
+JSGeoposition::JSGeoposition(Structure* structure, JSDOMGlobalObject* globalObject, Ref<Geoposition>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSGeoposition::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSGeopositionPrototype::create(vm, globalObject, JSGeopositionPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSGeoposition::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSGeoposition>(vm, globalObject);
 }
 
 void JSGeoposition::destroy(JSC::JSCell* cell)
@@ -85,65 +106,62 @@ void JSGeoposition::destroy(JSC::JSCell* cell)
 
 JSGeoposition::~JSGeoposition()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSGeoposition::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsGeopositionCoords(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSGeoposition* thisObject = jsCast<JSGeoposition*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSGeoposition, Base>(exec, JSGeopositionTable, thisObject, propertyName, slot);
-}
-
-JSValue jsGeopositionCoords(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSGeoposition* castedThis = jsCast<JSGeoposition*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Geoposition& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSGeoposition* castedThis = jsDynamicCast<JSGeoposition*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSGeopositionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Geoposition", "coords");
+        return throwGetterTypeError(*exec, "Geoposition", "coords");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.coords()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsGeopositionTimestamp(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsGeopositionTimestamp(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSGeoposition* castedThis = jsCast<JSGeoposition*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Geoposition& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSGeoposition* castedThis = jsDynamicCast<JSGeoposition*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSGeopositionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Geoposition", "timestamp");
+        return throwGetterTypeError(*exec, "Geoposition", "timestamp");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.timestamp());
-    return result;
+    return JSValue::encode(result);
 }
 
-
-static inline bool isObservable(JSGeoposition* jsGeoposition)
-{
-    if (jsGeoposition->hasCustomProperties())
-        return true;
-    return false;
-}
 
 bool JSGeopositionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSGeoposition* jsGeoposition = jsCast<JSGeoposition*>(handle.get().asCell());
-    if (!isObservable(jsGeoposition))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSGeopositionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSGeoposition* jsGeoposition = jsCast<JSGeoposition*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsGeoposition = jsCast<JSGeoposition*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsGeoposition->impl(), jsGeoposition);
-    jsGeoposition->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Geoposition* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, Geoposition* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSGeoposition>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSGeoposition>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -152,13 +170,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Geoposi
     // attribute to Geoposition.
     COMPILE_ASSERT(!__is_polymorphic(Geoposition), Geoposition_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<Geoposition>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSGeoposition>(exec, globalObject, impl);
+    return createNewWrapper<JSGeoposition>(globalObject, impl);
 }
 
-Geoposition* toGeoposition(JSC::JSValue value)
+Geoposition* JSGeoposition::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSGeoposition::info()) ? &jsCast<JSGeoposition*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSGeoposition*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

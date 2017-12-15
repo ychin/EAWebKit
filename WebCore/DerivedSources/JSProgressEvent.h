@@ -21,10 +21,8 @@
 #ifndef JSProgressEvent_h
 #define JSProgressEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "ProgressEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSProgressEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSProgressEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ProgressEvent> impl)
+    static JSProgressEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ProgressEvent>&& impl)
     {
-        JSProgressEvent* ptr = new (NotNull, JSC::allocateCell<JSProgressEvent>(globalObject->vm().heap)) JSProgressEvent(structure, globalObject, impl);
+        JSProgressEvent* ptr = new (NotNull, JSC::allocateCell<JSProgressEvent>(globalObject->vm().heap)) JSProgressEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,69 +54,19 @@ public:
         return static_cast<ProgressEvent&>(Base::impl());
     }
 protected:
-    JSProgressEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ProgressEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSProgressEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<ProgressEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSProgressEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSProgressEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSProgressEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSProgressEventPrototype>(vm.heap)) JSProgressEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSProgressEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSProgressEventConstructor : public DOMConstructorObject {
-private:
-    JSProgressEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSProgressEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSProgressEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSProgressEventConstructor>(vm.heap)) JSProgressEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSProgressEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillProgressEventInit(ProgressEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsProgressEventLengthComputable(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsProgressEventLoaded(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsProgressEventTotal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsProgressEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

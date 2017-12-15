@@ -23,25 +23,25 @@
 
 #if ENABLE(TOUCH_EVENTS)
 
-#include "JSDOMBinding.h"
 #include "JSUIEvent.h"
 #include "TouchEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSTouchEvent : public JSUIEvent {
 public:
     typedef JSUIEvent Base;
-    static JSTouchEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TouchEvent> impl)
+    static JSTouchEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TouchEvent>&& impl)
     {
-        JSTouchEvent* ptr = new (NotNull, JSC::allocateCell<JSTouchEvent>(globalObject->vm().heap)) JSTouchEvent(structure, globalObject, impl);
+        JSTouchEvent* ptr = new (NotNull, JSC::allocateCell<JSTouchEvent>(globalObject->vm().heap)) JSTouchEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,74 +54,20 @@ public:
     {
         return static_cast<TouchEvent&>(Base::impl());
     }
-protected:
-    JSTouchEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TouchEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSTouchEventPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTouchEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTouchEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSTouchEventPrototype>(vm.heap)) JSTouchEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTouchEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
     static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSTouchEventConstructor : public DOMConstructorObject {
-private:
-    JSTouchEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTouchEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTouchEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSTouchEventConstructor>(vm.heap)) JSTouchEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
+    JSTouchEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<TouchEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-// Functions
 
-JSC::EncodedJSValue JSC_HOST_CALL jsTouchEventPrototypeFunctionInitTouchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsTouchEventTouches(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventTargetTouches(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventChangedTouches(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventCtrlKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventShiftKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventAltKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventMetaKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

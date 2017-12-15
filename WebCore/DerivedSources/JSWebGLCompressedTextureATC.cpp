@@ -24,6 +24,7 @@
 
 #include "JSWebGLCompressedTextureATC.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLCompressedTextureATC.h"
 #include <wtf/GetPtr.h>
 
@@ -31,47 +32,64 @@ using namespace JSC;
 
 namespace WebCore {
 
+class JSWebGLCompressedTextureATCPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLCompressedTextureATCPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLCompressedTextureATCPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLCompressedTextureATCPrototype>(vm.heap)) JSWebGLCompressedTextureATCPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLCompressedTextureATCPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLCompressedTextureATCPrototypeTableValues[] =
 {
-    { "COMPRESSED_RGB_ATC_WEBGL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureATCCOMPRESSED_RGB_ATC_WEBGL), (intptr_t)0 },
-    { "COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureATCCOMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL), (intptr_t)0 },
-    { "COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureATCCOMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "COMPRESSED_RGB_ATC_WEBGL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x8C92), (intptr_t) (0) },
+    { "COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x8C93), (intptr_t) (0) },
+    { "COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x87EE), (intptr_t) (0) },
 };
 
-static const HashTable JSWebGLCompressedTextureATCPrototypeTable = { 8, 7, JSWebGLCompressedTextureATCPrototypeTableValues, 0 };
-const ClassInfo JSWebGLCompressedTextureATCPrototype::s_info = { "WebGLCompressedTextureATCPrototype", &Base::s_info, &JSWebGLCompressedTextureATCPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLCompressedTextureATCPrototype) };
+const ClassInfo JSWebGLCompressedTextureATCPrototype::s_info = { "WebGLCompressedTextureATCPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLCompressedTextureATCPrototype) };
 
-JSObject* JSWebGLCompressedTextureATCPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLCompressedTextureATC>(vm, globalObject);
-}
-
-bool JSWebGLCompressedTextureATCPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSWebGLCompressedTextureATCPrototype* thisObject = jsCast<JSWebGLCompressedTextureATCPrototype*>(object);
-    return getStaticValueSlot<JSWebGLCompressedTextureATCPrototype, JSObject>(exec, JSWebGLCompressedTextureATCPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSWebGLCompressedTextureATC::s_info = { "WebGLCompressedTextureATC", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSWebGLCompressedTextureATC) };
-
-JSWebGLCompressedTextureATC::JSWebGLCompressedTextureATC(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLCompressedTextureATC> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLCompressedTextureATC::finishCreation(VM& vm)
+void JSWebGLCompressedTextureATCPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLCompressedTextureATCPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLCompressedTextureATC::s_info = { "WebGLCompressedTextureATC", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLCompressedTextureATC) };
+
+JSWebGLCompressedTextureATC::JSWebGLCompressedTextureATC(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLCompressedTextureATC>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLCompressedTextureATC::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLCompressedTextureATCPrototype::create(vm, globalObject, JSWebGLCompressedTextureATCPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLCompressedTextureATC::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLCompressedTextureATC>(vm, globalObject);
 }
 
 void JSWebGLCompressedTextureATC::destroy(JSC::JSCell* cell)
@@ -82,51 +100,21 @@ void JSWebGLCompressedTextureATC::destroy(JSC::JSCell* cell)
 
 JSWebGLCompressedTextureATC::~JSWebGLCompressedTextureATC()
 {
-    releaseImplIfNotNull();
-}
-
-// Constant getters
-
-JSValue jsWebGLCompressedTextureATCCOMPRESSED_RGB_ATC_WEBGL(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x8C92));
-}
-
-JSValue jsWebGLCompressedTextureATCCOMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x8C93));
-}
-
-JSValue jsWebGLCompressedTextureATCCOMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x87EE));
-}
-
-static inline bool isObservable(JSWebGLCompressedTextureATC* jsWebGLCompressedTextureATC)
-{
-    if (jsWebGLCompressedTextureATC->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSWebGLCompressedTextureATCOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLCompressedTextureATC* jsWebGLCompressedTextureATC = jsCast<JSWebGLCompressedTextureATC*>(handle.get().asCell());
-    if (!isObservable(jsWebGLCompressedTextureATC))
-        return false;
-    WebGLRenderingContext* root = jsWebGLCompressedTextureATC->impl().context();
+    auto* jsWebGLCompressedTextureATC = jsCast<JSWebGLCompressedTextureATC*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsWebGLCompressedTextureATC->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSWebGLCompressedTextureATCOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLCompressedTextureATC* jsWebGLCompressedTextureATC = jsCast<JSWebGLCompressedTextureATC*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLCompressedTextureATC = jsCast<JSWebGLCompressedTextureATC*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLCompressedTextureATC->impl(), jsWebGLCompressedTextureATC);
-    jsWebGLCompressedTextureATC->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -137,11 +125,11 @@ extern "C" { extern void (*const __identifier("??_7WebGLCompressedTextureATC@Web
 extern "C" { extern void* _ZTVN7WebCore25WebGLCompressedTextureATCE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLCompressedTextureATC* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLCompressedTextureATC* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLCompressedTextureATC>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLCompressedTextureATC>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -162,13 +150,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLCo
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebGLCompressedTextureATC>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLCompressedTextureATC>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLCompressedTextureATC>(globalObject, impl);
 }
 
-WebGLCompressedTextureATC* toWebGLCompressedTextureATC(JSC::JSValue value)
+WebGLCompressedTextureATC* JSWebGLCompressedTextureATC::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLCompressedTextureATC::info()) ? &jsCast<JSWebGLCompressedTextureATC*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLCompressedTextureATC*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

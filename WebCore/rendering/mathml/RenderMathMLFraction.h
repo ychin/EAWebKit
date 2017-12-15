@@ -29,48 +29,38 @@
 
 #if ENABLE(MATHML)
 
+#include "MathMLInlineContainerElement.h"
 #include "RenderMathMLBlock.h"
 
 namespace WebCore {
 
-class RenderMathMLFraction : public RenderMathMLBlock {
+class RenderMathMLFraction final : public RenderMathMLBlock {
 public:
-    explicit RenderMathMLFraction(Element&);
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE;
-    virtual void updateFromElement() OVERRIDE;
-    
-    virtual RenderMathMLOperator* unembellishedOperator() OVERRIDE;
-    
-    virtual int firstLineBoxBaseline() const OVERRIDE;
+    RenderMathMLFraction(MathMLInlineContainerElement&, Ref<RenderStyle>&&);
+
+    MathMLInlineContainerElement& element() { return static_cast<MathMLInlineContainerElement&>(nodeForNonAnonymous()); }
     float lineThickness() const { return m_lineThickness; }
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
 
-protected:
-    virtual void layout() OVERRIDE;
-    
 private:
-    virtual bool isRenderMathMLFraction() const OVERRIDE { return true; }
-    void fixChildStyle(RenderObject* child);
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
+    virtual bool isRenderMathMLFraction() const override { return true; }
+    virtual const char* renderName() const override { return "RenderMathMLFraction"; }
 
-    virtual const char* renderName() const OVERRIDE { return "RenderMathMLFraction"; }
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild) override;
+    virtual void updateFromElement() override;
+    virtual Optional<int> firstLineBaseline() const override;
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
+    virtual RenderMathMLOperator* unembellishedOperator() override;
+    virtual void layout() override;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
+
+    void fixChildStyle(RenderObject*);
     
     LayoutUnit m_lineThickness;
 };
-    
-inline RenderMathMLFraction* toRenderMathMLFraction(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || (object->isRenderMathMLBlock() && toRenderMathMLBlock(object)->isRenderMathMLFraction()));
-    return static_cast<RenderMathMLFraction*>(object);
-}
 
-inline const RenderMathMLFraction* toRenderMathMLFraction(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || (object->isRenderMathMLBlock() && toRenderMathMLBlock(object)->isRenderMathMLFraction()));
-    return static_cast<const RenderMathMLFraction*>(object);
-}
+} // namespace WebCore
 
-}
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderMathMLFraction, isRenderMathMLFraction())
 
 #endif // ENABLE(MATHML)
 

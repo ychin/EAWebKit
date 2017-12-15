@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGTextPositioningElement.h"
 
+#include "JSDOMBinding.h"
 #include "JSSVGAnimatedLengthList.h"
 #include "JSSVGAnimatedNumberList.h"
 #include "SVGTextPositioningElement.h"
@@ -33,29 +31,62 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGTextPositioningElementTableValues[] =
-{
-    { "x", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementX), (intptr_t)0 },
-    { "y", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementY), (intptr_t)0 },
-    { "dx", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementDx), (intptr_t)0 },
-    { "dy", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementDy), (intptr_t)0 },
-    { "rotate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementRotate), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGTextPositioningElementX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextPositioningElementY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextPositioningElementDx(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextPositioningElementDy(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextPositioningElementRotate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextPositioningElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGTextPositioningElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGTextPositioningElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGTextPositioningElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGTextPositioningElementPrototype>(vm.heap)) JSSVGTextPositioningElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGTextPositioningElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGTextPositioningElementTable = { 17, 15, JSSVGTextPositioningElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGTextPositioningElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGTextPositioningElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGTextPositioningElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGTextPositioningElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGTextPositioningElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGTextPositioningElementConstructor>(vm.heap)) JSSVGTextPositioningElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGTextPositioningElementConstructorTable = { 1, 0, JSSVGTextPositioningElementConstructorTableValues, 0 };
-const ClassInfo JSSVGTextPositioningElementConstructor::s_info = { "SVGTextPositioningElementConstructor", &Base::s_info, &JSSVGTextPositioningElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGTextPositioningElementConstructor) };
+const ClassInfo JSSVGTextPositioningElementConstructor::s_info = { "SVGTextPositioningElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTextPositioningElementConstructor) };
 
 JSSVGTextPositioningElementConstructor::JSSVGTextPositioningElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,114 +97,144 @@ void JSSVGTextPositioningElementConstructor::finishCreation(VM& vm, JSDOMGlobalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGTextPositioningElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGTextPositioningElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGTextPositioningElementConstructor, JSDOMWrapper>(exec, JSSVGTextPositioningElementConstructorTable, jsCast<JSSVGTextPositioningElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGTextPositioningElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGTextPositioningElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGTextPositioningElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "y", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "dx", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementDx), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "dy", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementDy), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "rotate", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextPositioningElementRotate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGTextPositioningElementPrototypeTable = { 1, 0, JSSVGTextPositioningElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGTextPositioningElementPrototype::s_info = { "SVGTextPositioningElementPrototype", &Base::s_info, &JSSVGTextPositioningElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGTextPositioningElementPrototype) };
+const ClassInfo JSSVGTextPositioningElementPrototype::s_info = { "SVGTextPositioningElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTextPositioningElementPrototype) };
 
-JSObject* JSSVGTextPositioningElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGTextPositioningElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGTextPositioningElement::s_info = { "SVGTextPositioningElement", &Base::s_info, &JSSVGTextPositioningElementTable, 0 , CREATE_METHOD_TABLE(JSSVGTextPositioningElement) };
-
-JSSVGTextPositioningElement::JSSVGTextPositioningElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGTextPositioningElement> impl)
-    : JSSVGTextContentElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGTextPositioningElement::finishCreation(VM& vm)
+void JSSVGTextPositioningElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGTextPositioningElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGTextPositioningElement::s_info = { "SVGTextPositioningElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTextPositioningElement) };
+
+JSSVGTextPositioningElement::JSSVGTextPositioningElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGTextPositioningElement>&& impl)
+    : JSSVGTextContentElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGTextPositioningElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGTextPositioningElementPrototype::create(vm, globalObject, JSSVGTextPositioningElementPrototype::createStructure(vm, globalObject, JSSVGTextContentElementPrototype::self(vm, globalObject)));
+    return JSSVGTextPositioningElementPrototype::create(vm, globalObject, JSSVGTextPositioningElementPrototype::createStructure(vm, globalObject, JSSVGTextContentElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGTextPositioningElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGTextPositioningElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGTextPositioningElement* thisObject = jsCast<JSSVGTextPositioningElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGTextPositioningElement, Base>(exec, JSSVGTextPositioningElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGTextPositioningElement>(vm, globalObject);
 }
 
-JSValue jsSVGTextPositioningElementX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextPositioningElementX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextPositioningElement* castedThis = jsCast<JSSVGTextPositioningElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextPositioningElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextPositioningElement* castedThis = jsDynamicCast<JSSVGTextPositioningElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextPositioningElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextPositioningElement", "x");
+        return throwGetterTypeError(*exec, "SVGTextPositioningElement", "x");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLengthList> obj = impl.xAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGTextPositioningElementY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextPositioningElementY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextPositioningElement* castedThis = jsCast<JSSVGTextPositioningElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextPositioningElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextPositioningElement* castedThis = jsDynamicCast<JSSVGTextPositioningElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextPositioningElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextPositioningElement", "y");
+        return throwGetterTypeError(*exec, "SVGTextPositioningElement", "y");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLengthList> obj = impl.yAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGTextPositioningElementDx(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextPositioningElementDx(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextPositioningElement* castedThis = jsCast<JSSVGTextPositioningElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextPositioningElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextPositioningElement* castedThis = jsDynamicCast<JSSVGTextPositioningElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextPositioningElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextPositioningElement", "dx");
+        return throwGetterTypeError(*exec, "SVGTextPositioningElement", "dx");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLengthList> obj = impl.dxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGTextPositioningElementDy(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextPositioningElementDy(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextPositioningElement* castedThis = jsCast<JSSVGTextPositioningElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextPositioningElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextPositioningElement* castedThis = jsDynamicCast<JSSVGTextPositioningElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextPositioningElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextPositioningElement", "dy");
+        return throwGetterTypeError(*exec, "SVGTextPositioningElement", "dy");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLengthList> obj = impl.dyAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGTextPositioningElementRotate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextPositioningElementRotate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextPositioningElement* castedThis = jsCast<JSSVGTextPositioningElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextPositioningElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextPositioningElement* castedThis = jsDynamicCast<JSSVGTextPositioningElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextPositioningElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextPositioningElement", "rotate");
+        return throwGetterTypeError(*exec, "SVGTextPositioningElement", "rotate");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedNumberList> obj = impl.rotateAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGTextPositioningElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextPositioningElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGTextPositioningElement* domObject = jsCast<JSSVGTextPositioningElement*>(asObject(slotBase));
-    return JSSVGTextPositioningElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGTextPositioningElementPrototype* domObject = jsDynamicCast<JSSVGTextPositioningElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGTextPositioningElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGTextPositioningElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -183,5 +244,3 @@ JSValue JSSVGTextPositioningElement::getConstructor(VM& vm, JSGlobalObject* glob
 
 
 }
-
-#endif // ENABLE(SVG)

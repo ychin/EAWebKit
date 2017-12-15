@@ -46,7 +46,7 @@
 #pragma warning(disable: 4554)
 #endif
 
-#if CPU(PPC64) || CPU(X86_64)
+#if CPU(PPC64) || CPU(X86_64) || CPU(ARM64)
 // FIXME: should we enable this on all 64-bit CPUs?
 // 64-bit emulation provided by the compiler is likely to be slower than dtoa own code on 32-bit hardware.
 #define USE_LONG_LONG
@@ -367,7 +367,7 @@ static int p5sCount;
 
 static ALWAYS_INLINE void pow5mult(BigInt& b, int k)
 {
-    static int p05[3] = { 5, 25, 125 };
+    static const int p05[3] = { 5, 25, 125 };
 
     if (int i = k & 3)
         multadd(b, p05[i - 1], 0);

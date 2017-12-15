@@ -22,27 +22,27 @@
 #define JSInternals_h
 
 #include "Internals.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSInternals : public JSDOMWrapper {
+class WEBCORE_TESTSUPPORT_EXPORT JSInternals : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSInternals* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Internals> impl)
+    static JSInternals* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Internals>&& impl)
     {
-        JSInternals* ptr = new (NotNull, JSC::allocateCell<JSInternals>(globalObject->vm().heap)) JSInternals(structure, globalObject, impl);
+        JSInternals* ptr = new (NotNull, JSC::allocateCell<JSInternals>(globalObject->vm().heap)) JSInternals(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Internals* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSInternals();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -51,22 +51,19 @@ public:
     }
 
     Internals& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Internals* m_impl;
 protected:
-    JSInternals(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Internals>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSInternals(JSC::Structure*, JSDOMGlobalObject*, Ref<Internals>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSInternalsOwner : public JSC::WeakHandleOwner {
@@ -77,217 +74,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Internals*)
 {
-    DEFINE_STATIC_LOCAL(JSInternalsOwner, jsInternalsOwner, ());
-    return &jsInternalsOwner;
+    static NeverDestroyed<JSInternalsOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, Internals*)
-{
-    return &world;
-}
+WEBCORE_TESTSUPPORT_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Internals*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Internals& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Internals*);
-Internals* toInternals(JSC::JSValue);
-
-class JSInternalsPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSInternalsPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSInternalsPrototype* ptr = new (NotNull, JSC::allocateCell<JSInternalsPrototype>(vm.heap)) JSInternalsPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSInternalsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAddress(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionElementRenderTreeAsText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIsPreloaded(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIsLoadingFromMemoryCache(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionComputedStyleIncludingVisitedInfo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionEnsureShadowRoot(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionCreateShadowRoot(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionShadowRoot(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionShadowRootType(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIncluderFor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionShadowPseudoId(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetShadowPseudoId(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionTreeScopeRootNode(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionParentTreeScope(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionLastSpatialNavigationCandidateCount(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNumberOfActiveAnimations(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSuspendAnimations(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionResumeAnimations(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAnimationsAreSuspended(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPauseAnimationAtTimeOnElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPauseAnimationAtTimeOnPseudoElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPauseTransitionAtTimeOnElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPauseTransitionAtTimeOnPseudoElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAttached(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionVisiblePlaceholder(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionFormControlStateOfPreviousHistoryItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetFormControlStateOfPreviousHistoryItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAbsoluteCaretBounds(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionBoundingBox(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionInspectorHighlightRects(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionInspectorHighlightObject(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMarkerCountForNode(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMarkerRangeForNode(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMarkerDescriptionForNode(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAddTextMatchMarker(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetScrollViewPosition(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetPagination(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionConfigurationForViewport(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionWasLastChangeUserEdit(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionElementShouldAutoComplete(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSuggestedValue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetSuggestedValue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetEditingValue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetAutofilled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPaintControlTints(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionScrollElementToRect(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionRangeFromLocationAndLength(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionLocationFromRange(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionLengthFromRange(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionRangeAsText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetDelegatesScrolling(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionLastSpellCheckRequestSequence(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionLastSpellCheckProcessedSequence(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionUserPreferredLanguages(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetUserPreferredLanguages(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionWheelEventHandlerCount(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionTouchEventHandlerCount(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNodesFromRect(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionEmitInspectorDidBeginFrame(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionEmitInspectorDidCancelFrame(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionHasSpellingMarker(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionHasGrammarMarker(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionHasAutocorrectedMarker(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetContinuousSpellCheckingEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetAutomaticQuoteSubstitutionEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetAutomaticLinkDetectionEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetAutomaticDashSubstitutionEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetAutomaticTextReplacementEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetAutomaticSpellingCorrectionEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIsOverwriteModeEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionToggleOverwriteModeEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNumberOfScrollableAreas(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIsPageBoxVisible(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionLayerTreeAsText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionScrollingStateTreeAsText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMainThreadScrollingReasons(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNonFastScrollableRects(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionRepaintRectsAsText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionGarbageCollectDocumentResources(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAllowRoundingHacks(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionInsertAuthorCSS(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionInsertUserCSS(JSC::ExecState*);
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNumberOfLiveNodes(JSC::ExecState*);
-#endif
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNumberOfLiveDocuments(JSC::ExecState*);
-#endif
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionConsoleMessageArgumentCounts(JSC::ExecState*);
-#endif
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionOpenDummyInspectorFrontend(JSC::ExecState*);
-#endif
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionCloseDummyInspectorFrontend(JSC::ExecState*);
-#endif
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetInspectorResourcesDataSizeLimits(JSC::ExecState*);
-#endif
-#if ENABLE(INSPECTOR)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetJavaScriptProfilingEnabled(JSC::ExecState*);
-#endif
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionCounterValue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPageNumber(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionShortcutIconURLs(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionAllIconURLs(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionNumberOfPages(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPageProperty(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionPageSizeAndMarginsInPixels(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetPageScaleFactor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetHeaderHeight(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetFooterHeight(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionWebkitWillEnterFullScreenForElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionWebkitDidEnterFullScreenForElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionWebkitWillExitFullScreenForElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionWebkitDidExitFullScreenForElement(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionRegisterURLSchemeAsBypassingContentSecurityPolicy(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionRemoveURLSchemeRegisteredAsBypassingContentSecurityPolicy(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMallocStatistics(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionTypeConversions(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMemoryInfo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionGetReferencedFilePaths(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionStartTrackingRepaints(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionStopTrackingRepaints(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionGetCurrentCursorInfo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionMarkerTextForListItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionDeserializeBuffer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSerializeObject(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetUsesOverlayScrollbars(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionForceReload(JSC::ExecState*);
-#if ENABLE(VIDEO)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSimulateAudioInterruption(JSC::ExecState*);
-#endif
-#if ENABLE(ENCRYPTED_MEDIA_V2)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionInitializeMockCDM(JSC::ExecState*);
-#endif
-#if ENABLE(SPEECH_SYNTHESIS)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionEnableMockSpeechSynthesizer(JSC::ExecState*);
-#endif
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionGetImageSourceURL(JSC::ExecState*);
-#if ENABLE(VIDEO_TRACK)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionCaptionsStyleSheetOverride(JSC::ExecState*);
-#endif
-#if ENABLE(VIDEO_TRACK)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetCaptionsStyleSheetOverride(JSC::ExecState*);
-#endif
-#if ENABLE(VIDEO_TRACK)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetPrimaryAudioTrackLanguageOverride(JSC::ExecState*);
-#endif
-#if ENABLE(VIDEO_TRACK)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSetCaptionDisplayMode(JSC::ExecState*);
-#endif
-#if ENABLE(VIDEO)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionCreateTimeRanges(JSC::ExecState*);
-#endif
-#if ENABLE(VIDEO)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionClosestTimeToTimeRanges(JSC::ExecState*);
-#endif
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIsSelectPopupVisible(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionIsPluginUnavailabilityIndicatorObscured(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalsPrototypeFunctionSelectionBounds(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsInternalsSettings(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsInternalsWorkerThreadCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsInternalsLAYER_TREE_INCLUDES_VISIBLE_RECTS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsInternalsLAYER_TREE_INCLUDES_TILE_CACHES(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsInternalsLAYER_TREE_INCLUDES_REPAINT_RECTS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsInternalsLAYER_TREE_INCLUDES_PAINTING_PHASES(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsInternalsLAYER_TREE_INCLUDES_CONTENT_LAYERS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

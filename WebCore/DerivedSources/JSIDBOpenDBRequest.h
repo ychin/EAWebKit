@@ -24,25 +24,25 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBOpenDBRequest.h"
-#include "JSDOMBinding.h"
 #include "JSIDBRequest.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBOpenDBRequest : public JSIDBRequest {
 public:
     typedef JSIDBRequest Base;
-    static JSIDBOpenDBRequest* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBOpenDBRequest> impl)
+    static JSIDBOpenDBRequest* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBOpenDBRequest>&& impl)
     {
-        JSIDBOpenDBRequest* ptr = new (NotNull, JSC::allocateCell<JSIDBOpenDBRequest>(globalObject->vm().heap)) JSIDBOpenDBRequest(structure, globalObject, impl);
+        JSIDBOpenDBRequest* ptr = new (NotNull, JSC::allocateCell<JSIDBOpenDBRequest>(globalObject->vm().heap)) JSIDBOpenDBRequest(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBOpenDBRequest* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,9 +58,14 @@ public:
         return static_cast<IDBOpenDBRequest&>(Base::impl());
     }
 protected:
-    JSIDBOpenDBRequest(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBOpenDBRequest>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSIDBOpenDBRequest(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBOpenDBRequest>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBOpenDBRequestOwner : public JSC::WeakHandleOwner {
@@ -71,72 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBOpenDBRequest*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBOpenDBRequestOwner, jsIDBOpenDBRequestOwner, ());
-    return &jsIDBOpenDBRequestOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBOpenDBRequest*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBOpenDBRequestOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBOpenDBRequest*);
-IDBOpenDBRequest* toIDBOpenDBRequest(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBOpenDBRequest& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBOpenDBRequestPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBOpenDBRequestPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBOpenDBRequestPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBOpenDBRequestPrototype>(vm.heap)) JSIDBOpenDBRequestPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBOpenDBRequestPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSIDBOpenDBRequestConstructor : public DOMConstructorObject {
-private:
-    JSIDBOpenDBRequestConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBOpenDBRequestConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBOpenDBRequestConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBOpenDBRequestConstructor>(vm.heap)) JSIDBOpenDBRequestConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsIDBOpenDBRequestOnblocked(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBOpenDBRequestOnblocked(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBOpenDBRequestOnupgradeneeded(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBOpenDBRequestOnupgradeneeded(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBOpenDBRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,190 +26,121 @@
 #ifndef RegisterSet_h
 #define RegisterSet_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(JIT)
 
 #include "FPRInfo.h"
 #include "GPRInfo.h"
-#include <wtf/Bitmap.h>
+#include "MacroAssembler.h"
+#include "Reg.h"
+#include "TempRegisterSet.h"
+#include <wtf/BitVector.h>
 
 namespace JSC {
 
-static const unsigned totalNumberOfRegisters =
-    GPRInfo::numberOfRegisters + FPRInfo::numberOfRegisters;
-
-static const unsigned numberOfBytesInRegisterSet =
-    (totalNumberOfRegisters + 7) >> 3;
-
-typedef uint8_t RegisterSetPOD[numberOfBytesInRegisterSet];
-
 class RegisterSet {
 public:
-    RegisterSet()
+    template<typename... Regs>
+    explicit RegisterSet(Regs... regs)
     {
-        for (unsigned i = numberOfBytesInRegisterSet; i--;)
-            m_set[i] = 0;
+        setMany(regs...);
     }
     
-    RegisterSet(const RegisterSetPOD& other)
+    static RegisterSet stackRegisters();
+    static RegisterSet reservedHardwareRegisters();
+    static RegisterSet runtimeRegisters();
+    static RegisterSet specialRegisters(); // The union of stack, reserved hardware, and runtime registers.
+    static RegisterSet calleeSaveRegisters();
+    static RegisterSet allGPRs();
+    static RegisterSet allFPRs();
+    static RegisterSet allRegisters();
+    
+    void set(Reg reg, bool value = true)
     {
-        for (unsigned i = numberOfBytesInRegisterSet; i--;)
-            m_set[i] = other[i];
+        ASSERT(!!reg);
+        m_vector.set(reg.index(), value);
     }
     
-    const RegisterSetPOD& asPOD() const { return m_set; }
-    
-    void copyInfo(RegisterSetPOD& other) const
+    void set(JSValueRegs regs)
     {
-        for (unsigned i = numberOfBytesInRegisterSet; i--;)
-            other[i] = m_set[i];
+        if (regs.tagGPR() != InvalidGPRReg)
+            set(regs.tagGPR());
+        set(regs.payloadGPR());
     }
     
-    void set(GPRReg reg)
+    void clear(Reg reg)
     {
-        setBit(GPRInfo::toIndex(reg));
+        ASSERT(!!reg);
+        set(reg, false);
     }
     
-    void setGPRByIndex(unsigned index)
+    bool get(Reg reg) const
     {
-        ASSERT(index < GPRInfo::numberOfRegisters);
-        setBit(index);
+        ASSERT(!!reg);
+        return m_vector.get(reg.index());
     }
     
-    void clear(GPRReg reg)
+    void merge(const RegisterSet& other) { m_vector.merge(other.m_vector); }
+    void filter(const RegisterSet& other) { m_vector.filter(other.m_vector); }
+    void exclude(const RegisterSet& other) { m_vector.exclude(other.m_vector); }
+    
+    size_t numberOfSetGPRs() const;
+    size_t numberOfSetFPRs() const;
+    size_t numberOfSetRegisters() const { return m_vector.bitCount(); }
+    
+    void dump(PrintStream&) const;
+    
+    enum EmptyValueTag { EmptyValue };
+    enum DeletedValueTag { DeletedValue };
+    
+    RegisterSet(EmptyValueTag)
+        : m_vector(BitVector::EmptyValue)
     {
-        clearBit(GPRInfo::toIndex(reg));
     }
     
-    bool get(GPRReg reg) const
+    RegisterSet(DeletedValueTag)
+        : m_vector(BitVector::DeletedValue)
     {
-        return getBit(GPRInfo::toIndex(reg));
     }
     
-    bool getGPRByIndex(unsigned index) const
-    {
-        ASSERT(index < GPRInfo::numberOfRegisters);
-        return getBit(index);
-    }
+    bool isEmptyValue() const { return m_vector.isEmptyValue(); }
+    bool isDeletedValue() const { return m_vector.isDeletedValue(); }
     
-    // Return the index'th free GPR.
-    GPRReg getFreeGPR(unsigned index = 0) const
-    {
-        for (unsigned i = GPRInfo::numberOfRegisters; i--;) {
-            if (!getGPRByIndex(i) && !index--)
-                return GPRInfo::toRegister(i);
-        }
-        return InvalidGPRReg;
-    }
-    
-    void set(FPRReg reg)
-    {
-        setBit(GPRInfo::numberOfRegisters + FPRInfo::toIndex(reg));
-    }
-    
-    void setFPRByIndex(unsigned index)
-    {
-        ASSERT(index < FPRInfo::numberOfRegisters);
-        setBit(GPRInfo::numberOfRegisters + index);
-    }
-    
-    void clear(FPRReg reg)
-    {
-        clearBit(GPRInfo::numberOfRegisters + FPRInfo::toIndex(reg));
-    }
-    
-    bool get(FPRReg reg) const
-    {
-        return getBit(GPRInfo::numberOfRegisters + FPRInfo::toIndex(reg));
-    }
-    
-    bool getFPRByIndex(unsigned index) const
-    {
-        ASSERT(index < FPRInfo::numberOfRegisters);
-        return getBit(GPRInfo::numberOfRegisters + index);
-    }
-    
-    template<typename BankInfo>
-    void setByIndex(unsigned index)
-    {
-        set(BankInfo::toRegister(index));
-    }
-    
-    template<typename BankInfo>
-    bool getByIndex(unsigned index)
-    {
-        return get(BankInfo::toRegister(index));
-    }
-    
-    unsigned numberOfSetGPRs() const
-    {
-        unsigned result = 0;
-        for (unsigned i = GPRInfo::numberOfRegisters; i--;) {
-            if (!getBit(i))
-                continue;
-            result++;
-        }
-        return result;
-    }
-    
-    unsigned numberOfSetFPRs() const
-    {
-        unsigned result = 0;
-        for (unsigned i = FPRInfo::numberOfRegisters; i--;) {
-            if (!getBit(GPRInfo::numberOfRegisters + i))
-                continue;
-            result++;
-        }
-        return result;
-    }
-    
-    unsigned numberOfSetRegisters() const
-    {
-        unsigned result = 0;
-        for (unsigned i = totalNumberOfRegisters; i--;) {
-            if (!getBit(i))
-                continue;
-            result++;
-        }
-        return result;
-    }
+    bool operator==(const RegisterSet& other) const { return m_vector == other.m_vector; }
+    unsigned hash() const { return m_vector.hash(); }
     
 private:
-    void setBit(unsigned i)
+    void setAny(Reg reg) { set(reg); }
+    void setAny(const RegisterSet& set) { merge(set); }
+    void setMany() { }
+    template<typename RegType, typename... Regs>
+    void setMany(RegType reg, Regs... regs)
     {
-        ASSERT(i < totalNumberOfRegisters);
-        m_set[i >> 3] |= (1 << (i & 7));
+        setAny(reg);
+        setMany(regs...);
     }
-    
-    void clearBit(unsigned i)
-    {
-        ASSERT(i < totalNumberOfRegisters);
-        m_set[i >> 3] &= ~(1 << (i & 7));
-    }
-    
-    bool getBit(unsigned i) const
-    {
-        ASSERT(i < totalNumberOfRegisters);
-        return !!(m_set[i >> 3] & (1 << (i & 7)));
-    }
-    
-    RegisterSetPOD m_set;
+
+    BitVector m_vector;
+};
+
+struct RegisterSetHash {
+    static unsigned hash(const RegisterSet& set) { return set.hash(); }
+    static bool equal(const RegisterSet& a, const RegisterSet& b) { return a == b; }
+    static const bool safeToCompareToEmptyOrDeleted = false;
 };
 
 } // namespace JSC
 
-#else // ENABLE(JIT) -> so if JIT is disabled
+namespace WTF {
 
-namespace JSC {
+template<typename T> struct DefaultHash;
+template<> struct DefaultHash<JSC::RegisterSet> {
+    typedef JSC::RegisterSetHash Hash;
+};
 
-// Define RegisterSetPOD to something that is a POD, but is otherwise useless,
-// to make it easier to refer to this type in code that may be compiled when
-// the DFG is disabled.
+template<typename T> struct HashTraits;
+template<> struct HashTraits<JSC::RegisterSet> : public CustomHashTraits<JSC::RegisterSet> { };
 
-struct RegisterSetPOD { };
-
-} // namespace JSC
+} // namespace WTF
 
 #endif // ENABLE(JIT)
 

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -30,7 +30,7 @@
 #include "SQLValue.h"
 #include <sqlite3.h>
 #include <wtf/Assertions.h>
-#include <wtf/text/StringImpl.h>
+#include <wtf/text/StringView.h>
 
 // SQLite 3.6.16 makes sqlite3_prepare_v2 automatically retry preparing the statement
 // once if the database scheme has changed. We rely on this behavior.
@@ -60,8 +60,6 @@ int SQLiteStatement::prepare()
     ASSERT(!m_isPrepared);
 
     MutexLocker databaseLock(m_database.databaseMutex());
-    if (m_database.isInterrupted())
-        return SQLITE_INTERRUPT;
 
     CString query = m_query.stripWhiteSpace().utf8();
     
@@ -71,7 +69,7 @@ int SQLiteStatement::prepare()
     // this lets SQLite avoid an extra string copy.
     size_t lengthIncludingNullCharacter = query.length() + 1;
 
-    const char* tail;
+    const char* tail = nullptr;
     int error = sqlite3_prepare_v2(m_database.sqlite3Handle(), query.data(), lengthIncludingNullCharacter, &m_statement, &tail);
 
     if (error != SQLITE_OK)
@@ -89,9 +87,6 @@ int SQLiteStatement::prepare()
 int SQLiteStatement::step()
 {
     MutexLocker databaseLock(m_database.databaseMutex());
-    if (m_database.isInterrupted())
-        return SQLITE_INTERRUPT;
-    //ASSERT(m_isPrepared);
 
     if (!m_statement)
         return SQLITE_OK;
@@ -177,12 +172,13 @@ int SQLiteStatement::bindBlob(int index, const String& text)
 {
     // String::characters() returns 0 for the empty string, which SQLite
     // treats as a null, so we supply a non-null pointer for that case.
+    auto upconvertedCharacters = StringView(text).upconvertedCharacters();
     UChar anyCharacter = 0;
     const UChar* characters;
     if (text.isEmpty() && !text.isNull())
         characters = &anyCharacter;
     else
-        characters = text.characters();
+        characters = upconvertedCharacters;
 
     return bindBlob(index, characters, text.length() * sizeof(UChar));
 }
@@ -195,12 +191,13 @@ int SQLiteStatement::bindText(int index, const String& text)
 
     // String::characters() returns 0 for the empty string, which SQLite
     // treats as a null, so we supply a non-null pointer for that case.
+    auto upconvertedCharacters = StringView(text).upconvertedCharacters();
     UChar anyCharacter = 0;
     const UChar* characters;
     if (text.isEmpty() && !text.isNull())
         characters = &anyCharacter;
     else
-        characters = text.characters();
+        characters = upconvertedCharacters;
 
     return sqlite3_bind_text16(m_statement, index, characters, sizeof(UChar) * text.length(), SQLITE_TRANSIENT);
 }
@@ -428,32 +425,30 @@ void SQLiteStatement::getColumnBlobAsVector(int col, Vector<char>& result)
         result[i] = (static_cast<const unsigned char*>(blob))[i];
 }
 
-const void* SQLiteStatement::getColumnBlob(int col, int& size)
+void SQLiteStatement::getColumnBlobAsVector(int col, Vector<uint8_t>& result)
 {
     ASSERT(col >= 0);
 
-    size = 0;
-
-    if (finalize() != SQLITE_OK)
-        LOG(SQLDatabase, "Finalize failed");
-    if (prepare() != SQLITE_OK) {
-        LOG(SQLDatabase, "Prepare failed");
-        return 0;
-    }
-    if (step() != SQLITE_ROW) {
-        LOG(SQLDatabase, "Step wasn't a row");
-        return 0;
+    if (!m_statement && prepareAndStep() != SQLITE_ROW) {
+        result.clear();
+        return;
     }
 
-    if (columnCount() <= col)
-        return 0;
-        
+    if (columnCount() <= col) {
+        result.clear();
+        return;
+    }
+
     const void* blob = sqlite3_column_blob(m_statement, col);
-    if (!blob)
-        return 0;
-
-    size = sqlite3_column_bytes(m_statement, col);
-    return blob;
+    if (!blob) {
+        result.clear();
+        return;
+    }
+        
+    int size = sqlite3_column_bytes(m_statement, col);
+    result.resize((size_t)size);
+    for (int i = 0; i < size; ++i)
+        result[i] = (static_cast<const uint8_t*>(blob))[i];
 }
 
 bool SQLiteStatement::returnTextResults(int col, Vector<String>& v)
@@ -486,7 +481,7 @@ bool SQLiteStatement::returnIntResults(int col, Vector<int>& v)
         finalize();
     if (prepare() != SQLITE_OK)
         return false;
-        
+
     while (step() == SQLITE_ROW)
         v.append(getColumnInt(col));
     bool result = true;
@@ -506,7 +501,7 @@ bool SQLiteStatement::returnInt64Results(int col, Vector<int64_t>& v)
         finalize();
     if (prepare() != SQLITE_OK)
         return false;
-        
+
     while (step() == SQLITE_ROW)
         v.append(getColumnInt64(col));
     bool result = true;

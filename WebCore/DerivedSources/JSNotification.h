@@ -23,29 +23,28 @@
 
 #if ENABLE(LEGACY_NOTIFICATIONS) || ENABLE(NOTIFICATIONS)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "Notification.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSNotification : public JSDOMWrapper {
+class WEBCORE_EXPORT JSNotification : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSNotification* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Notification> impl)
+    static JSNotification* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Notification>&& impl)
     {
-        JSNotification* ptr = new (NotNull, JSC::allocateCell<JSNotification>(globalObject->vm().heap)) JSNotification(structure, globalObject, impl);
+        JSNotification* ptr = new (NotNull, JSC::allocateCell<JSNotification>(globalObject->vm().heap)) JSNotification(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Notification* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSNotification();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     Notification& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Notification* m_impl;
 protected:
-    JSNotification(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Notification>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSNotification(JSC::Structure*, JSDOMGlobalObject*, Ref<Notification>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSNotificationOwner : public JSC::WeakHandleOwner {
@@ -83,83 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Notification*)
 {
-    DEFINE_STATIC_LOCAL(JSNotificationOwner, jsNotificationOwner, ());
-    return &jsNotificationOwner;
+    static NeverDestroyed<JSNotificationOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, Notification*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Notification*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Notification& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Notification*);
-Notification* toNotification(JSC::JSValue);
-
-class JSNotificationPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSNotificationPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSNotificationPrototype* ptr = new (NotNull, JSC::allocateCell<JSNotificationPrototype>(vm.heap)) JSNotificationPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSNotificationPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSNotificationConstructor : public DOMConstructorObject {
-private:
-    JSNotificationConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSNotificationConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSNotificationConstructor* ptr = new (NotNull, JSC::allocateCell<JSNotificationConstructor>(vm.heap)) JSNotificationConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsNotificationPrototypeFunctionShow(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsNotificationPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsNotificationPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsNotificationPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsNotificationOnshow(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSNotificationOnshow(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsNotificationOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSNotificationOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsNotificationOnclose(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSNotificationOnclose(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsNotificationOnclick(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSNotificationOnclick(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsNotificationConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

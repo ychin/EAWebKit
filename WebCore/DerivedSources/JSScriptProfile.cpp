@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(JAVASCRIPT_DEBUGGER)
-
 #include "JSScriptProfile.h"
 
+#include "JSDOMBinding.h"
 #include "JSScriptProfileNode.h"
 #include "ScriptProfile.h"
 #include "ScriptProfileNode.h"
@@ -35,50 +33,70 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSScriptProfileTableValues[] =
-{
-    { "title", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileTitle), (intptr_t)0 },
-    { "uid", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileUid), (intptr_t)0 },
-    { "head", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileHead), (intptr_t)0 },
-    { "idleTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileIdleTime), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsScriptProfileTitle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsScriptProfileUid(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsScriptProfileRootNode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSScriptProfilePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSScriptProfilePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSScriptProfilePrototype* ptr = new (NotNull, JSC::allocateCell<JSScriptProfilePrototype>(vm.heap)) JSScriptProfilePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSScriptProfilePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSScriptProfileTable = { 9, 7, JSScriptProfileTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSScriptProfilePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "title", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileTitle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "uid", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileUid), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "rootNode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsScriptProfileRootNode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSScriptProfilePrototypeTable = { 1, 0, JSScriptProfilePrototypeTableValues, 0 };
-const ClassInfo JSScriptProfilePrototype::s_info = { "ScriptProfilePrototype", &Base::s_info, &JSScriptProfilePrototypeTable, 0, CREATE_METHOD_TABLE(JSScriptProfilePrototype) };
+const ClassInfo JSScriptProfilePrototype::s_info = { "ScriptProfilePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSScriptProfilePrototype) };
 
-JSObject* JSScriptProfilePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSScriptProfile>(vm, globalObject);
-}
-
-const ClassInfo JSScriptProfile::s_info = { "ScriptProfile", &Base::s_info, &JSScriptProfileTable, 0 , CREATE_METHOD_TABLE(JSScriptProfile) };
-
-JSScriptProfile::JSScriptProfile(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ScriptProfile> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSScriptProfile::finishCreation(VM& vm)
+void JSScriptProfilePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSScriptProfilePrototypeTableValues, *this);
+}
+
+const ClassInfo JSScriptProfile::s_info = { "ScriptProfile", &Base::s_info, 0, CREATE_METHOD_TABLE(JSScriptProfile) };
+
+JSScriptProfile::JSScriptProfile(Structure* structure, JSDOMGlobalObject* globalObject, Ref<ScriptProfile>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSScriptProfile::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSScriptProfilePrototype::create(vm, globalObject, JSScriptProfilePrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSScriptProfile::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSScriptProfile>(vm, globalObject);
 }
 
 void JSScriptProfile::destroy(JSC::JSCell* cell)
@@ -89,122 +107,88 @@ void JSScriptProfile::destroy(JSC::JSCell* cell)
 
 JSScriptProfile::~JSScriptProfile()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSScriptProfile::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsScriptProfileTitle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSScriptProfile* thisObject = jsCast<JSScriptProfile*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSScriptProfile, Base>(exec, JSScriptProfileTable, thisObject, propertyName, slot);
-}
-
-JSValue jsScriptProfileTitle(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSScriptProfile* castedThis = jsCast<JSScriptProfile*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ScriptProfile& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSScriptProfile* castedThis = jsDynamicCast<JSScriptProfile*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSScriptProfilePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "ScriptProfile", "title");
+        return throwGetterTypeError(*exec, "ScriptProfile", "title");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.title());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsScriptProfileUid(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsScriptProfileUid(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSScriptProfile* castedThis = jsCast<JSScriptProfile*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ScriptProfile& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSScriptProfile* castedThis = jsDynamicCast<JSScriptProfile*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSScriptProfilePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "ScriptProfile", "uid");
+        return throwGetterTypeError(*exec, "ScriptProfile", "uid");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.uid());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsScriptProfileHead(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsScriptProfileRootNode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSScriptProfile* castedThis = jsCast<JSScriptProfile*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ScriptProfile& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.head()));
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSScriptProfile* castedThis = jsDynamicCast<JSScriptProfile*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSScriptProfilePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "ScriptProfile", "rootNode");
+        return throwGetterTypeError(*exec, "ScriptProfile", "rootNode");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.rootNode()));
+    return JSValue::encode(result);
 }
 
-
-JSValue jsScriptProfileIdleTime(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSScriptProfile* castedThis = jsCast<JSScriptProfile*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    ScriptProfile& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.idleTime());
-    return result;
-}
-
-
-static inline bool isObservable(JSScriptProfile* jsScriptProfile)
-{
-    if (jsScriptProfile->hasCustomProperties())
-        return true;
-    return false;
-}
 
 bool JSScriptProfileOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSScriptProfile* jsScriptProfile = jsCast<JSScriptProfile*>(handle.get().asCell());
-    if (!isObservable(jsScriptProfile))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSScriptProfileOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSScriptProfile* jsScriptProfile = jsCast<JSScriptProfile*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsScriptProfile = jsCast<JSScriptProfile*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsScriptProfile->impl(), jsScriptProfile);
-    jsScriptProfile->releaseImpl();
 }
 
-#if ENABLE(BINDING_INTEGRITY)
-#if PLATFORM(WIN)
-#pragma warning(disable: 4483)
-extern "C" { extern void (*const __identifier("??_7ScriptProfile@WebCore@@6B@")[])(); }
-#else
-extern "C" { extern void* _ZTVN7WebCore13ScriptProfileE[]; }
-#endif
-#endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ScriptProfile* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, ScriptProfile* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSScriptProfile>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSScriptProfile>(globalObject, impl))
         return result;
-
-#if ENABLE(BINDING_INTEGRITY)
-    void* actualVTablePointer = *(reinterpret_cast<void**>(impl));
-#if PLATFORM(WIN)
-    void* expectedVTablePointer = reinterpret_cast<void*>(__identifier("??_7ScriptProfile@WebCore@@6B@"));
-#else
-    void* expectedVTablePointer = &_ZTVN7WebCore13ScriptProfileE[2];
-#if COMPILER(CLANG)
-    // If this fails ScriptProfile does not have a vtable, so you need to add the
-    // ImplementationLacksVTable attribute to the interface definition
-    COMPILE_ASSERT(__is_polymorphic(ScriptProfile), ScriptProfile_is_not_polymorphic);
-#endif
-#endif
-    // If you hit this assertion you either have a use after free bug, or
-    // ScriptProfile has subclasses. If ScriptProfile has subclasses that get passed
-    // to toJS() we currently require ScriptProfile you to opt out of binding hardening
-    // by adding the SkipVTableValidation attribute to the interface IDL definition
-    RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
-#endif
-    ReportMemoryCost<ScriptProfile>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSScriptProfile>(exec, globalObject, impl);
+    return createNewWrapper<JSScriptProfile>(globalObject, impl);
 }
 
-ScriptProfile* toScriptProfile(JSC::JSValue value)
+ScriptProfile* JSScriptProfile::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSScriptProfile::info()) ? &jsCast<JSScriptProfile*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSScriptProfile*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(JAVASCRIPT_DEBUGGER)

@@ -26,17 +26,17 @@
 #ifndef JSPromiseConstructor_h
 #define JSPromiseConstructor_h
 
-#if ENABLE(PROMISES)
-
 #include "InternalFunction.h"
 
 namespace JSC {
 
+class JSPromise;
 class JSPromisePrototype;
 
 class JSPromiseConstructor : public InternalFunction {
 public:
     typedef InternalFunction Base;
+    static const unsigned StructureFlags = Base::StructureFlags | OverridesGetOwnPropertySlot;
 
     static JSPromiseConstructor* create(VM&, Structure*, JSPromisePrototype*);
     static Structure* createStructure(VM&, JSGlobalObject*, JSValue);
@@ -45,7 +45,6 @@ public:
 
 protected:
     void finishCreation(VM&, JSPromisePrototype*);
-    static const unsigned StructureFlags = OverridesGetOwnPropertySlot | InternalFunction::StructureFlags;
 
 private:
     JSPromiseConstructor(VM&, Structure*);
@@ -55,7 +54,5 @@ private:
 };
 
 } // namespace JSC
-
-#endif // ENABLE(PROMISES)
 
 #endif // JSPromiseConstructor_h

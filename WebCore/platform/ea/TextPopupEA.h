@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2010, 2011, 2012 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2010, 2011, 2012, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -61,7 +61,7 @@ public:
     void hide(void); 
     
 private:    
-    void timerFired(WebCore::Timer<TextPopup>*);
+    void timerFired();
     void draw(const Font& font);
    
     EA::WebKit::View* mpViewEA;                 // 
@@ -74,7 +74,7 @@ private:
     WTF::String mTip;                           // Source tool tip text.    
     WTF::String mAdjustedTip;                   // Adjusted tool tip text (possibly clipped to fit on screen).
     double mLastTime;                           // Last time the tooltip was refreshed. Used to determine if it should be shut off.   
-    WebCore::Timer<TextPopup>   mPopupTimer;    // Timer to trigger auto shut down of popup.    
+    WebCore::Timer   mPopupTimer;    			// Timer to trigger auto shut down of popup.    
  };
 
 int ElidedTextEA(const Font& f, int width, int minWidth, const String& inStr, String &outStr);

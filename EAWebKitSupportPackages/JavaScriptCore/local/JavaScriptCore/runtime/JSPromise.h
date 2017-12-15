@@ -26,71 +26,33 @@
 #ifndef JSPromise_h
 #define JSPromise_h
 
-#if ENABLE(PROMISES)
-
-#include "JSDestructibleObject.h"
+#include "JSObject.h"
 
 namespace JSC {
 
-class JSPromiseResolver;
-class InternalFunction;
-class TaskContext;
-
-class JSPromise : public JSDestructibleObject {
+class JSPromise : public JSNonFinalObject {
 public:
-    typedef JSDestructibleObject Base;
+    typedef JSNonFinalObject Base;
 
-    static JSPromise* create(VM&, Structure*);
+    static JSPromise* create(VM&, JSGlobalObject*);
     static Structure* createStructure(VM&, JSGlobalObject*, JSValue);
 
-    static JSPromise* createWithResolver(VM&, JSGlobalObject*);
+    DECLARE_EXPORT_INFO;
 
-    DECLARE_INFO;
-
-    void setResolver(VM&, JSPromiseResolver*);
-    JSPromiseResolver* resolver() const;
-
-    enum State {
-        Pending,
+    enum class Status : unsigned {
+        Pending = 1,
         Fulfilled,
-        Rejected,
+        Rejected
     };
 
-    void setState(State);
-    State state() const;
-
-    void setResult(VM&, JSValue);
-    JSValue result() const;
-
-    void appendCallbacks(ExecState*, InternalFunction* fulfillCallback, InternalFunction* rejectCallback);
-
-    void queueTaskToProcessFulfillCallbacks(ExecState*);
-    void queueTaskToProcessRejectCallbacks(ExecState*);
-    void processFulfillCallbacksWithValue(ExecState*, JSValue);
-    void processRejectCallbacksWithValue(ExecState*, JSValue);
-
-protected:
-    void finishCreation(VM&);
-    static const unsigned StructureFlags = OverridesVisitChildren | JSObject::StructureFlags;
+    Status status(VM&) const;
+    JSValue result(VM&) const;
 
 private:
     JSPromise(VM&, Structure*);
-
-    static void processFulfillCallbacksForTask(ExecState*, TaskContext*);
-    static void processRejectCallbacksForTask(ExecState*, TaskContext*);
-
-    static void destroy(JSCell*);
-    static void visitChildren(JSCell*, SlotVisitor&);
-
-    WriteBarrier<JSPromiseResolver> m_resolver;
-    WriteBarrier<Unknown> m_result;
-    Vector<WriteBarrier<InternalFunction> > m_fulfillCallbacks;
-    Vector<WriteBarrier<InternalFunction> > m_rejectCallbacks;
-    State m_state;
+    void finishCreation(VM&);
 };
 
 } // namespace JSC
-
-#endif // ENABLE(PROMISES)
 
 #endif // JSPromise_h

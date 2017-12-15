@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "OESVertexArrayObject.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSOESVertexArrayObject : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSOESVertexArrayObject* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESVertexArrayObject> impl)
+    static JSOESVertexArrayObject* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESVertexArrayObject>&& impl)
     {
-        JSOESVertexArrayObject* ptr = new (NotNull, JSC::allocateCell<JSOESVertexArrayObject>(globalObject->vm().heap)) JSOESVertexArrayObject(structure, globalObject, impl);
+        JSOESVertexArrayObject* ptr = new (NotNull, JSC::allocateCell<JSOESVertexArrayObject>(globalObject->vm().heap)) JSOESVertexArrayObject(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static OESVertexArrayObject* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSOESVertexArrayObject();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     OESVertexArrayObject& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     OESVertexArrayObject* m_impl;
 protected:
-    JSOESVertexArrayObject(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OESVertexArrayObject>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSOESVertexArrayObject(JSC::Structure*, JSDOMGlobalObject*, Ref<OESVertexArrayObject>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSOESVertexArrayObjectOwner : public JSC::WeakHandleOwner {
@@ -78,51 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, OESVertexArrayObject*)
 {
-    DEFINE_STATIC_LOCAL(JSOESVertexArrayObjectOwner, jsOESVertexArrayObjectOwner, ());
-    return &jsOESVertexArrayObjectOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, OESVertexArrayObject*)
-{
-    return &world;
+    static NeverDestroyed<JSOESVertexArrayObjectOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, OESVertexArrayObject*);
-OESVertexArrayObject* toOESVertexArrayObject(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESVertexArrayObject& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSOESVertexArrayObjectPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOESVertexArrayObjectPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOESVertexArrayObjectPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESVertexArrayObjectPrototype>(vm.heap)) JSOESVertexArrayObjectPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOESVertexArrayObjectPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionCreateVertexArrayOES(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionDeleteVertexArrayOES(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionIsVertexArrayOES(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionBindVertexArrayOES(JSC::ExecState*);
-// Constants
-
-JSC::JSValue jsOESVertexArrayObjectVERTEX_ARRAY_BINDING_OES(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

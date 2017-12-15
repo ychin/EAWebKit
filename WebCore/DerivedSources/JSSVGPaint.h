@@ -21,28 +21,25 @@
 #ifndef JSSVGPaint_h
 #define JSSVGPaint_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGColor.h"
 #include "SVGElement.h"
 #include "SVGPaint.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGPaint : public JSSVGColor {
 public:
     typedef JSSVGColor Base;
-    static JSSVGPaint* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPaint> impl)
+    static JSSVGPaint* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPaint>&& impl)
     {
-        JSSVGPaint* ptr = new (NotNull, JSC::allocateCell<JSSVGPaint>(globalObject->vm().heap)) JSSVGPaint(structure, globalObject, impl);
+        JSSVGPaint* ptr = new (NotNull, JSC::allocateCell<JSSVGPaint>(globalObject->vm().heap)) JSSVGPaint(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,84 +53,18 @@ public:
         return static_cast<SVGPaint&>(Base::impl());
     }
 protected:
-    JSSVGPaint(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPaint>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGPaint(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGPaint>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGPaintPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGPaintPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGPaintPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPaintPrototype>(vm.heap)) JSSVGPaintPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGPaintPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGPaintConstructor : public DOMConstructorObject {
-private:
-    JSSVGPaintConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGPaintConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGPaintConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPaintConstructor>(vm.heap)) JSSVGPaintConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGPaintPrototypeFunctionSetUri(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGPaintPrototypeFunctionSetPaint(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsSVGPaintPaintType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintUri(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_RGBCOLOR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_RGBCOLOR_ICCCOLOR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_NONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_CURRENTCOLOR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_URI_NONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_URI_CURRENTCOLOR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_URI_RGBCOLOR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_URI_RGBCOLOR_ICCCOLOR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGPaintSVG_PAINTTYPE_URI(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

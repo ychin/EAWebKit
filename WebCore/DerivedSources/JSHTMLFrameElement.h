@@ -22,30 +22,29 @@
 #define JSHTMLFrameElement_h
 
 #include "HTMLFrameElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLFrameElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLFrameElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLFrameElement> impl)
+    static JSHTMLFrameElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLFrameElement>&& impl)
     {
-        JSHTMLFrameElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameElement>(globalObject->vm().heap)) JSHTMLFrameElement(structure, globalObject, impl);
+        JSHTMLFrameElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameElement>(globalObject->vm().heap)) JSHTMLFrameElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,89 +55,20 @@ public:
     {
         return static_cast<HTMLFrameElement&>(Base::impl());
     }
-protected:
-    JSHTMLFrameElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLFrameElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSHTMLFrameElementPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLFrameElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLFrameElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameElementPrototype>(vm.heap)) JSHTMLFrameElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLFrameElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
     static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSHTMLFrameElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLFrameElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLFrameElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLFrameElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameElementConstructor>(vm.heap)) JSHTMLFrameElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
+    JSHTMLFrameElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLFrameElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-// Functions
 
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLFrameElementPrototypeFunctionGetSVGDocument(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsHTMLFrameElementFrameBorder(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementFrameBorder(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementLongDesc(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementLongDesc(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementMarginHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementMarginHeight(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementMarginWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementMarginWidth(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementName(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementNoResize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementNoResize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementScrolling(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementScrolling(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementSrc(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementContentDocument(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLFrameElementContentWindow(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLFrameElementLocation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameElementLocation(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLFrameElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLFrameElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

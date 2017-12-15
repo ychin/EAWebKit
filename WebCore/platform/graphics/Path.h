@@ -12,10 +12,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,29 +28,36 @@
 #ifndef Path_h
 #define Path_h
 
+#include "FloatRect.h"
 #include "WindRule.h"
+#include <functional>
 #include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 
 #if USE(CG)
+
+#include <wtf/RetainPtr.h>
+#include <CoreGraphics/CGPath.h>
 typedef struct CGPath PlatformPath;
+
 #elif USE(CAIRO)
+
 namespace WebCore {
 class CairoPath;
 }
 typedef WebCore::CairoPath PlatformPath;
+
 #elif USE(WINGDI)
+
 namespace WebCore {
     class PlatformPath;
 }
 typedef WebCore::PlatformPath PlatformPath;
-#elif PLATFORM(BLACKBERRY)
-namespace BlackBerry { namespace Platform { namespace Graphics {
-    class Path;
-} } }
-typedef BlackBerry::Platform::Graphics::Path PlatformPath;
+
 #else
+
 typedef void PlatformPath;
+
 #endif
 
 typedef PlatformPath* PlatformPathPtr;
@@ -59,9 +66,10 @@ namespace WebCore {
 
     class AffineTransform;
     class FloatPoint;
-    class FloatRect;
+    class FloatRoundedRect;
     class FloatSize;
     class GraphicsContext;
+    class PathTraversalState;
     class RoundedRect;
     class StrokeStyleApplier;
 
@@ -73,7 +81,7 @@ namespace WebCore {
         PathElementCloseSubpath // The points member will contain no values.
     };
 
-    // The points in the sturcture are the same as those that would be used with the
+    // The points in the structure are the same as those that would be used with the
     // add... method. For example, a line returns the endpoint, while a cubic returns
     // two tangent points and the endpoint.
     struct PathElement {
@@ -81,16 +89,19 @@ namespace WebCore {
         FloatPoint* points;
     };
 
-    typedef void (*PathApplierFunction)(void* info, const PathElement*);
+    typedef std::function<void (const PathElement&)> PathApplierFunction;
 
     class Path {
         WTF_MAKE_FAST_ALLOCATED;
     public:
-        Path();
-        ~Path();
+        WEBCORE_EXPORT Path();
+#if USE(CG)
+        Path(RetainPtr<CGMutablePathRef>);
+#endif
+        WEBCORE_EXPORT ~Path();
 
-        Path(const Path&);
-        Path& operator=(const Path&);
+        WEBCORE_EXPORT Path(const Path&);
+        WEBCORE_EXPORT Path& operator=(const Path&);
 
         bool contains(const FloatPoint&, WindRule rule = RULE_NONZERO) const;
         bool strokeContains(StrokeStyleApplier*, const FloatPoint&) const;
@@ -99,12 +110,13 @@ namespace WebCore {
         FloatRect boundingRect() const;
         FloatRect fastBoundingRect() const;
         FloatRect strokeBoundingRect(StrokeStyleApplier* = 0) const;
-        
-        float length() const;
-        FloatPoint pointAtLength(float length, bool& ok) const;
-        float normalAngleAtLength(float length, bool& ok) const;
 
-        void clear();
+        float length() const;
+        PathTraversalState traversalStateAtLength(float length, bool& success) const;
+        FloatPoint pointAtLength(float length, bool& success) const;
+        float normalAngleAtLength(float length, bool& success) const;
+
+        WEBCORE_EXPORT void clear();
         bool isNull() const { return !m_path; }
         bool isEmpty() const;
         // Gets the current point of the current path, which is conceptually the final point reached by the path so far.
@@ -112,15 +124,16 @@ namespace WebCore {
         bool hasCurrentPoint() const;
         FloatPoint currentPoint() const;
 
-        void moveTo(const FloatPoint&);
-        void addLineTo(const FloatPoint&);
-        void addQuadCurveTo(const FloatPoint& controlPoint, const FloatPoint& endPoint);
-        void addBezierCurveTo(const FloatPoint& controlPoint1, const FloatPoint& controlPoint2, const FloatPoint& endPoint);
+        WEBCORE_EXPORT void moveTo(const FloatPoint&);
+        WEBCORE_EXPORT void addLineTo(const FloatPoint&);
+        WEBCORE_EXPORT void addQuadCurveTo(const FloatPoint& controlPoint, const FloatPoint& endPoint);
+        WEBCORE_EXPORT void addBezierCurveTo(const FloatPoint& controlPoint1, const FloatPoint& controlPoint2, const FloatPoint& endPoint);
         void addArcTo(const FloatPoint&, const FloatPoint&, float radius);
-        void closeSubpath();
+        WEBCORE_EXPORT void closeSubpath();
 
         void addArc(const FloatPoint&, float radius, float startAngle, float endAngle, bool anticlockwise);
         void addRect(const FloatRect&);
+        void addEllipse(FloatPoint, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool anticlockwise);
         void addEllipse(const FloatRect&);
 
         enum RoundedRectStrategy {
@@ -128,9 +141,11 @@ namespace WebCore {
             PreferBezierRoundedRect
         };
 
-        void addRoundedRect(const FloatRect&, const FloatSize& roundingRadii, RoundedRectStrategy = PreferNativeRoundedRect);
-        void addRoundedRect(const FloatRect&, const FloatSize& topLeftRadius, const FloatSize& topRightRadius, const FloatSize& bottomLeftRadius, const FloatSize& bottomRightRadius, RoundedRectStrategy = PreferNativeRoundedRect);
+        WEBCORE_EXPORT void addRoundedRect(const FloatRect&, const FloatSize& roundingRadii, RoundedRectStrategy = PreferNativeRoundedRect);
+        WEBCORE_EXPORT void addRoundedRect(const FloatRoundedRect&, RoundedRectStrategy = PreferNativeRoundedRect);
         void addRoundedRect(const RoundedRect&);
+
+        void addPath(const Path&, const AffineTransform&);
 
         void translate(const FloatSize&);
 
@@ -138,20 +153,15 @@ namespace WebCore {
         // meaning Path::platformPath() can return null.
         PlatformPathPtr platformPath() const { return m_path; }
         // ensurePlatformPath() will allocate a PlatformPath if it has not yet been and will never return null.
-        PlatformPathPtr ensurePlatformPath();
+        WEBCORE_EXPORT PlatformPathPtr ensurePlatformPath();
 
-        void apply(void* info, PathApplierFunction) const;
+        WEBCORE_EXPORT void apply(const PathApplierFunction&) const;
         void transform(const AffineTransform&);
 
-        void addPathForRoundedRect(const FloatRect&, const FloatSize& topLeftRadius, const FloatSize& topRightRadius, const FloatSize& bottomLeftRadius, const FloatSize& bottomRightRadius, RoundedRectStrategy = PreferNativeRoundedRect);
         void addBeziersForRoundedRect(const FloatRect&, const FloatSize& topLeftRadius, const FloatSize& topRightRadius, const FloatSize& bottomLeftRadius, const FloatSize& bottomRightRadius);
 
-#if USE(CG) || PLATFORM(BLACKBERRY)
+#if USE(CG)
         void platformAddPathForRoundedRect(const FloatRect&, const FloatSize& topLeftRadius, const FloatSize& topRightRadius, const FloatSize& bottomLeftRadius, const FloatSize& bottomRightRadius);
-#endif
-
-#if PLATFORM(BLACKBERRY)
-        Path(const PlatformPath&);
 #endif
 
     private:

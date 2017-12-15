@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,7 +11,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -29,38 +30,47 @@
 #ifndef WTF_Collator_h
 #define WTF_Collator_h
 
+#include <unicode/uconfig.h>
 #include <wtf/Noncopyable.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/unicode/Unicode.h>
 
-#if USE(ICU_UNICODE) && !UCONFIG_NO_COLLATION
 struct UCollator;
-#endif
 
 namespace WTF {
 
-    class Collator {
-        WTF_MAKE_NONCOPYABLE(Collator); WTF_MAKE_FAST_ALLOCATED;
-    public:
-        enum Result { Equal = 0, Greater = 1, Less = -1 };
+class StringView;
+//+EAWebKitChange
+//4/1/2015
+#if UCONFIG_NO_COLLATION && !PLATFORM(EA)
+//-EAWebKitChange
+class Collator {
+public:
+    explicit Collator(const char* = nullptr, bool = false) { }
 
-        WTF_EXPORT_PRIVATE Collator(const char* locale); // Parsing is lenient; e.g. language identifiers (such as "en-US") are accepted, too.
-        WTF_EXPORT_PRIVATE ~Collator();
-        WTF_EXPORT_PRIVATE void setOrderLowerFirst(bool);
+    WTF_EXPORT_PRIVATE static int collate(StringView, StringView);
+    WTF_EXPORT_PRIVATE static int collateUTF8(const char*, const char*);
+};
 
-        WTF_EXPORT_PRIVATE static std::unique_ptr<Collator> userDefault();
+#else
 
-        WTF_EXPORT_PRIVATE Result collate(const ::UChar*, size_t, const ::UChar*, size_t) const;
+class Collator {
+    WTF_MAKE_NONCOPYABLE(Collator);
+public:
+    // The value nullptr is a special one meaning the system default locale.
+    // Locale name parsing is lenient; e.g. language identifiers (such as "en-US") are accepted, too.
+    WTF_EXPORT_PRIVATE explicit Collator(const char* locale = nullptr, bool shouldSortLowercaseFirst = false);
+    WTF_EXPORT_PRIVATE ~Collator();
 
-    private:
-#if USE(ICU_UNICODE) && !UCONFIG_NO_COLLATION
-        void createCollator() const;
-        void releaseCollator();
-        mutable UCollator* m_collator;
+    WTF_EXPORT_PRIVATE int collate(StringView, StringView) const;
+    WTF_EXPORT_PRIVATE int collateUTF8(const char*, const char*) const;
+
+private:
+    char* m_locale;
+    bool m_shouldSortLowercaseFirst;
+    UCollator* m_collator;
+};
+
 #endif
-        char* m_locale;
-        bool m_lowerFirst;
-    };
+
 }
 
 using WTF::Collator;

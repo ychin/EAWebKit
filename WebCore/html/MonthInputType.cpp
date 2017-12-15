@@ -32,14 +32,12 @@
 #if ENABLE(INPUT_TYPE_MONTH)
 #include "MonthInputType.h"
 
-#include "DateComponents.h"
 #include "HTMLInputElement.h"
 #include "HTMLNames.h"
 #include "InputTypeNames.h"
 #include <wtf/CurrentTime.h>
 #include <wtf/DateMath.h>
 #include <wtf/MathExtras.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
@@ -48,16 +46,6 @@ using namespace HTMLNames;
 static const int monthDefaultStep = 1;
 static const int monthDefaultStepBase = 0;
 static const int monthStepScaleFactor = 1;
-
-OwnPtr<InputType> MonthInputType::create(HTMLInputElement& element)
-{
-    return adoptPtr(new MonthInputType(element));
-}
-
-void MonthInputType::attach()
-{
-    observeFeatureIfVisible(FeatureObserver::InputTypeMonth);
-}
 
 const AtomicString& MonthInputType::formControlType() const
 {
@@ -102,7 +90,7 @@ Decimal MonthInputType::defaultValueForStepUp() const
 
 StepRange MonthInputType::createStepRange(AnyStepHandling anyStepHandling) const
 {
-    DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (monthDefaultStep, monthDefaultStepBase, monthStepScaleFactor, StepRange::ParsedStepValueShouldBeInteger));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (monthDefaultStep, monthDefaultStepBase, monthStepScaleFactor, StepRange::ParsedStepValueShouldBeInteger));
 
     const Decimal stepBase = parseToNumber(element().fastGetAttribute(minAttr), Decimal::fromDouble(monthDefaultStepBase));
     const Decimal minimum = parseToNumber(element().fastGetAttribute(minAttr), Decimal::fromDouble(DateComponents::minimumMonth()));

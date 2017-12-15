@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -59,6 +59,10 @@ struct OSREntryData {
     BitVector m_localsForcedDouble;
     BitVector m_localsForcedMachineInt;
     Vector<OSREntryReshuffling> m_reshufflings;
+    BitVector m_machineStackUsed;
+    
+    void dumpInContext(PrintStream&, DumpContext*) const;
+    void dump(PrintStream&) const;
 };
 
 inline unsigned getOSREntryDataBytecodeIndex(OSREntryData* osrEntryData)
@@ -66,6 +70,8 @@ inline unsigned getOSREntryDataBytecodeIndex(OSREntryData* osrEntryData)
     return osrEntryData->m_bytecodeIndex;
 }
 
+// Returns a pointer to a data buffer that the OSR entry thunk will recognize and
+// parse. If this returns null, it means 
 void* prepareOSREntry(ExecState*, CodeBlock*, unsigned bytecodeIndex);
 #else
 inline void* prepareOSREntry(ExecState*, CodeBlock*, unsigned) { return 0; }

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -26,13 +26,14 @@
 #include "config.h"
 #include "Settings.h"
 
+#include "AudioSession.h"
 #include "BackForwardController.h"
 #include "CachedResourceLoader.h"
 #include "CookieStorage.h"
 #include "DOMTimer.h"
 #include "Database.h"
 #include "Document.h"
-#include "Font.h"
+#include "FontCascade.h"
 #include "FontGenericFamilies.h"
 #include "FrameTree.h"
 #include "FrameView.h"
@@ -45,8 +46,8 @@
 #include "StorageMap.h"
 #include "TextAutosizer.h"
 #include <limits>
-
-using namespace std;
+#include <wtf/NeverDestroyed.h>
+#include <wtf/StdLibExtras.h>
 
 namespace WebCore {
 
@@ -56,32 +57,24 @@ static void setImageLoadingSettings(Page* page)
         return;
 
     for (Frame* frame = &page->mainFrame(); frame; frame = frame->tree().traverseNext()) {
-        frame->document()->cachedResourceLoader()->setImagesEnabled(page->settings().areImagesEnabled());
-        frame->document()->cachedResourceLoader()->setAutoLoadImages(page->settings().loadsImagesAutomatically());
+        frame->document()->cachedResourceLoader().setImagesEnabled(page->settings().areImagesEnabled());
+        frame->document()->cachedResourceLoader().setAutoLoadImages(page->settings().loadsImagesAutomatically());
     }
 }
 
 static void invalidateAfterGenericFamilyChange(Page* page)
 {
-    invalidateFontGlyphsCache();
+    invalidateFontCascadeCache();
     if (page)
         page->setNeedsRecalcStyleInAllFrames();
 }
 
-double Settings::gDefaultMinDOMTimerInterval = 0.010; // 10 milliseconds
-double Settings::gDefaultDOMTimerAlignmentInterval = 0;
-double Settings::gHiddenPageDOMTimerAlignmentInterval = 1.0;
-
-#if USE(SAFARI_THEME)
-bool Settings::gShouldPaintNativeControls = true;
-#endif
-
 #if USE(AVFOUNDATION)
-bool Settings::gAVFoundationEnabled = false;
+bool Settings::gAVFoundationEnabled = true;
 #endif
 
-#if PLATFORM(MAC)
-bool Settings::gQTKitEnabled = true;
+#if PLATFORM(COCOA)
+bool Settings::gQTKitEnabled = false;
 #endif
 
 bool Settings::gMockScrollbarsEnabled = false;
@@ -94,15 +87,24 @@ bool Settings::gShouldUseHighResolutionTimers = true;
 bool Settings::gShouldRespectPriorityInCSSAttributeSetters = false;
 bool Settings::gLowPowerVideoAudioBufferSizeEnabled = false;
 
+#if PLATFORM(IOS)
+bool Settings::gNetworkDataUsageTrackingEnabled = false;
+bool Settings::gAVKitEnabled = false;
+bool Settings::gShouldOptOutOfNetworkStateObservation = false;
+bool Settings::gManageAudioSession = false;
+#endif
+
 // NOTEs
 //  1) EditingMacBehavior comprises Tiger, Leopard, SnowLeopard and iOS builds, as well as QtWebKit when built on Mac;
-//  2) EditingWindowsBehavior comprises Win32 and WinCE builds, as well as QtWebKit and Chromium when built on Windows;
+//  2) EditingWindowsBehavior comprises Win32 build;
 //  3) EditingUnixBehavior comprises all unix-based systems, but Darwin/MacOS (and then abusing the terminology);
 // 99) MacEditingBehavior is used as a fallback.
 static EditingBehaviorType editingBehaviorTypeForPlatform()
 {
     return
-#if OS(DARWIN)
+#if PLATFORM(IOS)
+    EditingIOSBehavior
+#elif OS(DARWIN)
     EditingMacBehavior
 #elif OS(WINDOWS)
     EditingWindowsBehavior
@@ -117,15 +119,29 @@ static EditingBehaviorType editingBehaviorTypeForPlatform()
 
 #if PLATFORM(IOS)
 static const bool defaultFixedPositionCreatesStackingContext = true;
-static const bool defaultMediaPlaybackAllowsInline = false;
-static const bool defaultMediaPlaybackRequiresUserGesture = true;
+static const bool defaultFixedBackgroundsPaintRelativeToDocument = true;
+static const bool defaultAcceleratedCompositingForFixedPositionEnabled = true;
+static const bool defaultAllowsInlineMediaPlayback = false;
+static const bool defaultRequiresUserGestureForMediaPlayback = true;
+static const bool defaultAudioPlaybackRequiresUserGesture = true;
 static const bool defaultShouldRespectImageOrientation = true;
+static const bool defaultImageSubsamplingEnabled = true;
+static const bool defaultScrollingTreeIncludesFrames = true;
+static const bool defaultMediaControlsScaleWithPageZoom = true;
 #else
 static const bool defaultFixedPositionCreatesStackingContext = false;
-static const bool defaultMediaPlaybackAllowsInline = true;
-static const bool defaultMediaPlaybackRequiresUserGesture = false;
+static const bool defaultFixedBackgroundsPaintRelativeToDocument = false;
+static const bool defaultAcceleratedCompositingForFixedPositionEnabled = false;
+static const bool defaultAllowsInlineMediaPlayback = true;
+static const bool defaultRequiresUserGestureForMediaPlayback = false;
+static const bool defaultAudioPlaybackRequiresUserGesture = false;
 static const bool defaultShouldRespectImageOrientation = false;
+static const bool defaultImageSubsamplingEnabled = false;
+static const bool defaultScrollingTreeIncludesFrames = false;
+static const bool defaultMediaControlsScaleWithPageZoom = true;
 #endif
+
+static const bool defaultAllowsPictureInPictureMediaPlayback = true;
 
 static const double defaultIncrementalRenderingSuppressionTimeoutInSeconds = 5;
 #if USE(UNIFIED_TEXT_CHECKING)
@@ -136,11 +152,19 @@ static const bool defaultUnifiedTextCheckerEnabled = false;
 static const bool defaultSmartInsertDeleteEnabled = true;
 static const bool defaultSelectTrailingWhitespaceEnabled = false;
 
+// This amount of time must have elapsed before we will even consider scheduling a layout without a delay.
+// FIXME: For faster machines this value can really be lowered to 200. 250 is adequate, but a little high
+// for dual G5s. :)
+static const auto layoutScheduleThreshold = std::chrono::milliseconds(250);
+
 Settings::Settings(Page* page)
-    : m_page(0)
+    : m_page(nullptr)
     , m_mediaTypeOverride("screen")
-    , m_fontGenericFamilies(FontGenericFamilies::create())
+    , m_fontGenericFamilies(std::make_unique<FontGenericFamilies>())
     , m_storageBlockingPolicy(SecurityOrigin::AllowAllStorage)
+    , m_layoutInterval(layoutScheduleThreshold)
+    , m_minimumDOMTimerInterval(DOMTimer::defaultMinimumInterval())
+    , m_domTimerAlignmentInterval(DOMTimer::defaultAlignmentInterval())
 #if ENABLE(TEXT_AUTOSIZING)
     , m_textAutosizingFontScaleFactor(1)
 #if HACK_FORCE_TEXT_AUTOSIZING_ON_DESKTOP
@@ -151,41 +175,31 @@ Settings::Settings(Page* page)
 #endif
 #endif
     SETTINGS_INITIALIZER_LIST
-    , m_screenFontSubstitutionEnabled(shouldEnableScreenFontSubstitutionByDefault())
     , m_isJavaEnabled(false)
     , m_isJavaEnabledForLocalFiles(true)
     , m_loadsImagesAutomatically(false)
-    , m_privateBrowsingEnabled(false)
     , m_areImagesEnabled(true)
     , m_arePluginsEnabled(false)
     , m_isScriptEnabled(false)
     , m_needsAdobeFrameReloadingQuirk(false)
     , m_usesPageCache(false)
     , m_fontRenderingMode(0)
-    , m_isCSSCustomFilterEnabled(false)
-#if ENABLE(CSS_STICKY_POSITION)
-    , m_cssStickyPositionEnabled(true)
-#endif
-#if ENABLE(CSS_VARIABLES)
-    , m_cssVariablesEnabled(false)
-#endif
+    , m_antialiasedFontDilationEnabled(false)
     , m_showTiledScrollingIndicator(false)
-    , m_tiledBackingStoreEnabled(false)
+    , m_backgroundShouldExtendBeyondPage(false)
     , m_dnsPrefetchingEnabled(false)
 #if ENABLE(TOUCH_EVENTS)
     , m_touchEventEmulationEnabled(false)
 #endif
     , m_scrollingPerformanceLoggingEnabled(false)
-    , m_aggressiveTileRetentionEnabled(false)
     , m_timeWithoutMouseMovementBeforeHidingControls(3)
-    , m_setImageLoadingSettingsTimer(this, &Settings::imageLoadingSettingsTimerFired)
+    , m_setImageLoadingSettingsTimer(*this, &Settings::imageLoadingSettingsTimerFired)
 #if ENABLE(HIDDEN_PAGE_DOM_TIMER_THROTTLING)
     , m_hiddenPageDOMTimerThrottlingEnabled(false)
 #endif
-#if ENABLE(PAGE_VISIBILITY_API)
     , m_hiddenPageCSSAnimationSuspensionEnabled(false)
-#endif
     , m_fontFallbackPrefersPictographs(false)
+    , m_forcePendingWebGLPolicy(false)
 {
     // A Frame may not have been created yet, so we initialize the AtomicString
     // hash before trying to use it.
@@ -198,31 +212,14 @@ Settings::~Settings()
 {
 }
 
-PassRefPtr<Settings> Settings::create(Page* page)
+Ref<Settings> Settings::create(Page* page)
 {
-    return adoptRef(new Settings(page));
+    return adoptRef(*new Settings(page));
 }
 
 SETTINGS_SETTER_BODIES
 
-void Settings::setHiddenPageDOMTimerAlignmentInterval(double hiddenPageDOMTimerAlignmentinterval)
-{
-    gHiddenPageDOMTimerAlignmentInterval = hiddenPageDOMTimerAlignmentinterval;
-}
-
-double Settings::hiddenPageDOMTimerAlignmentInterval()
-{
-    return gHiddenPageDOMTimerAlignmentInterval;
-}
-
-#if !PLATFORM(MAC)
-bool Settings::shouldEnableScreenFontSubstitutionByDefault()
-{
-    return true;
-}
-#endif
-
-#if !PLATFORM(MAC) && !PLATFORM(BLACKBERRY)
+#if !PLATFORM(COCOA)
 void Settings::initializeDefaultFontFamilies()
 {
     // Other platforms can set up fonts from a client, but on Mac, we want it in WebCore to share code between WebKit1 and WebKit2.
@@ -350,6 +347,12 @@ void Settings::setTextAutosizingFontScaleFactor(float fontScaleFactor)
 
 #endif
 
+void Settings::setAntialiasedFontDilationEnabled(bool enabled)
+{
+    // FIXME: It's wrong for a setting to toggle a global, but this code is temporary.
+    FontCascade::setAntialiasedFontDilationEnabled(enabled);
+}
+
 void Settings::setMediaTypeOverride(const String& mediaTypeOverride)
 {
     if (m_mediaTypeOverride == mediaTypeOverride)
@@ -381,19 +384,25 @@ void Settings::setLoadsImagesAutomatically(bool loadsImagesAutomatically)
     m_setImageLoadingSettingsTimer.startOneShot(0);
 }
 
-void Settings::imageLoadingSettingsTimerFired(Timer<Settings>*)
+void Settings::imageLoadingSettingsTimerFired()
 {
     setImageLoadingSettings(m_page);
 }
 
 void Settings::setScriptEnabled(bool isScriptEnabled)
 {
+    if (m_isScriptEnabled == isScriptEnabled)
+        return;
+
     m_isScriptEnabled = isScriptEnabled;
-    
+
     if (!m_page)
         return;
-    
-    InspectorInstrumentation::scriptsEnabled(m_page, m_isScriptEnabled);
+
+#if PLATFORM(IOS)
+    m_page->setNeedsRecalcStyleInAllFrames();
+#endif
+    InspectorInstrumentation::scriptsEnabled(*m_page, m_isScriptEnabled);
 }
 
 void Settings::setJavaEnabled(bool isJavaEnabled)
@@ -414,6 +423,11 @@ void Settings::setImagesEnabled(bool areImagesEnabled)
     m_setImageLoadingSettingsTimer.startOneShot(0);
 }
 
+void Settings::setForcePendingWebGLPolicy(bool forced)
+{
+    m_forcePendingWebGLPolicy = forced;
+}
+
 void Settings::setPluginsEnabled(bool arePluginsEnabled)
 {
     if (m_arePluginsEnabled == arePluginsEnabled)
@@ -421,17 +435,6 @@ void Settings::setPluginsEnabled(bool arePluginsEnabled)
 
     m_arePluginsEnabled = arePluginsEnabled;
     Page::refreshPlugins(false);
-}
-
-void Settings::setPrivateBrowsingEnabled(bool privateBrowsingEnabled)
-{
-    if (m_privateBrowsingEnabled == privateBrowsingEnabled)
-        return;
-
-    m_privateBrowsingEnabled = privateBrowsingEnabled;
-    
-    if (m_page)
-        m_page->privateBrowsingStateChanged();
 }
 
 void Settings::setUserStyleSheetLocation(const URL& userStyleSheetLocation)
@@ -452,50 +455,30 @@ void Settings::setNeedsAdobeFrameReloadingQuirk(bool shouldNotReloadIFramesForUn
     m_needsAdobeFrameReloadingQuirk = shouldNotReloadIFramesForUnchangedSRC;
 }
 
-void Settings::setDefaultMinDOMTimerInterval(double interval)
+void Settings::setMinimumDOMTimerInterval(double interval)
 {
-    gDefaultMinDOMTimerInterval = interval;
-}
+    double oldTimerInterval = m_minimumDOMTimerInterval;
+    m_minimumDOMTimerInterval = interval;
 
-double Settings::defaultMinDOMTimerInterval()
-{
-    return gDefaultMinDOMTimerInterval;
-}
-
-void Settings::setMinDOMTimerInterval(double interval)
-{
-    if (m_page)
-        m_page->setMinimumTimerInterval(interval);
-}
-
-double Settings::minDOMTimerInterval()
-{
     if (!m_page)
-        return 0;
-    return m_page->minimumTimerInterval();
+        return;
+
+    for (Frame* frame = &m_page->mainFrame(); frame; frame = frame->tree().traverseNext()) {
+        if (frame->document())
+            frame->document()->adjustMinimumTimerInterval(oldTimerInterval);
+    }
 }
 
-void Settings::setDefaultDOMTimerAlignmentInterval(double interval)
+void Settings::setDOMTimerAlignmentInterval(double alignmentInterval)
 {
-    gDefaultDOMTimerAlignmentInterval = interval;
+    m_domTimerAlignmentInterval = alignmentInterval;
 }
 
-double Settings::defaultDOMTimerAlignmentInterval()
+void Settings::setLayoutInterval(std::chrono::milliseconds layoutInterval)
 {
-    return gDefaultDOMTimerAlignmentInterval;
-}
-
-void Settings::setDOMTimerAlignmentInterval(double interval)
-{
-    if (m_page)
-        m_page->setTimerAlignmentInterval(interval);
-}
-
-double Settings::domTimerAlignmentInterval() const
-{
-    if (!m_page)
-        return 0;
-    return m_page->timerAlignmentInterval();
+    // FIXME: It seems weird that this function may disregard the specified layout interval.
+    // We should either expose layoutScheduleThreshold or better communicate this invariant.
+    m_layoutInterval = std::max(layoutInterval, layoutScheduleThreshold);
 }
 
 void Settings::setUsesPageCache(bool usesPageCache)
@@ -508,22 +491,8 @@ void Settings::setUsesPageCache(bool usesPageCache)
     if (!m_page)
         return;
 
-    if (!m_usesPageCache) {
-        int first = -m_page->backForward().backCount();
-        int last = m_page->backForward().forwardCount();
-        for (int i = first; i <= last; i++)
-            pageCache()->remove(m_page->backForward().itemAtIndex(i));
-    }
-}
-
-void Settings::setScreenFontSubstitutionEnabled(bool enabled)
-{
-    if (m_screenFontSubstitutionEnabled == enabled)
-        return;
-    m_screenFontSubstitutionEnabled = enabled;
-
-    if (m_page)
-        m_page->setNeedsRecalcStyleInAllFrames();
+    if (!m_usesPageCache)
+        PageCache::singleton().pruneToSizeNow(0, PruningReason::None);
 }
 
 void Settings::setFontRenderingMode(FontRenderingMode mode)
@@ -539,13 +508,6 @@ FontRenderingMode Settings::fontRenderingMode() const
 {
     return static_cast<FontRenderingMode>(m_fontRenderingMode);
 }
-
-#if USE(SAFARI_THEME)
-void Settings::setShouldPaintNativeControls(bool shouldPaintNativeControls)
-{
-    gShouldPaintNativeControls = shouldPaintNativeControls;
-}
-#endif
 
 void Settings::setDNSPrefetchingEnabled(bool dnsPrefetchingEnabled)
 {
@@ -582,13 +544,15 @@ void Settings::setStorageBlockingPolicy(SecurityOrigin::StorageBlockingPolicy en
         m_page->storageBlockingStateChanged();
 }
 
-void Settings::setTiledBackingStoreEnabled(bool enabled)
+void Settings::setBackgroundShouldExtendBeyondPage(bool shouldExtend)
 {
-    m_tiledBackingStoreEnabled = enabled;
-#if USE(TILED_BACKING_STORE)
+    if (m_backgroundShouldExtendBeyondPage == shouldExtend)
+        return;
+
+    m_backgroundShouldExtendBeyondPage = shouldExtend;
+
     if (m_page)
-        m_page->mainFrame().setTiledBackingStoreEnabled(enabled);
-#endif
+        m_page->mainFrame().view()->updateExtendBackgroundIfNecessary();
 }
 
 #if USE(AVFOUNDATION)
@@ -602,7 +566,7 @@ void Settings::setAVFoundationEnabled(bool enabled)
 }
 #endif
 
-#if PLATFORM(MAC)
+#if PLATFORM(COCOA)
 void Settings::setQTKitEnabled(bool enabled)
 {
     if (gQTKitEnabled == enabled)
@@ -620,15 +584,11 @@ void Settings::setScrollingPerformanceLoggingEnabled(bool enabled)
     if (m_page && m_page->mainFrame().view())
         m_page->mainFrame().view()->setScrollingPerformanceLoggingEnabled(enabled);
 }
-    
-void Settings::setAggressiveTileRetentionEnabled(bool enabled)
-{
-    m_aggressiveTileRetentionEnabled = enabled;
-}
 
 void Settings::setMockScrollbarsEnabled(bool flag)
 {
     gMockScrollbarsEnabled = flag;
+    // FIXME: This should update scroll bars in existing pages.
 }
 
 bool Settings::mockScrollbarsEnabled()
@@ -639,6 +599,7 @@ bool Settings::mockScrollbarsEnabled()
 void Settings::setUsesOverlayScrollbars(bool flag)
 {
     gUsesOverlayScrollbars = flag;
+    // FIXME: This should update scroll bars in existing pages.
 }
 
 bool Settings::usesOverlayScrollbars()
@@ -667,7 +628,6 @@ void Settings::setHiddenPageDOMTimerThrottlingEnabled(bool flag)
 }
 #endif
 
-#if ENABLE(PAGE_VISIBILITY_API)
 void Settings::setHiddenPageCSSAnimationSuspensionEnabled(bool flag)
 {
     if (m_hiddenPageCSSAnimationSuspensionEnabled == flag)
@@ -676,7 +636,6 @@ void Settings::setHiddenPageCSSAnimationSuspensionEnabled(bool flag)
     if (m_page)
         m_page->hiddenPageCSSAnimationSuspensionStateChanged();
 }
-#endif
 
 void Settings::setFontFallbackPrefersPictographs(bool preferPictographs)
 {
@@ -692,5 +651,43 @@ void Settings::setLowPowerVideoAudioBufferSizeEnabled(bool flag)
 {
     gLowPowerVideoAudioBufferSizeEnabled = flag;
 }
+
+#if PLATFORM(IOS)
+void Settings::setAudioSessionCategoryOverride(unsigned sessionCategory)
+{
+    AudioSession::sharedSession().setCategoryOverride(static_cast<AudioSession::CategoryType>(sessionCategory));
+}
+
+unsigned Settings::audioSessionCategoryOverride()
+{
+    return AudioSession::sharedSession().categoryOverride();
+}
+
+void Settings::setNetworkDataUsageTrackingEnabled(bool trackingEnabled)
+{
+    gNetworkDataUsageTrackingEnabled = trackingEnabled;
+}
+
+bool Settings::networkDataUsageTrackingEnabled()
+{
+    return gNetworkDataUsageTrackingEnabled;
+}
+
+static String& sharedNetworkInterfaceNameGlobal()
+{
+    static NeverDestroyed<String> networkInterfaceName;
+    return networkInterfaceName;
+}
+
+void Settings::setNetworkInterfaceName(const String& networkInterfaceName)
+{
+    sharedNetworkInterfaceNameGlobal() = networkInterfaceName;
+}
+
+const String& Settings::networkInterfaceName()
+{
+    return sharedNetworkInterfaceNameGlobal();
+}
+#endif
 
 } // namespace WebCore

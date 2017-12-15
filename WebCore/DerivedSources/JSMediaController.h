@@ -23,29 +23,28 @@
 
 #if ENABLE(VIDEO)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MediaController.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaController : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMediaController* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaController> impl)
+    static JSMediaController* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaController>&& impl)
     {
-        JSMediaController* ptr = new (NotNull, JSC::allocateCell<JSMediaController>(globalObject->vm().heap)) JSMediaController(structure, globalObject, impl);
+        JSMediaController* ptr = new (NotNull, JSC::allocateCell<JSMediaController>(globalObject->vm().heap)) JSMediaController(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaController* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMediaController();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     MediaController& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MediaController* m_impl;
 protected:
-    JSMediaController(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaController>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSMediaController(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaController>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaControllerOwner : public JSC::WeakHandleOwner {
@@ -83,95 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaController*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaControllerOwner, jsMediaControllerOwner, ());
-    return &jsMediaControllerOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MediaController*)
-{
-    return &world;
+    static NeverDestroyed<JSMediaControllerOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaController*);
-MediaController* toMediaController(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaController& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMediaControllerPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaControllerPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaControllerPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaControllerPrototype>(vm.heap)) JSMediaControllerPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaControllerPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSMediaControllerConstructor : public DOMConstructorObject {
-private:
-    JSMediaControllerConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaControllerConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaControllerConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaControllerConstructor>(vm.heap)) JSMediaControllerConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMediaController(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControllerPrototypeFunctionPlay(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControllerPrototypeFunctionPause(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControllerPrototypeFunctionUnpause(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControllerPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControllerPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControllerPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMediaControllerBuffered(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControllerSeekable(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControllerDuration(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControllerCurrentTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaControllerCurrentTime(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaControllerPaused(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControllerPlayed(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControllerPlaybackState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControllerDefaultPlaybackRate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaControllerDefaultPlaybackRate(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaControllerPlaybackRate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaControllerPlaybackRate(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaControllerVolume(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaControllerVolume(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaControllerMuted(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaControllerMuted(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaControllerConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

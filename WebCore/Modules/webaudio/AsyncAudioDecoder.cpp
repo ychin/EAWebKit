@@ -32,8 +32,6 @@
 #include "AudioBufferCallback.h"
 #include <runtime/ArrayBuffer.h>
 #include <wtf/MainThread.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
@@ -60,8 +58,8 @@ void AsyncAudioDecoder::decodeAsync(ArrayBuffer* audioData, float sampleRate, Pa
     if (!audioData)
         return;
 
-    auto decodingTask = DecodingTask::create(audioData, sampleRate, successCallback, errorCallback);
-    m_queue.append(std::move(decodingTask)); // note that ownership of the task is effectively taken by the queue.
+    auto decodingTask = std::make_unique<DecodingTask>(audioData, sampleRate, successCallback, errorCallback);
+    m_queue.append(WTF::move(decodingTask)); // note that ownership of the task is effectively taken by the queue.
 }
 
 // Asynchronously decode in this thread.
@@ -87,11 +85,6 @@ void AsyncAudioDecoder::runLoop()
         // See DecodingTask::notifyComplete() for cleanup.
         decodingTask.release()->decode();
     }
-}
-
-std::unique_ptr<AsyncAudioDecoder::DecodingTask> AsyncAudioDecoder::DecodingTask::create(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
-{
-    return std::unique_ptr<DecodingTask>(new DecodingTask(audioData, sampleRate, successCallback, errorCallback));
 }
 
 AsyncAudioDecoder::DecodingTask::DecodingTask(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)

@@ -24,6 +24,7 @@
 
 #include "JSWebGLRenderbuffer.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLRenderbuffer.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +32,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSWebGLRenderbufferTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLRenderbufferConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsWebGLRenderbufferConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebGLRenderbufferPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLRenderbufferPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLRenderbufferPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLRenderbufferPrototype>(vm.heap)) JSWebGLRenderbufferPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLRenderbufferPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebGLRenderbufferTable = { 2, 1, JSWebGLRenderbufferTableValues, 0 };
-/* Hash table for constructor */
+class JSWebGLRenderbufferConstructor : public DOMConstructorObject {
+private:
+    JSWebGLRenderbufferConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSWebGLRenderbufferConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebGLRenderbufferConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebGLRenderbufferConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebGLRenderbufferConstructor>(vm.heap)) JSWebGLRenderbufferConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSWebGLRenderbufferConstructorTable = { 1, 0, JSWebGLRenderbufferConstructorTableValues, 0 };
-const ClassInfo JSWebGLRenderbufferConstructor::s_info = { "WebGLRenderbufferConstructor", &Base::s_info, &JSWebGLRenderbufferConstructorTable, 0, CREATE_METHOD_TABLE(JSWebGLRenderbufferConstructor) };
+const ClassInfo JSWebGLRenderbufferConstructor::s_info = { "WebGLRenderbufferConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLRenderbufferConstructor) };
 
 JSWebGLRenderbufferConstructor::JSWebGLRenderbufferConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,47 +93,42 @@ void JSWebGLRenderbufferConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebGLRenderbufferPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebGLRenderbufferConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebGLRenderbufferConstructor, JSDOMWrapper>(exec, JSWebGLRenderbufferConstructorTable, jsCast<JSWebGLRenderbufferConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebGLRenderbuffer::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebGLRenderbuffer"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLRenderbufferPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLRenderbufferConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSWebGLRenderbufferPrototypeTable = { 1, 0, JSWebGLRenderbufferPrototypeTableValues, 0 };
-const ClassInfo JSWebGLRenderbufferPrototype::s_info = { "WebGLRenderbufferPrototype", &Base::s_info, &JSWebGLRenderbufferPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLRenderbufferPrototype) };
+const ClassInfo JSWebGLRenderbufferPrototype::s_info = { "WebGLRenderbufferPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLRenderbufferPrototype) };
 
-JSObject* JSWebGLRenderbufferPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLRenderbuffer>(vm, globalObject);
-}
-
-const ClassInfo JSWebGLRenderbuffer::s_info = { "WebGLRenderbuffer", &Base::s_info, &JSWebGLRenderbufferTable, 0 , CREATE_METHOD_TABLE(JSWebGLRenderbuffer) };
-
-JSWebGLRenderbuffer::JSWebGLRenderbuffer(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLRenderbuffer> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLRenderbuffer::finishCreation(VM& vm)
+void JSWebGLRenderbufferPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLRenderbufferPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLRenderbuffer::s_info = { "WebGLRenderbuffer", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLRenderbuffer) };
+
+JSWebGLRenderbuffer::JSWebGLRenderbuffer(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLRenderbuffer>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLRenderbuffer::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLRenderbufferPrototype::create(vm, globalObject, JSWebGLRenderbufferPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLRenderbuffer::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLRenderbuffer>(vm, globalObject);
 }
 
 void JSWebGLRenderbuffer::destroy(JSC::JSCell* cell)
@@ -110,20 +139,15 @@ void JSWebGLRenderbuffer::destroy(JSC::JSCell* cell)
 
 JSWebGLRenderbuffer::~JSWebGLRenderbuffer()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSWebGLRenderbuffer::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsWebGLRenderbufferConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSWebGLRenderbuffer* thisObject = jsCast<JSWebGLRenderbuffer*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebGLRenderbuffer, Base>(exec, JSWebGLRenderbufferTable, thisObject, propertyName, slot);
-}
-
-JSValue jsWebGLRenderbufferConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSWebGLRenderbuffer* domObject = jsCast<JSWebGLRenderbuffer*>(asObject(slotBase));
-    return JSWebGLRenderbuffer::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebGLRenderbufferPrototype* domObject = jsDynamicCast<JSWebGLRenderbufferPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebGLRenderbuffer::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSWebGLRenderbuffer::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -131,28 +155,18 @@ JSValue JSWebGLRenderbuffer::getConstructor(VM& vm, JSGlobalObject* globalObject
     return getDOMConstructor<JSWebGLRenderbufferConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSWebGLRenderbuffer* jsWebGLRenderbuffer)
-{
-    if (jsWebGLRenderbuffer->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSWebGLRenderbufferOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLRenderbuffer* jsWebGLRenderbuffer = jsCast<JSWebGLRenderbuffer*>(handle.get().asCell());
-    if (!isObservable(jsWebGLRenderbuffer))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebGLRenderbufferOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLRenderbuffer* jsWebGLRenderbuffer = jsCast<JSWebGLRenderbuffer*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLRenderbuffer = jsCast<JSWebGLRenderbuffer*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLRenderbuffer->impl(), jsWebGLRenderbuffer);
-    jsWebGLRenderbuffer->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -163,11 +177,11 @@ extern "C" { extern void (*const __identifier("??_7WebGLRenderbuffer@WebCore@@6B
 extern "C" { extern void* _ZTVN7WebCore17WebGLRenderbufferE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLRenderbuffer* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLRenderbuffer* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLRenderbuffer>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLRenderbuffer>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -188,13 +202,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLRe
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebGLRenderbuffer>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLRenderbuffer>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLRenderbuffer>(globalObject, impl);
 }
 
-WebGLRenderbuffer* toWebGLRenderbuffer(JSC::JSValue value)
+WebGLRenderbuffer* JSWebGLRenderbuffer::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLRenderbuffer::info()) ? &jsCast<JSWebGLRenderbuffer*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLRenderbuffer*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

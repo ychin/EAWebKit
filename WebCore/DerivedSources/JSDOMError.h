@@ -22,27 +22,28 @@
 #define JSDOMError_h
 
 #include "DOMError.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDOMError : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMError> impl)
+    static JSDOMError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMError>&& impl)
     {
-        JSDOMError* ptr = new (NotNull, JSC::allocateCell<JSDOMError>(globalObject->vm().heap)) JSDOMError(structure, globalObject, impl);
+        JSDOMError* ptr = new (NotNull, JSC::allocateCell<JSDOMError>(globalObject->vm().heap)) JSDOMError(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMError* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSDOMError();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -51,22 +52,21 @@ public:
     }
 
     DOMError& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMError* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSDOMError(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMError>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDOMError(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMError>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMErrorOwner : public JSC::WeakHandleOwner {
@@ -77,44 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMError*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMErrorOwner, jsDOMErrorOwner, ());
-    return &jsDOMErrorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, DOMError*)
-{
-    return &world;
+    static NeverDestroyed<JSDOMErrorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMError*);
-DOMError* toDOMError(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMError& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMErrorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMErrorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMErrorPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMErrorPrototype>(vm.heap)) JSDOMErrorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMErrorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsDOMErrorName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

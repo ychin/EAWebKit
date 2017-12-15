@@ -6,7 +6,7 @@
  * Copyright (C) 2008 Holger Hans Peter Freyther
  *
  * All rights reserved.
- * Copyright (C) 2011, 2012 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,7 +40,7 @@
 #include "IntRect.h"
 #include "NotImplemented.h"
 #include "WebPageClientEA.h"
-#include "ScrollView.h"
+#include "FrameView.h"
 #include <internal/include/EAWebKitAssert.h>
 
 // EAWidget platform class for any custom settings.  
@@ -86,7 +86,7 @@ void Widget::setFocus(bool focused)
 
 void Widget::setCursor(const Cursor& cursor)
 {
-    ScrollView* view = root();
+    FrameView* view = root();
     if (!view)
         return;
     view->hostWindow()->setCursor(cursor);

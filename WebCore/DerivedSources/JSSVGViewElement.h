@@ -21,34 +21,30 @@
 #ifndef JSSVGViewElement_h
 #define JSSVGViewElement_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGViewElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGViewElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGViewElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGViewElement> impl)
+    static JSSVGViewElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGViewElement>&& impl)
     {
-        JSSVGViewElement* ptr = new (NotNull, JSC::allocateCell<JSSVGViewElement>(globalObject->vm().heap)) JSSVGViewElement(structure, globalObject, impl);
+        JSSVGViewElement* ptr = new (NotNull, JSC::allocateCell<JSSVGViewElement>(globalObject->vm().heap)) JSSVGViewElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -57,91 +53,18 @@ public:
         return static_cast<SVGViewElement&>(Base::impl());
     }
 protected:
-    JSSVGViewElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGViewElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGViewElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGViewElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGViewElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGViewElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGViewElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGViewElementPrototype>(vm.heap)) JSSVGViewElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGViewElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGViewElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGViewElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGViewElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGViewElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGViewElementConstructor>(vm.heap)) JSSVGViewElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGViewElementViewTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementExternalResourcesRequired(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementViewBox(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementPreserveAspectRatio(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementZoomAndPan(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGViewElementZoomAndPan(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsSVGViewElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementSVG_ZOOMANDPAN_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementSVG_ZOOMANDPAN_DISABLE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGViewElementSVG_ZOOMANDPAN_MAGNIFY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

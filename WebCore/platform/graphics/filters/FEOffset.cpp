@@ -22,27 +22,24 @@
  */
 
 #include "config.h"
-
-#if ENABLE(FILTERS)
 #include "FEOffset.h"
 
 #include "Filter.h"
 #include "GraphicsContext.h"
-#include "RenderTreeAsText.h"
 #include "TextStream.h"
 
 namespace WebCore {
 
-FEOffset::FEOffset(Filter* filter, float dx, float dy)
+FEOffset::FEOffset(Filter& filter, float dx, float dy)
     : FilterEffect(filter)
     , m_dx(dx)
     , m_dy(dy)
 {
 }
 
-PassRefPtr<FEOffset> FEOffset::create(Filter* filter, float dx, float dy)
+Ref<FEOffset> FEOffset::create(Filter& filter, float dx, float dy)
 {
-    return adoptRef(new FEOffset(filter, dx, dy));
+    return adoptRef(*new FEOffset(filter, dx, dy));
 }
 
 float FEOffset::dx() const
@@ -68,8 +65,8 @@ void FEOffset::setDy(float dy)
 void FEOffset::determineAbsolutePaintRect()
 {
     FloatRect paintRect = inputEffect(0)->absolutePaintRect();
-    Filter* filter = this->filter();
-    paintRect.move(filter->applyHorizontalScale(m_dx), filter->applyVerticalScale(m_dy));
+    Filter& filter = this->filter();
+    paintRect.move(filter.applyHorizontalScale(m_dx), filter.applyVerticalScale(m_dy));
     if (clipsToBounds())
         paintRect.intersect(maxEffectRect());
     else
@@ -88,8 +85,8 @@ void FEOffset::platformApplySoftware()
     setIsAlphaImage(in->isAlphaImage());
 
     FloatRect drawingRegion = drawingRegionOfInputImage(in->absolutePaintRect());
-    Filter* filter = this->filter();
-    drawingRegion.move(filter->applyHorizontalScale(m_dx), filter->applyVerticalScale(m_dy));
+    Filter& filter = this->filter();
+    drawingRegion.move(filter.applyHorizontalScale(m_dx), filter.applyVerticalScale(m_dy));
     resultImage->context()->drawImageBuffer(in->asImageBuffer(), ColorSpaceDeviceRGB, drawingRegion);
 }
 
@@ -108,5 +105,3 @@ TextStream& FEOffset::externalRepresentation(TextStream& ts, int indent) const
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(FILTERS)

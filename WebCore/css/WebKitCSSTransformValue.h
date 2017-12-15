@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -60,20 +60,17 @@ public:
         Matrix3DTransformOperation
     };
 
-    static PassRefPtr<WebKitCSSTransformValue> create(TransformOperationType type)
+    static Ref<WebKitCSSTransformValue> create(TransformOperationType type)
     {
-        return adoptRef(new WebKitCSSTransformValue(type));
+        return adoptRef(*new WebKitCSSTransformValue(type));
     }
 
     String customCSSText() const;
     bool equals(const WebKitCSSTransformValue& other) const { return m_type == other.m_type && CSSValueList::equals(other); }
-#if ENABLE(CSS_VARIABLES)
-    String customSerializeResolvingVariables(const HashMap<AtomicString, String>&) const;
-#endif
 
     TransformOperationType operationType() const { return m_type; }
     
-    PassRefPtr<WebKitCSSTransformValue> cloneForCSSOM() const;
+    Ref<WebKitCSSTransformValue> cloneForCSSOM() const;
 
 private:
     WebKitCSSTransformValue(TransformOperationType);
@@ -82,18 +79,8 @@ private:
     TransformOperationType m_type;
 };
 
-inline WebKitCSSTransformValue* toWebKitCSSTransformValue(CSSValue* value)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!value || value->isWebKitCSSTransformValue());
-    return static_cast<WebKitCSSTransformValue*>(value);
-}
+} // namespace WebCore
 
-inline const WebKitCSSTransformValue* toWebKitCSSTransformValue(const CSSValue* value)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!value || value->isWebKitCSSTransformValue());
-    return static_cast<const WebKitCSSTransformValue*>(value);
-}
-
-}
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(WebKitCSSTransformValue, isWebKitCSSTransformValue())
 
 #endif

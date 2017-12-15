@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
 
+#if defined(EA_PLATFORM_MICROSOFT) 
     #if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0400)
         #undef  _WIN32_WINNT
         #define _WIN32_WINNT 0x0400
@@ -42,6 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #pragma warning(push,0)
     #include <Windows.h>        // ::IsDebuggerPresent
     #pragma warning(pop)
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,6 +53,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Implements support for the definition of EA_PLATFORM_MICROSOFT for the case
 // of using EABase versions prior to the addition of its EA_PLATFORM_MICROSOFT support.
 //
+#if (EABASE_VERSION_N < 20022) && !defined(EA_PLATFORM_MICROSOFT)
+    #if defined(EA_PLATFORM_WINDOWS) 
+        #define EA_PLATFORM_MICROSOFT 1
+    #endif
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,8 +76,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #if !defined(EA_ASSERT_VSNPRINTF)
+    #if defined(EA_PLATFORM_MICROSOFT)
         #define EA_ASSERT_VSNPRINTF _vsnprintf
         #define EA_ASSERT_SNPRINTF   _snprintf
+    #else
+        #define EA_ASSERT_VSNPRINTF vsnprintf
+        #define EA_ASSERT_SNPRINTF   snprintf
+    #endif
 #endif
 
 
@@ -102,11 +114,13 @@ namespace EA {
 
             output[len] = '\0';
 
+#if defined(EA_PLATFORM_MICROSOFT) 
             if (IsDebuggerPresent())
             {
                 ::OutputDebugStringA(output);
             }
             else
+#endif
                 puts(output);
 
 

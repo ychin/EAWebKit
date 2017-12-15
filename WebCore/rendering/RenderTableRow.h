@@ -32,10 +32,10 @@ namespace WebCore {
 static const unsigned unsetRowIndex = 0x7FFFFFFF;
 static const unsigned maxRowIndex = 0x7FFFFFFE; // 2,147,483,646
 
-class RenderTableRow FINAL : public RenderBox {
+class RenderTableRow final : public RenderBox {
 public:
-    explicit RenderTableRow(Element&);
-    explicit RenderTableRow(Document&);
+    RenderTableRow(Element&, Ref<RenderStyle>&&);
+    RenderTableRow(Document&, Ref<RenderStyle>&&);
 
     RenderTableRow* nextRow() const;
     RenderTableRow* previousRow() const;
@@ -43,123 +43,114 @@ public:
     RenderTableCell* firstCell() const;
     RenderTableCell* lastCell() const;
 
-    RenderTableSection* section() const { return toRenderTableSection(parent()); }
-    RenderTable* table() const { return toRenderTable(parent()->parent()); }
+    RenderTable* table() const;
 
     void paintOutlineForRowIfNeeded(PaintInfo&, const LayoutPoint&);
 
     static RenderTableRow* createAnonymousWithParentRenderer(const RenderObject*);
-    virtual RenderBox* createAnonymousBoxWithSameTypeAs(const RenderObject* parent) const OVERRIDE
-    {
-        return createAnonymousWithParentRenderer(parent);
-    }
+    virtual RenderBox* createAnonymousBoxWithSameTypeAs(const RenderObject* parent) const override { return createAnonymousWithParentRenderer(parent); }
 
-    void setRowIndex(unsigned rowIndex)
-    {
-        if (UNLIKELY(rowIndex > maxRowIndex))
-            CRASH();
-
-        m_rowIndex = rowIndex;
-    }
-
+    void setRowIndex(unsigned);
     bool rowIndexWasSet() const { return m_rowIndex != unsetRowIndex; }
-    unsigned rowIndex() const
-    {
-        ASSERT(rowIndexWasSet());
-        return m_rowIndex;
-    }
+    unsigned rowIndex() const;
 
-    const BorderValue& borderAdjoiningTableStart() const
-    {
-        if (section()->hasSameDirectionAs(table()))
-            return style()->borderStart();
-
-        return style()->borderEnd();
-    }
-
-    const BorderValue& borderAdjoiningTableEnd() const
-    {
-        if (section()->hasSameDirectionAs(table()))
-            return style()->borderEnd();
-
-        return style()->borderStart();
-    }
-
+    const BorderValue& borderAdjoiningTableStart() const;
+    const BorderValue& borderAdjoiningTableEnd() const;
     const BorderValue& borderAdjoiningStartCell(const RenderTableCell*) const;
     const BorderValue& borderAdjoiningEndCell(const RenderTableCell*) const;
 
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE;
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) override;
 
-    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestAction) OVERRIDE;
+    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestAction) override;
 
 private:
-    virtual const char* renderName() const OVERRIDE { return (isAnonymous() || isPseudoElement()) ? "RenderTableRow (anonymous)" : "RenderTableRow"; }
+    virtual const char* renderName() const override { return (isAnonymous() || isPseudoElement()) ? "RenderTableRow (anonymous)" : "RenderTableRow"; }
 
-    virtual bool isTableRow() const OVERRIDE { return true; }
+    virtual bool isTableRow() const override { return true; }
 
-    virtual bool canHaveChildren() const OVERRIDE { return true; }
-    virtual void willBeRemovedFromTree() OVERRIDE;
+    virtual bool canHaveChildren() const override { return true; }
+    virtual void willBeRemovedFromTree() override;
 
-    virtual void layout() OVERRIDE;
-    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const OVERRIDE;
+    virtual void layout() override;
+    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const override;
 
-    virtual bool requiresLayer() const OVERRIDE { return hasOverflowClip() || hasTransform() || hasHiddenBackface() || hasClipPath() || createsGroup(); }
+    virtual bool requiresLayer() const override { return hasOverflowClip() || hasTransformRelatedProperty() || hasHiddenBackface() || hasClipPath() || createsGroup() || isStickyPositioned(); }
 
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
 
-    virtual void imageChanged(WrappedImagePtr, const IntRect* = 0) OVERRIDE;
+    virtual void imageChanged(WrappedImagePtr, const IntRect* = 0) override;
 
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
 
-    void firstChild() const WTF_DELETED_FUNCTION;
-    void lastChild() const WTF_DELETED_FUNCTION;
-    void nextSibling() const WTF_DELETED_FUNCTION;
-    void previousSibling() const WTF_DELETED_FUNCTION;
+    RenderTableSection* section() const { return downcast<RenderTableSection>(parent()); }
+
+    void firstChild() const = delete;
+    void lastChild() const = delete;
+    void nextSibling() const = delete;
+    void previousSibling() const = delete;
 
     unsigned m_rowIndex : 31;
 };
 
-inline RenderTableRow& toRenderTableRow(RenderObject& object)
+inline void RenderTableRow::setRowIndex(unsigned rowIndex)
 {
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isTableRow());
-    return static_cast<RenderTableRow&>(object);
+    if (UNLIKELY(rowIndex > maxRowIndex))
+        CRASH();
+    m_rowIndex = rowIndex;
 }
 
-inline RenderTableRow* toRenderTableRow(RenderObject* object)
+inline unsigned RenderTableRow::rowIndex() const
 {
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isTableRow());
-    return static_cast<RenderTableRow*>(object);
+    ASSERT(rowIndexWasSet());
+    return m_rowIndex;
 }
 
-inline const RenderTableRow* toRenderTableRow(const RenderObject* object)
+inline const BorderValue& RenderTableRow::borderAdjoiningTableStart() const
 {
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isTableRow());
-    return static_cast<const RenderTableRow*>(object);
+    RenderTableSection* section = this->section();
+    if (section && section->hasSameDirectionAs(table()))
+        return style().borderStart();
+    return style().borderEnd();
 }
 
-// This will catch anyone doing an unnecessary cast.
-void toRenderTableRow(const RenderTableRow*);
-
-inline RenderTableRow* RenderTableSection::firstRow() const
+inline const BorderValue& RenderTableRow::borderAdjoiningTableEnd() const
 {
-    return toRenderTableRow(RenderBox::firstChild());
+    RenderTableSection* section = this->section();
+    if (section && section->hasSameDirectionAs(table()))
+        return style().borderEnd();
+    return style().borderStart();
 }
 
-inline RenderTableRow* RenderTableSection::lastRow() const
+inline RenderTable* RenderTableRow::table() const
 {
-    return toRenderTableRow(RenderBox::lastChild());
+    RenderTableSection* section = this->section();
+    if (!section)
+        return nullptr;
+    return downcast<RenderTable>(section->parent());
 }
 
 inline RenderTableRow* RenderTableRow::nextRow() const
 {
-    return toRenderTableRow(RenderBox::nextSibling());
+    return downcast<RenderTableRow>(RenderBox::nextSibling());
 }
 
 inline RenderTableRow* RenderTableRow::previousRow() const
 {
-    return toRenderTableRow(RenderBox::previousSibling());
+    return downcast<RenderTableRow>(RenderBox::previousSibling());
+}
+
+inline RenderTableRow* RenderTableSection::firstRow() const
+{
+    return downcast<RenderTableRow>(RenderBox::firstChild());
+}
+
+inline RenderTableRow* RenderTableSection::lastRow() const
+{
+    return downcast<RenderTableRow>(RenderBox::lastChild());
 }
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderTableRow, isTableRow())
 
 #endif // RenderTableRow_h

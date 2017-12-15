@@ -24,6 +24,7 @@
 
 #include "JSWebGLShaderPrecisionFormat.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLShaderPrecisionFormat.h"
 #include <wtf/GetPtr.h>
 
@@ -31,27 +32,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSWebGLShaderPrecisionFormatTableValues[] =
-{
-    { "rangeMin", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatRangeMin), (intptr_t)0 },
-    { "rangeMax", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatRangeMax), (intptr_t)0 },
-    { "precision", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatPrecision), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsWebGLShaderPrecisionFormatRangeMin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebGLShaderPrecisionFormatRangeMax(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebGLShaderPrecisionFormatPrecision(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebGLShaderPrecisionFormatConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebGLShaderPrecisionFormatPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLShaderPrecisionFormatPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLShaderPrecisionFormatPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLShaderPrecisionFormatPrototype>(vm.heap)) JSWebGLShaderPrecisionFormatPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLShaderPrecisionFormatPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebGLShaderPrecisionFormatTable = { 9, 7, JSWebGLShaderPrecisionFormatTableValues, 0 };
-/* Hash table for constructor */
+class JSWebGLShaderPrecisionFormatConstructor : public DOMConstructorObject {
+private:
+    JSWebGLShaderPrecisionFormatConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSWebGLShaderPrecisionFormatConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebGLShaderPrecisionFormatConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebGLShaderPrecisionFormatConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebGLShaderPrecisionFormatConstructor>(vm.heap)) JSWebGLShaderPrecisionFormatConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSWebGLShaderPrecisionFormatConstructorTable = { 1, 0, JSWebGLShaderPrecisionFormatConstructorTableValues, 0 };
-const ClassInfo JSWebGLShaderPrecisionFormatConstructor::s_info = { "WebGLShaderPrecisionFormatConstructor", &Base::s_info, &JSWebGLShaderPrecisionFormatConstructorTable, 0, CREATE_METHOD_TABLE(JSWebGLShaderPrecisionFormatConstructor) };
+const ClassInfo JSWebGLShaderPrecisionFormatConstructor::s_info = { "WebGLShaderPrecisionFormatConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLShaderPrecisionFormatConstructor) };
 
 JSWebGLShaderPrecisionFormatConstructor::JSWebGLShaderPrecisionFormatConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,47 +96,45 @@ void JSWebGLShaderPrecisionFormatConstructor::finishCreation(VM& vm, JSDOMGlobal
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebGLShaderPrecisionFormatPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebGLShaderPrecisionFormatConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebGLShaderPrecisionFormatConstructor, JSDOMWrapper>(exec, JSWebGLShaderPrecisionFormatConstructorTable, jsCast<JSWebGLShaderPrecisionFormatConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebGLShaderPrecisionFormat::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebGLShaderPrecisionFormat"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLShaderPrecisionFormatPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "rangeMin", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatRangeMin), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "rangeMax", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatRangeMax), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "precision", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLShaderPrecisionFormatPrecision), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSWebGLShaderPrecisionFormatPrototypeTable = { 1, 0, JSWebGLShaderPrecisionFormatPrototypeTableValues, 0 };
-const ClassInfo JSWebGLShaderPrecisionFormatPrototype::s_info = { "WebGLShaderPrecisionFormatPrototype", &Base::s_info, &JSWebGLShaderPrecisionFormatPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLShaderPrecisionFormatPrototype) };
+const ClassInfo JSWebGLShaderPrecisionFormatPrototype::s_info = { "WebGLShaderPrecisionFormatPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLShaderPrecisionFormatPrototype) };
 
-JSObject* JSWebGLShaderPrecisionFormatPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLShaderPrecisionFormat>(vm, globalObject);
-}
-
-const ClassInfo JSWebGLShaderPrecisionFormat::s_info = { "WebGLShaderPrecisionFormat", &Base::s_info, &JSWebGLShaderPrecisionFormatTable, 0 , CREATE_METHOD_TABLE(JSWebGLShaderPrecisionFormat) };
-
-JSWebGLShaderPrecisionFormat::JSWebGLShaderPrecisionFormat(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLShaderPrecisionFormat> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLShaderPrecisionFormat::finishCreation(VM& vm)
+void JSWebGLShaderPrecisionFormatPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLShaderPrecisionFormatPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLShaderPrecisionFormat::s_info = { "WebGLShaderPrecisionFormat", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLShaderPrecisionFormat) };
+
+JSWebGLShaderPrecisionFormat::JSWebGLShaderPrecisionFormat(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLShaderPrecisionFormat>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLShaderPrecisionFormat::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLShaderPrecisionFormatPrototype::create(vm, globalObject, JSWebGLShaderPrecisionFormatPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLShaderPrecisionFormat::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLShaderPrecisionFormat>(vm, globalObject);
 }
 
 void JSWebGLShaderPrecisionFormat::destroy(JSC::JSCell* cell)
@@ -113,50 +145,66 @@ void JSWebGLShaderPrecisionFormat::destroy(JSC::JSCell* cell)
 
 JSWebGLShaderPrecisionFormat::~JSWebGLShaderPrecisionFormat()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSWebGLShaderPrecisionFormat::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsWebGLShaderPrecisionFormatRangeMin(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLShaderPrecisionFormat* thisObject = jsCast<JSWebGLShaderPrecisionFormat*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebGLShaderPrecisionFormat, Base>(exec, JSWebGLShaderPrecisionFormatTable, thisObject, propertyName, slot);
-}
-
-JSValue jsWebGLShaderPrecisionFormatRangeMin(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSWebGLShaderPrecisionFormat* castedThis = jsCast<JSWebGLShaderPrecisionFormat*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLShaderPrecisionFormat& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLShaderPrecisionFormat* castedThis = jsDynamicCast<JSWebGLShaderPrecisionFormat*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLShaderPrecisionFormatPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLShaderPrecisionFormat", "rangeMin");
+        return throwGetterTypeError(*exec, "WebGLShaderPrecisionFormat", "rangeMin");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.rangeMin());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLShaderPrecisionFormatRangeMax(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLShaderPrecisionFormatRangeMax(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLShaderPrecisionFormat* castedThis = jsCast<JSWebGLShaderPrecisionFormat*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLShaderPrecisionFormat& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLShaderPrecisionFormat* castedThis = jsDynamicCast<JSWebGLShaderPrecisionFormat*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLShaderPrecisionFormatPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLShaderPrecisionFormat", "rangeMax");
+        return throwGetterTypeError(*exec, "WebGLShaderPrecisionFormat", "rangeMax");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.rangeMax());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLShaderPrecisionFormatPrecision(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLShaderPrecisionFormatPrecision(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLShaderPrecisionFormat* castedThis = jsCast<JSWebGLShaderPrecisionFormat*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLShaderPrecisionFormat& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLShaderPrecisionFormat* castedThis = jsDynamicCast<JSWebGLShaderPrecisionFormat*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLShaderPrecisionFormatPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLShaderPrecisionFormat", "precision");
+        return throwGetterTypeError(*exec, "WebGLShaderPrecisionFormat", "precision");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.precision());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLShaderPrecisionFormatConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLShaderPrecisionFormatConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSWebGLShaderPrecisionFormat* domObject = jsCast<JSWebGLShaderPrecisionFormat*>(asObject(slotBase));
-    return JSWebGLShaderPrecisionFormat::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebGLShaderPrecisionFormatPrototype* domObject = jsDynamicCast<JSWebGLShaderPrecisionFormatPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebGLShaderPrecisionFormat::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSWebGLShaderPrecisionFormat::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -164,35 +212,25 @@ JSValue JSWebGLShaderPrecisionFormat::getConstructor(VM& vm, JSGlobalObject* glo
     return getDOMConstructor<JSWebGLShaderPrecisionFormatConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSWebGLShaderPrecisionFormat* jsWebGLShaderPrecisionFormat)
-{
-    if (jsWebGLShaderPrecisionFormat->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSWebGLShaderPrecisionFormatOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLShaderPrecisionFormat* jsWebGLShaderPrecisionFormat = jsCast<JSWebGLShaderPrecisionFormat*>(handle.get().asCell());
-    if (!isObservable(jsWebGLShaderPrecisionFormat))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebGLShaderPrecisionFormatOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLShaderPrecisionFormat* jsWebGLShaderPrecisionFormat = jsCast<JSWebGLShaderPrecisionFormat*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLShaderPrecisionFormat = jsCast<JSWebGLShaderPrecisionFormat*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLShaderPrecisionFormat->impl(), jsWebGLShaderPrecisionFormat);
-    jsWebGLShaderPrecisionFormat->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLShaderPrecisionFormat* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLShaderPrecisionFormat* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLShaderPrecisionFormat>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLShaderPrecisionFormat>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -201,13 +239,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLSh
     // attribute to WebGLShaderPrecisionFormat.
     COMPILE_ASSERT(!__is_polymorphic(WebGLShaderPrecisionFormat), WebGLShaderPrecisionFormat_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<WebGLShaderPrecisionFormat>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLShaderPrecisionFormat>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLShaderPrecisionFormat>(globalObject, impl);
 }
 
-WebGLShaderPrecisionFormat* toWebGLShaderPrecisionFormat(JSC::JSValue value)
+WebGLShaderPrecisionFormat* JSWebGLShaderPrecisionFormat::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLShaderPrecisionFormat::info()) ? &jsCast<JSWebGLShaderPrecisionFormat*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLShaderPrecisionFormat*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

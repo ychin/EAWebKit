@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -26,9 +26,9 @@
 #ifndef MarkupAccumulator_h
 #define MarkupAccumulator_h
 
+#include "Element.h"
 #include "markup.h"
 #include <wtf/HashMap.h>
-#include <wtf/Vector.h>
 #include <wtf/text/StringBuilder.h>
 
 namespace WebCore {
@@ -57,19 +57,13 @@ enum EntityMask {
     EntityMaskInHTMLAttributeValue = EntityMaskInAttributeValue | EntityNbsp,
 };
 
-struct EntityDescription {
-    UChar entity;
-    const String& reference;
-    EntityMask mask;
-};
-
 // FIXME: Noncopyable?
 class MarkupAccumulator {
 public:
     MarkupAccumulator(Vector<Node*>*, EAbsoluteURLs, const Range* = 0, EFragmentSerialization = HTMLFragmentSerialization);
     virtual ~MarkupAccumulator();
 
-    String serializeNodes(Node& targetNode, Node* nodeToSkip, EChildrenOnly, Vector<QualifiedName>* tagNamesToSkip = nullptr);
+    String serializeNodes(Node& targetNode, EChildrenOnly, Vector<QualifiedName>* tagNamesToSkip = nullptr);
 
     static void appendCharactersReplacingEntities(StringBuilder&, const String&, unsigned, unsigned, EntityMask);
 
@@ -79,8 +73,14 @@ protected:
 
     void concatenateMarkup(StringBuilder&);
 
-    virtual void appendString(const String&);
-    virtual void appendEndTag(const Node&);
+    void appendString(const String&);
+    void appendEndTag(const Node& node)
+    {
+        if (is<Element>(node))
+            appendEndTag(downcast<Element>(node));
+    }
+
+    virtual void appendEndTag(const Element&);
     virtual void appendCustomAttributes(StringBuilder&, const Element&, Namespaces*);
     virtual void appendText(StringBuilder&, const Text&);
     virtual void appendElement(StringBuilder&, const Element&, Namespaces*);
@@ -91,10 +91,9 @@ protected:
     void appendCloseTag(StringBuilder&, const Element&);
 
     void appendStartMarkup(StringBuilder&, const Node&, Namespaces*);
-    void appendEndMarkup(StringBuilder&, const Node&);
+    void appendEndMarkup(StringBuilder&, const Element&);
 
     void appendAttributeValue(StringBuilder&, const String&, bool);
-    void appendNodeValue(StringBuilder&, const Node&, const Range*, EntityMask);
     void appendNamespace(StringBuilder&, const AtomicString& prefix, const AtomicString& namespaceURI, Namespaces&, bool allowEmptyDefaultNS = false);
     void appendXMLDeclaration(StringBuilder&, const Document&);
     void appendDocumentType(StringBuilder&, const DocumentType&);
@@ -104,7 +103,7 @@ protected:
 
     bool shouldAddNamespaceElement(const Element&);
     bool shouldAddNamespaceAttribute(const Attribute&, Namespaces&);
-    bool shouldSelfClose(const Node&);
+    bool shouldSelfClose(const Element&);
     bool elementCannotHaveEndTag(const Node&);
     EntityMask entityMaskForText(const Text&) const;
 
@@ -114,7 +113,7 @@ protected:
 private:
     String resolveURLIfNeeded(const Element&, const String&) const;
     void appendQuotedURLAttributeValue(StringBuilder&, const Element&, const Attribute&);
-    void serializeNodesWithNamespaces(Node& targetNode, Node* nodeToSkip, EChildrenOnly, const Namespaces*, Vector<QualifiedName>* tagNamesToSkip);
+    void serializeNodesWithNamespaces(Node& targetNode, EChildrenOnly, const Namespaces*, Vector<QualifiedName>* tagNamesToSkip);
     bool inXMLFragmentSerialization() const { return m_fragmentSerialization == XMLFragmentSerialization; }
     void generateUniquePrefix(QualifiedName&, const Namespaces&);
 

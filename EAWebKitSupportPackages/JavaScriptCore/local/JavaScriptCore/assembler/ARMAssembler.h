@@ -36,62 +36,6 @@ namespace JSC {
 
     typedef uint32_t ARMWord;
 
-    namespace ARMRegisters {
-        typedef enum {
-            r0 = 0,
-            r1,
-            r2,
-            r3, S0 = r3, /* Same as thumb assembler. */
-            r4,
-            r5,
-            r6,
-            r7,
-            r8,
-            r9,
-            r10,
-            r11,
-            r12, ip = r12, S1 = r12,
-            r13, sp = r13,
-            r14, lr = r14,
-            r15, pc = r15
-        } RegisterID;
-
-        typedef enum {
-            d0,
-            d1,
-            d2,
-            d3,
-            d4,
-            d5,
-            d6,
-            d7, SD0 = d7, /* Same as thumb assembler. */
-            d8,
-            d9,
-            d10,
-            d11,
-            d12,
-            d13,
-            d14,
-            d15,
-            d16,
-            d17,
-            d18,
-            d19,
-            d20,
-            d21,
-            d22,
-            d23,
-            d24,
-            d25,
-            d26,
-            d27,
-            d28,
-            d29,
-            d30,
-            d31
-        } FPRegisterID;
-
-#if USE(MASM_PROBE)
     #define FOR_EACH_CPU_REGISTER(V) \
         FOR_EACH_CPU_GPREGISTER(V) \
         FOR_EACH_CPU_SPECIAL_REGISTER(V) \
@@ -109,11 +53,11 @@ namespace JSC {
         V(void*, r8) \
         V(void*, r9) \
         V(void*, r10) \
-        V(void*, r11) \
+        V(void*, fp) \
         V(void*, ip) \
         V(void*, sp) \
         V(void*, lr) \
-        V(void*, pc)
+        V(void*, pc) \
 
     #define FOR_EACH_CPU_SPECIAL_REGISTER(V) \
         V(void*, apsr) \
@@ -135,8 +79,49 @@ namespace JSC {
         V(double, d12) \
         V(double, d13) \
         V(double, d14) \
-        V(double, d15)
-#endif // USE(MASM_PROBE)
+        V(double, d15) \
+        V(double, d16) \
+        V(double, d17) \
+        V(double, d18) \
+        V(double, d19) \
+        V(double, d20) \
+        V(double, d21) \
+        V(double, d22) \
+        V(double, d23) \
+        V(double, d24) \
+        V(double, d25) \
+        V(double, d26) \
+        V(double, d27) \
+        V(double, d28) \
+        V(double, d29) \
+        V(double, d30) \
+        V(double, d31) \
+
+    namespace ARMRegisters {
+
+        typedef enum {
+            #define DECLARE_REGISTER(_type, _regName) _regName,
+            FOR_EACH_CPU_GPREGISTER(DECLARE_REGISTER)
+            #undef DECLARE_REGISTER
+
+            // Pseudonyms for some of the registers.
+            S0 = r6,
+            r11 = fp, // frame pointer
+            r12 = ip, S1 = ip,
+            r13 = sp,
+            r14 = lr,
+            r15 = pc
+        } RegisterID;
+
+        typedef enum {
+            #define DECLARE_REGISTER(_type, _regName) _regName,
+            FOR_EACH_CPU_FPREGISTER(DECLARE_REGISTER)
+            #undef DECLARE_REGISTER
+
+            // Pseudonyms for some of the registers.
+            SD0 = d7, /* Same as thumb assembler. */
+        } FPRegisterID;
+
     } // namespace ARMRegisters
 
     class ARMAssembler {
@@ -150,6 +135,14 @@ namespace JSC {
             : m_indexOfTailOfLastWatchpoint(1)
         {
         }
+
+        ARMBuffer& buffer() { return m_buffer; }
+
+        static RegisterID firstRegister() { return ARMRegisters::r0; }
+        static RegisterID lastRegister() { return ARMRegisters::r15; }
+
+        static FPRegisterID firstFPRegister() { return ARMRegisters::d0; }
+        static FPRegisterID lastFPRegister() { return ARMRegisters::d31; }
 
         // ARM conditional constants
         typedef enum {
@@ -222,6 +215,11 @@ namespace JSC {
             MOVT = 0x03400000,
 #endif
             NOP = 0xe1a00000,
+            DMB_SY = 0xf57ff05f,
+#if HAVE(ARM_IDIV_INSTRUCTIONS)
+            SDIV = 0x0710f010,
+            UDIV = 0x0730f010,
+#endif
         };
 
         enum {
@@ -483,6 +481,26 @@ namespace JSC {
             m_buffer.putInt(toARMWord(cc) | MULL | RN(rdhi) | RD(rdlo) | RS(rn) | RM(rm));
         }
 
+#if HAVE(ARM_IDIV_INSTRUCTIONS)
+        template<int datasize>
+        void sdiv(int rd, int rn, int rm, Condition cc = AL)
+        {
+            static_assert(datasize == 32, "sdiv datasize must be 32 for armv7s");
+            ASSERT(rd != ARMRegisters::pc);
+            ASSERT(rn != ARMRegisters::pc);
+            ASSERT(rm != ARMRegisters::pc);
+            m_buffer.putInt(toARMWord(cc) | SDIV | RN(rd) | RM(rn) | RS(rm));
+        }
+
+        void udiv(int rd, int rn, int rm, Condition cc = AL)
+        {
+            ASSERT(rd != ARMRegisters::pc);
+            ASSERT(rn != ARMRegisters::pc);
+            ASSERT(rm != ARMRegisters::pc);
+            m_buffer.putInt(toARMWord(cc) | UDIV | RN(rd) | RM(rn) | RS(rm));
+        }
+#endif
+
         void vmov_f64(int dd, int dm, Condition cc = AL)
         {
             emitDoublePrecisionInstruction(toARMWord(cc) | VMOV_F64, dd, 0, dm);
@@ -688,6 +706,11 @@ namespace JSC {
             m_buffer.putInt(NOP);
         }
 
+        void dmbSY()
+        {
+            m_buffer.putInt(DMB_SY);
+        }
+
         void bx(int rm, Condition cc = AL)
         {
             emitInstruction(toARMWord(cc) | BX, 0, 0, RM(rm));
@@ -806,7 +829,7 @@ namespace JSC {
             return loadBranchTarget(ARMRegisters::pc, cc, useConstantPool);
         }
 
-        PassRefPtr<ExecutableMemoryHandle> executableCopy(VM&, void* ownerUID, JITCompilationEffort);
+        void prepareExecutableCopy(void* to);
 
         unsigned debugOffset() { return m_buffer.debugOffset(); }
 
@@ -1068,7 +1091,7 @@ namespace JSC {
             return AL | B | (offset & BranchOffsetMask);
         }
 
-#if OS(LINUX) && COMPILER(GCC)
+#if OS(LINUX) && COMPILER(GCC_OR_CLANG)
         static inline void linuxPageFlush(uintptr_t begin, uintptr_t end)
         {
             asm volatile(
@@ -1086,12 +1109,9 @@ namespace JSC {
         }
 #endif
 
-#if OS(LINUX) && COMPILER(RVCT)
-        static __asm void cacheFlush(void* code, size_t);
-#else
         static void cacheFlush(void* code, size_t size)
         {
-#if OS(LINUX) && COMPILER(GCC)
+#if OS(LINUX) && COMPILER(GCC_OR_CLANG)
             size_t page = pageSize();
             uintptr_t current = reinterpret_cast<uintptr_t>(code);
             uintptr_t end = current + size;
@@ -1108,18 +1128,10 @@ namespace JSC {
                 linuxPageFlush(current, current + page);
 
             linuxPageFlush(current, end);
-#elif OS(WINCE)
-            CacheRangeFlush(code, size, CACHE_SYNC_ALL);
-#elif OS(QNX) && ENABLE(ASSEMBLER_WX_EXCLUSIVE)
-            UNUSED_PARAM(code);
-            UNUSED_PARAM(size);
-#elif OS(QNX)
-            msync(code, size, MS_INVALIDATE_ICACHE);
 #else
 #error "The cacheFlush support is missing on this platform."
 #endif
         }
-#endif
 
     private:
         static ARMWord RM(int reg)

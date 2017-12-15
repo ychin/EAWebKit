@@ -23,23 +23,22 @@
 
 #include "CSSMediaRule.h"
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSMediaRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSMediaRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSMediaRule> impl)
+    static JSCSSMediaRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSMediaRule>&& impl)
     {
-        JSCSSMediaRule* ptr = new (NotNull, JSC::allocateCell<JSCSSMediaRule>(globalObject->vm().heap)) JSCSSMediaRule(structure, globalObject, impl);
+        JSCSSMediaRule* ptr = new (NotNull, JSC::allocateCell<JSCSSMediaRule>(globalObject->vm().heap)) JSCSSMediaRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,69 +52,17 @@ public:
         return static_cast<CSSMediaRule&>(Base::impl());
     }
 protected:
-    JSCSSMediaRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSMediaRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSMediaRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSMediaRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSMediaRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSMediaRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSMediaRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSMediaRulePrototype>(vm.heap)) JSCSSMediaRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSMediaRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSCSSMediaRuleConstructor : public DOMConstructorObject {
-private:
-    JSCSSMediaRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSMediaRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSMediaRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSMediaRuleConstructor>(vm.heap)) JSCSSMediaRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSMediaRulePrototypeFunctionInsertRule(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSMediaRulePrototypeFunctionDeleteRule(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsCSSMediaRuleMedia(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSMediaRuleCssRules(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSMediaRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

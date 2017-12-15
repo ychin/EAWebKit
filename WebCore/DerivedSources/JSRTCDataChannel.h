@@ -23,29 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RTCDataChannel.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRTCDataChannel : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRTCDataChannel* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDataChannel> impl)
+    static JSRTCDataChannel* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDataChannel>&& impl)
     {
-        JSRTCDataChannel* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannel>(globalObject->vm().heap)) JSRTCDataChannel(structure, globalObject, impl);
+        JSRTCDataChannel* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannel>(globalObject->vm().heap)) JSRTCDataChannel(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RTCDataChannel* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRTCDataChannel();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,22 +55,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     RTCDataChannel& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RTCDataChannel* m_impl;
 protected:
-    JSRTCDataChannel(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCDataChannel>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSRTCDataChannel(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCDataChannel>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRTCDataChannelOwner : public JSC::WeakHandleOwner {
@@ -82,70 +78,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RTCDataChannel*)
 {
-    DEFINE_STATIC_LOCAL(JSRTCDataChannelOwner, jsRTCDataChannelOwner, ());
-    return &jsRTCDataChannelOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RTCDataChannel*)
-{
-    return &world;
+    static NeverDestroyed<JSRTCDataChannelOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RTCDataChannel*);
-RTCDataChannel* toRTCDataChannel(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCDataChannel& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRTCDataChannelPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCDataChannelPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCDataChannelPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannelPrototype>(vm.heap)) JSRTCDataChannelPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCDataChannelPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionClose(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsRTCDataChannelLabel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelOrdered(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelMaxRetransmitTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelMaxRetransmits(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelProtocol(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelNegotiated(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelReadyState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelBufferedAmount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDataChannelBinaryType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCDataChannelBinaryType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCDataChannelOnopen(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCDataChannelOnopen(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCDataChannelOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCDataChannelOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCDataChannelOnclose(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCDataChannelOnclose(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCDataChannelOnmessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCDataChannelOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

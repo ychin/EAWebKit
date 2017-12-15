@@ -8,7 +8,7 @@
 * Copyright (C) 2009 Appcelerator Inc.
 * Copyright (C) 2009 Brent Fulgham <bfulgham@webkit.org>
 * All rights reserved.
-* Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+* Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc. All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
@@ -92,7 +92,7 @@ namespace Local
 static void GetSystemPathFromFileURL(const WebCore::URL& kurl, EA::WebKit::FixedString8_128& sPath)
 {
 	WTF::String           sURLPath = WebCore::decodeURLEscapeSequences(kurl.path());
-	EA::WebKit::FixedString16_128 sPath16(sURLPath.characters(), sURLPath.length());
+    EA::WebKit::FixedString16_128 sPath16(StringView(sURLPath).upconvertedCharacters(), sURLPath.length());
 
 	// Look for Microsoft-style paths (e.g. "/C|/windows/test.html", to convert to "C:\windows\test.html")
 #if defined(EA_PLATFORM_MICROSOFT)
@@ -104,11 +104,11 @@ static void GetSystemPathFromFileURL(const WebCore::URL& kurl, EA::WebKit::Fixed
         sPath16[1] = ':';
     }
 
-	for(eastl_size_t i = 0, iEnd = sPath16.length(); i < iEnd; ++i)
-	{
-		if(sPath16[i] == '/')
-			sPath16[i] = '\\';
-	}
+    for(eastl_size_t i = 0, iEnd = sPath16.length(); i < iEnd; ++i)
+    {
+        if(sPath16[i] == '/')
+        sPath16[i] = '\\';
+    }
 #endif
 
     EA::WebKit::ConvertToString8(sPath16, sPath);
@@ -144,7 +144,7 @@ ResourceHandleManager* ResourceHandleManager::m_pInstance = NULL;
 
 const double kPollTimeSeconds = 0.016; //60 Frames per Second
 ResourceHandleManager::ResourceHandleManager()
-    : m_downloadTimer(this, &ResourceHandleManager::downloadTimerCallback)
+    : m_downloadTimer(*this, &ResourceHandleManager::downloadTimerCallback)
     , m_pendingResourceHandleList()
     , m_runningJobs(0)
     , m_pollTimeSeconds(kPollTimeSeconds)
@@ -340,7 +340,7 @@ void ResourceHandleManager::notifyJobFailed(const JobInfo& jobInfo)
 	}
 }
 
-void ResourceHandleManager::downloadTimerCallback(Timer<ResourceHandleManager>* /*timer*/)
+void ResourceHandleManager::downloadTimerCallback()
 {
     int runningHandles = 0;
 
@@ -382,8 +382,15 @@ bool ResourceHandleManager::startPendingJobs()
     {
         ResourceHandle* pRH = m_pendingResourceHandleList.front();
         m_pendingResourceHandleList.pop_front();  
-        startPendingJob(pRH);
-        started = true;
+        if (!pRH->getInternal()->m_cancelled)
+        {
+            startPendingJob(pRH);
+            started = true;
+        }
+        else
+        {
+            pRH->deref();
+        }
     }
 
     return started;
@@ -483,7 +490,7 @@ bool ResourceHandleManager::initializeJob(JobInfo& jobInfo, ResourceHandle* pRH,
 	jobInfo.mTInfo.mbAsync		= !bSynchronous;
 	jobInfo.mbPaused			= pRHI->m_defersLoading; // Some jobs may start in pause state.
 
-	GetFixedString(jobInfo.mTInfo.mURI)->assign(url.characters(), url.length());
+    GetFixedString(jobInfo.mTInfo.mURI)->assign(StringView(url).upconvertedCharacters(), url.length());
 	GetFixedString(jobInfo.mTInfo.mEffectiveURI)->assign(GetFixedString(jobInfo.mTInfo.mURI)->c_str());
 	EA::IO::EAIOStrlcpy16(jobInfo.mTInfo.mScheme, pScheme, sizeof(jobInfo.mTInfo.mScheme) / sizeof(jobInfo.mTInfo.mScheme[0]));
 	jobInfo.mTInfo.mPort = kurl.port();
@@ -497,8 +504,8 @@ bool ResourceHandleManager::initializeJob(JobInfo& jobInfo, ResourceHandle* pRH,
 	// We translate WebCore::HTTPHeaderMap to EA::WebKit::HeaderMap.
 	for(WebCore::HTTPHeaderMap::const_iterator it = customHeaders.begin(); it != end; ++it)
 	{
-		const WebCore::HTTPHeaderMap::KeyValuePairType& wcValue = *it;
-		EA::WebKit::HeaderMap::value_type eaValue(HeaderMap::key_type(wcValue.key.characters(), wcValue.key.length()), HeaderMap::mapped_type(wcValue.value.characters(), wcValue.value.length()));
+		auto wcValue = *it;
+        EA::WebKit::HeaderMap::value_type eaValue(HeaderMap::key_type(StringView(wcValue.key).upconvertedCharacters(), wcValue.key.length()), HeaderMap::mapped_type(StringView(wcValue.value).upconvertedCharacters(), wcValue.value.length()));
 
 		GetHeaderMap(jobInfo.mTInfo.mHeaderMapOut)->insert(eaValue);
 	}
@@ -582,7 +589,7 @@ bool ResourceHandleManager::initializeJob(JobInfo& jobInfo, ResourceHandle* pRH,
 			lni.mLinkNotificationType = EA::WebKit::LinkNotificationInfo::kLinkNavigationFiltered;
 
 			const WTF::String& requestURI = kurl.string();
-			GetFixedString(lni.mOriginalURI)->assign(requestURI.characters(), requestURI.length());
+            GetFixedString(lni.mOriginalURI)->assign(StringView(requestURI).upconvertedCharacters(), requestURI.length());
 			pClient->LinkNotification(lni);
 		}
 
@@ -645,7 +652,7 @@ void ResourceHandleManager::SetupTHPost(JobInfo* pJobInfo)
             const FormDataElement& element = elements[i];
 			switch(element.m_type)
 			{
-			case FormDataElement::encodedFile:
+			case FormDataElement::Type::EncodedFile:
 				{
 					long long fileSizeResult = -1;
 					if(WebCore::getFileSize(element.m_filename, fileSizeResult))
@@ -655,7 +662,7 @@ void ResourceHandleManager::SetupTHPost(JobInfo* pJobInfo)
 					}
 					break;
 				}
-			case FormDataElement::data:
+			case FormDataElement::Type::Data:
 				{
 					pJobInfo->mTInfo.mPostSize += (int64_t)elements[i].m_data.size();
 					break;
@@ -676,27 +683,34 @@ int ResourceHandleManager::ProcessJobs()
 {
 	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeTHJobs, EA::WebKit::kVProcessStatusStarted);
 
-	for(JobInfoList::iterator it = m_JobInfoList.begin(); it != m_JobInfoList.end(); ++it)
+	for (JobInfoList::iterator it = m_JobInfoList.begin(); it != m_JobInfoList.end(); ++it)
 	{
 		JobInfo& jobInfo = *it;
-       
-        // We don't want to process a job if cancelled.  Also if cancelled, it is possible that the client pointer might no longer be valid (happens 
-        // infrequently when switching between sites).  Skipping the ProcessJobState here should protect from calling the client. 
-        ResourceHandleInternal* pRHI = jobInfo.mpRH->getInternal();
-        if(pRHI->m_cancelled)
-        {
-            CondemnJob(&jobInfo);
-            continue;
-        }
+		// We don't want to process a job if cancelled. Also if cancelled, it is possible that the client pointer might no longer be valid (happens 
+		// infrequently when switching between sites). Skipping the ProcessJobState here should protect from calling the client. 
+
+		ResourceHandleInternal* pRHI = jobInfo.mpRH->getInternal();
+
+		if (pRHI->m_cancelled)
+		{
+			CondemnJob(&jobInfo); continue;
+		}
 
 		bool bStateComplete = false;
-		bool bRemoveJob     = false;
+		bool bRemoveJob = false;
+
+		bool isTransport = jobInfo.mJobState == kJSTransfer;
 
 		ProcessJobState(jobInfo, bStateComplete, bRemoveJob);
 
-		if(bRemoveJob)
+		if (bRemoveJob)
 		{
 			CondemnJob(&jobInfo);
+		}
+
+		if (isTransport && bStateComplete)
+		{
+			break;
 		}
 	}
 
@@ -743,7 +757,17 @@ int ResourceHandleManager::ProcessJobs()
 
 void ResourceHandleManager::ProcessJobState(JobInfo& jobInfo, bool& bStateComplete, bool& bRemoveJob)
 {
-	if(!jobInfo.mbPaused)
+    if (jobInfo.mpRH->getInternal()->m_cancelled //we usually don't want to process canceled jobs, they should just be removed
+
+        //special case for transfers, we need to let the async handling complete nicely, an abrupt deletion can result in crash
+        //this can be seen when re-loading a page from the web inspector while at a javascript breakpoint, 
+        //the transfer will be in paused state till reloaded and the job needs to be around to clean up
+        && jobInfo.mJobState != kJSTransfer)        
+    {                                               
+                                                    
+        bRemoveJob = true;
+    }
+    else if (!jobInfo.mbPaused)
 	{
 		switch (jobInfo.mJobState)
 		{
@@ -787,7 +811,11 @@ void ResourceHandleManager::ProcessJobState(JobInfo& jobInfo, bool& bStateComple
 		case kJSTransfer:
 			if(jobInfo.mpTH->Transfer(&jobInfo.mTInfo, bStateComplete))
 			{
-				if(bStateComplete)
+                if (jobInfo.mpRH->getInternal()->m_cancelled)
+                {
+                    bRemoveJob = true;
+                }
+				else if(bStateComplete)
 				{
 					jobInfo.mJobState = kJSDisconnect;
 					NOTIFY_PROCESS_STATUS(jobInfo.mProcessInfo, EA::WebKit::kVProcessStatusQueuedToDisconnect);
@@ -959,10 +987,9 @@ bool ResourceHandleManager::HeadersReceived(EA::WebKit::TransportInfo* pTInfo)
 	pRHI->m_response.setHTTPStatusCode(pTInfo->mResultCode);
 	
 	// It is safe to read from httpHeaderField using strings below as WebCore::HTTPHeaderMap is case-insensitive.
-	pRHI->m_response.setExpectedContentLength(pRHI->m_response.httpHeaderField("Content-Length").toInt64());
-	pRHI->m_response.setMimeType(extractMIMETypeFromMediaType(pRHI->m_response.httpHeaderField("Content-Type")));
-	pRHI->m_response.setTextEncodingName(extractCharsetFromMediaType(pRHI->m_response.httpHeaderField("Content-Type")));
-	pRHI->m_response.setSuggestedFilename(filenameFromHTTPContentDisposition(pRHI->m_response.httpHeaderField("Content-Disposition")));
+	pRHI->m_response.setExpectedContentLength(pRHI->m_response.httpHeaderField(HTTPHeaderName::ContentLength).toInt64());
+	pRHI->m_response.setMimeType(extractMIMETypeFromMediaType(pRHI->m_response.httpHeaderField(HTTPHeaderName::ContentType)));
+	pRHI->m_response.setTextEncodingName(extractCharsetFromMediaType(pRHI->m_response.httpHeaderField(HTTPHeaderName::ContentType)));
 	pRHI->m_response.setURL(pRH->firstRequest().url());
 
 	// Deal with Http 1xx response
@@ -975,7 +1002,7 @@ bool ResourceHandleManager::HeadersReceived(EA::WebKit::TransportInfo* pTInfo)
 	// to curl version but different from 1.x version. 
 	if (isHttpRedirect(pTInfo->mResultCode)) 
 	{
-		String location = pRHI->m_response.httpHeaderField("location");
+		String location = pRHI->m_response.httpHeaderField(HTTPHeaderName::Location);
 		EAW_ASSERT_MSG(!location.isEmpty(), "Location can be empty, for example, in 304 case. This should have been filtered out.");
 		
 		if (!location.isEmpty()) 
@@ -998,7 +1025,7 @@ bool ResourceHandleManager::HeadersReceived(EA::WebKit::TransportInfo* pTInfo)
 			pRHI->m_firstRequest.setURL(newURL);
 
 			const String& s(newURL.string());
-			GetFixedString(pTInfo->mEffectiveURI)->assign(s.characters(), s.length());
+            GetFixedString(pTInfo->mEffectiveURI)->assign(StringView(s).upconvertedCharacters(), s.length());
 
 			// Simply add the job again for the new transport handler to handle the redirected url. This will set up new job.
 			if(!redirectedRequest.url().protocolIsInHTTPFamily())
@@ -1081,7 +1108,7 @@ bool ResourceHandleManager::DataReceived(EA::WebKit::TransportInfo* pTInfo, cons
     if(!pJobInfo->mbAuthorizationRequired)
     {
 		if(pRHI->client())
-			pRHI->client()->didReceiveData(pRH, (char*)pData, (size_t)size, 0);
+			pRHI->client()->didReceiveData(pRH, (char*)pData, (unsigned)size, 0);
     }
 
     return true;
@@ -1272,7 +1299,7 @@ void ResourceHandleManager::TickTransportHandlers()
 
 void ResourceHandleManager::TickDownload()
 {
-	downloadTimerCallback(0);
+	downloadTimerCallback();
 }
 
 void ResourceHandleManager::RemoveDependentJobs(EA::WebKit::TransportHandler* pTH, const char16_t* pScheme) 

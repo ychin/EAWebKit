@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -33,9 +33,9 @@ namespace WebCore {
 
 class CSSCubicBezierTimingFunctionValue : public CSSValue {
 public:
-    static PassRefPtr<CSSCubicBezierTimingFunctionValue> create(double x1, double y1, double x2, double y2)
+    static Ref<CSSCubicBezierTimingFunctionValue> create(double x1, double y1, double x2, double y2)
     {
-        return adoptRef(new CSSCubicBezierTimingFunctionValue(x1, y1, x2, y2));
+        return adoptRef(*new CSSCubicBezierTimingFunctionValue(x1, y1, x2, y2));
     }
 
     String customCSSText() const;
@@ -63,13 +63,11 @@ private:
     double m_y2;
 };
 
-CSS_VALUE_TYPE_CASTS(CubicBezierTimingFunctionValue)
-
 class CSSStepsTimingFunctionValue : public CSSValue {
 public:
-    static PassRefPtr<CSSStepsTimingFunctionValue> create(int steps, bool stepAtStart)
+    static Ref<CSSStepsTimingFunctionValue> create(int steps, bool stepAtStart)
     {
-        return adoptRef(new CSSStepsTimingFunctionValue(steps, stepAtStart));
+        return adoptRef(*new CSSStepsTimingFunctionValue(steps, stepAtStart));
     }
 
     int numberOfSteps() const { return m_steps; }
@@ -91,8 +89,9 @@ private:
     bool m_stepAtStart;
 };
 
-CSS_VALUE_TYPE_CASTS(StepsTimingFunctionValue)
+} // namespace WebCore
 
-} // namespace
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSCubicBezierTimingFunctionValue, isCubicBezierTimingFunctionValue())
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSStepsTimingFunctionValue, isStepsTimingFunctionValue())
 
-#endif
+#endif // CSSTimingFunctionValue_h

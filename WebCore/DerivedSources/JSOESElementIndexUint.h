@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "OESElementIndexUint.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSOESElementIndexUint : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSOESElementIndexUint* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESElementIndexUint> impl)
+    static JSOESElementIndexUint* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESElementIndexUint>&& impl)
     {
-        JSOESElementIndexUint* ptr = new (NotNull, JSC::allocateCell<JSOESElementIndexUint>(globalObject->vm().heap)) JSOESElementIndexUint(structure, globalObject, impl);
+        JSOESElementIndexUint* ptr = new (NotNull, JSC::allocateCell<JSOESElementIndexUint>(globalObject->vm().heap)) JSOESElementIndexUint(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static OESElementIndexUint* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSOESElementIndexUint();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     OESElementIndexUint& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     OESElementIndexUint* m_impl;
 protected:
-    JSOESElementIndexUint(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OESElementIndexUint>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSOESElementIndexUint(JSC::Structure*, JSDOMGlobalObject*, Ref<OESElementIndexUint>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSOESElementIndexUintOwner : public JSC::WeakHandleOwner {
@@ -78,40 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, OESElementIndexUint*)
 {
-    DEFINE_STATIC_LOCAL(JSOESElementIndexUintOwner, jsOESElementIndexUintOwner, ());
-    return &jsOESElementIndexUintOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, OESElementIndexUint*)
-{
-    return &world;
+    static NeverDestroyed<JSOESElementIndexUintOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, OESElementIndexUint*);
-OESElementIndexUint* toOESElementIndexUint(JSC::JSValue);
-
-class JSOESElementIndexUintPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOESElementIndexUintPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOESElementIndexUintPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESElementIndexUintPrototype>(vm.heap)) JSOESElementIndexUintPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOESElementIndexUintPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESElementIndexUint& impl) { return toJS(exec, globalObject, &impl); }
 
 
 } // namespace WebCore

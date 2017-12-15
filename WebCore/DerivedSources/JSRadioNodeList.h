@@ -23,24 +23,24 @@
 
 #include "JSNodeList.h"
 #include "RadioNodeList.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSRadioNodeList : public JSNodeList {
 public:
     typedef JSNodeList Base;
-    static JSRadioNodeList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RadioNodeList> impl)
+    static JSRadioNodeList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RadioNodeList>&& impl)
     {
-        JSRadioNodeList* ptr = new (NotNull, JSC::allocateCell<JSRadioNodeList>(globalObject->vm().heap)) JSRadioNodeList(structure, globalObject, impl);
+        JSRadioNodeList* ptr = new (NotNull, JSC::allocateCell<JSRadioNodeList>(globalObject->vm().heap)) JSRadioNodeList(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -48,47 +48,27 @@ public:
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
-    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode mode = JSC::ExcludeDontEnumProperties);
+    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode = JSC::EnumerationMode());
     RadioNodeList& impl() const
     {
         return static_cast<RadioNodeList&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesGetPropertyNames | Base::StructureFlags;
 protected:
-    JSRadioNodeList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RadioNodeList>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-    static JSC::JSValue indexGetter(JSC::ExecState*, JSC::JSValue, unsigned);
+    JSRadioNodeList(JSC::Structure*, JSDOMGlobalObject*, Ref<RadioNodeList>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RadioNodeList*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RadioNodeList& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRadioNodeListPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRadioNodeListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRadioNodeListPrototype* ptr = new (NotNull, JSC::allocateCell<JSRadioNodeListPrototype>(vm.heap)) JSRadioNodeListPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRadioNodeListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsRadioNodeListValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRadioNodeListValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

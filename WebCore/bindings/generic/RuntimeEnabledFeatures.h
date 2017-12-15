@@ -66,22 +66,6 @@ public:
     bool webkitIndexedDBEnabled() const { return m_isIndexedDBEnabled; }
     bool indexedDBEnabled() const { return m_isIndexedDBEnabled; }
 
-#if ENABLE(CANVAS_PATH)
-    void setCanvasPathEnabled(bool isEnabled) { m_isCanvasPathEnabled = isEnabled; }
-    bool canvasPathEnabled() const { return m_isCanvasPathEnabled; }
-#else
-    void setCanvasPathEnabled(bool) { }
-    bool canvasPathEnabled() const { return false; }
-#endif
-
-#if ENABLE(CSS_EXCLUSIONS)
-    void setCSSExclusionsEnabled(bool isEnabled) { m_isCSSExclusionsEnabled = isEnabled; }
-    bool cssExclusionsEnabled() const { return m_isCSSExclusionsEnabled; }
-#else
-    void setCSSExclusionsEnabled(bool) { }
-    bool cssExclusionsEnabled() const { return false; }
-#endif
-
 #if ENABLE(CSS_SHAPES)
     void setCSSShapesEnabled(bool isEnabled) { m_isCSSShapesEnabled = isEnabled; }
     bool cssShapesEnabled() const { return m_isCSSShapesEnabled; }
@@ -109,23 +93,6 @@ public:
     bool fontLoadEventsEnabled() { return false; }
 #endif
 
-#if ENABLE(FULLSCREEN_API)
-    // Mozilla version
-    bool webkitFullScreenAPIEnabled() const { return m_isFullScreenAPIEnabled; }
-    void setWebkitFullScreenAPIEnabled(bool isEnabled) { m_isFullScreenAPIEnabled = isEnabled; }
-    bool webkitRequestFullScreenEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitIsFullScreenEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitFullScreenKeyboardInputAllowedEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitCurrentFullScreenElementEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitCancelFullScreenEnabled() const { return m_isFullScreenAPIEnabled; }
-
-    // W3C version
-    bool webkitFullscreenEnabledEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitFullscreenElementEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitExitFullscreenEnabled() const { return m_isFullScreenAPIEnabled; }
-    bool webkitRequestFullscreenEnabled() const { return m_isFullScreenAPIEnabled; }
-#endif
-
 #if ENABLE(VIDEO)
     bool audioEnabled() const;
     bool htmlMediaElementEnabled() const;
@@ -137,17 +104,8 @@ public:
     bool timeRangesEnabled() const;
 #endif
 
-#if ENABLE(SHARED_WORKERS)
-    bool sharedWorkerEnabled() const;
-#endif
-
 #if ENABLE(WEB_SOCKETS)
     bool webSocketEnabled() const;
-#endif
-
-#if ENABLE(SQL_DATABASE)
-    bool openDatabaseEnabled() const;
-    bool openDatabaseSyncEnabled() const;
 #endif
 
 #if ENABLE(TOUCH_EVENTS)
@@ -164,21 +122,6 @@ public:
     bool deviceOrientationEnabled() const { return m_isDeviceOrientationEnabled; }
     bool deviceOrientationEventEnabled() const { return m_isDeviceOrientationEnabled; }
     bool ondeviceorientationEnabled() const { return m_isDeviceOrientationEnabled; }
-
-    void setSpeechInputEnabled(bool isEnabled) { m_isSpeechInputEnabled = isEnabled; }
-    bool speechInputEnabled() const { return m_isSpeechInputEnabled; }
-    bool webkitSpeechEnabled() const { return m_isSpeechInputEnabled; }
-    bool webkitGrammarEnabled() const { return m_isSpeechInputEnabled; }
-
-#if ENABLE(SCRIPTED_SPEECH)
-    void setScriptedSpeechEnabled(bool isEnabled) { m_isScriptedSpeechEnabled = isEnabled; }
-    bool scriptedSpeechEnabled() const { return m_isScriptedSpeechEnabled; }
-    bool webkitSpeechRecognitionEnabled() const { return m_isScriptedSpeechEnabled; }
-    bool webkitSpeechRecognitionErrorEnabled() const { return m_isScriptedSpeechEnabled; }
-    bool webkitSpeechRecognitionEventEnabled() const { return m_isScriptedSpeechEnabled; }
-    bool webkitSpeechGrammarEnabled() const { return m_isScriptedSpeechEnabled; }
-    bool webkitSpeechGrammarListEnabled() const { return m_isScriptedSpeechEnabled; }
-#endif
 
 #if ENABLE(JAVASCRIPT_I18N_API)
     bool javaScriptI18NAPIEnabled() const;
@@ -201,37 +144,9 @@ public:
     bool legacyCSSVendorPrefixesEnabled() const { return m_isLegacyCSSVendorPrefixesEnabled; }
 #endif
 
-#if ENABLE(GAMEPAD)
-    void setWebkitGetGamepadsEnabled(bool isEnabled) { m_isGamepadEnabled = isEnabled; }
-    bool webkitGetGamepadsEnabled() const { return m_isGamepadEnabled; }
-#endif
-
-#if ENABLE(QUOTA)
-    bool quotaEnabled() const { return m_isQuotaEnabled; }
-    void setQuotaEnabled(bool isEnabled) { m_isQuotaEnabled = isEnabled; }
-#endif
-
-#if ENABLE(MEDIA_SOURCE)
-    bool mediaSourceEnabled() const { return m_isMediaSourceEnabled; }
-    void setMediaSourceEnabled(bool isEnabled) { m_isMediaSourceEnabled = isEnabled; }
-#endif
-
-#if ENABLE(ENCRYPTED_MEDIA)
-    bool encryptedMediaEnabled() const { return m_isEncryptedMediaEnabled; }
-    void setEncryptedMediaEnabled(bool isEnabled) { m_isEncryptedMediaEnabled = isEnabled; }
-#endif
-
 #if ENABLE(VIDEO_TRACK)
     bool webkitVideoTrackEnabled() const { return m_isVideoTrackEnabled; }
     void setWebkitVideoTrackEnabled(bool isEnabled) { m_isVideoTrackEnabled = isEnabled; }
-#endif
-
-#if ENABLE(SHADOW_DOM)
-    bool shadowDOMEnabled() const { return m_isShadowDOMEnabled; }
-    void setShadowDOMEnabled(bool isEnabled) { m_isShadowDOMEnabled = isEnabled; }
-
-    bool authorShadowDOMForAnyElementEnabled() const { return m_isAuthorShadowDOMForAnyElementEnabled; }
-    void setAuthorShadowDOMForAnyElementEnabled(bool isEnabled) { m_isAuthorShadowDOMForAnyElementEnabled = isEnabled; }
 #endif
 
 #if ENABLE(INPUT_TYPE_DATE)
@@ -269,16 +184,24 @@ public:
     void setExperimentalContentSecurityPolicyFeaturesEnabled(bool isEnabled) { m_areExperimentalContentSecurityPolicyFeaturesEnabled = isEnabled; }
 #endif
 
-#if ENABLE(IFRAME_SEAMLESS)
-    bool seamlessIFramesEnabled() const { return m_areSeamlessIFramesEnabled; }
-    void setSeamlessIFramesEnabled(bool isEnabled) { m_areSeamlessIFramesEnabled = isEnabled; }
-#endif
-
     bool langAttributeAwareFormControlUIEnabled() const { return m_isLangAttributeAwareFormControlUIEnabled; }
     // The lang attribute support is incomplete and should only be turned on for tests.
     void setLangAttributeAwareFormControlUIEnabled(bool isEnabled) { m_isLangAttributeAwareFormControlUIEnabled = isEnabled; }
 
-    static RuntimeEnabledFeatures& sharedFeatures();
+    void setPluginReplacementEnabled(bool isEnabled) { m_isPluginReplacementEnabled = isEnabled; }
+    bool pluginReplacementEnabled() const { return m_isPluginReplacementEnabled; }
+
+#if ENABLE(GAMEPAD)
+    void setGamepadsEnabled(bool areEnabled) { m_areGamepadsEnabled = areEnabled; }
+    bool gamepadsEnabled() const { return m_areGamepadsEnabled; }
+#endif
+
+#if ENABLE(CSS_ANIMATIONS_LEVEL_2)
+    void setAnimationTriggersEnabled(bool areEnabled) { m_areAnimationTriggersEnabled = areEnabled; }
+    bool animationTriggersEnabled() const { return m_areAnimationTriggersEnabled; }
+#endif
+
+    WEBCORE_EXPORT static RuntimeEnabledFeatures& sharedFeatures();
 
 private:
     // Never instantiate.
@@ -294,16 +217,11 @@ private:
     bool m_isTouchEnabled;
     bool m_isDeviceMotionEnabled;
     bool m_isDeviceOrientationEnabled;
-    bool m_isSpeechInputEnabled;
-    bool m_isCanvasPathEnabled;
-    bool m_isCSSExclusionsEnabled;
     bool m_isCSSShapesEnabled;
     bool m_isCSSRegionsEnabled;
     bool m_isCSSCompositingEnabled;
     bool m_isLangAttributeAwareFormControlUIEnabled;
-#if ENABLE(SCRIPTED_SPEECH)
-    bool m_isScriptedSpeechEnabled;
-#endif
+    bool m_isPluginReplacementEnabled;
 
 #if ENABLE(JAVASCRIPT_I18N_API)
     bool m_isJavaScriptI18NAPIEnabled;
@@ -314,37 +232,12 @@ private:
     bool m_isPeerConnectionEnabled;
 #endif
 
-#if ENABLE(GAMEPAD)
-    bool m_isGamepadEnabled;
-#endif
-
 #if ENABLE(LEGACY_CSS_VENDOR_PREFIXES)
     bool m_isLegacyCSSVendorPrefixesEnabled;
 #endif
 
-#if ENABLE(QUOTA)
-    bool m_isQuotaEnabled;
-#endif
-
-#if ENABLE(FULLSCREEN_API)
-    bool m_isFullScreenAPIEnabled;
-#endif
-
-#if ENABLE(MEDIA_SOURCE)
-    bool m_isMediaSourceEnabled;
-#endif
-
-#if ENABLE(ENCRYPTED_MEDIA)
-    bool m_isEncryptedMediaEnabled;
-#endif
-
 #if ENABLE(VIDEO_TRACK)
     bool m_isVideoTrackEnabled;
-#endif
-
-#if ENABLE(SHADOW_DOM)
-    bool m_isShadowDOMEnabled;
-    bool m_isAuthorShadowDOMForAnyElementEnabled;
 #endif
 
 #if ENABLE(INPUT_TYPE_DATE)
@@ -375,22 +268,19 @@ private:
     bool m_areExperimentalContentSecurityPolicyFeaturesEnabled;
 #endif
 
-#if ENABLE(IFRAME_SEAMLESS)
-    bool m_areSeamlessIFramesEnabled;
-#endif
-
 #if ENABLE(FONT_LOAD_EVENTS)
     bool m_isFontLoadEventsEnabled;
 #endif
 
-#ifndef CLASS_IF_GCC
-#if COMPILER(GCC)
-#define CLASS_IF_GCC class
-#else
-#define CLASS_IF_GCC
+#if ENABLE(GAMEPAD)
+    bool m_areGamepadsEnabled;
 #endif
+
+#if ENABLE(CSS_ANIMATIONS_LEVEL_2)
+    bool m_areAnimationTriggersEnabled;
 #endif
-    friend CLASS_IF_GCC NeverDestroyed<RuntimeEnabledFeatures>;
+
+    friend class WTF::NeverDestroyed<RuntimeEnabledFeatures>;
 };
 
 } // namespace WebCore

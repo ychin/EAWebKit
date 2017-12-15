@@ -19,15 +19,11 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGStopElement.h"
 
-#include "Attribute.h"
 #include "Document.h"
 #include "RenderSVGGradientStop.h"
 #include "RenderSVGResource.h"
-#include "SVGElementInstance.h"
 #include "SVGGradientElement.h"
 #include "SVGNames.h"
 
@@ -49,26 +45,13 @@ inline SVGStopElement::SVGStopElement(const QualifiedName& tagName, Document& do
     registerAnimatedPropertiesForSVGStopElement();
 }
 
-PassRefPtr<SVGStopElement> SVGStopElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGStopElement> SVGStopElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGStopElement(tagName, document));
-}
-
-bool SVGStopElement::isSupportedAttribute(const QualifiedName& attrName)
-{
-    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());
-    if (supportedAttributes.isEmpty())
-        supportedAttributes.add(SVGNames::offsetAttr);
-    return supportedAttributes.contains<SVGAttributeHashTranslator>(attrName);
+    return adoptRef(*new SVGStopElement(tagName, document));
 }
 
 void SVGStopElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
-    if (!isSupportedAttribute(name)) {
-        SVGElement::parseAttribute(name, value);
-        return;
-    }
-
     if (name == SVGNames::offsetAttr) {
         if (value.endsWith('%'))
             setOffsetBaseValue(value.string().left(value.length() - 1).toFloat() / 100.0f);
@@ -77,32 +60,25 @@ void SVGStopElement::parseAttribute(const QualifiedName& name, const AtomicStrin
         return;
     }
 
-    ASSERT_NOT_REACHED();
+    SVGElement::parseAttribute(name, value);
 }
 
 void SVGStopElement::svgAttributeChanged(const QualifiedName& attrName)
 {
-    if (!isSupportedAttribute(attrName)) {
-        SVGElement::svgAttributeChanged(attrName);
-        return;
-    }
-
-    SVGElementInstance::InvalidationGuard invalidationGuard(this);
-
-    if (!renderer())
-        return;
-
     if (attrName == SVGNames::offsetAttr) {
-        RenderSVGResource::markForLayoutAndParentResourceInvalidation(renderer());
+        if (auto renderer = this->renderer()) {
+            InstanceInvalidationGuard guard(*this);
+            RenderSVGResource::markForLayoutAndParentResourceInvalidation(*renderer);
+        }
         return;
     }
 
-    ASSERT_NOT_REACHED();
+    SVGElement::svgAttributeChanged(attrName);
 }
 
-RenderElement* SVGStopElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> SVGStopElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderSVGGradientStop(*this);
+    return createRenderer<RenderSVGGradientStop>(*this, WTF::move(style));
 }
 
 bool SVGStopElement::rendererIsNeeded(const RenderStyle&)
@@ -112,17 +88,15 @@ bool SVGStopElement::rendererIsNeeded(const RenderStyle&)
 
 Color SVGStopElement::stopColorIncludingOpacity() const
 {
-    RenderStyle* style = renderer() ? renderer()->style() : 0;
+    RenderStyle* style = renderer() ? &renderer()->style() : nullptr;
     // FIXME: This check for null style exists to address Bug WK 90814, a rare crash condition in
     // which the renderer or style is null. This entire class is scheduled for removal (Bug WK 86941)
     // and we will tolerate this null check until then.
-    if (!style || !style->svgStyle())
+    if (!style)
         return Color(Color::transparent, true); // Transparent black.
 
-    const SVGRenderStyle* svgStyle = style->svgStyle();
-    return colorWithOverrideAlpha(svgStyle->stopColor().rgb(), svgStyle->stopOpacity());
+    const SVGRenderStyle& svgStyle = style->svgStyle();
+    return colorWithOverrideAlpha(svgStyle.stopColor().rgb(), svgStyle.stopOpacity());
 }
 
 }
-
-#endif // ENABLE(SVG)

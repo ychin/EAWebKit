@@ -21,28 +21,28 @@
 #ifndef JSWebKitNamedFlow_h
 #define JSWebKitNamedFlow_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebKitNamedFlow.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebKitNamedFlow : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebKitNamedFlow* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitNamedFlow> impl)
+    static JSWebKitNamedFlow* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitNamedFlow>&& impl)
     {
-        JSWebKitNamedFlow* ptr = new (NotNull, JSC::allocateCell<JSWebKitNamedFlow>(globalObject->vm().heap)) JSWebKitNamedFlow(structure, globalObject, impl);
+        JSWebKitNamedFlow* ptr = new (NotNull, JSC::allocateCell<JSWebKitNamedFlow>(globalObject->vm().heap)) JSWebKitNamedFlow(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebKitNamedFlow* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebKitNamedFlow();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     WebKitNamedFlow& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebKitNamedFlow* m_impl;
 protected:
-    JSWebKitNamedFlow(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebKitNamedFlow>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSWebKitNamedFlow(JSC::Structure*, JSDOMGlobalObject*, Ref<WebKitNamedFlow>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebKitNamedFlowOwner : public JSC::WeakHandleOwner {
@@ -79,55 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebKitNamedFlow*)
 {
-    DEFINE_STATIC_LOCAL(JSWebKitNamedFlowOwner, jsWebKitNamedFlowOwner, ());
-    return &jsWebKitNamedFlowOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebKitNamedFlow*)
-{
-    return &world;
+    static NeverDestroyed<JSWebKitNamedFlowOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebKitNamedFlow*);
-WebKitNamedFlow* toWebKitNamedFlow(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebKitNamedFlow& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebKitNamedFlowPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebKitNamedFlowPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebKitNamedFlowPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitNamedFlowPrototype>(vm.heap)) JSWebKitNamedFlowPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebKitNamedFlowPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWebKitNamedFlowPrototypeFunctionGetRegionsByContent(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWebKitNamedFlowPrototypeFunctionGetRegions(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWebKitNamedFlowPrototypeFunctionGetContent(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWebKitNamedFlowPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWebKitNamedFlowPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWebKitNamedFlowPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsWebKitNamedFlowName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitNamedFlowOverset(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitNamedFlowFirstEmptyRegionIndex(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

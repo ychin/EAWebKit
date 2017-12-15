@@ -21,33 +21,30 @@
 #ifndef JSSVGFEGaussianBlurElement_h
 #define JSSVGFEGaussianBlurElement_h
 
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGElement.h"
 #include "SVGFEGaussianBlurElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGFEGaussianBlurElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGFEGaussianBlurElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEGaussianBlurElement> impl)
+    static JSSVGFEGaussianBlurElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEGaussianBlurElement>&& impl)
     {
-        JSSVGFEGaussianBlurElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEGaussianBlurElement>(globalObject->vm().heap)) JSSVGFEGaussianBlurElement(structure, globalObject, impl);
+        JSSVGFEGaussianBlurElement* ptr = new (NotNull, JSC::allocateCell<JSSVGFEGaussianBlurElement>(globalObject->vm().heap)) JSSVGFEGaussianBlurElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,94 +53,18 @@ public:
         return static_cast<SVGFEGaussianBlurElement&>(Base::impl());
     }
 protected:
-    JSSVGFEGaussianBlurElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGFEGaussianBlurElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGFEGaussianBlurElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGFEGaussianBlurElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGFEGaussianBlurElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGFEGaussianBlurElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGFEGaussianBlurElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEGaussianBlurElementPrototype>(vm.heap)) JSSVGFEGaussianBlurElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGFEGaussianBlurElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGFEGaussianBlurElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGFEGaussianBlurElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGFEGaussianBlurElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGFEGaussianBlurElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEGaussianBlurElementConstructor>(vm.heap)) JSSVGFEGaussianBlurElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGFEGaussianBlurElementPrototypeFunctionSetStdDeviation(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsSVGFEGaussianBlurElementIn1(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEGaussianBlurElementStdDeviationX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEGaussianBlurElementStdDeviationY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEGaussianBlurElementEdgeMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEGaussianBlurElementX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEGaussianBlurElementY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEGaussianBlurElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEGaussianBlurElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::JSValue jsSVGFEGaussianBlurElementResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGFEGaussianBlurElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_DUPLICATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_WRAP(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGFEGaussianBlurElementSVG_EDGEMODE_NONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)
 
 #endif

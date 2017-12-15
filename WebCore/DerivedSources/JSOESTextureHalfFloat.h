@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "OESTextureHalfFloat.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSOESTextureHalfFloat : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSOESTextureHalfFloat* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESTextureHalfFloat> impl)
+    static JSOESTextureHalfFloat* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESTextureHalfFloat>&& impl)
     {
-        JSOESTextureHalfFloat* ptr = new (NotNull, JSC::allocateCell<JSOESTextureHalfFloat>(globalObject->vm().heap)) JSOESTextureHalfFloat(structure, globalObject, impl);
+        JSOESTextureHalfFloat* ptr = new (NotNull, JSC::allocateCell<JSOESTextureHalfFloat>(globalObject->vm().heap)) JSOESTextureHalfFloat(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static OESTextureHalfFloat* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSOESTextureHalfFloat();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     OESTextureHalfFloat& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     OESTextureHalfFloat* m_impl;
 protected:
-    JSOESTextureHalfFloat(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OESTextureHalfFloat>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSOESTextureHalfFloat(JSC::Structure*, JSDOMGlobalObject*, Ref<OESTextureHalfFloat>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSOESTextureHalfFloatOwner : public JSC::WeakHandleOwner {
@@ -78,40 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, OESTextureHalfFloat*)
 {
-    DEFINE_STATIC_LOCAL(JSOESTextureHalfFloatOwner, jsOESTextureHalfFloatOwner, ());
-    return &jsOESTextureHalfFloatOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, OESTextureHalfFloat*)
-{
-    return &world;
+    static NeverDestroyed<JSOESTextureHalfFloatOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, OESTextureHalfFloat*);
-OESTextureHalfFloat* toOESTextureHalfFloat(JSC::JSValue);
-
-class JSOESTextureHalfFloatPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOESTextureHalfFloatPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOESTextureHalfFloatPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESTextureHalfFloatPrototype>(vm.heap)) JSOESTextureHalfFloatPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOESTextureHalfFloatPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESTextureHalfFloat& impl) { return toJS(exec, globalObject, &impl); }
 
 
 } // namespace WebCore

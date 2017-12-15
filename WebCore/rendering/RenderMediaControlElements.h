@@ -36,34 +36,34 @@
 
 namespace WebCore {
 
-class RenderMediaVolumeSliderContainer FINAL : public RenderBlockFlow {
+class RenderMediaVolumeSliderContainer final : public RenderBlockFlow {
 public:
-    RenderMediaVolumeSliderContainer(Element&);
+    RenderMediaVolumeSliderContainer(Element&, Ref<RenderStyle>&&);
 
 private:
-    virtual void layout();
+    virtual void layout() override;
 };
 
 // ----------------------------
 
-class RenderMediaControlTimelineContainer FINAL : public RenderFlexibleBox {
+class RenderMediaControlTimelineContainer final : public RenderFlexibleBox {
 public:
-    RenderMediaControlTimelineContainer(Element&);
+    RenderMediaControlTimelineContainer(Element&, Ref<RenderStyle>&&);
 
 private:
-    virtual void layout();
+    virtual void layout() override;
 };
 
 // ----------------------------
 
 #if ENABLE(VIDEO_TRACK)
 
-class RenderTextTrackContainerElement FINAL : public RenderBlockFlow {
+class RenderTextTrackContainerElement final : public RenderBlockFlow {
 public:
-    RenderTextTrackContainerElement(Element&);
+    RenderTextTrackContainerElement(Element&, Ref<RenderStyle>&&);
 
 private:
-    virtual void layout();
+    virtual void layout() override;
 };
 
 #endif // ENABLE(VIDEO_TRACK)

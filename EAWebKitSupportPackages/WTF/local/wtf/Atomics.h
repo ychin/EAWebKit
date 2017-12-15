@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2008, 2010, 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2007-2008, 2010, 2012-2013, 2015 Apple Inc. All rights reserved.
  * Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)
  * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
  *
@@ -12,7 +12,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -60,76 +60,76 @@
 #ifndef Atomics_h
 #define Atomics_h
 
-#include <wtf/Platform.h>
+#include <atomic>
 #include <wtf/StdLibExtras.h>
 
 //+EAWebKitChange
 //3/11/2014
 #if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
-#if !COMPILER(GCC)
+#if !COMPILER(GCC_OR_CLANG)
 extern "C" void _ReadWriteBarrier(void);
 #pragma intrinsic(_ReadWriteBarrier)
 #endif
 #include <windows.h>
-#elif OS(QNX)
-#include <atomic.h>
 #endif
 
 namespace WTF {
+
+// Atomic wraps around std::atomic with the sole purpose of making the compare_exchange
+// operations not alter the expected value. This is more in line with how we typically
+// use CAS in our code.
+//
+// Atomic is a struct without explicitly defined constructors so that it can be
+// initialized at compile time.
+
+template<typename T>
+struct Atomic {
+    // Don't pass a non-default value for the order parameter unless you really know
+    // what you are doing and have thought about it very hard. The cost of seq_cst
+    // is usually not high enough to justify the risk.
+
+    T load(std::memory_order order = std::memory_order_seq_cst) const { return value.load(order); }
+
+    void store(T desired, std::memory_order order = std::memory_order_seq_cst) { value.store(desired, order); }
+
+    bool compareExchangeWeak(T expected, T desired, std::memory_order order = std::memory_order_seq_cst)
+    {
+//+EAWebKitChange
+//09/02/2015
+#if OS(WINDOWS) || PLATFORM(EA)
+//-EAWebKitChange
+        // Windows makes strange assertions about the argument to compare_exchange_weak, and anyway,
+        // Windows is X86 so seq_cst is cheap.
+        order = std::memory_order_seq_cst;
+#endif
+        T expectedOrActual = expected;
+        return value.compare_exchange_weak(expectedOrActual, desired, order);
+    }
+
+    bool compareExchangeStrong(T expected, T desired, std::memory_order order = std::memory_order_seq_cst)
+    {
+//+EAWebKitChange
+//09/02/2015
+#if OS(WINDOWS) || PLATFORM(EA)
+//-EAWebKitChange
+        // See above.
+        order = std::memory_order_seq_cst;
+#endif
+        T expectedOrActual = expected;
+        return value.compare_exchange_strong(expectedOrActual, desired, order);
+    }
+
+    std::atomic<T> value;
+};
 
 	//+EAWebKitChange
 	//4/4/2014
 #if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 	//-EAWebKitChange
-#define WTF_USE_LOCKFREE_THREADSAFEREFCOUNTED 1
-
-#if OS(WINCE)
-inline int atomicIncrement(int* addend) { return InterlockedIncrement(reinterpret_cast<long*>(addend)); }
-inline int atomicDecrement(int* addend) { return InterlockedDecrement(reinterpret_cast<long*>(addend)); }
-#elif COMPILER(MINGW)
-inline int atomicIncrement(int* addend) { return InterlockedIncrement(reinterpret_cast<long*>(addend)); }
-inline int atomicDecrement(int* addend) { return InterlockedDecrement(reinterpret_cast<long*>(addend)); }
-
-inline int64_t atomicIncrement(int64_t* addend) { return InterlockedIncrement64(reinterpret_cast<long long*>(addend)); }
-inline int64_t atomicDecrement(int64_t* addend) { return InterlockedDecrement64(reinterpret_cast<long long*>(addend)); }
-#else
-inline int atomicIncrement(int volatile* addend) { return InterlockedIncrement(reinterpret_cast<long volatile*>(addend)); }
-inline int atomicDecrement(int volatile* addend) { return InterlockedDecrement(reinterpret_cast<long volatile*>(addend)); }
-
-inline int64_t atomicIncrement(int64_t volatile* addend) { return InterlockedIncrement64(reinterpret_cast<long long volatile*>(addend)); }
-inline int64_t atomicDecrement(int64_t volatile* addend) { return InterlockedDecrement64(reinterpret_cast<long long volatile*>(addend)); }
-#endif
-
-#elif OS(QNX)
-#define WTF_USE_LOCKFREE_THREADSAFEREFCOUNTED 1
-
-// Note, atomic_{add, sub}_value() return the previous value of addend's content.
-inline int atomicIncrement(int volatile* addend) { return static_cast<int>(atomic_add_value(reinterpret_cast<unsigned volatile*>(addend), 1)) + 1; }
-inline int atomicDecrement(int volatile* addend) { return static_cast<int>(atomic_sub_value(reinterpret_cast<unsigned volatile*>(addend), 1)) - 1; }
-
-#elif COMPILER(GCC) && !CPU(SPARC64) // sizeof(_Atomic_word) != sizeof(int) on sparc64 gcc
-#define WTF_USE_LOCKFREE_THREADSAFEREFCOUNTED 1
-
-inline int atomicIncrement(int volatile* addend) { return __sync_add_and_fetch(addend, 1); }
-inline int atomicDecrement(int volatile* addend) { return __sync_sub_and_fetch(addend, 1); }
-
-inline int64_t atomicIncrement(int64_t volatile* addend) { return __sync_add_and_fetch(addend, 1); }
-inline int64_t atomicDecrement(int64_t volatile* addend) { return __sync_sub_and_fetch(addend, 1); }
-
-#endif
-
-//+EAWebKitChange
-//3/11/2014
-#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
-//-EAWebKitChange
 inline bool weakCompareAndSwap(volatile unsigned* location, unsigned expected, unsigned newValue)
 {
-#if OS(WINCE)
-    return InterlockedCompareExchange(reinterpret_cast<LONG*>(const_cast<unsigned*>(location)), static_cast<LONG>(newValue), static_cast<LONG>(expected)) == static_cast<LONG>(expected);
-#else
     return InterlockedCompareExchange(reinterpret_cast<LONG volatile*>(location), static_cast<LONG>(newValue), static_cast<LONG>(expected)) == static_cast<LONG>(expected);
-#endif
 }
 
 inline bool weakCompareAndSwap(void*volatile* location, void* expected, void* newValue)
@@ -137,11 +137,7 @@ inline bool weakCompareAndSwap(void*volatile* location, void* expected, void* ne
     return InterlockedCompareExchangePointer(location, newValue, expected) == expected;
 }
 #else // OS(WINDOWS) --> not windows
-#if COMPILER(GCC) && !COMPILER(CLANG) // Work around a gcc bug 
 inline bool weakCompareAndSwap(volatile unsigned* location, unsigned expected, unsigned newValue) 
-#else
-inline bool weakCompareAndSwap(unsigned* location, unsigned expected, unsigned newValue)
-#endif
 {
 #if ENABLE(COMPARE_AND_SWAP)
 #if CPU(X86) || CPU(X86_64)
@@ -164,6 +160,34 @@ inline bool weakCompareAndSwap(unsigned* location, unsigned expected, unsigned n
         "strex %1, %4, %0\n\t"
         "0:"
         : "+Q"(*location), "=&r"(result), "=&r"(tmp)
+        : "r"(expected), "r"(newValue)
+        : "memory");
+    result = !result;
+#elif CPU(ARM64) && COMPILER(GCC_OR_CLANG)
+    unsigned tmp;
+    unsigned result;
+    asm volatile(
+        "mov %w1, #1\n\t"
+        "ldxr %w2, [%0]\n\t"
+        "cmp %w3, %w2\n\t"
+        "b.ne 0f\n\t"
+        "stxr %w1, %w4, [%0]\n\t"
+        "0:"
+        : "+r"(location), "=&r"(result), "=&r"(tmp)
+        : "r"(expected), "r"(newValue)
+        : "memory");
+    result = !result;
+#elif CPU(ARM64)
+    unsigned tmp;
+    unsigned result;
+    asm volatile(
+        "mov %w1, #1\n\t"
+        "ldxr %w2, %0\n\t"
+        "cmp %w3, %w2\n\t"
+        "b.ne 0f\n\t"
+        "stxr %w1, %w4, %0\n\t"
+        "0:"
+        : "+m"(*location), "=&r"(result), "=&r"(tmp)
         : "r"(expected), "r"(newValue)
         : "memory");
     result = !result;
@@ -193,6 +217,34 @@ inline bool weakCompareAndSwap(void*volatile* location, void* expected, void* ne
         : "memory"
         );
     return result;
+#elif CPU(ARM64) && COMPILER(GCC_OR_CLANG)
+    bool result;
+    void* tmp;
+    asm volatile(
+        "mov %w1, #1\n\t"
+        "ldxr %x2, [%0]\n\t"
+        "cmp %x3, %x2\n\t"
+        "b.ne 0f\n\t"
+        "stxr %w1, %x4, [%0]\n\t"
+        "0:"
+        : "+r"(location), "=&r"(result), "=&r"(tmp)
+        : "r"(expected), "r"(newValue)
+        : "memory");
+    return !result;
+#elif CPU(ARM64)
+    bool result;
+    void* tmp;
+    asm volatile(
+        "mov %w1, #1\n\t"
+        "ldxr %x2, %0\n\t"
+        "cmp %x3, %x2\n\t"
+        "b.ne 0f\n\t"
+        "stxr %w1, %x4, %0\n\t"
+        "0:"
+        : "+m"(*location), "=&r"(result), "=&r"(tmp)
+        : "r"(expected), "r"(newValue)
+        : "memory");
+    return !result;
 #else
     return weakCompareAndSwap(bitwise_cast<unsigned*>(location), bitwise_cast<unsigned>(expected), bitwise_cast<unsigned>(newValue));
 #endif
@@ -223,7 +275,7 @@ inline void compilerFence()
 {
 //+EAWebKitChange
 //3/11/2014
-#if (OS(WINDOWS) && !COMPILER(GCC)) || defined(EA_PLATFORM_MICROSOFT)
+#if (OS(WINDOWS) && !COMPILER(GCC_OR_CLANG)) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
     _ReadWriteBarrier();
 #else
@@ -231,13 +283,13 @@ inline void compilerFence()
 #endif
 }
 
-#if CPU(ARM_THUMB2)
+#if CPU(ARM_THUMB2) || CPU(ARM64)
 
 // Full memory fence. No accesses will float above this, and no accesses will sink
 // below it.
 inline void armV7_dmb()
 {
-    asm volatile("dmb" ::: "memory");
+    asm volatile("dmb sy" ::: "memory");
 }
 
 // Like the above, but only affects stores.
@@ -301,7 +353,7 @@ inline bool weakCompareAndSwap(uint8_t* location, uint8_t expected, uint8_t newV
         "lock; cmpxchgb %3, %2\n\t"
         "sete %1"
         : "+a"(expected), "=q"(result), "+m"(*location)
-        : "r"(newValue)
+        : "q"(newValue)
         : "memory"
         );
     return result;
@@ -327,16 +379,24 @@ inline bool weakCompareAndSwap(uint8_t* location, uint8_t expected, uint8_t newV
     unsigned* alignedLocation = bitwise_cast<unsigned*>(alignedLocationValue);
     // Make sure that this load is always issued and never optimized away.
     unsigned oldAlignedValue = *const_cast<volatile unsigned*>(alignedLocation);
-    union {
-        uint8_t bytes[sizeof(unsigned)];
-        unsigned word;
-    } u;
-    u.word = oldAlignedValue;
-    if (u.bytes[locationOffset] != expected)
-        return false;
-    u.bytes[locationOffset] = newValue;
-    unsigned newAlignedValue = u.word;
-    return weakCompareAndSwap(alignedLocation, oldAlignedValue, newAlignedValue);
+
+    struct Splicer {
+        static unsigned splice(unsigned value, uint8_t byte, uintptr_t byteIndex)
+        {
+            union {
+                unsigned word;
+                uint8_t bytes[sizeof(unsigned)];
+            } u;
+            u.word = value;
+            u.bytes[byteIndex] = byte;
+            return u.word;
+        }
+    };
+    
+    unsigned expectedAlignedValue = Splicer::splice(oldAlignedValue, expected, locationOffset);
+    unsigned newAlignedValue = Splicer::splice(oldAlignedValue, newValue, locationOffset);
+
+    return weakCompareAndSwap(alignedLocation, expectedAlignedValue, newAlignedValue);
 #endif
 #else
     UNUSED_PARAM(location);
@@ -349,9 +409,6 @@ inline bool weakCompareAndSwap(uint8_t* location, uint8_t expected, uint8_t newV
 
 } // namespace WTF
 
-#if USE(LOCKFREE_THREADSAFEREFCOUNTED)
-using WTF::atomicDecrement;
-using WTF::atomicIncrement;
-#endif
+using WTF::Atomic;
 
 #endif // Atomics_h

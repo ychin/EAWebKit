@@ -21,9 +21,9 @@
 #include "config.h"
 #include "JSHTMLBodyElement.h"
 
-#include "EventListener.h"
 #include "HTMLBodyElement.h"
 #include "HTMLNames.h"
+#include "JSDOMBinding.h"
 #include "JSEventListener.h"
 #include "URL.h"
 #include <runtime/JSString.h>
@@ -33,46 +33,143 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLBodyElementTableValues[] =
-{
-    { "aLink", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementALink), (intptr_t)setJSHTMLBodyElementALink },
-    { "background", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementBackground), (intptr_t)setJSHTMLBodyElementBackground },
-    { "bgColor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementBgColor), (intptr_t)setJSHTMLBodyElementBgColor },
-    { "link", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementLink), (intptr_t)setJSHTMLBodyElementLink },
-    { "text", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementText), (intptr_t)setJSHTMLBodyElementText },
-    { "vLink", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementVLink), (intptr_t)setJSHTMLBodyElementVLink },
-    { "onbeforeunload", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnbeforeunload), (intptr_t)setJSHTMLBodyElementOnbeforeunload },
-    { "onhashchange", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnhashchange), (intptr_t)setJSHTMLBodyElementOnhashchange },
-    { "onmessage", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnmessage), (intptr_t)setJSHTMLBodyElementOnmessage },
-    { "onoffline", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnoffline), (intptr_t)setJSHTMLBodyElementOnoffline },
-    { "ononline", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnonline), (intptr_t)setJSHTMLBodyElementOnonline },
-    { "onpopstate", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnpopstate), (intptr_t)setJSHTMLBodyElementOnpopstate },
-    { "onresize", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnresize), (intptr_t)setJSHTMLBodyElementOnresize },
-    { "onstorage", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnstorage), (intptr_t)setJSHTMLBodyElementOnstorage },
-    { "onunload", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnunload), (intptr_t)setJSHTMLBodyElementOnunload },
-#if ENABLE(ORIENTATION_EVENTS)
-    { "onorientationchange", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnorientationchange), (intptr_t)setJSHTMLBodyElementOnorientationchange },
+JSC::EncodedJSValue jsHTMLBodyElementALink(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementALink(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementBackground(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementBackground(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementBgColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementBgColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementLink(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementLink(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementText(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementText(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementVLink(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementVLink(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnblur(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnblur(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnfocus(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnfocus(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnfocusin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnfocusin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnfocusout(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnfocusout(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnresize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnresize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnscroll(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnscroll(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(MOUSE_FORCE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitmouseforcechanged(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitmouseforcechanged(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
 #endif
-    { "onblur", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnblur), (intptr_t)setJSHTMLBodyElementOnblur },
-    { "onerror", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnerror), (intptr_t)setJSHTMLBodyElementOnerror },
-    { "onfocus", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnfocus), (intptr_t)setJSHTMLBodyElementOnfocus },
-    { "onload", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnload), (intptr_t)setJSHTMLBodyElementOnload },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+#if ENABLE(MOUSE_FORCE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitmouseforcedown(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitmouseforcedown(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(MOUSE_FORCE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitmouseforcewillbegin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitmouseforcewillbegin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(MOUSE_FORCE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitmouseforceup(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitmouseforceup(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealbottom(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitwillrevealbottom(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealleft(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitwillrevealleft(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealright(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitwillrevealright(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealtop(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnwebkitwillrevealtop(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+JSC::EncodedJSValue jsHTMLBodyElementOnselectionchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnselectionchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnbeforeunload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnbeforeunload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnhashchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnhashchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnoffline(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnoffline(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnonline(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnonline(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnpagehide(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnpagehide(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnpageshow(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnpageshow(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnpopstate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnpopstate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnstorage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnstorage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLBodyElementOnunload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnunload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(ORIENTATION_EVENTS)
+JSC::EncodedJSValue jsHTMLBodyElementOnorientationchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLBodyElementOnorientationchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+JSC::EncodedJSValue jsHTMLBodyElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLBodyElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLBodyElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLBodyElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLBodyElementPrototype>(vm.heap)) JSHTMLBodyElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLBodyElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLBodyElementTable = { 64, 63, JSHTMLBodyElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLBodyElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLBodyElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLBodyElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLBodyElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLBodyElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLBodyElementConstructor>(vm.heap)) JSHTMLBodyElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLBodyElementConstructorTable = { 1, 0, JSHTMLBodyElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLBodyElementConstructor::s_info = { "HTMLBodyElementConstructor", &Base::s_info, &JSHTMLBodyElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLBodyElementConstructor) };
+const ClassInfo JSHTMLBodyElementConstructor::s_info = { "HTMLBodyElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLBodyElementConstructor) };
 
 JSHTMLBodyElementConstructor::JSHTMLBodyElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -83,567 +180,1274 @@ void JSHTMLBodyElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLBodyElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLBodyElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLBodyElementConstructor, JSDOMWrapper>(exec, JSHTMLBodyElementConstructorTable, jsCast<JSHTMLBodyElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLBodyElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLBodyElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLBodyElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "aLink", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementALink), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementALink) },
+    { "background", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementBackground), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementBackground) },
+    { "bgColor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementBgColor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementBgColor) },
+    { "link", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementLink), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementLink) },
+    { "text", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementText), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementText) },
+    { "vLink", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementVLink), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementVLink) },
+    { "onblur", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnblur), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnblur) },
+    { "onerror", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnerror), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnerror) },
+    { "onfocus", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnfocus), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnfocus) },
+    { "onfocusin", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnfocusin), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnfocusin) },
+    { "onfocusout", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnfocusout), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnfocusout) },
+    { "onload", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnload), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnload) },
+    { "onresize", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnresize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnresize) },
+    { "onscroll", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnscroll), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnscroll) },
+#if ENABLE(MOUSE_FORCE_EVENTS)
+    { "onwebkitmouseforcechanged", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitmouseforcechanged), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitmouseforcechanged) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MOUSE_FORCE_EVENTS)
+    { "onwebkitmouseforcedown", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitmouseforcedown), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitmouseforcedown) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MOUSE_FORCE_EVENTS)
+    { "onwebkitmouseforcewillbegin", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitmouseforcewillbegin), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitmouseforcewillbegin) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MOUSE_FORCE_EVENTS)
+    { "onwebkitmouseforceup", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitmouseforceup), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitmouseforceup) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+    { "onwebkitwillrevealbottom", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitwillrevealbottom), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitwillrevealbottom) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+    { "onwebkitwillrevealleft", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitwillrevealleft), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitwillrevealleft) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+    { "onwebkitwillrevealright", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitwillrevealright), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitwillrevealright) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+    { "onwebkitwillrevealtop", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnwebkitwillrevealtop), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnwebkitwillrevealtop) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "onselectionchange", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnselectionchange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnselectionchange) },
+    { "onbeforeunload", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnbeforeunload), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnbeforeunload) },
+    { "onhashchange", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnhashchange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnhashchange) },
+    { "onmessage", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnmessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnmessage) },
+    { "onoffline", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnoffline), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnoffline) },
+    { "ononline", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnonline), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnonline) },
+    { "onpagehide", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnpagehide), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnpagehide) },
+    { "onpageshow", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnpageshow), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnpageshow) },
+    { "onpopstate", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnpopstate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnpopstate) },
+    { "onstorage", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnstorage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnstorage) },
+    { "onunload", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnunload), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnunload) },
+#if ENABLE(ORIENTATION_EVENTS)
+    { "onorientationchange", DontDelete | DontEnum | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLBodyElementOnorientationchange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLBodyElementOnorientationchange) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
 };
 
-static const HashTable JSHTMLBodyElementPrototypeTable = { 1, 0, JSHTMLBodyElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLBodyElementPrototype::s_info = { "HTMLBodyElementPrototype", &Base::s_info, &JSHTMLBodyElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLBodyElementPrototype) };
+const ClassInfo JSHTMLBodyElementPrototype::s_info = { "HTMLBodyElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLBodyElementPrototype) };
 
-JSObject* JSHTMLBodyElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLBodyElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLBodyElement::s_info = { "HTMLBodyElement", &Base::s_info, &JSHTMLBodyElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLBodyElement) };
-
-JSHTMLBodyElement::JSHTMLBodyElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLBodyElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLBodyElement::finishCreation(VM& vm)
+void JSHTMLBodyElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLBodyElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLBodyElement::s_info = { "HTMLBodyElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLBodyElement) };
+
+JSHTMLBodyElement::JSHTMLBodyElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLBodyElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLBodyElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLBodyElementPrototype::create(vm, globalObject, JSHTMLBodyElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLBodyElementPrototype::create(vm, globalObject, JSHTMLBodyElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLBodyElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLBodyElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLBodyElement* thisObject = jsCast<JSHTMLBodyElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLBodyElement, Base>(exec, JSHTMLBodyElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLBodyElement>(vm, globalObject);
 }
 
-JSValue jsHTMLBodyElementALink(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementALink(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "aLink");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "aLink");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::alinkAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLBodyElementBackground(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementBackground(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "background");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "background");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::backgroundAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLBodyElementBgColor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementBgColor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "bgColor");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "bgColor");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::bgcolorAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLBodyElementLink(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementLink(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "link");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "link");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::linkAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLBodyElementText(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementText(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "text");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "text");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::textAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLBodyElementVLink(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementVLink(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "vLink");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "vLink");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::vlinkAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLBodyElementOnbeforeunload(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnblur(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onbeforeunload()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onblur");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onblur");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().blurEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnhashchange(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnerror(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onhashchange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onerror");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onerror");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().errorEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnmessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnfocus(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onmessage()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onfocus");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onfocus");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().focusEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnoffline(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnfocusin(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onoffline()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onfocusin");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onfocusin");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().focusinEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnonline(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnfocusout(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.ononline()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onfocusout");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onfocusout");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().focusoutEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnpopstate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnload(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onpopstate()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onload");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onload");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().loadEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnresize(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnresize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onresize()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onresize");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onresize");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().resizeEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnstorage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLBodyElementOnscroll(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onstorage()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onscroll");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onscroll");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().scrollEvent));
 }
 
 
-JSValue jsHTMLBodyElementOnunload(ExecState* exec, JSValue slotBase, PropertyName)
+#if ENABLE(MOUSE_FORCE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitmouseforcechanged(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onunload()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitmouseforcechanged");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforcechanged");
     }
-    return jsNull();
-}
-
-
-#if ENABLE(ORIENTATION_EVENTS)
-JSValue jsHTMLBodyElementOnorientationchange(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onorientationchange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitmouseforcechangedEvent));
 }
 
 #endif
 
-JSValue jsHTMLBodyElementOnblur(ExecState* exec, JSValue slotBase, PropertyName)
+#if ENABLE(MOUSE_FORCE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitmouseforcedown(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onblur()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitmouseforcedown");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforcedown");
     }
-    return jsNull();
-}
-
-
-JSValue jsHTMLBodyElementOnerror(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onerror()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
-}
-
-
-JSValue jsHTMLBodyElementOnfocus(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onfocus()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
-}
-
-
-JSValue jsHTMLBodyElementOnload(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLBodyElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onload()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
-}
-
-
-JSValue jsHTMLBodyElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLBodyElement* domObject = jsCast<JSHTMLBodyElement*>(asObject(slotBase));
-    return JSHTMLBodyElement::getConstructor(exec->vm(), domObject->globalObject());
-}
-
-void JSHTMLBodyElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSHTMLBodyElement* thisObject = jsCast<JSHTMLBodyElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLBodyElement, Base>(exec, propertyName, value, JSHTMLBodyElementTable, thisObject, slot);
-}
-
-void setJSHTMLBodyElementALink(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    HTMLBodyElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
-        return;
-    impl.setAttribute(WebCore::HTMLNames::alinkAttr, nativeValue);
-}
-
-
-void setJSHTMLBodyElementBackground(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    HTMLBodyElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
-        return;
-    impl.setAttribute(WebCore::HTMLNames::backgroundAttr, nativeValue);
-}
-
-
-void setJSHTMLBodyElementBgColor(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    HTMLBodyElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
-        return;
-    impl.setAttribute(WebCore::HTMLNames::bgcolorAttr, nativeValue);
-}
-
-
-void setJSHTMLBodyElementLink(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    HTMLBodyElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
-        return;
-    impl.setAttribute(WebCore::HTMLNames::linkAttr, nativeValue);
-}
-
-
-void setJSHTMLBodyElementText(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    HTMLBodyElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
-        return;
-    impl.setAttribute(WebCore::HTMLNames::textAttr, nativeValue);
-}
-
-
-void setJSHTMLBodyElementVLink(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    HTMLBodyElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
-        return;
-    impl.setAttribute(WebCore::HTMLNames::vlinkAttr, nativeValue);
-}
-
-
-void setJSHTMLBodyElementOnbeforeunload(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnbeforeunload(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnhashchange(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnhashchange(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnmessage(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnmessage(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnoffline(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnoffline(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnonline(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnonline(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnpopstate(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnpopstate(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnresize(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnresize(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnstorage(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnstorage(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-void setJSHTMLBodyElementOnunload(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnunload(createJSAttributeEventListener(exec, value, globalObject));
-}
-
-
-#if ENABLE(ORIENTATION_EVENTS)
-void setJSHTMLBodyElementOnorientationchange(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnorientationchange(createJSAttributeEventListener(exec, value, globalObject));
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitmouseforcedownEvent));
 }
 
 #endif
 
-void setJSHTMLBodyElementOnblur(ExecState* exec, JSObject* thisObject, JSValue value)
+#if ENABLE(MOUSE_FORCE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitmouseforcewillbegin(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitmouseforcewillbegin");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforcewillbegin");
+    }
     UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnblur(createJSAttributeEventListener(exec, value, globalObject));
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitmouseforcewillbeginEvent));
+}
+
+#endif
+
+#if ENABLE(MOUSE_FORCE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitmouseforceup(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitmouseforceup");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforceup");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitmouseforceupEvent));
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealbottom(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealbottom");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealbottom");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitwillrevealbottomEvent));
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealleft(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealleft");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealleft");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitwillrevealleftEvent));
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealright(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealright");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealright");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitwillrevealrightEvent));
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnwebkitwillrevealtop(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealtop");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealtop");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().webkitwillrevealtopEvent));
+}
+
+#endif
+
+EncodedJSValue jsHTMLBodyElementOnselectionchange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onselectionchange");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onselectionchange");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(documentEventHandlerAttribute(castedThis->impl(), eventNames().selectionchangeEvent));
 }
 
 
-void setJSHTMLBodyElementOnerror(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsHTMLBodyElementOnbeforeunload(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onbeforeunload");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onbeforeunload");
+    }
     UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnerror(createJSAttributeEventListener(exec, value, globalObject));
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().beforeunloadEvent));
 }
 
 
-void setJSHTMLBodyElementOnfocus(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsHTMLBodyElementOnhashchange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onhashchange");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onhashchange");
+    }
     UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnfocus(createJSAttributeEventListener(exec, value, globalObject));
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().hashchangeEvent));
 }
 
 
-void setJSHTMLBodyElementOnload(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsHTMLBodyElementOnmessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onmessage");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onmessage");
+    }
     UNUSED_PARAM(exec);
-    JSHTMLBodyElement* castedThis = jsCast<JSHTMLBodyElement*>(thisObject);
-    JSDOMGlobalObject* globalObject = castedThis->globalObject();
-    HTMLBodyElement& impl = castedThis->impl();
-    impl.setOnload(createJSAttributeEventListener(exec, value, globalObject));
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().messageEvent));
 }
 
+
+EncodedJSValue jsHTMLBodyElementOnoffline(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onoffline");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onoffline");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().offlineEvent));
+}
+
+
+EncodedJSValue jsHTMLBodyElementOnonline(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "ononline");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "ononline");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().onlineEvent));
+}
+
+
+EncodedJSValue jsHTMLBodyElementOnpagehide(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onpagehide");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onpagehide");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().pagehideEvent));
+}
+
+
+EncodedJSValue jsHTMLBodyElementOnpageshow(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onpageshow");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onpageshow");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().pageshowEvent));
+}
+
+
+EncodedJSValue jsHTMLBodyElementOnpopstate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onpopstate");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onpopstate");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().popstateEvent));
+}
+
+
+EncodedJSValue jsHTMLBodyElementOnstorage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onstorage");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onstorage");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().storageEvent));
+}
+
+
+EncodedJSValue jsHTMLBodyElementOnunload(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onunload");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onunload");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().unloadEvent));
+}
+
+
+#if ENABLE(ORIENTATION_EVENTS)
+EncodedJSValue jsHTMLBodyElementOnorientationchange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLBodyElement", "onorientationchange");
+        return throwGetterTypeError(*exec, "HTMLBodyElement", "onorientationchange");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(windowEventHandlerAttribute(castedThis->impl(), eventNames().orientationchangeEvent));
+}
+
+#endif
+
+EncodedJSValue jsHTMLBodyElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
+{
+    JSHTMLBodyElementPrototype* domObject = jsDynamicCast<JSHTMLBodyElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLBodyElement::getConstructor(exec->vm(), domObject->globalObject()));
+}
+
+void setJSHTMLBodyElementALink(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "aLink");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "aLink");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::alinkAttr, nativeValue);
+}
+
+
+void setJSHTMLBodyElementBackground(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "background");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "background");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::backgroundAttr, nativeValue);
+}
+
+
+void setJSHTMLBodyElementBgColor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "bgColor");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "bgColor");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::bgcolorAttr, nativeValue);
+}
+
+
+void setJSHTMLBodyElementLink(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "link");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "link");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::linkAttr, nativeValue);
+}
+
+
+void setJSHTMLBodyElementText(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "text");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "text");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::textAttr, nativeValue);
+}
+
+
+void setJSHTMLBodyElementVLink(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "vLink");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "vLink");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::vlinkAttr, nativeValue);
+}
+
+
+void setJSHTMLBodyElementOnblur(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onblur");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onblur");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().blurEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnerror(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onerror");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onerror");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().errorEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnfocus(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onfocus");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onfocus");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().focusEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnfocusin(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onfocusin");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onfocusin");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().focusinEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnfocusout(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onfocusout");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onfocusout");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().focusoutEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnload(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onload");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onload");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().loadEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnresize(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onresize");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onresize");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().resizeEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnscroll(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onscroll");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onscroll");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().scrollEvent, value);
+}
+
+
+#if ENABLE(MOUSE_FORCE_EVENTS)
+void setJSHTMLBodyElementOnwebkitmouseforcechanged(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitmouseforcechanged");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforcechanged");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitmouseforcechangedEvent, value);
+}
+
+#endif
+
+#if ENABLE(MOUSE_FORCE_EVENTS)
+void setJSHTMLBodyElementOnwebkitmouseforcedown(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitmouseforcedown");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforcedown");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitmouseforcedownEvent, value);
+}
+
+#endif
+
+#if ENABLE(MOUSE_FORCE_EVENTS)
+void setJSHTMLBodyElementOnwebkitmouseforcewillbegin(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitmouseforcewillbegin");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforcewillbegin");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitmouseforcewillbeginEvent, value);
+}
+
+#endif
+
+#if ENABLE(MOUSE_FORCE_EVENTS)
+void setJSHTMLBodyElementOnwebkitmouseforceup(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitmouseforceup");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitmouseforceup");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitmouseforceupEvent, value);
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+void setJSHTMLBodyElementOnwebkitwillrevealbottom(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealbottom");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealbottom");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitwillrevealbottomEvent, value);
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+void setJSHTMLBodyElementOnwebkitwillrevealleft(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealleft");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealleft");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitwillrevealleftEvent, value);
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+void setJSHTMLBodyElementOnwebkitwillrevealright(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealright");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealright");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitwillrevealrightEvent, value);
+}
+
+#endif
+
+#if ENABLE(WILL_REVEAL_EDGE_EVENTS)
+void setJSHTMLBodyElementOnwebkitwillrevealtop(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onwebkitwillrevealtop");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onwebkitwillrevealtop");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitwillrevealtopEvent, value);
+}
+
+#endif
+
+void setJSHTMLBodyElementOnselectionchange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onselectionchange");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onselectionchange");
+        return;
+    }
+    setDocumentEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().selectionchangeEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnbeforeunload(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onbeforeunload");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onbeforeunload");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().beforeunloadEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnhashchange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onhashchange");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onhashchange");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().hashchangeEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnmessage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onmessage");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onmessage");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().messageEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnoffline(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onoffline");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onoffline");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().offlineEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnonline(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "ononline");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "ononline");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().onlineEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnpagehide(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onpagehide");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onpagehide");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().pagehideEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnpageshow(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onpageshow");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onpageshow");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().pageshowEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnpopstate(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onpopstate");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onpopstate");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().popstateEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnstorage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onstorage");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onstorage");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().storageEvent, value);
+}
+
+
+void setJSHTMLBodyElementOnunload(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onunload");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onunload");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().unloadEvent, value);
+}
+
+
+#if ENABLE(ORIENTATION_EVENTS)
+void setJSHTMLBodyElementOnorientationchange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLBodyElement* castedThis = jsDynamicCast<JSHTMLBodyElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLBodyElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLBodyElement", "onorientationchange");
+        else
+            throwSetterTypeError(*exec, "HTMLBodyElement", "onorientationchange");
+        return;
+    }
+    setWindowEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().orientationchangeEvent, value);
+}
+
+#endif
 
 JSValue JSHTMLBodyElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 {

@@ -22,30 +22,28 @@
 #define JSHTMLBRElement_h
 
 #include "HTMLBRElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLBRElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLBRElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLBRElement> impl)
+    static JSHTMLBRElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLBRElement>&& impl)
     {
-        JSHTMLBRElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLBRElement>(globalObject->vm().heap)) JSHTMLBRElement(structure, globalObject, impl);
+        JSHTMLBRElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLBRElement>(globalObject->vm().heap)) JSHTMLBRElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,64 +52,17 @@ public:
         return static_cast<HTMLBRElement&>(Base::impl());
     }
 protected:
-    JSHTMLBRElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLBRElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLBRElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLBRElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSHTMLBRElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLBRElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLBRElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLBRElementPrototype>(vm.heap)) JSHTMLBRElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLBRElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLBRElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLBRElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLBRElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLBRElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLBRElementConstructor>(vm.heap)) JSHTMLBRElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLBRElementClear(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLBRElementClear(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLBRElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

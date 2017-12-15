@@ -22,30 +22,28 @@
 #define JSHTMLBaseFontElement_h
 
 #include "HTMLBaseFontElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLBaseFontElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLBaseFontElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLBaseFontElement> impl)
+    static JSHTMLBaseFontElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLBaseFontElement>&& impl)
     {
-        JSHTMLBaseFontElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLBaseFontElement>(globalObject->vm().heap)) JSHTMLBaseFontElement(structure, globalObject, impl);
+        JSHTMLBaseFontElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLBaseFontElement>(globalObject->vm().heap)) JSHTMLBaseFontElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,68 +52,17 @@ public:
         return static_cast<HTMLBaseFontElement&>(Base::impl());
     }
 protected:
-    JSHTMLBaseFontElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLBaseFontElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLBaseFontElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLBaseFontElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSHTMLBaseFontElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLBaseFontElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLBaseFontElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLBaseFontElementPrototype>(vm.heap)) JSHTMLBaseFontElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLBaseFontElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLBaseFontElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLBaseFontElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLBaseFontElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLBaseFontElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLBaseFontElementConstructor>(vm.heap)) JSHTMLBaseFontElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLBaseFontElementColor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLBaseFontElementColor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLBaseFontElementFace(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLBaseFontElementFace(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLBaseFontElementSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLBaseFontElementSize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLBaseFontElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

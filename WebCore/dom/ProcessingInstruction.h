@@ -32,16 +32,16 @@ namespace WebCore {
 class StyleSheet;
 class CSSStyleSheet;
 
-class ProcessingInstruction FINAL : public CharacterData, private CachedStyleSheetClient {
+class ProcessingInstruction final : public CharacterData, private CachedStyleSheetClient {
 public:
-    static PassRefPtr<ProcessingInstruction> create(Document&, const String& target, const String& data);
+    static Ref<ProcessingInstruction> create(Document&, const String& target, const String& data);
     virtual ~ProcessingInstruction();
 
     const String& target() const { return m_target; }
 
     void setCreatedByParser(bool createdByParser) { m_createdByParser = createdByParser; }
 
-    virtual void finishParsingChildren();
+    virtual void finishParsingChildren() override;
 
     const String& localHref() const { return m_localHref; }
     StyleSheet* sheet() const { return m_sheet.get(); }
@@ -56,23 +56,23 @@ private:
     friend class CharacterData;
     ProcessingInstruction(Document&, const String& target, const String& data);
 
-    virtual String nodeName() const;
-    virtual NodeType nodeType() const;
-    virtual PassRefPtr<Node> cloneNode(bool deep);
+    virtual String nodeName() const override;
+    virtual NodeType nodeType() const override;
+    virtual RefPtr<Node> cloneNodeInternal(Document&, CloningOperation) override;
 
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
-    virtual void removedFrom(ContainerNode&) OVERRIDE;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
+    virtual void removedFrom(ContainerNode&) override;
 
     void checkStyleSheet();
-    virtual void setCSSStyleSheet(const String& href, const URL& baseURL, const String& charset, const CachedCSSStyleSheet*);
+    virtual void setCSSStyleSheet(const String& href, const URL& baseURL, const String& charset, const CachedCSSStyleSheet*) override;
 #if ENABLE(XSLT)
-    virtual void setXSLStyleSheet(const String& href, const URL& baseURL, const String& sheet);
+    virtual void setXSLStyleSheet(const String& href, const URL& baseURL, const String& sheet) override;
 #endif
 
     bool isLoading() const;
-    virtual bool sheetLoaded();
+    virtual bool sheetLoaded() override;
 
-    virtual void addSubresourceAttributeURLs(ListHashSet<URL>&) const;
+    virtual void addSubresourceAttributeURLs(ListHashSet<URL>&) const override;
 
     void parseStyleSheet(const String& sheet);
 
@@ -91,13 +91,10 @@ private:
 #endif
 };
 
-inline bool isProcessingInstruction(const Node& node)
-{
-    return node.nodeType() == Node::PROCESSING_INSTRUCTION_NODE;
-}
+} // namespace WebCore
 
-NODE_TYPE_CASTS(ProcessingInstruction)
-
-} //namespace
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::ProcessingInstruction)
+    static bool isType(const WebCore::Node& node) { return node.nodeType() == WebCore::Node::PROCESSING_INSTRUCTION_NODE; }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif

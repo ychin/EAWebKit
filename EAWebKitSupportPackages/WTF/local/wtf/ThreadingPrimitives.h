@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2007, 2008, 2010 Apple Inc. All rights reserved.
  * Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)
- * Copyright (C) 2011, 2013 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -12,7 +12,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -31,8 +31,6 @@
 
 #ifndef ThreadingPrimitives_h
 #define ThreadingPrimitives_h
-
-#include <wtf/Platform.h>
 
 #include <wtf/Assertions.h>
 #include <wtf/FastMalloc.h>
@@ -110,23 +108,6 @@ private:
 
 typedef Locker<Mutex> MutexLocker;
 
-class MutexTryLocker {
-    WTF_MAKE_NONCOPYABLE(MutexTryLocker);
-public:
-    MutexTryLocker(Mutex& mutex) : m_mutex(mutex), m_locked(mutex.tryLock()) { }
-    ~MutexTryLocker()
-    {
-        if (m_locked)
-            m_mutex.unlock();
-    }
-
-    bool locked() const { return m_locked; }
-
-private:
-    Mutex& m_mutex;
-    bool m_locked;
-};
-
 class ThreadCondition {
     WTF_MAKE_NONCOPYABLE(ThreadCondition);
 public:
@@ -150,29 +131,11 @@ private:
 WTF_EXPORT_PRIVATE DWORD absoluteTimeToWaitTimeoutInterval(double absoluteTime);
 #endif
 
-//+EAWebKitChange
-//2/10/2014
-#if PLATFORM(EA)
-void pauseBriefly();
-#else
-inline void pauseBriefly()
-{
-#if OS(WINDOWS)
-	Sleep(0);
-#else
-	sched_yield();
-#endif
-}
-#endif
-//-EAWebKitChange
-
 } // namespace WTF
 
 using WTF::Mutex;
 using WTF::MutexLocker;
-using WTF::MutexTryLocker;
 using WTF::ThreadCondition;
-using WTF::pauseBriefly;
 
 #if OS(WINDOWS)
 using WTF::absoluteTimeToWaitTimeoutInterval;

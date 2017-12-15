@@ -29,32 +29,20 @@
  */
 
 #include "config.h"
-
-#if ENABLE(INSPECTOR) && ENABLE(WORKERS)
-
 #include "WorkerConsoleAgent.h"
+
+using namespace Inspector;
 
 namespace WebCore {
 
-WorkerConsoleAgent::WorkerConsoleAgent(InstrumentingAgents* instrumentingAgents, InspectorCompositeState* state, InjectedScriptManager* injectedScriptManager)
-    : InspectorConsoleAgent(instrumentingAgents, state, injectedScriptManager)
+WorkerConsoleAgent::WorkerConsoleAgent(WebInjectedScriptManager* injectedScriptManager)
+    : WebConsoleAgent(injectedScriptManager)
 {
 }
 
-WorkerConsoleAgent::~WorkerConsoleAgent()
+void WorkerConsoleAgent::addInspectedNode(ErrorString& error, int)
 {
-}
-
-void WorkerConsoleAgent::addInspectedNode(ErrorString* error, int)
-{
-    *error = "addInspectedNode is not supported for workers";
-}
-
-bool WorkerConsoleAgent::developerExtrasEnabled()
-{
-    return true;
+    error = ASCIILiteral("addInspectedNode is not supported for workers");
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(INSPECTOR) && ENABLE(WORKERS)

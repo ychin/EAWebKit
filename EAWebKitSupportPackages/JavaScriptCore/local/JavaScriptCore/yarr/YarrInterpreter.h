@@ -27,8 +27,6 @@
 #define YarrInterpreter_h
 
 #include "YarrPattern.h"
-#include <wtf/PassOwnPtr.h>
-#include <wtf/unicode/Unicode.h>
 
 namespace WTF {
 class BumpPointerAllocator;
@@ -337,8 +335,8 @@ public:
 struct BytecodePattern {
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    BytecodePattern(PassOwnPtr<ByteDisjunction> body, Vector<OwnPtr<ByteDisjunction> >& parenthesesInfoToAdopt, YarrPattern& pattern, BumpPointerAllocator* allocator)
-        : m_body(body)
+    BytecodePattern(std::unique_ptr<ByteDisjunction> body, Vector<std::unique_ptr<ByteDisjunction>>& parenthesesInfoToAdopt, YarrPattern& pattern, BumpPointerAllocator* allocator)
+        : m_body(WTF::move(body))
         , m_ignoreCase(pattern.m_ignoreCase)
         , m_multiline(pattern.m_multiline)
         , m_allocator(allocator)
@@ -355,7 +353,7 @@ public:
         m_userCharacterClasses.shrinkToFit();
     }
 
-    OwnPtr<ByteDisjunction> m_body;
+    std::unique_ptr<ByteDisjunction> m_body;
     bool m_ignoreCase;
     bool m_multiline;
     // Each BytecodePattern is associated with a RegExp, each RegExp is associated
@@ -366,11 +364,11 @@ public:
     CharacterClass* wordcharCharacterClass;
 
 private:
-    Vector<OwnPtr<ByteDisjunction> > m_allParenthesesInfo;
-    Vector<OwnPtr<CharacterClass> > m_userCharacterClasses;
+    Vector<std::unique_ptr<ByteDisjunction>> m_allParenthesesInfo;
+    Vector<std::unique_ptr<CharacterClass>> m_userCharacterClasses;
 };
 
-JS_EXPORT_PRIVATE PassOwnPtr<BytecodePattern> byteCompile(YarrPattern&, BumpPointerAllocator*);
+JS_EXPORT_PRIVATE std::unique_ptr<BytecodePattern> byteCompile(YarrPattern&, BumpPointerAllocator*);
 JS_EXPORT_PRIVATE unsigned interpret(BytecodePattern*, const String& input, unsigned start, unsigned* output);
 unsigned interpret(BytecodePattern*, const LChar* input, unsigned length, unsigned start, unsigned* output);
 unsigned interpret(BytecodePattern*, const UChar* input, unsigned length, unsigned start, unsigned* output);

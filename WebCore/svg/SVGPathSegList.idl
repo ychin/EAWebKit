@@ -24,10 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-[
-    Conditional=SVG,
-    OperationsNotDeletable
-] interface SVGPathSegList {
+interface SVGPathSegList {
     readonly attribute unsigned long numberOfItems;
 
     [RaisesException] void clear();

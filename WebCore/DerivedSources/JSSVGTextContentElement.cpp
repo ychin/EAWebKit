@@ -19,13 +19,11 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGTextContentElement.h"
 
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
+#include "JSSVGAnimatedBoolean.h"
 #include "JSSVGAnimatedEnumeration.h"
 #include "JSSVGAnimatedLength.h"
 #include "JSSVGPoint.h"
@@ -36,45 +34,90 @@
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSSVGTextContentElementTableValues[] =
-{
-    { "textLength", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementTextLength), (intptr_t)0 },
-    { "lengthAdjust", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLengthAdjust), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetNumberOfChars(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetComputedTextLength(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetSubStringLength(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetStartPositionOfChar(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetEndPositionOfChar(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetExtentOfChar(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetRotationOfChar(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetCharNumAtPosition(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionSelectSubString(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsSVGTextContentElementTextLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextContentElementLengthAdjust(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextContentElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGTextContentElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGTextContentElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGTextContentElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGTextContentElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGTextContentElementPrototype>(vm.heap)) JSSVGTextContentElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGTextContentElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGTextContentElementTable = { 9, 7, JSSVGTextContentElementTableValues, 0 };
+class JSSVGTextContentElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGTextContentElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGTextContentElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGTextContentElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGTextContentElementConstructor>(vm.heap)) JSSVGTextContentElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGTextContentElementConstructorTableValues[] =
 {
-    { "LENGTHADJUST_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLENGTHADJUST_UNKNOWN), (intptr_t)0 },
-    { "LENGTHADJUST_SPACING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLENGTHADJUST_SPACING), (intptr_t)0 },
-    { "LENGTHADJUST_SPACINGANDGLYPHS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLENGTHADJUST_SPACINGANDGLYPHS), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "LENGTHADJUST_UNKNOWN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "LENGTHADJUST_SPACING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "LENGTHADJUST_SPACINGANDGLYPHS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGTextContentElementConstructorTable = { 8, 7, JSSVGTextContentElementConstructorTableValues, 0 };
 
 COMPILE_ASSERT(0 == SVGTextContentElement::LENGTHADJUST_UNKNOWN, SVGTextContentElementEnumLENGTHADJUST_UNKNOWNIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(1 == SVGTextContentElement::LENGTHADJUST_SPACING, SVGTextContentElementEnumLENGTHADJUST_SPACINGIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(2 == SVGTextContentElement::LENGTHADJUST_SPACINGANDGLYPHS, SVGTextContentElementEnumLENGTHADJUST_SPACINGANDGLYPHSIsWrongUseDoNotCheckConstants);
 
-const ClassInfo JSSVGTextContentElementConstructor::s_info = { "SVGTextContentElementConstructor", &Base::s_info, &JSSVGTextContentElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGTextContentElementConstructor) };
+const ClassInfo JSSVGTextContentElementConstructor::s_info = { "SVGTextContentElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTextContentElementConstructor) };
 
 JSSVGTextContentElementConstructor::JSSVGTextContentElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -85,112 +128,119 @@ void JSSVGTextContentElementConstructor::finishCreation(VM& vm, JSDOMGlobalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGTextContentElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGTextContentElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGTextContentElementConstructor, JSDOMWrapper>(exec, JSSVGTextContentElementConstructorTable, jsCast<JSSVGTextContentElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGTextContentElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGTextContentElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSSVGTextContentElementConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGTextContentElementPrototypeTableValues[] =
 {
-    { "LENGTHADJUST_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLENGTHADJUST_UNKNOWN), (intptr_t)0 },
-    { "LENGTHADJUST_SPACING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLENGTHADJUST_SPACING), (intptr_t)0 },
-    { "LENGTHADJUST_SPACINGANDGLYPHS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLENGTHADJUST_SPACINGANDGLYPHS), (intptr_t)0 },
-    { "getNumberOfChars", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetNumberOfChars), (intptr_t)0 },
-    { "getComputedTextLength", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetComputedTextLength), (intptr_t)0 },
-    { "getSubStringLength", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetSubStringLength), (intptr_t)0 },
-    { "getStartPositionOfChar", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetStartPositionOfChar), (intptr_t)0 },
-    { "getEndPositionOfChar", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetEndPositionOfChar), (intptr_t)0 },
-    { "getExtentOfChar", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetExtentOfChar), (intptr_t)0 },
-    { "getRotationOfChar", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetRotationOfChar), (intptr_t)0 },
-    { "getCharNumAtPosition", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetCharNumAtPosition), (intptr_t)0 },
-    { "selectSubString", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionSelectSubString), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "textLength", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementTextLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "lengthAdjust", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementLengthAdjust), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTextContentElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "LENGTHADJUST_UNKNOWN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "LENGTHADJUST_SPACING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "LENGTHADJUST_SPACINGANDGLYPHS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "getNumberOfChars", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetNumberOfChars), (intptr_t) (0) },
+    { "getComputedTextLength", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetComputedTextLength), (intptr_t) (0) },
+    { "getSubStringLength", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetSubStringLength), (intptr_t) (0) },
+    { "getStartPositionOfChar", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetStartPositionOfChar), (intptr_t) (0) },
+    { "getEndPositionOfChar", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetEndPositionOfChar), (intptr_t) (0) },
+    { "getExtentOfChar", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetExtentOfChar), (intptr_t) (0) },
+    { "getRotationOfChar", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetRotationOfChar), (intptr_t) (0) },
+    { "getCharNumAtPosition", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionGetCharNumAtPosition), (intptr_t) (0) },
+    { "selectSubString", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGTextContentElementPrototypeFunctionSelectSubString), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGTextContentElementPrototypeTable = { 33, 31, JSSVGTextContentElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGTextContentElementPrototype::s_info = { "SVGTextContentElementPrototype", &Base::s_info, &JSSVGTextContentElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGTextContentElementPrototype) };
+const ClassInfo JSSVGTextContentElementPrototype::s_info = { "SVGTextContentElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTextContentElementPrototype) };
 
-JSObject* JSSVGTextContentElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGTextContentElement>(vm, globalObject);
-}
-
-bool JSSVGTextContentElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGTextContentElementPrototype* thisObject = jsCast<JSSVGTextContentElementPrototype*>(object);
-    return getStaticPropertySlot<JSSVGTextContentElementPrototype, JSObject>(exec, JSSVGTextContentElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGTextContentElement::s_info = { "SVGTextContentElement", &Base::s_info, &JSSVGTextContentElementTable, 0 , CREATE_METHOD_TABLE(JSSVGTextContentElement) };
-
-JSSVGTextContentElement::JSSVGTextContentElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGTextContentElement> impl)
-    : JSSVGGraphicsElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGTextContentElement::finishCreation(VM& vm)
+void JSSVGTextContentElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGTextContentElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGTextContentElement::s_info = { "SVGTextContentElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTextContentElement) };
+
+JSSVGTextContentElement::JSSVGTextContentElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGTextContentElement>&& impl)
+    : JSSVGGraphicsElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGTextContentElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGTextContentElementPrototype::create(vm, globalObject, JSSVGTextContentElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElementPrototype::self(vm, globalObject)));
+    return JSSVGTextContentElementPrototype::create(vm, globalObject, JSSVGTextContentElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGTextContentElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGTextContentElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGTextContentElement* thisObject = jsCast<JSSVGTextContentElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGTextContentElement, Base>(exec, JSSVGTextContentElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGTextContentElement>(vm, globalObject);
 }
 
-JSValue jsSVGTextContentElementTextLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextContentElementTextLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextContentElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextContentElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextContentElement", "textLength");
+        return throwGetterTypeError(*exec, "SVGTextContentElement", "textLength");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.textLengthAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGTextContentElementLengthAdjust(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextContentElementLengthAdjust(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextContentElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextContentElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextContentElement", "lengthAdjust");
+        return throwGetterTypeError(*exec, "SVGTextContentElement", "lengthAdjust");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedEnumeration> obj = impl.lengthAdjustAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGTextContentElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextContentElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGTextContentElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGTextContentElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGTextContentElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGTextContentElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGTextContentElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTextContentElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGTextContentElement* domObject = jsCast<JSSVGTextContentElement*>(asObject(slotBase));
-    return JSSVGTextContentElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGTextContentElementPrototype* domObject = jsDynamicCast<JSSVGTextContentElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGTextContentElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGTextContentElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -200,216 +250,191 @@ JSValue JSSVGTextContentElement::getConstructor(VM& vm, JSGlobalObject* globalOb
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetNumberOfChars(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getNumberOfChars");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
-
-    JSC::JSValue result = jsNumber(impl.getNumberOfChars());
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.getNumberOfChars());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetComputedTextLength(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getComputedTextLength");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
-
-    JSC::JSValue result = jsNumber(impl.getComputedTextLength());
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.getComputedTextLength());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetSubStringLength(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getSubStringLength");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int length(toUInt32(exec, exec->argument(1), NormalConversion));
+    int length = toUInt32(exec, exec->argument(1), NormalConversion);
     if (length < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsNumber(impl.getSubStringLength(offset, length, ec));
 
-    JSC::JSValue result = jsNumber(impl.getSubStringLength(offset, length, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetStartPositionOfChar(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getStartPositionOfChar");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGPoint>::create(impl.getStartPositionOfChar(offset, ec))));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGPoint>::create(impl.getStartPositionOfChar(offset, ec))));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetEndPositionOfChar(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getEndPositionOfChar");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGPoint>::create(impl.getEndPositionOfChar(offset, ec))));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGPoint>::create(impl.getEndPositionOfChar(offset, ec))));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetExtentOfChar(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getExtentOfChar");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<FloatRect>::create(impl.getExtentOfChar(offset, ec))));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<FloatRect>::create(impl.getExtentOfChar(offset, ec))));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetRotationOfChar(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getRotationOfChar");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsNumber(impl.getRotationOfChar(offset, ec));
 
-    JSC::JSValue result = jsNumber(impl.getRotationOfChar(offset, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionGetCharNumAtPosition(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "getCharNumAtPosition");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
-    SVGPropertyTearOff<SVGPoint>* point(toSVGPoint(exec->argument(0)));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    SVGPropertyTearOff<SVGPoint>* point = JSSVGPoint::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     if (!point) {
         setDOMException(exec, TYPE_MISMATCH_ERR);
         return JSValue::encode(jsUndefined());
     }
-
-    JSC::JSValue result = jsNumber(impl.getCharNumAtPosition(point->propertyReference()));
+    JSValue result = jsNumber(impl.getCharNumAtPosition(point->propertyReference()));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGTextContentElementPrototypeFunctionSelectSubString(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGTextContentElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGTextContentElement* castedThis = jsCast<JSSVGTextContentElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGTextContentElement* castedThis = jsDynamicCast<JSSVGTextContentElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGTextContentElement", "selectSubString");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGTextContentElement::info());
-    SVGTextContentElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int offset(toUInt32(exec, exec->argument(0), NormalConversion));
+    int offset = toUInt32(exec, exec->argument(0), NormalConversion);
     if (offset < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int length(toUInt32(exec, exec->argument(1), NormalConversion));
+    int length = toUInt32(exec, exec->argument(1), NormalConversion);
     if (length < 0) {
         setDOMException(exec, INDEX_SIZE_ERR);
         return JSValue::encode(jsUndefined());
     }
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.selectSubString(offset, length, ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }
 
-// Constant getters
-
-JSValue jsSVGTextContentElementLENGTHADJUST_UNKNOWN(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsSVGTextContentElementLENGTHADJUST_SPACING(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsSVGTextContentElementLENGTHADJUST_SPACINGANDGLYPHS(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
 
 }
-
-#endif // ENABLE(SVG)

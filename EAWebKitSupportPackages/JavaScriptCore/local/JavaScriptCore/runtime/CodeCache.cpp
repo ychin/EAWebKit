@@ -29,7 +29,7 @@
 
 #include "BytecodeGenerator.h"
 #include "CodeSpecializationKind.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include "Parser.h"
 #include "StrongInlines.h"
 #include "UnlinkedCodeBlock.h"
@@ -75,85 +75,109 @@ template <> struct CacheTypes<UnlinkedEvalCodeBlock> {
 };
 
 template <class UnlinkedCodeBlockType, class ExecutableType>
-UnlinkedCodeBlockType* CodeCache::getCodeBlock(VM& vm, ExecutableType* executable, const SourceCode& source, JSParserStrictness strictness, DebuggerMode debuggerMode, ProfilerMode profilerMode, ParserError& error)
+UnlinkedCodeBlockType* CodeCache::getGlobalCodeBlock(VM& vm, ExecutableType* executable, const SourceCode& source, JSParserBuiltinMode builtinMode,
+    JSParserStrictMode strictMode, ThisTDZMode thisTDZMode, DebuggerMode debuggerMode, ProfilerMode profilerMode, ParserError& error, const VariableEnvironment* variablesUnderTDZ)
 {
-    SourceCodeKey key = SourceCodeKey(source, String(), CacheTypes<UnlinkedCodeBlockType>::codeType, strictness);
-    CodeCacheMap::AddResult addResult = m_sourceCode.add(key, SourceCodeValue());
-    bool canCache = debuggerMode == DebuggerOff && profilerMode == ProfilerOff;
-    if (!addResult.isNewEntry && canCache) {
-        UnlinkedCodeBlockType* unlinkedCode = jsCast<UnlinkedCodeBlockType*>(addResult.iterator->value.cell.get());
-        unsigned firstLine = source.firstLine() + unlinkedCode->firstLine();
-        unsigned startColumn = source.firstLine() ? source.startColumn() : 0;
-        executable->recordParse(unlinkedCode->codeFeatures(), unlinkedCode->hasCapturedVariables(), firstLine, firstLine + unlinkedCode->lineCount(), startColumn);
-        return unlinkedCode;
+    SourceCodeKey key = SourceCodeKey(source, String(), CacheTypes<UnlinkedCodeBlockType>::codeType, builtinMode, strictMode, thisTDZMode);
+    SourceCodeValue* cache = m_sourceCode.findCacheAndUpdateAge(key);
+    bool canCache = debuggerMode == DebuggerOff && profilerMode == ProfilerOff && !vm.typeProfiler() && !vm.controlFlowProfiler();
+    if (cache && canCache) {
+        UnlinkedCodeBlockType* unlinkedCodeBlock = jsCast<UnlinkedCodeBlockType*>(cache->cell.get());
+        unsigned firstLine = source.firstLine() + unlinkedCodeBlock->firstLine();
+        unsigned lineCount = unlinkedCodeBlock->lineCount();
+        unsigned startColumn = unlinkedCodeBlock->startColumn() + source.startColumn();
+        bool endColumnIsOnStartLine = !lineCount;
+        unsigned endColumn = unlinkedCodeBlock->endColumn() + (endColumnIsOnStartLine ? startColumn : 1);
+        executable->recordParse(unlinkedCodeBlock->codeFeatures(), unlinkedCodeBlock->hasCapturedVariables(), firstLine, firstLine + lineCount, startColumn, endColumn);
+        return unlinkedCodeBlock;
     }
 
     typedef typename CacheTypes<UnlinkedCodeBlockType>::RootNode RootNode;
-    RefPtr<RootNode> rootNode = parse<RootNode>(&vm, source, 0, Identifier(), strictness, JSParseProgramCode, error);
-    if (!rootNode) {
-        m_sourceCode.remove(addResult.iterator);
-        return 0;
-    }
-    executable->recordParse(rootNode->features(), rootNode->hasCapturedVariables(), rootNode->lineNo(), rootNode->lastLine(), rootNode->startColumn());
+    std::unique_ptr<RootNode> rootNode = parse<RootNode>(
+        &vm, source, Identifier(), builtinMode, strictMode,
+        SourceParseMode::ProgramMode, error, nullptr, ConstructorKind::None, thisTDZMode);
+    if (!rootNode)
+        return nullptr;
 
-    UnlinkedCodeBlockType* unlinkedCode = UnlinkedCodeBlockType::create(&vm, executable->executableInfo());
-    unlinkedCode->recordParse(rootNode->features(), rootNode->hasCapturedVariables(), rootNode->lineNo() - source.firstLine(), rootNode->lastLine() - rootNode->lineNo());
-    OwnPtr<BytecodeGenerator> generator(adoptPtr(new BytecodeGenerator(vm, rootNode.get(), unlinkedCode, debuggerMode, profilerMode)));
+    unsigned lineCount = rootNode->lastLine() - rootNode->firstLine();
+    unsigned startColumn = rootNode->startColumn() + 1;
+    bool endColumnIsOnStartLine = !lineCount;
+    unsigned unlinkedEndColumn = rootNode->endColumn();
+    unsigned endColumn = unlinkedEndColumn + (endColumnIsOnStartLine ? startColumn : 1);
+    executable->recordParse(rootNode->features(), rootNode->hasCapturedVariables(), rootNode->firstLine(), rootNode->lastLine(), startColumn, endColumn);
+
+    UnlinkedCodeBlockType* unlinkedCodeBlock = UnlinkedCodeBlockType::create(&vm, executable->executableInfo());
+    unlinkedCodeBlock->recordParse(rootNode->features(), rootNode->hasCapturedVariables(), rootNode->firstLine() - source.firstLine(), lineCount, unlinkedEndColumn);
+
+    auto generator = std::make_unique<BytecodeGenerator>(vm, rootNode.get(), unlinkedCodeBlock, debuggerMode, profilerMode, variablesUnderTDZ);
     error = generator->generate();
-    rootNode->destroyData();
-    if (error.m_type != ParserError::ErrorNone) {
-        m_sourceCode.remove(addResult.iterator);
-        return 0;
-    }
+    if (error.isValid())
+        return nullptr;
 
-    if (!canCache) {
-        m_sourceCode.remove(addResult.iterator);
-        return unlinkedCode;
-    }
+    if (!canCache)
+        return unlinkedCodeBlock;
 
-    addResult.iterator->value = SourceCodeValue(vm, unlinkedCode, m_sourceCode.age());
-    return unlinkedCode;
+    m_sourceCode.addCache(key, SourceCodeValue(vm, unlinkedCodeBlock, m_sourceCode.age()));
+    return unlinkedCodeBlock;
 }
 
-UnlinkedProgramCodeBlock* CodeCache::getProgramCodeBlock(VM& vm, ProgramExecutable* executable, const SourceCode& source, JSParserStrictness strictness, DebuggerMode debuggerMode, ProfilerMode profilerMode, ParserError& error)
+UnlinkedProgramCodeBlock* CodeCache::getProgramCodeBlock(VM& vm, ProgramExecutable* executable, const SourceCode& source, JSParserBuiltinMode builtinMode, JSParserStrictMode strictMode, DebuggerMode debuggerMode, ProfilerMode profilerMode, ParserError& error)
 {
-    return getCodeBlock<UnlinkedProgramCodeBlock>(vm, executable, source, strictness, debuggerMode, profilerMode, error);
+    VariableEnvironment emptyParentTDZVariables;
+    return getGlobalCodeBlock<UnlinkedProgramCodeBlock>(vm, executable, source, builtinMode, strictMode, ThisTDZMode::CheckIfNeeded, debuggerMode, profilerMode, error, &emptyParentTDZVariables);
 }
 
-UnlinkedEvalCodeBlock* CodeCache::getEvalCodeBlock(VM& vm, EvalExecutable* executable, const SourceCode& source, JSParserStrictness strictness, DebuggerMode debuggerMode, ProfilerMode profilerMode, ParserError& error)
+UnlinkedEvalCodeBlock* CodeCache::getEvalCodeBlock(VM& vm, EvalExecutable* executable, const SourceCode& source, JSParserBuiltinMode builtinMode, JSParserStrictMode strictMode, ThisTDZMode thisTDZMode, DebuggerMode debuggerMode, ProfilerMode profilerMode, ParserError& error, const VariableEnvironment* variablesUnderTDZ)
 {
-    return getCodeBlock<UnlinkedEvalCodeBlock>(vm, executable, source, strictness, debuggerMode, profilerMode, error);
+    return getGlobalCodeBlock<UnlinkedEvalCodeBlock>(vm, executable, source, builtinMode, strictMode, thisTDZMode, debuggerMode, profilerMode, error, variablesUnderTDZ);
 }
 
+// FIXME: There's no need to add the function's name to the key here. It's already in the source code.
 UnlinkedFunctionExecutable* CodeCache::getFunctionExecutableFromGlobalCode(VM& vm, const Identifier& name, const SourceCode& source, ParserError& error)
 {
-    SourceCodeKey key = SourceCodeKey(source, name.string(), SourceCodeKey::FunctionType, JSParseNormal);
-    CodeCacheMap::AddResult addResult = m_sourceCode.add(key, SourceCodeValue());
-    if (!addResult.isNewEntry)
-        return jsCast<UnlinkedFunctionExecutable*>(addResult.iterator->value.cell.get());
+    SourceCodeKey key = SourceCodeKey(
+        source, name.string(), SourceCodeKey::FunctionType, 
+        JSParserBuiltinMode::NotBuiltin, 
+        JSParserStrictMode::NotStrict);
+    SourceCodeValue* cache = m_sourceCode.findCacheAndUpdateAge(key);
+    if (cache)
+        return jsCast<UnlinkedFunctionExecutable*>(cache->cell.get());
 
-    RefPtr<ProgramNode> program = parse<ProgramNode>(&vm, source, 0, Identifier(), JSParseNormal, JSParseProgramCode, error);
+    JSTextPosition positionBeforeLastNewline;
+    std::unique_ptr<ProgramNode> program = parse<ProgramNode>(
+        &vm, source, Identifier(), JSParserBuiltinMode::NotBuiltin,
+        JSParserStrictMode::NotStrict, SourceParseMode::ProgramMode,
+        error, &positionBeforeLastNewline);
     if (!program) {
-        ASSERT(error.m_type != ParserError::ErrorNone);
-        m_sourceCode.remove(addResult.iterator);
-        return 0;
+        RELEASE_ASSERT(error.isValid());
+        return nullptr;
     }
 
-    // This function assumes an input string that would result in a single anonymous function expression.
-    StatementNode* exprStatement = program->singleStatement();
-    ASSERT(exprStatement);
-    ASSERT(exprStatement->isExprStatement());
-    ExpressionNode* funcExpr = static_cast<ExprStatementNode*>(exprStatement)->expr();
-    ASSERT(funcExpr);
-    RELEASE_ASSERT(funcExpr->isFuncExprNode());
-    FunctionBodyNode* body = static_cast<FuncExprNode*>(funcExpr)->body();
-    ASSERT(body);
-    ASSERT(body->ident().isNull());
+    // This function assumes an input string that would result in a single function declaration.
+    StatementNode* statement = program->singleStatement();
+    ASSERT(statement);
+    ASSERT(statement->isBlock());
+    if (!statement || !statement->isBlock())
+        return nullptr;
 
-    UnlinkedFunctionExecutable* functionExecutable = UnlinkedFunctionExecutable::create(&vm, source, body);
+    StatementNode* funcDecl = static_cast<BlockNode*>(statement)->singleStatement();
+    ASSERT(funcDecl);
+    ASSERT(funcDecl->isFuncDeclNode());
+    if (!funcDecl || !funcDecl->isFuncDeclNode())
+        return nullptr;
+
+    FunctionMetadataNode* metadata = static_cast<FuncDeclNode*>(funcDecl)->metadata();
+    ASSERT(metadata);
+    if (!metadata)
+        return nullptr;
+    
+    metadata->setEndPosition(positionBeforeLastNewline);
+    // The Function constructor only has access to global variables, so no variables will be under TDZ.
+    VariableEnvironment emptyTDZVariables;
+    UnlinkedFunctionExecutable* functionExecutable = UnlinkedFunctionExecutable::create(&vm, source, metadata, UnlinkedNormalFunction, ConstructAbility::CanConstruct, emptyTDZVariables);
     functionExecutable->m_nameValue.set(vm, functionExecutable, jsString(&vm, name.string()));
 
-    addResult.iterator->value = SourceCodeValue(vm, functionExecutable, m_sourceCode.age());
+    m_sourceCode.addCache(key, SourceCodeValue(vm, functionExecutable, m_sourceCode.age()));
     return functionExecutable;
 }
 

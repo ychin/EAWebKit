@@ -24,6 +24,7 @@
 
 #include "JSWebGLDebugRendererInfo.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLDebugRendererInfo.h"
 #include <wtf/GetPtr.h>
 
@@ -31,46 +32,63 @@ using namespace JSC;
 
 namespace WebCore {
 
+class JSWebGLDebugRendererInfoPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLDebugRendererInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLDebugRendererInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLDebugRendererInfoPrototype>(vm.heap)) JSWebGLDebugRendererInfoPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLDebugRendererInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLDebugRendererInfoPrototypeTableValues[] =
 {
-    { "UNMASKED_VENDOR_WEBGL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLDebugRendererInfoUNMASKED_VENDOR_WEBGL), (intptr_t)0 },
-    { "UNMASKED_RENDERER_WEBGL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLDebugRendererInfoUNMASKED_RENDERER_WEBGL), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "UNMASKED_VENDOR_WEBGL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x9245), (intptr_t) (0) },
+    { "UNMASKED_RENDERER_WEBGL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x9246), (intptr_t) (0) },
 };
 
-static const HashTable JSWebGLDebugRendererInfoPrototypeTable = { 4, 3, JSWebGLDebugRendererInfoPrototypeTableValues, 0 };
-const ClassInfo JSWebGLDebugRendererInfoPrototype::s_info = { "WebGLDebugRendererInfoPrototype", &Base::s_info, &JSWebGLDebugRendererInfoPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLDebugRendererInfoPrototype) };
+const ClassInfo JSWebGLDebugRendererInfoPrototype::s_info = { "WebGLDebugRendererInfoPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLDebugRendererInfoPrototype) };
 
-JSObject* JSWebGLDebugRendererInfoPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLDebugRendererInfo>(vm, globalObject);
-}
-
-bool JSWebGLDebugRendererInfoPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSWebGLDebugRendererInfoPrototype* thisObject = jsCast<JSWebGLDebugRendererInfoPrototype*>(object);
-    return getStaticValueSlot<JSWebGLDebugRendererInfoPrototype, JSObject>(exec, JSWebGLDebugRendererInfoPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSWebGLDebugRendererInfo::s_info = { "WebGLDebugRendererInfo", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSWebGLDebugRendererInfo) };
-
-JSWebGLDebugRendererInfo::JSWebGLDebugRendererInfo(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLDebugRendererInfo> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLDebugRendererInfo::finishCreation(VM& vm)
+void JSWebGLDebugRendererInfoPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLDebugRendererInfoPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLDebugRendererInfo::s_info = { "WebGLDebugRendererInfo", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLDebugRendererInfo) };
+
+JSWebGLDebugRendererInfo::JSWebGLDebugRendererInfo(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLDebugRendererInfo>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLDebugRendererInfo::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLDebugRendererInfoPrototype::create(vm, globalObject, JSWebGLDebugRendererInfoPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLDebugRendererInfo::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLDebugRendererInfo>(vm, globalObject);
 }
 
 void JSWebGLDebugRendererInfo::destroy(JSC::JSCell* cell)
@@ -81,45 +99,21 @@ void JSWebGLDebugRendererInfo::destroy(JSC::JSCell* cell)
 
 JSWebGLDebugRendererInfo::~JSWebGLDebugRendererInfo()
 {
-    releaseImplIfNotNull();
-}
-
-// Constant getters
-
-JSValue jsWebGLDebugRendererInfoUNMASKED_VENDOR_WEBGL(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x9245));
-}
-
-JSValue jsWebGLDebugRendererInfoUNMASKED_RENDERER_WEBGL(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x9246));
-}
-
-static inline bool isObservable(JSWebGLDebugRendererInfo* jsWebGLDebugRendererInfo)
-{
-    if (jsWebGLDebugRendererInfo->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSWebGLDebugRendererInfoOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLDebugRendererInfo* jsWebGLDebugRendererInfo = jsCast<JSWebGLDebugRendererInfo*>(handle.get().asCell());
-    if (!isObservable(jsWebGLDebugRendererInfo))
-        return false;
-    WebGLRenderingContext* root = jsWebGLDebugRendererInfo->impl().context();
+    auto* jsWebGLDebugRendererInfo = jsCast<JSWebGLDebugRendererInfo*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsWebGLDebugRendererInfo->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSWebGLDebugRendererInfoOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLDebugRendererInfo* jsWebGLDebugRendererInfo = jsCast<JSWebGLDebugRendererInfo*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLDebugRendererInfo = jsCast<JSWebGLDebugRendererInfo*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLDebugRendererInfo->impl(), jsWebGLDebugRendererInfo);
-    jsWebGLDebugRendererInfo->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -130,11 +124,11 @@ extern "C" { extern void (*const __identifier("??_7WebGLDebugRendererInfo@WebCor
 extern "C" { extern void* _ZTVN7WebCore22WebGLDebugRendererInfoE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLDebugRendererInfo* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLDebugRendererInfo* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLDebugRendererInfo>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLDebugRendererInfo>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -155,13 +149,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLDe
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebGLDebugRendererInfo>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLDebugRendererInfo>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLDebugRendererInfo>(globalObject, impl);
 }
 
-WebGLDebugRendererInfo* toWebGLDebugRendererInfo(JSC::JSValue value)
+WebGLDebugRendererInfo* JSWebGLDebugRendererInfo::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLDebugRendererInfo::info()) ? &jsCast<JSWebGLDebugRendererInfo*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLDebugRendererInfo*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -37,35 +37,86 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSDOMSelectionTableValues[] =
-{
-    { "anchorNode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionAnchorNode), (intptr_t)0 },
-    { "anchorOffset", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionAnchorOffset), (intptr_t)0 },
-    { "focusNode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionFocusNode), (intptr_t)0 },
-    { "focusOffset", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionFocusOffset), (intptr_t)0 },
-    { "isCollapsed", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionIsCollapsed), (intptr_t)0 },
-    { "rangeCount", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionRangeCount), (intptr_t)0 },
-    { "baseNode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionBaseNode), (intptr_t)0 },
-    { "baseOffset", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionBaseOffset), (intptr_t)0 },
-    { "extentNode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionExtentNode), (intptr_t)0 },
-    { "extentOffset", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionExtentOffset), (intptr_t)0 },
-    { "type", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionType), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapse(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapseToEnd(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapseToStart(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionDeleteFromDocument(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionContainsNode(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSelectAllChildren(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionExtend(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionGetRangeAt(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionRemoveAllRanges(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionAddRange(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionToString(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionModify(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSetBaseAndExtent(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSetPosition(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionEmpty(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsDOMSelectionAnchorNode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionAnchorOffset(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionFocusNode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionFocusOffset(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionIsCollapsed(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionRangeCount(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionBaseNode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionBaseOffset(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionExtentNode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionExtentOffset(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMSelectionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSDOMSelectionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDOMSelectionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDOMSelectionPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMSelectionPrototype>(vm.heap)) JSDOMSelectionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDOMSelectionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSDOMSelectionTable = { 35, 31, JSDOMSelectionTableValues, 0 };
-/* Hash table for constructor */
+class JSDOMSelectionConstructor : public DOMConstructorObject {
+private:
+    JSDOMSelectionConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSDOMSelectionConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSDOMSelectionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSDOMSelectionConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMSelectionConstructor>(vm.heap)) JSDOMSelectionConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSDOMSelectionConstructorTable = { 1, 0, JSDOMSelectionConstructorTableValues, 0 };
-const ClassInfo JSDOMSelectionConstructor::s_info = { "SelectionConstructor", &Base::s_info, &JSDOMSelectionConstructorTable, 0, CREATE_METHOD_TABLE(JSDOMSelectionConstructor) };
+const ClassInfo JSDOMSelectionConstructor::s_info = { "SelectionConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMSelectionConstructor) };
 
 JSDOMSelectionConstructor::JSDOMSelectionConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -76,68 +127,68 @@ void JSDOMSelectionConstructor::finishCreation(VM& vm, JSDOMGlobalObject* global
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSDOMSelectionPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSDOMSelectionConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSDOMSelectionConstructor, JSDOMWrapper>(exec, JSDOMSelectionConstructorTable, jsCast<JSDOMSelectionConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSDOMSelection::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("Selection"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSDOMSelectionPrototypeTableValues[] =
 {
-    { "collapse", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionCollapse), (intptr_t)0 },
-    { "collapseToEnd", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionCollapseToEnd), (intptr_t)0 },
-    { "collapseToStart", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionCollapseToStart), (intptr_t)0 },
-    { "deleteFromDocument", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionDeleteFromDocument), (intptr_t)0 },
-    { "containsNode", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionContainsNode), (intptr_t)0 },
-    { "selectAllChildren", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionSelectAllChildren), (intptr_t)0 },
-    { "extend", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionExtend), (intptr_t)0 },
-    { "getRangeAt", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionGetRangeAt), (intptr_t)0 },
-    { "removeAllRanges", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionRemoveAllRanges), (intptr_t)0 },
-    { "addRange", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionAddRange), (intptr_t)0 },
-    { "toString", DontDelete | DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionToString), (intptr_t)0 },
-    { "modify", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionModify), (intptr_t)0 },
-    { "setBaseAndExtent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionSetBaseAndExtent), (intptr_t)0 },
-    { "setPosition", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionSetPosition), (intptr_t)0 },
-    { "empty", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionEmpty), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "anchorNode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionAnchorNode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "anchorOffset", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionAnchorOffset), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "focusNode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionFocusNode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "focusOffset", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionFocusOffset), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "isCollapsed", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionIsCollapsed), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "rangeCount", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionRangeCount), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "baseNode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionBaseNode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "baseOffset", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionBaseOffset), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "extentNode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionExtentNode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "extentOffset", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionExtentOffset), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "type", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMSelectionType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "collapse", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionCollapse), (intptr_t) (0) },
+    { "collapseToEnd", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionCollapseToEnd), (intptr_t) (0) },
+    { "collapseToStart", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionCollapseToStart), (intptr_t) (0) },
+    { "deleteFromDocument", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionDeleteFromDocument), (intptr_t) (0) },
+    { "containsNode", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionContainsNode), (intptr_t) (0) },
+    { "selectAllChildren", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionSelectAllChildren), (intptr_t) (0) },
+    { "extend", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionExtend), (intptr_t) (0) },
+    { "getRangeAt", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionGetRangeAt), (intptr_t) (0) },
+    { "removeAllRanges", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionRemoveAllRanges), (intptr_t) (0) },
+    { "addRange", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionAddRange), (intptr_t) (0) },
+    { "toString", DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionToString), (intptr_t) (0) },
+    { "modify", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionModify), (intptr_t) (0) },
+    { "setBaseAndExtent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionSetBaseAndExtent), (intptr_t) (0) },
+    { "setPosition", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionSetPosition), (intptr_t) (0) },
+    { "empty", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMSelectionPrototypeFunctionEmpty), (intptr_t) (0) },
 };
 
-static const HashTable JSDOMSelectionPrototypeTable = { 34, 31, JSDOMSelectionPrototypeTableValues, 0 };
-const ClassInfo JSDOMSelectionPrototype::s_info = { "SelectionPrototype", &Base::s_info, &JSDOMSelectionPrototypeTable, 0, CREATE_METHOD_TABLE(JSDOMSelectionPrototype) };
+const ClassInfo JSDOMSelectionPrototype::s_info = { "SelectionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMSelectionPrototype) };
 
-JSObject* JSDOMSelectionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDOMSelection>(vm, globalObject);
-}
-
-bool JSDOMSelectionPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDOMSelectionPrototype* thisObject = jsCast<JSDOMSelectionPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDOMSelectionPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSDOMSelection::s_info = { "Selection", &Base::s_info, &JSDOMSelectionTable, 0 , CREATE_METHOD_TABLE(JSDOMSelection) };
-
-JSDOMSelection::JSDOMSelection(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMSelection> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSDOMSelection::finishCreation(VM& vm)
+void JSDOMSelectionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDOMSelectionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSDOMSelection::s_info = { "Selection", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMSelection) };
+
+JSDOMSelection::JSDOMSelection(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMSelection>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSDOMSelection::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSDOMSelectionPrototype::create(vm, globalObject, JSDOMSelectionPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSDOMSelection::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSDOMSelection>(vm, globalObject);
 }
 
 void JSDOMSelection::destroy(JSC::JSCell* cell)
@@ -148,130 +199,202 @@ void JSDOMSelection::destroy(JSC::JSCell* cell)
 
 JSDOMSelection::~JSDOMSelection()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSDOMSelection::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsDOMSelectionAnchorNode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* thisObject = jsCast<JSDOMSelection*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSDOMSelection, Base>(exec, JSDOMSelectionTable, thisObject, propertyName, slot);
-}
-
-JSValue jsDOMSelectionAnchorNode(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "anchorNode");
+        return throwGetterTypeError(*exec, "DOMSelection", "anchorNode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.anchorNode()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionAnchorOffset(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionAnchorOffset(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "anchorOffset");
+        return throwGetterTypeError(*exec, "DOMSelection", "anchorOffset");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.anchorOffset());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionFocusNode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionFocusNode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "focusNode");
+        return throwGetterTypeError(*exec, "DOMSelection", "focusNode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.focusNode()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionFocusOffset(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionFocusOffset(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "focusOffset");
+        return throwGetterTypeError(*exec, "DOMSelection", "focusOffset");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.focusOffset());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionIsCollapsed(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionIsCollapsed(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "isCollapsed");
+        return throwGetterTypeError(*exec, "DOMSelection", "isCollapsed");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.isCollapsed());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionRangeCount(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionRangeCount(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "rangeCount");
+        return throwGetterTypeError(*exec, "DOMSelection", "rangeCount");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.rangeCount());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionBaseNode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionBaseNode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "baseNode");
+        return throwGetterTypeError(*exec, "DOMSelection", "baseNode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.baseNode()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionBaseOffset(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionBaseOffset(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "baseOffset");
+        return throwGetterTypeError(*exec, "DOMSelection", "baseOffset");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.baseOffset());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionExtentNode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionExtentNode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "extentNode");
+        return throwGetterTypeError(*exec, "DOMSelection", "extentNode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.extentNode()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionExtentOffset(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionExtentOffset(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "extentOffset");
+        return throwGetterTypeError(*exec, "DOMSelection", "extentOffset");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.extentOffset());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMSelection& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDOMSelectionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DOMSelection", "type");
+        return throwGetterTypeError(*exec, "DOMSelection", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMSelectionConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMSelectionConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSDOMSelection* domObject = jsCast<JSDOMSelection*>(asObject(slotBase));
-    return JSDOMSelection::getConstructor(exec->vm(), domObject->globalObject());
+    JSDOMSelectionPrototype* domObject = jsDynamicCast<JSDOMSelectionPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSDOMSelection::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSDOMSelection::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -281,18 +404,18 @@ JSValue JSDOMSelection::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapse(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "collapse");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    Node* node(toNode(exec->argument(0)));
-    if (exec->hadException())
+    Node* node = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int index(toInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    int index = toInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.collapse(node, index, ec);
     setDOMException(exec, ec);
@@ -301,12 +424,12 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapse(ExecState* 
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapseToEnd(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "collapseToEnd");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     impl.collapseToEnd(ec);
     setDOMException(exec, ec);
@@ -315,12 +438,12 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapseToEnd(ExecSt
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapseToStart(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "collapseToStart");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     impl.collapseToStart(ec);
     setDOMException(exec, ec);
@@ -329,46 +452,45 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionCollapseToStart(Exec
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionDeleteFromDocument(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "deleteFromDocument");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.deleteFromDocument();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionContainsNode(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "containsNode");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
-    Node* node(toNode(exec->argument(0)));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    Node* node = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool allowPartial(exec->argument(1).toBoolean(exec));
-    if (exec->hadException())
+    bool allowPartial = exec->argument(1).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.containsNode(node, allowPartial));
+    JSValue result = jsBoolean(impl.containsNode(node, allowPartial));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSelectAllChildren(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "selectAllChildren");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    Node* node(toNode(exec->argument(0)));
-    if (exec->hadException())
+    Node* node = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.selectAllChildren(node, ec);
     setDOMException(exec, ec);
@@ -377,18 +499,18 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSelectAllChildren(Ex
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionExtend(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "extend");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    Node* node(toNode(exec->argument(0)));
-    if (exec->hadException())
+    Node* node = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int offset(toInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    int offset = toInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.extend(node, offset, ec);
     setDOMException(exec, ec);
@@ -397,44 +519,44 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionExtend(ExecState* ex
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionGetRangeAt(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "getRangeAt");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int index(toInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    int index = toInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getRangeAt(index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getRangeAt(index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionRemoveAllRanges(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "removeAllRanges");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.removeAllRanges();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionAddRange(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "addRange");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
-    Range* range(toRange(exec->argument(0)));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    Range* range = JSRange::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.addRange(range);
     return JSValue::encode(jsUndefined());
@@ -442,33 +564,32 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionAddRange(ExecState* 
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionToString(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "toString");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
-
-    JSC::JSValue result = jsStringWithCache(exec, impl.toString());
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.toString());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionModify(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "modify");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
-    const String& alter(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String alter = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& direction(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String direction = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& granularity(exec->argument(2).isEmpty() ? String() : exec->argument(2).toString(exec)->value(exec));
-    if (exec->hadException())
+    String granularity = exec->argument(2).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.modify(alter, direction, granularity);
     return JSValue::encode(jsUndefined());
@@ -476,24 +597,24 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionModify(ExecState* ex
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSetBaseAndExtent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "setBaseAndExtent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    Node* baseNode(toNode(exec->argument(0)));
-    if (exec->hadException())
+    Node* baseNode = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int baseOffset(toInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    int baseOffset = toInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    Node* extentNode(toNode(exec->argument(2)));
-    if (exec->hadException())
+    Node* extentNode = JSNode::toWrapped(exec->argument(2));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int extentOffset(toInt32(exec, exec->argument(3), NormalConversion));
-    if (exec->hadException())
+    int extentOffset = toInt32(exec, exec->argument(3), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setBaseAndExtent(baseNode, baseOffset, extentNode, extentOffset, ec);
     setDOMException(exec, ec);
@@ -502,18 +623,18 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSetBaseAndExtent(Exe
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSetPosition(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "setPosition");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    Node* node(toNode(exec->argument(0)));
-    if (exec->hadException())
+    Node* node = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    int offset(toInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    int offset = toInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setPosition(node, offset, ec);
     setDOMException(exec, ec);
@@ -522,29 +643,20 @@ EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionSetPosition(ExecStat
 
 EncodedJSValue JSC_HOST_CALL jsDOMSelectionPrototypeFunctionEmpty(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMSelection::info()))
-        return throwVMTypeError(exec);
-    JSDOMSelection* castedThis = jsCast<JSDOMSelection*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMSelection* castedThis = jsDynamicCast<JSDOMSelection*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMSelection", "empty");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMSelection::info());
-    DOMSelection& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.empty();
     return JSValue::encode(jsUndefined());
 }
 
-static inline bool isObservable(JSDOMSelection* jsDOMSelection)
-{
-    if (jsDOMSelection->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSDOMSelectionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSDOMSelection* jsDOMSelection = jsCast<JSDOMSelection*>(handle.get().asCell());
-    if (!isObservable(jsDOMSelection))
-        return false;
-    Frame* root = jsDOMSelection->impl().frame();
+    auto* jsDOMSelection = jsCast<JSDOMSelection*>(handle.slot()->asCell());
+    Frame* root = WTF::getPtr(jsDOMSelection->impl().frame());
     if (!root)
         return false;
     return visitor.containsOpaqueRoot(root);
@@ -552,10 +664,9 @@ bool JSDOMSelectionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> h
 
 void JSDOMSelectionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSDOMSelection* jsDOMSelection = jsCast<JSDOMSelection*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsDOMSelection = jsCast<JSDOMSelection*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsDOMSelection->impl(), jsDOMSelection);
-    jsDOMSelection->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -566,11 +677,11 @@ extern "C" { extern void (*const __identifier("??_7DOMSelection@WebCore@@6B@")[]
 extern "C" { extern void* _ZTVN7WebCore12DOMSelectionE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMSelection* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DOMSelection* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDOMSelection>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDOMSelection>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -591,13 +702,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMSele
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<DOMSelection>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDOMSelection>(exec, globalObject, impl);
+    return createNewWrapper<JSDOMSelection>(globalObject, impl);
 }
 
-DOMSelection* toDOMSelection(JSC::JSValue value)
+DOMSelection* JSDOMSelection::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSDOMSelection::info()) ? &jsCast<JSDOMSelection*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSDOMSelection*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

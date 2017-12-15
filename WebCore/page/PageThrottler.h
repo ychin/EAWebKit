@@ -28,51 +28,50 @@
 
 #include "Timer.h"
 
-#include <wtf/HashSet.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include "UserActivity.h"
+#include "ViewState.h"
+#include <wtf/RefCounter.h>
 
 namespace WebCore {
 
 class Page;
-class PageActivityAssertionToken;
 
-class PageThrottler {
-public:
-    PageThrottler(Page&);
-    ~PageThrottler();
+enum PageActivityAssertionTokenType { };
+typedef RefCounter::Token<PageActivityAssertionTokenType> PageActivityAssertionToken;
 
-    std::unique_ptr<PageActivityAssertionToken> createActivityToken();
-
-    bool shouldThrottleAnimations() const { return m_throttleState != PageNotThrottledState; }
-    bool shouldThrottleTimers() const { return m_throttleState != PageNotThrottledState; }
-
-    void setThrottled(bool);
-
-    void reportInterestingEvent();
-
-private:
-    enum PageThrottleState {
-        PageNotThrottledState,
-        PageWaitingToThrottleState,
-        PageThrottledState
+struct PageActivityState {
+    enum {
+        UserInputActivity = 1 << 0,
+        AudiblePlugin = 1 << 1,
+        MediaActivity = 1 << 2,
+        PageLoadActivity = 1 << 3,
     };
 
-    friend class PageActivityAssertionToken;
-    void addActivityToken(PageActivityAssertionToken&);
-    void removeActivityToken(PageActivityAssertionToken&);
+    typedef unsigned Flags;
 
-    void startThrottleHysteresisTimer();
-    void stopThrottleHysteresisTimer();
-    void throttleHysteresisTimerFired(Timer<PageThrottler>*);
+    static const Flags NoFlags = 0;
+    static const Flags AllFlags = UserInputActivity | AudiblePlugin | MediaActivity | PageLoadActivity;
+};
 
-    void throttlePage();
-    void unthrottlePage();
+class PageThrottler {
+    WTF_MAKE_FAST_ALLOCATED;
+public:
+    PageThrottler(Page&);
+
+    void didReceiveUserInput() { m_userInputHysteresis.impulse(); }
+    void pluginDidEvaluateWhileAudioIsPlaying() { m_audiblePluginHysteresis.impulse(); }
+    PageActivityAssertionToken mediaActivityToken();
+    PageActivityAssertionToken pageLoadActivityToken();
+
+private:
+    void setActivityFlag(PageActivityState::Flags, bool);
 
     Page& m_page;
-    PageThrottleState m_throttleState;
-    Timer<PageThrottler> m_throttleHysteresisTimer;
-    HashSet<PageActivityAssertionToken*> m_activityTokens;
+    PageActivityState::Flags m_activityState { PageActivityState::NoFlags };
+    HysteresisActivity m_userInputHysteresis;
+    HysteresisActivity m_audiblePluginHysteresis;
+    RefCounter m_mediaActivityCounter;
+    RefCounter m_pageLoadActivityCounter;
 };
 
 }

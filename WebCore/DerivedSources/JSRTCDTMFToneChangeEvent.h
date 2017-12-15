@@ -25,7 +25,6 @@
 
 #include "JSEvent.h"
 #include "RTCDTMFToneChangeEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -34,15 +33,16 @@ class JSDictionary;
 class JSRTCDTMFToneChangeEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSRTCDTMFToneChangeEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDTMFToneChangeEvent> impl)
+    static JSRTCDTMFToneChangeEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDTMFToneChangeEvent>&& impl)
     {
-        JSRTCDTMFToneChangeEvent* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFToneChangeEvent>(globalObject->vm().heap)) JSRTCDTMFToneChangeEvent(structure, globalObject, impl);
+        JSRTCDTMFToneChangeEvent* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFToneChangeEvent>(globalObject->vm().heap)) JSRTCDTMFToneChangeEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,38 +55,19 @@ public:
         return static_cast<RTCDTMFToneChangeEvent&>(Base::impl());
     }
 protected:
-    JSRTCDTMFToneChangeEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCDTMFToneChangeEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRTCDTMFToneChangeEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCDTMFToneChangeEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSRTCDTMFToneChangeEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCDTMFToneChangeEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCDTMFToneChangeEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFToneChangeEventPrototype>(vm.heap)) JSRTCDTMFToneChangeEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+bool fillRTCDTMFToneChangeEventInit(RTCDTMFToneChangeEventInit&, JSDictionary&);
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCDTMFToneChangeEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsRTCDTMFToneChangeEventTone(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

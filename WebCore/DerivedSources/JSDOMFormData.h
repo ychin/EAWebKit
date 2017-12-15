@@ -22,27 +22,27 @@
 #define JSDOMFormData_h
 
 #include "DOMFormData.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDOMFormData : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMFormData* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMFormData> impl)
+    static JSDOMFormData* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMFormData>&& impl)
     {
-        JSDOMFormData* ptr = new (NotNull, JSC::allocateCell<JSDOMFormData>(globalObject->vm().heap)) JSDOMFormData(structure, globalObject, impl);
+        JSDOMFormData* ptr = new (NotNull, JSC::allocateCell<JSDOMFormData>(globalObject->vm().heap)) JSDOMFormData(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMFormData* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDOMFormData();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +55,19 @@ public:
     // Custom functions
     JSC::JSValue append(JSC::ExecState*);
     DOMFormData& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMFormData* m_impl;
 protected:
-    JSDOMFormData(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMFormData>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDOMFormData(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMFormData>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMFormDataOwner : public JSC::WeakHandleOwner {
@@ -81,74 +78,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMFormData*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMFormDataOwner, jsDOMFormDataOwner, ());
-    return &jsDOMFormDataOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, DOMFormData*)
-{
-    return &world;
+    static NeverDestroyed<JSDOMFormDataOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMFormData*);
-DOMFormData* toDOMFormData(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMFormData& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMFormDataPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMFormDataPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMFormDataPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMFormDataPrototype>(vm.heap)) JSDOMFormDataPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMFormData(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMFormDataPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDOMFormDataConstructor : public DOMConstructorObject {
-private:
-    JSDOMFormDataConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDOMFormDataConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDOMFormDataConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMFormDataConstructor>(vm.heap)) JSDOMFormDataConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMFormData(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMFormDataPrototypeFunctionAppend(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDOMFormDataConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

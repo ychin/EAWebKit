@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -56,30 +56,19 @@ using namespace JSC;
 
 namespace WebCore {
 
-void JSXMLHttpRequest::visitChildren(JSCell* cell, SlotVisitor& visitor)
+void JSXMLHttpRequest::visitAdditionalChildren(SlotVisitor& visitor)
 {
-    JSXMLHttpRequest* thisObject = jsCast<JSXMLHttpRequest*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
-    Base::visitChildren(thisObject, visitor);
-
-    if (XMLHttpRequestUpload* upload = thisObject->m_impl->optionalUpload())
+    if (XMLHttpRequestUpload* upload = impl().optionalUpload())
         visitor.addOpaqueRoot(upload);
 
-    if (Document* responseDocument = thisObject->m_impl->optionalResponseXML())
+    if (Document* responseDocument = impl().optionalResponseXML())
         visitor.addOpaqueRoot(responseDocument);
 
-    if (ArrayBuffer* responseArrayBuffer = thisObject->m_impl->optionalResponseArrayBuffer())
+    if (ArrayBuffer* responseArrayBuffer = impl().optionalResponseArrayBuffer())
         visitor.addOpaqueRoot(responseArrayBuffer);
 
-    if (Blob* responseBlob = thisObject->m_impl->optionalResponseBlob())
+    if (Blob* responseBlob = impl().optionalResponseBlob())
         visitor.addOpaqueRoot(responseBlob);
-
-    if (thisObject->m_response)
-        visitor.append(&thisObject->m_response);
-
-    thisObject->m_impl->visitJSEventListeners(visitor);
 }
 
 // Custom functions
@@ -116,10 +105,12 @@ public:
     SendFunctor()
         : m_hasSkippedFirstFrame(false)
         , m_line(0)
+        , m_column(0)
     {
     }
 
     unsigned line() const { return m_line; }
+    unsigned column() const { return m_column; }
     String url() const { return m_url; }
 
     StackVisitor::Status operator()(StackVisitor& visitor)
@@ -130,9 +121,10 @@ public:
         }
 
         unsigned line = 0;
-        unsigned unusedColumn = 0;
-        visitor->computeLineAndColumn(line, unusedColumn);
+        unsigned column = 0;
+        visitor->computeLineAndColumn(line, column);
         m_line = line;
+        m_column = column;
         m_url = visitor->sourceURL();
         return StackVisitor::Done;
     }
@@ -140,6 +132,7 @@ public:
 private:
     bool m_hasSkippedFirstFrame;
     unsigned m_line;
+    unsigned m_column;
     String m_url;
 };
 
@@ -152,11 +145,11 @@ JSValue JSXMLHttpRequest::send(ExecState* exec)
     if (val.isUndefinedOrNull())
         impl().send(ec);
     else if (val.inherits(JSDocument::info()))
-        impl().send(toDocument(val), ec);
+        impl().send(JSDocument::toWrapped(val), ec);
     else if (val.inherits(JSBlob::info()))
-        impl().send(toBlob(val), ec);
+        impl().send(JSBlob::toWrapped(val), ec);
     else if (val.inherits(JSDOMFormData::info()))
-        impl().send(toDOMFormData(val), ec);
+        impl().send(JSDOMFormData::toWrapped(val), ec);
     else if (val.inherits(JSArrayBuffer::info()))
         impl().send(toArrayBuffer(val), ec);
     else if (val.inherits(JSArrayBufferView::info())) {
@@ -167,7 +160,7 @@ JSValue JSXMLHttpRequest::send(ExecState* exec)
 
     SendFunctor functor;
     exec->iterate(functor);
-    impl().setLastSendLineNumber(functor.line());
+    impl().setLastSendLineAndColumnNumber(functor.line(), functor.column());
     impl().setLastSendURL(functor.url());
     setDOMException(exec, ec);
     return jsUndefined();
@@ -186,6 +179,13 @@ JSValue JSXMLHttpRequest::responseText(ExecState* exec) const
 
 JSValue JSXMLHttpRequest::response(ExecState* exec) const
 {
+    // FIXME: Use CachedAttribute for other types than JSON as well.
+    if (m_response && impl().responseCacheIsValid())
+        return m_response.get();
+
+    if (!impl().doneWithoutErrors() && impl().responseTypeCode() > XMLHttpRequest::ResponseTypeText)
+        return jsNull();
+
     switch (impl().responseTypeCode()) {
     case XMLHttpRequest::ResponseTypeDefault:
     case XMLHttpRequest::ResponseTypeText:
@@ -193,13 +193,6 @@ JSValue JSXMLHttpRequest::response(ExecState* exec) const
 
     case XMLHttpRequest::ResponseTypeJSON:
         {
-            // FIXME: Use CachedAttribute for other types as well.
-            if (m_response && impl().responseCacheIsValid())
-                return m_response.get();
-
-            if (!impl().doneWithoutErrors())
-                return jsNull();
-
             JSValue value = JSONParse(exec, impl().responseTextIgnoringResponseType());
             if (!value)
                 value = jsNull();

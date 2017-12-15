@@ -23,23 +23,23 @@
 
 #include "File.h"
 #include "JSBlob.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
-class JSFile : public JSBlob {
+class WEBCORE_EXPORT JSFile : public JSBlob {
 public:
     typedef JSBlob Base;
-    static JSFile* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<File> impl)
+    static JSFile* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<File>&& impl)
     {
-        JSFile* ptr = new (NotNull, JSC::allocateCell<JSFile>(globalObject->vm().heap)) JSFile(structure, globalObject, impl);
+        JSFile* ptr = new (NotNull, JSC::allocateCell<JSFile>(globalObject->vm().heap)) JSFile(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static File* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,69 +53,19 @@ public:
         return static_cast<File&>(Base::impl());
     }
 protected:
-    JSFile(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<File>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSFile(JSC::Structure*, JSDOMGlobalObject*, Ref<File>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, File*);
-File* toFile(JSC::JSValue);
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, File*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, File& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSFilePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSFilePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSFilePrototype* ptr = new (NotNull, JSC::allocateCell<JSFilePrototype>(vm.heap)) JSFilePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSFilePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSFileConstructor : public DOMConstructorObject {
-private:
-    JSFileConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSFileConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSFileConstructor* ptr = new (NotNull, JSC::allocateCell<JSFileConstructor>(vm.heap)) JSFileConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsFileName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileLastModifiedDate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(DIRECTORY_UPLOAD)
-JSC::JSValue jsFileWebkitRelativePath(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsFileConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

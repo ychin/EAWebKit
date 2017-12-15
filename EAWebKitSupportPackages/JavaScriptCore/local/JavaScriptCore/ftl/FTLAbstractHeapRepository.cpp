@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,9 +28,14 @@
 
 #if ENABLE(FTL_JIT)
 
+#include "DirectArguments.h"
+#include "GetterSetter.h"
+#include "JSEnvironmentRecord.h"
+#include "JSPropertyNameEnumerator.h"
 #include "JSScope.h"
-#include "JSVariableObject.h"
-#include "Operations.h"
+#include "JSCInlines.h"
+#include "ScopedArguments.h"
+#include "ScopedArgumentsTable.h"
 
 namespace JSC { namespace FTL {
 
@@ -45,7 +50,9 @@ AbstractHeapRepository::AbstractHeapRepository(LContext context)
     FOR_EACH_ABSTRACT_FIELD(ABSTRACT_FIELD_INITIALIZATION)
 #undef ABSTRACT_FIELD_INITIALIZATION
     
-#define INDEXED_ABSTRACT_HEAP_INITIALIZATION(name, size) , name(context, &root, #name, size)
+    , JSCell_freeListNext(JSCell_structureID)
+    
+#define INDEXED_ABSTRACT_HEAP_INITIALIZATION(name, offset, size) , name(context, &root, #name, offset, size)
     FOR_EACH_INDEXED_ABSTRACT_HEAP(INDEXED_ABSTRACT_HEAP_INITIALIZATION)
 #undef INDEXED_ABSTRACT_HEAP_INITIALIZATION
     
@@ -57,10 +64,23 @@ AbstractHeapRepository::AbstractHeapRepository(LContext context)
     , m_context(context)
     , m_tbaaKind(mdKindID(m_context, "tbaa"))
 {
+    // Make sure that our explicit assumptions about the StructureIDBlob match reality.
+    RELEASE_ASSERT(!(JSCell_indexingType.offset() & (sizeof(int32_t) - 1)));
+    RELEASE_ASSERT(JSCell_indexingType.offset() + 1 == JSCell_typeInfoType.offset());
+    RELEASE_ASSERT(JSCell_indexingType.offset() + 2 == JSCell_typeInfoFlags.offset());
+    RELEASE_ASSERT(JSCell_indexingType.offset() + 3 == JSCell_gcData.offset());
+
+    JSCell_indexingType.changeParent(&JSCell_usefulBytes);
+    JSCell_typeInfoType.changeParent(&JSCell_usefulBytes);
+    JSCell_typeInfoFlags.changeParent(&JSCell_usefulBytes);
+    JSCell_gcData.changeParent(&JSCell_usefulBytes);
+    
     root.m_tbaaMetadata = mdNode(m_context, mdString(m_context, root.m_heapName));
     
     RELEASE_ASSERT(m_tbaaKind);
     RELEASE_ASSERT(root.m_tbaaMetadata);
+    
+    RELEASE_ASSERT(!JSCell_freeListNext.offset());
 }
 
 AbstractHeapRepository::~AbstractHeapRepository()

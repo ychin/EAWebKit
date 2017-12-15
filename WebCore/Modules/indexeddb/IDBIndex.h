@@ -28,9 +28,9 @@
 
 #include "IDBCursor.h"
 #include "IDBDatabase.h"
+#include "IDBDatabaseMetadata.h"
 #include "IDBKeyPath.h"
 #include "IDBKeyRange.h"
-#include "IDBMetadata.h"
 #include "IDBObjectStore.h"
 #include "IDBRequest.h"
 #include "ScriptWrappable.h"
@@ -45,9 +45,9 @@ class IDBObjectStore;
 
 class IDBIndex : public ScriptWrappable, public RefCounted<IDBIndex> {
 public:
-    static PassRefPtr<IDBIndex> create(const IDBIndexMetadata& metadata, IDBObjectStore* objectStore, IDBTransaction* transaction)
+    static Ref<IDBIndex> create(const IDBIndexMetadata& metadata, IDBObjectStore* objectStore, IDBTransaction* transaction)
     {
-        return adoptRef(new IDBIndex(metadata, objectStore, transaction));
+        return adoptRef(*new IDBIndex(metadata, objectStore, transaction));
     }
     ~IDBIndex();
 
@@ -61,29 +61,29 @@ public:
     int64_t id() const { return m_metadata.id; }
 
     // FIXME: Try to modify the code generator so this is unneeded.
-    PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext* context, ExceptionCode& ec) { return openCursor(context, static_cast<IDBKeyRange*>(0), ec); }
+    PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext* context, ExceptionCode& ec) { return openCursor(context, static_cast<IDBKeyRange*>(nullptr), ec); }
     PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext* context, PassRefPtr<IDBKeyRange> keyRange, ExceptionCode& ec) { return openCursor(context, keyRange, IDBCursor::directionNext(), ec); }
-    PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext* context, const ScriptValue& key, ExceptionCode& ec) { return openCursor(context, key, IDBCursor::directionNext(), ec); }
+    PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext* context, const Deprecated::ScriptValue& key, ExceptionCode& ec) { return openCursor(context, key, IDBCursor::directionNext(), ec); }
     PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext*, PassRefPtr<IDBKeyRange>, const String& direction, ExceptionCode&);
-    PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext*, const ScriptValue& key, const String& direction, ExceptionCode&);
-    PassRefPtr<IDBRequest> count(ScriptExecutionContext* context, ExceptionCode& ec) { return count(context, static_cast<IDBKeyRange*>(0), ec); }
+    PassRefPtr<IDBRequest> openCursor(ScriptExecutionContext*, const Deprecated::ScriptValue& key, const String& direction, ExceptionCode&);
+    PassRefPtr<IDBRequest> count(ScriptExecutionContext* context, ExceptionCode& ec) { return count(context, static_cast<IDBKeyRange*>(nullptr), ec); }
     PassRefPtr<IDBRequest> count(ScriptExecutionContext*, PassRefPtr<IDBKeyRange>, ExceptionCode&);
-    PassRefPtr<IDBRequest> count(ScriptExecutionContext*, const ScriptValue& key, ExceptionCode&);
+    PassRefPtr<IDBRequest> count(ScriptExecutionContext*, const Deprecated::ScriptValue& key, ExceptionCode&);
 
-    PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext* context, ExceptionCode& ec) { return openKeyCursor(context, static_cast<IDBKeyRange*>(0), ec); }
+    PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext* context, ExceptionCode& ec) { return openKeyCursor(context, static_cast<IDBKeyRange*>(nullptr), ec); }
     PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext* context, PassRefPtr<IDBKeyRange> keyRange, ExceptionCode& ec) { return openKeyCursor(context, keyRange, IDBCursor::directionNext(), ec); }
-    PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext* context, const ScriptValue& key, ExceptionCode& ec) { return openKeyCursor(context, key, IDBCursor::directionNext(), ec); }
+    PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext* context, const Deprecated::ScriptValue& key, ExceptionCode& ec) { return openKeyCursor(context, key, IDBCursor::directionNext(), ec); }
     PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext*, PassRefPtr<IDBKeyRange>, const String& direction, ExceptionCode&);
-    PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext*, const ScriptValue& key, const String& direction, ExceptionCode&);
+    PassRefPtr<IDBRequest> openKeyCursor(ScriptExecutionContext*, const Deprecated::ScriptValue& key, const String& direction, ExceptionCode&);
 
     PassRefPtr<IDBRequest> get(ScriptExecutionContext*, PassRefPtr<IDBKeyRange>, ExceptionCode&);
-    PassRefPtr<IDBRequest> get(ScriptExecutionContext*, const ScriptValue& key, ExceptionCode&);
+    PassRefPtr<IDBRequest> get(ScriptExecutionContext*, const Deprecated::ScriptValue& key, ExceptionCode&);
     PassRefPtr<IDBRequest> getKey(ScriptExecutionContext*, PassRefPtr<IDBKeyRange>, ExceptionCode&);
-    PassRefPtr<IDBRequest> getKey(ScriptExecutionContext*, const ScriptValue& key, ExceptionCode&);
+    PassRefPtr<IDBRequest> getKey(ScriptExecutionContext*, const Deprecated::ScriptValue& key, ExceptionCode&);
 
     void markDeleted() { m_deleted = true; }
 
-    IDBDatabaseBackendInterface* backendDB() const;
+    IDBDatabaseBackend* backendDB() const;
 
 private:
     IDBIndex(const IDBIndexMetadata&, IDBObjectStore*, IDBTransaction*);

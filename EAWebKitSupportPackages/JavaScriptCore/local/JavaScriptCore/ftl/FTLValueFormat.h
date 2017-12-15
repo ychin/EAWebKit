@@ -26,8 +26,6 @@
 #ifndef FTLValueFormat_h
 #define FTLValueFormat_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(FTL_JIT)
 
 #include "GPRInfo.h"
@@ -45,7 +43,6 @@ namespace FTL {
 enum ValueFormat {
     InvalidValueFormat,
     ValueFormatInt32,
-    ValueFormatUInt32,
     ValueFormatInt52,
     ValueFormatStrictInt52,
     ValueFormatBoolean,

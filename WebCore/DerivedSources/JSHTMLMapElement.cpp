@@ -24,6 +24,7 @@
 #include "HTMLCollection.h"
 #include "HTMLMapElement.h"
 #include "HTMLNames.h"
+#include "JSDOMBinding.h"
 #include "JSHTMLCollection.h"
 #include "URL.h"
 #include <runtime/JSString.h>
@@ -33,26 +34,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLMapElementTableValues[] =
-{
-    { "areas", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMapElementAreas), (intptr_t)0 },
-    { "name", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMapElementName), (intptr_t)setJSHTMLMapElementName },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMapElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsHTMLMapElementAreas(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMapElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMapElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMapElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLMapElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLMapElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLMapElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLMapElementPrototype>(vm.heap)) JSHTMLMapElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLMapElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLMapElementTable = { 9, 7, JSHTMLMapElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLMapElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLMapElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLMapElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLMapElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLMapElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLMapElementConstructor>(vm.heap)) JSHTMLMapElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLMapElementConstructorTable = { 1, 0, JSHTMLMapElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLMapElementConstructor::s_info = { "HTMLMapElementConstructor", &Base::s_info, &JSHTMLMapElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLMapElementConstructor) };
+const ClassInfo JSHTMLMapElementConstructor::s_info = { "HTMLMapElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLMapElementConstructor) };
 
 JSHTMLMapElementConstructor::JSHTMLMapElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,97 +98,104 @@ void JSHTMLMapElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLMapElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLMapElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLMapElementConstructor, JSDOMWrapper>(exec, JSHTMLMapElementConstructorTable, jsCast<JSHTMLMapElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLMapElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLMapElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLMapElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMapElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "areas", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMapElementAreas), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "name", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMapElementName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMapElementName) },
 };
 
-static const HashTable JSHTMLMapElementPrototypeTable = { 1, 0, JSHTMLMapElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLMapElementPrototype::s_info = { "HTMLMapElementPrototype", &Base::s_info, &JSHTMLMapElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLMapElementPrototype) };
+const ClassInfo JSHTMLMapElementPrototype::s_info = { "HTMLMapElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLMapElementPrototype) };
 
-JSObject* JSHTMLMapElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLMapElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLMapElement::s_info = { "HTMLMapElement", &Base::s_info, &JSHTMLMapElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLMapElement) };
-
-JSHTMLMapElement::JSHTMLMapElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLMapElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLMapElement::finishCreation(VM& vm)
+void JSHTMLMapElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLMapElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLMapElement::s_info = { "HTMLMapElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLMapElement) };
+
+JSHTMLMapElement::JSHTMLMapElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLMapElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLMapElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLMapElementPrototype::create(vm, globalObject, JSHTMLMapElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLMapElementPrototype::create(vm, globalObject, JSHTMLMapElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLMapElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLMapElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLMapElement* thisObject = jsCast<JSHTMLMapElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLMapElement, Base>(exec, JSHTMLMapElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLMapElement>(vm, globalObject);
 }
 
-JSValue jsHTMLMapElementAreas(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLMapElementAreas(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLMapElement* castedThis = jsCast<JSHTMLMapElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLMapElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMapElement* castedThis = jsDynamicCast<JSHTMLMapElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMapElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMapElement", "areas");
+        return throwGetterTypeError(*exec, "HTMLMapElement", "areas");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.areas()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLMapElementName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLMapElementName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLMapElement* castedThis = jsCast<JSHTMLMapElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLMapElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMapElement* castedThis = jsDynamicCast<JSHTMLMapElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMapElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMapElement", "name");
+        return throwGetterTypeError(*exec, "HTMLMapElement", "name");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getNameAttribute());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLMapElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLMapElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLMapElement* domObject = jsCast<JSHTMLMapElement*>(asObject(slotBase));
-    return JSHTMLMapElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLMapElementPrototype* domObject = jsDynamicCast<JSHTMLMapElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLMapElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLMapElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLMapElementName(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLMapElement* thisObject = jsCast<JSHTMLMapElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLMapElement, Base>(exec, propertyName, value, JSHTMLMapElementTable, thisObject, slot);
-}
-
-void setJSHTMLMapElementName(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLMapElement* castedThis = jsCast<JSHTMLMapElement*>(thisObject);
-    HTMLMapElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMapElement* castedThis = jsDynamicCast<JSHTMLMapElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMapElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMapElement", "name");
+        else
+            throwSetterTypeError(*exec, "HTMLMapElement", "name");
         return;
-    impl.setAttribute(WebCore::HTMLNames::nameAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::nameAttr, nativeValue);
 }
 
 

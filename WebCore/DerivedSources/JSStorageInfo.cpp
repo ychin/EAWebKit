@@ -37,48 +37,70 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionQueryUsageAndQuota(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionRequestQuota(JSC::ExecState*);
+
+class JSStorageInfoPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSStorageInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSStorageInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSStorageInfoPrototype>(vm.heap)) JSStorageInfoPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSStorageInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSStorageInfoPrototypeTableValues[] =
 {
-    { "TEMPORARY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStorageInfoTEMPORARY), (intptr_t)0 },
-    { "PERSISTENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStorageInfoPERSISTENT), (intptr_t)0 },
-    { "queryUsageAndQuota", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageInfoPrototypeFunctionQueryUsageAndQuota), (intptr_t)1 },
-    { "requestQuota", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageInfoPrototypeFunctionRequestQuota), (intptr_t)2 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "TEMPORARY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "PERSISTENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "queryUsageAndQuota", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageInfoPrototypeFunctionQueryUsageAndQuota), (intptr_t) (1) },
+    { "requestQuota", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageInfoPrototypeFunctionRequestQuota), (intptr_t) (2) },
 };
 
-static const HashTable JSStorageInfoPrototypeTable = { 9, 7, JSStorageInfoPrototypeTableValues, 0 };
-const ClassInfo JSStorageInfoPrototype::s_info = { "StorageInfoPrototype", &Base::s_info, &JSStorageInfoPrototypeTable, 0, CREATE_METHOD_TABLE(JSStorageInfoPrototype) };
+const ClassInfo JSStorageInfoPrototype::s_info = { "StorageInfoPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStorageInfoPrototype) };
 
-JSObject* JSStorageInfoPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSStorageInfo>(vm, globalObject);
-}
-
-bool JSStorageInfoPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSStorageInfoPrototype* thisObject = jsCast<JSStorageInfoPrototype*>(object);
-    return getStaticPropertySlot<JSStorageInfoPrototype, JSObject>(exec, JSStorageInfoPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSStorageInfo::s_info = { "StorageInfo", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSStorageInfo) };
-
-JSStorageInfo::JSStorageInfo(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<StorageInfo> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSStorageInfo::finishCreation(VM& vm)
+void JSStorageInfoPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSStorageInfoPrototypeTableValues, *this);
+}
+
+const ClassInfo JSStorageInfo::s_info = { "StorageInfo", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStorageInfo) };
+
+JSStorageInfo::JSStorageInfo(Structure* structure, JSDOMGlobalObject* globalObject, Ref<StorageInfo>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSStorageInfo::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSStorageInfoPrototype::create(vm, globalObject, JSStorageInfoPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSStorageInfo::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSStorageInfo>(vm, globalObject);
 }
 
 void JSStorageInfo::destroy(JSC::JSCell* cell)
@@ -89,35 +111,35 @@ void JSStorageInfo::destroy(JSC::JSCell* cell)
 
 JSStorageInfo::~JSStorageInfo()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionQueryUsageAndQuota(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSStorageInfo::info()))
-        return throwVMTypeError(exec);
-    JSStorageInfo* castedThis = jsCast<JSStorageInfo*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSStorageInfo* castedThis = jsDynamicCast<JSStorageInfo*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "StorageInfo", "queryUsageAndQuota");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSStorageInfo::info());
-    StorageInfo& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    ScriptExecutionContext* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
+    auto* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
     if (!scriptContext)
         return JSValue::encode(jsUndefined());
-    unsigned short storageType(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    uint16_t storageType = toUInt16(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     RefPtr<StorageUsageCallback> usageCallback;
     if (!exec->argument(1).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(1).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 1, "usageCallback", "StorageInfo", "queryUsageAndQuota");
         usageCallback = JSStorageUsageCallback::create(asObject(exec->uncheckedArgument(1)), castedThis->globalObject());
     }
     RefPtr<StorageErrorCallback> errorCallback;
     if (!exec->argument(2).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(2).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 2, "errorCallback", "StorageInfo", "queryUsageAndQuota");
         errorCallback = JSStorageErrorCallback::create(asObject(exec->uncheckedArgument(2)), castedThis->globalObject());
     }
     impl.queryUsageAndQuota(scriptContext, storageType, usageCallback, errorCallback);
@@ -126,82 +148,58 @@ EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionQueryUsageAndQuota(Ex
 
 EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionRequestQuota(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSStorageInfo::info()))
-        return throwVMTypeError(exec);
-    JSStorageInfo* castedThis = jsCast<JSStorageInfo*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSStorageInfo* castedThis = jsDynamicCast<JSStorageInfo*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "StorageInfo", "requestQuota");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSStorageInfo::info());
-    StorageInfo& impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    ScriptExecutionContext* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
+    auto* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
     if (!scriptContext)
         return JSValue::encode(jsUndefined());
-    unsigned short storageType(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    uint16_t storageType = toUInt16(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned long long newQuotaInBytes(toUInt64(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    unsigned long long newQuotaInBytes = toUInt64(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     RefPtr<StorageQuotaCallback> quotaCallback;
     if (!exec->argument(2).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(2).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 2, "quotaCallback", "StorageInfo", "requestQuota");
         quotaCallback = JSStorageQuotaCallback::create(asObject(exec->uncheckedArgument(2)), castedThis->globalObject());
     }
     RefPtr<StorageErrorCallback> errorCallback;
     if (!exec->argument(3).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(3).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 3, "errorCallback", "StorageInfo", "requestQuota");
         errorCallback = JSStorageErrorCallback::create(asObject(exec->uncheckedArgument(3)), castedThis->globalObject());
     }
     impl.requestQuota(scriptContext, storageType, newQuotaInBytes, quotaCallback, errorCallback);
     return JSValue::encode(jsUndefined());
 }
 
-// Constant getters
-
-JSValue jsStorageInfoTEMPORARY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsStorageInfoPERSISTENT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-static inline bool isObservable(JSStorageInfo* jsStorageInfo)
-{
-    if (jsStorageInfo->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSStorageInfoOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSStorageInfo* jsStorageInfo = jsCast<JSStorageInfo*>(handle.get().asCell());
-    if (!isObservable(jsStorageInfo))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSStorageInfoOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSStorageInfo* jsStorageInfo = jsCast<JSStorageInfo*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsStorageInfo = jsCast<JSStorageInfo*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsStorageInfo->impl(), jsStorageInfo);
-    jsStorageInfo->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, StorageInfo* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, StorageInfo* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSStorageInfo>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSStorageInfo>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -210,13 +208,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Storage
     // attribute to StorageInfo.
     COMPILE_ASSERT(!__is_polymorphic(StorageInfo), StorageInfo_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<StorageInfo>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSStorageInfo>(exec, globalObject, impl);
+    return createNewWrapper<JSStorageInfo>(globalObject, impl);
 }
 
-StorageInfo* toStorageInfo(JSC::JSValue value)
+StorageInfo* JSStorageInfo::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSStorageInfo::info()) ? &jsCast<JSStorageInfo*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSStorageInfo*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

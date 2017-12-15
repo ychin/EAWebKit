@@ -23,29 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLContextAttributes.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLContextAttributes : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLContextAttributes* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLContextAttributes> impl)
+    static JSWebGLContextAttributes* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLContextAttributes>&& impl)
     {
-        JSWebGLContextAttributes* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextAttributes>(globalObject->vm().heap)) JSWebGLContextAttributes(structure, globalObject, impl);
+        JSWebGLContextAttributes* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextAttributes>(globalObject->vm().heap)) JSWebGLContextAttributes(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLContextAttributes* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLContextAttributes();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +53,19 @@ public:
     }
 
     WebGLContextAttributes& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLContextAttributes* m_impl;
 protected:
-    JSWebGLContextAttributes(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLContextAttributes>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebGLContextAttributes(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLContextAttributes>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLContextAttributesOwner : public JSC::WeakHandleOwner {
@@ -80,55 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLContextAttributes*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLContextAttributesOwner, jsWebGLContextAttributesOwner, ());
-    return &jsWebGLContextAttributesOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLContextAttributes*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLContextAttributesOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLContextAttributes*);
-WebGLContextAttributes* toWebGLContextAttributes(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLContextAttributes& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebGLContextAttributesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLContextAttributesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLContextAttributesPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextAttributesPrototype>(vm.heap)) JSWebGLContextAttributesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLContextAttributesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsWebGLContextAttributesAlpha(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebGLContextAttributesAlpha(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebGLContextAttributesDepth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebGLContextAttributesDepth(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebGLContextAttributesStencil(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebGLContextAttributesStencil(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebGLContextAttributesAntialias(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebGLContextAttributesAntialias(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebGLContextAttributesPremultipliedAlpha(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebGLContextAttributesPremultipliedAlpha(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebGLContextAttributesPreserveDrawingBuffer(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebGLContextAttributesPreserveDrawingBuffer(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

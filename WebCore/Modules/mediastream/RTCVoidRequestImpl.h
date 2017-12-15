@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
+ * Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,27 +39,29 @@
 
 namespace WebCore {
 
-class RTCErrorCallback;
+class RTCPeerConnectionErrorCallback;
 class VoidCallback;
 
 class RTCVoidRequestImpl : public RTCVoidRequest, public ActiveDOMObject {
 public:
-    static PassRefPtr<RTCVoidRequestImpl> create(ScriptExecutionContext*, PassRefPtr<VoidCallback>, PassRefPtr<RTCErrorCallback>);
+    static Ref<RTCVoidRequestImpl> create(ScriptExecutionContext*, PassRefPtr<VoidCallback>, PassRefPtr<RTCPeerConnectionErrorCallback>);
     virtual ~RTCVoidRequestImpl();
 
-    virtual void requestSucceeded();
-    virtual void requestFailed(const String& error);
-
-    // ActiveDOMObject
-    virtual void stop() OVERRIDE;
+    virtual void requestSucceeded() override;
+    virtual void requestFailed(const String& error) override;
 
 private:
-    RTCVoidRequestImpl(ScriptExecutionContext*, PassRefPtr<VoidCallback>, PassRefPtr<RTCErrorCallback>);
+    RTCVoidRequestImpl(ScriptExecutionContext*, PassRefPtr<VoidCallback>, PassRefPtr<RTCPeerConnectionErrorCallback>);
 
     void clear();
 
+    // ActiveDOMObject
+    void stop() override;
+    const char* activeDOMObjectName() const override;
+    bool canSuspendForPageCache() const override;
+
     RefPtr<VoidCallback> m_successCallback;
-    RefPtr<RTCErrorCallback> m_errorCallback;
+    RefPtr<RTCPeerConnectionErrorCallback> m_errorCallback;
 };
 
 } // namespace WebCore

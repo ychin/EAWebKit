@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004, 2005, 2006 Apple Computer, Inc.  All rights reserved.
+ * Copyright (C) 2004, 2005, 2006 Apple Inc.  All rights reserved.
  * Copyright (C) 2007 Alp Toker <alp@atoker.com>
  * Copyright (C) 2009 Dirk Schulze <krit@webkit.org>
  *
@@ -12,10 +12,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,6 +28,8 @@
 #include "config.h"
 #include "BitmapImage.h"
 
+#if USE(CAIRO)
+
 #include "CairoUtilities.h"
 #include "ImageObserver.h"
 #include "PlatformContextCairo.h"
@@ -39,6 +41,7 @@ namespace WebCore {
 BitmapImage::BitmapImage(PassRefPtr<cairo_surface_t> nativeImage, ImageObserver* observer)
     : Image(observer)
     , m_size(cairoSurfaceSize(nativeImage.get()))
+    , m_minimumSubsamplingLevel(0)
     , m_currentFrame(0)
     , m_repetitionCount(cAnimationNone)
     , m_repetitionCountStatus(Unknown)
@@ -59,11 +62,6 @@ BitmapImage::BitmapImage(PassRefPtr<cairo_surface_t> nativeImage, ImageObserver*
     m_frames[0].m_haveMetadata = true;
 
     checkForSolidColor();
-}
-
-void BitmapImage::draw(GraphicsContext* context, const FloatRect& dst, const FloatRect& src, ColorSpace styleColorSpace, CompositeOperator op, BlendMode blendMode)
-{
-    draw(context, dst, src, styleColorSpace, op, blendMode, ImageOrientationDescription());
 }
 
 void BitmapImage::draw(GraphicsContext* context, const FloatRect& dst, const FloatRect& src, ColorSpace styleColorSpace, CompositeOperator op,
@@ -98,18 +96,18 @@ void BitmapImage::draw(GraphicsContext* context, const FloatRect& dst, const Flo
     FloatRect adjustedSrcRect(src);
 #endif
 
-    ImageOrientation orientation;
+    ImageOrientation frameOrientation(description.imageOrientation());
     if (description.respectImageOrientation() == RespectImageOrientation)
-        orientation = frameOrientationAtIndex(m_currentFrame);
+        frameOrientation = frameOrientationAtIndex(m_currentFrame);
 
     FloatRect dstRect = dst;
 
-    if (orientation != DefaultImageOrientation) {
+    if (frameOrientation != DefaultImageOrientation) {
         // ImageOrientation expects the origin to be at (0, 0).
         context->translate(dstRect.x(), dstRect.y());
         dstRect.setLocation(FloatPoint());
-        context->concatCTM(orientation.transformFromDefault(dstRect.size()));
-        if (orientation.usesWidthAsHeight()) {
+        context->concatCTM(frameOrientation.transformFromDefault(dstRect.size()));
+        if (frameOrientation.usesWidthAsHeight()) {
             // The destination rectangle will have it's width and height already reversed for the orientation of
             // the image, as it was needed for page layout, so we need to reverse it back here.
             dstRect = FloatRect(dstRect.x(), dstRect.y(), dstRect.height(), dstRect.width());
@@ -122,6 +120,11 @@ void BitmapImage::draw(GraphicsContext* context, const FloatRect& dst, const Flo
 
     if (imageObserver())
         imageObserver()->didDraw(this);
+}
+
+void BitmapImage::determineMinimumSubsamplingLevel() const
+{
+    m_minimumSubsamplingLevel = 0;
 }
 
 void BitmapImage::checkForSolidColor()
@@ -156,7 +159,7 @@ bool FrameData::clear(bool clearMetadata)
         m_haveMetadata = false;
 
     if (m_frame) {
-        m_frame.clear();
+        m_frame = nullptr;
         return true;
     }
     return false;
@@ -164,3 +167,4 @@ bool FrameData::clear(bool clearMetadata)
 
 } // namespace WebCore
 
+#endif // USE(CAIRO)

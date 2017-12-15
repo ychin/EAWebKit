@@ -21,30 +21,30 @@
 #ifndef JSSQLException_h
 #define JSSQLException_h
 
-#if ENABLE(SQL_DATABASE)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SQLException.h"
 #include <runtime/ErrorPrototype.h>
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSQLException : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSQLException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SQLException> impl)
+    static JSSQLException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SQLException>&& impl)
     {
-        JSSQLException* ptr = new (NotNull, JSC::allocateCell<JSSQLException>(globalObject->vm().heap)) JSSQLException(structure, globalObject, impl);
+        JSSQLException* ptr = new (NotNull, JSC::allocateCell<JSSQLException>(globalObject->vm().heap)) JSSQLException(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SQLException* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSSQLException();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     SQLException& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SQLException* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSSQLException(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SQLException>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSQLException(JSC::Structure*, JSDOMGlobalObject*, Ref<SQLException>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSQLExceptionOwner : public JSC::WeakHandleOwner {
@@ -80,84 +79,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SQLException*)
 {
-    DEFINE_STATIC_LOCAL(JSSQLExceptionOwner, jsSQLExceptionOwner, ());
-    return &jsSQLExceptionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SQLException*)
-{
-    return &world;
+    static NeverDestroyed<JSSQLExceptionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SQLException*);
-SQLException* toSQLException(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SQLException& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSQLExceptionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSQLExceptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSQLExceptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSSQLExceptionPrototype>(vm.heap)) JSSQLExceptionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSQLExceptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSQLExceptionConstructor : public DOMConstructorObject {
-private:
-    JSSQLExceptionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSQLExceptionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSQLExceptionConstructor* ptr = new (NotNull, JSC::allocateCell<JSSQLExceptionConstructor>(vm.heap)) JSSQLExceptionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSQLExceptionCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSQLExceptionUNKNOWN_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionDATABASE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionVERSION_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionTOO_LARGE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionQUOTA_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionSYNTAX_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionCONSTRAINT_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLExceptionTIMEOUT_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif

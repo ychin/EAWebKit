@@ -21,33 +21,32 @@
 #ifndef JSSVGAltGlyphItemElement_h
 #define JSSVGAltGlyphItemElement_h
 
-#if ENABLE(SVG) && ENABLE(SVG_FONTS)
+#if ENABLE(SVG_FONTS)
 
-#include "JSDOMBinding.h"
 #include "JSSVGElement.h"
 #include "SVGAltGlyphItemElement.h"
 #include "SVGElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGAltGlyphItemElement : public JSSVGElement {
 public:
     typedef JSSVGElement Base;
-    static JSSVGAltGlyphItemElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGAltGlyphItemElement> impl)
+    static JSSVGAltGlyphItemElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGAltGlyphItemElement>&& impl)
     {
-        JSSVGAltGlyphItemElement* ptr = new (NotNull, JSC::allocateCell<JSSVGAltGlyphItemElement>(globalObject->vm().heap)) JSSVGAltGlyphItemElement(structure, globalObject, impl);
+        JSSVGAltGlyphItemElement* ptr = new (NotNull, JSC::allocateCell<JSSVGAltGlyphItemElement>(globalObject->vm().heap)) JSSVGAltGlyphItemElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,65 +55,20 @@ public:
         return static_cast<SVGAltGlyphItemElement&>(Base::impl());
     }
 protected:
-    JSSVGAltGlyphItemElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGAltGlyphItemElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGAltGlyphItemElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGAltGlyphItemElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGAltGlyphItemElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGAltGlyphItemElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGAltGlyphItemElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGAltGlyphItemElementPrototype>(vm.heap)) JSSVGAltGlyphItemElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGAltGlyphItemElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGAltGlyphItemElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGAltGlyphItemElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGAltGlyphItemElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGAltGlyphItemElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGAltGlyphItemElementConstructor>(vm.heap)) JSSVGAltGlyphItemElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGAltGlyphItemElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 
-#endif // ENABLE(SVG) && ENABLE(SVG_FONTS)
+#endif // ENABLE(SVG_FONTS)
 
 #endif

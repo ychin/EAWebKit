@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
-    Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+    Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,6 +19,7 @@
 
 */
 #include "config.h"
+#include "FontDescription.h"
 #include "FontCustomPlatformData.h"
 #include "FontPlatformData.h"
 #include "SharedBuffer.h"
@@ -40,8 +41,10 @@ FontCustomPlatformData::~FontCustomPlatformData()
 
 
 
-FontPlatformData FontCustomPlatformData::fontPlatformData(int size, bool bold, bool italic, FontOrientation, FontWidthVariant, FontRenderingMode)
+FontPlatformData FontCustomPlatformData::fontPlatformData(const FontDescription& fontDescription, bool bold, bool italic)
 {
+	int size = fontDescription.computedPixelSize();
+
 	FontPlatformDataPrivate* privData = new FontPlatformDataPrivate();
 	privData->size = ConvertFontSizeToPoints(size);
 
@@ -88,30 +91,27 @@ static bool canHandleSourceData(const char* data, unsigned size)
 	return false;
 }
 
-std::unique_ptr<FontCustomPlatformData> createFontCustomPlatformData(SharedBuffer* buffer)
+std::unique_ptr<FontCustomPlatformData> createFontCustomPlatformData(SharedBuffer& buffer)
 {
-    ASSERT_ARG(buffer, buffer);
-
-    // Check if we are dealing with a compressed WOFF font format.
-    if (isWOFF(buffer))
-    {
-        Vector<char> sfnt;
-        convertWOFFToSfnt(buffer, sfnt);
-        if (!sfnt.size())
-            return nullptr;
-        RefPtr<SharedBuffer> bufferWOFF = SharedBuffer::adoptVector(sfnt);
-        if(canHandleSourceData(bufferWOFF->data(),bufferWOFF->size()))
+	// Check if we are dealing with a compressed WOFF font format.
+	if (isWOFF(&buffer))
+	{
+		Vector<char> sfnt;
+		convertWOFFToSfnt(&buffer, sfnt);
+		if (!sfnt.size())
+			return nullptr;
+		RefPtr<SharedBuffer> bufferWOFF = SharedBuffer::adoptVector(sfnt);
+		if (canHandleSourceData(bufferWOFF->data(), bufferWOFF->size()))
 			return std::make_unique<FontCustomPlatformData>(bufferWOFF.get());
-    }
-    else
-    {
-        if(canHandleSourceData(buffer->data(),buffer->size()))
-			return std::make_unique<FontCustomPlatformData>(buffer);
-    }
+	}
+	else
+	{
+		if (canHandleSourceData(buffer.data(), buffer.size()))
+			return std::make_unique<FontCustomPlatformData>(&buffer);
+	}
 
 	return nullptr;
 }
-
 
 
 

@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 #include <wtf/PrintStream.h>
-#include <wtf/OwnPtr.h>
 
 namespace WTF {
 
@@ -46,8 +45,8 @@ public:
     
     FILE* file() { return m_file; }
     
-    virtual void vprintf(const char* format, va_list) OVERRIDE WTF_ATTRIBUTE_PRINTF(2, 0);
-    virtual void flush() OVERRIDE;
+    virtual void vprintf(const char* format, va_list) override WTF_ATTRIBUTE_PRINTF(2, 0);
+    virtual void flush() override;
 
 private:
     FILE* m_file;

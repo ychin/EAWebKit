@@ -24,7 +24,8 @@
 #include "CSSPageRule.h"
 #include "CSSStyleDeclaration.h"
 #include "JSCSSStyleDeclaration.h"
-#include "StylePropertySet.h"
+#include "JSDOMBinding.h"
+#include "StyleProperties.h"
 #include "URL.h"
 #include <wtf/GetPtr.h>
 
@@ -32,26 +33,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSCSSPageRuleTableValues[] =
-{
-    { "selectorText", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSPageRuleSelectorText), (intptr_t)setJSCSSPageRuleSelectorText },
-    { "style", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSPageRuleStyle), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSPageRuleConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsCSSPageRuleSelectorText(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSCSSPageRuleSelectorText(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsCSSPageRuleStyle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCSSPageRuleConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCSSPageRulePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCSSPageRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCSSPageRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSPageRulePrototype>(vm.heap)) JSCSSPageRulePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCSSPageRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCSSPageRuleTable = { 8, 7, JSCSSPageRuleTableValues, 0 };
-/* Hash table for constructor */
+class JSCSSPageRuleConstructor : public DOMConstructorObject {
+private:
+    JSCSSPageRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSCSSPageRuleConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSCSSPageRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCSSPageRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSPageRuleConstructor>(vm.heap)) JSCSSPageRuleConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSCSSPageRuleConstructorTable = { 1, 0, JSCSSPageRuleConstructorTableValues, 0 };
-const ClassInfo JSCSSPageRuleConstructor::s_info = { "CSSPageRuleConstructor", &Base::s_info, &JSCSSPageRuleConstructorTable, 0, CREATE_METHOD_TABLE(JSCSSPageRuleConstructor) };
+const ClassInfo JSCSSPageRuleConstructor::s_info = { "CSSPageRuleConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSPageRuleConstructor) };
 
 JSCSSPageRuleConstructor::JSCSSPageRuleConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,95 +97,102 @@ void JSCSSPageRuleConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCSSPageRulePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSCSSPageRuleConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSCSSPageRuleConstructor, JSDOMWrapper>(exec, JSCSSPageRuleConstructorTable, jsCast<JSCSSPageRuleConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSCSSPageRule::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("CSSPageRule"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSCSSPageRulePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSPageRuleConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "selectorText", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSPageRuleSelectorText), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSCSSPageRuleSelectorText) },
+    { "style", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCSSPageRuleStyle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCSSPageRulePrototypeTable = { 1, 0, JSCSSPageRulePrototypeTableValues, 0 };
-const ClassInfo JSCSSPageRulePrototype::s_info = { "CSSPageRulePrototype", &Base::s_info, &JSCSSPageRulePrototypeTable, 0, CREATE_METHOD_TABLE(JSCSSPageRulePrototype) };
+const ClassInfo JSCSSPageRulePrototype::s_info = { "CSSPageRulePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSPageRulePrototype) };
 
-JSObject* JSCSSPageRulePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCSSPageRule>(vm, globalObject);
-}
-
-const ClassInfo JSCSSPageRule::s_info = { "CSSPageRule", &Base::s_info, &JSCSSPageRuleTable, 0 , CREATE_METHOD_TABLE(JSCSSPageRule) };
-
-JSCSSPageRule::JSCSSPageRule(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSPageRule> impl)
-    : JSCSSRule(structure, globalObject, impl)
-{
-}
-
-void JSCSSPageRule::finishCreation(VM& vm)
+void JSCSSPageRulePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCSSPageRulePrototypeTableValues, *this);
+}
+
+const ClassInfo JSCSSPageRule::s_info = { "CSSPageRule", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCSSPageRule) };
+
+JSCSSPageRule::JSCSSPageRule(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSPageRule>&& impl)
+    : JSCSSRule(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSCSSPageRule::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCSSPageRulePrototype::create(vm, globalObject, JSCSSPageRulePrototype::createStructure(vm, globalObject, JSCSSRulePrototype::self(vm, globalObject)));
+    return JSCSSPageRulePrototype::create(vm, globalObject, JSCSSPageRulePrototype::createStructure(vm, globalObject, JSCSSRule::getPrototype(vm, globalObject)));
 }
 
-bool JSCSSPageRule::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSCSSPageRule::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSCSSPageRule* thisObject = jsCast<JSCSSPageRule*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCSSPageRule, Base>(exec, JSCSSPageRuleTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSCSSPageRule>(vm, globalObject);
 }
 
-JSValue jsCSSPageRuleSelectorText(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCSSPageRuleSelectorText(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCSSPageRule* castedThis = jsCast<JSCSSPageRule*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CSSPageRule& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCSSPageRule* castedThis = jsDynamicCast<JSCSSPageRule*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCSSPageRulePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CSSPageRule", "selectorText");
+        return throwGetterTypeError(*exec, "CSSPageRule", "selectorText");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.selectorText());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCSSPageRuleStyle(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCSSPageRuleStyle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCSSPageRule* castedThis = jsCast<JSCSSPageRule*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CSSPageRule& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCSSPageRule* castedThis = jsDynamicCast<JSCSSPageRule*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCSSPageRulePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CSSPageRule", "style");
+        return throwGetterTypeError(*exec, "CSSPageRule", "style");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.style()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCSSPageRuleConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCSSPageRuleConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSCSSPageRule* domObject = jsCast<JSCSSPageRule*>(asObject(slotBase));
-    return JSCSSPageRule::getConstructor(exec->vm(), domObject->globalObject());
+    JSCSSPageRulePrototype* domObject = jsDynamicCast<JSCSSPageRulePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSCSSPageRule::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSCSSPageRule::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSCSSPageRuleSelectorText(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSCSSPageRule* thisObject = jsCast<JSCSSPageRule*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSCSSPageRule, Base>(exec, propertyName, value, JSCSSPageRuleTable, thisObject, slot);
-}
-
-void setJSCSSPageRuleSelectorText(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSCSSPageRule* castedThis = jsCast<JSCSSPageRule*>(thisObject);
-    CSSPageRule& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSCSSPageRule* castedThis = jsDynamicCast<JSCSSPageRule*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCSSPageRulePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "CSSPageRule", "selectorText");
+        else
+            throwSetterTypeError(*exec, "CSSPageRule", "selectorText");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setSelectorText(nativeValue);
 }

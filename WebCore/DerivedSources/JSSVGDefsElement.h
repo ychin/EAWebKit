@@ -21,33 +21,30 @@
 #ifndef JSSVGDefsElement_h
 #define JSSVGDefsElement_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGGraphicsElement.h"
 #include "SVGDefsElement.h"
 #include "SVGElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGDefsElement : public JSSVGGraphicsElement {
 public:
     typedef JSSVGGraphicsElement Base;
-    static JSSVGDefsElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGDefsElement> impl)
+    static JSSVGDefsElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGDefsElement>&& impl)
     {
-        JSSVGDefsElement* ptr = new (NotNull, JSC::allocateCell<JSSVGDefsElement>(globalObject->vm().heap)) JSSVGDefsElement(structure, globalObject, impl);
+        JSSVGDefsElement* ptr = new (NotNull, JSC::allocateCell<JSSVGDefsElement>(globalObject->vm().heap)) JSSVGDefsElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,68 +53,18 @@ public:
         return static_cast<SVGDefsElement&>(Base::impl());
     }
 protected:
-    JSSVGDefsElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGDefsElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGDefsElement(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGDefsElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGDefsElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGDefsElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGDefsElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGDefsElementPrototype>(vm.heap)) JSSVGDefsElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGDefsElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGDefsElementConstructor : public DOMConstructorObject {
-private:
-    JSSVGDefsElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGDefsElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGDefsElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGDefsElementConstructor>(vm.heap)) JSSVGDefsElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-#if ENABLE(SVG)
-JSC::JSValue jsSVGDefsElementExternalResourcesRequired(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsSVGDefsElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

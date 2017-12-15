@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,22 +29,42 @@
 #if HAVE(LLVM)
 
 #include "LLVMAPI.h"
+#include "Options.h"
 #include <dlfcn.h>
+#include <wtf/DataLog.h>
 
 namespace JSC {
 
-typedef LLVMAPI* (*InitializerFunction)();
-
-void initializeLLVMPOSIX(const char* libraryName)
+LLVMInitializerFunction getLLVMInitializerFunctionPOSIX(const char* libraryName, bool verbose)
 {
-    void* library = dlopen(libraryName, RTLD_NOW);
-    ASSERT_WITH_MESSAGE(library, "%s", dlerror());
+    int flags = RTLD_NOW;
     
-    InitializerFunction initializer = bitwise_cast<InitializerFunction>(
-        dlsym(library, "initializeAndGetJSCLLVMAPI"));
-    ASSERT_WITH_MESSAGE(initializer, "%s", dlerror());
+#if OS(LINUX)
+    // We need this to cause our overrides (like __cxa_atexit) to take precedent over the __cxa_atexit that is already
+    // globally exported. Those overrides are necessary to prevent crashes (our __cxa_atexit turns off LLVM's exit-time
+    // destruction, which causes exit-time crashes if the concurrent JIT is still running) and to make LLVM assertion
+    // failures funnel through WebKit's mechanisms. This flag induces behavior that is the default on Darwin. Other OSes
+    // may need their own flags in place of this.
+    flags |= RTLD_DEEPBIND;
+#endif
     
-    llvm = initializer();
+    void* library = dlopen(libraryName, flags);
+    if (!library) {
+        if (verbose)
+            dataLog("Failed to load LLVM library at ", libraryName, ": ", dlerror(), "\n");
+        return nullptr;
+    }
+    
+    const char* symbolName = "initializeAndGetJSCLLVMAPI";
+    LLVMInitializerFunction initializer = bitwise_cast<LLVMInitializerFunction>(
+        dlsym(library, symbolName));
+    if (!initializer) {
+        if (verbose)
+            dataLog("Failed to find ", symbolName, " in ", libraryName, ": ", dlerror());
+        return nullptr;
+    }
+    
+    return initializer;
 }
 
 } // namespace JSC

@@ -24,24 +24,23 @@
 #if ENABLE(CSS_DEVICE_ADAPTATION)
 
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
 #include "WebKitCSSViewportRule.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSWebKitCSSViewportRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSWebKitCSSViewportRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitCSSViewportRule> impl)
+    static JSWebKitCSSViewportRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitCSSViewportRule>&& impl)
     {
-        JSWebKitCSSViewportRule* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSViewportRule>(globalObject->vm().heap)) JSWebKitCSSViewportRule(structure, globalObject, impl);
+        JSWebKitCSSViewportRule* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSViewportRule>(globalObject->vm().heap)) JSWebKitCSSViewportRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,63 +54,17 @@ public:
         return static_cast<WebKitCSSViewportRule&>(Base::impl());
     }
 protected:
-    JSWebKitCSSViewportRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebKitCSSViewportRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebKitCSSViewportRule(JSC::Structure*, JSDOMGlobalObject*, Ref<WebKitCSSViewportRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSWebKitCSSViewportRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebKitCSSViewportRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebKitCSSViewportRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSViewportRulePrototype>(vm.heap)) JSWebKitCSSViewportRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebKitCSSViewportRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWebKitCSSViewportRuleConstructor : public DOMConstructorObject {
-private:
-    JSWebKitCSSViewportRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebKitCSSViewportRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebKitCSSViewportRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSViewportRuleConstructor>(vm.heap)) JSWebKitCSSViewportRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsWebKitCSSViewportRuleStyle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSViewportRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

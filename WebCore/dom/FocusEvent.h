@@ -39,49 +39,40 @@ struct FocusEventInit : public UIEventInit {
     RefPtr<EventTarget> relatedTarget;
 };
 
-class FocusEvent : public UIEvent {
+class FocusEvent final : public UIEvent {
 public:
-    static PassRefPtr<FocusEvent> create()
+    static Ref<FocusEvent> create()
     {
-        return adoptRef(new FocusEvent);
+        return adoptRef(*new FocusEvent);
     }
 
-    static PassRefPtr<FocusEvent> create(const AtomicString& type, bool canBubble, bool cancelable, PassRefPtr<AbstractView> view, int detail, PassRefPtr<EventTarget> relatedTarget)
+    static Ref<FocusEvent> create(const AtomicString& type, bool canBubble, bool cancelable, RefPtr<AbstractView>&& view, int detail, RefPtr<EventTarget>&& relatedTarget)
     {
-        return adoptRef(new FocusEvent(type, canBubble, cancelable, view, detail, relatedTarget));
+        return adoptRef(*new FocusEvent(type, canBubble, cancelable, WTF::move(view), detail, WTF::move(relatedTarget)));
     }
 
-    static PassRefPtr<FocusEvent> create(const AtomicString& type, const FocusEventInit& initializer)
+    static Ref<FocusEvent> create(const AtomicString& type, const FocusEventInit& initializer)
     {
-        return adoptRef(new FocusEvent(type, initializer));
+        return adoptRef(*new FocusEvent(type, initializer));
     }
 
-    virtual EventTarget* relatedTarget() const OVERRIDE FINAL { return m_relatedTarget.get(); }
-    void setRelatedTarget(PassRefPtr<EventTarget> relatedTarget) { m_relatedTarget = relatedTarget; }
+    virtual EventTarget* relatedTarget() const override { return m_relatedTarget.get(); }
+    void setRelatedTarget(RefPtr<EventTarget>&& relatedTarget) { m_relatedTarget = WTF::move(relatedTarget); }
 
-    virtual EventInterface eventInterface() const;
-    virtual bool isFocusEvent() const;
+    virtual EventInterface eventInterface() const override;
 
 private:
     FocusEvent();
-    FocusEvent(const AtomicString& type, bool canBubble, bool cancelable, PassRefPtr<AbstractView>, int, PassRefPtr<EventTarget>);
+    FocusEvent(const AtomicString& type, bool canBubble, bool cancelable, RefPtr<AbstractView>&&, int, RefPtr<EventTarget>&&);
     FocusEvent(const AtomicString& type, const FocusEventInit&);
+
+    virtual bool isFocusEvent() const override;
 
     RefPtr<EventTarget> m_relatedTarget;
 };
 
-inline FocusEvent* toFocusEvent(Event* event)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(event && event->isFocusEvent());
-    return static_cast<FocusEvent*>(event);
-}
-
-inline FocusEvent& toFocusEvent(Event& event)
-{
-    ASSERT(event.isFocusEvent());
-    return static_cast<FocusEvent&>(event);
-}
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_EVENT(FocusEvent)
 
 #endif // FocusEvent_h

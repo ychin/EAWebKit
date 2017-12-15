@@ -23,28 +23,28 @@
 
 #if ENABLE(WEB_TIMING)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "PerformanceNavigation.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSPerformanceNavigation : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSPerformanceNavigation* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<PerformanceNavigation> impl)
+    static JSPerformanceNavigation* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<PerformanceNavigation>&& impl)
     {
-        JSPerformanceNavigation* ptr = new (NotNull, JSC::allocateCell<JSPerformanceNavigation>(globalObject->vm().heap)) JSPerformanceNavigation(structure, globalObject, impl);
+        JSPerformanceNavigation* ptr = new (NotNull, JSC::allocateCell<JSPerformanceNavigation>(globalObject->vm().heap)) JSPerformanceNavigation(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static PerformanceNavigation* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSPerformanceNavigation();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     PerformanceNavigation& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     PerformanceNavigation* m_impl;
 protected:
-    JSPerformanceNavigation(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<PerformanceNavigation>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSPerformanceNavigation(JSC::Structure*, JSDOMGlobalObject*, Ref<PerformanceNavigation>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSPerformanceNavigationOwner : public JSC::WeakHandleOwner {
@@ -80,77 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, PerformanceNavigation*)
 {
-    DEFINE_STATIC_LOCAL(JSPerformanceNavigationOwner, jsPerformanceNavigationOwner, ());
-    return &jsPerformanceNavigationOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, PerformanceNavigation*)
-{
-    return &world;
+    static NeverDestroyed<JSPerformanceNavigationOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, PerformanceNavigation*);
-PerformanceNavigation* toPerformanceNavigation(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, PerformanceNavigation& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSPerformanceNavigationPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSPerformanceNavigationPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSPerformanceNavigationPrototype* ptr = new (NotNull, JSC::allocateCell<JSPerformanceNavigationPrototype>(vm.heap)) JSPerformanceNavigationPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSPerformanceNavigationPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSPerformanceNavigationConstructor : public DOMConstructorObject {
-private:
-    JSPerformanceNavigationConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSPerformanceNavigationConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSPerformanceNavigationConstructor* ptr = new (NotNull, JSC::allocateCell<JSPerformanceNavigationConstructor>(vm.heap)) JSPerformanceNavigationConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsPerformanceNavigationType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceNavigationRedirectCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceNavigationConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsPerformanceNavigationTYPE_NAVIGATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceNavigationTYPE_RELOAD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceNavigationTYPE_BACK_FORWARD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceNavigationTYPE_RESERVED(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -24,6 +24,7 @@
 
 #include "JSRTCDataChannelEvent.h"
 
+#include "JSDOMBinding.h"
 #include "JSRTCDataChannel.h"
 #include "RTCDataChannel.h"
 #include "RTCDataChannelEvent.h"
@@ -33,62 +34,81 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSRTCDataChannelEventTableValues[] =
-{
-    { "channel", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelEventChannel), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsRTCDataChannelEventChannel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSRTCDataChannelEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRTCDataChannelEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRTCDataChannelEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannelEventPrototype>(vm.heap)) JSRTCDataChannelEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRTCDataChannelEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSRTCDataChannelEventTable = { 2, 1, JSRTCDataChannelEventTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSRTCDataChannelEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "channel", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelEventChannel), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSRTCDataChannelEventPrototypeTable = { 1, 0, JSRTCDataChannelEventPrototypeTableValues, 0 };
-const ClassInfo JSRTCDataChannelEventPrototype::s_info = { "RTCDataChannelEventPrototype", &Base::s_info, &JSRTCDataChannelEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSRTCDataChannelEventPrototype) };
+const ClassInfo JSRTCDataChannelEventPrototype::s_info = { "RTCDataChannelEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDataChannelEventPrototype) };
 
-JSObject* JSRTCDataChannelEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRTCDataChannelEvent>(vm, globalObject);
-}
-
-const ClassInfo JSRTCDataChannelEvent::s_info = { "RTCDataChannelEvent", &Base::s_info, &JSRTCDataChannelEventTable, 0 , CREATE_METHOD_TABLE(JSRTCDataChannelEvent) };
-
-JSRTCDataChannelEvent::JSRTCDataChannelEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDataChannelEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSRTCDataChannelEvent::finishCreation(VM& vm)
+void JSRTCDataChannelEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSRTCDataChannelEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSRTCDataChannelEvent::s_info = { "RTCDataChannelEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDataChannelEvent) };
+
+JSRTCDataChannelEvent::JSRTCDataChannelEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDataChannelEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSRTCDataChannelEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSRTCDataChannelEventPrototype::create(vm, globalObject, JSRTCDataChannelEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSRTCDataChannelEventPrototype::create(vm, globalObject, JSRTCDataChannelEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSRTCDataChannelEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSRTCDataChannelEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSRTCDataChannelEvent* thisObject = jsCast<JSRTCDataChannelEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSRTCDataChannelEvent, Base>(exec, JSRTCDataChannelEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSRTCDataChannelEvent>(vm, globalObject);
 }
 
-JSValue jsRTCDataChannelEventChannel(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelEventChannel(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannelEvent* castedThis = jsCast<JSRTCDataChannelEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannelEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannelEvent* castedThis = jsDynamicCast<JSRTCDataChannelEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannelEvent", "channel");
+        return throwGetterTypeError(*exec, "RTCDataChannelEvent", "channel");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.channel()));
-    return result;
+    return JSValue::encode(result);
 }
 
 

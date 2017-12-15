@@ -33,18 +33,16 @@
 //EAWebKitTODO - figure out how many cores to report for various platforms - looks like numberOfCores() is used in two places
 // 1) Parallel GC, currently disabled
 // 2) ParallelJobs, currently used in platform/graphics/filters
-#elif OS(DARWIN) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
+#elif OS(DARWIN)
 #include <sys/param.h>
 // sys/types.h must come before sys/sysctl.h because the latter uses
 // data types defined in the former. See sysctl(3) and style(9).
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#elif OS(LINUX) || OS(AIX) || OS(SOLARIS)
+#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
 #include <unistd.h>
 #elif OS(WINDOWS)
 #include <windows.h>
-#elif OS(QNX)
-#include <sys/syspage.h>
 #endif
 //-EAWebKitChange
 
@@ -62,17 +60,17 @@ int numberOfProcessorCores()
 //3/3/2014
 #if PLATFORM(EA)
     s_numberOfCores = defaultIfUnavailable;
-#elif OS(DARWIN) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
+#elif OS(DARWIN)
     unsigned result;
     size_t length = sizeof(result);
     int name[] = {
             CTL_HW,
-            HW_NCPU
+            HW_AVAILCPU
     };
     int sysctlResult = sysctl(name, sizeof(name) / sizeof(int), &result, &length, 0, 0);
 
     s_numberOfCores = sysctlResult < 0 ? defaultIfUnavailable : result;
-#elif OS(LINUX) || OS(AIX) || OS(SOLARIS)
+#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
     long sysconfResult = sysconf(_SC_NPROCESSORS_ONLN);
 
     s_numberOfCores = sysconfResult < 0 ? defaultIfUnavailable : static_cast<int>(sysconfResult);
@@ -82,10 +80,6 @@ int numberOfProcessorCores()
     GetSystemInfo(&sysInfo);
 
     s_numberOfCores = sysInfo.dwNumberOfProcessors;
-#elif OS(QNX)
-    UNUSED_PARAM(defaultIfUnavailable);
-
-    s_numberOfCores = _syspage_ptr->num_cpu;
 #else
     s_numberOfCores = defaultIfUnavailable;
 #endif

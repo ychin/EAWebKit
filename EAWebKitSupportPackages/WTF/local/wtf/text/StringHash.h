@@ -45,7 +45,7 @@ namespace WTF {
         static unsigned hash(StringImpl* key) { return key->hash(); }
         static inline bool equal(const StringImpl* a, const StringImpl* b)
         {
-            return equalNonNull(a, b);
+            return WTF::equal(*a, *b);
         }
 
         static unsigned hash(const RefPtr<StringImpl>& key) { return key->hash(); }
@@ -75,6 +75,9 @@ namespace WTF {
     public:
         template<typename T> static inline UChar foldCase(T character)
         {
+            if (std::is_same<T, LChar>::value)
+                return StringImpl::latin1CaseFoldTable[character];
+            
             return u_foldCase(character, U_FOLD_CASE_DEFAULT);
         }
 

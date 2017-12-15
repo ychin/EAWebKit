@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -44,33 +44,33 @@ namespace JSC { namespace Bindings {
 class EAInstance : public Instance {
 	WTF_MAKE_NONCOPYABLE(EAInstance);
 public:
-    static PassRefPtr<EAInstance> create(EA::WebKit::IJSBoundObject* object, PassRefPtr<RootObject> rootObject)
+    static Ref<EAInstance> create(EA::WebKit::IJSBoundObject* object, PassRefPtr<RootObject> rootObject)
     {
-        return adoptRef(new EAInstance(object, rootObject));
+        return adoptRef(*new EAInstance(object, rootObject));
     }
 
     virtual ~EAInstance(void);
 
-    virtual Class *getClass() const OVERRIDE;
+    virtual Class *getClass() const override;
 
 	//virtual bool setValueOfUndefinedField(ExecState*, PropertyName, JSValue) { return false; }
 	
-	virtual JSValue getMethod(ExecState*, PropertyName) OVERRIDE;
-	virtual JSValue invokeMethod(ExecState*, RuntimeMethod*) OVERRIDE;
+	virtual JSValue getMethod(ExecState*, PropertyName) override;
+	virtual JSValue invokeMethod(ExecState*, RuntimeMethod*) override;
 	
-	virtual bool supportsInvokeDefaultMethod() const OVERRIDE;
-	virtual JSValue invokeDefaultMethod(ExecState*) OVERRIDE;
+	virtual bool supportsInvokeDefaultMethod() const override;
+	virtual JSValue invokeDefaultMethod(ExecState*) override;
 
 	//EAWebKitTODO: Implement these to support bound object as constructor. 
 	//virtual bool supportsConstruct() const { return false; }
 	//virtual JSValue invokeConstruct(ExecState*, const ArgList&) { return JSValue(); }
 	
 	//EAWebKitTODO: We currently don't support methods, only fields.
-	virtual void getPropertyNames(ExecState*, PropertyNameArray&) OVERRIDE;
+	virtual void getPropertyNames(ExecState*, PropertyNameArray&) override;
 	
-    virtual JSValue defaultValue(ExecState*, PreferredPrimitiveType) const OVERRIDE;
+    virtual JSValue defaultValue(ExecState*, PreferredPrimitiveType) const override;
 
-	virtual JSValue valueOf(ExecState*) const OVERRIDE;
+	virtual JSValue valueOf(ExecState*) const override;
 
 	//EAWebKitTODO: Implement these to support dynamic object member addition.
 	//virtual bool getOwnPropertySlot(JSObject*, ExecState*, PropertyName, PropertySlot&) { return false; }

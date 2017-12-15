@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,8 +31,6 @@
 
 #include "config.h"
 #include "ElementRareData.h"
-#include "RegionOversetState.h"
-#include "RenderStyle.h"
 
 namespace WebCore {
 
@@ -41,9 +40,16 @@ struct SameSizeAsElementRareData : NodeRareData {
     RegionOversetState regionOversetState;
     LayoutSize sizeForResizing;
     IntSize scrollOffset;
-    void* pointers[7];
+	//+EAWebKitChange
+	//10/7/2015 : To match same sizes for all compilers
+    void* pointers[4];
+	std::unique_ptr<DatasetDOMStringMap> pointer2;
+    std::unique_ptr<ClassList> pointer3;
+    std::unique_ptr<NamedNodeMap> pointer4;
+	//-EAWebKitChange
 };
-
-COMPILE_ASSERT(sizeof(ElementRareData) == sizeof(SameSizeAsElementRareData), ElementRareDataShouldStaySmall);
-
+//+EAWebKitChange
+//10/7/2015
+COMPILE_ASSERT(sizeof(ElementRareData) == sizeof(SameSizeAsElementRareData), "ElementRareData should stay small");
+//-EAWebKitChange
 } // namespace WebCore

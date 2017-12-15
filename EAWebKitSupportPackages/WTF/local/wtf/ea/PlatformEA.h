@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -38,9 +38,9 @@ extern "C" char* getenv(const char*);
 
 #define WTF_PLATFORM_EA 1
 
-#define WTF_USE_CAIRO 1
+#define USE_CAIRO 1
 
-#define WTF_USE_ZLIB 0 //There doesn't seem to be any feature that is enabled that needs this. We set it to 0 for compilation purpose(or we can choose to exclude compression.cpp
+#define USE_ZLIB 0 //There doesn't seem to be any feature that is enabled that needs this. We set it to 0 for compilation purpose(or we can choose to exclude compression.cpp
 
 // If you enable USE_SYSTEM_MALLOC, it means that fastMalloc calls implement themselves in terms of, well, system malloc. We define it to 1, exclude FastMalloc.cpp from build and supply our versions so that any fastmalloc 
 // call are routed to our allocator. 
@@ -50,23 +50,23 @@ extern "C" char* getenv(const char*);
 // but we do it here anyway to provide future safety.
 #define GLOBAL_FASTMALLOC_NEW 0 
 
-// We enable tiled backing storage. The tiled backing storage allows for faster scrolling by caching bitmaps outside the visible viewport. The concept is applicable both for software rendering or GPU 
-// compositing. 
-// Even though we compile with tiled backing storage available, the runtime is not enabled by default. It can be turned on/off by the users of EA::WebKit::View. 
-#define WTF_USE_TILED_BACKING_STORE 1
-
 // Enable accelerated compositing. We use texture mapper mechanism to provide accelerated compositing in our port.
-#define WTF_USE_ACCELERATED_COMPOSITING 1
-#define WTF_USE_TEXTURE_MAPPER 1
+#define USE_ACCELERATED_COMPOSITING 1
+#define USE_TEXTURE_MAPPER 1
 
 // Turn off 3D graphics/OpenGL for now.
-#define WTF_USE_3D_GRAPHICS 0
-#define	WTF_USE_OPENGL_ES_2 0
-#define	WTF_USE_EGL 0
+#define ENABLE_GRAPHICS_CONTEXT_3D 0
+#define	USE_OPENGL_ES_2 0
+#define	USE_EGL 0
 
-#define WTF_USE_PTHREADS 0
+#define USE_PTHREADS 0
+
+#define USE_UDIS86 0
+
+#define JSC_OBJC_API_ENABLED 0
 
 #define U_STATIC_IMPLEMENTATION 1
+#define UCONFIG_NO_COLLATION 1 // We don't use icu dlls/implementation but we use this to avoid touching some files.
 
 #if EA_SSE
 #include <xmmintrin.h>
@@ -84,6 +84,19 @@ extern "C" char* getenv(const char*);
 #define HAVE_VIRTUALALLOC 0 // This is used in TCSystemAlloc.h which we don't use
 #define HAVE_MMAP 0 // Used only on OS(UNIX) which we don't have.
 #define ENABLE_BINDING_INTEGRITY 0
+#elif defined(EA_PLATFORM_SONY)
+#define HAVE_ERRNO_H 1
+#define HAVE_ALIGNED_MALLOC 1
+#define HAVE_MMAP 0
+#define HAVE_VIRTUALALLOC 0 
+#define HAVE_SBRK 0
+#define HAVE_STRINGS_H 0
+#define HAVE_SYS_PARAM_H 0
+#define HAVE_SYS_TIME_H 1
+#define HAVE_SIGNAL_H 0
+#define HAVE_VASPRINTF 0
+#define HAVE_LANGINFO_H 0
+#define ENABLE_BRANCH_COMPACTION 0
 #elif defined(EA_PLATFORM_OSX)
 #include <unistd.h>
 #endif

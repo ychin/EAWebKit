@@ -23,23 +23,23 @@
 
 #include "CSSFontFaceRule.h"
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSFontFaceRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSFontFaceRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSFontFaceRule> impl)
+    static JSCSSFontFaceRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSFontFaceRule>&& impl)
     {
-        JSCSSFontFaceRule* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceRule>(globalObject->vm().heap)) JSCSSFontFaceRule(structure, globalObject, impl);
+        JSCSSFontFaceRule* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceRule>(globalObject->vm().heap)) JSCSSFontFaceRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static CSSFontFaceRule* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,65 +53,19 @@ public:
         return static_cast<CSSFontFaceRule&>(Base::impl());
     }
 protected:
-    JSCSSFontFaceRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSFontFaceRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSFontFaceRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSFontFaceRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, CSSFontFaceRule*);
-CSSFontFaceRule* toCSSFontFaceRule(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, CSSFontFaceRule& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSCSSFontFaceRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSFontFaceRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSFontFaceRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceRulePrototype>(vm.heap)) JSCSSFontFaceRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSFontFaceRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSCSSFontFaceRuleConstructor : public DOMConstructorObject {
-private:
-    JSCSSFontFaceRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSFontFaceRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSFontFaceRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceRuleConstructor>(vm.heap)) JSCSSFontFaceRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCSSFontFaceRuleStyle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSFontFaceRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

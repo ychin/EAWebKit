@@ -11,7 +11,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -46,6 +46,7 @@
 #include "FrameTree.h"
 #include "HTMLFormElement.h"
 #include "HTMLFrameOwnerElement.h"
+#include "HTTPHeaderNames.h"
 #include "HistoryItem.h"
 #include "IconController.h"
 #include "InspectorInstrumentation.h"
@@ -55,44 +56,63 @@
 #include "Page.h"
 #include "PolicyChecker.h"
 #include "ProgressTracker.h"
-#include "ResourceBuffer.h"
+#include "ResourceHandle.h"
 #include "SchemeRegistry.h"
+#include "ScriptController.h"
 #include "SecurityPolicy.h"
 #include "Settings.h"
 #include "SubresourceLoader.h"
 #include "TextResourceDecoder.h"
 #include <wtf/Assertions.h>
+#include <wtf/NeverDestroyed.h>
 #include <wtf/Ref.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/WTFString.h>
-#include <wtf/unicode/Unicode.h>
 
 #if ENABLE(WEB_ARCHIVE) || ENABLE(MHTML)
 #include "ArchiveFactory.h"
 #endif
 
-#if USE(CONTENT_FILTERING)
+#if ENABLE(CONTENT_FILTERING)
 #include "ContentFilter.h"
 #endif
 
 namespace WebCore {
 
-static void cancelAll(const ResourceLoaderSet& loaders)
+static void cancelAll(const ResourceLoaderMap& loaders)
 {
-    Vector<RefPtr<ResourceLoader> > loadersCopy;
-    copyToVector(loaders, loadersCopy);
-    size_t size = loadersCopy.size();
-    for (size_t i = 0; i < size; ++i)
-        loadersCopy[i]->cancel();
+    Vector<RefPtr<ResourceLoader>> loadersCopy;
+    copyValuesToVector(loaders, loadersCopy);
+    for (auto& loader : loadersCopy)
+        loader->cancel();
 }
 
-static void setAllDefersLoading(const ResourceLoaderSet& loaders, bool defers)
+static void setAllDefersLoading(const ResourceLoaderMap& loaders, bool defers)
 {
-    Vector<RefPtr<ResourceLoader> > loadersCopy;
-    copyToVector(loaders, loadersCopy);
-    size_t size = loadersCopy.size();
-    for (size_t i = 0; i < size; ++i)
-        loadersCopy[i]->setDefersLoading(defers);
+    Vector<RefPtr<ResourceLoader>> loadersCopy;
+    copyValuesToVector(loaders, loadersCopy);
+    for (auto& loader : loadersCopy)
+        loader->setDefersLoading(defers);
+}
+
+static bool areAllLoadersPageCacheAcceptable(const ResourceLoaderMap& loaders)
+{
+    Vector<RefPtr<ResourceLoader>> loadersCopy;
+    copyValuesToVector(loaders, loadersCopy);
+    for (auto& loader : loadersCopy) {
+        if (!loader->frameLoader() || !loader->frameLoader()->frame().page())
+            return false;
+
+        CachedResource* cachedResource = MemoryCache::singleton().resourceForRequest(loader->request(), loader->frameLoader()->frame().page()->sessionID());
+        if (!cachedResource)
+            return false;
+
+        // Only image and XHR loads do prevent the page from entering the PageCache.
+        // All non-image loads will prevent the page from entering the PageCache.
+        if (!cachedResource->isImage() && !cachedResource->areAllClientsXMLHttpRequests())
+            return false;
+    }
+    return true;
 }
 
 DocumentLoader::DocumentLoader(const ResourceRequest& req, const SubstituteData& substituteData)
@@ -112,13 +132,17 @@ DocumentLoader::DocumentLoader(const ResourceRequest& req, const SubstituteData&
     , m_isLoadingMultipartContent(false)
     , m_wasOnloadHandled(false)
     , m_stopRecordingResponses(false)
-    , m_substituteResourceDeliveryTimer(this, &DocumentLoader::substituteResourceDeliveryTimerFired)
+    , m_substituteResourceDeliveryTimer(*this, &DocumentLoader::substituteResourceDeliveryTimerFired)
     , m_didCreateGlobalHistoryEntry(false)
     , m_loadingMainResource(false)
     , m_timeOfLastDataReceived(0.0)
     , m_identifierForLoadWithoutResourceLoader(0)
-    , m_dataLoadTimer(this, &DocumentLoader::handleSubstituteDataLoadNow)
-    , m_applicationCacheHost(adoptPtr(new ApplicationCacheHost(this)))
+    , m_dataLoadTimer(*this, &DocumentLoader::handleSubstituteDataLoadNow)
+    , m_subresourceLoadersArePageCacheAcceptable(false)
+    , m_applicationCacheHost(std::make_unique<ApplicationCacheHost>(*this))
+#if ENABLE(CONTENT_FILTERING)
+    , m_contentFilter(!substituteData.isValid() ? ContentFilter::createIfNeeded(std::bind(&DocumentLoader::contentFilterDidDecide, this)) : nullptr)
+#endif
 {
 }
 
@@ -129,7 +153,7 @@ FrameLoader* DocumentLoader::frameLoader() const
     return &m_frame->loader();
 }
 
-ResourceLoader* DocumentLoader::mainResourceLoader() const
+SubresourceLoader* DocumentLoader::mainResourceLoader() const
 {
     return m_mainResource ? m_mainResource->loader() : 0;
 }
@@ -137,7 +161,8 @@ ResourceLoader* DocumentLoader::mainResourceLoader() const
 DocumentLoader::~DocumentLoader()
 {
     ASSERT(!m_frame || frameLoader()->activeDocumentLoader() != this || !isLoading());
-	ASSERT_WITH_MESSAGE(!m_waitingForNavigationPolicy, "The navigation policy callback should never outlive its DocumentLoader.");
+    ASSERT_WITH_MESSAGE(!m_waitingForContentPolicy, "The content policy callback should never outlive its DocumentLoader.");
+    ASSERT_WITH_MESSAGE(!m_waitingForNavigationPolicy, "The navigation policy callback should never outlive its DocumentLoader.");
     if (m_iconLoadDecisionCallback)
         m_iconLoadDecisionCallback->invalidate();
     if (m_iconDataCallback)
@@ -147,20 +172,20 @@ DocumentLoader::~DocumentLoader()
     clearMainResource();
 }
 
-PassRefPtr<ResourceBuffer> DocumentLoader::mainResourceData() const
+PassRefPtr<SharedBuffer> DocumentLoader::mainResourceData() const
 {
     if (m_substituteData.isValid())
-        return ResourceBuffer::create(m_substituteData.content()->data(), m_substituteData.content()->size());
+        return m_substituteData.content()->copy();
     if (m_mainResource)
         return m_mainResource->resourceBuffer();
-    return 0;
+    return nullptr;
 }
 
 Document* DocumentLoader::document() const
 {
     if (m_frame && m_frame->loader().documentLoader() == this)
         return m_frame->document();
-    return 0;
+    return nullptr;
 }
 
 const ResourceRequest& DocumentLoader::originalRequest() const
@@ -256,7 +281,14 @@ void DocumentLoader::stopLoading()
     // (This can happen when there's a single XMLHttpRequest currently loading and stopLoading causes it
     // to stop loading. Because of this, we need to save it so we don't return early.
     bool loading = isLoading();
-    
+
+    // We may want to audit the existing subresource loaders when we are on a page which has completed
+    // loading but there are subresource loads during cancellation. This must be done before the
+    // frame->stopLoading() call, which may evict the CachedResources, which we rely on to check
+    // the type of the resource loads.
+    if (loading && m_committed && !mainResourceLoader() && !m_subresourceLoaders.isEmpty())
+        m_subresourceLoadersArePageCacheAcceptable = areAllLoadersPageCacheAcceptable(m_subresourceLoaders);
+
     if (m_committed) {
         // Attempt to stop the frame if the document loader is loading, or if it is done loading but
         // still  parsing. Failure to do so can cause a world leak.
@@ -296,14 +328,15 @@ void DocumentLoader::stopLoading()
     if (isLoadingMainResource()) {
         // Stop the main resource loader and let it send the cancelled message.
         cancelMainResourceLoad(frameLoader->cancelledError(m_request));
-    } else if (!m_subresourceLoaders.isEmpty())
-        // The main resource loader already finished loading. Set the cancelled error on the 
-        // document and let the subresourceLoaders send individual cancelled messages below.
+    } else if (!m_subresourceLoaders.isEmpty() || !m_plugInStreamLoaders.isEmpty()) {
+        // The main resource loader already finished loading. Set the cancelled error on the
+        // document and let the subresourceLoaders and pluginLoaders send individual cancelled messages below.
         setMainDocumentError(frameLoader->cancelledError(m_request));
-    else
+    } else {
         // If there are no resource loaders, we need to manufacture a cancelled message.
         // (A back/forward navigation has no resource loaders because its resources are cached.)
         mainReceivedError(frameLoader->cancelledError(m_request));
+    }
 
     // We always need to explicitly cancel the Document's parser when stopping the load.
     // Otherwise cancelling the parser while starting the next page load might result
@@ -327,13 +360,12 @@ void DocumentLoader::commitIfReady()
 
 bool DocumentLoader::isLoading() const
 {
-    // FIXME: This should always be enabled, but it seems to cause
+    // if (document() && document()->hasActiveParser())
+    //     return true;
+    // FIXME: The above code should be enabled, but it seems to cause
     // http/tests/security/feed-urls-from-remote.html to timeout on Mac WK1
     // see http://webkit.org/b/110554 and http://webkit.org/b/110401
-#if ENABLE(THREADED_HTML_PARSER)
-    if (document() && document()->hasActiveParser())
-        return true;
-#endif
+
     return isLoadingMainResource() || !m_subresourceLoaders.isEmpty() || !m_plugInStreamLoaders.isEmpty();
 }
 
@@ -374,16 +406,6 @@ void DocumentLoader::finishedLoading(double finishTime)
         frameLoader()->notifier().dispatchDidFinishLoading(this, identifier, finishTime);
     }
 
-#if USE(CONTENT_FILTERING)
-    if (m_contentFilter && m_contentFilter->needsMoreData()) {
-        m_contentFilter->finishedAddingData();
-        int length;
-        const char* data = m_contentFilter->getReplacementData(length);
-        if (data)
-            dataReceived(m_mainResource.get(), data, length);
-    }
-#endif
-
     maybeFinishLoadingMultipartContent();
 
     double responseEndTime = finishTime;
@@ -391,7 +413,7 @@ void DocumentLoader::finishedLoading(double finishTime)
         responseEndTime = m_timeOfLastDataReceived;
     if (!responseEndTime)
         responseEndTime = monotonicallyIncreasingTime();
-    timing()->setResponseEnd(responseEndTime);
+    timing().setResponseEnd(responseEndTime);
 
     commitIfReady();
     if (!frameLoader())
@@ -409,14 +431,14 @@ void DocumentLoader::finishedLoading(double finishTime)
     if (!m_mainDocumentError.isNull())
         return;
     clearMainResourceLoader();
-    if (!frameLoader()->stateMachine()->creatingInitialEmptyDocument())
+    if (!frameLoader()->stateMachine().creatingInitialEmptyDocument())
         frameLoader()->checkLoadComplete();
 
     // If the document specified an application cache manifest, it violates the author's intent if we store it in the memory cache
     // and deny the appcache the chance to intercept it in the future, so remove from the memory cache.
     if (m_frame) {
         if (m_mainResource && m_frame->document()->hasManifest())
-            memoryCache()->remove(m_mainResource.get());
+            MemoryCache::singleton().remove(*m_mainResource);
     }
     m_applicationCacheHost->finishedLoadingMainResource();
 }
@@ -434,12 +456,12 @@ bool DocumentLoader::isPostOrRedirectAfterPost(const ResourceRequest& newRequest
     return false;
 }
 
-void DocumentLoader::handleSubstituteDataLoadNow(DocumentLoaderTimer*)
+void DocumentLoader::handleSubstituteDataLoadNow()
 {
-    URL url = m_substituteData.responseURL();
-    if (url.isEmpty())
-        url = m_request.url();
-    ResourceResponse response(url, m_substituteData.mimeType(), m_substituteData.content()->size(), m_substituteData.textEncoding(), "");
+    ResourceResponse response = m_substituteData.response();
+    if (response.url().isEmpty())
+        response = ResourceResponse(m_request.url(), m_substituteData.mimeType(), m_substituteData.content()->size(), m_substituteData.textEncoding());
+
     responseReceived(0, response);
 }
 
@@ -455,16 +477,24 @@ void DocumentLoader::startDataLoadTimer()
 
 void DocumentLoader::handleSubstituteDataLoadSoon()
 {
-    if (m_deferMainResourceDataLoad)
-        startDataLoadTimer();
+    if (!m_deferMainResourceDataLoad || frameLoader()->loadsSynchronously())
+        handleSubstituteDataLoadNow();
     else
-        handleSubstituteDataLoadNow(0);
+        startDataLoadTimer();
 }
 
 void DocumentLoader::redirectReceived(CachedResource* resource, ResourceRequest& request, const ResourceResponse& redirectResponse)
 {
     ASSERT_UNUSED(resource, resource == m_mainResource);
     willSendRequest(request, redirectResponse);
+}
+
+void DocumentLoader::syntheticRedirectReceived(CachedResource* resource, ResourceRequest& request, const ResourceResponse& redirectResponse, bool& shouldContinue)
+{
+    redirectReceived(resource, request, redirectResponse);
+
+    // If we will soon remove our reference to the CachedRawResource in favor of a SubstituteData load, we don't want to continue receiving synthetic CachedRawResource callbacks.
+    shouldContinue = !m_substituteData.isValid();
 }
 
 void DocumentLoader::willSendRequest(ResourceRequest& newRequest, const ResourceResponse& redirectResponse)
@@ -480,22 +510,22 @@ void DocumentLoader::willSendRequest(ResourceRequest& newRequest, const Resource
         return;
     }
 
-    ASSERT(timing()->fetchStart());
+    ASSERT(timing().fetchStart());
     if (!redirectResponse.isNull()) {
         // If the redirecting url is not allowed to display content from the target origin,
         // then block the redirect.
-        RefPtr<SecurityOrigin> redirectingOrigin = SecurityOrigin::create(redirectResponse.url());
-        if (!redirectingOrigin->canDisplay(newRequest.url())) {
+        Ref<SecurityOrigin> redirectingOrigin(SecurityOrigin::create(redirectResponse.url()));
+        if (!redirectingOrigin.get().canDisplay(newRequest.url())) {
             FrameLoader::reportLocalLoadFailed(m_frame, newRequest.url().string());
             cancelMainResourceLoad(frameLoader()->cancelledError(newRequest));
             return;
         }
-		if (!portAllowed(newRequest.url())) {
-			FrameLoader::reportBlockedPortFailed(m_frame, newRequest.url().string());
-			cancelMainResourceLoad(frameLoader()->blockedError(newRequest));
-			return;
-		}
-        timing()->addRedirect(redirectResponse.url(), newRequest.url());
+        if (!portAllowed(newRequest.url())) {
+            FrameLoader::reportBlockedPortFailed(m_frame, newRequest.url().string());
+            cancelMainResourceLoad(frameLoader()->blockedError(newRequest));
+            return;
+        }
+        timing().addRedirect(redirectResponse.url(), newRequest.url());
     }
 
     // Update cookie policy base URL as URL changes, except for subframes, which use the
@@ -512,11 +542,20 @@ void DocumentLoader::willSendRequest(ResourceRequest& newRequest, const Resource
 
     Frame& topFrame = m_frame->tree().top();
     if (&topFrame != m_frame) {
-        if (!frameLoader()->mixedContentChecker().canDisplayInsecureContent(topFrame.document()->securityOrigin(), newRequest.url())) {
+        if (!frameLoader()->mixedContentChecker().canDisplayInsecureContent(topFrame.document()->securityOrigin(), MixedContentChecker::ContentType::Active, newRequest.url())) {
             cancelMainResourceLoad(frameLoader()->cancelledError(newRequest));
             return;
         }
     }
+
+#if ENABLE(CONTENT_FILTERING)
+    if (m_contentFilter) {
+        ASSERT(redirectResponse.isNull());
+        m_contentFilter->willSendRequest(newRequest, redirectResponse);
+        if (newRequest.isNull())
+            return;
+    }
+#endif
 
     setRequest(newRequest);
 
@@ -524,35 +563,36 @@ void DocumentLoader::willSendRequest(ResourceRequest& newRequest, const Resource
         // We checked application cache for initial URL, now we need to check it for redirected one.
         ASSERT(!m_substituteData.isValid());
         m_applicationCacheHost->maybeLoadMainResourceForRedirect(newRequest, m_substituteData);
-        if (m_substituteData.isValid())
-            m_identifierForLoadWithoutResourceLoader = mainResourceLoader()->identifier();
+        if (m_substituteData.isValid()) {
+            RELEASE_ASSERT(m_mainResource);
+            ResourceLoader* loader = m_mainResource->loader();
+            m_identifierForLoadWithoutResourceLoader = loader ? loader->identifier() : m_mainResource->identifierForLoadWithoutResourceLoader();
+        }
     }
 
     // FIXME: Ideally we'd stop the I/O until we hear back from the navigation policy delegate
     // listener. But there's no way to do that in practice. So instead we cancel later if the
     // listener tells us to. In practice that means the navigation policy needs to be decided
     // synchronously for these redirect cases.
-	if (!redirectResponse.isNull()) {
-		ASSERT(!m_waitingForNavigationPolicy);
-		m_waitingForNavigationPolicy = true;
-		frameLoader()->policyChecker().checkNavigationPolicy(newRequest, callContinueAfterNavigationPolicy, this);
-	}
-}
+    if (redirectResponse.isNull())
+        return;
 
-void DocumentLoader::callContinueAfterNavigationPolicy(void* argument, const ResourceRequest& request, PassRefPtr<FormState>, bool shouldContinue)
-{
-    static_cast<DocumentLoader*>(argument)->continueAfterNavigationPolicy(request, shouldContinue);
+    ASSERT(!m_waitingForNavigationPolicy);
+    m_waitingForNavigationPolicy = true;
+    frameLoader()->policyChecker().checkNavigationPolicy(newRequest, [this](const ResourceRequest& request, PassRefPtr<FormState>, bool shouldContinue) {
+        continueAfterNavigationPolicy(request, shouldContinue);
+    });
 }
 
 void DocumentLoader::continueAfterNavigationPolicy(const ResourceRequest&, bool shouldContinue)
 {
-	ASSERT(m_waitingForNavigationPolicy);
-	m_waitingForNavigationPolicy = false;
+    ASSERT(m_waitingForNavigationPolicy);
+    m_waitingForNavigationPolicy = false;
     if (!shouldContinue)
         stopLoadingForPolicyChange();
     else if (m_substituteData.isValid()) {
         // A redirect resulted in loading substitute data.
-        ASSERT(timing()->redirectCount());
+        ASSERT(timing().redirectCount());
 
         // We need to remove our reference to the CachedResource in favor of a SubstituteData load.
         // This will probably trigger the cancellation of the CachedResource's underlying ResourceLoader, though there is a
@@ -561,10 +601,15 @@ void DocumentLoader::continueAfterNavigationPolicy(const ResourceRequest&, bool 
         // However, from an API perspective, this isn't a cancellation. Therefore, sever our relationship with the network load,
         // but prevent the ResourceLoader from sending ResourceLoadNotifier callbacks.
         RefPtr<ResourceLoader> resourceLoader = mainResourceLoader();
-        ASSERT(resourceLoader->shouldSendResourceLoadCallbacks());
-        resourceLoader->setSendCallbackPolicy(DoNotSendCallbacks);
+        if (resourceLoader) {
+            ASSERT(resourceLoader->shouldSendResourceLoadCallbacks());
+            resourceLoader->setSendCallbackPolicy(DoNotSendCallbacks);
+        }
+
         clearMainResource();
-        resourceLoader->setSendCallbackPolicy(SendCallbacks);
+
+        if (resourceLoader)
+            resourceLoader->setSendCallbackPolicy(SendCallbacks);
         handleSubstituteDataLoadSoon();
     }
 }
@@ -578,22 +623,22 @@ void DocumentLoader::responseReceived(CachedResource* resource, const ResourceRe
     // The memory cache doesn't understand the application cache or its caching rules. So if a main resource is served
     // from the application cache, ensure we don't save the result for future use.
     if (willLoadFallback)
-        memoryCache()->remove(m_mainResource.get());
+        MemoryCache::singleton().remove(*m_mainResource);
 
     if (willLoadFallback)
         return;
 
-    DEFINE_STATIC_LOCAL(AtomicString, xFrameOptionHeader, ("x-frame-options", AtomicString::ConstructFromLiteral));
-    HTTPHeaderMap::const_iterator it = response.httpHeaderFields().find(xFrameOptionHeader);
-    if (it != response.httpHeaderFields().end()) {
+    const auto& commonHeaders = response.httpHeaderFields().commonHeaders();
+    auto it = commonHeaders.find(HTTPHeaderName::XFrameOptions);
+    if (it != commonHeaders.end()) {
         String content = it->value;
-        ASSERT(m_mainResource);
+        ASSERT(m_identifierForLoadWithoutResourceLoader || m_mainResource);
         unsigned long identifier = m_identifierForLoadWithoutResourceLoader ? m_identifierForLoadWithoutResourceLoader : m_mainResource->identifier();
         ASSERT(identifier);
         if (frameLoader()->shouldInterruptLoadForXFrameOptions(content, response.url(), identifier)) {
-            InspectorInstrumentation::continueAfterXFrameOptionsDenied(m_frame, this, identifier, response);
+            InspectorInstrumentation::continueAfterXFrameOptionsDenied(m_frame, *this, identifier, response);
             String message = "Refused to display '" + response.url().stringCenterEllipsizedToLength() + "' in a frame because it set 'X-Frame-Options' to '" + content + "'.";
-            frame()->document()->addConsoleMessage(SecurityMessageSource, ErrorMessageLevel, message, identifier);
+            frame()->document()->addConsoleMessage(MessageSource::Security, MessageLevel::Error, message, identifier);
             frame()->document()->enforceSandboxFlags(SandboxOrigin);
             if (HTMLFrameOwnerElement* ownerElement = frame()->ownerElement())
                 ownerElement->dispatchEvent(Event::create(eventNames().loadEvent, false, false));
@@ -614,10 +659,8 @@ void DocumentLoader::responseReceived(CachedResource* resource, const ResourceRe
     if (m_isLoadingMultipartContent) {
         setupForReplace();
         m_mainResource->clear();
-    } else if (response.isMultipart()) {
-        FeatureObserver::observe(m_frame->document(), FeatureObserver::MultipartMainResource);
+    } else if (response.isMultipart())
         m_isLoadingMultipartContent = true;
-    }
 
     m_response = response;
 
@@ -631,6 +674,7 @@ void DocumentLoader::responseReceived(CachedResource* resource, const ResourceRe
     }
 
     ASSERT(!m_waitingForContentPolicy);
+    ASSERT(frameLoader());
     m_waitingForContentPolicy = true;
 
     // Always show content with valid substitute data.
@@ -647,17 +691,9 @@ void DocumentLoader::responseReceived(CachedResource* resource, const ResourceRe
     }
 #endif
 
-#if USE(CONTENT_FILTERING)
-    if (response.url().protocolIs("https") && ContentFilter::isEnabled())
-        m_contentFilter = ContentFilter::create(response);
-#endif
-
-    frameLoader()->policyChecker().checkContentPolicy(m_response, callContinueAfterContentPolicy, this);
-}
-
-void DocumentLoader::callContinueAfterContentPolicy(void* argument, PolicyAction policy)
-{
-    static_cast<DocumentLoader*>(argument)->continueAfterContentPolicy(policy);
+    frameLoader()->policyChecker().checkContentPolicy(m_response, [this](PolicyAction policy) {
+        continueAfterContentPolicy(policy);
+    });
 }
 
 void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
@@ -697,7 +733,7 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
         }
 
         if (ResourceLoader* mainResourceLoader = this->mainResourceLoader())
-            InspectorInstrumentation::continueWithPolicyDownload(m_frame, this, mainResourceLoader->identifier(), m_response);
+            InspectorInstrumentation::continueWithPolicyDownload(m_frame, *this, mainResourceLoader->identifier(), m_response);
 
         // When starting the request, we didn't know that it would result in download and not navigation. Now we know that main document URL didn't change.
         // Download may use this knowledge for purposes unrelated to cookies, notably for setting file quarantine data.
@@ -706,12 +742,12 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
 
         // It might have gone missing
         if (mainResourceLoader())
-            mainResourceLoader()->didFail(interruptedForPolicyChangeError());
+            static_cast<ResourceLoader*>(mainResourceLoader())->didFail(interruptedForPolicyChangeError());
         return;
     }
     case PolicyIgnore:
         if (ResourceLoader* mainResourceLoader = this->mainResourceLoader())
-            InspectorInstrumentation::continueWithPolicyIgnore(m_frame, this, mainResourceLoader->identifier(), m_response);
+            InspectorInstrumentation::continueWithPolicyIgnore(m_frame, *this, mainResourceLoader->identifier(), m_response);
         stopLoadingForPolicyChange();
         return;
     
@@ -720,8 +756,8 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
     }
 
     if (m_response.isHTTP()) {
-        int status = m_response.httpStatusCode();
-        if (status < 200 || status >= 300) {
+        int status = m_response.httpStatusCode(); // Status may be zero when loading substitute data, in particular from a WebArchive.
+        if (status && (status < 200 || status >= 300)) {
             bool hostedByObject = frameLoader()->isHostedByObjectElement();
 
             frameLoader()->handleFallbackContent();
@@ -733,7 +769,7 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
         }
     }
 
-    if (!isStopping() && m_substituteData.isValid()) {
+    if (!isStopping() && m_substituteData.isValid() && isLoadingMainResource()) {
         if (m_substituteData.content()->size())
             dataReceived(0, m_substituteData.content()->data(), m_substituteData.content()->size());
         if (isLoadingMainResource())
@@ -757,6 +793,9 @@ void DocumentLoader::commitLoad(const char* data, int length)
         return;
 #endif
     frameLoader->client().committedLoad(this, data, length);
+
+    if (isMultipartReplacingLoad())
+        frameLoader->client().didReplaceMultipartContent();
 }
 
 ResourceError DocumentLoader::interruptedForPolicyChangeError() const
@@ -786,7 +825,7 @@ void DocumentLoader::commitData(const char* bytes, size_t length)
             m_frame->document()->securityOrigin()->grantLoadLocalResources();
         }
 
-        if (frameLoader()->stateMachine()->creatingInitialEmptyDocument())
+        if (frameLoader()->stateMachine().creatingInitialEmptyDocument())
             return;
         
 #if ENABLE(MHTML)
@@ -801,16 +840,12 @@ void DocumentLoader::commitData(const char* bytes, size_t length)
         if (!isMultipartReplacingLoad())
             frameLoader()->receivedFirstData();
 
+        // The load could be canceled under receivedFirstData(), which makes delegate calls and even sometimes dispatches DOM events.
+        if (!isLoading())
+            return;
+
         bool userChosen;
         String encoding;
-#if USE(CONTENT_FILTERING)
-        // The content filter's replacement data has a known encoding that might
-        // differ from the response's encoding.
-        if (m_contentFilter && m_contentFilter->didBlockData()) {
-            ASSERT(!m_contentFilter->needsMoreData());
-            userChosen = false;
-        } else
-#endif
         if (overrideEncoding().isNull()) {
             userChosen = false;
             encoding = response().textEncodingName();
@@ -825,6 +860,21 @@ void DocumentLoader::commitData(const char* bytes, size_t length)
 
         m_writer.setEncoding(encoding, userChosen);
     }
+
+#if ENABLE(CONTENT_EXTENSIONS)
+    DocumentStyleSheetCollection& styleSheetCollection = m_frame->document()->styleSheetCollection();
+
+    for (auto& pendingStyleSheet : m_pendingNamedContentExtensionStyleSheets)
+        styleSheetCollection.maybeAddContentExtensionSheet(pendingStyleSheet.key, *pendingStyleSheet.value);
+    for (auto& pendingSelectorEntry : m_pendingContentExtensionDisplayNoneSelectors) {
+        for (const auto& pendingSelector : pendingSelectorEntry.value)
+            styleSheetCollection.addDisplayNoneSelector(pendingSelectorEntry.key, pendingSelector.first, pendingSelector.second);
+    }
+
+    m_pendingNamedContentExtensionStyleSheets.clear();
+    m_pendingContentExtensionDisplayNoneSelectors.clear();
+#endif
+
     ASSERT(m_frame->document()->parsing());
     m_writer.addData(bytes, length);
 }
@@ -836,33 +886,10 @@ void DocumentLoader::dataReceived(CachedResource* resource, const char* data, in
     ASSERT_UNUSED(resource, resource == m_mainResource);
     ASSERT(!m_response.isNull());
 
-#if USE(CFNETWORK) || PLATFORM(MAC)
-    // Workaround for <rdar://problem/6060782>
-    if (m_response.isNull())
-        m_response = ResourceResponse(URL(), "text/html", 0, String(), String());
-#endif
-
     // There is a bug in CFNetwork where callbacks can be dispatched even when loads are deferred.
     // See <rdar://problem/6304600> for more details.
 #if !USE(CF)
     ASSERT(!mainResourceLoader() || !mainResourceLoader()->defersLoading());
-#endif
-
-#if USE(CONTENT_FILTERING)
-    bool loadWasBlockedBeforeFinishing = false;
-    if (m_contentFilter && m_contentFilter->needsMoreData()) {
-        m_contentFilter->addData(data, length);
-
-        if (m_contentFilter->needsMoreData()) {
-            // Since the filter still needs more data to make a decision,
-            // avoid committing this data to prevent partial rendering of
-            // content that might later be blocked.
-            return;
-        }
-
-        data = m_contentFilter->getReplacementData(length);
-        loadWasBlockedBeforeFinishing = m_contentFilter->didBlockData();
-    }
 #endif
 
     if (m_identifierForLoadWithoutResourceLoader)
@@ -873,17 +900,14 @@ void DocumentLoader::dataReceived(CachedResource* resource, const char* data, in
 
     if (!isMultipartReplacingLoad())
         commitLoad(data, length);
-
-#if USE(CONTENT_FILTERING)
-    if (loadWasBlockedBeforeFinishing)
-        cancelMainResourceLoad(frameLoader()->cancelledError(m_request));
-#endif
 }
 
 void DocumentLoader::setupForReplace()
 {
     if (!mainResourceData())
         return;
+
+    frameLoader()->client().willReplaceMultipartContent();
     
     maybeFinishLoadingMultipartContent();
     maybeCreateArchive();
@@ -902,22 +926,24 @@ void DocumentLoader::checkLoadComplete()
 {
     if (!m_frame || isLoading())
         return;
-#if !ENABLE(THREADED_HTML_PARSER)
-    // This ASSERT triggers with the threaded HTML parser.
-    // See https://bugs.webkit.org/show_bug.cgi?id=110937
+
     ASSERT(this == frameLoader()->activeDocumentLoader());
-#endif
     m_frame->document()->domWindow()->finishedLoading();
 }
 
-void DocumentLoader::setFrame(Frame* frame)
+void DocumentLoader::attachToFrame(Frame& frame)
 {
-    if (m_frame == frame)
+    if (m_frame == &frame)
         return;
-    ASSERT(frame && !m_frame);
-    m_frame = frame;
-    m_writer.setFrame(frame);
+
+    ASSERT(!m_frame);
+    m_frame = &frame;
+    m_writer.setFrame(&frame);
     attachToFrame();
+
+#ifndef NDEBUG
+    m_hasEverBeenAttached = true;
+#endif
 }
 
 void DocumentLoader::attachToFrame()
@@ -927,24 +953,42 @@ void DocumentLoader::attachToFrame()
 
 void DocumentLoader::detachFromFrame()
 {
-    ASSERT(m_frame);
+#ifndef NDEBUG
+    if (m_hasEverBeenAttached)
+        ASSERT_WITH_MESSAGE(m_frame, "detachFromFrame() is being called on a DocumentLoader twice without an attachToFrame() inbetween");
+    else
+        ASSERT_WITH_MESSAGE(m_frame, "detachFromFrame() is being called on a DocumentLoader that has never attached to any Frame");
+#endif
     RefPtr<Frame> protectFrame(m_frame);
     Ref<DocumentLoader> protectLoader(*this);
 
     // It never makes sense to have a document loader that is detached from its
-    // frame have any loads active, so go ahead and kill all the loads.
+    // frame have any loads active, so kill all the loads.
     stopLoading();
     if (m_mainResource && m_mainResource->hasClient(this))
         m_mainResource->removeClient(this);
+#if ENABLE(CONTENT_FILTERING)
+    m_contentFilter = nullptr;
+#endif
 
-    m_applicationCacheHost->setDOMApplicationCache(0);
-    InspectorInstrumentation::loaderDetachedFromFrame(m_frame, this);
-    m_frame = 0;
+    m_applicationCacheHost->setDOMApplicationCache(nullptr);
+
+    cancelPolicyCheckIfNeeded();
+
+    // Even though we ASSERT at the top of this method that we have an m_frame, we're seeing crashes where m_frame is null.
+    // This means either that a DocumentLoader is detaching twice, or is detaching before ever having attached.
+    // Until we figure out how that is happening, null check m_frame before dereferencing it here.
+    // <rdar://problem/21293082> and https://bugs.webkit.org/show_bug.cgi?id=146786
+    if (m_frame)
+        InspectorInstrumentation::loaderDetachedFromFrame(*m_frame, *this);
+
+    m_frame = nullptr;
 }
 
 void DocumentLoader::clearMainResourceLoader()
 {
     m_loadingMainResource = false;
+
     if (this == frameLoader()->activeDocumentLoader())
         checkLoadComplete();
 }
@@ -977,8 +1021,7 @@ bool DocumentLoader::maybeCreateArchive()
 #else
     
     // Give the archive machinery a crack at this document. If the MIME type is not an archive type, it will return 0.
-    RefPtr<ResourceBuffer> mainResourceBuffer = mainResourceData();
-    m_archive = ArchiveFactory::create(m_response.url(), mainResourceBuffer ? mainResourceBuffer->sharedBuffer() : 0, m_response.mimeType());
+    m_archive = ArchiveFactory::create(m_response.url(), mainResourceData().get(), m_response.mimeType());
     if (!m_archive)
         return false;
     
@@ -994,6 +1037,7 @@ bool DocumentLoader::maybeCreateArchive()
 }
 
 #if ENABLE(WEB_ARCHIVE) || ENABLE(MHTML)
+
 void DocumentLoader::setArchive(PassRefPtr<Archive> archive)
 {
     m_archive = archive;
@@ -1003,7 +1047,7 @@ void DocumentLoader::setArchive(PassRefPtr<Archive> archive)
 void DocumentLoader::addAllArchiveResources(Archive* archive)
 {
     if (!m_archiveResourceCollection)
-        m_archiveResourceCollection = adoptPtr(new ArchiveResourceCollection);
+        m_archiveResourceCollection = std::make_unique<ArchiveResourceCollection>();
         
     ASSERT(archive);
     if (!archive)
@@ -1017,7 +1061,7 @@ void DocumentLoader::addAllArchiveResources(Archive* archive)
 void DocumentLoader::addArchiveResource(PassRefPtr<ArchiveResource> resource)
 {
     if (!m_archiveResourceCollection)
-        m_archiveResourceCollection = adoptPtr(new ArchiveResourceCollection);
+        m_archiveResourceCollection = std::make_unique<ArchiveResourceCollection>();
         
     ASSERT(resource);
     if (!resource)
@@ -1033,7 +1077,7 @@ PassRefPtr<Archive> DocumentLoader::popArchiveForSubframe(const String& frameNam
 
 void DocumentLoader::clearArchiveResources()
 {
-    m_archiveResourceCollection.clear();
+    m_archiveResourceCollection = nullptr;
     m_substituteResourceDeliveryTimer.stop();
 }
 
@@ -1041,68 +1085,61 @@ SharedBuffer* DocumentLoader::parsedArchiveData() const
 {
     return m_parsedArchiveData.get();
 }
+
 #endif // ENABLE(WEB_ARCHIVE) || ENABLE(MHTML)
 
 ArchiveResource* DocumentLoader::archiveResourceForURL(const URL& url) const
 {
     if (!m_archiveResourceCollection)
-        return 0;
-        
+        return nullptr;
     ArchiveResource* resource = m_archiveResourceCollection->archiveResourceForURL(url);
-
-    return resource && !resource->shouldIgnoreWhenUnarchiving() ? resource : 0;
+    if (!resource || resource->shouldIgnoreWhenUnarchiving())
+        return nullptr;
+    return resource;
 }
 
 PassRefPtr<ArchiveResource> DocumentLoader::mainResource() const
 {
-    const ResourceResponse& r = response();
-    
-    RefPtr<ResourceBuffer> mainResourceBuffer = mainResourceData();
-    RefPtr<SharedBuffer> data = mainResourceBuffer ? mainResourceBuffer->sharedBuffer() : 0;
+    RefPtr<SharedBuffer> data = mainResourceData();
     if (!data)
         data = SharedBuffer::create();
         
-    return ArchiveResource::create(data, r.url(), r.mimeType(), r.textEncodingName(), frame()->tree().uniqueName());
+    auto& response = this->response();
+    return ArchiveResource::create(data, response.url(), response.mimeType(), response.textEncodingName(), frame()->tree().uniqueName());
 }
 
 PassRefPtr<ArchiveResource> DocumentLoader::subresource(const URL& url) const
 {
     if (!isCommitted())
-        return 0;
+        return nullptr;
     
     CachedResource* resource = m_cachedResourceLoader->cachedResource(url);
     if (!resource || !resource->isLoaded())
         return archiveResourceForURL(url);
 
     if (resource->type() == CachedResource::MainResource)
-        return 0;
+        return nullptr;
 
-    // FIXME: This has the side effect of making the resource non-purgeable.
-    // It would be better if it didn't have this permanent effect.
-    if (!resource->makePurgeable(false))
-        return 0;
-
-    ResourceBuffer* data = resource->resourceBuffer();
+    auto* data = resource->resourceBuffer();
     if (!data)
-        return 0;
+        return nullptr;
 
-    return ArchiveResource::create(data->sharedBuffer(), url, resource->response());
+    return ArchiveResource::create(data, url, resource->response());
 }
 
-void DocumentLoader::getSubresources(Vector<PassRefPtr<ArchiveResource> >& subresources) const
+Vector<RefPtr<ArchiveResource>> DocumentLoader::subresources() const
 {
     if (!isCommitted())
-        return;
+        return { };
 
-    const CachedResourceLoader::DocumentResourceMap& allResources = m_cachedResourceLoader->allCachedResources();
-    CachedResourceLoader::DocumentResourceMap::const_iterator end = allResources.end();
-    for (CachedResourceLoader::DocumentResourceMap::const_iterator it = allResources.begin(); it != end; ++it) {
-        RefPtr<ArchiveResource> subresource = this->subresource(URL(ParsedURLString, it->value->url()));
-        if (subresource)
-            subresources.append(subresource.release());
+    Vector<RefPtr<ArchiveResource>> subresources;
+
+    for (auto& cachedResourceHandle : m_cachedResourceLoader->allCachedResources().values()) {
+        if (RefPtr<ArchiveResource> subresource = this->subresource(URL(ParsedURLString, cachedResourceHandle->url())))
+            subresources.append(WTF::move(subresource));
     }
 
-    return;
+    return subresources;
 }
 
 void DocumentLoader::deliverSubstituteResourcesAfterDelay()
@@ -1116,7 +1153,7 @@ void DocumentLoader::deliverSubstituteResourcesAfterDelay()
         m_substituteResourceDeliveryTimer.startOneShot(0);
 }
 
-void DocumentLoader::substituteResourceDeliveryTimerFired(Timer<DocumentLoader>*)
+void DocumentLoader::substituteResourceDeliveryTimerFired()
 {
     if (m_pendingSubstituteResources.isEmpty())
         return;
@@ -1132,25 +1169,9 @@ void DocumentLoader::substituteResourceDeliveryTimerFired(Timer<DocumentLoader>*
         RefPtr<ResourceLoader> loader = it->key;
         SubstituteResource* resource = it->value.get();
         
-        if (resource) {
-            SharedBuffer* data = resource->data();
-        
-            loader->didReceiveResponse(resource->response());
-
-            // Calling ResourceLoader::didReceiveResponse can end up cancelling the load,
-            // so we need to check if the loader has reached its terminal state.
-            if (loader->reachedTerminalState())
-                return;
-
-            loader->didReceiveData(data->data(), data->size(), data->size(), DataPayloadWholeResource);
-
-            // Calling ResourceLoader::didReceiveData can end up cancelling the load,
-            // so we need to check if the loader has reached its terminal state.
-            if (loader->reachedTerminalState())
-                return;
-
-            loader->didFinishLoading(0);
-        } else {
+        if (resource)
+            resource->deliver(*loader);
+        else {
             // A null resource means that we should fail the load.
             // FIXME: Maybe we should use another error here - something like "not in cache".
             loader->didFail(loader->cannotShowURLError());
@@ -1178,8 +1199,7 @@ void DocumentLoader::cancelPendingSubstituteLoad(ResourceLoader* loader)
 bool DocumentLoader::scheduleArchiveLoad(ResourceLoader* loader, const ResourceRequest& request)
 {
     if (ArchiveResource* resource = archiveResourceForURL(request.url())) {
-        m_pendingSubstituteResources.set(loader, resource);
-        deliverSubstituteResourcesAfterDelay();
+        scheduleSubstituteResourceLoad(*loader, *resource);
         return true;
     }
 
@@ -1201,6 +1221,12 @@ bool DocumentLoader::scheduleArchiveLoad(ResourceLoader* loader, const ResourceR
     }
 }
 #endif // ENABLE(WEB_ARCHIVE)
+
+void DocumentLoader::scheduleSubstituteResourceLoad(ResourceLoader& loader, SubstituteResource& resource)
+{
+    m_pendingSubstituteResources.set(&loader, &resource);
+    deliverSubstituteResourcesAfterDelay();
+}
 
 void DocumentLoader::addResponse(const ResourceResponse& r)
 {
@@ -1245,11 +1271,6 @@ const URL& DocumentLoader::originalURL() const
     return m_originalRequestCopy.url();
 }
 
-const URL& DocumentLoader::requestURL() const
-{
-    return request().url();
-}
-
 const URL& DocumentLoader::responseURL() const
 {
     return m_response.url();
@@ -1257,13 +1278,13 @@ const URL& DocumentLoader::responseURL() const
 
 URL DocumentLoader::documentURL() const
 {
-    URL url = substituteData().responseURL();
+    URL url = substituteData().response().url();
 #if ENABLE(WEB_ARCHIVE)
     if (url.isEmpty() && m_archive && m_archive->type() == Archive::WebArchive)
         url = m_archive->mainResource()->url();
 #endif
     if (url.isEmpty())
-        url = requestURL();
+        url = m_request.url();
     if (url.isEmpty())
         url = m_response.url();
     return url;
@@ -1273,6 +1294,19 @@ const String& DocumentLoader::responseMIMEType() const
 {
     return m_response.mimeType();
 }
+
+const String& DocumentLoader::currentContentType() const
+{
+    return m_writer.mimeType();
+}
+
+#if PLATFORM(IOS)
+// FIXME: This method seems to violate the encapsulation of this class.
+void DocumentLoader::setResponseMIMEType(const String& responseMimeType)
+{
+    m_response.setMimeType(responseMimeType);
+}
+#endif
 
 const URL& DocumentLoader::unreachableURL() const
 {
@@ -1307,6 +1341,7 @@ void DocumentLoader::stopLoadingPlugIns()
 void DocumentLoader::stopLoadingSubresources()
 {
     cancelAll(m_subresourceLoaders);
+    ASSERT(m_subresourceLoaders.isEmpty());
 }
 
 void DocumentLoader::addSubresourceLoader(ResourceLoader* loader)
@@ -1318,28 +1353,41 @@ void DocumentLoader::addSubresourceLoader(ResourceLoader* loader)
     // if we are just starting the main resource load.
     if (!m_gotFirstByte)
         return;
-    ASSERT(!m_subresourceLoaders.contains(loader));
+    ASSERT(loader->identifier());
+    ASSERT(!m_subresourceLoaders.contains(loader->identifier()));
     ASSERT(!mainResourceLoader() || mainResourceLoader() != loader);
-    m_subresourceLoaders.add(loader);
+
+    // A page in the PageCache should not be able to start loads.
+    ASSERT_WITH_SECURITY_IMPLICATION(!document() || !document()->inPageCache());
+
+    m_subresourceLoaders.add(loader->identifier(), loader);
 }
 
 void DocumentLoader::removeSubresourceLoader(ResourceLoader* loader)
 {
-    if (!m_subresourceLoaders.remove(loader))
+    ASSERT(loader->identifier());
+
+    if (!m_subresourceLoaders.remove(loader->identifier()))
         return;
     checkLoadComplete();
     if (Frame* frame = m_frame)
         frame->loader().checkLoadComplete();
 }
 
-void DocumentLoader::addPlugInStreamLoader(ResourceLoader* loader)
+void DocumentLoader::addPlugInStreamLoader(ResourceLoader& loader)
 {
-    m_plugInStreamLoaders.add(loader);
+    ASSERT(loader.identifier());
+    ASSERT(!m_plugInStreamLoaders.contains(loader.identifier()));
+
+    m_plugInStreamLoaders.add(loader.identifier(), &loader);
 }
 
-void DocumentLoader::removePlugInStreamLoader(ResourceLoader* loader)
+void DocumentLoader::removePlugInStreamLoader(ResourceLoader& loader)
 {
-    m_plugInStreamLoaders.remove(loader);
+    ASSERT(loader.identifier());
+    ASSERT(&loader == m_plugInStreamLoaders.get(loader.identifier()));
+
+    m_plugInStreamLoaders.remove(loader.identifier());
     checkLoadComplete();
 }
 
@@ -1354,10 +1402,14 @@ bool DocumentLoader::maybeLoadEmpty()
     if (!shouldLoadEmpty && !frameLoader()->client().representationExistsForURLScheme(m_request.url().protocol()))
         return false;
 
-    if (m_request.url().isEmpty() && !frameLoader()->stateMachine()->creatingInitialEmptyDocument())
+    if (m_request.url().isEmpty() && !frameLoader()->stateMachine().creatingInitialEmptyDocument()) {
         m_request.setURL(blankURL());
+        if (isLoadingMainResource())
+            frameLoader()->client().dispatchDidChangeProvisionalURL();
+    }
+
     String mimeType = shouldLoadEmpty ? "text/html" : frameLoader()->client().generatedMIMETypeForURLScheme(m_request.url().protocol());
-    m_response = ResourceResponse(m_request.url(), mimeType, 0, String(), String());
+    m_response = ResourceResponse(m_request.url(), mimeType, 0, String());
     finishedLoading(monotonicallyIncreasingTime());
     return true;
 }
@@ -1365,7 +1417,7 @@ bool DocumentLoader::maybeLoadEmpty()
 void DocumentLoader::startLoadingMainResource()
 {
     m_mainDocumentError = ResourceError();
-    timing()->markNavigationStart();
+    timing().markNavigationStart();
     ASSERT(!m_mainResource);
     ASSERT(!m_loadingMainResource);
     m_loadingMainResource = true;
@@ -1379,9 +1431,9 @@ void DocumentLoader::startLoadingMainResource()
     // because we pass a wrong loadType (see FIXME in addExtraFieldsToMainResourceRequest()).
     frameLoader()->addExtraFieldsToMainResourceRequest(m_request);
 
-    ASSERT(timing()->navigationStart());
-    ASSERT(!timing()->fetchStart());
-    timing()->markFetchStart();
+    ASSERT(timing().navigationStart());
+    ASSERT(!timing().fetchStart());
+    timing().markFetchStart();
     willSendRequest(m_request, ResourceResponse());
 
     // willSendRequest() may lead to our Frame being detached or cancelling the load via nulling the ResourceRequest.
@@ -1399,16 +1451,20 @@ void DocumentLoader::startLoadingMainResource()
     }
 
     ResourceRequest request(m_request);
-    DEFINE_STATIC_LOCAL(ResourceLoaderOptions, mainResourceLoadOptions,
-        (SendCallbacks, SniffContent, BufferData, AllowStoredCredentials, AskClientForAllCredentials, SkipSecurityCheck, UseDefaultOriginRestrictionsForType));
+    request.setRequester(ResourceRequest::Requester::Main);
+    // If this is a reload the cache layer might have made the previous request conditional. DocumentLoader can't handle 304 responses itself.
+    request.makeUnconditional();
+
+    static NeverDestroyed<ResourceLoaderOptions> mainResourceLoadOptions(SendCallbacks, SniffContent, BufferData, AllowStoredCredentials, AskClientForAllCredentials, SkipSecurityCheck, UseDefaultOriginRestrictionsForType, IncludeCertificateInfo, ContentSecurityPolicyImposition::DoPolicyCheck);
     CachedResourceRequest cachedResourceRequest(request, mainResourceLoadOptions);
+    cachedResourceRequest.setInitiator(*this);
     m_mainResource = m_cachedResourceLoader->requestMainResource(cachedResourceRequest);
     if (!m_mainResource) {
         setRequest(ResourceRequest());
         // If the load was aborted by clearing m_request, it's possible the ApplicationCacheHost
         // is now in a state where starting an empty load will be inconsistent. Replace it with
         // a new ApplicationCacheHost.
-        m_applicationCacheHost = adoptPtr(new ApplicationCacheHost(this));
+        m_applicationCacheHost = std::make_unique<ApplicationCacheHost>(*this);
         maybeLoadEmpty();
         return;
     }
@@ -1418,7 +1474,12 @@ void DocumentLoader::startLoadingMainResource()
         frameLoader()->notifier().assignIdentifierToInitialRequest(m_identifierForLoadWithoutResourceLoader, this, request);
         frameLoader()->notifier().dispatchWillSendRequest(this, m_identifierForLoadWithoutResourceLoader, request, ResourceResponse());
     }
+
+#if ENABLE(CONTENT_FILTERING)
+    becomeMainResourceClientIfFilterAllows();
+#else
     m_mainResource->addClient(this);
+#endif
 
     // A bunch of headers are set when the underlying ResourceLoader is created, and m_request needs to include those.
     if (mainResourceLoader())
@@ -1430,18 +1491,25 @@ void DocumentLoader::startLoadingMainResource()
     setRequest(request);
 }
 
+void DocumentLoader::cancelPolicyCheckIfNeeded()
+{
+    RELEASE_ASSERT(frameLoader());
+
+    if (m_waitingForContentPolicy || m_waitingForNavigationPolicy) {
+        frameLoader()->policyChecker().cancelCheck();
+        m_waitingForContentPolicy = false;
+        m_waitingForNavigationPolicy = false;
+    }
+}
+
 void DocumentLoader::cancelMainResourceLoad(const ResourceError& resourceError)
 {
     Ref<DocumentLoader> protect(*this);
     ResourceError error = resourceError.isNull() ? frameLoader()->cancelledError(m_request) : resourceError;
 
     m_dataLoadTimer.stop();
-    if (m_waitingForContentPolicy || m_waitingForNavigationPolicy) {
-        frameLoader()->policyChecker().cancelCheck();
-        ASSERT(m_waitingForContentPolicy);
-        m_waitingForContentPolicy = false;
-		m_waitingForNavigationPolicy = false;
-    }
+
+    cancelPolicyCheckIfNeeded();
 
     if (mainResourceLoader())
         mainResourceLoader()->cancel(error);
@@ -1455,14 +1523,26 @@ void DocumentLoader::clearMainResource()
 {
     if (m_mainResource && m_mainResource->hasClient(this))
         m_mainResource->removeClient(this);
+#if ENABLE(CONTENT_FILTERING)
+    m_contentFilter = nullptr;
+#endif
 
     m_mainResource = 0;
 }
 
 void DocumentLoader::subresourceLoaderFinishedLoadingOnePart(ResourceLoader* loader)
 {
-    m_multipartSubresourceLoaders.add(loader);
-    m_subresourceLoaders.remove(loader);
+    unsigned long identifier = loader->identifier();
+    ASSERT(identifier);
+
+    if (!m_multipartSubresourceLoaders.add(identifier, loader).isNewEntry) {
+        ASSERT(m_multipartSubresourceLoaders.get(identifier) == loader);
+        ASSERT(!m_subresourceLoaders.contains(identifier));
+    } else {
+        ASSERT(m_subresourceLoaders.contains(identifier));
+        m_subresourceLoaders.remove(identifier);
+    }
+
     checkLoadComplete();
     if (Frame* frame = m_frame)
         frame->loader().checkLoadComplete();    
@@ -1475,7 +1555,7 @@ void DocumentLoader::maybeFinishLoadingMultipartContent()
 
     frameLoader()->setupForReplace();
     m_committed = false;
-    RefPtr<ResourceBuffer> resourceData = mainResourceData();
+    RefPtr<SharedBuffer> resourceData = mainResourceData();
     commitLoad(resourceData->data(), resourceData->size());
 }
 
@@ -1501,7 +1581,7 @@ void DocumentLoader::getIconLoadDecisionForIconURL(const String& urlString)
 void DocumentLoader::continueIconLoadWithDecision(IconLoadDecision decision)
 {
     ASSERT(m_iconLoadDecisionCallback);
-    m_iconLoadDecisionCallback = 0;
+    m_iconLoadDecisionCallback = nullptr;
     if (m_frame)
         m_frame->loader().icon().continueLoadWithDecision(decision);
 }
@@ -1524,5 +1604,86 @@ void DocumentLoader::handledOnloadEvents()
     m_wasOnloadHandled = true;
     applicationCacheHost()->stopDeferringEvents();
 }
+
+void DocumentLoader::setTriggeringAction(const NavigationAction& action)
+{
+    m_triggeringAction = action.copyWithShouldOpenExternalURLsPolicy(m_frame ? shouldOpenExternalURLsPolicyToPropagate() : m_shouldOpenExternalURLsPolicy);
+}
+
+ShouldOpenExternalURLsPolicy DocumentLoader::shouldOpenExternalURLsPolicyToPropagate() const
+{
+    if (!m_frame || !m_frame->isMainFrame())
+        return ShouldOpenExternalURLsPolicy::ShouldNotAllow;
+
+    return m_shouldOpenExternalURLsPolicy;
+}
+
+#if ENABLE(CONTENT_EXTENSIONS)
+void DocumentLoader::addPendingContentExtensionSheet(const String& identifier, StyleSheetContents& sheet)
+{
+    ASSERT(!m_gotFirstByte);
+    m_pendingNamedContentExtensionStyleSheets.set(identifier, &sheet);
+}
+
+void DocumentLoader::addPendingContentExtensionDisplayNoneSelector(const String& identifier, const String& selector, uint32_t selectorID)
+{
+    ASSERT(!m_gotFirstByte);
+    auto addResult = m_pendingContentExtensionDisplayNoneSelectors.add(identifier, Vector<std::pair<String, uint32_t>>());
+    addResult.iterator->value.append(std::make_pair(selector, selectorID));
+}
+#endif
+
+#if ENABLE(CONTENT_FILTERING)
+void DocumentLoader::becomeMainResourceClientIfFilterAllows()
+{
+    ASSERT(m_mainResource);
+    if (m_contentFilter) {
+        ASSERT(m_contentFilter->state() == ContentFilter::State::Initialized);
+        m_contentFilter->startFilteringMainResource(*m_mainResource);
+    } else
+        m_mainResource->addClient(this);
+}
+
+void DocumentLoader::installContentFilterUnblockHandler(ContentFilter& contentFilter)
+{
+    ContentFilterUnblockHandler unblockHandler { contentFilter.unblockHandler() };
+    unblockHandler.setUnreachableURL(documentURL());
+    RefPtr<Frame> frame { this->frame() };
+    String unblockRequestDeniedScript { contentFilter.unblockRequestDeniedScript() };
+    if (!unblockRequestDeniedScript.isEmpty() && frame) {
+        static_assert(std::is_base_of<ThreadSafeRefCounted<Frame>, Frame>::value, "Frame must be ThreadSafeRefCounted.");
+        StringCapture capturedScript { unblockRequestDeniedScript };
+        unblockHandler.wrapWithDecisionHandler([frame, capturedScript](bool unblocked) {
+            if (!unblocked)
+                frame->script().executeScript(capturedScript.string());
+        });
+    }
+    frameLoader()->client().contentFilterDidBlockLoad(WTF::move(unblockHandler));
+}
+
+void DocumentLoader::contentFilterDidDecide()
+{
+    using State = ContentFilter::State;
+    ASSERT(m_contentFilter);
+    ASSERT(m_contentFilter->state() == State::Blocked || m_contentFilter->state() == State::Allowed);
+    std::unique_ptr<ContentFilter> contentFilter;
+    std::swap(contentFilter, m_contentFilter);
+    if (contentFilter->state() == State::Allowed) {
+        if (m_mainResource)
+            m_mainResource->addClient(this);
+        return;
+    }
+
+    installContentFilterUnblockHandler(*contentFilter);
+
+    URL blockedURL;
+    blockedURL.setProtocol(ContentFilter::urlScheme());
+    blockedURL.setHost(ASCIILiteral("blocked-page"));
+    ResourceResponse response(URL(), ASCIILiteral("text/html"), contentFilter->replacementData()->size(), ASCIILiteral("UTF-8"));
+    SubstituteData substituteData { contentFilter->replacementData(), documentURL(), response, SubstituteData::SessionHistoryVisibility::Hidden };
+    frame()->navigationScheduler().scheduleSubstituteDataLoad(blockedURL, substituteData);
+}
+#endif
+
 
 } // namespace WebCore

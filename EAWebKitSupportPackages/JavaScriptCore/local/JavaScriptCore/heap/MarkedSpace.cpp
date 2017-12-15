@@ -25,7 +25,7 @@
 #include "JSGlobalObject.h"
 #include "JSLock.h"
 #include "JSObject.h"
-
+#include "JSCInlines.h"
 
 namespace JSC {
 
@@ -83,36 +83,34 @@ MarkedSpace::MarkedSpace(Heap* heap)
     , m_isIterating(false)
 {
     for (size_t cellSize = preciseStep; cellSize <= preciseCutoff; cellSize += preciseStep) {
-        allocatorFor(cellSize).init(heap, this, cellSize, MarkedBlock::None);
-        normalDestructorAllocatorFor(cellSize).init(heap, this, cellSize, MarkedBlock::Normal);
-        immortalStructureDestructorAllocatorFor(cellSize).init(heap, this, cellSize, MarkedBlock::ImmortalStructure);
+        allocatorFor(cellSize).init(heap, this, cellSize, false);
+        destructorAllocatorFor(cellSize).init(heap, this, cellSize, true);
     }
 
     for (size_t cellSize = impreciseStep; cellSize <= impreciseCutoff; cellSize += impreciseStep) {
-        allocatorFor(cellSize).init(heap, this, cellSize, MarkedBlock::None);
-        normalDestructorAllocatorFor(cellSize).init(heap, this, cellSize, MarkedBlock::Normal);
-        immortalStructureDestructorAllocatorFor(cellSize).init(heap, this, cellSize, MarkedBlock::ImmortalStructure);
+        allocatorFor(cellSize).init(heap, this, cellSize, false);
+        destructorAllocatorFor(cellSize).init(heap, this, cellSize, true);
     }
 
-    m_normalSpace.largeAllocator.init(heap, this, 0, MarkedBlock::None);
-    m_normalDestructorSpace.largeAllocator.init(heap, this, 0, MarkedBlock::Normal);
-    m_immortalStructureDestructorSpace.largeAllocator.init(heap, this, 0, MarkedBlock::ImmortalStructure);
+    m_normalSpace.largeAllocator.init(heap, this, 0, false);
+    m_destructorSpace.largeAllocator.init(heap, this, 0, true);
 }
 
 MarkedSpace::~MarkedSpace()
 {
     Free free(Free::FreeAll, this);
     forEachBlock(free);
+    ASSERT(!m_blocks.set().size());
 }
 
-struct LastChanceToFinalize : MarkedBlock::VoidFunctor {
-    void operator()(MarkedBlock* block) { block->lastChanceToFinalize(); }
+struct LastChanceToFinalize {
+    void operator()(MarkedAllocator& allocator) { allocator.lastChanceToFinalize(); }
 };
 
 void MarkedSpace::lastChanceToFinalize()
 {
     stopAllocating();
-    forEachBlock<LastChanceToFinalize>();
+    forEachAllocator<LastChanceToFinalize>();
 }
 
 void MarkedSpace::sweep()
@@ -121,34 +119,51 @@ void MarkedSpace::sweep()
     forEachBlock<Sweep>();
 }
 
+void MarkedSpace::zombifySweep()
+{
+    if (Options::logGC())
+        dataLog("Zombifying sweep...");
+    m_heap->sweeper()->willFinishSweeping();
+    forEachBlock<ZombifySweep>();
+}
+
 void MarkedSpace::resetAllocators()
 {
     for (size_t cellSize = preciseStep; cellSize <= preciseCutoff; cellSize += preciseStep) {
         allocatorFor(cellSize).reset();
-        normalDestructorAllocatorFor(cellSize).reset();
-        immortalStructureDestructorAllocatorFor(cellSize).reset();
+        destructorAllocatorFor(cellSize).reset();
     }
 
     for (size_t cellSize = impreciseStep; cellSize <= impreciseCutoff; cellSize += impreciseStep) {
         allocatorFor(cellSize).reset();
-        normalDestructorAllocatorFor(cellSize).reset();
-        immortalStructureDestructorAllocatorFor(cellSize).reset();
+        destructorAllocatorFor(cellSize).reset();
     }
 
     m_normalSpace.largeAllocator.reset();
-    m_normalDestructorSpace.largeAllocator.reset();
-    m_immortalStructureDestructorSpace.largeAllocator.reset();
+    m_destructorSpace.largeAllocator.reset();
+
+#if ENABLE(GGC)
+    m_blocksWithNewObjects.clear();
+#endif
 }
 
 void MarkedSpace::visitWeakSets(HeapRootVisitor& heapRootVisitor)
 {
     VisitWeakSet visitWeakSet(heapRootVisitor);
-    forEachBlock(visitWeakSet);
+    if (m_heap->operationInProgress() == EdenCollection) {
+        for (unsigned i = 0; i < m_blocksWithNewObjects.size(); ++i)
+            visitWeakSet(m_blocksWithNewObjects[i]);
+    } else
+        forEachBlock(visitWeakSet);
 }
 
 void MarkedSpace::reapWeakSets()
 {
-    forEachBlock<ReapWeakSet>();
+    if (m_heap->operationInProgress() == EdenCollection) {
+        for (unsigned i = 0; i < m_blocksWithNewObjects.size(); ++i)
+            m_blocksWithNewObjects[i]->reapWeakSet();
+    } else
+        forEachBlock<ReapWeakSet>();
 }
 
 template <typename Functor>
@@ -163,19 +178,16 @@ void MarkedSpace::forEachAllocator(Functor& functor)
 {
     for (size_t cellSize = preciseStep; cellSize <= preciseCutoff; cellSize += preciseStep) {
         functor(allocatorFor(cellSize));
-        functor(normalDestructorAllocatorFor(cellSize));
-        functor(immortalStructureDestructorAllocatorFor(cellSize));
+        functor(destructorAllocatorFor(cellSize));
     }
 
     for (size_t cellSize = impreciseStep; cellSize <= impreciseCutoff; cellSize += impreciseStep) {
         functor(allocatorFor(cellSize));
-        functor(normalDestructorAllocatorFor(cellSize));
-        functor(immortalStructureDestructorAllocatorFor(cellSize));
+        functor(destructorAllocatorFor(cellSize));
     }
 
     functor(m_normalSpace.largeAllocator);
-    functor(m_normalDestructorSpace.largeAllocator);
-    functor(m_immortalStructureDestructorSpace.largeAllocator);
+    functor(m_destructorSpace.largeAllocator);
 }
 
 struct StopAllocatingFunctor {
@@ -202,21 +214,18 @@ bool MarkedSpace::isPagedOut(double deadline)
 {
     for (size_t cellSize = preciseStep; cellSize <= preciseCutoff; cellSize += preciseStep) {
         if (allocatorFor(cellSize).isPagedOut(deadline) 
-            || normalDestructorAllocatorFor(cellSize).isPagedOut(deadline) 
-            || immortalStructureDestructorAllocatorFor(cellSize).isPagedOut(deadline))
+            || destructorAllocatorFor(cellSize).isPagedOut(deadline))
             return true;
     }
 
     for (size_t cellSize = impreciseStep; cellSize <= impreciseCutoff; cellSize += impreciseStep) {
         if (allocatorFor(cellSize).isPagedOut(deadline) 
-            || normalDestructorAllocatorFor(cellSize).isPagedOut(deadline) 
-            || immortalStructureDestructorAllocatorFor(cellSize).isPagedOut(deadline))
+            || destructorAllocatorFor(cellSize).isPagedOut(deadline))
             return true;
     }
 
     if (m_normalSpace.largeAllocator.isPagedOut(deadline)
-        || m_normalDestructorSpace.largeAllocator.isPagedOut(deadline)
-        || m_immortalStructureDestructorSpace.largeAllocator.isPagedOut(deadline))
+        || m_destructorSpace.largeAllocator.isPagedOut(deadline))
         return true;
 
     return false;
@@ -227,11 +236,7 @@ void MarkedSpace::freeBlock(MarkedBlock* block)
     block->allocator()->removeBlock(block);
     m_capacity -= block->capacity();
     m_blocks.remove(block);
-    if (block->capacity() == MarkedBlock::blockSize) {
-        m_heap->blockAllocator().deallocate(MarkedBlock::destroy(block));
-        return;
-    }
-    m_heap->blockAllocator().deallocateCustomSize(MarkedBlock::destroy(block));
+    MarkedBlock::destroy(block);
 }
 
 void MarkedSpace::freeOrShrinkBlock(MarkedBlock* block)
@@ -275,14 +280,12 @@ void MarkedSpace::clearNewlyAllocated()
 {
     for (size_t i = 0; i < preciseCount; ++i) {
         clearNewlyAllocatedInBlock(m_normalSpace.preciseAllocators[i].takeLastActiveBlock());
-        clearNewlyAllocatedInBlock(m_normalDestructorSpace.preciseAllocators[i].takeLastActiveBlock());
-        clearNewlyAllocatedInBlock(m_immortalStructureDestructorSpace.preciseAllocators[i].takeLastActiveBlock());
+        clearNewlyAllocatedInBlock(m_destructorSpace.preciseAllocators[i].takeLastActiveBlock());
     }
 
     for (size_t i = 0; i < impreciseCount; ++i) {
         clearNewlyAllocatedInBlock(m_normalSpace.impreciseAllocators[i].takeLastActiveBlock());
-        clearNewlyAllocatedInBlock(m_normalDestructorSpace.impreciseAllocators[i].takeLastActiveBlock());
-        clearNewlyAllocatedInBlock(m_immortalStructureDestructorSpace.impreciseAllocators[i].takeLastActiveBlock());
+        clearNewlyAllocatedInBlock(m_destructorSpace.impreciseAllocators[i].takeLastActiveBlock());
     }
 
     // We have to iterate all of the blocks in the large allocators because they are
@@ -290,11 +293,39 @@ void MarkedSpace::clearNewlyAllocated()
     // which creates the m_newlyAllocated bitmap.
     ClearNewlyAllocated functor;
     m_normalSpace.largeAllocator.forEachBlock(functor);
-    m_normalDestructorSpace.largeAllocator.forEachBlock(functor);
-    m_immortalStructureDestructorSpace.largeAllocator.forEachBlock(functor);
+    m_destructorSpace.largeAllocator.forEachBlock(functor);
 
 #ifndef NDEBUG
     VerifyNewlyAllocated verifyFunctor;
+    forEachBlock(verifyFunctor);
+#endif
+}
+
+#ifndef NDEBUG 
+struct VerifyMarkedOrRetired : MarkedBlock::VoidFunctor { 
+    void operator()(MarkedBlock* block)
+    {
+        switch (block->m_state) {
+        case MarkedBlock::Marked:
+        case MarkedBlock::Retired:
+            return;
+        default:
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    }
+}; 
+#endif 
+
+void MarkedSpace::clearMarks()
+{
+    if (m_heap->operationInProgress() == EdenCollection) {
+        for (unsigned i = 0; i < m_blocksWithNewObjects.size(); ++i)
+            m_blocksWithNewObjects[i]->clearMarks();
+    } else
+        forEachBlock<ClearMarks>();
+
+#ifndef NDEBUG
+    VerifyMarkedOrRetired verifyFunctor;
     forEachBlock(verifyFunctor);
 #endif
 }

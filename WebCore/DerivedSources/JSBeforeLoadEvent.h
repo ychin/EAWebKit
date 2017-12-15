@@ -22,9 +22,7 @@
 #define JSBeforeLoadEvent_h
 
 #include "BeforeLoadEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSBeforeLoadEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSBeforeLoadEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<BeforeLoadEvent> impl)
+    static JSBeforeLoadEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<BeforeLoadEvent>&& impl)
     {
-        JSBeforeLoadEvent* ptr = new (NotNull, JSC::allocateCell<JSBeforeLoadEvent>(globalObject->vm().heap)) JSBeforeLoadEvent(structure, globalObject, impl);
+        JSBeforeLoadEvent* ptr = new (NotNull, JSC::allocateCell<JSBeforeLoadEvent>(globalObject->vm().heap)) JSBeforeLoadEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,67 +54,19 @@ public:
         return static_cast<BeforeLoadEvent&>(Base::impl());
     }
 protected:
-    JSBeforeLoadEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<BeforeLoadEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSBeforeLoadEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<BeforeLoadEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSBeforeLoadEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSBeforeLoadEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSBeforeLoadEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSBeforeLoadEventPrototype>(vm.heap)) JSBeforeLoadEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSBeforeLoadEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSBeforeLoadEventConstructor : public DOMConstructorObject {
-private:
-    JSBeforeLoadEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSBeforeLoadEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSBeforeLoadEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSBeforeLoadEventConstructor>(vm.heap)) JSBeforeLoadEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSBeforeLoadEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillBeforeLoadEventInit(BeforeLoadEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsBeforeLoadEventUrl(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBeforeLoadEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -25,45 +25,50 @@
 #define HTMLFieldSetElement_h
 
 #include "HTMLFormControlElement.h"
+#include <wtf/HashSet.h>
 
 namespace WebCore {
 
 class FormAssociatedElement;
 class HTMLCollection;
 
-class HTMLFieldSetElement FINAL : public HTMLFormControlElement {
+class HTMLFieldSetElement final : public HTMLFormControlElement {
 public:
-    static PassRefPtr<HTMLFieldSetElement> create(const QualifiedName&, Document&, HTMLFormElement*);
+    static Ref<HTMLFieldSetElement> create(const QualifiedName&, Document&, HTMLFormElement*);
 
     HTMLLegendElement* legend() const;
-    PassRefPtr<HTMLCollection> elements();
+    Ref<HTMLCollection> elements();
 
     const Vector<FormAssociatedElement*>& associatedElements() const;
     unsigned length() const;
 
-protected:
-    virtual void disabledAttributeChanged() OVERRIDE;
+    void addInvalidDescendant(const HTMLFormControlElement&);
+    void removeInvalidDescendant(const HTMLFormControlElement&);
 
 private:
     HTMLFieldSetElement(const QualifiedName&, Document&, HTMLFormElement*);
+    ~HTMLFieldSetElement();
 
-    virtual bool isEnumeratable() const OVERRIDE { return true; }
-    virtual bool supportsFocus() const OVERRIDE;
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&) OVERRIDE;
-    virtual const AtomicString& formControlType() const OVERRIDE;
-    virtual bool recalcWillValidate() const OVERRIDE { return false; }
-    virtual void childrenChanged(const ChildChange&) OVERRIDE;
-    virtual bool areAuthorShadowsAllowed() const OVERRIDE { return false; }
+    virtual bool isEnumeratable() const override { return true; }
+    virtual bool supportsFocus() const override;
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual const AtomicString& formControlType() const override;
+    virtual bool computeWillValidate() const override { return false; }
+    virtual void disabledAttributeChanged() override;
+    virtual void disabledStateChanged() override;
+    virtual void childrenChanged(const ChildChange&) override;
+    virtual void didMoveToNewDocument(Document* oldDocument) override;
 
-    static void invalidateDisabledStateUnder(Element*);
+    virtual bool matchesValidPseudoClass() const override;
+    virtual bool matchesInvalidPseudoClass() const override;
+
     void refreshElementsIfNeeded() const;
 
     mutable Vector<FormAssociatedElement*> m_associatedElements;
     // When dom tree is modified, we have to refresh the m_associatedElements array.
     mutable uint64_t m_documentVersion;
+    HashSet<const HTMLFormControlElement*> m_invalidDescendants;
 };
-
-NODE_TYPE_CASTS(HTMLFieldSetElement)
 
 } // namespace
 

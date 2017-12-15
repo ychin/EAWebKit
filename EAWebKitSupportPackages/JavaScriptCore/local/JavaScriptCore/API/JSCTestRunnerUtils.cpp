@@ -27,7 +27,7 @@
 #include "JSCTestRunnerUtils.h"
 
 #include "APICast.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include "TestRunnerUtils.h"
 
 namespace JSC {
@@ -35,12 +35,14 @@ namespace JSC {
 JSValueRef numberOfDFGCompiles(JSContextRef context, JSValueRef theFunctionValueRef)
 {
     ExecState* exec= toJS(context);
+    JSLockHolder holder(exec);
     return toRef(exec, numberOfDFGCompiles(toJS(exec, theFunctionValueRef)));
 }
 
 JSValueRef setNeverInline(JSContextRef context, JSValueRef theFunctionValueRef)
 {
     ExecState* exec= toJS(context);
+    JSLockHolder holder(exec);
     return toRef(exec, setNeverInline(toJS(exec, theFunctionValueRef)));
 }
 

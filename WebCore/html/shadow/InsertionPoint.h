@@ -51,12 +51,9 @@ public:
     bool hasDistribution() const { return m_hasDistribution; }
     void setHasDistribution() { m_hasDistribution = true; }
     void clearDistribution() { m_hasDistribution = false; }
-    bool isActive() const;
+    WEBCORE_EXPORT bool isActive() const;
 
     virtual MatchType matchTypeFor(Node*) const { return AlwaysMatches; }
-
-    virtual void willAttachRenderers() OVERRIDE;
-    virtual void willDetachRenderers() OVERRIDE;
 
     bool shouldUseFallbackElements() const;
 
@@ -67,32 +64,20 @@ public:
 
 protected:
     InsertionPoint(const QualifiedName&, Document&);
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE;
-    virtual void childrenChanged(const ChildChange&) OVERRIDE;
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
-    virtual void removedFrom(ContainerNode&) OVERRIDE;
-    virtual bool isInsertionPointNode() const OVERRIDE { return true; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override;
+    virtual void childrenChanged(const ChildChange&) override;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
+    virtual void removedFrom(ContainerNode&) override;
 
 private:
+    virtual bool isInsertionPointNode() const override final { return true; }
 
     bool m_hasDistribution;
 };
 
-inline InsertionPoint* toInsertionPoint(Node* node)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!node || node->isInsertionPoint());
-    return static_cast<InsertionPoint*>(node);
-}
-
-inline const InsertionPoint* toInsertionPoint(const Node* node)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!node || node->isInsertionPoint());
-    return static_cast<const InsertionPoint*>(node);
-}
-
 inline bool isActiveInsertionPoint(const Node* node)
 {
-    return node && node->isInsertionPoint() && toInsertionPoint(node)->isActive();
+    return is<InsertionPoint>(node) && downcast<InsertionPoint>(*node).isActive();
 }
 
 inline Node* parentNodeForDistribution(const Node* node)
@@ -100,22 +85,22 @@ inline Node* parentNodeForDistribution(const Node* node)
     ASSERT(node);
 
     if (Node* parent = node->parentNode()) {
-        if (parent->isInsertionPoint() && toInsertionPoint(parent)->shouldUseFallbackElements())
+        if (is<InsertionPoint>(*parent) && downcast<InsertionPoint>(*parent).shouldUseFallbackElements())
             return parent->parentNode();
         return parent;
     }
 
-    return 0;
+    return nullptr;
 }
 
 inline Element* parentElementForDistribution(const Node* node)
 {
     if (Node* parent = parentNodeForDistribution(node)) {
-        if (parent->isElementNode())
-            return toElement(parent);
+        if (is<Element>(*parent))
+            return downcast<Element>(parent);
     }
 
-    return 0;
+    return nullptr;
 }
 
 inline ShadowRoot* shadowRootOfParentForDistribution(const Node* node)
@@ -124,18 +109,22 @@ inline ShadowRoot* shadowRootOfParentForDistribution(const Node* node)
     if (Element* parent = parentElementForDistribution(node))
         return parent->shadowRoot();
 
-    return 0;
+    return nullptr;
 }
 
 InsertionPoint* findInsertionPointOf(const Node*);
 
-inline bool hasShadowRootOrActiveInsertionPointParent(const Node* node)
+inline bool hasShadowRootOrActiveInsertionPointParent(const Node& node)
 {
     return hasShadowRootParent(node)
-        || isActiveInsertionPoint(findInsertionPointOf(node))
-        || isActiveInsertionPoint(node->parentNode());
+        || isActiveInsertionPoint(findInsertionPointOf(&node))
+        || isActiveInsertionPoint(node.parentNode());
 }
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::InsertionPoint)
+    static bool isType(const WebCore::Node& node) { return node.isInsertionPoint(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // InsertionPoint_h

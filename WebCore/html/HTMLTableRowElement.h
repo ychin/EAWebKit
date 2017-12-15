@@ -30,10 +30,10 @@
 
 namespace WebCore {
 
-class HTMLTableRowElement FINAL : public HTMLTablePartElement {
+class HTMLTableRowElement final : public HTMLTablePartElement {
 public:
-    static PassRefPtr<HTMLTableRowElement> create(Document&);
-    static PassRefPtr<HTMLTableRowElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLTableRowElement> create(Document&);
+    static Ref<HTMLTableRowElement> create(const QualifiedName&, Document&);
 
     int rowIndex() const;
     void setRowIndex(int);
@@ -41,17 +41,16 @@ public:
     int sectionRowIndex() const;
     void setSectionRowIndex(int);
 
-    PassRefPtr<HTMLElement> insertCell(int index, ExceptionCode&);
+    RefPtr<HTMLElement> insertCell(ExceptionCode& ec) { return insertCell(-1, ec); }
+    RefPtr<HTMLElement> insertCell(int index, ExceptionCode&);
     void deleteCell(int index, ExceptionCode&);
 
-    PassRefPtr<HTMLCollection> cells();
+    Ref<HTMLCollection> cells();
     void setCells(HTMLCollection *, ExceptionCode&);
 
 private:
     HTMLTableRowElement(const QualifiedName&, Document&);
 };
-
-NODE_TYPE_CASTS(HTMLTableRowElement)
 
 } // namespace
 

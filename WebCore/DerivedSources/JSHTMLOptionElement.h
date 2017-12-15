@@ -21,32 +21,30 @@
 #ifndef JSHTMLOptionElement_h
 #define JSHTMLOptionElement_h
 
-#include "DOMConstructorWithDocument.h"
 #include "HTMLOptionElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLOptionElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLOptionElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLOptionElement> impl)
+    static JSHTMLOptionElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLOptionElement>&& impl)
     {
-        JSHTMLOptionElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLOptionElement>(globalObject->vm().heap)) JSHTMLOptionElement(structure, globalObject, impl);
+        JSHTMLOptionElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLOptionElement>(globalObject->vm().heap)) JSHTMLOptionElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static HTMLOptionElement* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -56,102 +54,17 @@ public:
         return static_cast<HTMLOptionElement&>(Base::impl());
     }
 protected:
-    JSHTMLOptionElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLOptionElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLOptionElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLOptionElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-HTMLOptionElement* toHTMLOptionElement(JSC::JSValue);
 
-class JSHTMLOptionElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLOptionElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLOptionElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLOptionElementPrototype>(vm.heap)) JSHTMLOptionElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLOptionElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLOptionElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLOptionElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLOptionElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLOptionElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLOptionElementConstructor>(vm.heap)) JSHTMLOptionElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-class JSHTMLOptionElementNamedConstructor : public DOMConstructorWithDocument {
-public:
-    typedef DOMConstructorWithDocument Base;
-
-    static JSHTMLOptionElementNamedConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLOptionElementNamedConstructor* constructor = new (NotNull, JSC::allocateCell<JSHTMLOptionElementNamedConstructor>(vm.heap)) JSHTMLOptionElementNamedConstructor(structure, globalObject);
-        constructor->finishCreation(vm, globalObject);
-        return constructor;
-    }
-
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-    DECLARE_INFO;
-
-private:
-    JSHTMLOptionElementNamedConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSHTMLOptionElement(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLOptionElementDisabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLOptionElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLOptionElementForm(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLOptionElementLabel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLOptionElementLabel(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLOptionElementDefaultSelected(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLOptionElementDefaultSelected(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLOptionElementSelected(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLOptionElementSelected(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLOptionElementValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLOptionElementValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLOptionElementText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLOptionElementText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLOptionElementIndex(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLOptionElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

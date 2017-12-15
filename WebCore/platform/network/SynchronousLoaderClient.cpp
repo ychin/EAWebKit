@@ -45,7 +45,7 @@ void SynchronousLoaderClient::willSendRequest(ResourceHandle* handle, ResourceRe
     ASSERT(m_error.isNull());
     m_error = platformBadResponseError();
     m_isDone = true;
-    request = 0;
+    request = ResourceRequest();
 }
 
 bool SynchronousLoaderClient::shouldUseCredentialStorage(ResourceHandle*)
@@ -67,7 +67,7 @@ void SynchronousLoaderClient::didReceiveResponse(ResourceHandle*, const Resource
     m_response = response;
 }
 
-void SynchronousLoaderClient::didReceiveData(ResourceHandle*, const char* data, int length, int /*encodedDataLength*/)
+void SynchronousLoaderClient::didReceiveData(ResourceHandle*, const char* data, unsigned length, int /*encodedDataLength*/)
 {
     m_data.append(data, length);
 }

@@ -25,37 +25,66 @@
 #include "JSIDBVersionChangeEvent.h"
 
 #include "IDBVersionChangeEvent.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSIDBVersionChangeEventTableValues[] =
-{
-    { "oldVersion", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBVersionChangeEventOldVersion), (intptr_t)0 },
-    { "newVersion", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBVersionChangeEventNewVersion), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBVersionChangeEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsIDBVersionChangeEventOldVersion(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBVersionChangeEventNewVersion(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBVersionChangeEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSIDBVersionChangeEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSIDBVersionChangeEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSIDBVersionChangeEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBVersionChangeEventPrototype>(vm.heap)) JSIDBVersionChangeEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSIDBVersionChangeEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSIDBVersionChangeEventTable = { 8, 7, JSIDBVersionChangeEventTableValues, 0 };
-/* Hash table for constructor */
+class JSIDBVersionChangeEventConstructor : public DOMConstructorObject {
+private:
+    JSIDBVersionChangeEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSIDBVersionChangeEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSIDBVersionChangeEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSIDBVersionChangeEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBVersionChangeEventConstructor>(vm.heap)) JSIDBVersionChangeEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSIDBVersionChangeEventConstructorTable = { 1, 0, JSIDBVersionChangeEventConstructorTableValues, 0 };
-static const HashTable& getJSIDBVersionChangeEventConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBVersionChangeEventConstructorTable);
-}
-
-const ClassInfo JSIDBVersionChangeEventConstructor::s_info = { "IDBVersionChangeEventConstructor", &Base::s_info, 0, getJSIDBVersionChangeEventConstructorTable, CREATE_METHOD_TABLE(JSIDBVersionChangeEventConstructor) };
+const ClassInfo JSIDBVersionChangeEventConstructor::s_info = { "IDBVersionChangeEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBVersionChangeEventConstructor) };
 
 JSIDBVersionChangeEventConstructor::JSIDBVersionChangeEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,92 +95,85 @@ void JSIDBVersionChangeEventConstructor::finishCreation(VM& vm, JSDOMGlobalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSIDBVersionChangeEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSIDBVersionChangeEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSIDBVersionChangeEventConstructor, JSDOMWrapper>(exec, getJSIDBVersionChangeEventConstructorTable(exec), jsCast<JSIDBVersionChangeEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSIDBVersionChangeEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("IDBVersionChangeEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSIDBVersionChangeEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBVersionChangeEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "oldVersion", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBVersionChangeEventOldVersion), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "newVersion", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBVersionChangeEventNewVersion), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSIDBVersionChangeEventPrototypeTable = { 1, 0, JSIDBVersionChangeEventPrototypeTableValues, 0 };
-static const HashTable& getJSIDBVersionChangeEventPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBVersionChangeEventPrototypeTable);
-}
+const ClassInfo JSIDBVersionChangeEventPrototype::s_info = { "IDBVersionChangeEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBVersionChangeEventPrototype) };
 
-const ClassInfo JSIDBVersionChangeEventPrototype::s_info = { "IDBVersionChangeEventPrototype", &Base::s_info, 0, getJSIDBVersionChangeEventPrototypeTable, CREATE_METHOD_TABLE(JSIDBVersionChangeEventPrototype) };
-
-JSObject* JSIDBVersionChangeEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSIDBVersionChangeEvent>(vm, globalObject);
-}
-
-static const HashTable& getJSIDBVersionChangeEventTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBVersionChangeEventTable);
-}
-
-const ClassInfo JSIDBVersionChangeEvent::s_info = { "IDBVersionChangeEvent", &Base::s_info, 0, getJSIDBVersionChangeEventTable , CREATE_METHOD_TABLE(JSIDBVersionChangeEvent) };
-
-JSIDBVersionChangeEvent::JSIDBVersionChangeEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBVersionChangeEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSIDBVersionChangeEvent::finishCreation(VM& vm)
+void JSIDBVersionChangeEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSIDBVersionChangeEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSIDBVersionChangeEvent::s_info = { "IDBVersionChangeEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBVersionChangeEvent) };
+
+JSIDBVersionChangeEvent::JSIDBVersionChangeEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBVersionChangeEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSIDBVersionChangeEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSIDBVersionChangeEventPrototype::create(vm, globalObject, JSIDBVersionChangeEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSIDBVersionChangeEventPrototype::create(vm, globalObject, JSIDBVersionChangeEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSIDBVersionChangeEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSIDBVersionChangeEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSIDBVersionChangeEvent* thisObject = jsCast<JSIDBVersionChangeEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSIDBVersionChangeEvent, Base>(exec, getJSIDBVersionChangeEventTable(exec), thisObject, propertyName, slot);
+    return getDOMPrototype<JSIDBVersionChangeEvent>(vm, globalObject);
 }
 
-JSValue jsIDBVersionChangeEventOldVersion(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBVersionChangeEventOldVersion(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBVersionChangeEvent* castedThis = jsCast<JSIDBVersionChangeEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    IDBVersionChangeEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBVersionChangeEvent* castedThis = jsDynamicCast<JSIDBVersionChangeEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBVersionChangeEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBVersionChangeEvent", "oldVersion");
+        return throwGetterTypeError(*exec, "IDBVersionChangeEvent", "oldVersion");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.oldVersion());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsIDBVersionChangeEventNewVersion(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBVersionChangeEventNewVersion(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBVersionChangeEvent* castedThis = jsCast<JSIDBVersionChangeEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    bool isNull = false;
-    IDBVersionChangeEvent& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.newVersion(isNull));
-    if (isNull)
-        return jsNull();
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBVersionChangeEvent* castedThis = jsDynamicCast<JSIDBVersionChangeEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBVersionChangeEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBVersionChangeEvent", "newVersion");
+        return throwGetterTypeError(*exec, "IDBVersionChangeEvent", "newVersion");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.newVersion());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsIDBVersionChangeEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBVersionChangeEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSIDBVersionChangeEvent* domObject = jsCast<JSIDBVersionChangeEvent*>(asObject(slotBase));
-    return JSIDBVersionChangeEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSIDBVersionChangeEventPrototype* domObject = jsDynamicCast<JSIDBVersionChangeEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSIDBVersionChangeEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSIDBVersionChangeEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

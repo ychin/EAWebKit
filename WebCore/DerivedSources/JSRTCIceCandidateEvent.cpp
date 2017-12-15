@@ -24,6 +24,7 @@
 
 #include "JSRTCIceCandidateEvent.h"
 
+#include "JSDOMBinding.h"
 #include "JSRTCIceCandidate.h"
 #include "RTCIceCandidate.h"
 #include "RTCIceCandidateEvent.h"
@@ -33,62 +34,81 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSRTCIceCandidateEventTableValues[] =
-{
-    { "candidate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCIceCandidateEventCandidate), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsRTCIceCandidateEventCandidate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSRTCIceCandidateEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRTCIceCandidateEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRTCIceCandidateEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidateEventPrototype>(vm.heap)) JSRTCIceCandidateEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRTCIceCandidateEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSRTCIceCandidateEventTable = { 2, 1, JSRTCIceCandidateEventTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSRTCIceCandidateEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "candidate", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCIceCandidateEventCandidate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSRTCIceCandidateEventPrototypeTable = { 1, 0, JSRTCIceCandidateEventPrototypeTableValues, 0 };
-const ClassInfo JSRTCIceCandidateEventPrototype::s_info = { "RTCIceCandidateEventPrototype", &Base::s_info, &JSRTCIceCandidateEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSRTCIceCandidateEventPrototype) };
+const ClassInfo JSRTCIceCandidateEventPrototype::s_info = { "RTCIceCandidateEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCIceCandidateEventPrototype) };
 
-JSObject* JSRTCIceCandidateEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRTCIceCandidateEvent>(vm, globalObject);
-}
-
-const ClassInfo JSRTCIceCandidateEvent::s_info = { "RTCIceCandidateEvent", &Base::s_info, &JSRTCIceCandidateEventTable, 0 , CREATE_METHOD_TABLE(JSRTCIceCandidateEvent) };
-
-JSRTCIceCandidateEvent::JSRTCIceCandidateEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCIceCandidateEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSRTCIceCandidateEvent::finishCreation(VM& vm)
+void JSRTCIceCandidateEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSRTCIceCandidateEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSRTCIceCandidateEvent::s_info = { "RTCIceCandidateEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCIceCandidateEvent) };
+
+JSRTCIceCandidateEvent::JSRTCIceCandidateEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCIceCandidateEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSRTCIceCandidateEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSRTCIceCandidateEventPrototype::create(vm, globalObject, JSRTCIceCandidateEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSRTCIceCandidateEventPrototype::create(vm, globalObject, JSRTCIceCandidateEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSRTCIceCandidateEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSRTCIceCandidateEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSRTCIceCandidateEvent* thisObject = jsCast<JSRTCIceCandidateEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSRTCIceCandidateEvent, Base>(exec, JSRTCIceCandidateEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSRTCIceCandidateEvent>(vm, globalObject);
 }
 
-JSValue jsRTCIceCandidateEventCandidate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCIceCandidateEventCandidate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCIceCandidateEvent* castedThis = jsCast<JSRTCIceCandidateEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCIceCandidateEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCIceCandidateEvent* castedThis = jsDynamicCast<JSRTCIceCandidateEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCIceCandidateEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCIceCandidateEvent", "candidate");
+        return throwGetterTypeError(*exec, "RTCIceCandidateEvent", "candidate");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.candidate()));
-    return result;
+    return JSValue::encode(result);
 }
 
 

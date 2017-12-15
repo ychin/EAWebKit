@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -33,14 +33,18 @@
 
 #if ENABLE(MATHML)
 
-#include "JSMathMLMathElement.h"
-#include "JSMathMLInlineContainerElement.h"
 #include "JSMathMLTextElement.h"
+#include "JSMathMLInlineContainerElement.h"
+#include "JSMathMLSelectElement.h"
+#include "JSMathMLMathElement.h"
+#include "JSMathMLMencloseElement.h"
 #include "JSMathMLElement.h"
-#include "MathMLMathElement.h"
-#include "MathMLInlineContainerElement.h"
 #include "MathMLTextElement.h"
+#include "MathMLInlineContainerElement.h"
+#include "MathMLSelectElement.h"
 #include "MathMLElement.h"
+#include "MathMLMathElement.h"
+#include "MathMLMencloseElement.h"
 #include "MathMLElement.h"
 
 #include "MathMLNames.h"
@@ -57,21 +61,31 @@ namespace WebCore {
 
 using namespace MathMLNames;
 
-typedef JSDOMWrapper* (*CreateMathMLElementWrapperFunction)(ExecState*, JSDOMGlobalObject*, PassRefPtr<MathMLElement>);
+typedef JSDOMWrapper* (*CreateMathMLElementWrapperFunction)(JSDOMGlobalObject*, PassRefPtr<MathMLElement>);
 
-static JSDOMWrapper* createMathMLMathElementWrapper(ExecState* exec, JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
+static JSDOMWrapper* createMathMLTextElementWrapper(JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
 {
-    return CREATE_DOM_WRAPPER(exec, globalObject, MathMLMathElement, element.get());
+    return CREATE_DOM_WRAPPER(globalObject, MathMLTextElement, element.get());
 }
 
-static JSDOMWrapper* createMathMLInlineContainerElementWrapper(ExecState* exec, JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
+static JSDOMWrapper* createMathMLInlineContainerElementWrapper(JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
 {
-    return CREATE_DOM_WRAPPER(exec, globalObject, MathMLInlineContainerElement, element.get());
+    return CREATE_DOM_WRAPPER(globalObject, MathMLInlineContainerElement, element.get());
 }
 
-static JSDOMWrapper* createMathMLTextElementWrapper(ExecState* exec, JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
+static JSDOMWrapper* createMathMLSelectElementWrapper(JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
 {
-    return CREATE_DOM_WRAPPER(exec, globalObject, MathMLTextElement, element.get());
+    return CREATE_DOM_WRAPPER(globalObject, MathMLSelectElement, element.get());
+}
+
+static JSDOMWrapper* createMathMLMathElementWrapper(JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
+{
+    return CREATE_DOM_WRAPPER(globalObject, MathMLMathElement, element.get());
+}
+
+static JSDOMWrapper* createMathMLMencloseElementWrapper(JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
+{
+    return CREATE_DOM_WRAPPER(globalObject, MathMLMencloseElement, element.get());
 }
 
 
@@ -83,7 +97,12 @@ static NEVER_INLINE void populateMathMLWrapperMap(HashMap<AtomicStringImpl*, Cre
     };
 
     static const TableEntry table[] = {
+        { annotationTag, &createMathMLTextElementWrapper },
+        { annotation_xmlTag, &createMathMLInlineContainerElementWrapper },
+        { mactionTag, &createMathMLSelectElementWrapper },
         { mathTag, &createMathMLMathElementWrapper },
+        { mencloseTag, &createMathMLMencloseElementWrapper },
+        { merrorTag, &createMathMLInlineContainerElementWrapper },
         { mfencedTag, &createMathMLInlineContainerElementWrapper },
         { mfracTag, &createMathMLInlineContainerElementWrapper },
         { miTag, &createMathMLTextElementWrapper },
@@ -91,11 +110,14 @@ static NEVER_INLINE void populateMathMLWrapperMap(HashMap<AtomicStringImpl*, Cre
         { mnTag, &createMathMLTextElementWrapper },
         { moTag, &createMathMLTextElementWrapper },
         { moverTag, &createMathMLInlineContainerElementWrapper },
+        { mphantomTag, &createMathMLInlineContainerElementWrapper },
         { mprescriptsTag, &createMathMLInlineContainerElementWrapper },
         { mrootTag, &createMathMLInlineContainerElementWrapper },
         { mrowTag, &createMathMLInlineContainerElementWrapper },
+        { msTag, &createMathMLTextElementWrapper },
         { mspaceTag, &createMathMLTextElementWrapper },
         { msqrtTag, &createMathMLInlineContainerElementWrapper },
+        { mstyleTag, &createMathMLInlineContainerElementWrapper },
         { msubTag, &createMathMLInlineContainerElementWrapper },
         { msubsupTag, &createMathMLInlineContainerElementWrapper },
         { msupTag, &createMathMLInlineContainerElementWrapper },
@@ -104,20 +126,21 @@ static NEVER_INLINE void populateMathMLWrapperMap(HashMap<AtomicStringImpl*, Cre
         { munderTag, &createMathMLInlineContainerElementWrapper },
         { munderoverTag, &createMathMLInlineContainerElementWrapper },
         { noneTag, &createMathMLInlineContainerElementWrapper },
+        { semanticsTag, &createMathMLSelectElementWrapper },
     };
 
     for (unsigned i = 0; i < WTF_ARRAY_LENGTH(table); ++i)
         map.add(table[i].name.localName().impl(), table[i].function);
 }
 
-JSDOMWrapper* createJSMathMLWrapper(ExecState* exec, JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
+JSDOMWrapper* createJSMathMLWrapper(JSDOMGlobalObject* globalObject, PassRefPtr<MathMLElement> element)
 {
     static NeverDestroyed<HashMap<AtomicStringImpl*, CreateMathMLElementWrapperFunction>> functions;
     if (functions.get().isEmpty())
         populateMathMLWrapperMap(functions);
     if (auto function = functions.get().get(element->localName().impl()))
-        return function(exec, globalObject, element);
-    return CREATE_DOM_WRAPPER(exec, globalObject, MathMLElement, element.get());
+        return function(globalObject, element);
+    return CREATE_DOM_WRAPPER(globalObject, MathMLElement, element.get());
 }
 
 }

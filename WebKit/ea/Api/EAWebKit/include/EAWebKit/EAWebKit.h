@@ -191,7 +191,7 @@ struct Parameters
 	const char8_t*      mpApplicationName;                  // Defaults to NULL, which means "EAWebKit". The SetParameters function copies this string, mpApplicationName doesn't need to persist.
 
 	// Transport settings:
-	const char8_t*      mpUserAgent;                    // Defaults to NULL, which means "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.71 (KHTML, like Gecko) Safari/537.71 WebKit/157437 EAWebKit/"<EAWebKit Version>. The SetParameters function copies this string, mpUserAgent doesn't need to persist. See http://www.useragentstring.com/
+	const char8_t*      mpUserAgent;                    // Defaults to NULL, which means "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) WebKit/188436 EAWebKit/"<EAWebKit Version>. The SetParameters function copies this string, mpUserAgent doesn't need to persist. See http://www.useragentstring.com/
 	uint32_t            mMaxTransportJobs;              // Defaults to 16. Specifies maximum number of concurrent transport jobs (e.g. HTTP requests).
     uint32_t            mMaxParallelConnectionsPerHost; // Defaults to 6. Specifies the number of parallel connections maintained to host.
 	uint32_t			mHttpRequestResponseBufferSize; // Defaults to 4096. Number of bytes that a HTTP request/response handle has for transaction with server. This is only for request/response headers and does not put any limit on the actual resource size(say a css file).
@@ -224,7 +224,7 @@ struct Parameters
     uint16_t   mRemoteWebInspectorPort;                   // Defaults to 0 (disabled)
 	const char8_t*      mpRemoteWebInspectorIp;           // Defaults to 0.0.0.0 listening on all ip
 
-	//Note by Arpit Baldeva: JavaScriptStackSize defaults to 128 KB. The core Webkit trunk allocates 0.5 MB by default (well, they don't allocate but assume that the platform has on-demand commit capability) at the time of writing. This is not suitable for consoles with limited amount of memory and without on-demand commit capability.
+	//Note by Arpit Baldeva: JavaScriptStackSize defaults to 256 KB. The core Webkit trunk allocates 0.5 MB by default (well, they don't allocate but assume that the platform has on-demand commit capability) at the time of writing. This is not suitable for consoles with limited amount of memory and without on-demand commit capability.
 	// The user can tweak this size and may be get around by using a smaller size that fits their need. If the size is too small, some JavaScript code may fail to execute. You will see a DebugLog similar to following.
 	// EAWebKit: JS Error - undefined (0): RangeError: Maximum call stack size exceeded.
 	uint32_t    mJavaScriptStackSize;
@@ -428,7 +428,7 @@ public:
 	// Add a user style sheet that affects all rendered pages.
 	// Example 1 - Adding ":link, :visited { text-decoration: line-through ! important; }" will line-through all the links on all pages even if styled by the page.
 	// Example 2 - Adding ":link, :visited { text-decoration: line-through;}" will line-through all the links that are not styled on the pages.
-	virtual void AddUserStyleSheet(const char8_t* userStyleSheet);
+    virtual void AddUserStyleSheet(const EA::WebKit::View* pView, const char8_t* userStyleSheet);
 
 
 

@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2006, 2007, 2011 Apple Inc. All rights reserved.
  * Copyright (C) 2007-2009 Torch Mobile, Inc.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -11,10 +12,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,26 +28,27 @@
 #include "config.h"
 #include "TextEncodingRegistry.h"
 
+#include "TextCodecICU.h"
 #include "TextCodecLatin1.h"
 #include "TextCodecUserDefined.h"
 #include "TextCodecUTF16.h"
 #include "TextCodecUTF8.h"
 #include "TextEncoding.h"
+#include <mutex>
 #include <wtf/ASCIICType.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/MainThread.h>
+#include <wtf/NeverDestroyed.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/StringExtras.h>
 
-#if USE(ICU_UNICODE)
-#include "TextCodecICU.h"
+#if PLATFORM(COCOA)
+#include "WebCoreSystemInterface.h"
 #endif
+
 #if PLATFORM(MAC)
 #include "TextCodecMac.h"
-#endif
-#if OS(WINDOWS) && USE(WCHAR_UNICODE)
-#include "win/TextCodecWin.h"
 #endif
 
 #include <wtf/CurrentTime.h>
@@ -65,19 +67,10 @@ struct TextEncodingNameHash {
         char c1;
         char c2;
         do {
-#if defined(_MSC_VER) && _MSC_VER == 1700
-            // Workaround for a bug in the VS2012 Update1 and Update2 optimizer, remove once the fix is released.
-            // https://connect.microsoft.com/VisualStudio/feedback/details/781189/vs2012-update-ctp4-c-optimizing-bug
-            c1 = toASCIILower(*s1++);
-            c2 = toASCIILower(*s2++);
-            if (c1 != c2)
-                return false;
-#else
             c1 = *s1++;
             c2 = *s2++;
             if (toASCIILower(c1) != toASCIILower(c2))
                 return false;
-#endif
         } while (c1 && c2);
         return !c1 && !c2;
     }
@@ -114,12 +107,12 @@ struct TextCodecFactory {
 typedef HashMap<const char*, const char*, TextEncodingNameHash> TextEncodingNameMap;
 typedef HashMap<const char*, TextCodecFactory> TextCodecMap;
 
-static Mutex& encodingRegistryMutex()
+static std::mutex& encodingRegistryMutex()
 {
-    // We don't have to use AtomicallyInitializedStatic here because
-    // this function is called on the main thread for any page before
-    // it is used in worker threads.
-    DEFINE_STATIC_LOCAL(Mutex, mutex, ());
+    // We don't have to construct this mutex in a thread safe way because this function
+    // is called on the main thread for any page before it is used in worker threads.
+    static NeverDestroyed<std::mutex> mutex;
+
     return mutex;
 }
 
@@ -288,28 +281,27 @@ bool shouldShowBackslashAsCurrencySymbolIn(const char* canonicalEncodingName)
 
 static void extendTextCodecMaps()
 {
-#if USE(ICU_UNICODE)
+//+EAWebKitChange
+//3/23/2015
+//TextCodecICU is excluded for us in TextAllInOne
+#if !PLATFORM(EA)
     TextCodecICU::registerEncodingNames(addToTextEncodingNameMap);
     TextCodecICU::registerCodecs(addToTextCodecMap);
 #endif
+//-EAWebKitChange
 
 #if PLATFORM(MAC)
     TextCodecMac::registerEncodingNames(addToTextEncodingNameMap);
     TextCodecMac::registerCodecs(addToTextCodecMap);
 #endif
 
-#if OS(WINDOWS) && USE(WCHAR_UNICODE)
-    TextCodecWin::registerExtendedEncodingNames(addToTextEncodingNameMap);
-    TextCodecWin::registerExtendedCodecs(addToTextCodecMap);
-#endif
-
     pruneBlacklistedCodecs();
     buildQuirksSets();
 }
 
-PassOwnPtr<TextCodec> newTextCodec(const TextEncoding& encoding)
+std::unique_ptr<TextCodec> newTextCodec(const TextEncoding& encoding)
 {
-    MutexLocker lock(encodingRegistryMutex());
+    std::lock_guard<std::mutex> lock(encodingRegistryMutex());
 
     ASSERT(textCodecMap);
     TextCodecFactory factory = textCodecMap->get(encoding.name());
@@ -320,16 +312,18 @@ PassOwnPtr<TextCodec> newTextCodec(const TextEncoding& encoding)
 const char* atomicCanonicalTextEncodingName(const char* name)
 {
     if (!name || !name[0])
-        return 0;
+        return nullptr;
+
     if (!textEncodingNameMap)
         buildBaseTextCodecMaps();
 
-    MutexLocker lock(encodingRegistryMutex());
+    std::lock_guard<std::mutex> lock(encodingRegistryMutex());
 
     if (const char* atomicName = textEncodingNameMap->get(name))
         return atomicName;
     if (didExtendTextCodecMaps)
-        return 0;
+        return nullptr;
+
     extendTextCodecMaps();
     didExtendTextCodecMaps = true;
     return textEncodingNameMap->get(name);
@@ -353,12 +347,12 @@ const char* atomicCanonicalTextEncodingName(const CharacterType* characters, siz
 const char* atomicCanonicalTextEncodingName(const String& alias)
 {
     if (!alias.length())
-        return 0;
+        return nullptr;
 
     if (alias.is8Bit())
-        return atomicCanonicalTextEncodingName<LChar>(alias.characters8(), alias.length());
+        return atomicCanonicalTextEncodingName(alias.characters8(), alias.length());
 
-    return atomicCanonicalTextEncodingName<UChar>(alias.characters(), alias.length());
+    return atomicCanonicalTextEncodingName(alias.characters16(), alias.length());
 }
 
 bool noExtendedTextEncodingNameUsed()
@@ -367,13 +361,30 @@ bool noExtendedTextEncodingNameUsed()
     return !didExtendTextCodecMaps;
 }
 
+String defaultTextEncodingNameForSystemLanguage()
+{
+#if PLATFORM(COCOA)
+    String systemEncodingName = CFStringConvertEncodingToIANACharSetName(wkGetWebDefaultCFStringEncoding());
+
+    // CFStringConvertEncodingToIANACharSetName() returns cp949 for kTextEncodingDOSKorean AKA "extended EUC-KR" AKA windows-949.
+    // ICU uses this name for a different encoding, so we need to change the name to a value that actually gives us windows-949.
+    // In addition, this value must match what is used in Safari, see <rdar://problem/5579292>.
+    // On some OS versions, the result is CP949 (uppercase).
+    if (equalIgnoringCase(systemEncodingName, "cp949"))
+        systemEncodingName = "ks_c_5601-1987";
+    return systemEncodingName;
+#else
+    return String("ISO-8859-1");
+#endif
+}
+
 #ifndef NDEBUG
 void dumpTextEncodingNameMap()
 {
     unsigned size = textEncodingNameMap->size();
     fprintf(stderr, "Dumping %u entries in WebCore::textEncodingNameMap...\n", size);
 
-    MutexLocker lock(encodingRegistryMutex());
+    std::lock_guard<std::mutex> lock(encodingRegistryMutex());
 
     TextEncodingNameMap::const_iterator it = textEncodingNameMap->begin();
     TextEncodingNameMap::const_iterator end = textEncodingNameMap->end();

@@ -21,25 +21,24 @@
 #ifndef JSTextEvent_h
 #define JSTextEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSUIEvent.h"
 #include "TextEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSTextEvent : public JSUIEvent {
 public:
     typedef JSUIEvent Base;
-    static JSTextEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TextEvent> impl)
+    static JSTextEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TextEvent>&& impl)
     {
-        JSTextEvent* ptr = new (NotNull, JSC::allocateCell<JSTextEvent>(globalObject->vm().heap)) JSTextEvent(structure, globalObject, impl);
+        JSTextEvent* ptr = new (NotNull, JSC::allocateCell<JSTextEvent>(globalObject->vm().heap)) JSTextEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,67 +52,17 @@ public:
         return static_cast<TextEvent&>(Base::impl());
     }
 protected:
-    JSTextEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TextEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSTextEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<TextEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSTextEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTextEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTextEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSTextEventPrototype>(vm.heap)) JSTextEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTextEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSTextEventConstructor : public DOMConstructorObject {
-private:
-    JSTextEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTextEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTextEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSTextEventConstructor>(vm.heap)) JSTextEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsTextEventPrototypeFunctionInitTextEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsTextEventData(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

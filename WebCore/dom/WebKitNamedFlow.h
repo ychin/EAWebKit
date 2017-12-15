@@ -46,9 +46,9 @@ class NodeList;
 class RenderNamedFlowThread;
 class ScriptExecutionContext;
 
-class WebKitNamedFlow FINAL : public RefCounted<WebKitNamedFlow>, public EventTargetWithInlineData {
+class WebKitNamedFlow final : public RefCounted<WebKitNamedFlow>, public EventTargetWithInlineData {
 public:
-    static PassRefPtr<WebKitNamedFlow> create(PassRefPtr<NamedFlowCollection> manager, const AtomicString& flowThreadName);
+    static Ref<WebKitNamedFlow> create(PassRefPtr<NamedFlowCollection> manager, const AtomicString& flowThreadName);
 
     ~WebKitNamedFlow();
 
@@ -62,8 +62,8 @@ public:
     using RefCounted<WebKitNamedFlow>::ref;
     using RefCounted<WebKitNamedFlow>::deref;
 
-    virtual EventTargetInterface eventTargetInterface() const OVERRIDE { return WebKitNamedFlowEventTargetInterfaceType; }
-    virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE;
+    virtual EventTargetInterface eventTargetInterface() const override { return WebKitNamedFlowEventTargetInterfaceType; }
+    virtual ScriptExecutionContext* scriptExecutionContext() const override;
 
     // This function is called from the JS binding code to determine if the NamedFlow object is reachable or not.
     // If the object has listeners, the object should only be discarded if the parent Document is not reachable.
@@ -78,15 +78,14 @@ public:
 
     FlowState flowState() const { return m_parentFlowThread ? FlowStateCreated : FlowStateNull; }
 
-    void dispatchRegionLayoutUpdateEvent();
     void dispatchRegionOversetChangeEvent();
 
 private:
     WebKitNamedFlow(PassRefPtr<NamedFlowCollection>, const AtomicString&);
 
     // EventTarget implementation.
-    virtual void refEventTarget() OVERRIDE { ref(); }
-    virtual void derefEventTarget() OVERRIDE { deref(); }
+    virtual void refEventTarget() override { ref(); }
+    virtual void derefEventTarget() override { deref(); }
 
     // The name of the flow thread as specified in CSS.
     AtomicString m_flowThreadName;

@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGPathSegCurvetoQuadraticSmoothRel.h"
 
+#include "JSDOMBinding.h"
 #include "SVGPathSegCurvetoQuadraticSmoothRel.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
@@ -32,26 +30,61 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGPathSegCurvetoQuadraticSmoothRelTableValues[] =
-{
-    { "x", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoQuadraticSmoothRelX), (intptr_t)setJSSVGPathSegCurvetoQuadraticSmoothRelX },
-    { "y", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoQuadraticSmoothRelY), (intptr_t)setJSSVGPathSegCurvetoQuadraticSmoothRelY },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoQuadraticSmoothRelConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGPathSegCurvetoQuadraticSmoothRelX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoQuadraticSmoothRelX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoQuadraticSmoothRelY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoQuadraticSmoothRelY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoQuadraticSmoothRelConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGPathSegCurvetoQuadraticSmoothRelPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGPathSegCurvetoQuadraticSmoothRelPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGPathSegCurvetoQuadraticSmoothRelPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoQuadraticSmoothRelPrototype>(vm.heap)) JSSVGPathSegCurvetoQuadraticSmoothRelPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGPathSegCurvetoQuadraticSmoothRelPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGPathSegCurvetoQuadraticSmoothRelTable = { 9, 7, JSSVGPathSegCurvetoQuadraticSmoothRelTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGPathSegCurvetoQuadraticSmoothRelConstructor : public DOMConstructorObject {
+private:
+    JSSVGPathSegCurvetoQuadraticSmoothRelConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGPathSegCurvetoQuadraticSmoothRelConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGPathSegCurvetoQuadraticSmoothRelConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGPathSegCurvetoQuadraticSmoothRelConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoQuadraticSmoothRelConstructor>(vm.heap)) JSSVGPathSegCurvetoQuadraticSmoothRelConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGPathSegCurvetoQuadraticSmoothRelConstructorTable = { 1, 0, JSSVGPathSegCurvetoQuadraticSmoothRelConstructorTableValues, 0 };
-const ClassInfo JSSVGPathSegCurvetoQuadraticSmoothRelConstructor::s_info = { "SVGPathSegCurvetoQuadraticSmoothRelConstructor", &Base::s_info, &JSSVGPathSegCurvetoQuadraticSmoothRelConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoQuadraticSmoothRelConstructor) };
+const ClassInfo JSSVGPathSegCurvetoQuadraticSmoothRelConstructor::s_info = { "SVGPathSegCurvetoQuadraticSmoothRelConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoQuadraticSmoothRelConstructor) };
 
 JSSVGPathSegCurvetoQuadraticSmoothRelConstructor::JSSVGPathSegCurvetoQuadraticSmoothRelConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,107 +95,122 @@ void JSSVGPathSegCurvetoQuadraticSmoothRelConstructor::finishCreation(VM& vm, JS
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGPathSegCurvetoQuadraticSmoothRelConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGPathSegCurvetoQuadraticSmoothRelConstructor, JSDOMWrapper>(exec, JSSVGPathSegCurvetoQuadraticSmoothRelConstructorTable, jsCast<JSSVGPathSegCurvetoQuadraticSmoothRelConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegCurvetoQuadraticSmoothRel::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGPathSegCurvetoQuadraticSmoothRel"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGPathSegCurvetoQuadraticSmoothRelPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoQuadraticSmoothRelConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoQuadraticSmoothRelX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoQuadraticSmoothRelX) },
+    { "y", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoQuadraticSmoothRelY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoQuadraticSmoothRelY) },
 };
 
-static const HashTable JSSVGPathSegCurvetoQuadraticSmoothRelPrototypeTable = { 1, 0, JSSVGPathSegCurvetoQuadraticSmoothRelPrototypeTableValues, 0 };
-const ClassInfo JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::s_info = { "SVGPathSegCurvetoQuadraticSmoothRelPrototype", &Base::s_info, &JSSVGPathSegCurvetoQuadraticSmoothRelPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoQuadraticSmoothRelPrototype) };
+const ClassInfo JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::s_info = { "SVGPathSegCurvetoQuadraticSmoothRelPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoQuadraticSmoothRelPrototype) };
 
-JSObject* JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGPathSegCurvetoQuadraticSmoothRel>(vm, globalObject);
-}
-
-const ClassInfo JSSVGPathSegCurvetoQuadraticSmoothRel::s_info = { "SVGPathSegCurvetoQuadraticSmoothRel", &Base::s_info, &JSSVGPathSegCurvetoQuadraticSmoothRelTable, 0 , CREATE_METHOD_TABLE(JSSVGPathSegCurvetoQuadraticSmoothRel) };
-
-JSSVGPathSegCurvetoQuadraticSmoothRel::JSSVGPathSegCurvetoQuadraticSmoothRel(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPathSegCurvetoQuadraticSmoothRel> impl)
-    : JSSVGPathSeg(structure, globalObject, impl)
-{
-}
-
-void JSSVGPathSegCurvetoQuadraticSmoothRel::finishCreation(VM& vm)
+void JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGPathSegCurvetoQuadraticSmoothRelPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGPathSegCurvetoQuadraticSmoothRel::s_info = { "SVGPathSegCurvetoQuadraticSmoothRel", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoQuadraticSmoothRel) };
+
+JSSVGPathSegCurvetoQuadraticSmoothRel::JSSVGPathSegCurvetoQuadraticSmoothRel(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPathSegCurvetoQuadraticSmoothRel>&& impl)
+    : JSSVGPathSeg(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGPathSegCurvetoQuadraticSmoothRel::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::create(vm, globalObject, JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::createStructure(vm, globalObject, JSSVGPathSegPrototype::self(vm, globalObject)));
+    return JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::create(vm, globalObject, JSSVGPathSegCurvetoQuadraticSmoothRelPrototype::createStructure(vm, globalObject, JSSVGPathSeg::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGPathSegCurvetoQuadraticSmoothRel::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGPathSegCurvetoQuadraticSmoothRel::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGPathSegCurvetoQuadraticSmoothRel* thisObject = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGPathSegCurvetoQuadraticSmoothRel, Base>(exec, JSSVGPathSegCurvetoQuadraticSmoothRelTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGPathSegCurvetoQuadraticSmoothRel>(vm, globalObject);
 }
 
-JSValue jsSVGPathSegCurvetoQuadraticSmoothRelX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoQuadraticSmoothRelX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoQuadraticSmoothRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "x");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "x");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoQuadraticSmoothRelY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoQuadraticSmoothRelY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoQuadraticSmoothRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "y");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "y");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoQuadraticSmoothRelConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoQuadraticSmoothRelConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGPathSegCurvetoQuadraticSmoothRel* domObject = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(asObject(slotBase));
-    return JSSVGPathSegCurvetoQuadraticSmoothRel::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGPathSegCurvetoQuadraticSmoothRelPrototype* domObject = jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRelPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGPathSegCurvetoQuadraticSmoothRel::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGPathSegCurvetoQuadraticSmoothRel::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGPathSegCurvetoQuadraticSmoothRelX(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGPathSegCurvetoQuadraticSmoothRel* thisObject = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGPathSegCurvetoQuadraticSmoothRel, Base>(exec, propertyName, value, JSSVGPathSegCurvetoQuadraticSmoothRelTable, thisObject, slot);
-}
-
-void setJSSVGPathSegCurvetoQuadraticSmoothRelX(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(thisObject);
-    SVGPathSegCurvetoQuadraticSmoothRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "x");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "x");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoQuadraticSmoothRelY(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoQuadraticSmoothRelY(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(thisObject);
-    SVGPathSegCurvetoQuadraticSmoothRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoQuadraticSmoothRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoQuadraticSmoothRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "y");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoQuadraticSmoothRel", "y");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY(nativeValue);
 }
@@ -175,5 +223,3 @@ JSValue JSSVGPathSegCurvetoQuadraticSmoothRel::getConstructor(VM& vm, JSGlobalOb
 
 
 }
-
-#endif // ENABLE(SVG)

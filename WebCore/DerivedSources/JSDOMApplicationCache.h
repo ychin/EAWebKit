@@ -22,28 +22,27 @@
 #define JSDOMApplicationCache_h
 
 #include "DOMApplicationCache.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDOMApplicationCache : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMApplicationCache* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMApplicationCache> impl)
+    static JSDOMApplicationCache* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMApplicationCache>&& impl)
     {
-        JSDOMApplicationCache* ptr = new (NotNull, JSC::allocateCell<JSDOMApplicationCache>(globalObject->vm().heap)) JSDOMApplicationCache(structure, globalObject, impl);
+        JSDOMApplicationCache* ptr = new (NotNull, JSC::allocateCell<JSDOMApplicationCache>(globalObject->vm().heap)) JSDOMApplicationCache(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMApplicationCache* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDOMApplicationCache();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +53,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     DOMApplicationCache& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMApplicationCache* m_impl;
 protected:
-    JSDOMApplicationCache(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMApplicationCache>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSDOMApplicationCache(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMApplicationCache>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMApplicationCacheOwner : public JSC::WeakHandleOwner {
@@ -80,77 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMApplicationCache*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMApplicationCacheOwner, jsDOMApplicationCacheOwner, ());
-    return &jsDOMApplicationCacheOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, DOMApplicationCache*)
-{
-    return &world;
+    static NeverDestroyed<JSDOMApplicationCacheOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMApplicationCache*);
-DOMApplicationCache* toDOMApplicationCache(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMApplicationCache& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMApplicationCachePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMApplicationCachePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMApplicationCachePrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMApplicationCachePrototype>(vm.heap)) JSDOMApplicationCachePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMApplicationCachePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMApplicationCachePrototypeFunctionUpdate(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMApplicationCachePrototypeFunctionSwapCache(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMApplicationCachePrototypeFunctionAbort(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMApplicationCachePrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMApplicationCachePrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMApplicationCachePrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDOMApplicationCacheStatus(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMApplicationCacheOnchecking(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOnchecking(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOnnoupdate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOnnoupdate(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOndownloading(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOndownloading(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOnprogress(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOnprogress(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOnupdateready(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOnupdateready(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOncached(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOncached(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMApplicationCacheOnobsolete(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMApplicationCacheOnobsolete(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-// Constants
-
-JSC::JSValue jsDOMApplicationCacheUNCACHED(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMApplicationCacheIDLE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMApplicationCacheCHECKING(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMApplicationCacheDOWNLOADING(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMApplicationCacheUPDATEREADY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMApplicationCacheOBSOLETE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

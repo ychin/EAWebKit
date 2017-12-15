@@ -25,52 +25,70 @@
 #include "JSEXTTextureFilterAnisotropic.h"
 
 #include "EXTTextureFilterAnisotropic.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
+class JSEXTTextureFilterAnisotropicPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSEXTTextureFilterAnisotropicPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSEXTTextureFilterAnisotropicPrototype* ptr = new (NotNull, JSC::allocateCell<JSEXTTextureFilterAnisotropicPrototype>(vm.heap)) JSEXTTextureFilterAnisotropicPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSEXTTextureFilterAnisotropicPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSEXTTextureFilterAnisotropicPrototypeTableValues[] =
 {
-    { "TEXTURE_MAX_ANISOTROPY_EXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEXTTextureFilterAnisotropicTEXTURE_MAX_ANISOTROPY_EXT), (intptr_t)0 },
-    { "MAX_TEXTURE_MAX_ANISOTROPY_EXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEXTTextureFilterAnisotropicMAX_TEXTURE_MAX_ANISOTROPY_EXT), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "TEXTURE_MAX_ANISOTROPY_EXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x84FE), (intptr_t) (0) },
+    { "MAX_TEXTURE_MAX_ANISOTROPY_EXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x84FF), (intptr_t) (0) },
 };
 
-static const HashTable JSEXTTextureFilterAnisotropicPrototypeTable = { 4, 3, JSEXTTextureFilterAnisotropicPrototypeTableValues, 0 };
-const ClassInfo JSEXTTextureFilterAnisotropicPrototype::s_info = { "EXTTextureFilterAnisotropicPrototype", &Base::s_info, &JSEXTTextureFilterAnisotropicPrototypeTable, 0, CREATE_METHOD_TABLE(JSEXTTextureFilterAnisotropicPrototype) };
+const ClassInfo JSEXTTextureFilterAnisotropicPrototype::s_info = { "EXTTextureFilterAnisotropicPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEXTTextureFilterAnisotropicPrototype) };
 
-JSObject* JSEXTTextureFilterAnisotropicPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSEXTTextureFilterAnisotropic>(vm, globalObject);
-}
-
-bool JSEXTTextureFilterAnisotropicPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSEXTTextureFilterAnisotropicPrototype* thisObject = jsCast<JSEXTTextureFilterAnisotropicPrototype*>(object);
-    return getStaticValueSlot<JSEXTTextureFilterAnisotropicPrototype, JSObject>(exec, JSEXTTextureFilterAnisotropicPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSEXTTextureFilterAnisotropic::s_info = { "EXTTextureFilterAnisotropic", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSEXTTextureFilterAnisotropic) };
-
-JSEXTTextureFilterAnisotropic::JSEXTTextureFilterAnisotropic(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EXTTextureFilterAnisotropic> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSEXTTextureFilterAnisotropic::finishCreation(VM& vm)
+void JSEXTTextureFilterAnisotropicPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSEXTTextureFilterAnisotropicPrototypeTableValues, *this);
+}
+
+const ClassInfo JSEXTTextureFilterAnisotropic::s_info = { "EXTTextureFilterAnisotropic", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEXTTextureFilterAnisotropic) };
+
+JSEXTTextureFilterAnisotropic::JSEXTTextureFilterAnisotropic(Structure* structure, JSDOMGlobalObject* globalObject, Ref<EXTTextureFilterAnisotropic>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSEXTTextureFilterAnisotropic::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSEXTTextureFilterAnisotropicPrototype::create(vm, globalObject, JSEXTTextureFilterAnisotropicPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSEXTTextureFilterAnisotropic::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSEXTTextureFilterAnisotropic>(vm, globalObject);
 }
 
 void JSEXTTextureFilterAnisotropic::destroy(JSC::JSCell* cell)
@@ -81,45 +99,21 @@ void JSEXTTextureFilterAnisotropic::destroy(JSC::JSCell* cell)
 
 JSEXTTextureFilterAnisotropic::~JSEXTTextureFilterAnisotropic()
 {
-    releaseImplIfNotNull();
-}
-
-// Constant getters
-
-JSValue jsEXTTextureFilterAnisotropicTEXTURE_MAX_ANISOTROPY_EXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x84FE));
-}
-
-JSValue jsEXTTextureFilterAnisotropicMAX_TEXTURE_MAX_ANISOTROPY_EXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x84FF));
-}
-
-static inline bool isObservable(JSEXTTextureFilterAnisotropic* jsEXTTextureFilterAnisotropic)
-{
-    if (jsEXTTextureFilterAnisotropic->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSEXTTextureFilterAnisotropicOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSEXTTextureFilterAnisotropic* jsEXTTextureFilterAnisotropic = jsCast<JSEXTTextureFilterAnisotropic*>(handle.get().asCell());
-    if (!isObservable(jsEXTTextureFilterAnisotropic))
-        return false;
-    WebGLRenderingContext* root = jsEXTTextureFilterAnisotropic->impl().context();
+    auto* jsEXTTextureFilterAnisotropic = jsCast<JSEXTTextureFilterAnisotropic*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsEXTTextureFilterAnisotropic->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSEXTTextureFilterAnisotropicOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSEXTTextureFilterAnisotropic* jsEXTTextureFilterAnisotropic = jsCast<JSEXTTextureFilterAnisotropic*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsEXTTextureFilterAnisotropic = jsCast<JSEXTTextureFilterAnisotropic*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsEXTTextureFilterAnisotropic->impl(), jsEXTTextureFilterAnisotropic);
-    jsEXTTextureFilterAnisotropic->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -130,11 +124,11 @@ extern "C" { extern void (*const __identifier("??_7EXTTextureFilterAnisotropic@W
 extern "C" { extern void* _ZTVN7WebCore27EXTTextureFilterAnisotropicE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EXTTextureFilterAnisotropic* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, EXTTextureFilterAnisotropic* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSEXTTextureFilterAnisotropic>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSEXTTextureFilterAnisotropic>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -155,13 +149,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EXTText
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<EXTTextureFilterAnisotropic>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSEXTTextureFilterAnisotropic>(exec, globalObject, impl);
+    return createNewWrapper<JSEXTTextureFilterAnisotropic>(globalObject, impl);
 }
 
-EXTTextureFilterAnisotropic* toEXTTextureFilterAnisotropic(JSC::JSValue value)
+EXTTextureFilterAnisotropic* JSEXTTextureFilterAnisotropic::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSEXTTextureFilterAnisotropic::info()) ? &jsCast<JSEXTTextureFilterAnisotropic*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSEXTTextureFilterAnisotropic*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

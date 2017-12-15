@@ -19,9 +19,6 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGNumberList.h"
 
 #include "ExceptionCode.h"
@@ -35,25 +32,82 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionClear(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionInitialize(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionGetItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionInsertItemBefore(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionReplaceItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionRemoveItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionAppendItem(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsSVGNumberListNumberOfItems(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGNumberListConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGNumberListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGNumberListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGNumberListPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGNumberListPrototype>(vm.heap)) JSSVGNumberListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGNumberListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSSVGNumberListConstructor : public DOMConstructorObject {
+private:
+    JSSVGNumberListConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGNumberListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGNumberListConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGNumberListConstructor>(vm.heap)) JSSVGNumberListConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSSVGNumberListTableIndex[2] = {
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSSVGNumberListTableValues[] =
 {
-    { "numberOfItems", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGNumberListNumberOfItems), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGNumberListConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "numberOfItems", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGNumberListNumberOfItems), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGNumberListTable = { 4, 3, JSSVGNumberListTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSSVGNumberListConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSSVGNumberListConstructorTable = { 1, 0, JSSVGNumberListConstructorTableValues, 0 };
-const ClassInfo JSSVGNumberListConstructor::s_info = { "SVGNumberListConstructor", &Base::s_info, &JSSVGNumberListConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGNumberListConstructor) };
+static const HashTable JSSVGNumberListTable = { 1, 1, true, JSSVGNumberListTableValues, 0, JSSVGNumberListTableIndex };
+const ClassInfo JSSVGNumberListConstructor::s_info = { "SVGNumberListConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGNumberListConstructor) };
 
 JSSVGNumberListConstructor::JSSVGNumberListConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -64,60 +118,49 @@ void JSSVGNumberListConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globa
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGNumberListPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGNumberListConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGNumberListConstructor, JSDOMWrapper>(exec, JSSVGNumberListConstructorTable, jsCast<JSSVGNumberListConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGNumberList::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGNumberList"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGNumberListPrototypeTableValues[] =
 {
-    { "clear", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionClear), (intptr_t)0 },
-    { "initialize", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionInitialize), (intptr_t)1 },
-    { "getItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionGetItem), (intptr_t)1 },
-    { "insertItemBefore", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionInsertItemBefore), (intptr_t)2 },
-    { "replaceItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionReplaceItem), (intptr_t)2 },
-    { "removeItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionRemoveItem), (intptr_t)1 },
-    { "appendItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionAppendItem), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGNumberListConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "clear", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionClear), (intptr_t) (0) },
+    { "initialize", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionInitialize), (intptr_t) (1) },
+    { "getItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionGetItem), (intptr_t) (1) },
+    { "insertItemBefore", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionInsertItemBefore), (intptr_t) (2) },
+    { "replaceItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionReplaceItem), (intptr_t) (2) },
+    { "removeItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionRemoveItem), (intptr_t) (1) },
+    { "appendItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGNumberListPrototypeFunctionAppendItem), (intptr_t) (1) },
 };
 
-static const HashTable JSSVGNumberListPrototypeTable = { 18, 15, JSSVGNumberListPrototypeTableValues, 0 };
-const ClassInfo JSSVGNumberListPrototype::s_info = { "SVGNumberListPrototype", &Base::s_info, &JSSVGNumberListPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGNumberListPrototype) };
+const ClassInfo JSSVGNumberListPrototype::s_info = { "SVGNumberListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGNumberListPrototype) };
 
-JSObject* JSSVGNumberListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGNumberList>(vm, globalObject);
-}
-
-bool JSSVGNumberListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGNumberListPrototype* thisObject = jsCast<JSSVGNumberListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSSVGNumberListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGNumberList::s_info = { "SVGNumberList", &Base::s_info, &JSSVGNumberListTable, 0 , CREATE_METHOD_TABLE(JSSVGNumberList) };
-
-JSSVGNumberList::JSSVGNumberList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGListPropertyTearOff<SVGNumberList> > impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSVGNumberList::finishCreation(VM& vm)
+void JSSVGNumberListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGNumberListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGNumberList::s_info = { "SVGNumberList", &Base::s_info, &JSSVGNumberListTable, CREATE_METHOD_TABLE(JSSVGNumberList) };
+
+JSSVGNumberList::JSSVGNumberList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGListPropertyTearOff<SVGNumberList>>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSVGNumberList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSVGNumberListPrototype::create(vm, globalObject, JSSVGNumberListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSVGNumberList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSVGNumberList>(vm, globalObject);
 }
 
 void JSSVGNumberList::destroy(JSC::JSCell* cell)
@@ -128,29 +171,33 @@ void JSSVGNumberList::destroy(JSC::JSCell* cell)
 
 JSSVGNumberList::~JSSVGNumberList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSSVGNumberList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSSVGNumberList* thisObject = jsCast<JSSVGNumberList*>(object);
+    auto* thisObject = jsCast<JSSVGNumberList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSSVGNumberList, Base>(exec, JSSVGNumberListTable, thisObject, propertyName, slot);
 }
 
-JSValue jsSVGNumberListNumberOfItems(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGNumberListNumberOfItems(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSSVGNumberList*>(slotBase);
     JSValue result =  jsNumber(castedThis->impl().numberOfItems());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGNumberListConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGNumberListConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGNumberList* domObject = jsCast<JSSVGNumberList*>(asObject(slotBase));
-    return JSSVGNumberList::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGNumberListPrototype* domObject = jsDynamicCast<JSSVGNumberListPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGNumberList::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGNumberList::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -160,12 +207,12 @@ JSValue JSSVGNumberList::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionClear(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "clear");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     impl.clear(ec);
     setDOMException(exec, ec);
@@ -174,177 +221,166 @@ EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionClear(ExecState* ex
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionInitialize(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "initialize");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<float>* item(toSVGNumber(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGNumberList", "initialize", "SVGNumber");
+    SVGPropertyTearOff<float>* item = JSSVGNumber::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.initialize(item, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.initialize(item, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionGetItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "getItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getItem(index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getItem(index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionInsertItemBefore(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "insertItemBefore");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<float>* item(toSVGNumber(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGNumberList", "insertItemBefore", "SVGNumber");
+    SVGPropertyTearOff<float>* item = JSSVGNumber::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned index(toUInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.insertItemBefore(item, index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.insertItemBefore(item, index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionReplaceItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "replaceItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<float>* item(toSVGNumber(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGNumberList", "replaceItem", "SVGNumber");
+    SVGPropertyTearOff<float>* item = JSSVGNumber::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned index(toUInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.replaceItem(item, index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.replaceItem(item, index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionRemoveItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "removeItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.removeItem(index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.removeItem(index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGNumberListPrototypeFunctionAppendItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGNumberList::info()))
-        return throwVMTypeError(exec);
-    JSSVGNumberList* castedThis = jsCast<JSSVGNumberList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGNumberList* castedThis = jsDynamicCast<JSSVGNumberList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGNumberList", "appendItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGNumberList::info());
-    SVGListPropertyTearOff<SVGNumberList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<float>* item(toSVGNumber(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGNumber::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGNumberList", "appendItem", "SVGNumber");
+    SVGPropertyTearOff<float>* item = JSSVGNumber::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.appendItem(item, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.appendItem(item, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-static inline bool isObservable(JSSVGNumberList* jsSVGNumberList)
-{
-    if (jsSVGNumberList->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSSVGNumberListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSVGNumberList* jsSVGNumberList = jsCast<JSSVGNumberList*>(handle.get().asCell());
-    if (!isObservable(jsSVGNumberList))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSVGNumberListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSVGNumberList* jsSVGNumberList = jsCast<JSSVGNumberList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSVGNumberList = jsCast<JSSVGNumberList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSVGNumberList->impl(), jsSVGNumberList);
-    jsSVGNumberList->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGListPropertyTearOff<SVGNumberList> * impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SVGListPropertyTearOff<SVGNumberList>* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSVGNumberList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSVGNumberList>(globalObject, impl))
         return result;
-    ReportMemoryCost<SVGListPropertyTearOff<SVGNumberList> >::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSVGNumberList>(exec, globalObject, impl);
+    return createNewWrapper<JSSVGNumberList>(globalObject, impl);
 }
 
-SVGListPropertyTearOff<SVGNumberList> * toSVGNumberList(JSC::JSValue value)
+SVGListPropertyTearOff<SVGNumberList>* JSSVGNumberList::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSVGNumberList::info()) ? &jsCast<JSSVGNumberList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSVGNumberList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(SVG)

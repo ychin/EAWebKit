@@ -26,8 +26,6 @@
 #ifndef SVGUnknownElement_h
 #define SVGUnknownElement_h
 
-#if ENABLE(SVG)
-
 #include "SVGElement.h"
 
 namespace WebCore {
@@ -38,11 +36,11 @@ namespace WebCore {
 //
 // The main purpose of this class at the moment is to override rendererIsNeeded() to return
 // false to make sure we don't attempt to render such elements.
-class SVGUnknownElement FINAL : public SVGElement {
+class SVGUnknownElement final : public SVGElement {
 public:
-    static PassRefPtr<SVGUnknownElement> create(const QualifiedName& tagName, Document& document)
+    static Ref<SVGUnknownElement> create(const QualifiedName& tagName, Document& document)
     {
-        return adoptRef(new SVGUnknownElement(tagName, document));
+        return adoptRef(*new SVGUnknownElement(tagName, document));
     }
 
 private:
@@ -51,11 +49,9 @@ private:
     {
     }
 
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE { return false; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif // SVGUnknownElement_h

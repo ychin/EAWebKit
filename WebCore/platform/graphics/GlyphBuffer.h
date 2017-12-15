@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2006, 2009, 2011 Apple Inc. All rights reserved.
  * Copyright (C) 2007-2008 Torch Mobile Inc.
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -12,7 +12,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -33,6 +33,7 @@
 
 #include "FloatSize.h"
 #include "Glyph.h"
+#include <climits>
 #include <wtf/Vector.h>
 
 #if USE(CG)
@@ -48,7 +49,7 @@
 
 namespace WebCore {
 
-class SimpleFontData;
+class Font;
 
 //+EAWebKitChange
 //1/15/2014
@@ -58,8 +59,6 @@ class SimpleFontData;
 typedef cairo_glyph_t GlyphBufferGlyph;
 #elif USE(WINGDI)
 typedef wchar_t GlyphBufferGlyph;
-#elif PLATFORM(BLACKBERRY)
-typedef unsigned GlyphBufferGlyph;
 #else
 typedef Glyph GlyphBufferGlyph;
 #endif
@@ -84,14 +83,16 @@ typedef FloatSize GlyphBufferAdvance;
 
 class GlyphBuffer {
 public:
-    bool isEmpty() const { return m_fontData.isEmpty(); }
-    int size() const { return m_fontData.size(); }
+    bool isEmpty() const { return m_font.isEmpty(); }
+    int size() const { return m_font.size(); }
     
     void clear()
     {
-        m_fontData.clear();
+        m_font.clear();
         m_glyphs.clear();
         m_advances.clear();
+        if (m_offsetsInString)
+            m_offsetsInString->clear();
 #if PLATFORM(WIN)
         m_offsets.clear();
 #endif
@@ -102,10 +103,13 @@ public:
     const GlyphBufferGlyph* glyphs(int from) const { return m_glyphs.data() + from; }
     const GlyphBufferAdvance* advances(int from) const { return m_advances.data() + from; }
 
-    const SimpleFontData* fontDataAt(int index) const { return m_fontData[index]; }
+    const Font* fontAt(int index) const { return m_font[index]; }
 
     void setInitialAdvance(GlyphBufferAdvance initialAdvance) { m_initialAdvance = initialAdvance; }
     const GlyphBufferAdvance& initialAdvance() const { return m_initialAdvance; }
+
+    void setLeadingExpansion(float leadingExpansion) { m_leadingExpansion = leadingExpansion; }
+    float leadingExpansion() const { return m_leadingExpansion; }
     
     Glyph glyphAt(int index) const
     {
@@ -133,20 +137,11 @@ public:
         return FloatSize();
 #endif
     }
-
-    void add(const GlyphBuffer* glyphBuffer, int from, int len)
+    
+    static const unsigned noOffset = UINT_MAX;
+    void add(Glyph glyph, const Font* font, float width, unsigned offsetInString = noOffset, const FloatSize* offset = 0)
     {
-        m_glyphs.append(glyphBuffer->glyphs(from), len);
-        m_advances.append(glyphBuffer->advances(from), len);
-        m_fontData.append(glyphBuffer->m_fontData.data() + from, len);
-#if PLATFORM(WIN)
-        m_offsets.append(glyphBuffer->m_offsets.data() + from, len);
-#endif
-    }
-
-    void add(Glyph glyph, const SimpleFontData* font, float width, const FloatSize* offset = 0)
-    {
-        m_fontData.append(font);
+        m_font.append(font);
 
 //+EAWebKitChange
 //1/15/2014
@@ -174,12 +169,15 @@ public:
 #else
         UNUSED_PARAM(offset);
 #endif
+        
+        if (offsetInString != noOffset && m_offsetsInString)
+            m_offsetsInString->append(offsetInString);
     }
     
 #if !USE(WINGDI)
-    void add(Glyph glyph, const SimpleFontData* font, GlyphBufferAdvance advance)
+    void add(Glyph glyph, const Font* font, GlyphBufferAdvance advance, unsigned offsetInString = noOffset)
     {
-        m_fontData.append(font);
+        m_font.append(font);
 //+EAWebKitChange
 //1/15/2014
 #if USE(CAIRO) && !PLATFORM(EA)
@@ -192,6 +190,9 @@ public:
 #endif
 
         m_advances.append(advance);
+        
+        if (offsetInString != noOffset && m_offsetsInString)
+            m_offsetsInString->append(offsetInString);
     }
 #endif
 
@@ -207,13 +208,37 @@ public:
         GlyphBufferAdvance& lastAdvance = m_advances.last();
         lastAdvance.setWidth(lastAdvance.width() + width);
     }
+    
+    void saveOffsetsInString()
+    {
+        m_offsetsInString.reset(new Vector<unsigned, 2048>());
+    }
+
+    // FIXME: This converts from an unsigned to an int
+    int offsetInString(int index) const
+    {
+        ASSERT(m_offsetsInString);
+        return (*m_offsetsInString)[index];
+    }
+
+    void shrink(int truncationPoint)
+    {
+        m_font.shrink(truncationPoint);
+        m_glyphs.shrink(truncationPoint);
+        m_advances.shrink(truncationPoint);
+        if (m_offsetsInString)
+            m_offsetsInString->shrink(truncationPoint);
+#if PLATFORM(WIN)
+        m_offsets.shrink(truncationPoint);
+#endif
+    }
 
 private:
     void swap(int index1, int index2)
     {
-        const SimpleFontData* f = m_fontData[index1];
-        m_fontData[index1] = m_fontData[index2];
-        m_fontData[index2] = f;
+        const Font* f = m_font[index1];
+        m_font[index1] = m_font[index2];
+        m_font[index2] = f;
 
         GlyphBufferGlyph g = m_glyphs[index1];
         m_glyphs[index1] = m_glyphs[index2];
@@ -232,21 +257,25 @@ private:
 
 	//+EAWebKitChange
 	//12/14/2011 - Changed the inline capacity to be 1024 from 2048 for PLATFORM(EA)
+	//3/8/2015 - m_fontData -> m_font
 #if PLATFORM(EA)
-	Vector<const SimpleFontData*, 1024> m_fontData;
+	Vector<const Font*, 1024> m_font;
 	Vector<GlyphBufferGlyph, 1024> m_glyphs;
 	Vector<GlyphBufferAdvance, 1024> m_advances;
 #else
-	Vector<const SimpleFontData*, 2048> m_fontData;
-	Vector<GlyphBufferGlyph, 2048> m_glyphs;
-	Vector<GlyphBufferAdvance, 2048> m_advances;
+
+    Vector<const Font*, 2048> m_font;
+    Vector<GlyphBufferGlyph, 2048> m_glyphs;
+    Vector<GlyphBufferAdvance, 2048> m_advances;
 #endif
 	//-EAWebKitChange
 
     GlyphBufferAdvance m_initialAdvance;
+    std::unique_ptr<Vector<unsigned, 2048>> m_offsetsInString;
 #if PLATFORM(WIN)
     Vector<FloatSize, 2048> m_offsets;
 #endif
+    float m_leadingExpansion;
 };
 
 }

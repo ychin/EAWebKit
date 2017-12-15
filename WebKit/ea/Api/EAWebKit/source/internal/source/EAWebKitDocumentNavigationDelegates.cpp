@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009, 2010, 2011, 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2009, 2010, 2011, 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,6 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IntRect.h"
 #include "RenderStyle.h"
 #include <wtf/Assertions.h>
+#include "RenderElement.h"
 
 namespace EA
 {
@@ -49,7 +50,7 @@ namespace EA
 	{
 		bool DelegateBase::CanJumpToNode(WebCore::Node* node, bool checkHTMLElementType, bool checkSize)
 		{
-			if ((node->nodeType() == WebCore::Node::ELEMENT_NODE) && node->isHTMLElement())
+			if ((node->nodeType() == WebCore::Node::ELEMENT_NODE) && node->isHTMLElement() && node->renderer())
 			{
 				WebCore::HTMLElement* htmlElement = (WebCore::HTMLElement*)node;
 				if(checkHTMLElementType)
@@ -71,7 +72,7 @@ namespace EA
 				// We don't check against size unless specified. It is pretty expensive to call getRect and caller may already be doing that.
 				if(checkSize)
 				{
-					WebCore::LayoutRect rect = htmlElement->boundingBox();					
+					WebCore::LayoutRect rect = htmlElement->renderer()->absoluteBoundingBoxRect();
 					bool bigEnough = (rect.width() >= 1 && rect.height() >= 1);// Avoid 0 size elements 
 					if(!bigEnough)
 					{

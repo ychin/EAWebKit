@@ -22,29 +22,28 @@
 #define JSEntity_h
 
 #include "Entity.h"
-#include "JSDOMBinding.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSEntity : public JSNode {
 public:
     typedef JSNode Base;
-    static JSEntity* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Entity> impl)
+    static JSEntity* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Entity>&& impl)
     {
-        JSEntity* ptr = new (NotNull, JSC::allocateCell<JSEntity>(globalObject->vm().heap)) JSEntity(structure, globalObject, impl);
+        JSEntity* ptr = new (NotNull, JSC::allocateCell<JSEntity>(globalObject->vm().heap)) JSEntity(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -53,65 +52,17 @@ public:
         return static_cast<Entity&>(Base::impl());
     }
 protected:
-    JSEntity(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Entity>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSEntity(JSC::Structure*, JSDOMGlobalObject*, Ref<Entity>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSEntityPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSEntityPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSEntityPrototype* ptr = new (NotNull, JSC::allocateCell<JSEntityPrototype>(vm.heap)) JSEntityPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSEntityPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSEntityConstructor : public DOMConstructorObject {
-private:
-    JSEntityConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSEntityConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSEntityConstructor* ptr = new (NotNull, JSC::allocateCell<JSEntityConstructor>(vm.heap)) JSEntityConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsEntityPublicId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEntitySystemId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEntityNotationName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEntityConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -145,7 +145,15 @@ namespace EA
 
         inline size_t Strlen(const char16_t* pString)
         {
+#if defined(EA_PLATFORM_MICROSOFT)
             return wcslen(reinterpret_cast<const wchar_t *>(pString));
+#else
+            size_t nLength = (size_t)-1;
+            do{
+                ++nLength;
+            }while(*pString++);
+            return nLength;
+#endif
         }
 
 
@@ -156,7 +164,16 @@ namespace EA
 
         inline char16_t* Strcpy(char16_t* pDestination, const char16_t* pSource)
         {
+#if defined(EA_PLATFORM_MICROSOFT)
             return reinterpret_cast<char16_t*>(wcscpy(reinterpret_cast<wchar_t *>(pDestination), reinterpret_cast<const wchar_t *>(pSource)));
+#else
+            const char16_t* s = pSource;
+            char16_t*       d = pDestination;
+
+            while((*d++ = *s++) != 0)
+            {} // Do nothing.
+            return pDestination;
+#endif
         }
 
 
@@ -167,7 +184,24 @@ namespace EA
 
         inline char16_t* Strncpy(char16_t* pDestination, const char16_t* pSource, size_t n)
         {
+#if defined(EA_PLATFORM_MICROSOFT)
             return reinterpret_cast<char16_t*>(wcsncpy(reinterpret_cast<wchar_t *>(pDestination), reinterpret_cast<const wchar_t *>(pSource), n));
+#else
+            const char16_t* s = pSource;
+            char16_t*       d = pDestination;
+
+            n++;
+            while(--n)
+            {
+                if((*d++ = *s++) == 0)
+                {
+                    while(--n)
+                        *d++ = 0;
+                    break;
+                }
+            }
+            return pDestination;
+#endif
         }
 
 
@@ -178,7 +212,18 @@ namespace EA
 
         inline int Strcmp(const char16_t* pString1, const char16_t* pString2)
         {
+#if defined(EA_PLATFORM_MICROSOFT)            
             return wcscmp(reinterpret_cast<const wchar_t *>(pString1), reinterpret_cast<const wchar_t *>(pString2));
+#else
+          char16_t c1, c2;   
+            while((c1 = *pString1++) == (c2 = *pString2++))
+            {
+                if(c1 == 0) // If we've reached the end of the string with no difference...
+                    return 0;
+            }
+            EA_COMPILETIME_ASSERT(sizeof(int) > sizeof(uint16_t));  
+            return ((uint16_t)c1 - (uint16_t)c2);
+#endif
         }
 
 
@@ -189,7 +234,19 @@ namespace EA
 
         inline char16_t* Strcat(char16_t* pDestination, const char16_t* pSource)
         {
+#if defined(EA_PLATFORM_MICROSOFT)             
             return reinterpret_cast<char16_t *>(wcscat(reinterpret_cast<wchar_t *>(pDestination), reinterpret_cast<const wchar_t *>(pSource)));
+#else
+            const char16_t* s = pSource;
+            char16_t*       d = pDestination;
+
+            while(*d++){}          // Do nothing.
+            --d;
+            while((*d++ = *s++) != 0)
+            {} // Do nothing.
+
+            return pDestination;
+#endif
         }
 
 
@@ -200,7 +257,16 @@ namespace EA
 
         inline const char16_t* Strchr(const char16_t* pString, char16_t c)
         {
+#if defined(EA_PLATFORM_MICROSOFT)                
             return reinterpret_cast<const char16_t*>(wcschr(reinterpret_cast<const wchar_t*>(pString), (wchar_t)c));
+#else
+            do {
+                if(*pString == c)
+                    return (char16_t*)pString;
+            } while (*pString++);
+
+            return NULL;
+#endif
         }
 
 

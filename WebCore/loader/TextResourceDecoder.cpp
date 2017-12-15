@@ -355,7 +355,7 @@ void TextResourceDecoder::setEncoding(const TextEncoding& encoding, EncodingSour
     else
         m_encoding = encoding;
 
-    m_codec.clear();
+    m_codec = nullptr;
     m_source = source;
 }
 
@@ -475,6 +475,8 @@ bool TextResourceDecoder::checkForCSSCharset(const char* data, size_t len, bool&
         int encodingNameLength = pos - dataStart;
         
         ++pos;
+        if (pos == dataEnd)
+            return false;
 
         if (*pos == ';')
             setEncoding(findTextEncoding(dataStart, encodingNameLength), EncodingFromCSSCharset);
@@ -543,7 +545,7 @@ bool TextResourceDecoder::checkForHeadCharset(const char* data, size_t len, bool
     if (m_contentType == XML)
         return true;
 
-    m_charsetParser = HTMLMetaCharsetParser::create();
+    m_charsetParser = std::make_unique<HTMLMetaCharsetParser>();
     return checkForMetaCharset(data, len);
 }
 
@@ -553,7 +555,7 @@ bool TextResourceDecoder::checkForMetaCharset(const char* data, size_t length)
         return false;
 
     setEncoding(m_charsetParser->encoding(), EncodingFromMetaTag);
-    m_charsetParser.clear();
+    m_charsetParser = nullptr;
     m_checkedForHeadCharset = true;
     return true;
 }
@@ -658,9 +660,15 @@ String TextResourceDecoder::flush()
 
     String result = m_codec->decode(m_buffer.data(), m_buffer.size(), true, m_contentType == XML && !m_useLenientXMLDecoding, m_sawError);
     m_buffer.clear();
-    m_codec.clear();
+    m_codec = nullptr;
     m_checkedForBOM = false; // Skip BOM again when re-decoding.
     return result;
+}
+
+String TextResourceDecoder::decodeAndFlush(const char* data, size_t length)
+{
+    String decoded = decode(data, length);
+    return decoded + flush();
 }
 
 }

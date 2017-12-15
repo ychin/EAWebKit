@@ -5,7 +5,7 @@
  *
  * All rights reserved.
  *
- * Copyright (C) 2011 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,6 +34,7 @@
 
 #include <wtf/CurrentTime.h>
 #include <float.h>
+#include <internal/include/EAWebKitAssert.h>
 
 // Note by Arpit Baldeva: I sent a mail to webkit community (http://lists.macosforge.org/pipermail/webkit-dev/2011-October/018332.html )
 // and have not received any answer. Based on my understanding, the way our code is structured, we are fine simply calling
@@ -139,7 +140,10 @@ void fireTimerIfNeeded()
 #endif
 }
 
-
+void invalidateSharedTimer()
+{
+	//Not implemented.
+}
 
 }
 

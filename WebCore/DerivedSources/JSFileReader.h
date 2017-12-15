@@ -21,31 +21,29 @@
 #ifndef JSFileReader_h
 #define JSFileReader_h
 
-#if ENABLE(BLOB)
-
 #include "FileReader.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSFileReader : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSFileReader* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<FileReader> impl)
+    static JSFileReader* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<FileReader>&& impl)
     {
-        JSFileReader* ptr = new (NotNull, JSC::allocateCell<JSFileReader>(globalObject->vm().heap)) JSFileReader(structure, globalObject, impl);
+        JSFileReader* ptr = new (NotNull, JSC::allocateCell<JSFileReader>(globalObject->vm().heap)) JSFileReader(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static FileReader* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSFileReader();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -60,22 +58,21 @@ public:
     // Custom attributes
     JSC::JSValue result(JSC::ExecState*) const;
     FileReader& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     FileReader* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSFileReader(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<FileReader>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSFileReader(JSC::Structure*, JSDOMGlobalObject*, Ref<FileReader>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSFileReaderOwner : public JSC::WeakHandleOwner {
@@ -86,104 +83,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, FileReader*)
 {
-    DEFINE_STATIC_LOCAL(JSFileReaderOwner, jsFileReaderOwner, ());
-    return &jsFileReaderOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, FileReader*)
-{
-    return &world;
+    static NeverDestroyed<JSFileReaderOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, FileReader*);
-FileReader* toFileReader(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, FileReader& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSFileReaderPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSFileReaderPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSFileReaderPrototype* ptr = new (NotNull, JSC::allocateCell<JSFileReaderPrototype>(vm.heap)) JSFileReaderPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSFileReaderPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSFileReaderConstructor : public DOMConstructorObject {
-private:
-    JSFileReaderConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSFileReaderConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSFileReaderConstructor* ptr = new (NotNull, JSC::allocateCell<JSFileReaderConstructor>(vm.heap)) JSFileReaderConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSFileReader(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionReadAsArrayBuffer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionReadAsBinaryString(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionReadAsText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionReadAsDataURL(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionAbort(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsFileReaderPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsFileReaderReadyState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileReaderResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileReaderError(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileReaderOnloadstart(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFileReaderOnloadstart(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFileReaderOnprogress(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFileReaderOnprogress(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFileReaderOnload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFileReaderOnload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFileReaderOnabort(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFileReaderOnabort(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFileReaderOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFileReaderOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFileReaderOnloadend(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSFileReaderOnloadend(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsFileReaderConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsFileReaderEMPTY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileReaderLOADING(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileReaderDONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(BLOB)
 
 #endif

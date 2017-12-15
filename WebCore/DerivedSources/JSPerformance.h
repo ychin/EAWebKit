@@ -23,28 +23,28 @@
 
 #if ENABLE(WEB_TIMING)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "Performance.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSPerformance : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSPerformance* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Performance> impl)
+    static JSPerformance* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Performance>&& impl)
     {
-        JSPerformance* ptr = new (NotNull, JSC::allocateCell<JSPerformance>(globalObject->vm().heap)) JSPerformance(structure, globalObject, impl);
+        JSPerformance* ptr = new (NotNull, JSC::allocateCell<JSPerformance>(globalObject->vm().heap)) JSPerformance(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Performance* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSPerformance();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     Performance& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Performance* m_impl;
 protected:
-    JSPerformance(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Performance>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSPerformance(JSC::Structure*, JSDOMGlobalObject*, Ref<Performance>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSPerformanceOwner : public JSC::WeakHandleOwner {
@@ -82,74 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Performance*)
 {
-    DEFINE_STATIC_LOCAL(JSPerformanceOwner, jsPerformanceOwner, ());
-    return &jsPerformanceOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Performance*)
-{
-    return &world;
+    static NeverDestroyed<JSPerformanceOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Performance*);
-Performance* toPerformance(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Performance& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSPerformancePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSPerformancePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSPerformancePrototype* ptr = new (NotNull, JSC::allocateCell<JSPerformancePrototype>(vm.heap)) JSPerformancePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSPerformancePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSPerformanceConstructor : public DOMConstructorObject {
-private:
-    JSPerformanceConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSPerformanceConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSPerformanceConstructor* ptr = new (NotNull, JSC::allocateCell<JSPerformanceConstructor>(vm.heap)) JSPerformanceConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsPerformancePrototypeFunctionNow(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsPerformanceNavigation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceTiming(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPerformanceConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

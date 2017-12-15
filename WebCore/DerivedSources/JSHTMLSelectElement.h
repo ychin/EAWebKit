@@ -22,35 +22,35 @@
 #define JSHTMLSelectElement_h
 
 #include "HTMLSelectElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLSelectElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLSelectElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLSelectElement> impl)
+    static JSHTMLSelectElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLSelectElement>&& impl)
     {
-        JSHTMLSelectElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLSelectElement>(globalObject->vm().heap)) JSHTMLSelectElement(structure, globalObject, impl);
+        JSHTMLSelectElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLSelectElement>(globalObject->vm().heap)) JSHTMLSelectElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
     static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void putByIndex(JSC::JSCell*, JSC::ExecState*, unsigned propertyName, JSC::JSValue, bool shouldThrow);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
-    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode mode = JSC::ExcludeDontEnumProperties);
+    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode = JSC::EnumerationMode());
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
 
     // Custom functions
@@ -59,100 +59,21 @@ public:
     {
         return static_cast<HTMLSelectElement&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesGetPropertyNames | Base::StructureFlags;
 protected:
-    JSHTMLSelectElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLSelectElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-    static JSC::JSValue indexGetter(JSC::ExecState*, JSC::JSValue, unsigned);
+    JSHTMLSelectElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLSelectElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
     void indexSetter(JSC::ExecState*, unsigned index, JSC::JSValue);
 };
 
 
-class JSHTMLSelectElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLSelectElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLSelectElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLSelectElementPrototype>(vm.heap)) JSHTMLSelectElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLSelectElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSHTMLSelectElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLSelectElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLSelectElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLSelectElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLSelectElementConstructor>(vm.heap)) JSHTMLSelectElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLSelectElementPrototypeFunctionItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLSelectElementPrototypeFunctionNamedItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLSelectElementPrototypeFunctionAdd(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLSelectElementPrototypeFunctionRemove(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLSelectElementPrototypeFunctionCheckValidity(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLSelectElementPrototypeFunctionSetCustomValidity(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsHTMLSelectElementAutofocus(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementAutofocus(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementDisabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementForm(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementMultiple(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementMultiple(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementName(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementRequired(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementRequired(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementSize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementOptions(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementLength(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementLength(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementSelectedOptions(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementSelectedIndex(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementSelectedIndex(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLSelectElementValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLSelectElementWillValidate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementValidity(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementValidationMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementLabels(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLSelectElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

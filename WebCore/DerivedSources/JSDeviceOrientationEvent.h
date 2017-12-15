@@ -24,24 +24,24 @@
 #if ENABLE(DEVICE_ORIENTATION)
 
 #include "DeviceOrientationEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDeviceOrientationEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSDeviceOrientationEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DeviceOrientationEvent> impl)
+    static JSDeviceOrientationEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DeviceOrientationEvent>&& impl)
     {
-        JSDeviceOrientationEvent* ptr = new (NotNull, JSC::allocateCell<JSDeviceOrientationEvent>(globalObject->vm().heap)) JSDeviceOrientationEvent(structure, globalObject, impl);
+        JSDeviceOrientationEvent* ptr = new (NotNull, JSC::allocateCell<JSDeviceOrientationEvent>(globalObject->vm().heap)) JSDeviceOrientationEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -63,71 +63,20 @@ public:
     {
         return static_cast<DeviceOrientationEvent&>(Base::impl());
     }
-protected:
-    JSDeviceOrientationEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DeviceOrientationEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSDeviceOrientationEventPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDeviceOrientationEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDeviceOrientationEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSDeviceOrientationEventPrototype>(vm.heap)) JSDeviceOrientationEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDeviceOrientationEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
     static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDeviceOrientationEventConstructor : public DOMConstructorObject {
-private:
-    JSDeviceOrientationEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDeviceOrientationEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDeviceOrientationEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSDeviceOrientationEventConstructor>(vm.heap)) JSDeviceOrientationEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
+    JSDeviceOrientationEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<DeviceOrientationEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-// Functions
 
-JSC::EncodedJSValue JSC_HOST_CALL jsDeviceOrientationEventPrototypeFunctionInitDeviceOrientationEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDeviceOrientationEventAlpha(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceOrientationEventBeta(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceOrientationEventGamma(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceOrientationEventAbsolute(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDeviceOrientationEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -21,12 +21,8 @@
 #ifndef JSDedicatedWorkerGlobalScope_h
 #define JSDedicatedWorkerGlobalScope_h
 
-#if ENABLE(WORKERS)
-
 #include "DedicatedWorkerGlobalScope.h"
-#include "JSDOMBinding.h"
 #include "JSWorkerGlobalScope.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -35,9 +31,9 @@ class DedicatedWorkerGlobalScope;
 class JSDedicatedWorkerGlobalScope : public JSWorkerGlobalScope {
 public:
     typedef JSWorkerGlobalScope Base;
-    static JSDedicatedWorkerGlobalScope* create(JSC::VM& vm, JSC::Structure* structure, PassRefPtr<DedicatedWorkerGlobalScope> impl)
+    static JSDedicatedWorkerGlobalScope* create(JSC::VM& vm, JSC::Structure* structure, Ref<DedicatedWorkerGlobalScope>&& impl)
     {
-        JSDedicatedWorkerGlobalScope* ptr = new (NotNull, JSC::allocateCell<JSDedicatedWorkerGlobalScope>(vm.heap)) JSDedicatedWorkerGlobalScope(vm, structure, impl);
+        JSDedicatedWorkerGlobalScope* ptr = new (NotNull, JSC::allocateCell<JSDedicatedWorkerGlobalScope>(vm.heap)) JSDedicatedWorkerGlobalScope(vm, structure, WTF::move(impl));
         ptr->finishCreation(vm);
         vm.heap.addFinalizer(ptr, destroy);
         return ptr;
@@ -45,8 +41,9 @@ public:
 
     static const bool needsDestruction = false;
 
+    static DedicatedWorkerGlobalScope* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -62,12 +59,12 @@ public:
     {
         return static_cast<DedicatedWorkerGlobalScope&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSDedicatedWorkerGlobalScope(JSC::VM&, JSC::Structure*, PassRefPtr<DedicatedWorkerGlobalScope>);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDedicatedWorkerGlobalScope(JSC::VM&, JSC::Structure*, Ref<DedicatedWorkerGlobalScope>&&);
 };
 
-DedicatedWorkerGlobalScope* toDedicatedWorkerGlobalScope(JSC::JSValue);
 
 class JSDedicatedWorkerGlobalScopePrototype : public JSC::JSNonFinalObject {
 public:
@@ -80,57 +77,23 @@ public:
     }
 
     DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
 private:
-    JSDedicatedWorkerGlobalScopePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
+    JSDedicatedWorkerGlobalScopePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+public:
     static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
-class JSDedicatedWorkerGlobalScopeConstructor : public DOMConstructorObject {
-private:
-    JSDedicatedWorkerGlobalScopeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDedicatedWorkerGlobalScopeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDedicatedWorkerGlobalScopeConstructor* ptr = new (NotNull, JSC::allocateCell<JSDedicatedWorkerGlobalScopeConstructor>(vm.heap)) JSDedicatedWorkerGlobalScopeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDedicatedWorkerGlobalScopePrototypeFunctionPostMessage(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDedicatedWorkerGlobalScopeOnmessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDedicatedWorkerGlobalScopeOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(WORKERS)
-JSC::JSValue jsDedicatedWorkerGlobalScopeDedicatedWorkerGlobalScopeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDedicatedWorkerGlobalScopeDedicatedWorkerGlobalScopeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsDedicatedWorkerGlobalScopeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)
 
 #endif

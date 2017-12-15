@@ -22,30 +22,28 @@
 #define JSHTMLTableElement_h
 
 #include "HTMLTableElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLTableElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLTableElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLTableElement> impl)
+    static JSHTMLTableElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLTableElement>&& impl)
     {
-        JSHTMLTableElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableElement>(globalObject->vm().heap)) JSHTMLTableElement(structure, globalObject, impl);
+        JSHTMLTableElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableElement>(globalObject->vm().heap)) JSHTMLTableElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,100 +52,17 @@ public:
         return static_cast<HTMLTableElement&>(Base::impl());
     }
 protected:
-    JSHTMLTableElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLTableElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLTableElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLTableElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSHTMLTableElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLTableElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLTableElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableElementPrototype>(vm.heap)) JSHTMLTableElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLTableElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSHTMLTableElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLTableElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLTableElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLTableElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLTableElementConstructor>(vm.heap)) JSHTMLTableElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionCreateTHead(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionDeleteTHead(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionCreateTFoot(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionDeleteTFoot(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionCreateTBody(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionCreateCaption(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionDeleteCaption(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionInsertRow(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLTableElementPrototypeFunctionDeleteRow(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsHTMLTableElementCaption(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementCaption(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementTHead(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementTHead(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementTFoot(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementTFoot(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementRows(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLTableElementTBodies(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLTableElementAlign(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementAlign(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementBgColor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementBgColor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementBorder(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementBorder(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementCellPadding(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementCellPadding(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementCellSpacing(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementCellSpacing(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementFrame(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementFrame(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementRules(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementRules(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementSummary(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementSummary(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLTableElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLTableElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

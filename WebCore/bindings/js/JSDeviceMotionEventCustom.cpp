@@ -31,84 +31,87 @@
 
 #include "DeviceMotionData.h"
 #include "DeviceMotionEvent.h"
+#include <runtime/IdentifierInlines.h>
+#include <runtime/JSCJSValueInlines.h>
 #include <runtime/ObjectConstructor.h>
+#include <runtime/StructureInlines.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-static PassRefPtr<DeviceMotionData::Acceleration> readAccelerationArgument(JSValue value, ExecState* exec)
+static RefPtr<DeviceMotionData::Acceleration> readAccelerationArgument(JSValue value, ExecState* exec)
 {
     if (value.isUndefinedOrNull())
-        return 0;
+        return nullptr;
 
     // Given the above test, this will always yield an object.
     JSObject* object = value.toObject(exec);
 
-    JSValue xValue = object->get(exec, Identifier(exec, "x"));
+    JSValue xValue = object->get(exec, Identifier::fromString(exec, "x"));
     if (exec->hadException())
-        return 0;
+        return nullptr;
     bool canProvideX = !xValue.isUndefinedOrNull();
     double x = xValue.toNumber(exec);
     if (exec->hadException())
-        return 0;
+        return nullptr;
 
-    JSValue yValue = object->get(exec, Identifier(exec, "y"));
+    JSValue yValue = object->get(exec, Identifier::fromString(exec, "y"));
     if (exec->hadException())
-        return 0;
+        return nullptr;
     bool canProvideY = !yValue.isUndefinedOrNull();
     double y = yValue.toNumber(exec);
     if (exec->hadException())
-        return 0;
+        return nullptr;
 
-    JSValue zValue = object->get(exec, Identifier(exec, "z"));
+    JSValue zValue = object->get(exec, Identifier::fromString(exec, "z"));
     if (exec->hadException())
-        return 0;
+        return nullptr;
     bool canProvideZ = !zValue.isUndefinedOrNull();
     double z = zValue.toNumber(exec);
     if (exec->hadException())
-        return 0;
+        return nullptr;
 
     if (!canProvideX && !canProvideY && !canProvideZ)
-        return 0;
+        return nullptr;
 
     return DeviceMotionData::Acceleration::create(canProvideX, x, canProvideY, y, canProvideZ, z);
 }
 
-static PassRefPtr<DeviceMotionData::RotationRate> readRotationRateArgument(JSValue value, ExecState* exec)
+static RefPtr<DeviceMotionData::RotationRate> readRotationRateArgument(JSValue value, ExecState* exec)
 {
     if (value.isUndefinedOrNull())
-        return 0;
+        return nullptr;
 
     // Given the above test, this will always yield an object.
     JSObject* object = value.toObject(exec);
 
-    JSValue alphaValue = object->get(exec, Identifier(exec, "alpha"));
+    JSValue alphaValue = object->get(exec, Identifier::fromString(exec, "alpha"));
     if (exec->hadException())
-        return 0;
+        return nullptr;
     bool canProvideAlpha = !alphaValue.isUndefinedOrNull();
     double alpha = alphaValue.toNumber(exec);
     if (exec->hadException())
-        return 0;
+        return nullptr;
 
-    JSValue betaValue = object->get(exec, Identifier(exec, "beta"));
+    JSValue betaValue = object->get(exec, Identifier::fromString(exec, "beta"));
     if (exec->hadException())
-        return 0;
+        return nullptr;
     bool canProvideBeta = !betaValue.isUndefinedOrNull();
     double beta = betaValue.toNumber(exec);
     if (exec->hadException())
-        return 0;
+        return nullptr;
 
-    JSValue gammaValue = object->get(exec, Identifier(exec, "gamma"));
+    JSValue gammaValue = object->get(exec, Identifier::fromString(exec, "gamma"));
     if (exec->hadException())
-        return 0;
+        return nullptr;
     bool canProvideGamma = !gammaValue.isUndefinedOrNull();
     double gamma = gammaValue.toNumber(exec);
     if (exec->hadException())
-        return 0;
+        return nullptr;
 
     if (!canProvideAlpha && !canProvideBeta && !canProvideGamma)
-        return 0;
+        return nullptr;
 
     return DeviceMotionData::RotationRate::create(canProvideAlpha, alpha, canProvideBeta, beta, canProvideGamma, gamma);
 }
@@ -116,18 +119,18 @@ static PassRefPtr<DeviceMotionData::RotationRate> readRotationRateArgument(JSVal
 static JSObject* createAccelerationObject(const DeviceMotionData::Acceleration* acceleration, ExecState* exec)
 {
     JSObject* object = constructEmptyObject(exec);
-    object->putDirect(exec->vm(), Identifier(exec, "x"), acceleration->canProvideX() ? jsNumber(acceleration->x()) : jsNull());
-    object->putDirect(exec->vm(), Identifier(exec, "y"), acceleration->canProvideY() ? jsNumber(acceleration->y()) : jsNull());
-    object->putDirect(exec->vm(), Identifier(exec, "z"), acceleration->canProvideZ() ? jsNumber(acceleration->z()) : jsNull());
+    object->putDirect(exec->vm(), Identifier::fromString(exec, "x"), acceleration->canProvideX() ? jsNumber(acceleration->x()) : jsNull());
+    object->putDirect(exec->vm(), Identifier::fromString(exec, "y"), acceleration->canProvideY() ? jsNumber(acceleration->y()) : jsNull());
+    object->putDirect(exec->vm(), Identifier::fromString(exec, "z"), acceleration->canProvideZ() ? jsNumber(acceleration->z()) : jsNull());
     return object;
 }
 
 static JSObject* createRotationRateObject(const DeviceMotionData::RotationRate* rotationRate, ExecState* exec)
 {
     JSObject* object = constructEmptyObject(exec);
-    object->putDirect(exec->vm(), Identifier(exec, "alpha"), rotationRate->canProvideAlpha() ? jsNumber(rotationRate->alpha()) : jsNull());
-    object->putDirect(exec->vm(), Identifier(exec, "beta"),  rotationRate->canProvideBeta()  ? jsNumber(rotationRate->beta())  : jsNull());
-    object->putDirect(exec->vm(), Identifier(exec, "gamma"), rotationRate->canProvideGamma() ? jsNumber(rotationRate->gamma()) : jsNull());
+    object->putDirect(exec->vm(), Identifier::fromString(exec, "alpha"), rotationRate->canProvideAlpha() ? jsNumber(rotationRate->alpha()) : jsNull());
+    object->putDirect(exec->vm(), Identifier::fromString(exec, "beta"),  rotationRate->canProvideBeta()  ? jsNumber(rotationRate->beta())  : jsNull());
+    object->putDirect(exec->vm(), Identifier::fromString(exec, "gamma"), rotationRate->canProvideGamma() ? jsNumber(rotationRate->gamma()) : jsNull());
     return object;
 }
 

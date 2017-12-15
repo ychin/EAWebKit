@@ -23,10 +23,8 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "MediaStreamTrackEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -35,15 +33,16 @@ class JSDictionary;
 class JSMediaStreamTrackEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSMediaStreamTrackEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaStreamTrackEvent> impl)
+    static JSMediaStreamTrackEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaStreamTrackEvent>&& impl)
     {
-        JSMediaStreamTrackEvent* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrackEvent>(globalObject->vm().heap)) JSMediaStreamTrackEvent(structure, globalObject, impl);
+        JSMediaStreamTrackEvent* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrackEvent>(globalObject->vm().heap)) JSMediaStreamTrackEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,67 +56,19 @@ public:
         return static_cast<MediaStreamTrackEvent&>(Base::impl());
     }
 protected:
-    JSMediaStreamTrackEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaStreamTrackEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMediaStreamTrackEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaStreamTrackEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSMediaStreamTrackEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaStreamTrackEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaStreamTrackEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrackEventPrototype>(vm.heap)) JSMediaStreamTrackEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaStreamTrackEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSMediaStreamTrackEventConstructor : public DOMConstructorObject {
-private:
-    JSMediaStreamTrackEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaStreamTrackEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaStreamTrackEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrackEventConstructor>(vm.heap)) JSMediaStreamTrackEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMediaStreamTrackEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillMediaStreamTrackEventInit(MediaStreamTrackEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsMediaStreamTrackEventTrack(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

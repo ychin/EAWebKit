@@ -24,27 +24,27 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBObjectStore.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBObjectStore : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSIDBObjectStore* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBObjectStore> impl)
+    static JSIDBObjectStore* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBObjectStore>&& impl)
     {
-        JSIDBObjectStore* ptr = new (NotNull, JSC::allocateCell<JSIDBObjectStore>(globalObject->vm().heap)) JSIDBObjectStore(structure, globalObject, impl);
+        JSIDBObjectStore* ptr = new (NotNull, JSC::allocateCell<JSIDBObjectStore>(globalObject->vm().heap)) JSIDBObjectStore(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBObjectStore* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSIDBObjectStore();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +57,19 @@ public:
     // Custom functions
     JSC::JSValue createIndex(JSC::ExecState*);
     IDBObjectStore& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     IDBObjectStore* m_impl;
 protected:
-    JSIDBObjectStore(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBObjectStore>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSIDBObjectStore(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBObjectStore>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBObjectStoreOwner : public JSC::WeakHandleOwner {
@@ -83,86 +80,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBObjectStore*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBObjectStoreOwner, jsIDBObjectStoreOwner, ());
-    return &jsIDBObjectStoreOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBObjectStore*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBObjectStoreOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBObjectStore*);
-IDBObjectStore* toIDBObjectStore(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBObjectStore& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBObjectStorePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBObjectStorePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBObjectStorePrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBObjectStorePrototype>(vm.heap)) JSIDBObjectStorePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBObjectStorePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSIDBObjectStoreConstructor : public DOMConstructorObject {
-private:
-    JSIDBObjectStoreConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBObjectStoreConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBObjectStoreConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBObjectStoreConstructor>(vm.heap)) JSIDBObjectStoreConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionPut(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionAdd(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionDelete(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionGet(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionClear(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionOpenCursor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionCreateIndex(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionIndex(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionDeleteIndex(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBObjectStorePrototypeFunctionCount(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsIDBObjectStoreName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBObjectStoreKeyPath(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBObjectStoreIndexNames(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBObjectStoreTransaction(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBObjectStoreAutoIncrement(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBObjectStoreConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

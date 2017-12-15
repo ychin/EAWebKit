@@ -23,29 +23,29 @@
 
 #if ENABLE(VIDEO_TRACK)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "TextTrack.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSTextTrack : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSTextTrack* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TextTrack> impl)
+    static JSTextTrack* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TextTrack>&& impl)
     {
-        JSTextTrack* ptr = new (NotNull, JSC::allocateCell<JSTextTrack>(globalObject->vm().heap)) JSTextTrack(structure, globalObject, impl);
+        JSTextTrack* ptr = new (NotNull, JSC::allocateCell<JSTextTrack>(globalObject->vm().heap)) JSTextTrack(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static TextTrack* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSTextTrack();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,24 +55,28 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
+
+    // Custom attributes
+    void setKind(JSC::ExecState*, JSC::JSValue);
+    void setLanguage(JSC::ExecState*, JSC::JSValue);
     TextTrack& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     TextTrack* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSTextTrack(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TextTrack>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSTextTrack(JSC::Structure*, JSDOMGlobalObject*, Ref<TextTrack>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSTextTrackOwner : public JSC::WeakHandleOwner {
@@ -83,85 +87,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, TextTrack*)
 {
-    DEFINE_STATIC_LOCAL(JSTextTrackOwner, jsTextTrackOwner, ());
-    return &jsTextTrackOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, TextTrack*)
-{
-    return &world;
+    static NeverDestroyed<JSTextTrackOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, TextTrack*);
-TextTrack* toTextTrack(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TextTrack& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSTextTrackPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTextTrackPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTextTrackPrototype* ptr = new (NotNull, JSC::allocateCell<JSTextTrackPrototype>(vm.heap)) JSTextTrackPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTextTrackPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSTextTrackConstructor : public DOMConstructorObject {
-private:
-    JSTextTrackConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTextTrackConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTextTrackConstructor* ptr = new (NotNull, JSC::allocateCell<JSTextTrackConstructor>(vm.heap)) JSTextTrackConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddCue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveCue(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsTextTrackKind(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextTrackLabel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextTrackLanguage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextTrackMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackMode(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackCues(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextTrackActiveCues(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTextTrackOncuechange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSTextTrackOncuechange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsTextTrackConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -23,24 +23,22 @@
 
 #include "CSSStyleRule.h"
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSStyleRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSStyleRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSStyleRule> impl)
+    static JSCSSStyleRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSStyleRule>&& impl)
     {
-        JSCSSStyleRule* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleRule>(globalObject->vm().heap)) JSCSSStyleRule(structure, globalObject, impl);
+        JSCSSStyleRule* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleRule>(globalObject->vm().heap)) JSCSSStyleRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,65 +52,17 @@ public:
         return static_cast<CSSStyleRule&>(Base::impl());
     }
 protected:
-    JSCSSStyleRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSStyleRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSStyleRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSStyleRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSStyleRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSStyleRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSStyleRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleRulePrototype>(vm.heap)) JSCSSStyleRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSStyleRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSCSSStyleRuleConstructor : public DOMConstructorObject {
-private:
-    JSCSSStyleRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSStyleRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSStyleRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleRuleConstructor>(vm.heap)) JSCSSStyleRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCSSStyleRuleSelectorText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSCSSStyleRuleSelectorText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsCSSStyleRuleStyle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSStyleRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

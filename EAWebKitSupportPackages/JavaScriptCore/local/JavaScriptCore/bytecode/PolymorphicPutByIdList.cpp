@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2012, 2014, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,10 +32,11 @@
 
 namespace JSC {
 
-PutByIdAccess PutByIdAccess::fromStructureStubInfo(
-    StructureStubInfo& stubInfo,
-    MacroAssemblerCodePtr initialSlowPath)
+PutByIdAccess PutByIdAccess::fromStructureStubInfo(StructureStubInfo& stubInfo)
 {
+    MacroAssemblerCodePtr initialSlowPath =
+        stubInfo.callReturnLocation.labelAtOffset(stubInfo.patch.deltaCallToSlowCase);
+    
     PutByIdAccess result;
     
     switch (stubInfo.accessType) {
@@ -50,7 +51,8 @@ PutByIdAccess PutByIdAccess::fromStructureStubInfo(
         result.m_type = Transition;
         result.m_oldStructure.copyFrom(stubInfo.u.putByIdTransition.previousStructure);
         result.m_newStructure.copyFrom(stubInfo.u.putByIdTransition.structure);
-        result.m_chain.copyFrom(stubInfo.u.putByIdTransition.chain);
+        result.m_conditionSet = ObjectPropertyConditionSet::adoptRawPointer(
+            stubInfo.u.putByIdTransition.rawConditionSet);
         result.m_stubRoutine = stubInfo.stubRoutine;
         break;
         
@@ -61,8 +63,11 @@ PutByIdAccess PutByIdAccess::fromStructureStubInfo(
     return result;
 }
 
-bool PutByIdAccess::visitWeak() const
+bool PutByIdAccess::visitWeak(RepatchBuffer& repatchBuffer) const
 {
+    if (!m_conditionSet.areStillLive())
+        return false;
+    
     switch (m_type) {
     case Replace:
         if (!Heap::isMarked(m_oldStructure.get()))
@@ -73,39 +78,42 @@ bool PutByIdAccess::visitWeak() const
             return false;
         if (!Heap::isMarked(m_newStructure.get()))
             return false;
-        if (!Heap::isMarked(m_chain.get()))
+        break;
+    case Setter:
+    case CustomSetter:
+        if (!Heap::isMarked(m_oldStructure.get()))
             return false;
         break;
     default:
         RELEASE_ASSERT_NOT_REACHED();
         return false;
     }
+    if (!m_stubRoutine->visitWeak(repatchBuffer))
+        return false;
     return true;
 }
 
 PolymorphicPutByIdList::PolymorphicPutByIdList(
-    PutKind putKind,
-    StructureStubInfo& stubInfo,
-    MacroAssemblerCodePtr initialSlowPath)
+    PutKind putKind, StructureStubInfo& stubInfo)
     : m_kind(putKind)
 {
-    m_list.append(PutByIdAccess::fromStructureStubInfo(stubInfo, initialSlowPath));
+    if (stubInfo.accessType != access_unset)
+        m_list.append(PutByIdAccess::fromStructureStubInfo(stubInfo));
 }
 
 PolymorphicPutByIdList* PolymorphicPutByIdList::from(
-    PutKind putKind,
-    StructureStubInfo& stubInfo,
-    MacroAssemblerCodePtr initialSlowPath)
+    PutKind putKind, StructureStubInfo& stubInfo)
 {
     if (stubInfo.accessType == access_put_by_id_list)
         return stubInfo.u.putByIdList.list;
     
     ASSERT(stubInfo.accessType == access_put_by_id_replace
-           || stubInfo.accessType == access_put_by_id_transition_normal
-           || stubInfo.accessType == access_put_by_id_transition_direct);
+        || stubInfo.accessType == access_put_by_id_transition_normal
+        || stubInfo.accessType == access_put_by_id_transition_direct
+        || stubInfo.accessType == access_unset);
     
     PolymorphicPutByIdList* result =
-        new PolymorphicPutByIdList(putKind, stubInfo, initialSlowPath);
+        new PolymorphicPutByIdList(putKind, stubInfo);
     
     stubInfo.initPutByIdList(result);
     
@@ -130,14 +138,14 @@ void PolymorphicPutByIdList::addAccess(const PutByIdAccess& putByIdAccess)
 {
     ASSERT(!isFull());
     // Make sure that the resizing optimizes for space, not time.
-    m_list.resize(m_list.size() + 1);
+    m_list.resizeToFit(m_list.size() + 1);
     m_list.last() = putByIdAccess;
 }
 
-bool PolymorphicPutByIdList::visitWeak() const
+bool PolymorphicPutByIdList::visitWeak(RepatchBuffer& repatchBuffer) const
 {
     for (unsigned i = 0; i < size(); ++i) {
-        if (!at(i).visitWeak())
+        if (!at(i).visitWeak(repatchBuffer))
             return false;
     }
     return true;

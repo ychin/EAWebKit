@@ -28,12 +28,12 @@
 
 #include "JSGenericTypedArrayViewConstructorInlines.h"
 #include "JSGenericTypedArrayViewInlines.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 
 #define MAKE_S_INFO(type) \
-    template<> const ClassInfo JS##type##Constructor::s_info = {"Function", &JS##type##Constructor::Base::s_info, 0, 0, CREATE_METHOD_TABLE(JS##type##Constructor)}
+    template<> const ClassInfo JS##type##Constructor::s_info = {"Function", &JS##type##Constructor::Base::s_info, 0, CREATE_METHOD_TABLE(JS##type##Constructor)}
 
 MAKE_S_INFO(Int8Array);
 MAKE_S_INFO(Int16Array);

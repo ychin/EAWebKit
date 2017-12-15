@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SQL_DATABASE)
-
 #include "JSSQLTransaction.h"
 
+#include "JSDOMBinding.h"
 #include "SQLTransaction.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
@@ -32,50 +30,66 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsSQLTransactionPrototypeFunctionExecuteSql(JSC::ExecState*);
+
+class JSSQLTransactionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSQLTransactionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSQLTransactionPrototype* ptr = new (NotNull, JSC::allocateCell<JSSQLTransactionPrototype>(vm.heap)) JSSQLTransactionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSQLTransactionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSSQLTransactionPrototypeTableValues[] =
 {
-    { "executeSql", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSQLTransactionPrototypeFunctionExecuteSql), (intptr_t)2 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "executeSql", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSQLTransactionPrototypeFunctionExecuteSql), (intptr_t) (2) },
 };
 
-static const HashTable JSSQLTransactionPrototypeTable = { 2, 1, JSSQLTransactionPrototypeTableValues, 0 };
-static const HashTable& getJSSQLTransactionPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSSQLTransactionPrototypeTable);
-}
+const ClassInfo JSSQLTransactionPrototype::s_info = { "SQLTransactionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSQLTransactionPrototype) };
 
-const ClassInfo JSSQLTransactionPrototype::s_info = { "SQLTransactionPrototype", &Base::s_info, 0, getJSSQLTransactionPrototypeTable, CREATE_METHOD_TABLE(JSSQLTransactionPrototype) };
-
-JSObject* JSSQLTransactionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSQLTransaction>(vm, globalObject);
-}
-
-bool JSSQLTransactionPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSQLTransactionPrototype* thisObject = jsCast<JSSQLTransactionPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, getJSSQLTransactionPrototypeTable(exec), thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSQLTransaction::s_info = { "SQLTransaction", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSSQLTransaction) };
-
-JSSQLTransaction::JSSQLTransaction(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SQLTransaction> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSQLTransaction::finishCreation(VM& vm)
+void JSSQLTransactionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSQLTransactionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSQLTransaction::s_info = { "SQLTransaction", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSQLTransaction) };
+
+JSSQLTransaction::JSSQLTransaction(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SQLTransaction>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSQLTransaction::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSQLTransactionPrototype::create(vm, globalObject, JSSQLTransactionPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSQLTransaction::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSQLTransaction>(vm, globalObject);
 }
 
 void JSSQLTransaction::destroy(JSC::JSCell* cell)
@@ -86,58 +100,47 @@ void JSSQLTransaction::destroy(JSC::JSCell* cell)
 
 JSSQLTransaction::~JSSQLTransaction()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 EncodedJSValue JSC_HOST_CALL jsSQLTransactionPrototypeFunctionExecuteSql(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSQLTransaction::info()))
-        return throwVMTypeError(exec);
-    JSSQLTransaction* castedThis = jsCast<JSSQLTransaction*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSQLTransaction* castedThis = jsDynamicCast<JSSQLTransaction*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SQLTransaction", "executeSql");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSQLTransaction::info());
     return JSValue::encode(castedThis->executeSql(exec));
 }
 
-static inline bool isObservable(JSSQLTransaction* jsSQLTransaction)
-{
-    if (jsSQLTransaction->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSSQLTransactionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSQLTransaction* jsSQLTransaction = jsCast<JSSQLTransaction*>(handle.get().asCell());
-    if (!isObservable(jsSQLTransaction))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSQLTransactionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSQLTransaction* jsSQLTransaction = jsCast<JSSQLTransaction*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSQLTransaction = jsCast<JSSQLTransaction*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSQLTransaction->impl(), jsSQLTransaction);
-    jsSQLTransaction->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SQLTransaction* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SQLTransaction* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSQLTransaction>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSQLTransaction>(globalObject, impl))
         return result;
-    ReportMemoryCost<SQLTransaction>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSQLTransaction>(exec, globalObject, impl);
+    return createNewWrapper<JSSQLTransaction>(globalObject, impl);
 }
 
-SQLTransaction* toSQLTransaction(JSC::JSValue value)
+SQLTransaction* JSSQLTransaction::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSQLTransaction::info()) ? &jsCast<JSSQLTransaction*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSQLTransaction*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(SQL_DATABASE)

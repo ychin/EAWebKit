@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009, 2011 Apple Inc. All rights reserved.
+ * Copyright (C) 2009, 2011, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,17 +31,19 @@
 #include "MarkedBlock.h"
 #include "UnconditionalFinalizer.h"
 #include "WeakReferenceHarvester.h"
+#include <condition_variable>
+#include <wtf/Condition.h>
 #include <wtf/HashSet.h>
-#include <wtf/TCSpinLock.h>
-#include <wtf/Threading.h>
+#include <wtf/Lock.h>
 #include <wtf/Vector.h>
 
 namespace JSC {
 
-class GCThread;
-class VM;
+class CopiedBlock;
 class CopiedSpace;
 class CopyVisitor;
+class GCThread;
+class VM;
 
 enum GCPhase {
     NoPhase,
@@ -51,6 +53,7 @@ enum GCPhase {
 };
 
 class GCThreadSharedData {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
     GCThreadSharedData(VM*);
     ~GCThreadSharedData();
@@ -86,23 +89,23 @@ private:
 
     Vector<GCThread*> m_gcThreads;
 
-    Mutex m_markingLock;
-    ThreadCondition m_markingCondition;
+    Lock m_markingMutex;
+    Condition m_markingConditionVariable;
     MarkStackArray m_sharedMarkStack;
     unsigned m_numberOfActiveParallelMarkers;
     bool m_parallelMarkersShouldExit;
 
-    Mutex m_opaqueRootsLock;
+    Lock m_opaqueRootsMutex;
     HashSet<void*> m_opaqueRoots;
 
-    SpinLock m_copyLock;
+    Lock m_copyLock;
     Vector<CopiedBlock*> m_blocksToCopy;
     size_t m_copyIndex;
     static const size_t s_blockFragmentLength = 32;
 
-    Mutex m_phaseLock;
-    ThreadCondition m_phaseCondition;
-    ThreadCondition m_activityCondition;
+    Lock m_phaseMutex;
+    Condition m_phaseConditionVariable;
+    Condition m_activityConditionVariable;
     unsigned m_numberOfActiveGCThreads;
     bool m_gcThreadsShouldWait;
     GCPhase m_currentPhase;
@@ -113,7 +116,7 @@ private:
 
 inline void GCThreadSharedData::getNextBlocksToCopy(size_t& start, size_t& end)
 {
-    SpinLockHolder locker(&m_copyLock);
+    LockHolder locker(&m_copyLock);
     start = m_copyIndex;
     end = std::min(m_blocksToCopy.size(), m_copyIndex + s_blockFragmentLength);
     m_copyIndex = end;

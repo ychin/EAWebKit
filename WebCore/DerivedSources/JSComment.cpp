@@ -22,30 +22,84 @@
 #include "JSComment.h"
 
 #include "Comment.h"
+#include "Document.h"
+#include "ExceptionCode.h"
+#include "JSDOMBinding.h"
+#include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSCommentTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCommentConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsCommentConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCommentPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCommentPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCommentPrototype* ptr = new (NotNull, JSC::allocateCell<JSCommentPrototype>(vm.heap)) JSCommentPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCommentPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCommentTable = { 2, 1, JSCommentTableValues, 0 };
-/* Hash table for constructor */
+class JSCommentConstructor : public DOMConstructorObject {
+private:
+    JSCommentConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSCommentConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSCommentConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCommentConstructor* ptr = new (NotNull, JSC::allocateCell<JSCommentConstructor>(vm.heap)) JSCommentConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSComment(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSCommentConstructorTable = { 1, 0, JSCommentConstructorTableValues, 0 };
-const ClassInfo JSCommentConstructor::s_info = { "CommentConstructor", &Base::s_info, &JSCommentConstructorTable, 0, CREATE_METHOD_TABLE(JSCommentConstructor) };
+EncodedJSValue JSC_HOST_CALL JSCommentConstructor::constructJSComment(ExecState* exec)
+{
+    auto* castedThis = jsCast<JSCommentConstructor*>(exec->callee());
+    String data = exec->argumentCount() <= 0 ? String() : exec->uncheckedArgument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    ScriptExecutionContext* context = castedThis->scriptExecutionContext();
+    if (!context)
+        return throwConstructorDocumentUnavailableError(*exec, "Comment");
+    auto& document = downcast<Document>(*context);
+    RefPtr<Comment> object = Comment::create(document, data);
+    return JSValue::encode(asObject(toJS(exec, castedThis->globalObject(), object.get())));
+}
+
+const ClassInfo JSCommentConstructor::s_info = { "CommentConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCommentConstructor) };
 
 JSCommentConstructor::JSCommentConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -56,59 +110,55 @@ void JSCommentConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCommentPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
+    putDirect(vm, vm.propertyNames->prototype, JSComment::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("Comment"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
-bool JSCommentConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+ConstructType JSCommentConstructor::getConstructData(JSCell*, ConstructData& constructData)
 {
-    return getStaticValueSlot<JSCommentConstructor, JSDOMWrapper>(exec, JSCommentConstructorTable, jsCast<JSCommentConstructor*>(object), propertyName, slot);
+    constructData.native.function = constructJSComment;
+    return ConstructTypeHost;
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSCommentPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCommentConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCommentPrototypeTable = { 1, 0, JSCommentPrototypeTableValues, 0 };
-const ClassInfo JSCommentPrototype::s_info = { "CommentPrototype", &Base::s_info, &JSCommentPrototypeTable, 0, CREATE_METHOD_TABLE(JSCommentPrototype) };
+const ClassInfo JSCommentPrototype::s_info = { "CommentPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCommentPrototype) };
 
-JSObject* JSCommentPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSComment>(vm, globalObject);
-}
-
-const ClassInfo JSComment::s_info = { "Comment", &Base::s_info, &JSCommentTable, 0 , CREATE_METHOD_TABLE(JSComment) };
-
-JSComment::JSComment(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Comment> impl)
-    : JSCharacterData(structure, globalObject, impl)
-{
-}
-
-void JSComment::finishCreation(VM& vm)
+void JSCommentPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCommentPrototypeTableValues, *this);
+}
+
+const ClassInfo JSComment::s_info = { "Comment", &Base::s_info, 0, CREATE_METHOD_TABLE(JSComment) };
+
+JSComment::JSComment(Structure* structure, JSDOMGlobalObject* globalObject, Ref<Comment>&& impl)
+    : JSCharacterData(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSComment::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCommentPrototype::create(vm, globalObject, JSCommentPrototype::createStructure(vm, globalObject, JSCharacterDataPrototype::self(vm, globalObject)));
+    return JSCommentPrototype::create(vm, globalObject, JSCommentPrototype::createStructure(vm, globalObject, JSCharacterData::getPrototype(vm, globalObject)));
 }
 
-bool JSComment::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSComment::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSComment* thisObject = jsCast<JSComment*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSComment, Base>(exec, JSCommentTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSComment>(vm, globalObject);
 }
 
-JSValue jsCommentConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCommentConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSComment* domObject = jsCast<JSComment*>(asObject(slotBase));
-    return JSComment::getConstructor(exec->vm(), domObject->globalObject());
+    JSCommentPrototype* domObject = jsDynamicCast<JSCommentPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSComment::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSComment::getConstructor(VM& vm, JSGlobalObject* globalObject)

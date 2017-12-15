@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#if ENABLE(SVG) && ENABLE(SVG_FONTS)
+#if ENABLE(SVG_FONTS)
 #include "SVGAltGlyphItemElement.h"
 
 #include "ElementIterator.h"
@@ -34,9 +34,9 @@ inline SVGAltGlyphItemElement::SVGAltGlyphItemElement(const QualifiedName& tagNa
     ASSERT(hasTagName(SVGNames::altGlyphItemTag));
 }
 
-PassRefPtr<SVGAltGlyphItemElement> SVGAltGlyphItemElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGAltGlyphItemElement> SVGAltGlyphItemElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGAltGlyphItemElement(tagName, document));
+    return adoptRef(*new SVGAltGlyphItemElement(tagName, document));
 }
 
 bool SVGAltGlyphItemElement::hasValidGlyphElements(Vector<String>& glyphNames) const
@@ -50,9 +50,9 @@ bool SVGAltGlyphItemElement::hasValidGlyphElements(Vector<String>& glyphNames) c
     // Here we fill glyphNames and return true only if all referenced glyphs are valid and
     // there is at least one glyph.
 
-    for (auto glyphRef = childrenOfType<SVGGlyphRefElement>(this).begin(), end = childrenOfType<SVGGlyphRefElement>(this).end(); glyphRef != end; ++glyphRef) {
+    for (auto& glyphRef : childrenOfType<SVGGlyphRefElement>(*this)) {
         String referredGlyphName;
-        if (glyphRef->hasValidGlyphElement(referredGlyphName))
+        if (glyphRef.hasValidGlyphElement(referredGlyphName))
             glyphNames.append(referredGlyphName);
         else {
             glyphNames.clear();

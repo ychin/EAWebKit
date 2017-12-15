@@ -21,28 +21,28 @@
 #ifndef JSMemoryInfo_h
 #define JSMemoryInfo_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MemoryInfo.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSMemoryInfo : public JSDOMWrapper {
+class WEBCORE_TESTSUPPORT_EXPORT JSMemoryInfo : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMemoryInfo* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MemoryInfo> impl)
+    static JSMemoryInfo* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MemoryInfo>&& impl)
     {
-        JSMemoryInfo* ptr = new (NotNull, JSC::allocateCell<JSMemoryInfo>(globalObject->vm().heap)) JSMemoryInfo(structure, globalObject, impl);
+        JSMemoryInfo* ptr = new (NotNull, JSC::allocateCell<JSMemoryInfo>(globalObject->vm().heap)) JSMemoryInfo(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MemoryInfo* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMemoryInfo();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -51,22 +51,19 @@ public:
     }
 
     MemoryInfo& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MemoryInfo* m_impl;
 protected:
-    JSMemoryInfo(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MemoryInfo>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMemoryInfo(JSC::Structure*, JSDOMGlobalObject*, Ref<MemoryInfo>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMemoryInfoOwner : public JSC::WeakHandleOwner {
@@ -77,45 +74,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MemoryInfo*)
 {
-    DEFINE_STATIC_LOCAL(JSMemoryInfoOwner, jsMemoryInfoOwner, ());
-    return &jsMemoryInfoOwner;
+    static NeverDestroyed<JSMemoryInfoOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, MemoryInfo*)
-{
-    return &world;
-}
+WEBCORE_TESTSUPPORT_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MemoryInfo*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MemoryInfo& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MemoryInfo*);
-MemoryInfo* toMemoryInfo(JSC::JSValue);
-
-class JSMemoryInfoPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMemoryInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMemoryInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSMemoryInfoPrototype>(vm.heap)) JSMemoryInfoPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMemoryInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsMemoryInfoUsedJSHeapSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMemoryInfoTotalJSHeapSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

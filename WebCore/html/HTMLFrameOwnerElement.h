@@ -22,6 +22,7 @@
 #define HTMLFrameOwnerElement_h
 
 #include "HTMLElement.h"
+#include <wtf/HashCountedSet.h>
 
 namespace WebCore {
 
@@ -36,7 +37,7 @@ public:
 
     Frame* contentFrame() const { return m_contentFrame; }
     DOMWindow* contentWindow() const;
-    Document* contentDocument() const;
+    WEBCORE_EXPORT Document* contentDocument() const;
 
     void setContentFrame(Frame*);
     void clearContentFrame();
@@ -48,29 +49,25 @@ public:
     // RenderElement when using fallback content.
     RenderWidget* renderWidget() const;
 
-#if ENABLE(SVG)
     SVGDocument* getSVGDocument(ExceptionCode&) const;
-#endif
 
     virtual ScrollbarMode scrollingMode() const { return ScrollbarAuto; }
 
     SandboxFlags sandboxFlags() const { return m_sandboxFlags; }
+
+    void scheduleSetNeedsStyleRecalc(StyleChangeType = FullStyleChange);
 
 protected:
     HTMLFrameOwnerElement(const QualifiedName& tagName, Document&);
     void setSandboxFlags(SandboxFlags);
 
 private:
-    virtual bool isKeyboardFocusable(KeyboardEvent*) const OVERRIDE;
-    virtual bool isFrameOwnerElement() const OVERRIDE { return true; }
+    virtual bool isKeyboardFocusable(KeyboardEvent*) const override;
+    virtual bool isFrameOwnerElement() const override final { return true; }
 
     Frame* m_contentFrame;
     SandboxFlags m_sandboxFlags;
 };
-
-void isHTMLFrameOwnerElement(const HTMLFrameOwnerElement&); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLFrameOwnerElement(const Node& node) { return node.isFrameOwnerElement(); }
-NODE_TYPE_CASTS(HTMLFrameOwnerElement)
 
 class SubframeLoadingDisabler {
 public:
@@ -88,9 +85,9 @@ public:
     static bool canLoadFrame(HTMLFrameOwnerElement&);
 
 private:
-    static HashSet<ContainerNode*>& disabledSubtreeRoots()
+    static HashCountedSet<ContainerNode*>& disabledSubtreeRoots()
     {
-        DEFINE_STATIC_LOCAL(HashSet<ContainerNode*>, nodes, ());
+        DEPRECATED_DEFINE_STATIC_LOCAL(HashCountedSet<ContainerNode*>, nodes, ());
         return nodes;
     }
 
@@ -98,5 +95,9 @@ private:
 };
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::HTMLFrameOwnerElement)
+    static bool isType(const WebCore::Node& node) { return node.isFrameOwnerElement(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // HTMLFrameOwnerElement_h

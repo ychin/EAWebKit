@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSStyleSheet.h"
 
+#include "JSDOMBinding.h"
 #include "JSMediaList.h"
 #include "JSNode.h"
 #include "JSStyleSheet.h"
@@ -34,31 +35,65 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSStyleSheetTableValues[] =
-{
-    { "type", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetType), (intptr_t)0 },
-    { "disabled", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetDisabled), (intptr_t)setJSStyleSheetDisabled },
-    { "ownerNode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetOwnerNode), (intptr_t)0 },
-    { "parentStyleSheet", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetParentStyleSheet), (intptr_t)0 },
-    { "href", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetHref), (intptr_t)0 },
-    { "title", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetTitle), (intptr_t)0 },
-    { "media", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetMedia), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsStyleSheetType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsStyleSheetDisabled(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSStyleSheetDisabled(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsStyleSheetOwnerNode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsStyleSheetParentStyleSheet(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsStyleSheetHref(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsStyleSheetTitle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsStyleSheetMedia(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsStyleSheetConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSStyleSheetPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSStyleSheetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSStyleSheetPrototype* ptr = new (NotNull, JSC::allocateCell<JSStyleSheetPrototype>(vm.heap)) JSStyleSheetPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSStyleSheetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSStyleSheetTable = { 17, 15, JSStyleSheetTableValues, 0 };
-/* Hash table for constructor */
+class JSStyleSheetConstructor : public DOMConstructorObject {
+private:
+    JSStyleSheetConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSStyleSheetConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSStyleSheetConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSStyleSheetConstructor* ptr = new (NotNull, JSC::allocateCell<JSStyleSheetConstructor>(vm.heap)) JSStyleSheetConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSStyleSheetConstructorTable = { 1, 0, JSStyleSheetConstructorTableValues, 0 };
-const ClassInfo JSStyleSheetConstructor::s_info = { "StyleSheetConstructor", &Base::s_info, &JSStyleSheetConstructorTable, 0, CREATE_METHOD_TABLE(JSStyleSheetConstructor) };
+const ClassInfo JSStyleSheetConstructor::s_info = { "StyleSheetConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStyleSheetConstructor) };
 
 JSStyleSheetConstructor::JSStyleSheetConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -69,47 +104,49 @@ void JSStyleSheetConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSStyleSheetPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSStyleSheetConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSStyleSheetConstructor, JSDOMWrapper>(exec, JSStyleSheetConstructorTable, jsCast<JSStyleSheetConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSStyleSheet::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("StyleSheet"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSStyleSheetPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "type", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "disabled", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetDisabled), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSStyleSheetDisabled) },
+    { "ownerNode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetOwnerNode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "parentStyleSheet", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetParentStyleSheet), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "href", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetHref), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "title", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetTitle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "media", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsStyleSheetMedia), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSStyleSheetPrototypeTable = { 1, 0, JSStyleSheetPrototypeTableValues, 0 };
-const ClassInfo JSStyleSheetPrototype::s_info = { "StyleSheetPrototype", &Base::s_info, &JSStyleSheetPrototypeTable, 0, CREATE_METHOD_TABLE(JSStyleSheetPrototype) };
+const ClassInfo JSStyleSheetPrototype::s_info = { "StyleSheetPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStyleSheetPrototype) };
 
-JSObject* JSStyleSheetPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSStyleSheet>(vm, globalObject);
-}
-
-const ClassInfo JSStyleSheet::s_info = { "StyleSheet", &Base::s_info, &JSStyleSheetTable, 0 , CREATE_METHOD_TABLE(JSStyleSheet) };
-
-JSStyleSheet::JSStyleSheet(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<StyleSheet> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSStyleSheet::finishCreation(VM& vm)
+void JSStyleSheetPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSStyleSheetPrototypeTableValues, *this);
+}
+
+const ClassInfo JSStyleSheet::s_info = { "StyleSheet", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStyleSheet) };
+
+JSStyleSheet::JSStyleSheet(Structure* structure, JSDOMGlobalObject* globalObject, Ref<StyleSheet>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSStyleSheet::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSStyleSheetPrototype::create(vm, globalObject, JSStyleSheetPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSStyleSheet::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSStyleSheet>(vm, globalObject);
 }
 
 void JSStyleSheet::destroy(JSC::JSCell* cell)
@@ -120,106 +157,151 @@ void JSStyleSheet::destroy(JSC::JSCell* cell)
 
 JSStyleSheet::~JSStyleSheet()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSStyleSheet::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsStyleSheetType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* thisObject = jsCast<JSStyleSheet*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSStyleSheet, Base>(exec, JSStyleSheetTable, thisObject, propertyName, slot);
-}
-
-JSValue jsStyleSheetType(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "type");
+        return throwGetterTypeError(*exec, "StyleSheet", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetDisabled(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetDisabled(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "disabled");
+        return throwGetterTypeError(*exec, "StyleSheet", "disabled");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.disabled());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetOwnerNode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetOwnerNode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "ownerNode");
+        return throwGetterTypeError(*exec, "StyleSheet", "ownerNode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.ownerNode()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetParentStyleSheet(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetParentStyleSheet(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "parentStyleSheet");
+        return throwGetterTypeError(*exec, "StyleSheet", "parentStyleSheet");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.parentStyleSheet()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetHref(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetHref(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "href");
+        return throwGetterTypeError(*exec, "StyleSheet", "href");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.href());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetTitle(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetTitle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "title");
+        return throwGetterTypeError(*exec, "StyleSheet", "title");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.title());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetMedia(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetMedia(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    StyleSheet& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "StyleSheet", "media");
+        return throwGetterTypeError(*exec, "StyleSheet", "media");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.media()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsStyleSheetConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsStyleSheetConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSStyleSheet* domObject = jsCast<JSStyleSheet*>(asObject(slotBase));
-    return JSStyleSheet::getConstructor(exec->vm(), domObject->globalObject());
+    JSStyleSheetPrototype* domObject = jsDynamicCast<JSStyleSheetPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSStyleSheet::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSStyleSheet::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSStyleSheetDisabled(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSStyleSheet* thisObject = jsCast<JSStyleSheet*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSStyleSheet, Base>(exec, propertyName, value, JSStyleSheetTable, thisObject, slot);
-}
-
-void setJSStyleSheetDisabled(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSStyleSheet* castedThis = jsCast<JSStyleSheet*>(thisObject);
-    StyleSheet& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSStyleSheet* castedThis = jsDynamicCast<JSStyleSheet*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSStyleSheetPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "StyleSheet", "disabled");
+        else
+            throwSetterTypeError(*exec, "StyleSheet", "disabled");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setDisabled(nativeValue);
 }
@@ -230,33 +312,33 @@ JSValue JSStyleSheet::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSStyleSheetConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSStyleSheet* jsStyleSheet)
+void JSStyleSheet::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    if (jsStyleSheet->hasCustomProperties())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSStyleSheet*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSStyleSheetOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSStyleSheet* jsStyleSheet = jsCast<JSStyleSheet*>(handle.get().asCell());
-    if (!isObservable(jsStyleSheet))
-        return false;
+    auto* jsStyleSheet = jsCast<JSStyleSheet*>(handle.slot()->asCell());
     void* root = WebCore::root(&jsStyleSheet->impl());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSStyleSheetOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSStyleSheet* jsStyleSheet = jsCast<JSStyleSheet*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsStyleSheet = jsCast<JSStyleSheet*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsStyleSheet->impl(), jsStyleSheet);
-    jsStyleSheet->releaseImpl();
 }
 
-StyleSheet* toStyleSheet(JSC::JSValue value)
+StyleSheet* JSStyleSheet::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSStyleSheet::info()) ? &jsCast<JSStyleSheet*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSStyleSheet*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

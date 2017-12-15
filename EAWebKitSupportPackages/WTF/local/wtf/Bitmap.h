@@ -19,8 +19,8 @@
 #ifndef Bitmap_h
 #define Bitmap_h
 
+#include <array>
 #include <wtf/Atomics.h>
-#include <wtf/FixedArray.h>
 #include <wtf/StdLibExtras.h>
 #include <stdint.h>
 #include <string.h>
@@ -36,8 +36,9 @@ enum BitmapAtomicMode {
     BitmapAtomic
 };
 
-template<size_t size, BitmapAtomicMode atomicMode = BitmapNotAtomic, typename WordType = uint32_t>
+template<size_t Size, BitmapAtomicMode atomicMode = BitmapNotAtomic, typename WordType = uint32_t>
 class Bitmap {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
     Bitmap();
 
@@ -57,7 +58,7 @@ public:
 
 private:
     static const unsigned wordSize = sizeof(WordType) * 8;
-    static const unsigned words = (size + wordSize - 1) / wordSize;
+    static const unsigned words = (Size + wordSize - 1) / wordSize;
 
     // the literal '1' is of type signed int.  We want to use an unsigned
     // version of the correct size when doing the calculations because if
@@ -66,7 +67,7 @@ private:
     // a 64 bit unsigned int would give 0xffff8000
     static const WordType one = 1;
 
-    FixedArray<WordType, words> bits;
+    std::array<WordType, words> bits;
 };
 
 template<size_t size, BitmapAtomicMode atomicMode, typename WordType>
@@ -196,7 +197,7 @@ inline size_t Bitmap<size, atomicMode, WordType>::count(size_t start) const
             ++result;
     }
     for (size_t i = start / wordSize; i < words; ++i)
-        result += WTF::bitCount(bits[i]);
+        result += WTF::bitCount(static_cast<unsigned>(bits[i]));
     return result;
 }
 

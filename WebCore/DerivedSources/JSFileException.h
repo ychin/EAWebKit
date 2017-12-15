@@ -21,30 +21,30 @@
 #ifndef JSFileException_h
 #define JSFileException_h
 
-#if ENABLE(BLOB)
-
 #include "FileException.h"
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include <runtime/ErrorPrototype.h>
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSFileException : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSFileException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<FileException> impl)
+    static JSFileException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<FileException>&& impl)
     {
-        JSFileException* ptr = new (NotNull, JSC::allocateCell<JSFileException>(globalObject->vm().heap)) JSFileException(structure, globalObject, impl);
+        JSFileException* ptr = new (NotNull, JSC::allocateCell<JSFileException>(globalObject->vm().heap)) JSFileException(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static FileException* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSFileException();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,21 @@ public:
     }
 
     FileException& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     FileException* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSFileException(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<FileException>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSFileException(JSC::Structure*, JSDOMGlobalObject*, Ref<FileException>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSFileExceptionOwner : public JSC::WeakHandleOwner {
@@ -79,67 +78,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, FileException*)
 {
-    DEFINE_STATIC_LOCAL(JSFileExceptionOwner, jsFileExceptionOwner, ());
-    return &jsFileExceptionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, FileException*)
-{
-    return &world;
+    static NeverDestroyed<JSFileExceptionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, FileException*);
-FileException* toFileException(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, FileException& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSFileExceptionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSFileExceptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSFileExceptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSFileExceptionPrototype>(vm.heap)) JSFileExceptionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSFileExceptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsFileExceptionPrototypeFunctionToString(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsFileExceptionCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsFileExceptionNOT_FOUND_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionSECURITY_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionABORT_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionNOT_READABLE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionENCODING_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionNO_MODIFICATION_ALLOWED_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionINVALID_STATE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionSYNTAX_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionINVALID_MODIFICATION_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionQUOTA_EXCEEDED_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionTYPE_MISMATCH_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFileExceptionPATH_EXISTS_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(BLOB)
 
 #endif

@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(CSS_FILTERS)
-
 #include "JSWebKitCSSFilterValue.h"
 
+#include "JSDOMBinding.h"
 #include "WebKitCSSFilterValue.h"
 #include <runtime/PropertyNameArray.h>
 #include <wtf/GetPtr.h>
@@ -32,36 +30,89 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Attributes
+
+JSC::EncodedJSValue jsWebKitCSSFilterValueOperationType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebKitCSSFilterValueConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebKitCSSFilterValuePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebKitCSSFilterValuePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebKitCSSFilterValuePrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSFilterValuePrototype>(vm.heap)) JSWebKitCSSFilterValuePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebKitCSSFilterValuePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSWebKitCSSFilterValueConstructor : public DOMConstructorObject {
+private:
+    JSWebKitCSSFilterValueConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebKitCSSFilterValueConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebKitCSSFilterValueConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSFilterValueConstructor>(vm.heap)) JSWebKitCSSFilterValueConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSWebKitCSSFilterValueTableIndex[2] = {
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSWebKitCSSFilterValueTableValues[] =
 {
-    { "operationType", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueOperationType), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSWebKitCSSFilterValueTable = { 5, 3, JSWebKitCSSFilterValueTableValues, 0 };
+static const HashTable JSWebKitCSSFilterValueTable = { 1, 1, true, JSWebKitCSSFilterValueTableValues, 0, JSWebKitCSSFilterValueTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSWebKitCSSFilterValueConstructorTableValues[] =
 {
-    { "CSS_FILTER_REFERENCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_REFERENCE), (intptr_t)0 },
-    { "CSS_FILTER_GRAYSCALE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_GRAYSCALE), (intptr_t)0 },
-    { "CSS_FILTER_SEPIA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_SEPIA), (intptr_t)0 },
-    { "CSS_FILTER_SATURATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_SATURATE), (intptr_t)0 },
-    { "CSS_FILTER_HUE_ROTATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_HUE_ROTATE), (intptr_t)0 },
-    { "CSS_FILTER_INVERT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_INVERT), (intptr_t)0 },
-    { "CSS_FILTER_OPACITY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_OPACITY), (intptr_t)0 },
-    { "CSS_FILTER_BRIGHTNESS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_BRIGHTNESS), (intptr_t)0 },
-    { "CSS_FILTER_CONTRAST", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_CONTRAST), (intptr_t)0 },
-    { "CSS_FILTER_BLUR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_BLUR), (intptr_t)0 },
-    { "CSS_FILTER_DROP_SHADOW", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_DROP_SHADOW), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "CSS_FILTER_REFERENCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "CSS_FILTER_GRAYSCALE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "CSS_FILTER_SEPIA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "CSS_FILTER_SATURATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "CSS_FILTER_HUE_ROTATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(5), (intptr_t) (0) },
+    { "CSS_FILTER_INVERT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(6), (intptr_t) (0) },
+    { "CSS_FILTER_OPACITY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(7), (intptr_t) (0) },
+    { "CSS_FILTER_BRIGHTNESS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(8), (intptr_t) (0) },
+    { "CSS_FILTER_CONTRAST", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(9), (intptr_t) (0) },
+    { "CSS_FILTER_BLUR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(10), (intptr_t) (0) },
+    { "CSS_FILTER_DROP_SHADOW", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(11), (intptr_t) (0) },
 };
 
-static const HashTable JSWebKitCSSFilterValueConstructorTable = { 33, 31, JSWebKitCSSFilterValueConstructorTableValues, 0 };
-const ClassInfo JSWebKitCSSFilterValueConstructor::s_info = { "WebKitCSSFilterValueConstructor", &Base::s_info, &JSWebKitCSSFilterValueConstructorTable, 0, CREATE_METHOD_TABLE(JSWebKitCSSFilterValueConstructor) };
+const ClassInfo JSWebKitCSSFilterValueConstructor::s_info = { "WebKitCSSFilterValueConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitCSSFilterValueConstructor) };
 
 JSWebKitCSSFilterValueConstructor::JSWebKitCSSFilterValueConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -72,78 +123,69 @@ void JSWebKitCSSFilterValueConstructor::finishCreation(VM& vm, JSDOMGlobalObject
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebKitCSSFilterValuePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebKitCSSFilterValueConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebKitCSSFilterValueConstructor, JSDOMWrapper>(exec, JSWebKitCSSFilterValueConstructorTable, jsCast<JSWebKitCSSFilterValueConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebKitCSSFilterValue::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebKitCSSFilterValue"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSWebKitCSSFilterValueConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSWebKitCSSFilterValuePrototypeTableValues[] =
 {
-    { "CSS_FILTER_REFERENCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_REFERENCE), (intptr_t)0 },
-    { "CSS_FILTER_GRAYSCALE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_GRAYSCALE), (intptr_t)0 },
-    { "CSS_FILTER_SEPIA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_SEPIA), (intptr_t)0 },
-    { "CSS_FILTER_SATURATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_SATURATE), (intptr_t)0 },
-    { "CSS_FILTER_HUE_ROTATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_HUE_ROTATE), (intptr_t)0 },
-    { "CSS_FILTER_INVERT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_INVERT), (intptr_t)0 },
-    { "CSS_FILTER_OPACITY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_OPACITY), (intptr_t)0 },
-    { "CSS_FILTER_BRIGHTNESS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_BRIGHTNESS), (intptr_t)0 },
-    { "CSS_FILTER_CONTRAST", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_CONTRAST), (intptr_t)0 },
-    { "CSS_FILTER_BLUR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_BLUR), (intptr_t)0 },
-    { "CSS_FILTER_DROP_SHADOW", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueCSS_FILTER_DROP_SHADOW), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "operationType", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSFilterValueOperationType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "CSS_FILTER_REFERENCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "CSS_FILTER_GRAYSCALE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "CSS_FILTER_SEPIA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "CSS_FILTER_SATURATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "CSS_FILTER_HUE_ROTATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(5), (intptr_t) (0) },
+    { "CSS_FILTER_INVERT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(6), (intptr_t) (0) },
+    { "CSS_FILTER_OPACITY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(7), (intptr_t) (0) },
+    { "CSS_FILTER_BRIGHTNESS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(8), (intptr_t) (0) },
+    { "CSS_FILTER_CONTRAST", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(9), (intptr_t) (0) },
+    { "CSS_FILTER_BLUR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(10), (intptr_t) (0) },
+    { "CSS_FILTER_DROP_SHADOW", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(11), (intptr_t) (0) },
 };
 
-static const HashTable JSWebKitCSSFilterValuePrototypeTable = { 33, 31, JSWebKitCSSFilterValuePrototypeTableValues, 0 };
-const ClassInfo JSWebKitCSSFilterValuePrototype::s_info = { "WebKitCSSFilterValuePrototype", &Base::s_info, &JSWebKitCSSFilterValuePrototypeTable, 0, CREATE_METHOD_TABLE(JSWebKitCSSFilterValuePrototype) };
+const ClassInfo JSWebKitCSSFilterValuePrototype::s_info = { "WebKitCSSFilterValuePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitCSSFilterValuePrototype) };
 
-JSObject* JSWebKitCSSFilterValuePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebKitCSSFilterValue>(vm, globalObject);
-}
-
-bool JSWebKitCSSFilterValuePrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSWebKitCSSFilterValuePrototype* thisObject = jsCast<JSWebKitCSSFilterValuePrototype*>(object);
-    return getStaticValueSlot<JSWebKitCSSFilterValuePrototype, JSObject>(exec, JSWebKitCSSFilterValuePrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSWebKitCSSFilterValue::s_info = { "WebKitCSSFilterValue", &Base::s_info, &JSWebKitCSSFilterValueTable, 0 , CREATE_METHOD_TABLE(JSWebKitCSSFilterValue) };
-
-JSWebKitCSSFilterValue::JSWebKitCSSFilterValue(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitCSSFilterValue> impl)
-    : JSCSSValueList(structure, globalObject, impl)
-{
-}
-
-void JSWebKitCSSFilterValue::finishCreation(VM& vm)
+void JSWebKitCSSFilterValuePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebKitCSSFilterValuePrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebKitCSSFilterValue::s_info = { "WebKitCSSFilterValue", &Base::s_info, &JSWebKitCSSFilterValueTable, CREATE_METHOD_TABLE(JSWebKitCSSFilterValue) };
+
+JSWebKitCSSFilterValue::JSWebKitCSSFilterValue(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitCSSFilterValue>&& impl)
+    : JSCSSValueList(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSWebKitCSSFilterValue::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSWebKitCSSFilterValuePrototype::create(vm, globalObject, JSWebKitCSSFilterValuePrototype::createStructure(vm, globalObject, JSCSSValueListPrototype::self(vm, globalObject)));
+    return JSWebKitCSSFilterValuePrototype::create(vm, globalObject, JSWebKitCSSFilterValuePrototype::createStructure(vm, globalObject, JSCSSValueList::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSWebKitCSSFilterValue::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebKitCSSFilterValue>(vm, globalObject);
 }
 
 bool JSWebKitCSSFilterValue::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSWebKitCSSFilterValue* thisObject = jsCast<JSWebKitCSSFilterValue*>(object);
+    auto* thisObject = jsCast<JSWebKitCSSFilterValue*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSWebKitCSSFilterValue>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSWebKitCSSFilterValue>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSWebKitCSSFilterValue, Base>(exec, JSWebKitCSSFilterValueTable, thisObject, propertyName, slot);
@@ -151,39 +193,48 @@ bool JSWebKitCSSFilterValue::getOwnPropertySlot(JSObject* object, ExecState* exe
 
 bool JSWebKitCSSFilterValue::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSWebKitCSSFilterValue* thisObject = jsCast<JSWebKitCSSFilterValue*>(object);
+    auto* thisObject = jsCast<JSWebKitCSSFilterValue*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsWebKitCSSFilterValueOperationType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebKitCSSFilterValueOperationType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebKitCSSFilterValue* castedThis = jsCast<JSWebKitCSSFilterValue*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebKitCSSFilterValue& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebKitCSSFilterValue* castedThis = jsDynamicCast<JSWebKitCSSFilterValue*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebKitCSSFilterValuePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebKitCSSFilterValue", "operationType");
+        return throwGetterTypeError(*exec, "WebKitCSSFilterValue", "operationType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.operationType());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebKitCSSFilterValueConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebKitCSSFilterValueConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebKitCSSFilterValue* domObject = jsCast<JSWebKitCSSFilterValue*>(asObject(slotBase));
-    return JSWebKitCSSFilterValue::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebKitCSSFilterValue* domObject = jsDynamicCast<JSWebKitCSSFilterValue*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebKitCSSFilterValue::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 void JSWebKitCSSFilterValue::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSWebKitCSSFilterValue* thisObject = jsCast<JSWebKitCSSFilterValue*>(object);
+    auto* thisObject = jsCast<JSWebKitCSSFilterValue*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 JSValue JSWebKitCSSFilterValue::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -191,83 +242,5 @@ JSValue JSWebKitCSSFilterValue::getConstructor(VM& vm, JSGlobalObject* globalObj
     return getDOMConstructor<JSWebKitCSSFilterValueConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-// Constant getters
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_REFERENCE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_GRAYSCALE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_SEPIA(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_SATURATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(4));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_HUE_ROTATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(5));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_INVERT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(6));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_OPACITY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(7));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_BRIGHTNESS(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(8));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_CONTRAST(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(9));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_BLUR(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(10));
-}
-
-JSValue jsWebKitCSSFilterValueCSS_FILTER_DROP_SHADOW(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(11));
-}
-
-
-JSValue JSWebKitCSSFilterValue::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSWebKitCSSFilterValue* thisObj = jsCast<JSWebKitCSSFilterValue*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
-}
-
 
 }
-
-#endif // ENABLE(CSS_FILTERS)

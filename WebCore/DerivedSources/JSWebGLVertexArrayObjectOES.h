@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLVertexArrayObjectOES.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLVertexArrayObjectOES : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLVertexArrayObjectOES* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLVertexArrayObjectOES> impl)
+    static JSWebGLVertexArrayObjectOES* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLVertexArrayObjectOES>&& impl)
     {
-        JSWebGLVertexArrayObjectOES* ptr = new (NotNull, JSC::allocateCell<JSWebGLVertexArrayObjectOES>(globalObject->vm().heap)) JSWebGLVertexArrayObjectOES(structure, globalObject, impl);
+        JSWebGLVertexArrayObjectOES* ptr = new (NotNull, JSC::allocateCell<JSWebGLVertexArrayObjectOES>(globalObject->vm().heap)) JSWebGLVertexArrayObjectOES(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLVertexArrayObjectOES* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLVertexArrayObjectOES();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     WebGLVertexArrayObjectOES& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLVertexArrayObjectOES* m_impl;
 protected:
-    JSWebGLVertexArrayObjectOES(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLVertexArrayObjectOES>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSWebGLVertexArrayObjectOES(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLVertexArrayObjectOES>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLVertexArrayObjectOESOwner : public JSC::WeakHandleOwner {
@@ -78,40 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLVertexArrayObjectOES*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLVertexArrayObjectOESOwner, jsWebGLVertexArrayObjectOESOwner, ());
-    return &jsWebGLVertexArrayObjectOESOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLVertexArrayObjectOES*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLVertexArrayObjectOESOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLVertexArrayObjectOES*);
-WebGLVertexArrayObjectOES* toWebGLVertexArrayObjectOES(JSC::JSValue);
-
-class JSWebGLVertexArrayObjectOESPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLVertexArrayObjectOESPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLVertexArrayObjectOESPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLVertexArrayObjectOESPrototype>(vm.heap)) JSWebGLVertexArrayObjectOESPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLVertexArrayObjectOESPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLVertexArrayObjectOES& impl) { return toJS(exec, globalObject, &impl); }
 
 
 } // namespace WebCore

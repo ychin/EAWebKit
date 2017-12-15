@@ -23,24 +23,22 @@
 
 #include "CSSCharsetRule.h"
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSCharsetRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSCharsetRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSCharsetRule> impl)
+    static JSCSSCharsetRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSCharsetRule>&& impl)
     {
-        JSCSSCharsetRule* ptr = new (NotNull, JSC::allocateCell<JSCSSCharsetRule>(globalObject->vm().heap)) JSCSSCharsetRule(structure, globalObject, impl);
+        JSCSSCharsetRule* ptr = new (NotNull, JSC::allocateCell<JSCSSCharsetRule>(globalObject->vm().heap)) JSCSSCharsetRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,64 +52,17 @@ public:
         return static_cast<CSSCharsetRule&>(Base::impl());
     }
 protected:
-    JSCSSCharsetRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSCharsetRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSCharsetRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSCharsetRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSCharsetRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSCharsetRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSCharsetRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSCharsetRulePrototype>(vm.heap)) JSCSSCharsetRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSCharsetRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSCSSCharsetRuleConstructor : public DOMConstructorObject {
-private:
-    JSCSSCharsetRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSCharsetRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSCharsetRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSCharsetRuleConstructor>(vm.heap)) JSCSSCharsetRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCSSCharsetRuleEncoding(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSCSSCharsetRuleEncoding(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsCSSCharsetRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

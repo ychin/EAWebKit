@@ -30,9 +30,9 @@ namespace WebCore {
 
 class JSStringCallback : public StringCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSStringCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSStringCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSStringCallback(callback, globalObject));
+        return adoptRef(*new JSStringCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

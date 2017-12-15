@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSStorageUsageCallback : public StorageUsageCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSStorageUsageCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSStorageUsageCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSStorageUsageCallback(callback, globalObject));
+        return adoptRef(*new JSStorageUsageCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

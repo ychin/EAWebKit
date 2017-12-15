@@ -30,8 +30,6 @@
 
 #include "config.h"
 
-#if ENABLE(WORKERS)
-
 #include "AbstractWorker.h"
 
 #include "ContentSecurityPolicy.h"
@@ -45,11 +43,6 @@
 #include "SecurityOrigin.h"
 
 namespace WebCore {
-
-AbstractWorker::AbstractWorker(ScriptExecutionContext& context)
-    : ActiveDOMObject(&context)
-{
-}
 
 AbstractWorker::~AbstractWorker()
 {
@@ -83,5 +76,3 @@ URL AbstractWorker::resolveURL(const String& url, ExceptionCode& ec)
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)

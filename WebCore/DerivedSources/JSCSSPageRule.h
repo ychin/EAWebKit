@@ -23,24 +23,22 @@
 
 #include "CSSPageRule.h"
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSPageRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSPageRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSPageRule> impl)
+    static JSCSSPageRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSPageRule>&& impl)
     {
-        JSCSSPageRule* ptr = new (NotNull, JSC::allocateCell<JSCSSPageRule>(globalObject->vm().heap)) JSCSSPageRule(structure, globalObject, impl);
+        JSCSSPageRule* ptr = new (NotNull, JSC::allocateCell<JSCSSPageRule>(globalObject->vm().heap)) JSCSSPageRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,65 +52,17 @@ public:
         return static_cast<CSSPageRule&>(Base::impl());
     }
 protected:
-    JSCSSPageRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSPageRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSPageRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSPageRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSPageRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSPageRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSPageRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSPageRulePrototype>(vm.heap)) JSCSSPageRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSPageRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSCSSPageRuleConstructor : public DOMConstructorObject {
-private:
-    JSCSSPageRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSPageRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSPageRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSPageRuleConstructor>(vm.heap)) JSCSSPageRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCSSPageRuleSelectorText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSCSSPageRuleSelectorText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsCSSPageRuleStyle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSPageRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

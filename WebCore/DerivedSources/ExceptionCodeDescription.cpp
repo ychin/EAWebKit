@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY GOOGLE, INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -31,16 +31,10 @@
 #include "ExceptionCode.h"
 #include "DOMCoreException.h"
 #include "EventException.h"
-#if ENABLE(BLOB)
 #include "FileException.h"
-#endif
 #include "RangeException.h"
-#if ENABLE(SQL_DATABASE)
 #include "SQLException.h"
-#endif
-#if ENABLE(SVG)
 #include "SVGException.h"
-#endif
 #include "XMLHttpRequestException.h"
 #include "XPathException.h"
 #if ENABLE(INDEXED_DATABASE)
@@ -54,20 +48,14 @@ ExceptionCodeDescription::ExceptionCodeDescription(ExceptionCode ec)
     ASSERT(ec);
     if (EventException::initializeDescription(ec, this))
         return;
-#if ENABLE(BLOB)
     if (FileException::initializeDescription(ec, this))
         return;
-#endif
     if (RangeException::initializeDescription(ec, this))
         return;
-#if ENABLE(SQL_DATABASE)
     if (SQLException::initializeDescription(ec, this))
         return;
-#endif
-#if ENABLE(SVG)
     if (SVGException::initializeDescription(ec, this))
         return;
-#endif
     if (XMLHttpRequestException::initializeDescription(ec, this))
         return;
     if (XPathException::initializeDescription(ec, this))

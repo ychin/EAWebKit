@@ -34,25 +34,62 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSTextEventTableValues[] =
-{
-    { "data", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextEventData), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsTextEventPrototypeFunctionInitTextEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsTextEventData(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSTextEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSTextEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSTextEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSTextEventPrototype>(vm.heap)) JSTextEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSTextEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSTextEventTable = { 4, 3, JSTextEventTableValues, 0 };
-/* Hash table for constructor */
+class JSTextEventConstructor : public DOMConstructorObject {
+private:
+    JSTextEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSTextEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSTextEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSTextEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSTextEventConstructor>(vm.heap)) JSTextEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSTextEventConstructorTable = { 1, 0, JSTextEventConstructorTableValues, 0 };
-const ClassInfo JSTextEventConstructor::s_info = { "TextEventConstructor", &Base::s_info, &JSTextEventConstructorTable, 0, CREATE_METHOD_TABLE(JSTextEventConstructor) };
+const ClassInfo JSTextEventConstructor::s_info = { "TextEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextEventConstructor) };
 
 JSTextEventConstructor::JSTextEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,76 +100,68 @@ void JSTextEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObj
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSTextEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSTextEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSTextEventConstructor, JSDOMWrapper>(exec, JSTextEventConstructorTable, jsCast<JSTextEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSTextEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("TextEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSTextEventPrototypeTableValues[] =
 {
-    { "initTextEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextEventPrototypeFunctionInitTextEvent), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "data", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextEventData), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "initTextEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextEventPrototypeFunctionInitTextEvent), (intptr_t) (0) },
 };
 
-static const HashTable JSTextEventPrototypeTable = { 2, 1, JSTextEventPrototypeTableValues, 0 };
-const ClassInfo JSTextEventPrototype::s_info = { "TextEventPrototype", &Base::s_info, &JSTextEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSTextEventPrototype) };
+const ClassInfo JSTextEventPrototype::s_info = { "TextEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextEventPrototype) };
 
-JSObject* JSTextEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSTextEvent>(vm, globalObject);
-}
-
-bool JSTextEventPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSTextEventPrototype* thisObject = jsCast<JSTextEventPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSTextEventPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSTextEvent::s_info = { "TextEvent", &Base::s_info, &JSTextEventTable, 0 , CREATE_METHOD_TABLE(JSTextEvent) };
-
-JSTextEvent::JSTextEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TextEvent> impl)
-    : JSUIEvent(structure, globalObject, impl)
-{
-}
-
-void JSTextEvent::finishCreation(VM& vm)
+void JSTextEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSTextEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSTextEvent::s_info = { "TextEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextEvent) };
+
+JSTextEvent::JSTextEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<TextEvent>&& impl)
+    : JSUIEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSTextEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSTextEventPrototype::create(vm, globalObject, JSTextEventPrototype::createStructure(vm, globalObject, JSUIEventPrototype::self(vm, globalObject)));
+    return JSTextEventPrototype::create(vm, globalObject, JSTextEventPrototype::createStructure(vm, globalObject, JSUIEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSTextEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSTextEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSTextEvent* thisObject = jsCast<JSTextEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSTextEvent, Base>(exec, JSTextEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSTextEvent>(vm, globalObject);
 }
 
-JSValue jsTextEventData(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTextEventData(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTextEvent* castedThis = jsCast<JSTextEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TextEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextEvent* castedThis = jsDynamicCast<JSTextEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextEvent", "data");
+        return throwGetterTypeError(*exec, "TextEvent", "data");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.data());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTextEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTextEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSTextEvent* domObject = jsCast<JSTextEvent*>(asObject(slotBase));
-    return JSTextEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSTextEventPrototype* domObject = jsDynamicCast<JSTextEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSTextEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSTextEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -142,26 +171,26 @@ JSValue JSTextEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsTextEventPrototypeFunctionInitTextEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextEvent::info()))
-        return throwVMTypeError(exec);
-    JSTextEvent* castedThis = jsCast<JSTextEvent*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextEvent* castedThis = jsDynamicCast<JSTextEvent*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextEvent", "initTextEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextEvent::info());
-    TextEvent& impl = castedThis->impl();
-    const String& typeArg(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String typeArg = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool canBubbleArg(exec->argument(1).toBoolean(exec));
-    if (exec->hadException())
+    bool canBubbleArg = exec->argument(1).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool cancelableArg(exec->argument(2).toBoolean(exec));
-    if (exec->hadException())
+    bool cancelableArg = exec->argument(2).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    DOMWindow* viewArg(toDOMWindow(exec->argument(3)));
-    if (exec->hadException())
+    DOMWindow* viewArg = JSDOMWindow::toWrapped(exec->argument(3));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& dataArg(exec->argument(4).isEmpty() ? String() : exec->argument(4).toString(exec)->value(exec));
-    if (exec->hadException())
+    String dataArg = exec->argument(4).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.initTextEvent(typeArg, canBubbleArg, cancelableArg, viewArg, dataArg);
     return JSValue::encode(jsUndefined());

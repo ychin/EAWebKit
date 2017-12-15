@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2011 Google Inc. All rights reserved.
- * Copyright (C) 2011, 2012 Ericsson AB. All rights reserved.
+ * Copyright (C) 2011, 2012, 2015 Ericsson AB. All rights reserved.
  * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,235 +30,133 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "AudioStreamTrack.h"
 #include "Event.h"
 #include "ExceptionCode.h"
-#include "MediaStreamCenter.h"
 #include "MediaStreamRegistry.h"
-#include "MediaStreamSource.h"
 #include "MediaStreamTrackEvent.h"
-#include "VideoStreamTrack.h"
+#include "RealtimeMediaSource.h"
 #include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-static bool containsSource(MediaStreamSourceVector& sourceVector, MediaStreamSource* source)
+Ref<MediaStream> MediaStream::create(ScriptExecutionContext& context)
 {
-    for (size_t i = 0; i < sourceVector.size(); ++i) {
-        if (source->id() == sourceVector[i]->id())
-            return true;
-    }
-    return false;
+    return MediaStream::create(context, MediaStreamPrivate::create());
 }
 
-static void processTrack(MediaStreamTrack* track, MediaStreamSourceVector& sourceVector)
-{
-    if (track->ended())
-        return;
-
-    MediaStreamSource* source = track->source();
-    if (!containsSource(sourceVector, source))
-        sourceVector.append(source);
-}
-
-static PassRefPtr<MediaStream> createFromSourceVectors(ScriptExecutionContext* context, const MediaStreamSourceVector& audioSources, const MediaStreamSourceVector& videoSources, bool ended)
-{
-    MediaStreamDescriptor::EndedAtCreationFlag flag = ended ? MediaStreamDescriptor::IsEnded : MediaStreamDescriptor::IsNotEnded;
-    RefPtr<MediaStreamDescriptor> descriptor = MediaStreamDescriptor::create(audioSources, videoSources, flag);
-    return MediaStream::create(context, descriptor.release());
-}
-
-PassRefPtr<MediaStream> MediaStream::create(ScriptExecutionContext* context)
-{
-    MediaStreamSourceVector audioSources;
-    MediaStreamSourceVector videoSources;
-
-    return createFromSourceVectors(context, audioSources, videoSources, false);
-}
-
-PassRefPtr<MediaStream> MediaStream::create(ScriptExecutionContext* context, PassRefPtr<MediaStream> stream)
+Ref<MediaStream> MediaStream::create(ScriptExecutionContext& context, MediaStream* stream)
 {
     ASSERT(stream);
 
-    MediaStreamSourceVector audioSources;
-    MediaStreamSourceVector videoSources;
-
-    for (size_t i = 0; i < stream->m_audioTracks.size(); ++i)
-        processTrack(stream->m_audioTracks[i].get(), audioSources);
-
-    for (size_t i = 0; i < stream->m_videoTracks.size(); ++i)
-        processTrack(stream->m_videoTracks[i].get(), videoSources);
-
-    return createFromSourceVectors(context, audioSources, videoSources, stream->ended());
+    return adoptRef(*new MediaStream(context, stream->getTracks()));
 }
 
-PassRefPtr<MediaStream> MediaStream::create(ScriptExecutionContext* context, const MediaStreamTrackVector& tracks)
+Ref<MediaStream> MediaStream::create(ScriptExecutionContext& context, const Vector<RefPtr<MediaStreamTrack>>& tracks)
 {
-    MediaStreamSourceVector audioSources;
-    MediaStreamSourceVector videoSources;
+    return adoptRef(*new MediaStream(context, tracks));
+}
 
-    bool allEnded = true;
-    for (size_t i = 0; i < tracks.size(); ++i) {
-        allEnded &= tracks[i]->ended();
-        processTrack(tracks[i].get(), tracks[i]->kind() == "audio" ? audioSources : videoSources);
+Ref<MediaStream> MediaStream::create(ScriptExecutionContext& context, RefPtr<MediaStreamPrivate>&& streamPrivate)
+{
+    return adoptRef(*new MediaStream(context, WTF::move(streamPrivate)));
+}
+
+MediaStream::MediaStream(ScriptExecutionContext& context, const Vector<RefPtr<MediaStreamTrack>>& tracks)
+    : ContextDestructionObserver(&context)
+    , m_activityEventTimer(*this, &MediaStream::activityEventTimerFired)
+{
+    // This constructor preserves MediaStreamTrack instances and must be used by calls originating
+    // from the JavaScript MediaStream constructor.
+    Vector<RefPtr<MediaStreamTrackPrivate>> trackPrivates;
+    trackPrivates.reserveCapacity(tracks.size());
+
+    for (auto& track : tracks) {
+        track->addObserver(this);
+        m_trackSet.add(track->id(), track);
+        trackPrivates.append(&track->privateTrack());
     }
 
-    return createFromSourceVectors(context, audioSources, videoSources, allEnded);
+    m_private = MediaStreamPrivate::create(trackPrivates);
+    m_isActive = m_private->active();
+    m_private->setClient(this);
 }
 
-PassRefPtr<MediaStream> MediaStream::create(ScriptExecutionContext* context, PassRefPtr<MediaStreamDescriptor> streamDescriptor)
+MediaStream::MediaStream(ScriptExecutionContext& context, RefPtr<MediaStreamPrivate>&& streamPrivate)
+    : ContextDestructionObserver(&context)
+    , m_private(streamPrivate)
+    , m_isActive(m_private->active())
+    , m_activityEventTimer(*this, &MediaStream::activityEventTimerFired)
 {
-    return adoptRef(new MediaStream(context, streamDescriptor));
-}
+    ASSERT(m_private);
+    m_private->setClient(this);
 
-MediaStream::MediaStream(ScriptExecutionContext* context, PassRefPtr<MediaStreamDescriptor> streamDescriptor)
-    : ContextDestructionObserver(context)
-    , m_descriptor(streamDescriptor)
-    , m_scheduledEventTimer(this, &MediaStream::scheduledEventTimerFired)
-{
-    ASSERT(m_descriptor);
-    m_descriptor->setClient(this);
-
-    size_t numberOfAudioTracks = m_descriptor->numberOfAudioStreams();
-    m_audioTracks.reserveCapacity(numberOfAudioTracks);
-    for (size_t i = 0; i < numberOfAudioTracks; i++)
-        m_audioTracks.append(AudioStreamTrack::create(context, m_descriptor->audioStreams(i)));
-
-    size_t numberOfVideoTracks = m_descriptor->numberOfVideoStreams();
-    m_videoTracks.reserveCapacity(numberOfVideoTracks);
-    for (size_t i = 0; i < numberOfVideoTracks; i++)
-        m_videoTracks.append(VideoStreamTrack::create(context, m_descriptor->videoStreams(i)));
+    for (auto& trackPrivate : m_private->tracks()) {
+        RefPtr<MediaStreamTrack> track = MediaStreamTrack::create(context, *trackPrivate);
+        track->addObserver(this);
+        m_trackSet.add(track->id(), WTF::move(track));
+    }
 }
 
 MediaStream::~MediaStream()
 {
-    m_descriptor->setClient(0);
+    m_private->setClient(nullptr);
 }
 
-bool MediaStream::ended() const
+RefPtr<MediaStream> MediaStream::clone()
 {
-    return m_descriptor->ended();
+    Vector<RefPtr<MediaStreamTrack>> clonedTracks;
+    clonedTracks.reserveCapacity(m_trackSet.size());
+
+    for (auto& track : m_trackSet.values())
+        clonedTracks.append(track->clone());
+
+    return MediaStream::create(*scriptExecutionContext(), clonedTracks);
 }
 
-void MediaStream::setEnded()
+void MediaStream::addTrack(RefPtr<MediaStreamTrack>&& track)
 {
-    if (ended())
+    if (!internalAddTrack(WTF::move(track), StreamModifier::DomAPI))
         return;
-    m_descriptor->setEnded();
+
+    for (auto& observer : m_observers)
+        observer->didAddOrRemoveTrack();
 }
 
-PassRefPtr<MediaStream> MediaStream::clone()
+void MediaStream::removeTrack(MediaStreamTrack* track)
 {
-    MediaStreamTrackVector trackSet;
-
-    cloneMediaStreamTrackVector(trackSet, getAudioTracks());
-    cloneMediaStreamTrackVector(trackSet, getVideoTracks());
-    return MediaStream::create(scriptExecutionContext(), trackSet);
-}
-
-void MediaStream::cloneMediaStreamTrackVector(MediaStreamTrackVector& destination, const MediaStreamTrackVector& origin)
-{
-    for (unsigned i = 0; i < origin.size(); i++)
-        destination.append(origin[i]->clone());
-}
-
-void MediaStream::addTrack(PassRefPtr<MediaStreamTrack> prpTrack, ExceptionCode& ec)
-{
-    if (ended()) {
-        ec = INVALID_STATE_ERR;
-        return;
-    }
-
-    if (!prpTrack) {
-        ec = TYPE_MISMATCH_ERR;
-        return;
-    }
-
-    RefPtr<MediaStreamTrack> track = prpTrack;
-    if (getTrackById(track->id()))
+    if (!internalRemoveTrack(track, StreamModifier::DomAPI))
         return;
 
-    switch (track->source()->type()) {
-    case MediaStreamSource::Audio:
-        m_audioTracks.append(track);
-        break;
-    case MediaStreamSource::Video:
-        m_videoTracks.append(track);
-        break;
-    }
-}
-
-void MediaStream::removeTrack(PassRefPtr<MediaStreamTrack> prpTrack, ExceptionCode& ec)
-{
-    if (ended()) {
-        ec = INVALID_STATE_ERR;
-        return;
-    }
-
-    if (!prpTrack) {
-        ec = TYPE_MISMATCH_ERR;
-        return;
-    }
-
-    RefPtr<MediaStreamTrack> track = prpTrack;
-
-    size_t pos = notFound;
-    switch (track->source()->type()) {
-    case MediaStreamSource::Audio:
-        pos = m_audioTracks.find(track);
-        if (pos != notFound)
-            m_audioTracks.remove(pos);
-        break;
-    case MediaStreamSource::Video:
-        pos = m_videoTracks.find(track);
-        if (pos != notFound)
-            m_videoTracks.remove(pos);
-        break;
-    }
-
-    if (pos == notFound)
-        return;
-
-    m_descriptor->removeSource(track->source());
-
-    if (!m_audioTracks.size() && !m_videoTracks.size())
-        setEnded();
+    for (auto& observer : m_observers)
+        observer->didAddOrRemoveTrack();
 }
 
 MediaStreamTrack* MediaStream::getTrackById(String id)
 {
-    for (MediaStreamTrackVector::iterator iter = m_audioTracks.begin(); iter != m_audioTracks.end(); ++iter) {
-        if ((*iter)->id() == id)
-            return (*iter).get();
-    }
+    auto it = m_trackSet.find(id);
+    if (it != m_trackSet.end())
+        return it->value.get();
 
-    for (MediaStreamTrackVector::iterator iter = m_videoTracks.begin(); iter != m_videoTracks.end(); ++iter) {
-        if ((*iter)->id() == id)
-            return (*iter).get();
-    }
-
-    return 0;
+    return nullptr;
 }
 
-void MediaStream::trackDidEnd()
+Vector<RefPtr<MediaStreamTrack>> MediaStream::getAudioTracks()
 {
-    for (size_t i = 0; i < m_audioTracks.size(); ++i)
-        if (!m_audioTracks[i]->ended())
-            return;
-    
-    for (size_t i = 0; i < m_videoTracks.size(); ++i)
-        if (!m_videoTracks[i]->ended())
-            return;
-    
-    setEnded();
+    return trackVectorForType(RealtimeMediaSource::Audio);
 }
 
-void MediaStream::streamDidEnd()
+Vector<RefPtr<MediaStreamTrack>> MediaStream::getVideoTracks()
 {
-    if (ended())
-        return;
+    return trackVectorForType(RealtimeMediaSource::Video);
+}
 
-    scheduleDispatchEvent(Event::create(eventNames().endedEvent, false, false));
+Vector<RefPtr<MediaStreamTrack>> MediaStream::getTracks() const
+{
+    Vector<RefPtr<MediaStreamTrack>> tracks;
+    tracks.reserveCapacity(m_trackSet.size());
+    copyValuesToVector(m_trackSet, tracks);
+
+    return tracks;
 }
 
 void MediaStream::contextDestroyed()
@@ -265,78 +164,82 @@ void MediaStream::contextDestroyed()
     ContextDestructionObserver::contextDestroyed();
 }
 
-void MediaStream::addRemoteSource(MediaStreamSource* source)
+void MediaStream::trackDidEnd()
 {
-    ASSERT(source);
-    if (ended())
-        return;
-
-    source->setStream(descriptor());
-
-    RefPtr<MediaStreamTrack> track;
-    switch (source->type()) {
-    case MediaStreamSource::Audio:
-        track = AudioStreamTrack::create(scriptExecutionContext(), source);
-        m_audioTracks.append(track);
-        break;
-    case MediaStreamSource::Video:
-        track = VideoStreamTrack::create(scriptExecutionContext(), source);
-        m_videoTracks.append(track);
-        break;
-    }
-    m_descriptor->addSource(source);
-
-    scheduleDispatchEvent(MediaStreamTrackEvent::create(eventNames().addtrackEvent, false, false, track));
+    m_private->updateActiveState(MediaStreamPrivate::NotifyClientOption::Notify);
 }
 
-void MediaStream::removeRemoteSource(MediaStreamSource* source)
+void MediaStream::activeStatusChanged()
 {
-    if (ended())
-        return;
-
-    MediaStreamTrackVector* tracks = 0;
-    switch (source->type()) {
-    case MediaStreamSource::Audio:
-        tracks = &m_audioTracks;
-        break;
-    case MediaStreamSource::Video:
-        tracks = &m_videoTracks;
-        break;
-    }
-
-    size_t index = notFound;
-    for (size_t i = 0; i < tracks->size(); ++i) {
-        if ((*tracks)[i]->source() == source) {
-            index = i;
-            break;
-        }
-    }
-    if (index == notFound)
-        return;
-
-    m_descriptor->removeSource(source);
-
-    RefPtr<MediaStreamTrack> track = (*tracks)[index];
-    tracks->remove(index);
-    scheduleDispatchEvent(MediaStreamTrackEvent::create(eventNames().removetrackEvent, false, false, track));
+    // Schedule the active state change and event dispatch since this callback may be called
+    // synchronously from the DOM API (e.g. as a result of addTrack()).
+    scheduleActiveStateChange();
 }
 
-void MediaStream::scheduleDispatchEvent(PassRefPtr<Event> event)
+void MediaStream::didAddTrackToPrivate(MediaStreamTrackPrivate& trackPrivate)
 {
-    m_scheduledEvents.append(event);
+    ScriptExecutionContext* context = scriptExecutionContext();
+    if (!context)
+        return;
 
-    if (!m_scheduledEventTimer.isActive())
-        m_scheduledEventTimer.startOneShot(0);
+    internalAddTrack(MediaStreamTrack::create(*context, trackPrivate), StreamModifier::Platform);
 }
 
-void MediaStream::scheduledEventTimerFired(Timer<MediaStream>*)
+void MediaStream::didRemoveTrackFromPrivate(MediaStreamTrackPrivate& trackPrivate)
 {
-    Vector<RefPtr<Event> > events;
-    events.swap(m_scheduledEvents);
+    RefPtr<MediaStreamTrack> track = getTrackById(trackPrivate.id());
+    internalRemoveTrack(WTF::move(track), StreamModifier::Platform);
+}
 
-    Vector<RefPtr<Event> >::iterator it = events.begin();
-    for (; it != events.end(); ++it)
-        dispatchEvent((*it).release());
+bool MediaStream::internalAddTrack(RefPtr<MediaStreamTrack>&& track, StreamModifier streamModifier)
+{
+    if (getTrackById(track->id()))
+        return false;
+
+    m_trackSet.add(track->id(), track);
+    track->addObserver(this);
+
+    if (streamModifier == StreamModifier::DomAPI)
+        m_private->addTrack(&track->privateTrack(), MediaStreamPrivate::NotifyClientOption::DontNotify);
+    else
+        dispatchEvent(MediaStreamTrackEvent::create(eventNames().addtrackEvent, false, false, WTF::move(track)));
+
+    return true;
+}
+
+bool MediaStream::internalRemoveTrack(RefPtr<MediaStreamTrack>&& track, StreamModifier streamModifier)
+{
+    if (!m_trackSet.remove(track->id()))
+        return false;
+
+    track->removeObserver(this);
+
+    if (streamModifier == StreamModifier::DomAPI)
+        m_private->removeTrack(track->privateTrack(), MediaStreamPrivate::NotifyClientOption::DontNotify);
+    else
+        dispatchEvent(MediaStreamTrackEvent::create(eventNames().removetrackEvent, false, false, WTF::move(track)));
+
+    return true;
+}
+
+void MediaStream::scheduleActiveStateChange()
+{
+    const AtomicString& eventName = m_isActive ? eventNames().inactiveEvent : eventNames().activeEvent;
+    m_scheduledActivityEvents.append(Event::create(eventName, false, false));
+
+    if (!m_activityEventTimer.isActive())
+        m_activityEventTimer.startOneShot(0);
+}
+
+void MediaStream::activityEventTimerFired()
+{
+    Vector<RefPtr<Event>> events;
+    events.swap(m_scheduledActivityEvents);
+
+    for (auto& event : events) {
+        m_isActive = event->type() == eventNames().activeEvent;
+        dispatchEvent(event.release());
+    }
 
     events.clear();
 }
@@ -344,6 +247,30 @@ void MediaStream::scheduledEventTimerFired(Timer<MediaStream>*)
 URLRegistry& MediaStream::registry() const
 {
     return MediaStreamRegistry::registry();
+}
+
+Vector<RefPtr<MediaStreamTrack>> MediaStream::trackVectorForType(RealtimeMediaSource::Type filterType) const
+{
+    Vector<RefPtr<MediaStreamTrack>> tracks;
+    for (auto& track : m_trackSet.values()) {
+        if (track->source()->type() == filterType)
+            tracks.append(track);
+    }
+
+    return tracks;
+}
+
+void MediaStream::addObserver(MediaStream::Observer* observer)
+{
+    if (m_observers.find(observer) == notFound)
+        m_observers.append(observer);
+}
+
+void MediaStream::removeObserver(MediaStream::Observer* observer)
+{
+    size_t pos = m_observers.find(observer);
+    if (pos != notFound)
+        m_observers.remove(pos);
 }
 
 } // namespace WebCore

@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,7 +13,7 @@
  * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,36 +26,18 @@
 #ifndef PlatformLayer_h
 #define PlatformLayer_h
 
-#if USE(ACCELERATED_COMPOSITING)
-
-#if PLATFORM(MAC)
+#if PLATFORM(COCOA)
 OBJC_CLASS CALayer;
 typedef CALayer PlatformLayer;
-#elif PLATFORM(WIN)
+#elif PLATFORM(WIN) && USE(CA)
 typedef struct _CACFLayer PlatformLayer;
-#elif PLATFORM(GTK)
-#if USE(TEXTURE_MAPPER_GL)
+#elif USE(TEXTURE_MAPPER)
 namespace WebCore {
 class TextureMapperPlatformLayer;
 typedef TextureMapperPlatformLayer PlatformLayer;
 };
-#endif
-#elif PLATFORM(EFL) || PLATFORM(NIX) || PLATFORM(EA)
-#if USE(TEXTURE_MAPPER)
-namespace WebCore {
-class TextureMapperPlatformLayer;
-typedef TextureMapperPlatformLayer PlatformLayer;
-};
-#endif
-#elif PLATFORM(BLACKBERRY)
-namespace WebCore {
-class LayerWebKitThread;
-typedef LayerWebKitThread PlatformLayer;
-}
 #else
 typedef void* PlatformLayer;
 #endif
-
-#endif // USE(ACCELERATED_COMPOSITING)
 
 #endif // PlatformLayer_h

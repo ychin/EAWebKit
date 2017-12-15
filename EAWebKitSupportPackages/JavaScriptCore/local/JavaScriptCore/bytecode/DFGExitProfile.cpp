@@ -26,7 +26,7 @@
 #include "config.h"
 #include "DFGExitProfile.h"
 
-#include <wtf/PassOwnPtr.h>
+#if ENABLE(DFG_JIT)
 
 namespace JSC { namespace DFG {
 
@@ -35,10 +35,12 @@ ExitProfile::~ExitProfile() { }
 
 bool ExitProfile::add(const ConcurrentJITLocker&, const FrequentExitSite& site)
 {
+    ASSERT(site.jitType() != ExitFromAnything);
+    
     // If we've never seen any frequent exits then create the list and put this site
     // into it.
     if (!m_frequentExitSites) {
-        m_frequentExitSites = adoptPtr(new Vector<FrequentExitSite>());
+        m_frequentExitSites = std::make_unique<Vector<FrequentExitSite>>();
         m_frequentExitSites->append(site);
         return true;
     }
@@ -76,7 +78,7 @@ bool ExitProfile::hasExitSite(const ConcurrentJITLocker&, const FrequentExitSite
         return false;
     
     for (unsigned i = m_frequentExitSites->size(); i--;) {
-        if (m_frequentExitSites->at(i) == site)
+        if (site.subsumes(m_frequentExitSites->at(i)))
             return true;
     }
     return false;
@@ -95,3 +97,5 @@ void QueryableExitProfile::initialize(const ConcurrentJITLocker&, const ExitProf
 }
 
 } } // namespace JSC::DFG
+
+#endif

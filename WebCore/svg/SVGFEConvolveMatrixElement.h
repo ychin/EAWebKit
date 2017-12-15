@@ -20,7 +20,6 @@
 #ifndef SVGFEConvolveMatrixElement_h
 #define SVGFEConvolveMatrixElement_h
 
-#if ENABLE(SVG) && ENABLE(FILTERS)
 #include "FEConvolveMatrix.h"
 #include "SVGAnimatedBoolean.h"
 #include "SVGAnimatedEnumeration.h"
@@ -64,9 +63,9 @@ struct SVGPropertyTraits<EdgeModeType> {
     }
 };
 
-class SVGFEConvolveMatrixElement FINAL : public SVGFilterPrimitiveStandardAttributes {
+class SVGFEConvolveMatrixElement final : public SVGFilterPrimitiveStandardAttributes {
 public:
-    static PassRefPtr<SVGFEConvolveMatrixElement> create(const QualifiedName&, Document&);
+    static Ref<SVGFEConvolveMatrixElement> create(const QualifiedName&, Document&);
 
     void setOrder(float orderX, float orderY);
     void setKernelUnitLength(float kernelUnitLengthX, float kernelUnitLengthY);
@@ -74,11 +73,10 @@ public:
 private:
     SVGFEConvolveMatrixElement(const QualifiedName&, Document&);
 
-    bool isSupportedAttribute(const QualifiedName&);
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
-    virtual bool setFilterEffectAttribute(FilterEffect*, const QualifiedName&);
-    virtual void svgAttributeChanged(const QualifiedName&);
-    virtual PassRefPtr<FilterEffect> build(SVGFilterBuilder*, Filter*);
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
+    virtual bool setFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;
+    virtual void svgAttributeChanged(const QualifiedName&) override;
+    virtual RefPtr<FilterEffect> build(SVGFilterBuilder*, Filter&) override;
 
     static const AtomicString& orderXIdentifier();
     static const AtomicString& orderYIdentifier();
@@ -103,5 +101,4 @@ private:
 
 } // namespace WebCore
 
-#endif // ENABLE(SVG)
 #endif

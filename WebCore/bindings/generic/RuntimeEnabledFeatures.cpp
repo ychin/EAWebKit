@@ -34,7 +34,6 @@
 
 #include "DatabaseManager.h"
 #include "MediaPlayer.h"
-#include "SharedWorkerRepository.h"
 #include "WebSocket.h"
 #include <wtf/NeverDestroyed.h>
 
@@ -51,15 +50,14 @@ RuntimeEnabledFeatures::RuntimeEnabledFeatures()
     , m_isTouchEnabled(true)
     , m_isDeviceMotionEnabled(true)
     , m_isDeviceOrientationEnabled(true)
-    , m_isSpeechInputEnabled(true)
-    , m_isCanvasPathEnabled(false)
-    , m_isCSSExclusionsEnabled(true)
     , m_isCSSShapesEnabled(true)
     , m_isCSSRegionsEnabled(false)
     , m_isCSSCompositingEnabled(false)
     , m_isLangAttributeAwareFormControlUIEnabled(false)
-#if ENABLE(SCRIPTED_SPEECH)
-    , m_isScriptedSpeechEnabled(false)
+#if PLATFORM(IOS)
+    , m_isPluginReplacementEnabled(true)
+#else
+    , m_isPluginReplacementEnabled(false)
 #endif
 #if ENABLE(MEDIA_STREAM)
     , m_isMediaStreamEnabled(true)
@@ -68,34 +66,11 @@ RuntimeEnabledFeatures::RuntimeEnabledFeatures()
 #if ENABLE(LEGACY_CSS_VENDOR_PREFIXES)
     , m_isLegacyCSSVendorPrefixesEnabled(false)
 #endif
-#if ENABLE(GAMEPAD)
-    , m_isGamepadEnabled(false)
-#endif
 #if ENABLE(JAVASCRIPT_I18N_API)
     , m_isJavaScriptI18NAPIEnabled(false)
 #endif
-#if ENABLE(QUOTA)
-    , m_isQuotaEnabled(false)
-#endif
-#if ENABLE(FULLSCREEN_API)
-    , m_isFullScreenAPIEnabled(true)
-#endif
-#if ENABLE(MEDIA_SOURCE)
-    , m_isMediaSourceEnabled(false)
-#endif
-#if ENABLE(ENCRYPTED_MEDIA)
-    , m_isEncryptedMediaEnabled(false)
-#endif
 #if ENABLE(VIDEO_TRACK)
-#if PLATFORM(MAC) || PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(BLACKBERRY) || PLATFORM(WIN)
     , m_isVideoTrackEnabled(true)
-#else
-    , m_isVideoTrackEnabled(false)
-#endif
-#endif
-#if ENABLE(SHADOW_DOM)
-    , m_isShadowDOMEnabled(false)
-    , m_isAuthorShadowDOMForAnyElementEnabled(false)
 #endif
 #if ENABLE(INPUT_TYPE_DATE)
     , m_isInputTypeDateEnabled(true)
@@ -118,11 +93,14 @@ RuntimeEnabledFeatures::RuntimeEnabledFeatures()
 #if ENABLE(CSP_NEXT)
     , m_areExperimentalContentSecurityPolicyFeaturesEnabled(false)
 #endif
-#if ENABLE(IFRAME_SEAMLESS)
-    , m_areSeamlessIFramesEnabled(false)
-#endif
 #if ENABLE(FONT_LOAD_EVENTS)
-    , m_isFontLoadEventsEnabled(false)
+    , m_isFontLoadEventsEnabled(true)
+#endif
+#if ENABLE(GAMEPAD)
+    , m_areGamepadsEnabled(false)
+#endif
+#if ENABLE(CSS_ANIMATIONS_LEVEL_2)
+    , m_areAnimationTriggersEnabled(false)
 #endif
 {
 }
@@ -183,29 +161,10 @@ bool RuntimeEnabledFeatures::timeRangesEnabled() const
 }
 #endif
 
-#if ENABLE(SHARED_WORKERS)
-bool RuntimeEnabledFeatures::sharedWorkerEnabled() const
-{
-    return SharedWorkerRepository::isAvailable();
-}
-#endif
-
 #if ENABLE(WEB_SOCKETS)
 bool RuntimeEnabledFeatures::webSocketEnabled() const
 {
     return WebSocket::isAvailable();
-}
-#endif
-
-#if ENABLE(SQL_DATABASE)
-bool RuntimeEnabledFeatures::openDatabaseEnabled() const
-{
-    return DatabaseManager::manager().isAvailable();
-}
-
-bool RuntimeEnabledFeatures::openDatabaseSyncEnabled() const
-{
-    return DatabaseManager::manager().isAvailable();
 }
 #endif
 

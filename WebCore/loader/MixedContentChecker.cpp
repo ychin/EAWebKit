@@ -6,13 +6,13 @@
  * are met:
  *
  * 1.  Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer. 
+ *     notice, this list of conditions and the following disclaimer.
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ *     documentation and/or other materials provided with the distribution.
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission. 
+ *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -29,13 +29,10 @@
 #include "config.h"
 #include "MixedContentChecker.h"
 
-#include "Console.h"
-#include "DOMWindow.h"
 #include "Document.h"
 #include "Frame.h"
 #include "FrameLoader.h"
 #include "FrameLoaderClient.h"
-#include "SchemeRegistry.h"
 #include "SecurityOrigin.h"
 #include "Settings.h"
 #include <wtf/text/CString.h>
@@ -43,14 +40,14 @@
 
 namespace WebCore {
 
-MixedContentChecker::MixedContentChecker(Frame* frame)
+MixedContentChecker::MixedContentChecker(Frame& frame)
     : m_frame(frame)
 {
 }
 
 FrameLoaderClient& MixedContentChecker::client() const
 {
-    return m_frame->loader().client();
+    return m_frame.loader().client();
 }
 
 // static
@@ -63,13 +60,13 @@ bool MixedContentChecker::isMixedContent(SecurityOrigin* securityOrigin, const U
     return !SecurityOrigin::isSecure(url);
 }
 
-bool MixedContentChecker::canDisplayInsecureContent(SecurityOrigin* securityOrigin, const URL& url) const
+bool MixedContentChecker::canDisplayInsecureContent(SecurityOrigin* securityOrigin, ContentType type, const URL& url) const
 {
     if (!isMixedContent(securityOrigin, url))
         return true;
 
-    bool allowed = client().allowDisplayingInsecureContent(m_frame->settings().allowDisplayOfInsecureContent(), securityOrigin, url);
-    logWarning(allowed, "displayed", url);
+    bool allowed = m_frame.settings().allowDisplayOfInsecureContent() || type == ContentType::ActiveCanWarn;
+    logWarning(allowed, "display", url);
 
     if (allowed)
         client().didDisplayInsecureContent();
@@ -82,8 +79,8 @@ bool MixedContentChecker::canRunInsecureContent(SecurityOrigin* securityOrigin, 
     if (!isMixedContent(securityOrigin, url))
         return true;
 
-    bool allowed = client().allowRunningInsecureContent(m_frame->settings().allowRunningOfInsecureContent(), securityOrigin, url);
-    logWarning(allowed, "ran", url);
+    bool allowed = m_frame.settings().allowRunningOfInsecureContent();
+    logWarning(allowed, "run", url);
 
     if (allowed)
         client().didRunInsecureContent(securityOrigin, url);
@@ -93,8 +90,9 @@ bool MixedContentChecker::canRunInsecureContent(SecurityOrigin* securityOrigin, 
 
 void MixedContentChecker::logWarning(bool allowed, const String& action, const URL& target) const
 {
-    String message = makeString((allowed ? "" : "[blocked] "), "The page at ", m_frame->document()->url().stringCenterEllipsizedToLength(), " ", action, " insecure content from ", target.stringCenterEllipsizedToLength(), ".\n");
-    m_frame->document()->addConsoleMessage(SecurityMessageSource, WarningMessageLevel, message);
+    const char* errorString = allowed ? " was allowed to " : " was not allowed to ";
+    String message = makeString((allowed ? String() : "[blocked] "), "The page at ", m_frame.document()->url().stringCenterEllipsizedToLength(), errorString, action, " insecure content from ", target.stringCenterEllipsizedToLength(), ".\n");
+    m_frame.document()->addConsoleMessage(MessageSource::Security, MessageLevel::Warning, message);
 }
 
 } // namespace WebCore

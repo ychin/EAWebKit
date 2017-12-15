@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2012, 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,31 +28,77 @@
 
 #include "DFGOperations.h"
 #include "DFGThunks.h"
+#include "JSCInlines.h"
+#include "Repatch.h"
 #include "RepatchBuffer.h"
+#include <wtf/ListDump.h>
+#include <wtf/NeverDestroyed.h>
 
 #if ENABLE(JIT)
 namespace JSC {
 
-void CallLinkInfo::unlink(VM& vm, RepatchBuffer& repatchBuffer)
+void CallLinkInfo::clearStub()
 {
-    ASSERT(isLinked());
+    if (!stub())
+        return;
+
+    m_stub->clearCallNodesFor(this);
+    m_stub = nullptr;
+}
+
+void CallLinkInfo::unlink(RepatchBuffer& repatchBuffer)
+{
+    if (!isLinked()) {
+        // We could be called even if we're not linked anymore because of how polymorphic calls
+        // work. Each callsite within the polymorphic call stub may separately ask us to unlink().
+        RELEASE_ASSERT(!isOnList());
+        return;
+    }
     
-    repatchBuffer.revertJumpReplacementToBranchPtrWithPatch(RepatchBuffer::startOfBranchPtrWithPatchOnRegister(hotPathBegin), static_cast<MacroAssembler::RegisterID>(calleeGPR), 0);
-    if (isDFG) {
-#if ENABLE(DFG_JIT)
-        repatchBuffer.relink(callReturnLocation, (callType == Construct ? vm.getCTIStub(linkConstructThunkGenerator) : vm.getCTIStub(linkCallThunkGenerator)).code());
-#else
-        RELEASE_ASSERT_NOT_REACHED();
-#endif
-    } else
-        repatchBuffer.relink(callReturnLocation, callType == Construct ? vm.getCTIStub(linkConstructThunkGenerator).code() : vm.getCTIStub(linkCallThunkGenerator).code());
-    hasSeenShouldRepatch = false;
-    callee.clear();
-    stub.clear();
+    unlinkFor(repatchBuffer, *this);
 
     // It will be on a list if the callee has a code block.
     if (isOnList())
         remove();
+}
+
+void CallLinkInfo::visitWeak(RepatchBuffer& repatchBuffer)
+{
+    auto handleSpecificCallee = [&] (JSFunction* callee) {
+        if (Heap::isMarked(callee->executable()))
+            m_hasSeenClosure = true;
+        else
+            m_clearedByGC = true;
+    };
+    
+    if (isLinked()) {
+        if (stub()) {
+            if (!stub()->visitWeak(repatchBuffer)) {
+                if (Options::verboseOSR()) {
+                    dataLog(
+                        "Clearing closure call from ", *repatchBuffer.codeBlock(), " to ",
+                        listDump(stub()->variants()), ", stub routine ", RawPointer(stub()),
+                        ".\n");
+                }
+                unlink(repatchBuffer);
+                m_clearedByGC = true;
+            }
+        } else if (!Heap::isMarked(m_callee.get())) {
+            if (Options::verboseOSR()) {
+                dataLog(
+                    "Clearing call from ", *repatchBuffer.codeBlock(), " to ",
+                    RawPointer(m_callee.get()), " (",
+                    m_callee.get()->executable()->hashFor(specializationKind()),
+                    ").\n");
+            }
+            handleSpecificCallee(m_callee.get());
+            unlink(repatchBuffer);
+        }
+    }
+    if (haveLastSeenCallee() && !Heap::isMarked(lastSeenCallee())) {
+        handleSpecificCallee(lastSeenCallee());
+        clearLastSeenCallee();
+    }
 }
 
 } // namespace JSC

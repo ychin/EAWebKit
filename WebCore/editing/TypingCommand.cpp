@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -32,14 +32,14 @@
 #include "Editor.h"
 #include "Element.h"
 #include "Frame.h"
-#include "FrameSelection.h"
+#include "HTMLElement.h"
 #include "HTMLNames.h"
 #include "InsertLineBreakCommand.h"
 #include "InsertParagraphSeparatorCommand.h"
 #include "InsertTextCommand.h"
+#include "MathMLElement.h"
 #include "RenderElement.h"
 #include "TextIterator.h"
-#include "VisiblePosition.h"
 #include "VisibleUnits.h"
 #include "htmlediting.h"
 
@@ -155,7 +155,7 @@ void TypingCommand::insertText(Document& document, const String& text, Options o
     ASSERT(frame);
 
     if (!text.isEmpty())
-        frame->editor().updateMarkersForWordsAffectedByEditing(isSpaceOrNewline(text.characters()[0]));
+        frame->editor().updateMarkersForWordsAffectedByEditing(isSpaceOrNewline(text[0]));
     
     insertText(document, text, frame->selection().selection(), options, composition);
 }
@@ -239,6 +239,16 @@ void TypingCommand::closeTyping(Frame* frame)
         lastTypingCommand->closeTyping();
 }
 
+#if PLATFORM(IOS)
+void TypingCommand::ensureLastEditCommandHasCurrentSelectionIfOpenForMoreTyping(Frame* frame, const VisibleSelection& newSelection)
+{
+    if (RefPtr<TypingCommand> lastTypingCommand = lastTypingCommandIfStillOpenForTyping(frame)) {
+        lastTypingCommand->setEndingSelection(newSelection);
+        lastTypingCommand->setEndingSelectionOnLastInsertCommand(newSelection);
+    }
+}
+#endif
+
 void TypingCommand::doApply()
 {
     if (!endingSelection().isNonOrphanedCaretOrRange())
@@ -302,6 +312,7 @@ void TypingCommand::markMisspellingsAfterTyping(ETypingCommand commandType)
     VisiblePosition start(endingSelection().start(), endingSelection().affinity());
     VisiblePosition previous = start.previous();
     if (previous.isNotNull()) {
+#if !PLATFORM(IOS)
         VisiblePosition p1 = startOfWord(previous, LeftWordIfOnBoundary);
         VisiblePosition p2 = startOfWord(start, LeftWordIfOnBoundary);
         if (p1 != p2) {
@@ -312,6 +323,22 @@ void TypingCommand::markMisspellingsAfterTyping(ETypingCommand commandType)
             frame.editor().markMisspellingsAfterTypingToWord(p1, endingSelection(), !strippedPreviousWord.isEmpty());
         } else if (commandType == TypingCommand::InsertText)
             frame.editor().startAlternativeTextUITimer();
+#else
+        UNUSED_PARAM(commandType);
+        // If this bug gets fixed, this PLATFORM(IOS) code could be removed:
+        // <rdar://problem/7259611> Word boundary code on iPhone gives different results than desktop
+        EWordSide startWordSide = LeftWordIfOnBoundary;
+        UChar32 c = previous.characterAfter();
+        // FIXME: VisiblePosition::characterAfter() and characterBefore() do not emit newlines the same
+        // way as TextIterator, so we do an isEndOfParagraph check here.
+        if (isSpaceOrNewline(c) || c == 0xA0 || isEndOfParagraph(previous)) {
+            startWordSide = RightWordIfOnBoundary;
+        }
+        VisiblePosition p1 = startOfWord(previous, startWordSide);
+        VisiblePosition p2 = startOfWord(start, startWordSide);
+        if (p1 != p2)
+            frame.editor().markMisspellingsAfterTypingToWord(p1, endingSelection(), false);
+#endif // !PLATFORM(IOS)
     }
 }
 
@@ -321,7 +348,7 @@ void TypingCommand::typingAddedToOpenCommand(ETypingCommand commandTypeForAddedT
 
     updatePreservesTypingStyle(commandTypeForAddedTyping);
 
-#if PLATFORM(MAC)
+#if PLATFORM(COCOA)
     frame.editor().appliedEditing(this);
     // Since the spellchecking code may also perform corrections and other replacements, it should happen after the typing changes.
     if (!m_shouldPreventSpellChecking)
@@ -347,7 +374,7 @@ void TypingCommand::insertText(const String &text, bool selectInsertedText)
 void TypingCommand::insertTextRunWithoutNewlines(const String &text, bool selectInsertedText)
 {
     RefPtr<InsertTextCommand> command = InsertTextCommand::create(document(), text, selectInsertedText,
-        m_compositionType == TextCompositionNone ? InsertTextCommand::RebalanceLeadingAndTrailingWhitespaces : InsertTextCommand::RebalanceAllWhitespaces);
+        m_compositionType == TextCompositionNone ? InsertTextCommand::RebalanceLeadingAndTrailingWhitespaces : InsertTextCommand::RebalanceAllWhitespaces, EditActionTyping);
 
     applyCommandToComposite(command, endingSelection());
 
@@ -368,7 +395,7 @@ void TypingCommand::insertParagraphSeparator()
     if (!canAppendNewLineFeedToSelection(endingSelection()))
         return;
 
-    applyCommandToComposite(InsertParagraphSeparatorCommand::create(document()));
+    applyCommandToComposite(InsertParagraphSeparatorCommand::create(document(), false, false, EditActionTyping));
     typingAddedToOpenCommand(InsertParagraphSeparator);
 }
 
@@ -490,8 +517,15 @@ void TypingCommand::deleteKeyPressed(TextGranularity granularity, bool killRing)
     }
     
     ASSERT(!selectionToDelete.isNone());
-    if (selectionToDelete.isNone())
+    if (selectionToDelete.isNone()) {
+#if PLATFORM(IOS)
+        // Workaround for this bug:
+        // <rdar://problem/4653755> UIKit text widgets should use WebKit editing API to manipulate text
+        setEndingSelection(frame.selection().selection());
+        closeTyping(&frame);
+#endif
         return;
+    }
     
     if (selectionToDelete.isCaret() || !frame.selection().shouldDeleteSelection(selectionToDelete))
         return;
@@ -581,8 +615,15 @@ void TypingCommand::forwardDeleteKeyPressed(TextGranularity granularity, bool ki
     }
     
     ASSERT(!selectionToDelete.isNone());
-    if (selectionToDelete.isNone())
+    if (selectionToDelete.isNone()) {
+#if PLATFORM(IOS)
+        // Workaround for this bug:
+        // <rdar://problem/4653755> UIKit text widgets should use WebKit editing API to manipulate text
+        setEndingSelection(frame.selection().selection());
+        closeTyping(&frame);
+#endif
         return;
+    }
     
     if (selectionToDelete.isCaret() || !frame.selection().shouldDeleteSelection(selectionToDelete))
         return;
@@ -601,6 +642,25 @@ void TypingCommand::deleteSelection(bool smartDelete)
     CompositeEditCommand::deleteSelection(smartDelete);
     typingAddedToOpenCommand(DeleteSelection);
 }
+
+#if PLATFORM(IOS)
+class FriendlyEditCommand : public EditCommand {
+public:
+    void setEndingSelection(const VisibleSelection& selection)
+    {
+        EditCommand::setEndingSelection(selection);
+    }
+};
+
+void TypingCommand::setEndingSelectionOnLastInsertCommand(const VisibleSelection& selection)
+{
+    if (!m_commands.isEmpty()) {
+        EditCommand* lastCommand = m_commands.last().get();
+        if (lastCommand->isInsertTextCommand())
+            static_cast<FriendlyEditCommand*>(lastCommand)->setEndingSelection(selection);
+    }
+}
+#endif
 
 void TypingCommand::updatePreservesTypingStyle(ETypingCommand commandType)
 {

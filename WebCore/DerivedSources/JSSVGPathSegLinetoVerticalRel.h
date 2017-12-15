@@ -21,29 +21,25 @@
 #ifndef JSSVGPathSegLinetoVerticalRel_h
 #define JSSVGPathSegLinetoVerticalRel_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSSVGPathSeg.h"
 #include "SVGElement.h"
 #include "SVGPathSegLinetoVerticalRel.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGPathSegLinetoVerticalRel : public JSSVGPathSeg {
 public:
     typedef JSSVGPathSeg Base;
-    static JSSVGPathSegLinetoVerticalRel* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPathSegLinetoVerticalRel> impl)
+    static JSSVGPathSegLinetoVerticalRel* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPathSegLinetoVerticalRel>&& impl)
     {
-        JSSVGPathSegLinetoVerticalRel* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegLinetoVerticalRel>(globalObject->vm().heap)) JSSVGPathSegLinetoVerticalRel(structure, globalObject, impl);
+        JSSVGPathSegLinetoVerticalRel* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegLinetoVerticalRel>(globalObject->vm().heap)) JSSVGPathSegLinetoVerticalRel(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,67 +53,18 @@ public:
         return static_cast<SVGPathSegLinetoVerticalRel&>(Base::impl());
     }
 protected:
-    JSSVGPathSegLinetoVerticalRel(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPathSegLinetoVerticalRel>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGPathSegLinetoVerticalRel(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGPathSegLinetoVerticalRel>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGPathSegLinetoVerticalRelPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGPathSegLinetoVerticalRelPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGPathSegLinetoVerticalRelPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegLinetoVerticalRelPrototype>(vm.heap)) JSSVGPathSegLinetoVerticalRelPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGPathSegLinetoVerticalRelPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGPathSegLinetoVerticalRelConstructor : public DOMConstructorObject {
-private:
-    JSSVGPathSegLinetoVerticalRelConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGPathSegLinetoVerticalRelConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGPathSegLinetoVerticalRelConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegLinetoVerticalRelConstructor>(vm.heap)) JSSVGPathSegLinetoVerticalRelConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGPathSegLinetoVerticalRelY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGPathSegLinetoVerticalRelY(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGPathSegLinetoVerticalRelConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

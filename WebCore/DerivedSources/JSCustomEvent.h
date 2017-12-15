@@ -22,9 +22,7 @@
 #define JSCustomEvent_h
 
 #include "CustomEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,17 @@ class JSDictionary;
 class JSCustomEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSCustomEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CustomEvent> impl)
+    static JSCustomEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CustomEvent>&& impl)
     {
-        JSCustomEvent* ptr = new (NotNull, JSC::allocateCell<JSCustomEvent>(globalObject->vm().heap)) JSCustomEvent(structure, globalObject, impl);
+        JSCustomEvent* ptr = new (NotNull, JSC::allocateCell<JSCustomEvent>(globalObject->vm().heap)) JSCustomEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -50,76 +50,29 @@ public:
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
+
+    // Custom attributes
+    JSC::JSValue detail(JSC::ExecState*) const;
     CustomEvent& impl() const
     {
         return static_cast<CustomEvent&>(Base::impl());
     }
-protected:
-    JSCustomEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CustomEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSCustomEventPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCustomEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCustomEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSCustomEventPrototype>(vm.heap)) JSCustomEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCustomEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
     static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSCustomEventConstructor : public DOMConstructorObject {
-private:
-    JSCustomEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCustomEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCustomEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSCustomEventConstructor>(vm.heap)) JSCustomEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSCustomEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
+    JSCustomEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<CustomEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
+
 
 bool fillCustomEventInit(CustomEventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCustomEventPrototypeFunctionInitCustomEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsCustomEventDetail(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCustomEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

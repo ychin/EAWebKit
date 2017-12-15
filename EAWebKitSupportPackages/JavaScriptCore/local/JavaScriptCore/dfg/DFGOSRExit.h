@@ -26,15 +26,12 @@
 #ifndef DFGOSRExit_h
 #define DFGOSRExit_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "CodeOrigin.h"
 #include "DFGCommon.h"
 #include "DFGExitProfile.h"
 #include "DFGOSRExitBase.h"
-#include "DFGValueRecoveryOverride.h"
 #include "GPRInfo.h"
 #include "MacroAssembler.h"
 #include "MethodOfGettingAValueProfile.h"
@@ -96,23 +93,24 @@ struct OSRExit : public OSRExitBase {
     unsigned m_patchableCodeOffset;
     
     unsigned m_recoveryIndex;
-    unsigned m_watchpointIndex;
     
     void setPatchableCodeOffset(MacroAssembler::PatchableJump);
     MacroAssembler::Jump getPatchableCodeOffsetAsJump() const;
     CodeLocationJump codeLocationForRepatch(CodeBlock*) const;
     void correctJump(LinkBuffer&);
-    
-    void convertToForward(BasicBlock*, Node*, unsigned nodeIndex, const ValueRecovery&);
 
     unsigned m_streamIndex;
-    VirtualRegister m_lastSetOperand;
     
-    RefPtr<ValueRecoveryOverride> m_valueRecoveryOverride;
+    void considerAddingAsFrequentExitSite(CodeBlock* profiledCodeBlock)
+    {
+        OSRExitBase::considerAddingAsFrequentExitSite(profiledCodeBlock, ExitFromDFG);
+    }
 };
 
 struct SpeculationFailureDebugInfo {
     CodeBlock* codeBlock;
+    ExitKind kind;
+    unsigned bytecodeOffset;
 };
 
 } } // namespace JSC::DFG

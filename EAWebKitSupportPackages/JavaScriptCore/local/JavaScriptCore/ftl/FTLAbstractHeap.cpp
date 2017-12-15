@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,7 +32,7 @@
 #include "FTLAbstractHeapRepository.h"
 #include "FTLOutput.h"
 #include "FTLTypedPointer.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include "Options.h"
 
 namespace JSC { namespace FTL {
@@ -53,9 +53,24 @@ void AbstractHeap::decorateInstruction(LValue instruction, const AbstractHeapRep
     setMetadata(instruction, repository.m_tbaaKind, tbaaMetadata(repository));
 }
 
-IndexedAbstractHeap::IndexedAbstractHeap(LContext context, AbstractHeap* parent, const char* heapName, size_t elementSize)
+void AbstractHeap::dump(PrintStream& out) const
+{
+    out.print(heapName());
+    if (m_parent)
+        out.print("->", *m_parent);
+}
+
+void AbstractField::dump(PrintStream& out) const
+{
+    out.print(heapName(), "(", m_offset, ")");
+    if (parent())
+        out.print("->", *parent());
+}
+
+IndexedAbstractHeap::IndexedAbstractHeap(LContext context, AbstractHeap* parent, const char* heapName, ptrdiff_t offset, size_t elementSize)
     : m_heapForAnyIndex(parent, heapName)
     , m_heapNameLength(strlen(heapName))
+    , m_offset(offset)
     , m_elementSize(elementSize)
     , m_scaleTerm(0)
     , m_canShift(false)
@@ -63,7 +78,7 @@ IndexedAbstractHeap::IndexedAbstractHeap(LContext context, AbstractHeap* parent,
     // See if there is a common shift amount we could use instead of multiplying. Don't
     // try too hard. This is just a speculative optimization to reduce load on LLVM.
     for (unsigned i = 0; i < 4; ++i) {
-        if ((1 << i) == m_elementSize) {
+        if (1U << i == m_elementSize) {
             if (i)
                 m_scaleTerm = constInt(intPtrType(context), i, ZeroExtend);
             m_canShift = true;
@@ -93,7 +108,7 @@ TypedPointer IndexedAbstractHeap::baseIndex(Output& out, LValue base, LValue ind
     } else
         result = out.add(base, out.mul(index, m_scaleTerm));
     
-    return TypedPointer(atAnyIndex(), out.addPtr(result, offset));
+    return TypedPointer(atAnyIndex(), out.addPtr(result, m_offset + offset));
 }
 
 const AbstractField& IndexedAbstractHeap::atSlow(ptrdiff_t index)
@@ -101,7 +116,7 @@ const AbstractField& IndexedAbstractHeap::atSlow(ptrdiff_t index)
     ASSERT(static_cast<size_t>(index) >= m_smallIndices.size());
     
     if (UNLIKELY(!m_largeIndices))
-        m_largeIndices = adoptPtr(new MapType());
+        m_largeIndices = std::make_unique<MapType>();
 
     std::unique_ptr<AbstractField>& field = m_largeIndices->add(index, nullptr).iterator->value;
     if (!field) {
@@ -168,16 +183,20 @@ void IndexedAbstractHeap::initialize(AbstractField& field, ptrdiff_t signedIndex
             accumulator >>= 4;
         }
         
-        field.initialize(&m_heapForAnyIndex, characters, signedIndex * m_elementSize);
+        field.initialize(&m_heapForAnyIndex, characters, m_offset + signedIndex * m_elementSize);
         return;
     }
     
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-NumberedAbstractHeap::NumberedAbstractHeap(
-    LContext context, AbstractHeap* heap, const char* heapName)
-    : m_indexedHeap(context, heap, heapName, 1)
+void IndexedAbstractHeap::dump(PrintStream& out) const
+{
+    out.print("Indexed:", atAnyIndex());
+}
+
+NumberedAbstractHeap::NumberedAbstractHeap(LContext context, AbstractHeap* heap, const char* heapName)
+    : m_indexedHeap(context, heap, heapName, 0, 1)
 {
 }
 
@@ -185,14 +204,23 @@ NumberedAbstractHeap::~NumberedAbstractHeap()
 {
 }
 
-AbsoluteAbstractHeap::AbsoluteAbstractHeap(
-    LContext context, AbstractHeap* heap, const char* heapName)
-    : m_indexedHeap(context, heap, heapName, 1)
+void NumberedAbstractHeap::dump(PrintStream& out) const
+{
+    out.print("Numbered: ", atAnyNumber());
+}
+
+AbsoluteAbstractHeap::AbsoluteAbstractHeap(LContext context, AbstractHeap* heap, const char* heapName)
+    : m_indexedHeap(context, heap, heapName, 0, 1)
 {
 }
 
 AbsoluteAbstractHeap::~AbsoluteAbstractHeap()
 {
+}
+
+void AbsoluteAbstractHeap::dump(PrintStream& out) const
+{
+    out.print("Absolute:", atAnyAddress());
 }
 
 } } // namespace JSC::FTL

@@ -30,40 +30,43 @@
 #include <glib.h>
 
 #include <wtf/Forward.h>
+#include <wtf/glib/GThreadSafeMainLoopSource.h>
 
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
 #include "TextureMapperPlatformLayer.h"
 #endif
 
-typedef struct _GstBuffer GstBuffer;
-typedef struct _GstElement GstElement;
 typedef struct _GstMessage GstMessage;
 typedef struct _GstStreamVolume GstStreamVolume;
-typedef struct _WebKitVideoSink WebKitVideoSink;
+typedef struct _GstGLContext GstGLContext;
+typedef struct _GstGLDisplay GstGLDisplay;
 
 namespace WebCore {
 
-class FullscreenVideoControllerGStreamer;
 class GraphicsContext;
 class IntSize;
 class IntRect;
-class GStreamerGWorld;
 
 class MediaPlayerPrivateGStreamerBase : public MediaPlayerPrivateInterface
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
     , public TextureMapperPlatformLayer
 #endif
 {
 
 public:
-    ~MediaPlayerPrivateGStreamerBase();
+    virtual ~MediaPlayerPrivateGStreamerBase();
 
-    IntSize naturalSize() const;
+    FloatSize naturalSize() const;
 
     void setVolume(float);
     float volume() const;
     void volumeChanged();
     void notifyPlayerOfVolumeChange();
+
+#if USE(GSTREAMER_GL)
+    bool ensureGstGLContext();
+#endif
+    void handleNeedContextMessage(GstMessage*);
 
     bool supportsMuting() const { return true; }
     void setMuted(bool);
@@ -78,17 +81,11 @@ public:
     void setSize(const IntSize&);
     void sizeChanged();
 
-    void triggerRepaint(GstBuffer*);
-    void paint(GraphicsContext*, const IntRect&);
+    void triggerRepaint(GstSample*);
+    void paint(GraphicsContext*, const FloatRect&);
 
     virtual bool hasSingleSecurityOrigin() const { return true; }
     virtual float maxTimeLoaded() const { return 0.0; }
-
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    void enterFullscreen();
-    void exitFullscreen();
-    bool canEnterFullscreen() const { return true; }
-#endif
 
     bool supportsFullscreen() const;
     PlatformMedia platformMedia() const;
@@ -103,41 +100,55 @@ public:
     unsigned audioDecodedByteCount() const;
     unsigned videoDecodedByteCount() const;
 
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
     virtual PlatformLayer* platformLayer() const { return const_cast<MediaPlayerPrivateGStreamerBase*>(this); }
+#if PLATFORM(WIN_CAIRO)
+    // FIXME: Accelerated rendering has not been implemented for WinCairo yet.
+    virtual bool supportsAcceleratedRendering() const { return false; }
+#else
     virtual bool supportsAcceleratedRendering() const { return true; }
+#endif
     virtual void paintToTextureMapper(TextureMapper*, const FloatRect&, const TransformationMatrix&, float);
 #endif
 
 protected:
     MediaPlayerPrivateGStreamerBase(MediaPlayer*);
-    GstElement* createVideoSink(GstElement* pipeline);
+    virtual GstElement* createVideoSink();
+
     void setStreamVolumeElement(GstStreamVolume*);
+    virtual GstElement* createAudioSink() { return 0; }
     virtual GstElement* audioSink() const { return 0; }
-    GRefPtr<GstCaps> currentVideoSinkCaps() const;
+
+    void setPipeline(GstElement*);
 
     MediaPlayer* m_player;
+    GRefPtr<GstElement> m_pipeline;
     GRefPtr<GstStreamVolume> m_volumeElement;
-    GRefPtr<GstElement> m_webkitVideoSink;
-    GRefPtr<GstElement> m_videoSinkBin;
-    GstElement* m_fpsSink;
+    GRefPtr<GstElement> m_videoSink;
+    GRefPtr<GstElement> m_fpsSink;
     MediaPlayer::ReadyState m_readyState;
     MediaPlayer::NetworkState m_networkState;
     IntSize m_size;
-    GMutex* m_bufferMutex;
-    GstBuffer* m_buffer;
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    RefPtr<GStreamerGWorld> m_gstGWorld;
-    OwnPtr<FullscreenVideoControllerGStreamer> m_fullscreenVideoController;
+    mutable GMutex m_sampleMutex;
+    GRefPtr<GstSample> m_sample;
+    GThreadSafeMainLoopSource m_volumeTimerHandler;
+    GThreadSafeMainLoopSource m_muteTimerHandler;
+#if USE(GSTREAMER_GL)
+    GThreadSafeMainLoopSource m_drawTimerHandler;
+    GCond m_drawCondition;
+    GMutex m_drawMutex;
 #endif
-    unsigned long m_volumeTimerHandler;
-    unsigned long m_muteTimerHandler;
     unsigned long m_repaintHandler;
     unsigned long m_volumeSignalHandler;
     unsigned long m_muteSignalHandler;
-    mutable IntSize m_videoSize;
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+    mutable FloatSize m_videoSize;
+    bool m_usingFallbackVideoSink;
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
     PassRefPtr<BitmapTexture> updateTexture(TextureMapper*);
+#endif
+#if USE(GSTREAMER_GL)
+    GRefPtr<GstGLContext> m_glContext;
+    GRefPtr<GstGLDisplay> m_glDisplay;
 #endif
 };
 }

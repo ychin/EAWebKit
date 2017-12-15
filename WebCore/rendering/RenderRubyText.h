@@ -35,25 +35,31 @@
 
 namespace WebCore {
 
-class RenderRubyText FINAL : public RenderBlockFlow {
+class RenderRubyText final : public RenderBlockFlow {
 public:
-    explicit RenderRubyText(Element&);
+    RenderRubyText(Element&, Ref<RenderStyle>&&);
     virtual ~RenderRubyText();
 
-    Element& element() const { return toElement(nodeForNonAnonymous()); }
+    Element& element() const { return downcast<Element>(nodeForNonAnonymous()); }
 
-    virtual bool isChildAllowed(RenderObject*, RenderStyle*) const OVERRIDE;
-
+    virtual bool isChildAllowed(const RenderObject&, const RenderStyle&) const override;
+    
+    RenderRubyRun* rubyRun() const;
+    
+    bool canBreakBefore(const LazyLineBreakIterator&) const;
+   
 private:
-    virtual const char* renderName() const OVERRIDE { return "RenderRubyText"; }
-    virtual bool isRubyText() const OVERRIDE { return true; }
+    virtual const char* renderName() const override { return "RenderRubyText"; }
+    virtual bool isRubyText() const override { return true; }
 
-    virtual bool avoidsFloats() const OVERRIDE;
+    virtual bool avoidsFloats() const override;
 
-    virtual ETextAlign textAlignmentForLine(bool endsWithSoftBreak) const OVERRIDE;
-    virtual void adjustInlineDirectionLineBounds(int expansionOpportunityCount, float& logicalLeft, float& logicalWidth) const OVERRIDE;
+    virtual ETextAlign textAlignmentForLine(bool endsWithSoftBreak) const override;
+    virtual void adjustInlineDirectionLineBounds(int expansionOpportunityCount, float& logicalLeft, float& logicalWidth) const override;
 };
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderRubyText, isRubyText())
 
 #endif // RenderRubyText_h

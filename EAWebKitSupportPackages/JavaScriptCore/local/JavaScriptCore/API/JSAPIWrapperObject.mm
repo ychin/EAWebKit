@@ -26,25 +26,22 @@
 #include "config.h"
 #include "JSAPIWrapperObject.h"
 
-#include "JSCJSValueInlines.h"
+#include "JSCInlines.h"
 #include "JSCallbackObject.h"
-#include "JSCellInlines.h"
 #include "JSVirtualMachineInternal.h"
-#include "SlotVisitorInlines.h"
 #include "Structure.h"
-#include "StructureInlines.h"
 
 #if JSC_OBJC_API_ENABLED
 
 class JSAPIWrapperObjectHandleOwner : public JSC::WeakHandleOwner {
 public:
-    virtual void finalize(JSC::Handle<JSC::Unknown>, void*) OVERRIDE;
-    virtual bool isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>, void* context, JSC::SlotVisitor&) OVERRIDE;
+    virtual void finalize(JSC::Handle<JSC::Unknown>, void*) override;
+    virtual bool isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>, void* context, JSC::SlotVisitor&) override;
 };
 
 static JSAPIWrapperObjectHandleOwner* jsAPIWrapperObjectHandleOwner()
 {
-    DEFINE_STATIC_LOCAL(JSAPIWrapperObjectHandleOwner, jsWrapperObjectHandleOwner, ());
+    DEPRECATED_DEFINE_STATIC_LOCAL(JSAPIWrapperObjectHandleOwner, jsWrapperObjectHandleOwner, ());
     return &jsWrapperObjectHandleOwner;
 }
 
@@ -53,7 +50,8 @@ void JSAPIWrapperObjectHandleOwner::finalize(JSC::Handle<JSC::Unknown> handle, v
     JSC::JSAPIWrapperObject* wrapperObject = JSC::jsCast<JSC::JSAPIWrapperObject*>(handle.get().asCell());
     if (!wrapperObject->wrappedObject())
         return;
-    [static_cast<id>(wrapperObject->wrappedObject()) release];
+
+    JSC::Heap::heap(wrapperObject)->releaseSoon(adoptNS(static_cast<id>(wrapperObject->wrappedObject())));
     JSC::WeakSet::deallocate(JSC::WeakImpl::asWeakImpl(handle.slot()));
 }
 
@@ -69,7 +67,7 @@ bool JSAPIWrapperObjectHandleOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::
 
 namespace JSC {
     
-template <> const ClassInfo JSCallbackObject<JSAPIWrapperObject>::s_info = { "JSAPIWrapperObject", &Base::s_info, 0, 0, CREATE_METHOD_TABLE(JSCallbackObject) };
+template <> const ClassInfo JSCallbackObject<JSAPIWrapperObject>::s_info = { "JSAPIWrapperObject", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCallbackObject) };
 
 template<> const bool JSCallbackObject<JSAPIWrapperObject>::needsDestruction = true;
 
@@ -100,7 +98,6 @@ void JSAPIWrapperObject::setWrappedObject(void* wrappedObject)
 void JSAPIWrapperObject::visitChildren(JSCell* cell, JSC::SlotVisitor& visitor)
 {
     JSAPIWrapperObject* thisObject = JSC::jsCast<JSAPIWrapperObject*>(cell);
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
     Base::visitChildren(cell, visitor);
 
     if (thisObject->wrappedObject())

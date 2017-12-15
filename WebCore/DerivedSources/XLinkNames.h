@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,32 +28,36 @@
  */
 
 #ifndef DOM_XLinkNames_h
+
 #define DOM_XLinkNames_h
 
 #include "QualifiedName.h"
 
 namespace WebCore {
 
+class XLinkQualifiedName : public QualifiedName { };
+
 namespace XLinkNames {
 
-#ifndef DOM_XLinkNAMES_HIDE_GLOBALS
+#ifndef DOM_XLink_NAMES_HIDE_GLOBALS
+
 // Namespace
-extern const WTF::AtomicString xlinkNamespaceURI;
+WEBCORE_EXPORT extern const WTF::AtomicString xlinkNamespaceURI;
 
 // Attributes
-extern const WebCore::QualifiedName actuateAttr;
-extern const WebCore::QualifiedName arcroleAttr;
-extern const WebCore::QualifiedName hrefAttr;
-extern const WebCore::QualifiedName roleAttr;
-extern const WebCore::QualifiedName showAttr;
-extern const WebCore::QualifiedName titleAttr;
-extern const WebCore::QualifiedName typeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName actuateAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName arcroleAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName hrefAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName roleAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName showAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName titleAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName typeAttr;
 #endif
 
 const unsigned XLinkAttrsCount = 7;
-const WebCore::QualifiedName* const * getXLinkAttrs();
+const WebCore::QualifiedName* const* getXLinkAttrs();
 
-void init();
+WEBCORE_EXPORT void init();
 
 } }
 

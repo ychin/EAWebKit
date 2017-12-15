@@ -19,57 +19,75 @@
 */
 
 #include "config.h"
-
-#if ENABLE(FILTERS) && ENABLE(SVG)
-
 #include "JSSVGFEComponentTransferElement.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedLength.h"
 #include "JSSVGAnimatedString.h"
 #include "SVGFEComponentTransferElement.h"
 #include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
-#include "JSSVGAnimatedLength.h"
-#endif
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGFEComponentTransferElementTableValues[] =
-{
-    { "in1", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementIn1), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "x", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementX), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "y", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementY), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementWidth), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementHeight), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "result", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementResult), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGFEComponentTransferElementIn1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEComponentTransferElementX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEComponentTransferElementY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEComponentTransferElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEComponentTransferElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEComponentTransferElementResult(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGFEComponentTransferElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGFEComponentTransferElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGFEComponentTransferElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGFEComponentTransferElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFEComponentTransferElementPrototype>(vm.heap)) JSSVGFEComponentTransferElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGFEComponentTransferElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGFEComponentTransferElementTable = { 18, 15, JSSVGFEComponentTransferElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGFEComponentTransferElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGFEComponentTransferElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGFEComponentTransferElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGFEComponentTransferElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGFEComponentTransferElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFEComponentTransferElementConstructor>(vm.heap)) JSSVGFEComponentTransferElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGFEComponentTransferElementConstructorTable = { 1, 0, JSSVGFEComponentTransferElementConstructorTableValues, 0 };
-const ClassInfo JSSVGFEComponentTransferElementConstructor::s_info = { "SVGFEComponentTransferElementConstructor", &Base::s_info, &JSSVGFEComponentTransferElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGFEComponentTransferElementConstructor) };
+const ClassInfo JSSVGFEComponentTransferElementConstructor::s_info = { "SVGFEComponentTransferElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFEComponentTransferElementConstructor) };
 
 JSSVGFEComponentTransferElementConstructor::JSSVGFEComponentTransferElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -80,135 +98,163 @@ void JSSVGFEComponentTransferElementConstructor::finishCreation(VM& vm, JSDOMGlo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGFEComponentTransferElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGFEComponentTransferElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGFEComponentTransferElementConstructor, JSDOMWrapper>(exec, JSSVGFEComponentTransferElementConstructorTable, jsCast<JSSVGFEComponentTransferElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGFEComponentTransferElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGFEComponentTransferElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGFEComponentTransferElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "in1", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementIn1), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "y", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "result", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEComponentTransferElementResult), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGFEComponentTransferElementPrototypeTable = { 1, 0, JSSVGFEComponentTransferElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGFEComponentTransferElementPrototype::s_info = { "SVGFEComponentTransferElementPrototype", &Base::s_info, &JSSVGFEComponentTransferElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGFEComponentTransferElementPrototype) };
+const ClassInfo JSSVGFEComponentTransferElementPrototype::s_info = { "SVGFEComponentTransferElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFEComponentTransferElementPrototype) };
 
-JSObject* JSSVGFEComponentTransferElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGFEComponentTransferElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGFEComponentTransferElement::s_info = { "SVGFEComponentTransferElement", &Base::s_info, &JSSVGFEComponentTransferElementTable, 0 , CREATE_METHOD_TABLE(JSSVGFEComponentTransferElement) };
-
-JSSVGFEComponentTransferElement::JSSVGFEComponentTransferElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFEComponentTransferElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGFEComponentTransferElement::finishCreation(VM& vm)
+void JSSVGFEComponentTransferElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGFEComponentTransferElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGFEComponentTransferElement::s_info = { "SVGFEComponentTransferElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFEComponentTransferElement) };
+
+JSSVGFEComponentTransferElement::JSSVGFEComponentTransferElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFEComponentTransferElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGFEComponentTransferElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGFEComponentTransferElementPrototype::create(vm, globalObject, JSSVGFEComponentTransferElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGFEComponentTransferElementPrototype::create(vm, globalObject, JSSVGFEComponentTransferElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGFEComponentTransferElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGFEComponentTransferElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGFEComponentTransferElement* thisObject = jsCast<JSSVGFEComponentTransferElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGFEComponentTransferElement, Base>(exec, JSSVGFEComponentTransferElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGFEComponentTransferElement>(vm, globalObject);
 }
 
-JSValue jsSVGFEComponentTransferElementIn1(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementIn1(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* castedThis = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEComponentTransferElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEComponentTransferElement* castedThis = jsDynamicCast<JSSVGFEComponentTransferElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEComponentTransferElement", "in1");
+        return throwGetterTypeError(*exec, "SVGFEComponentTransferElement", "in1");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedString> obj = impl.in1Animated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGFEComponentTransferElementX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* castedThis = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEComponentTransferElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEComponentTransferElement* castedThis = jsDynamicCast<JSSVGFEComponentTransferElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEComponentTransferElement", "x");
+        return throwGetterTypeError(*exec, "SVGFEComponentTransferElement", "x");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.xAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEComponentTransferElementY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* castedThis = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEComponentTransferElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEComponentTransferElement* castedThis = jsDynamicCast<JSSVGFEComponentTransferElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEComponentTransferElement", "y");
+        return throwGetterTypeError(*exec, "SVGFEComponentTransferElement", "y");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.yAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEComponentTransferElementWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* castedThis = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEComponentTransferElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEComponentTransferElement* castedThis = jsDynamicCast<JSSVGFEComponentTransferElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEComponentTransferElement", "width");
+        return throwGetterTypeError(*exec, "SVGFEComponentTransferElement", "width");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.widthAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEComponentTransferElementHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* castedThis = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEComponentTransferElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEComponentTransferElement* castedThis = jsDynamicCast<JSSVGFEComponentTransferElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEComponentTransferElement", "height");
+        return throwGetterTypeError(*exec, "SVGFEComponentTransferElement", "height");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.heightAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGFEComponentTransferElementResult(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementResult(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* castedThis = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGFEComponentTransferElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGFEComponentTransferElement* castedThis = jsDynamicCast<JSSVGFEComponentTransferElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGFEComponentTransferElement", "result");
+        return throwGetterTypeError(*exec, "SVGFEComponentTransferElement", "result");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedString> obj = impl.resultAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGFEComponentTransferElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFEComponentTransferElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGFEComponentTransferElement* domObject = jsCast<JSSVGFEComponentTransferElement*>(asObject(slotBase));
-    return JSSVGFEComponentTransferElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGFEComponentTransferElementPrototype* domObject = jsDynamicCast<JSSVGFEComponentTransferElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGFEComponentTransferElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGFEComponentTransferElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -218,5 +264,3 @@ JSValue JSSVGFEComponentTransferElement::getConstructor(VM& vm, JSGlobalObject* 
 
 
 }
-
-#endif // ENABLE(FILTERS) && ENABLE(SVG)

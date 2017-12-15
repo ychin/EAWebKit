@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -30,7 +30,7 @@
 #include "config.h"
 
 #ifdef SKIP_STATIC_CONSTRUCTORS_ON_GCC
-#define DOM_XMLNAMES_HIDE_GLOBALS 1
+#define DOM_XML_NAMES_HIDE_GLOBALS 1
 #else
 #define QNAME_DEFAULT_CONSTRUCTOR 1
 #endif
@@ -44,7 +44,7 @@ namespace XMLNames {
 
 using namespace WebCore;
 
-DEFINE_GLOBAL(AtomicString, xmlNamespaceURI)
+WEBCORE_EXPORT DEFINE_GLOBAL(AtomicString, xmlNamespaceURI)
 
 static const LChar baseString8[] = "base";
 static const LChar langString8[] = "lang";
@@ -54,32 +54,29 @@ static StringImpl::StaticASCIILiteral baseData = {
     StringImpl::StaticASCIILiteral::s_initialRefCount,
     4,
     baseString8,
-    0,
     StringImpl::StaticASCIILiteral::s_initialFlags | (4376626 << StringImpl::StaticASCIILiteral::s_hashShift)
 };
 static StringImpl::StaticASCIILiteral langData = {
     StringImpl::StaticASCIILiteral::s_initialRefCount,
     4,
     langString8,
-    0,
     StringImpl::StaticASCIILiteral::s_initialFlags | (3702417 << StringImpl::StaticASCIILiteral::s_hashShift)
 };
 static StringImpl::StaticASCIILiteral spaceData = {
     StringImpl::StaticASCIILiteral::s_initialRefCount,
     5,
     spaceString8,
-    0,
     StringImpl::StaticASCIILiteral::s_initialFlags | (531440 << StringImpl::StaticASCIILiteral::s_hashShift)
 };
 
 
 // Attributes
-DEFINE_GLOBAL(QualifiedName, baseAttr)
-DEFINE_GLOBAL(QualifiedName, langAttr)
-DEFINE_GLOBAL(QualifiedName, spaceAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, baseAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, langAttr)
+WEBCORE_EXPORT DEFINE_GLOBAL(QualifiedName, spaceAttr)
 
 
-const WebCore::QualifiedName* const * getXMLAttrs()
+const WebCore::QualifiedName* const* getXMLAttrs()
 {
     static const WebCore::QualifiedName* const XMLAttrs[] = {
         reinterpret_cast<const WebCore::QualifiedName*>(&baseAttr),

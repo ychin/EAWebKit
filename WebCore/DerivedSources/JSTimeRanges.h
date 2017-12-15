@@ -23,28 +23,29 @@
 
 #if ENABLE(VIDEO)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "TimeRanges.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSTimeRanges : public JSDOMWrapper {
+class WEBCORE_EXPORT JSTimeRanges : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSTimeRanges* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TimeRanges> impl)
+    static JSTimeRanges* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TimeRanges>&& impl)
     {
-        JSTimeRanges* ptr = new (NotNull, JSC::allocateCell<JSTimeRanges>(globalObject->vm().heap)) JSTimeRanges(structure, globalObject, impl);
+        JSTimeRanges* ptr = new (NotNull, JSC::allocateCell<JSTimeRanges>(globalObject->vm().heap)) JSTimeRanges(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static TimeRanges* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSTimeRanges();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +55,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     TimeRanges& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     TimeRanges* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSTimeRanges(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TimeRanges>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSTimeRanges(JSC::Structure*, JSDOMGlobalObject*, Ref<TimeRanges>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSTimeRangesOwner : public JSC::WeakHandleOwner {
@@ -80,74 +80,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, TimeRanges*)
 {
-    DEFINE_STATIC_LOCAL(JSTimeRangesOwner, jsTimeRangesOwner, ());
-    return &jsTimeRangesOwner;
+    static NeverDestroyed<JSTimeRangesOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, TimeRanges*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, TimeRanges*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TimeRanges& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, TimeRanges*);
-TimeRanges* toTimeRanges(JSC::JSValue);
-
-class JSTimeRangesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTimeRangesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTimeRangesPrototype* ptr = new (NotNull, JSC::allocateCell<JSTimeRangesPrototype>(vm.heap)) JSTimeRangesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTimeRangesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSTimeRangesConstructor : public DOMConstructorObject {
-private:
-    JSTimeRangesConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTimeRangesConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTimeRangesConstructor* ptr = new (NotNull, JSC::allocateCell<JSTimeRangesConstructor>(vm.heap)) JSTimeRangesConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsTimeRangesPrototypeFunctionStart(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsTimeRangesPrototypeFunctionEnd(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsTimeRangesLength(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTimeRangesConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

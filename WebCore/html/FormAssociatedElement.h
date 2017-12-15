@@ -106,12 +106,13 @@ protected:
     String customValidationMessage() const;
 
 private:
+    virtual bool willValidate() const = 0;
     virtual void refFormAssociatedElement() = 0;
     virtual void derefFormAssociatedElement() = 0;
 
     void resetFormAttributeTargetObserver();
 
-    virtual bool isFormAssociatedElement() const OVERRIDE FINAL { return true; }
+    virtual bool isFormAssociatedElement() const override final { return true; }
 
     std::unique_ptr<FormAttributeTargetObserver> m_formAttributeTargetObserver;
     HTMLFormElement* m_form;

@@ -38,36 +38,94 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsBiquadFilterNodePrototypeFunctionGetFrequencyResponse(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsBiquadFilterNodeType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSBiquadFilterNodeType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsBiquadFilterNodeFrequency(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsBiquadFilterNodeDetune(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsBiquadFilterNodeQ(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsBiquadFilterNodeGain(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsBiquadFilterNodeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSBiquadFilterNodePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSBiquadFilterNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSBiquadFilterNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSBiquadFilterNodePrototype>(vm.heap)) JSBiquadFilterNodePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSBiquadFilterNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSBiquadFilterNodeConstructor : public DOMConstructorObject {
+private:
+    JSBiquadFilterNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSBiquadFilterNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSBiquadFilterNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSBiquadFilterNodeConstructor>(vm.heap)) JSBiquadFilterNodeConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSBiquadFilterNodeTableIndex[2] = {
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSBiquadFilterNodeTableValues[] =
 {
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeType), (intptr_t)setJSBiquadFilterNodeType },
-    { "frequency", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeFrequency), (intptr_t)0 },
-    { "detune", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeDetune), (intptr_t)0 },
-    { "Q", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeQ), (intptr_t)0 },
-    { "gain", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeGain), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSBiquadFilterNodeType) },
 };
 
-static const HashTable JSBiquadFilterNodeTable = { 16, 15, JSBiquadFilterNodeTableValues, 0 };
+static const HashTable JSBiquadFilterNodeTable = { 1, 1, true, JSBiquadFilterNodeTableValues, 0, JSBiquadFilterNodeTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSBiquadFilterNodeConstructorTableValues[] =
 {
-    { "LOWPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeLOWPASS), (intptr_t)0 },
-    { "HIGHPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeHIGHPASS), (intptr_t)0 },
-    { "BANDPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeBANDPASS), (intptr_t)0 },
-    { "LOWSHELF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeLOWSHELF), (intptr_t)0 },
-    { "HIGHSHELF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeHIGHSHELF), (intptr_t)0 },
-    { "PEAKING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodePEAKING), (intptr_t)0 },
-    { "NOTCH", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeNOTCH), (intptr_t)0 },
-    { "ALLPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeALLPASS), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "LOWPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "HIGHPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "BANDPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "LOWSHELF", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "HIGHSHELF", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "PEAKING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(5), (intptr_t) (0) },
+    { "NOTCH", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(6), (intptr_t) (0) },
+    { "ALLPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(7), (intptr_t) (0) },
 };
 
-static const HashTable JSBiquadFilterNodeConstructorTable = { 18, 15, JSBiquadFilterNodeConstructorTableValues, 0 };
 
 COMPILE_ASSERT(0 == BiquadFilterNode::LOWPASS, BiquadFilterNodeEnumLOWPASSIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(1 == BiquadFilterNode::HIGHPASS, BiquadFilterNodeEnumHIGHPASSIsWrongUseDoNotCheckConstants);
@@ -78,7 +136,7 @@ COMPILE_ASSERT(5 == BiquadFilterNode::PEAKING, BiquadFilterNodeEnumPEAKINGIsWron
 COMPILE_ASSERT(6 == BiquadFilterNode::NOTCH, BiquadFilterNodeEnumNOTCHIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(7 == BiquadFilterNode::ALLPASS, BiquadFilterNodeEnumALLPASSIsWrongUseDoNotCheckConstants);
 
-const ClassInfo JSBiquadFilterNodeConstructor::s_info = { "BiquadFilterNodeConstructor", &Base::s_info, &JSBiquadFilterNodeConstructorTable, 0, CREATE_METHOD_TABLE(JSBiquadFilterNodeConstructor) };
+const ClassInfo JSBiquadFilterNodeConstructor::s_info = { "BiquadFilterNodeConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSBiquadFilterNodeConstructor) };
 
 JSBiquadFilterNodeConstructor::JSBiquadFilterNodeConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -89,137 +147,161 @@ void JSBiquadFilterNodeConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSBiquadFilterNodePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSBiquadFilterNodeConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSBiquadFilterNodeConstructor, JSDOMWrapper>(exec, JSBiquadFilterNodeConstructorTable, jsCast<JSBiquadFilterNodeConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSBiquadFilterNode::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("BiquadFilterNode"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSBiquadFilterNodeConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSBiquadFilterNodePrototypeTableValues[] =
 {
-    { "LOWPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeLOWPASS), (intptr_t)0 },
-    { "HIGHPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeHIGHPASS), (intptr_t)0 },
-    { "BANDPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeBANDPASS), (intptr_t)0 },
-    { "LOWSHELF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeLOWSHELF), (intptr_t)0 },
-    { "HIGHSHELF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeHIGHSHELF), (intptr_t)0 },
-    { "PEAKING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodePEAKING), (intptr_t)0 },
-    { "NOTCH", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeNOTCH), (intptr_t)0 },
-    { "ALLPASS", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeALLPASS), (intptr_t)0 },
-    { "getFrequencyResponse", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsBiquadFilterNodePrototypeFunctionGetFrequencyResponse), (intptr_t)3 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "frequency", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeFrequency), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "detune", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeDetune), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "Q", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeQ), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "gain", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBiquadFilterNodeGain), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "LOWPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "HIGHPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "BANDPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "LOWSHELF", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "HIGHSHELF", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "PEAKING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(5), (intptr_t) (0) },
+    { "NOTCH", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(6), (intptr_t) (0) },
+    { "ALLPASS", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(7), (intptr_t) (0) },
+    { "getFrequencyResponse", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsBiquadFilterNodePrototypeFunctionGetFrequencyResponse), (intptr_t) (3) },
 };
 
-static const HashTable JSBiquadFilterNodePrototypeTable = { 34, 31, JSBiquadFilterNodePrototypeTableValues, 0 };
-const ClassInfo JSBiquadFilterNodePrototype::s_info = { "BiquadFilterNodePrototype", &Base::s_info, &JSBiquadFilterNodePrototypeTable, 0, CREATE_METHOD_TABLE(JSBiquadFilterNodePrototype) };
+const ClassInfo JSBiquadFilterNodePrototype::s_info = { "BiquadFilterNodePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSBiquadFilterNodePrototype) };
 
-JSObject* JSBiquadFilterNodePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSBiquadFilterNode>(vm, globalObject);
-}
-
-bool JSBiquadFilterNodePrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSBiquadFilterNodePrototype* thisObject = jsCast<JSBiquadFilterNodePrototype*>(object);
-    return getStaticPropertySlot<JSBiquadFilterNodePrototype, JSObject>(exec, JSBiquadFilterNodePrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSBiquadFilterNode::s_info = { "BiquadFilterNode", &Base::s_info, &JSBiquadFilterNodeTable, 0 , CREATE_METHOD_TABLE(JSBiquadFilterNode) };
-
-JSBiquadFilterNode::JSBiquadFilterNode(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<BiquadFilterNode> impl)
-    : JSAudioNode(structure, globalObject, impl)
-{
-}
-
-void JSBiquadFilterNode::finishCreation(VM& vm)
+void JSBiquadFilterNodePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSBiquadFilterNodePrototypeTableValues, *this);
+}
+
+const ClassInfo JSBiquadFilterNode::s_info = { "BiquadFilterNode", &Base::s_info, &JSBiquadFilterNodeTable, CREATE_METHOD_TABLE(JSBiquadFilterNode) };
+
+JSBiquadFilterNode::JSBiquadFilterNode(Structure* structure, JSDOMGlobalObject* globalObject, Ref<BiquadFilterNode>&& impl)
+    : JSAudioNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSBiquadFilterNode::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSBiquadFilterNodePrototype::create(vm, globalObject, JSBiquadFilterNodePrototype::createStructure(vm, globalObject, JSAudioNodePrototype::self(vm, globalObject)));
+    return JSBiquadFilterNodePrototype::create(vm, globalObject, JSBiquadFilterNodePrototype::createStructure(vm, globalObject, JSAudioNode::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSBiquadFilterNode::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSBiquadFilterNode>(vm, globalObject);
 }
 
 bool JSBiquadFilterNode::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSBiquadFilterNode* thisObject = jsCast<JSBiquadFilterNode*>(object);
+    auto* thisObject = jsCast<JSBiquadFilterNode*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSBiquadFilterNode, Base>(exec, JSBiquadFilterNodeTable, thisObject, propertyName, slot);
 }
 
-JSValue jsBiquadFilterNodeType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBiquadFilterNodeType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSBiquadFilterNode* castedThis = jsCast<JSBiquadFilterNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    BiquadFilterNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSBiquadFilterNode*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsBiquadFilterNodeFrequency(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBiquadFilterNodeFrequency(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSBiquadFilterNode* castedThis = jsCast<JSBiquadFilterNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    BiquadFilterNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSBiquadFilterNode* castedThis = jsDynamicCast<JSBiquadFilterNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSBiquadFilterNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "BiquadFilterNode", "frequency");
+        return throwGetterTypeError(*exec, "BiquadFilterNode", "frequency");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.frequency()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsBiquadFilterNodeDetune(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBiquadFilterNodeDetune(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSBiquadFilterNode* castedThis = jsCast<JSBiquadFilterNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    BiquadFilterNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSBiquadFilterNode* castedThis = jsDynamicCast<JSBiquadFilterNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSBiquadFilterNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "BiquadFilterNode", "detune");
+        return throwGetterTypeError(*exec, "BiquadFilterNode", "detune");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.detune()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsBiquadFilterNodeQ(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBiquadFilterNodeQ(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSBiquadFilterNode* castedThis = jsCast<JSBiquadFilterNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    BiquadFilterNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSBiquadFilterNode* castedThis = jsDynamicCast<JSBiquadFilterNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSBiquadFilterNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "BiquadFilterNode", "Q");
+        return throwGetterTypeError(*exec, "BiquadFilterNode", "Q");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.q()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsBiquadFilterNodeGain(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBiquadFilterNodeGain(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSBiquadFilterNode* castedThis = jsCast<JSBiquadFilterNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    BiquadFilterNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSBiquadFilterNode* castedThis = jsDynamicCast<JSBiquadFilterNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSBiquadFilterNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "BiquadFilterNode", "gain");
+        return throwGetterTypeError(*exec, "BiquadFilterNode", "gain");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.gain()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsBiquadFilterNodeConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBiquadFilterNodeConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSBiquadFilterNode* domObject = jsCast<JSBiquadFilterNode*>(asObject(slotBase));
-    return JSBiquadFilterNode::getConstructor(exec->vm(), domObject->globalObject());
+    JSBiquadFilterNodePrototype* domObject = jsDynamicCast<JSBiquadFilterNodePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSBiquadFilterNode::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSBiquadFilterNode::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSBiquadFilterNodeType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSBiquadFilterNode* thisObject = jsCast<JSBiquadFilterNode*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSBiquadFilterNode, Base>(exec, propertyName, value, JSBiquadFilterNodeTable, thisObject, slot);
-}
-
-void setJSBiquadFilterNodeType(ExecState* exec, JSObject* thisObject, JSValue value)
-{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSBiquadFilterNode*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSBiquadFilterNode*>(thisObject)->setType(exec, value);
+    castedThis->setType(exec, value);
 }
 
 
@@ -230,75 +312,25 @@ JSValue JSBiquadFilterNode::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsBiquadFilterNodePrototypeFunctionGetFrequencyResponse(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSBiquadFilterNode::info()))
-        return throwVMTypeError(exec);
-    JSBiquadFilterNode* castedThis = jsCast<JSBiquadFilterNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSBiquadFilterNode* castedThis = jsDynamicCast<JSBiquadFilterNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "BiquadFilterNode", "getFrequencyResponse");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSBiquadFilterNode::info());
-    BiquadFilterNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 3)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 3))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    RefPtr<Float32Array> frequencyHz(toFloat32Array(exec->argument(0)));
-    if (exec->hadException())
+    RefPtr<Float32Array> frequencyHz = toFloat32Array(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    RefPtr<Float32Array> magResponse(toFloat32Array(exec->argument(1)));
-    if (exec->hadException())
+    RefPtr<Float32Array> magResponse = toFloat32Array(exec->argument(1));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    RefPtr<Float32Array> phaseResponse(toFloat32Array(exec->argument(2)));
-    if (exec->hadException())
+    RefPtr<Float32Array> phaseResponse = toFloat32Array(exec->argument(2));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.getFrequencyResponse(frequencyHz.get(), magResponse.get(), phaseResponse.get());
     return JSValue::encode(jsUndefined());
-}
-
-// Constant getters
-
-JSValue jsBiquadFilterNodeLOWPASS(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsBiquadFilterNodeHIGHPASS(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsBiquadFilterNodeBANDPASS(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsBiquadFilterNodeLOWSHELF(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
-JSValue jsBiquadFilterNodeHIGHSHELF(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(4));
-}
-
-JSValue jsBiquadFilterNodePEAKING(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(5));
-}
-
-JSValue jsBiquadFilterNodeNOTCH(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(6));
-}
-
-JSValue jsBiquadFilterNodeALLPASS(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(7));
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -309,11 +341,11 @@ extern "C" { extern void (*const __identifier("??_7BiquadFilterNode@WebCore@@6B@
 extern "C" { extern void* _ZTVN7WebCore16BiquadFilterNodeE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, BiquadFilterNode* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, BiquadFilterNode* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSBiquadFilterNode>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSBiquadFilterNode>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -334,8 +366,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, BiquadF
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<BiquadFilterNode>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSBiquadFilterNode>(exec, globalObject, impl);
+    return createNewWrapper<JSBiquadFilterNode>(globalObject, impl);
 }
 
 

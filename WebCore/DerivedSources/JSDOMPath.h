@@ -21,30 +21,28 @@
 #ifndef JSDOMPath_h
 #define JSDOMPath_h
 
-#if ENABLE(CANVAS_PATH)
-
 #include "DOMPath.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSDOMPath : public JSDOMWrapper {
+class WEBCORE_EXPORT JSDOMPath : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMPath* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMPath> impl)
+    static JSDOMPath* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMPath>&& impl)
     {
-        JSDOMPath* ptr = new (NotNull, JSC::allocateCell<JSDOMPath>(globalObject->vm().heap)) JSDOMPath(structure, globalObject, impl);
+        JSDOMPath* ptr = new (NotNull, JSC::allocateCell<JSDOMPath>(globalObject->vm().heap)) JSDOMPath(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMPath* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDOMPath();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     DOMPath& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMPath* m_impl;
 protected:
-    JSDOMPath(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMPath>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDOMPath(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMPath>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMPathOwner : public JSC::WeakHandleOwner {
@@ -80,87 +75,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMPath*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMPathOwner, jsDOMPathOwner, ());
-    return &jsDOMPathOwner;
+    static NeverDestroyed<JSDOMPathOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, DOMPath*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMPath*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMPath& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMPath*);
-DOMPath* toDOMPath(JSC::JSValue);
-
-class JSDOMPathPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMPathPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMPathPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMPathPrototype>(vm.heap)) JSDOMPathPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMPathPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDOMPathConstructor : public DOMConstructorObject {
-private:
-    JSDOMPathConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDOMPathConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDOMPathConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMPathConstructor>(vm.heap)) JSDOMPathConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath(JSC::ExecState*);
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath1(JSC::ExecState*);
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath2(JSC::ExecState*);
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath3(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionClosePath(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionMoveTo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionLineTo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionQuadraticCurveTo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionBezierCurveTo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArcTo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionRect(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArc(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDOMPathConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(CANVAS_PATH)
 
 #endif

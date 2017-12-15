@@ -40,37 +40,38 @@ std::unique_ptr<ContentData> ContentData::clone() const
     ContentData* lastNewData = result.get();
     for (const ContentData* contentData = next(); contentData; contentData = contentData->next()) {
         auto newData = contentData->cloneInternal();
-        lastNewData->setNext(std::move(newData));
+        lastNewData->setNext(WTF::move(newData));
         lastNewData = lastNewData->next();
     }
         
     return result;
 }
 
-RenderObject* ImageContentData::createRenderer(Document& document, RenderStyle& pseudoStyle) const
+RenderPtr<RenderObject> ImageContentData::createContentRenderer(Document& document, const RenderStyle& pseudoStyle) const
 {
-    RenderImage* image = new (*document.renderArena()) RenderImage(document);
-    image->setPseudoStyle(&pseudoStyle);
-    if (m_image)
-        image->setImageResource(RenderImageResourceStyleImage::create(m_image.get()));
-    else
-        image->setImageResource(RenderImageResource::create());
-    return image;
+    auto image = createRenderer<RenderImage>(document, RenderStyle::createStyleInheritingFromPseudoStyle(pseudoStyle), m_image.get());
+    image->initializeStyle();
+    image->setAltText(altText());
+    return WTF::move(image);
 }
 
-RenderObject* TextContentData::createRenderer(Document& document, RenderStyle&) const
+RenderPtr<RenderObject> TextContentData::createContentRenderer(Document& document, const RenderStyle&) const
 {
-    return new (*document.renderArena()) RenderTextFragment(document, m_text);
+    auto fragment = createRenderer<RenderTextFragment>(document, m_text);
+    fragment->setAltText(altText());
+    return WTF::move(fragment);
 }
 
-RenderObject* CounterContentData::createRenderer(Document& document, RenderStyle&) const
+RenderPtr<RenderObject> CounterContentData::createContentRenderer(Document& document, const RenderStyle&) const
 {
-    return new (*document.renderArena()) RenderCounter(document, *m_counter);
+    return createRenderer<RenderCounter>(document, *m_counter);
 }
 
-RenderObject* QuoteContentData::createRenderer(Document& document, RenderStyle&) const
+RenderPtr<RenderObject> QuoteContentData::createContentRenderer(Document& document, const RenderStyle& pseudoStyle) const
 {
-    return new (*document.renderArena()) RenderQuote(document, m_quote);
+    auto quote = createRenderer<RenderQuote>(document, RenderStyle::createStyleInheritingFromPseudoStyle(pseudoStyle), m_quote);
+    quote->initializeStyle();
+    return WTF::move(quote);
 }
 
 } // namespace WebCore

@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -28,14 +28,9 @@
 #ifndef DatabaseTask_h
 #define DatabaseTask_h
 
-#if ENABLE(SQL_DATABASE)
-
-#include "DatabaseBackend.h"
 #include "DatabaseBasicTypes.h"
 #include "DatabaseError.h"
 #include "SQLTransactionBackend.h"
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/Threading.h>
 #include <wtf/Vector.h>
@@ -77,19 +72,19 @@ public:
 
     void performTask();
 
-    DatabaseBackend* database() const { return m_database; }
+    Database& database() const { return m_database; }
 #ifndef NDEBUG
     bool hasSynchronizer() const { return m_synchronizer; }
     bool hasCheckedForTermination() const { return m_synchronizer->hasCheckedForTermination(); }
 #endif
 
 protected:
-    DatabaseTask(DatabaseBackend*, DatabaseTaskSynchronizer*);
+    DatabaseTask(Database&, DatabaseTaskSynchronizer*);
 
 private:
     virtual void doPerformTask() = 0;
 
-    DatabaseBackend* m_database;
+    Database& m_database;
     DatabaseTaskSynchronizer* m_synchronizer;
 
 #if !LOG_DISABLED
@@ -98,19 +93,14 @@ private:
 #endif
 };
 
-class DatabaseBackend::DatabaseOpenTask : public DatabaseTask {
+class DatabaseOpenTask : public DatabaseTask {
 public:
-    static std::unique_ptr<DatabaseOpenTask> create(DatabaseBackend* db, bool setVersionInNewDatabase, DatabaseTaskSynchronizer* synchronizer, DatabaseError& error, String& errorMessage, bool& success)
-    {
-        return std::unique_ptr<DatabaseOpenTask>(new DatabaseOpenTask(db, setVersionInNewDatabase, synchronizer, error, errorMessage, success));
-    }
+    DatabaseOpenTask(Database&, bool setVersionInNewDatabase, DatabaseTaskSynchronizer&, DatabaseError&, String& errorMessage, bool& success);
 
 private:
-    DatabaseOpenTask(DatabaseBackend*, bool setVersionInNewDatabase, DatabaseTaskSynchronizer*, DatabaseError&, String& errorMessage, bool& success);
-
-    virtual void doPerformTask();
+    virtual void doPerformTask() override;
 #if !LOG_DISABLED
-    virtual const char* debugTaskName() const;
+    virtual const char* debugTaskName() const override;
 #endif
 
     bool m_setVersionInNewDatabase;
@@ -119,66 +109,47 @@ private:
     bool& m_success;
 };
 
-class DatabaseBackend::DatabaseCloseTask : public DatabaseTask {
+class DatabaseCloseTask : public DatabaseTask {
 public:
-    static std::unique_ptr<DatabaseCloseTask> create(DatabaseBackend* db, DatabaseTaskSynchronizer* synchronizer)
-    {
-        return std::unique_ptr<DatabaseCloseTask>(new DatabaseCloseTask(db, synchronizer));
-    }
+    DatabaseCloseTask(Database&, DatabaseTaskSynchronizer&);
 
 private:
-    DatabaseCloseTask(DatabaseBackend*, DatabaseTaskSynchronizer*);
-
-    virtual void doPerformTask();
+    virtual void doPerformTask() override;
 #if !LOG_DISABLED
-    virtual const char* debugTaskName() const;
+    virtual const char* debugTaskName() const override;
 #endif
 };
 
-class DatabaseBackend::DatabaseTransactionTask : public DatabaseTask {
+class DatabaseTransactionTask : public DatabaseTask {
 public:
+    explicit DatabaseTransactionTask(PassRefPtr<SQLTransactionBackend>);
     virtual ~DatabaseTransactionTask();
-
-    // Transaction task is never synchronous, so no 'synchronizer' parameter.
-    static std::unique_ptr<DatabaseTransactionTask> create(PassRefPtr<SQLTransactionBackend> transaction)
-    {
-        return std::unique_ptr<DatabaseTransactionTask>(new DatabaseTransactionTask(transaction));
-    }
 
     SQLTransactionBackend* transaction() const { return m_transaction.get(); }
 
 private:
-    explicit DatabaseTransactionTask(PassRefPtr<SQLTransactionBackend>);
-
-    virtual void doPerformTask();
+    virtual void doPerformTask() override;
 #if !LOG_DISABLED
-    virtual const char* debugTaskName() const;
+    virtual const char* debugTaskName() const override;
 #endif
 
     RefPtr<SQLTransactionBackend> m_transaction;
     bool m_didPerformTask;
 };
 
-class DatabaseBackend::DatabaseTableNamesTask : public DatabaseTask {
+class DatabaseTableNamesTask : public DatabaseTask {
 public:
-    static std::unique_ptr<DatabaseTableNamesTask> create(DatabaseBackend* db, DatabaseTaskSynchronizer* synchronizer, Vector<String>& names)
-    {
-        return std::unique_ptr<DatabaseTableNamesTask>(new DatabaseTableNamesTask(db, synchronizer, names));
-    }
+    DatabaseTableNamesTask(Database&, DatabaseTaskSynchronizer&, Vector<String>& names);
 
 private:
-    DatabaseTableNamesTask(DatabaseBackend*, DatabaseTaskSynchronizer*, Vector<String>& names);
-
-    virtual void doPerformTask();
+    virtual void doPerformTask() override;
 #if !LOG_DISABLED
-    virtual const char* debugTaskName() const;
+    virtual const char* debugTaskName() const override;
 #endif
 
     Vector<String>& m_tableNames;
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif // DatabaseTask_h

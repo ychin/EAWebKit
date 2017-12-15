@@ -29,22 +29,32 @@
  */
 
 #include "config.h"
-
-#if ENABLE(JAVASCRIPT_DEBUGGER) && ENABLE(INSPECTOR) && ENABLE(WORKERS)
 #include "WorkerDebuggerAgent.h"
 
-#include "ScriptDebugServer.h"
 #include "WorkerGlobalScope.h"
 #include "WorkerThread.h"
+#include <inspector/InjectedScript.h>
+#include <inspector/InjectedScriptManager.h>
+#include <inspector/ScriptDebugServer.h>
+#include <mutex>
 #include <wtf/MessageQueue.h>
+#include <wtf/NeverDestroyed.h>
+
+using namespace Inspector;
 
 namespace WebCore {
 
 namespace {
 
-Mutex& workerDebuggerAgentsMutex()
+std::mutex& workerDebuggerAgentsMutex()
 {
-    AtomicallyInitializedStatic(Mutex&, mutex = *new Mutex);
+    static std::once_flag onceFlag;
+    static LazyNeverDestroyed<std::mutex> mutex;
+
+    std::call_once(onceFlag, []{
+        mutex.construct();
+    });
+
     return mutex;
 }
 
@@ -52,10 +62,10 @@ typedef HashMap<WorkerThread*, WorkerDebuggerAgent*> WorkerDebuggerAgents;
 
 WorkerDebuggerAgents& workerDebuggerAgents()
 {
-    DEFINE_STATIC_LOCAL(WorkerDebuggerAgents, agents, ());
+    static NeverDestroyed<WorkerDebuggerAgents> agents;
+
     return agents;
 }
-
 
 class RunInspectorCommandsTask : public ScriptDebugServer::Task {
 public:
@@ -63,7 +73,7 @@ public:
         : m_thread(thread)
         , m_workerGlobalScope(workerGlobalScope) { }
     virtual ~RunInspectorCommandsTask() { }
-    virtual void run()
+    virtual void run() override
     {
         // Process all queued debugger commands. It is safe to use m_workerGlobalScope here
         // because it is alive if RunWorkerLoop is not terminated, otherwise it will
@@ -80,33 +90,29 @@ private:
 
 const char* WorkerDebuggerAgent::debuggerTaskMode = "debugger";
 
-PassOwnPtr<WorkerDebuggerAgent> WorkerDebuggerAgent::create(InstrumentingAgents* instrumentingAgents, InspectorCompositeState* inspectorState, WorkerGlobalScope* inspectedWorkerGlobalScope, InjectedScriptManager* injectedScriptManager)
-{
-    return adoptPtr(new WorkerDebuggerAgent(instrumentingAgents, inspectorState, inspectedWorkerGlobalScope, injectedScriptManager));
-}
-
-WorkerDebuggerAgent::WorkerDebuggerAgent(InstrumentingAgents* instrumentingAgents, InspectorCompositeState* inspectorState, WorkerGlobalScope* inspectedWorkerGlobalScope, InjectedScriptManager* injectedScriptManager)
-    : InspectorDebuggerAgent(instrumentingAgents, inspectorState, injectedScriptManager)
+WorkerDebuggerAgent::WorkerDebuggerAgent(InjectedScriptManager* injectedScriptManager, InstrumentingAgents* instrumentingAgents, WorkerGlobalScope* inspectedWorkerGlobalScope)
+    : WebDebuggerAgent(injectedScriptManager, instrumentingAgents)
     , m_scriptDebugServer(inspectedWorkerGlobalScope, WorkerDebuggerAgent::debuggerTaskMode)
     , m_inspectedWorkerGlobalScope(inspectedWorkerGlobalScope)
 {
-    MutexLocker lock(workerDebuggerAgentsMutex());
-    workerDebuggerAgents().set(inspectedWorkerGlobalScope->thread(), this);
+    std::lock_guard<std::mutex> lock(workerDebuggerAgentsMutex());
+    workerDebuggerAgents().set(&inspectedWorkerGlobalScope->thread(), this);
 }
 
 WorkerDebuggerAgent::~WorkerDebuggerAgent()
 {
-    MutexLocker lock(workerDebuggerAgentsMutex());
-    ASSERT(workerDebuggerAgents().contains(m_inspectedWorkerGlobalScope->thread()));
-    workerDebuggerAgents().remove(m_inspectedWorkerGlobalScope->thread());
+    std::lock_guard<std::mutex> lock(workerDebuggerAgentsMutex());
+
+    ASSERT(workerDebuggerAgents().contains(&m_inspectedWorkerGlobalScope->thread()));
+    workerDebuggerAgents().remove(&m_inspectedWorkerGlobalScope->thread());
 }
 
 void WorkerDebuggerAgent::interruptAndDispatchInspectorCommands(WorkerThread* thread)
 {
-    MutexLocker lock(workerDebuggerAgentsMutex());
-    WorkerDebuggerAgent* agent = workerDebuggerAgents().get(thread);
-    if (agent)
-        agent->m_scriptDebugServer.interruptAndRunTask(adoptPtr(new RunInspectorCommandsTask(thread, agent->m_inspectedWorkerGlobalScope)));
+    std::lock_guard<std::mutex> lock(workerDebuggerAgentsMutex());
+
+    if (WorkerDebuggerAgent* agent = workerDebuggerAgents().get(thread))
+        agent->m_scriptDebugServer.interruptAndRunTask(std::make_unique<RunInspectorCommandsTask>(thread, agent->m_inspectedWorkerGlobalScope));
 }
 
 void WorkerDebuggerAgent::startListeningScriptDebugServer()
@@ -114,9 +120,14 @@ void WorkerDebuggerAgent::startListeningScriptDebugServer()
     scriptDebugServer().addListener(this);
 }
 
-void WorkerDebuggerAgent::stopListeningScriptDebugServer()
+void WorkerDebuggerAgent::stopListeningScriptDebugServer(bool isBeingDestroyed)
 {
-    scriptDebugServer().removeListener(this);
+    scriptDebugServer().removeListener(this, isBeingDestroyed);
+}
+
+void WorkerDebuggerAgent::breakpointActionLog(JSC::ExecState*, const String& message)
+{
+    m_inspectedWorkerGlobalScope->addConsoleMessage(MessageSource::JS, MessageLevel::Log, message);
 }
 
 WorkerScriptDebugServer& WorkerDebuggerAgent::scriptDebugServer()
@@ -124,12 +135,13 @@ WorkerScriptDebugServer& WorkerDebuggerAgent::scriptDebugServer()
     return m_scriptDebugServer;
 }
 
-InjectedScript WorkerDebuggerAgent::injectedScriptForEval(ErrorString* error, const int* executionContextId)
+InjectedScript WorkerDebuggerAgent::injectedScriptForEval(ErrorString& error, const int* executionContextId)
 {
     if (executionContextId) {
-        *error = "Execution context id is not supported for workers as there is only one execution context.";
+        error = ASCIILiteral("Execution context id is not supported for workers as there is only one execution context.");
         return InjectedScript();
     }
+
     JSC::ExecState* scriptState = execStateFromWorkerGlobalScope(m_inspectedWorkerGlobalScope);
     return injectedScriptManager()->injectedScriptFor(scriptState);
 }
@@ -145,5 +157,3 @@ void WorkerDebuggerAgent::unmuteConsole()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(JAVASCRIPT_DEBUGGER) && ENABLE(INSPECTOR) && ENABLE(WORKERS)

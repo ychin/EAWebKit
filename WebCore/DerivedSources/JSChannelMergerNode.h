@@ -25,23 +25,22 @@
 
 #include "ChannelMergerNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSChannelMergerNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSChannelMergerNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ChannelMergerNode> impl)
+    static JSChannelMergerNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ChannelMergerNode>&& impl)
     {
-        JSChannelMergerNode* ptr = new (NotNull, JSC::allocateCell<JSChannelMergerNode>(globalObject->vm().heap)) JSChannelMergerNode(structure, globalObject, impl);
+        JSChannelMergerNode* ptr = new (NotNull, JSC::allocateCell<JSChannelMergerNode>(globalObject->vm().heap)) JSChannelMergerNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,63 +54,19 @@ public:
         return static_cast<ChannelMergerNode&>(Base::impl());
     }
 protected:
-    JSChannelMergerNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ChannelMergerNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSChannelMergerNode(JSC::Structure*, JSDOMGlobalObject*, Ref<ChannelMergerNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ChannelMergerNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ChannelMergerNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSChannelMergerNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSChannelMergerNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSChannelMergerNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSChannelMergerNodePrototype>(vm.heap)) JSChannelMergerNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSChannelMergerNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSChannelMergerNodeConstructor : public DOMConstructorObject {
-private:
-    JSChannelMergerNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSChannelMergerNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSChannelMergerNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSChannelMergerNodeConstructor>(vm.heap)) JSChannelMergerNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsChannelMergerNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

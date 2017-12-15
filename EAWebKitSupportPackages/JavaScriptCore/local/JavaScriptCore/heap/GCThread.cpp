@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2012, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,17 +29,17 @@
 #include "CopyVisitor.h"
 #include "CopyVisitorInlines.h"
 #include "GCThreadSharedData.h"
+#include "JSCInlines.h"
 #include "SlotVisitor.h"
 #include <wtf/MainThread.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace JSC {
 
-GCThread::GCThread(GCThreadSharedData& shared, SlotVisitor* slotVisitor, CopyVisitor* copyVisitor)
+GCThread::GCThread(GCThreadSharedData& shared, std::unique_ptr<SlotVisitor> slotVisitor, std::unique_ptr<CopyVisitor> copyVisitor)
     : m_threadID(0)
     , m_shared(shared)
-    , m_slotVisitor(WTF::adoptPtr(slotVisitor))
-    , m_copyVisitor(WTF::adoptPtr(copyVisitor))
+    , m_slotVisitor(WTF::move(slotVisitor))
+    , m_copyVisitor(WTF::move(copyVisitor))
 {
 }
 
@@ -69,16 +69,14 @@ CopyVisitor* GCThread::copyVisitor()
 
 GCPhase GCThread::waitForNextPhase()
 {
-    MutexLocker locker(m_shared.m_phaseLock);
-    while (m_shared.m_gcThreadsShouldWait)
-        m_shared.m_phaseCondition.wait(m_shared.m_phaseLock);
+    std::unique_lock<Lock> lock(m_shared.m_phaseMutex);
+    m_shared.m_phaseConditionVariable.wait(lock, [this] { return !m_shared.m_gcThreadsShouldWait; });
 
     m_shared.m_numberOfActiveGCThreads--;
     if (!m_shared.m_numberOfActiveGCThreads)
-        m_shared.m_activityCondition.signal();
+        m_shared.m_activityConditionVariable.notifyOne();
 
-    while (m_shared.m_currentPhase == NoPhase)
-        m_shared.m_phaseCondition.wait(m_shared.m_phaseLock);
+    m_shared.m_phaseConditionVariable.wait(lock, [this] { return m_shared.m_currentPhase != NoPhase; });
     m_shared.m_numberOfActiveGCThreads++;
     return m_shared.m_currentPhase;
 }
@@ -92,7 +90,7 @@ void GCThread::gcThreadMain()
     // Wait for the main thread to finish creating and initializing us. The main thread grabs this lock before 
     // creating this thread. We aren't guaranteed to have a valid threadID until the main thread releases this lock.
     {
-        MutexLocker locker(m_shared.m_phaseLock);
+        std::lock_guard<Lock> lock(m_shared.m_phaseMutex);
     }
     {
         ParallelModeEnabler enabler(*m_slotVisitor);
@@ -117,6 +115,9 @@ void GCThread::gcThreadMain()
                 // all of the blocks that the GCThreads borrowed have been returned. doneCopying() 
                 // returns our borrowed CopiedBlock, allowing the copying phase to finish.
                 m_copyVisitor->doneCopying();
+
+                WTF::releaseFastMallocFreeMemoryForThisThread();
+
                 break;
             case NoPhase:
                 RELEASE_ASSERT_NOT_REACHED();

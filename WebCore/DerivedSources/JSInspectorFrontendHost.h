@@ -21,29 +21,28 @@
 #ifndef JSInspectorFrontendHost_h
 #define JSInspectorFrontendHost_h
 
-#if ENABLE(INSPECTOR)
-
 #include "InspectorFrontendHost.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSInspectorFrontendHost : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSInspectorFrontendHost* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<InspectorFrontendHost> impl)
+    static JSInspectorFrontendHost* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<InspectorFrontendHost>&& impl)
     {
-        JSInspectorFrontendHost* ptr = new (NotNull, JSC::allocateCell<JSInspectorFrontendHost>(globalObject->vm().heap)) JSInspectorFrontendHost(structure, globalObject, impl);
+        JSInspectorFrontendHost* ptr = new (NotNull, JSC::allocateCell<JSInspectorFrontendHost>(globalObject->vm().heap)) JSInspectorFrontendHost(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static InspectorFrontendHost* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSInspectorFrontendHost();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,26 +55,20 @@ public:
     JSC::JSValue platform(JSC::ExecState*);
     JSC::JSValue port(JSC::ExecState*);
     JSC::JSValue showContextMenu(JSC::ExecState*);
-    JSC::JSValue recordActionTaken(JSC::ExecState*);
-    JSC::JSValue recordPanelShown(JSC::ExecState*);
-    JSC::JSValue recordSettingChanged(JSC::ExecState*);
     InspectorFrontendHost& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     InspectorFrontendHost* m_impl;
 protected:
-    JSInspectorFrontendHost(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<InspectorFrontendHost>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSInspectorFrontendHost(JSC::Structure*, JSDOMGlobalObject*, Ref<InspectorFrontendHost>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSInspectorFrontendHostOwner : public JSC::WeakHandleOwner {
@@ -86,80 +79,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, InspectorFrontendHost*)
 {
-    DEFINE_STATIC_LOCAL(JSInspectorFrontendHostOwner, jsInspectorFrontendHostOwner, ());
-    return &jsInspectorFrontendHostOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, InspectorFrontendHost*)
-{
-    return &world;
+    static NeverDestroyed<JSInspectorFrontendHostOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, InspectorFrontendHost*);
-InspectorFrontendHost* toInspectorFrontendHost(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, InspectorFrontendHost& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSInspectorFrontendHostPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSInspectorFrontendHostPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSInspectorFrontendHostPrototype* ptr = new (NotNull, JSC::allocateCell<JSInspectorFrontendHostPrototype>(vm.heap)) JSInspectorFrontendHostPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSInspectorFrontendHostPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLoaded(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCloseWindow(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionBringToFront(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetZoomFactor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionInspectedURLChanged(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRequestSetDockSide(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowHeight(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowWidth(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetToolbarHeight(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionMoveWindowBy(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetInjectedScriptForOrigin(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLocalizedStringsURL(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCopyText(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionOpenInNewTab(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanSave(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSave(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionAppend(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionClose(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionPlatform(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionPort(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionShowContextMenu(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSendMessageToBackend(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRecordActionTaken(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRecordPanelShown(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRecordSettingChanged(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLoadResourceSynchronously(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSupportsFileSystems(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRequestFileSystems(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionAddFileSystem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRemoveFileSystem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionIsUnderTest(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanInspectWorkers(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanSaveAs(JSC::ExecState*);
 
 } // namespace WebCore
-
-#endif // ENABLE(INSPECTOR)
 
 #endif

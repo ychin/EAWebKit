@@ -5,7 +5,7 @@
  * Copyright (C) 2008 Collabora Ltd. All rights reserved.
  * Coypright (C) 2008 Holger Hans Peter Freyther
  * Coypright (C) 2009, 2010 Girish Ramakrishnan <girish@forwardbias.in>
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * All rights reserved.
  *
@@ -57,9 +57,7 @@
 #include "Page.h"
 #include "PlatformMouseEvent.h"
 #include "PluginData.h"
-#include "PluginDatabase.h"
 #include "PolicyChecker.h"
-#include "ProgressTracker.h"
 #include "ResourceRequest.h"
 #include "HistoryItem.h"
 #include "HTMLAppletElement.h"
@@ -268,16 +266,6 @@ void FrameLoaderClientEA::dispatchDidBecomeFrameset(bool)
 {
 }
 
-
-
-void FrameLoaderClientEA::forceLayout()
-{
-    FrameView* view = m_frame->view();
-    if (view)
-        view->layout(true);
-}
-
-
 void FrameLoaderClientEA::forceLayoutForNonHTML()
 {
 }
@@ -361,6 +349,7 @@ void FrameLoaderClientEA::dispatchDidChangeLocationWithinPage()
 			EAW_LOG(3, "Event %s : The URL has been changed", EVENT_TYPE_STR(kLETUrlChanged) );
 			pClient->LoadUpdate(loadInfo);
 		}
+
 		m_webFrame->page()->d->updateNavigationActions();
 	}
 }
@@ -396,7 +385,7 @@ void FrameLoaderClientEA::dispatchWillClose()
 
 void FrameLoaderClientEA::dispatchDidStartProvisionalLoad()
 {
-	m_lastRequestedUrl = m_frame->loader().activeDocumentLoader()->requestURL();
+	m_lastRequestedUrl = m_frame->loader().activeDocumentLoader()->url();
 
 	
 	
@@ -570,63 +559,6 @@ void FrameLoaderClientEA::dispatchWillSubmitForm(PassRefPtr<FormState>,FramePoli
     callPolicyFunction(function, PolicyUse);
 }
 
-void FrameLoaderClientEA::postProgressStartedNotification()
-{
-	using namespace EA::WebKit;
-	if (m_webFrame && m_frame->page())
-	{
-        // A new load starts, so lets clear the previous error.
-        m_loadError = ResourceError();
-		m_webFrame->SetLoadState(WebFrame::kLoadStarted);
-		if(isMainFrame(m_frame)) 
-		{
-			if(EAWebKitClient* const pClient = GetEAWebKitClient(m_webFrame->page()->view()))
-			{
-				LoadInfo loadInfo(m_webFrame->page()->view(), m_webFrame->page()->view()->GetUserData(), kLETLoadStarted);
-				loadInfo.mProgressEstimation = 0.0f;
-				EAW_LOG(3, "Event %s : Sent a request to server for page load", EVENT_TYPE_STR(kLETLoadStarted));
-				pClient->LoadUpdate(loadInfo);
-			}
-		}
-        postProgressEstimateChangedNotification();
-    }
-
-	if (m_frame->tree().parent() || !m_webFrame)// abaldeva: Is m_frame->tree().parent() trying to detect if it is a subframe?
-        return;
-   
-	m_webFrame->page()->d->updateNavigationActions();
-}
-
-void FrameLoaderClientEA::postProgressEstimateChangedNotification()
-{
-    if (m_webFrame && m_frame->page())
-	{
-		using namespace EA::WebKit;
-		
-		m_webFrame->SetLoadState(WebFrame::kLoadInProgress);
-		if(EAWebKitClient* const pClient = GetEAWebKitClient(m_webFrame->page()->view()))
-		{
-			LoadInfo loadInfo(m_webFrame->page()->view(), m_webFrame->page()->view()->GetUserData(),kLETLoadProgressUpdate);
-			loadInfo.mProgressEstimation = m_frame->page()->progress().estimatedProgress();
-			EAW_LOG(3, "Event %s : Page load in progress with estimate = %lf", EVENT_TYPE_STR(kLETLoadProgressUpdate) , loadInfo.mProgressEstimation );
-			pClient->LoadUpdate(loadInfo);
-		}
-	}
-}
-
-void FrameLoaderClientEA::postProgressFinishedNotification()
-{
-    // send a mousemove event to
-    // (1) update the cursor to change according to whatever is underneath the mouse cursor right now
-    // (2) display the tool tip if the mouse hovers a node which has a tool tip
-	// Last port, we had a specific call to ResetToolTip in the page load start. Following should get rid
-	// of that. Verify.
-
-	/* We don't use this as it is non reliable and can be trigger multiple times. Instead, we use ::dispatchDidFinishLoad().
-	Reference - http://old.nabble.com/FrameLoaderClient-notifications-tt16025970.html
-	*/
-}
-
 void FrameLoaderClientEA::setMainFrameDocumentReady(bool)
 {
     // this is only interesting once we provide an external API for the DOM
@@ -648,10 +580,6 @@ void FrameLoaderClientEA::finishedLoading(DocumentLoader* loader)
 {
     if (!m_pluginView)
         return;
-    if (m_pluginView->isPluginView())
-        m_pluginView->didFinishLoading();
-    m_pluginView = 0;
-    m_hasSentResponseToPlugin = false;
 }
 
 bool FrameLoaderClientEA::canShowMIMETypeAsHTML(const String& MIMEType) const
@@ -667,10 +595,11 @@ bool FrameLoaderClientEA::canShowMIMEType(const String& MIMEType) const
     if (MIMETypeRegistry::canShowMIMEType(type))
         return true;
 
+    /*
     if (m_frame && m_frame->settings().arePluginsEnabled()
         && PluginDatabase::installedPlugins()->isMIMETypeRegistered(type))
         return true;
-
+    */
     return false;
 }
 
@@ -778,18 +707,6 @@ void FrameLoaderClientEA::dispatchDidClearWindowObjectInWorld(DOMWrapperWorld& w
 	}
 }
 
-void FrameLoaderClientEA::documentElementAvailable()
-{
-    return;
-}
-
-void FrameLoaderClientEA::didPerformFirstNavigation() const
-{
-    if (m_frame->tree().parent() || !m_webFrame)
-        return;
-    m_webFrame->page()->d->updateNavigationActions();
-}
-
 void FrameLoaderClientEA::registerForIconNotification(bool)
 {
     notImplemented();
@@ -812,11 +729,6 @@ void FrameLoaderClientEA::updateGlobalHistoryRedirectLinks()
 bool FrameLoaderClientEA::shouldGoToHistoryItem(WebCore::HistoryItem *) const
 {
     return true;
-}
-
-bool FrameLoaderClientEA::shouldStopLoadingForHistoryItem(WebCore::HistoryItem *) const
-{
-	return true;
 }
 
 void FrameLoaderClientEA::didDisplayInsecureContent()
@@ -860,10 +772,6 @@ void FrameLoaderClientEA::setMainDocumentError(WebCore::DocumentLoader* loader, 
 	// mechanisms
 	if (!m_pluginView)
         return;
-    if (m_pluginView->isPluginView())
-        m_pluginView->didFail(error);
-    m_pluginView = 0;
-    m_hasSentResponseToPlugin = false;
 }
 
 // FIXME: This function should be moved into WebCore. 
@@ -876,19 +784,6 @@ void FrameLoaderClientEA::committedLoad(WebCore::DocumentLoader* loader, const c
     // If we are sending data to MediaDocument, we should stop here and cancel the request.
     if (m_frame->document()->isMediaDocument())
         loader->cancelMainResourceLoad(pluginWillHandleLoadError(loader->response()));
-    // We re-check here as the plugin can have been created
-    if (m_pluginView && m_pluginView->isPluginView()) {
-        if (!m_hasSentResponseToPlugin) {
-            m_pluginView->didReceiveResponse(loader->response());
-            // didReceiveResponse sets up a new stream to the plug-in. on a full-page plug-in, a failure in
-            // setting up this stream can cause the main document load to be cancelled, setting m_pluginView
-            // to null
-            if (!m_pluginView)
-                return;
-            m_hasSentResponseToPlugin = true;
-        }
-        m_pluginView->didReceiveData(data, length);
-    }
 }
 
 WebCore::ResourceError FrameLoaderClientEA::cancelledError(const WebCore::ResourceRequest& request)
@@ -933,9 +828,9 @@ WebCore::ResourceError FrameLoaderClientEA::pluginWillHandleLoadError(const WebC
 
 bool FrameLoaderClientEA::shouldFallBack(const WebCore::ResourceError& error)
 {
-    DEFINE_STATIC_LOCAL(const ResourceError, cancelledError, (this->cancelledError(ResourceRequest())));
-    DEFINE_STATIC_LOCAL(const ResourceError, pluginWillHandleLoadError, (this->pluginWillHandleLoadError(ResourceResponse())));
-    DEFINE_STATIC_LOCAL(const ResourceError, errorInterruptedForPolicyChange, (this->interruptedForPolicyChangeError(ResourceRequest())));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const ResourceError, cancelledError, (this->cancelledError(ResourceRequest())));
+	DEPRECATED_DEFINE_STATIC_LOCAL(const ResourceError, pluginWillHandleLoadError, (this->pluginWillHandleLoadError(ResourceResponse())));
+	DEPRECATED_DEFINE_STATIC_LOCAL(const ResourceError, errorInterruptedForPolicyChange, (this->interruptedForPolicyChangeError(ResourceRequest())));
 
     if (error.errorCode() == cancelledError.errorCode() && error.domain() == cancelledError.domain())
         return false;
@@ -951,14 +846,12 @@ bool FrameLoaderClientEA::shouldFallBack(const WebCore::ResourceError& error)
     //return !(error.isCancellation() || (error.errorCode() == EA::WebKit::kLETFrameLoadInterruptedByPolicyChange));
 }
 
-WTF::PassRefPtr<WebCore::DocumentLoader> FrameLoaderClientEA::createDocumentLoader(const WebCore::ResourceRequest& request, const SubstituteData& substituteData)
+WTF::Ref<WebCore::DocumentLoader> FrameLoaderClientEA::createDocumentLoader(const WebCore::ResourceRequest& request, const SubstituteData& substituteData)
 {
-    RefPtr<DocumentLoader> loader = DocumentLoader::create(request, substituteData);
+    Ref<DocumentLoader> loader = DocumentLoader::create(request, substituteData);
     if (!deferMainResourceDataLoad || substituteData.isValid())
         loader->setDeferMainResourceDataLoad(false);
-    else
-        m_frame->page()->setCustomHTMLTokenizerTimeDelay(-1);
-    return loader.release();
+    return WTF::move(loader);
 }
 
 void FrameLoaderClientEA::convertMainResourceLoadToDownload(WebCore::DocumentLoader*, const WebCore::ResourceRequest&, const WebCore::ResourceResponse&)
@@ -994,8 +887,8 @@ void FrameLoaderClientEA::dispatchWillSendRequest(WebCore::DocumentLoader*, unsi
 			const WTF::String& urlTo	= newRequest.url().string();
 			const WTF::String& urlFrom	= redirectResponse.url().string();
 
-			GetFixedString(loadInfo.mResourceURL)->assign(urlFrom.characters(), urlFrom.length());
-			GetFixedString(loadInfo.mRedirectedURL)->assign(urlTo.characters(), urlTo.length());
+            GetFixedString(loadInfo.mResourceURL)->assign(StringView(urlFrom).upconvertedCharacters(), urlFrom.length());
+            GetFixedString(loadInfo.mRedirectedURL)->assign(StringView(urlTo).upconvertedCharacters(), urlTo.length());
 
 			EAW_LOG(3, "Event %s : The server has a redirection request to %ls from %ls", EVENT_TYPE_STR(kLETRedirectionReceived) , GetFixedString(loadInfo.mRedirectedURL)->c_str(), GetFixedString(loadInfo.mResourceURL)->c_str() );
 			pClient->LoadUpdate(loadInfo);
@@ -1014,7 +907,7 @@ void FrameLoaderClientEA::dispatchWillSendRequest(WebCore::DocumentLoader*, unsi
 
 		// Setup mOriginalURI
 		const WTF::String& webCoreURI = newRequest.url().string();
-		GetFixedString(lni.mOriginalURI)->assign(webCoreURI.characters(), webCoreURI.length());
+        GetFixedString(lni.mOriginalURI)->assign(StringView(webCoreURI).upconvertedCharacters(), webCoreURI.length());
 
 		// Setup mOriginalHeaderMap. 
 		EA::WebKit::HeaderMap& originalHeaderMap = *GetHeaderMap(lni.mOriginalHeaderMap);
@@ -1024,8 +917,8 @@ void FrameLoaderClientEA::dispatchWillSendRequest(WebCore::DocumentLoader*, unsi
 			const WTF::String& webCoreKey   = it->key;
 			const WTF::String& webCoreValue = it->value;
 
-			HeaderMap::value_type entry(HeaderMap::key_type(webCoreKey.characters(), webCoreKey.length()), 
-				HeaderMap::mapped_type(webCoreValue.characters(), webCoreValue.length()));
+            HeaderMap::value_type entry(HeaderMap::key_type(StringView(webCoreKey).upconvertedCharacters(), webCoreKey.length()),
+                HeaderMap::mapped_type(StringView(webCoreValue).upconvertedCharacters(), webCoreValue.length()));
 
 			originalHeaderMap.insert(entry);
 		}
@@ -1078,6 +971,10 @@ void FrameLoaderClientEA::dispatchDidCancelAuthenticationChallenge(DocumentLoade
 void FrameLoaderClientEA::dispatchDidReceiveResponse(WebCore::DocumentLoader*, unsigned long identifier, const WebCore::ResourceResponse& response)
 {
     m_response = response;
+    
+    if (m_response.url().protocolIsData())
+        return;
+
 	using namespace EA::WebKit;
 	if(EAWebKitClient* const pClient = GetEAWebKitClient(m_webFrame->page()->view()))
 	{
@@ -1085,7 +982,7 @@ void FrameLoaderClientEA::dispatchDidReceiveResponse(WebCore::DocumentLoader*, u
 		loadInfo.mStatusCode = response.httpStatusCode();
 		const WTF::String& resourceURL = response.url().string();
 		if(resourceURL.length())
-			GetFixedString(loadInfo.mResourceURL)->assign(resourceURL.characters(), resourceURL.length());
+            GetFixedString(loadInfo.mResourceURL)->assign(StringView(resourceURL).upconvertedCharacters(), resourceURL.length());
 
 		EAW_LOG(3, "Event %s : The server has responded to a resource request URL - %ls with status = %ld", EVENT_TYPE_STR(kLETResourceResponseReceived) , GetFixedString(loadInfo.mResourceURL)->c_str() , loadInfo.mStatusCode );
 		pClient->LoadUpdate(loadInfo);
@@ -1112,7 +1009,7 @@ void FrameLoaderClientEA::dispatchDidFailLoading(WebCore::DocumentLoader* loader
 		loadInfo.mLoadErrorType = (EA::WebKit::LoadErrorType) error.errorCode();
 		const WTF::String& failingURL = error.failingURL();
 		if(failingURL.length())
-			GetFixedString(loadInfo.mResourceURL)->assign(failingURL.characters(), failingURL.length());
+            GetFixedString(loadInfo.mResourceURL)->assign(StringView(failingURL).upconvertedCharacters(), failingURL.length());
 
 		EAW_LOG(3, "Event %s : Error = %d while loading resource - %ls", EVENT_TYPE_STR(kLETResourceLoadError), loadInfo.mLoadErrorType , GetFixedString(loadInfo.mResourceURL)->c_str() );
 		pClient->LoadUpdate(loadInfo);
@@ -1218,7 +1115,7 @@ WebCore::Frame* FrameLoaderClientEA::dispatchCreatePage(const WebCore::Navigatio
 		createViewInfo.mpUserData = createViewInfo.mpView->GetUserData();
 		createViewInfo.mEventType = EA::WebKit::CreateViewInfo::kEventTargetBlank;
 		WebCore::URL kurl = action.url();
- 		FixedString16_128 urlToOpen(kurl.string().characters(),kurl.string().length());
+        FixedString16_128 urlToOpen(StringView(kurl.string()).upconvertedCharacters(), kurl.string().length());
  		createViewInfo.mpURLToOpen = urlToOpen.c_str();
  
  		pClient->CreateView(createViewInfo);
@@ -1243,7 +1140,7 @@ void FrameLoaderClientEA::dispatchDecidePolicyForResponse(const WebCore::Resourc
 		return;
 	}
 
-	if (WebCore::contentDispositionType(response.httpHeaderField("Content-Disposition")) == WebCore::ContentDispositionAttachment)
+	if (WebCore::contentDispositionType(response.httpHeaderField(HTTPHeaderName::ContentDisposition)) == WebCore::ContentDispositionAttachment)
 		callPolicyFunction(function, PolicyDownload);
 	else if (canShowMIMEType(response.mimeType()))
 		callPolicyFunction(function, PolicyUse);
@@ -1260,10 +1157,10 @@ void FrameLoaderClientEA::dispatchDecidePolicyForNewWindowAction(const WebCore::
 	EA::WebKit::WebPage* page = m_webFrame->page();
 
 	if (!page->d->acceptNavigationRequest(0, request, EA::WebKit::WebPage::NavigationType(action.type()))) {
-        if (action.type() == NavigationTypeFormSubmitted || action.type() == NavigationTypeFormResubmitted)
+        if (action.type() == NavigationType::FormSubmitted || action.type() == NavigationType::FormResubmitted)
             m_frame->loader().resetMultipleFormSubmissionProtection();
 
-        if (action.type() == NavigationTypeLinkClicked && request.url().hasFragmentIdentifier()) {
+        if (action.type() == NavigationType::LinkClicked && request.url().hasFragmentIdentifier()) {
 			ResourceRequest emptyRequest;
             m_frame->loader().activeDocumentLoader()->setLastCheckedRequest(emptyRequest);
         }
@@ -1306,10 +1203,10 @@ void FrameLoaderClientEA::dispatchDecidePolicyForNavigationAction(const WebCore:
     }
 
 	if (!page->d->acceptNavigationRequest(m_webFrame, request, EA::WebKit::WebPage::NavigationType(action.type()))) {
-        if (action.type() == NavigationTypeFormSubmitted || action.type() == NavigationTypeFormResubmitted)
+        if (action.type() == NavigationType::FormSubmitted || action.type() == NavigationType::FormResubmitted)
             m_frame->loader().resetMultipleFormSubmissionProtection();
 
-        if (action.type() == NavigationTypeLinkClicked && request.url().hasFragmentIdentifier()) {
+        if (action.type() == NavigationType::LinkClicked && request.url().hasFragmentIdentifier()) {
 			WebCore::ResourceRequest emptyRequest;
             m_frame->loader().activeDocumentLoader()->setLastCheckedRequest(emptyRequest);
         }
@@ -1333,11 +1230,11 @@ void FrameLoaderClientEA::startDownload(const WebCore::ResourceRequest &, const 
 //     emit m_webFrame->page()->downloadRequested(request.toNetworkRequest(m_webFrame));
 }
 
-PassRefPtr<Frame> FrameLoaderClientEA::createFrame(const URL& url, const String& name, HTMLFrameOwnerElement* ownerElement,
+RefPtr<Frame> FrameLoaderClientEA::createFrame(const URL& url, const String& name, HTMLFrameOwnerElement* ownerElement,
                                         const String& referrer, bool allowsScrolling, int marginWidth, int marginHeight)
 {
     if (!m_webFrame)
-        return 0;
+        return nullptr;
 
 	using namespace EA::WebKit;
 	
@@ -1358,7 +1255,7 @@ PassRefPtr<Frame> FrameLoaderClientEA::createFrame(const URL& url, const String&
     if (!webFrame->d->frame->page()) {
         frameData.frame.release();
 		//ASSERT(webFrame.isNull());
-        return 0;
+        return nullptr;
     }
 
     //emit m_webFrame->page()->frameCreated(webFrame);
@@ -1369,9 +1266,9 @@ PassRefPtr<Frame> FrameLoaderClientEA::createFrame(const URL& url, const String&
 
     // The frame's onload handler may have removed it from the document.
     if (!frameData.frame->tree().parent())
-        return 0;
+        return nullptr;
 
-    return frameData.frame.release();
+    return frameData.frame;
 }
 
 ObjectContentType FrameLoaderClientEA::objectContentType(const URL& url, const String& mimeTypeIn, bool)
@@ -1386,18 +1283,20 @@ ObjectContentType FrameLoaderClientEA::objectContentType(const URL& url, const S
 		mimeType = MIMETypeRegistry::getMIMETypeForExtension(extension);
 
     }
-
+    /*
 	bool arePluginsEnabled = (m_frame && m_frame->settings().arePluginsEnabled());
     if (arePluginsEnabled && !mimeType.length())
 		mimeType = PluginDatabase::installedPlugins()->MIMETypeForExtension(extension);
-
+    */
     if (!mimeType.length())
         return ObjectContentFrame;
 
 	ObjectContentType plugInType = ObjectContentNone;
+    /*
     if (arePluginsEnabled && PluginDatabase::installedPlugins()->isMIMETypeRegistered(mimeType))
 		plugInType = ObjectContentNetscapePlugin;
-	else if (m_frame->page() && m_frame->page()->pluginData().supportsMimeType(mimeType,PluginData::AllPlugins))
+	else 
+    */if (m_frame->page() && m_frame->page()->pluginData().supportsWebVisibleMimeType(mimeType,PluginData::AllPlugins))
 		plugInType = ObjectContentOtherPlugin;
 
 	if (MIMETypeRegistry::isSupportedImageMIMEType(mimeType))
@@ -1415,21 +1314,21 @@ ObjectContentType FrameLoaderClientEA::objectContentType(const URL& url, const S
 	return ObjectContentNone;
 }
 
-PassRefPtr<Widget> FrameLoaderClientEA::createPlugin(const IntSize& pluginSize, HTMLPlugInElement* element, const URL& url, const Vector<String>& paramNames,
+RefPtr<Widget> FrameLoaderClientEA::createPlugin(const IntSize& pluginSize, HTMLPlugInElement* element, const URL& url, const Vector<String>& paramNames,
                                           const Vector<String>& paramValues, const String& mimeType, bool loadManually)
 {
     if (!m_webFrame)
-        return 0;
+        return nullptr;
 
 	// we don't support plugins.
 	notImplemented();
-	return 0;
+	return nullptr;
 }
 
 void FrameLoaderClientEA::redirectDataToPlugin(Widget* pluginWidget)
 {
     ASSERT(!m_pluginView);
-    m_pluginView = static_cast<PluginView*>(pluginWidget);
+    m_pluginView = static_cast<PluginViewBase*>(pluginWidget);
     m_hasSentResponseToPlugin = false;
 }
 

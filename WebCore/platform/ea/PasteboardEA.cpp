@@ -2,7 +2,7 @@
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2006, 2007 Apple Inc.  All rights reserved.
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -42,13 +42,12 @@
 #include <internal/include/EAWebKitEASTLHelpers.h>
 namespace WebCore {
 
-PassOwnPtr<Pasteboard> Pasteboard::createForCopyAndPaste()
+std::unique_ptr<Pasteboard> Pasteboard::createForCopyAndPaste()
 {
-	OwnPtr<Pasteboard> pasteboard = adoptPtr(new Pasteboard);
-	return pasteboard.release();
+	return std::make_unique<Pasteboard>();
 }
 
-PassOwnPtr<Pasteboard> Pasteboard::createPrivate()
+std::unique_ptr<Pasteboard> Pasteboard::createPrivate()
 {
 	//No "Private pasteboard" concept.
 	return createForCopyAndPaste();
@@ -58,7 +57,7 @@ Pasteboard::Pasteboard()
 {
 }
 
-void Pasteboard::writeSelection(Range& /*selectedRange*/, bool /*canSmartCopyOrDelete*/, Frame& frame, ShouldSerializeSelectedTextForClipboard)
+void Pasteboard::writeSelection(Range& /*selectedRange*/, bool /*canSmartCopyOrDelete*/, Frame& frame, ShouldSerializeSelectedTextForDataTransfer)
 {
     String text = frame.editor().selectedText();
 
@@ -107,14 +106,14 @@ void Pasteboard::writePlainText(const String& text, SmartReplaceOption)
         cei.mpView = NULL;      // We don't have any view info at this level.
         cei.mpUserData = NULL;  // Since we have no view, no user data.
         cei.mType = kClipBoardEventWritePlainText;
-        GetFixedString(cei.mText)->assign(text.characters(), text.length());
+        GetFixedString(cei.mText)->assign(StringView(text).upconvertedCharacters(), text.length());
         pClient->ClipboardEvent(cei); 
     }
 }
 
 void Pasteboard::writeImage(Element& element, const URL&, const String&)
 {
-    ASSERT(element.renderer() && element.renderer()->isRenderImage());
+    ASSERT(element.renderer() && element.renderer()->isImage());
 }
 
 bool Pasteboard::hasData()
@@ -132,10 +131,9 @@ String Pasteboard::readString(const String& type)
 	return "";
 }
 
-bool Pasteboard::writeString(const String& /*type*/, const String& data)
+void Pasteboard::writeString(const String& /*type*/, const String& data)
 {
 	writePlainText(data, CannotSmartReplace);
-	return true;
 }
 
 void Pasteboard::clear()
@@ -157,17 +155,17 @@ Vector<String> Pasteboard::readFilenames()
 }
 
 #if ENABLE(DRAG_SUPPORT)
-PassOwnPtr<Pasteboard> Pasteboard::createForDragAndDrop()
+std::unique_ptr<Pasteboard> Pasteboard::createForDragAndDrop()
 {
 	notImplemented();
-	return adoptPtr(new Pasteboard());
+	return std::make_unique<Pasteboard>();
 }
 
 // static
-PassOwnPtr<Pasteboard> Pasteboard::createForDragAndDrop(const DragData& dragData)
+std::unique_ptr<Pasteboard> Pasteboard::createForDragAndDrop(const DragData& dragData)
 {
 	notImplemented();
-	return adoptPtr(new Pasteboard());
+	return std::make_unique<Pasteboard>();
 }
 
 void Pasteboard::setDragImage(DragImageRef, const IntPoint&)

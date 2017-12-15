@@ -19,7 +19,7 @@
  */
 #include "config.h"
 
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER)
 #include "TextureMapperTile.h"
 
 #include "Image.h"
@@ -65,14 +65,12 @@ void TextureMapperTile::updateContents(TextureMapper* textureMapper, Image* imag
 //4/28/2015
 const WTF::String* imageSrcUrl(const GraphicsLayer* layer)
 {
-    if (!layer->client())
-        return nullptr;
 
-    RenderLayerBacking* backing = static_cast<RenderLayerBacking*>(layer->client());
+    RenderLayerBacking* backing = static_cast<RenderLayerBacking*>(&(layer->client()));
     Element* element = backing->owningLayer().renderer().element();
-    if (element && isHTMLImageElement(element))
+    if (element && is<HTMLImageElement>(*element))
     {
-        const AtomicString& url = toHTMLImageElement(element)->imageSourceURL();
+        const AtomicString& url = downcast<HTMLImageElement>(element)->imageSourceURL();
         return &url.string();
     }
     return nullptr;

@@ -24,25 +24,25 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "AudioNode.h"
-#include "JSDOMBinding.h"
 #include "JSEventTarget.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSAudioNode : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSAudioNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioNode> impl)
+    static JSAudioNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioNode>&& impl)
     {
-        JSAudioNode* ptr = new (NotNull, JSC::allocateCell<JSAudioNode>(globalObject->vm().heap)) JSAudioNode(structure, globalObject, impl);
+        JSAudioNode* ptr = new (NotNull, JSC::allocateCell<JSAudioNode>(globalObject->vm().heap)) JSAudioNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static AudioNode* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,9 +58,14 @@ public:
         return static_cast<AudioNode&>(Base::impl());
     }
 protected:
-    JSAudioNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AudioNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSAudioNode(JSC::Structure*, JSDOMGlobalObject*, Ref<AudioNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSAudioNodeOwner : public JSC::WeakHandleOwner {
@@ -71,85 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, AudioNode*)
 {
-    DEFINE_STATIC_LOCAL(JSAudioNodeOwner, jsAudioNodeOwner, ());
-    return &jsAudioNodeOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, AudioNode*)
-{
-    return &world;
+    static NeverDestroyed<JSAudioNodeOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AudioNode*);
-AudioNode* toAudioNode(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAudioNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAudioNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAudioNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioNodePrototype>(vm.heap)) JSAudioNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAudioNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSAudioNodeConstructor : public DOMConstructorObject {
-private:
-    JSAudioNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSAudioNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSAudioNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSAudioNodeConstructor>(vm.heap)) JSAudioNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioNodePrototypeFunctionConnect(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioNodePrototypeFunctionDisconnect(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioNodePrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioNodePrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioNodePrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsAudioNodeContext(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioNodeNumberOfInputs(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioNodeNumberOfOutputs(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioNodeChannelCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioNodeChannelCount(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioNodeChannelCountMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioNodeChannelCountMode(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioNodeChannelInterpretation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioNodeChannelInterpretation(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

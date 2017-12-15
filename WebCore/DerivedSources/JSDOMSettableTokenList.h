@@ -22,26 +22,25 @@
 #define JSDOMSettableTokenList_h
 
 #include "DOMSettableTokenList.h"
-#include "JSDOMBinding.h"
 #include "JSDOMTokenList.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDOMSettableTokenList : public JSDOMTokenList {
 public:
     typedef JSDOMTokenList Base;
-    static JSDOMSettableTokenList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMSettableTokenList> impl)
+    static JSDOMSettableTokenList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMSettableTokenList>&& impl)
     {
-        JSDOMSettableTokenList* ptr = new (NotNull, JSC::allocateCell<JSDOMSettableTokenList>(globalObject->vm().heap)) JSDOMSettableTokenList(structure, globalObject, impl);
+        JSDOMSettableTokenList* ptr = new (NotNull, JSC::allocateCell<JSDOMSettableTokenList>(globalObject->vm().heap)) JSDOMSettableTokenList(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -49,73 +48,28 @@ public:
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
-    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode mode = JSC::ExcludeDontEnumProperties);
+    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode = JSC::EnumerationMode());
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     DOMSettableTokenList& impl() const
     {
         return static_cast<DOMSettableTokenList&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesGetPropertyNames | Base::StructureFlags;
 protected:
-    JSDOMSettableTokenList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMSettableTokenList>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-    static JSC::JSValue indexGetter(JSC::ExecState*, JSC::JSValue, unsigned);
+    JSDOMSettableTokenList(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMSettableTokenList>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMSettableTokenList*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMSettableTokenList& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMSettableTokenListPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMSettableTokenListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMSettableTokenListPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMSettableTokenListPrototype>(vm.heap)) JSDOMSettableTokenListPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMSettableTokenListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSDOMSettableTokenListConstructor : public DOMConstructorObject {
-private:
-    JSDOMSettableTokenListConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDOMSettableTokenListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDOMSettableTokenListConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMSettableTokenListConstructor>(vm.heap)) JSDOMSettableTokenListConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsDOMSettableTokenListValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSDOMSettableTokenListValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsDOMSettableTokenListConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

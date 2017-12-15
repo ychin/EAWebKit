@@ -26,8 +26,6 @@
 #ifndef WebSocketServerClient_h
 #define WebSocketServerClient_h
 
-#if ENABLE(INSPECTOR_SERVER)
-
 #include "HTTPRequest.h"
 #include <wtf/PassRefPtr.h>
 #include <wtf/text/WTFString.h>
@@ -58,6 +56,6 @@ public:
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+
 
 #endif // WebSocketServerClient_h

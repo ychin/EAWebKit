@@ -23,7 +23,6 @@
 #define DOMWrapperWorld_h
 
 #include "JSDOMGlobalObject.h"
-#include <runtime/WeakGCMap.h>
 #include <wtf/Forward.h>
 
 namespace WebCore {
@@ -32,43 +31,41 @@ class CSSValue;
 class JSDOMWrapper;
 class ScriptController;
 
-typedef HashMap<void*, JSC::Weak<JSC::JSObject> > DOMObjectWrapperMap;
-typedef JSC::WeakGCMap<StringImpl*, JSC::JSString, PtrHash<StringImpl*> > JSStringCache;
+typedef HashMap<void*, JSC::Weak<JSC::JSObject>> DOMObjectWrapperMap;
 
 class DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
 public:
-    static PassRefPtr<DOMWrapperWorld> create(JSC::VM* vm, bool isNormal = false)
+    static Ref<DOMWrapperWorld> create(JSC::VM& vm, bool isNormal = false)
     {
-        return adoptRef(new DOMWrapperWorld(vm, isNormal));
+        return adoptRef(*new DOMWrapperWorld(vm, isNormal));
     }
-    ~DOMWrapperWorld();
+    WEBCORE_EXPORT ~DOMWrapperWorld();
 
     // Free as much memory held onto by this world as possible.
-    void clearWrappers();
+    WEBCORE_EXPORT void clearWrappers();
 
     void didCreateWindowShell(ScriptController* scriptController) { m_scriptControllersWithWindowShells.add(scriptController); }
     void didDestroyWindowShell(ScriptController* scriptController) { m_scriptControllersWithWindowShells.remove(scriptController); }
 
     // FIXME: can we make this private?
     DOMObjectWrapperMap m_wrappers;
-    JSStringCache m_stringCache;
     HashMap<CSSValue*, void*> m_cssValueRoots;
 
     bool isNormal() const { return m_isNormal; }
 
-    JSC::VM* vm() const { return m_vm; }
+    JSC::VM& vm() const { return m_vm; }
 
 protected:
-    DOMWrapperWorld(JSC::VM*, bool isNormal);
+    DOMWrapperWorld(JSC::VM&, bool isNormal);
 
 private:
-    JSC::VM* m_vm;
+    JSC::VM& m_vm;
     HashSet<ScriptController*> m_scriptControllersWithWindowShells;
     bool m_isNormal;
 };
 
 DOMWrapperWorld& normalWorld(JSC::VM&);
-DOMWrapperWorld& mainThreadNormalWorld();
+WEBCORE_EXPORT DOMWrapperWorld& mainThreadNormalWorld();
 inline DOMWrapperWorld& debuggerWorld() { return mainThreadNormalWorld(); }
 inline DOMWrapperWorld& pluginWorld() { return mainThreadNormalWorld(); }
 
@@ -77,6 +74,11 @@ inline DOMWrapperWorld& currentWorld(JSC::ExecState* exec)
     return JSC::jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->world();
 }
 
+inline DOMWrapperWorld& worldForDOMObject(JSC::JSObject* object)
+{
+    return JSC::jsCast<JSDOMGlobalObject*>(object->globalObject())->world();
+}
+    
 } // namespace WebCore
 
 #endif // DOMWrapperWorld_h

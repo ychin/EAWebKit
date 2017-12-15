@@ -18,9 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-[
-    OperationsNotDeletable
-] interface HTMLFrameElement : HTMLElement {
+interface HTMLFrameElement : HTMLElement {
 
     [Reflect] attribute DOMString frameBorder;
     [Reflect] attribute DOMString longDesc;
@@ -37,10 +35,8 @@
     // Extensions
     readonly attribute DOMWindow contentWindow;
 
-#if defined(ENABLE_SVG) && ENABLE_SVG
 #if !defined(LANGUAGE_OBJECTIVE_C) || !LANGUAGE_OBJECTIVE_C
     [CheckSecurityForNode, RaisesException] SVGDocument getSVGDocument();
-#endif
 #endif
 
     [TreatNullAs=NullString, CustomSetter] attribute DOMString location;

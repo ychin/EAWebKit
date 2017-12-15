@@ -37,25 +37,81 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackCueListPrototypeFunctionItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackCueListPrototypeFunctionGetCueById(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsTextTrackCueListLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextTrackCueListConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSTextTrackCueListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSTextTrackCueListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSTextTrackCueListPrototype* ptr = new (NotNull, JSC::allocateCell<JSTextTrackCueListPrototype>(vm.heap)) JSTextTrackCueListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSTextTrackCueListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSTextTrackCueListConstructor : public DOMConstructorObject {
+private:
+    JSTextTrackCueListConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSTextTrackCueListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSTextTrackCueListConstructor* ptr = new (NotNull, JSC::allocateCell<JSTextTrackCueListConstructor>(vm.heap)) JSTextTrackCueListConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSTextTrackCueListTableIndex[5] = {
+    { -1, -1 },
+    { 0, 4 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSTextTrackCueListTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackCueListLength), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackCueListConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackCueListConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackCueListLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSTextTrackCueListTable = { 5, 3, JSTextTrackCueListTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSTextTrackCueListConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSTextTrackCueListConstructorTable = { 1, 0, JSTextTrackCueListConstructorTableValues, 0 };
-const ClassInfo JSTextTrackCueListConstructor::s_info = { "TextTrackCueListConstructor", &Base::s_info, &JSTextTrackCueListConstructorTable, 0, CREATE_METHOD_TABLE(JSTextTrackCueListConstructor) };
+static const HashTable JSTextTrackCueListTable = { 2, 3, true, JSTextTrackCueListTableValues, 0, JSTextTrackCueListTableIndex };
+const ClassInfo JSTextTrackCueListConstructor::s_info = { "TextTrackCueListConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextTrackCueListConstructor) };
 
 JSTextTrackCueListConstructor::JSTextTrackCueListConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,55 +122,43 @@ void JSTextTrackCueListConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSTextTrackCueListPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSTextTrackCueListConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSTextTrackCueListConstructor, JSDOMWrapper>(exec, JSTextTrackCueListConstructorTable, jsCast<JSTextTrackCueListConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSTextTrackCueList::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("TextTrackCueList"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSTextTrackCueListPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackCueListPrototypeFunctionItem), (intptr_t)1 },
-    { "getCueById", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackCueListPrototypeFunctionGetCueById), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackCueListPrototypeFunctionItem), (intptr_t) (1) },
+    { "getCueById", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackCueListPrototypeFunctionGetCueById), (intptr_t) (1) },
 };
 
-static const HashTable JSTextTrackCueListPrototypeTable = { 4, 3, JSTextTrackCueListPrototypeTableValues, 0 };
-const ClassInfo JSTextTrackCueListPrototype::s_info = { "TextTrackCueListPrototype", &Base::s_info, &JSTextTrackCueListPrototypeTable, 0, CREATE_METHOD_TABLE(JSTextTrackCueListPrototype) };
+const ClassInfo JSTextTrackCueListPrototype::s_info = { "TextTrackCueListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextTrackCueListPrototype) };
 
-JSObject* JSTextTrackCueListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSTextTrackCueList>(vm, globalObject);
-}
-
-bool JSTextTrackCueListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSTextTrackCueListPrototype* thisObject = jsCast<JSTextTrackCueListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSTextTrackCueListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSTextTrackCueList::s_info = { "TextTrackCueList", &Base::s_info, &JSTextTrackCueListTable, 0 , CREATE_METHOD_TABLE(JSTextTrackCueList) };
-
-JSTextTrackCueList::JSTextTrackCueList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TextTrackCueList> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSTextTrackCueList::finishCreation(VM& vm)
+void JSTextTrackCueListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSTextTrackCueListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSTextTrackCueList::s_info = { "TextTrackCueList", &Base::s_info, &JSTextTrackCueListTable, CREATE_METHOD_TABLE(JSTextTrackCueList) };
+
+JSTextTrackCueList::JSTextTrackCueList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<TextTrackCueList>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSTextTrackCueList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSTextTrackCueListPrototype::create(vm, globalObject, JSTextTrackCueListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSTextTrackCueList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSTextTrackCueList>(vm, globalObject);
 }
 
 void JSTextTrackCueList::destroy(JSC::JSCell* cell)
@@ -125,22 +169,23 @@ void JSTextTrackCueList::destroy(JSC::JSCell* cell)
 
 JSTextTrackCueList::~JSTextTrackCueList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSTextTrackCueList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSTextTrackCueList* thisObject = jsCast<JSTextTrackCueList*>(object);
+    auto* thisObject = jsCast<JSTextTrackCueList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSTextTrackCueList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSTextTrackCueList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSTextTrackCueList, Base>(exec, JSTextTrackCueListTable, thisObject, propertyName, slot);
@@ -148,39 +193,43 @@ bool JSTextTrackCueList::getOwnPropertySlot(JSObject* object, ExecState* exec, P
 
 bool JSTextTrackCueList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSTextTrackCueList* thisObject = jsCast<JSTextTrackCueList*>(object);
+    auto* thisObject = jsCast<JSTextTrackCueList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsTextTrackCueListLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTextTrackCueListLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTextTrackCueList* castedThis = jsCast<JSTextTrackCueList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TextTrackCueList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSTextTrackCueList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTextTrackCueListConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTextTrackCueListConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSTextTrackCueList* domObject = jsCast<JSTextTrackCueList*>(asObject(slotBase));
-    return JSTextTrackCueList::getConstructor(exec->vm(), domObject->globalObject());
+    JSTextTrackCueList* domObject = jsDynamicCast<JSTextTrackCueList*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSTextTrackCueList::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 void JSTextTrackCueList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSTextTrackCueList* thisObject = jsCast<JSTextTrackCueList*>(object);
+    auto* thisObject = jsCast<JSTextTrackCueList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 JSValue JSTextTrackCueList::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -190,77 +239,57 @@ JSValue JSTextTrackCueList::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsTextTrackCueListPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrackCueList::info()))
-        return throwVMTypeError(exec);
-    JSTextTrackCueList* castedThis = jsCast<JSTextTrackCueList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrackCueList* castedThis = jsDynamicCast<JSTextTrackCueList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrackCueList", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrackCueList::info());
-    TextTrackCueList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsTextTrackCueListPrototypeFunctionGetCueById(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrackCueList::info()))
-        return throwVMTypeError(exec);
-    JSTextTrackCueList* castedThis = jsCast<JSTextTrackCueList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrackCueList* castedThis = jsDynamicCast<JSTextTrackCueList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrackCueList", "getCueById");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrackCueList::info());
-    TextTrackCueList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& id(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String id = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getCueById(id)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getCueById(id)));
     return JSValue::encode(result);
-}
-
-
-JSValue JSTextTrackCueList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSTextTrackCueList* thisObj = jsCast<JSTextTrackCueList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
-}
-
-static inline bool isObservable(JSTextTrackCueList* jsTextTrackCueList)
-{
-    if (jsTextTrackCueList->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSTextTrackCueListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSTextTrackCueList* jsTextTrackCueList = jsCast<JSTextTrackCueList*>(handle.get().asCell());
-    if (!isObservable(jsTextTrackCueList))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSTextTrackCueListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSTextTrackCueList* jsTextTrackCueList = jsCast<JSTextTrackCueList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsTextTrackCueList = jsCast<JSTextTrackCueList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsTextTrackCueList->impl(), jsTextTrackCueList);
-    jsTextTrackCueList->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TextTrackCueList* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, TextTrackCueList* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSTextTrackCueList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSTextTrackCueList>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -269,13 +298,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TextTra
     // attribute to TextTrackCueList.
     COMPILE_ASSERT(!__is_polymorphic(TextTrackCueList), TextTrackCueList_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<TextTrackCueList>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSTextTrackCueList>(exec, globalObject, impl);
+    return createNewWrapper<JSTextTrackCueList>(globalObject, impl);
 }
 
-TextTrackCueList* toTextTrackCueList(JSC::JSValue value)
+TextTrackCueList* JSTextTrackCueList::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSTextTrackCueList::info()) ? &jsCast<JSTextTrackCueList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSTextTrackCueList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

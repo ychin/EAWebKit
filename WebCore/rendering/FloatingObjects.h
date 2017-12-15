@@ -33,8 +33,6 @@ namespace WebCore {
 class RenderBlockFlow;
 class RenderBox;
 
-enum ShapeOutsideFloatOffsetMode { ShapeOutsideFloatShapeOffset, ShapeOutsideFloatMarginBoxOffset };
-
 class FloatingObject {
     WTF_MAKE_NONCOPYABLE(FloatingObject); WTF_MAKE_FAST_ALLOCATED;
 public:
@@ -69,8 +67,8 @@ public:
     const LayoutRect& frameRect() const { ASSERT(isPlaced()); return m_frameRect; }
     void setFrameRect(const LayoutRect& frameRect) { ASSERT(!isInPlacedTree()); m_frameRect = frameRect; }
 
-    int paginationStrut() const { return m_paginationStrut; }
-    void setPaginationStrut(int strut) { m_paginationStrut = strut; }
+    LayoutUnit paginationStrut() const { return m_paginationStrut; }
+    void setPaginationStrut(LayoutUnit strut) { m_paginationStrut = strut; }
 
 #ifndef NDEBUG
     bool isInPlacedTree() const { return m_isInPlacedTree; }
@@ -90,7 +88,7 @@ private:
     RenderBox& m_renderer;
     RootInlineBox* m_originatingLine;
     LayoutRect m_frameRect;
-    int m_paginationStrut; // FIXME: This should be a LayoutUnit, since it's a vertical offset.
+    LayoutUnit m_paginationStrut;
 
     unsigned m_type : 2; // Type (left or right aligned)
     unsigned m_shouldPaint : 1;
@@ -113,11 +111,10 @@ struct FloatingObjectHashTranslator {
     static bool equal(const std::unique_ptr<FloatingObject>& a, const FloatingObject& b) { return &a->renderer() == &b.renderer(); }
 };
 
-typedef ListHashSet<std::unique_ptr<FloatingObject>, 4, FloatingObjectHashFunctions> FloatingObjectSet;
+typedef ListHashSet<std::unique_ptr<FloatingObject>, FloatingObjectHashFunctions> FloatingObjectSet;
 
-typedef PODInterval<int, FloatingObject*> FloatingObjectInterval;
-typedef PODIntervalTree<int, FloatingObject*> FloatingObjectTree;
-typedef PODFreeListArena<PODRedBlackTree<FloatingObjectInterval>::Node> IntervalArena;
+typedef PODInterval<LayoutUnit, FloatingObject*> FloatingObjectInterval;
+typedef PODIntervalTree<LayoutUnit, FloatingObject*> FloatingObjectTree;
 
 // FIXME: This is really the same thing as FloatingObjectSet.
 // Change clients to use that set directly, and replace the moveAllToFloatInfoMap function with a takeSet function.
@@ -126,7 +123,7 @@ typedef HashMap<RenderBox*, std::unique_ptr<FloatingObject>> RendererToFloatInfo
 class FloatingObjects {
     WTF_MAKE_NONCOPYABLE(FloatingObjects); WTF_MAKE_FAST_ALLOCATED;
 public:
-    FloatingObjects(const RenderBlockFlow*, bool horizontalWritingMode);
+    explicit FloatingObjects(const RenderBlockFlow&);
     ~FloatingObjects();
 
     void clear();
@@ -141,31 +138,38 @@ public:
     bool hasRightObjects() const { return m_rightObjectsCount > 0; }
     const FloatingObjectSet& set() const { return m_set; }
     void clearLineBoxTreePointers();
-    LayoutUnit logicalLeftOffset(LayoutUnit fixedOffset, LayoutUnit logicalTop, LayoutUnit logicalHeight, ShapeOutsideFloatOffsetMode = ShapeOutsideFloatShapeOffset, LayoutUnit* heightRemaining = 0);
-    LayoutUnit logicalRightOffset(LayoutUnit fixedOffset, LayoutUnit logicalTop, LayoutUnit logicalHeight, ShapeOutsideFloatOffsetMode = ShapeOutsideFloatShapeOffset, LayoutUnit* heightRemaining = 0);
+
+    LayoutUnit logicalLeftOffset(LayoutUnit fixedOffset, LayoutUnit logicalTop, LayoutUnit logicalHeight);
+    LayoutUnit logicalRightOffset(LayoutUnit fixedOffset, LayoutUnit logicalTop, LayoutUnit logicalHeight);
+
+    LayoutUnit logicalLeftOffsetForPositioningFloat(LayoutUnit fixedOffset, LayoutUnit logicalTop, LayoutUnit* heightRemaining);
+    LayoutUnit logicalRightOffsetForPositioningFloat(LayoutUnit fixedOffset, LayoutUnit logicalTop, LayoutUnit* heightRemaining);
+
+    LayoutUnit findNextFloatLogicalBottomBelow(LayoutUnit logicalHeight);
+    LayoutUnit findNextFloatLogicalBottomBelowForBlock(LayoutUnit logicalHeight);
 
 private:
     void computePlacedFloatsTree();
-    const FloatingObjectTree& placedFloatsTree();
+    const FloatingObjectTree* placedFloatsTree();
     void increaseObjectsCount(FloatingObject::Type);
     void decreaseObjectsCount(FloatingObject::Type);
     FloatingObjectInterval intervalForFloatingObject(FloatingObject*);
 
     FloatingObjectSet m_set;
-    FloatingObjectTree m_placedFloatsTree;
+    std::unique_ptr<FloatingObjectTree> m_placedFloatsTree;
     unsigned m_leftObjectsCount;
     unsigned m_rightObjectsCount;
     bool m_horizontalWritingMode;
-    const RenderBlockFlow* m_renderer;
+    const RenderBlockFlow& m_renderer;
 };
 
 #ifndef NDEBUG
-// These structures are used by PODIntervalTree for debugging purposes.
-template <> struct ValueToString<int> {
-    static String string(const int value);
-};
+// This helper is used by PODIntervalTree for debugging purposes.
 template<> struct ValueToString<FloatingObject*> {
-    static String string(const FloatingObject*);
+    static String string(const FloatingObject* floatingObject)
+    {
+        return String::format("%p (%ix%i %ix%i)", floatingObject, floatingObject->frameRect().x().toInt(), floatingObject->frameRect().y().toInt(), floatingObject->frameRect().maxX().toInt(), floatingObject->frameRect().maxY().toInt());
+    }
 };
 #endif
 

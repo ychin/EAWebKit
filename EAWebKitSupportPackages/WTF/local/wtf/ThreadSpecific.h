@@ -2,7 +2,7 @@
  * Copyright (C) 2008 Apple Inc. All rights reserved.
  * Copyright (C) 2009 Jian Li <jianli@chromium.org>
  * Copyright (C) 2012 Patrick Gansterer <paroga@paroga.com>
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,7 +13,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -60,7 +60,7 @@
 
 namespace WTF {
 
-#if OS(WINDOWS) 
+#if OS(WINDOWS)
 // ThreadSpecificThreadExit should be called each time when a thread is detached.
 // This is done automatically for threads created with WTF::createThread.
 void ThreadSpecificThreadExit();
@@ -122,8 +122,19 @@ private:
 };
 
 //+EAWebKitChange
-//2/19/2014
+//3/16/2015
 #if PLATFORM(EA)
+class PlatformThreadSpecificKey;
+typedef PlatformThreadSpecificKey* ThreadSpecificKey;
+
+WTF_EXPORT_PRIVATE void threadSpecificKeyCreate(ThreadSpecificKey*, void(*)(void *));
+WTF_EXPORT_PRIVATE void threadSpecificKeyDelete(ThreadSpecificKey);
+WTF_EXPORT_PRIVATE void threadSpecificSet(ThreadSpecificKey, void*);
+WTF_EXPORT_PRIVATE void* threadSpecificGet(ThreadSpecificKey);
+//-EAWebKitChange
+
+//+EAWebKitChange
+//2/19/2014
 template<typename T>
 inline ThreadSpecific<T>::ThreadSpecific()
 {
@@ -203,11 +214,6 @@ inline void ThreadSpecific<T>::set(T* ptr)
 
 #elif OS(WINDOWS)
 
-// TLS_OUT_OF_INDEXES is not defined on WinCE.
-#ifndef TLS_OUT_OF_INDEXES
-#define TLS_OUT_OF_INDEXES 0xffffffff
-#endif
-
 // The maximum number of TLS keys that can be created. For simplification, we assume that:
 // 1) Once the instance of ThreadSpecific<> is created, it will not be destructed until the program dies.
 // 2) We do not need to hold many instances of ThreadSpecific<> data. This fixed number should be far enough.
@@ -279,9 +285,12 @@ inline void ThreadSpecific<T>::destroy(void* ptr)
     data->value->~T();
     fastFree(data->value);
 
+//+EAWebKitChange
+//2/19/2014
 #if PLATFORM(EA)
 	data->owner->m_key->SetValue(0);
 #elif USE(PTHREADS)
+//-EAWebKitChange
     pthread_setspecific(data->owner->m_key, 0);
 #elif OS(WINDOWS)
     TlsSetValue(tlsKeys()[data->owner->m_index], 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,7 +26,8 @@
 #include "config.h"
 #include "Disassembler.h"
 
-#if USE(UDIS86) || USE(LLVM_DISASSEMBLER)
+#if ENABLE(DISASSEMBLER)
+#if USE(UDIS86) || (USE(LLVM_DISASSEMBLER) && (CPU(X86_64) || CPU(X86)))
 
 #include "MacroAssemblerCodeRef.h"
 #include "Options.h"
@@ -70,4 +71,4 @@ bool tryToDisassemble(const MacroAssemblerCodePtr& codePtr, size_t size, const c
 } // namespace JSC
 
 #endif // USE(UDIS86) || USE(LLVM_DISASSEMBLER)
-
+#endif // ENABLE(DISASSEMBLER)

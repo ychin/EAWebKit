@@ -37,6 +37,7 @@
 #include "HTMLAnchorElement.cpp"
 #include "HTMLAppletElement.cpp"
 #include "HTMLAreaElement.cpp"
+#include "HTMLAttachmentElement.cpp"
 #include "HTMLAudioElement.cpp"
 #include "HTMLBRElement.cpp"
 #include "HTMLBaseElement.cpp"
@@ -83,6 +84,7 @@
 #include "HTMLObjectElement.cpp"
 #include "HTMLOptGroupElement.cpp"
 #include "HTMLOptionElement.cpp"
+#include "HTMLOutputElement.cpp"
 #include "HTMLParagraphElement.cpp"
 #include "HTMLParamElement.cpp"
 #include "HTMLPlugInImageElement.cpp"
@@ -109,4 +111,5 @@
 #include "HTMLTrackElement.cpp"
 #include "HTMLUListElement.cpp"
 #include "HTMLVideoElement.cpp"
+#include "HTMLWBRElement.cpp"
 

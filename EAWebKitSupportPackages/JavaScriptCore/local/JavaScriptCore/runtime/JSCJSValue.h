@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003, 2004, 2005, 2007, 2008, 2009, 2012 Apple Inc. All rights reserved.
+ *  Copyright (C) 2003, 2004, 2005, 2007, 2008, 2009, 2012, 2015 Apple Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,22 +23,22 @@
 #ifndef JSCJSValue_h
 #define JSCJSValue_h
 
+#include "JSExportMacros.h"
+#include "PureNaN.h"
+#include <functional>
 #include <math.h>
-#include <stddef.h> // for size_t
+#include <stddef.h>
 #include <stdint.h>
 #include <wtf/Assertions.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashTraits.h>
 #include <wtf/MathExtras.h>
+#include <wtf/MediaTime.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TriState.h>
 
 namespace JSC {
-
-// This is used a lot throughout JavaScriptCore for everything from value boxing to marking
-// values as being missing, so it is useful to have it abbreviated.
-#define QNaN (std::numeric_limits<double>::quiet_NaN())
 
 class AssemblyHelpers;
 class ExecState;
@@ -48,9 +48,11 @@ class VM;
 class JSGlobalObject;
 class JSObject;
 class JSString;
+class Identifier;
 class PropertyName;
 class PropertySlot;
 class PutPropertySlot;
+class Structure;
 #if ENABLE(DFG_JIT)
 namespace DFG {
 class JITCompiler;
@@ -58,7 +60,7 @@ class OSRExitCompiler;
 class SpeculativeJIT;
 }
 #endif
-#if ENABLE(LLINT_C_LOOP)
+#if !ENABLE(JIT)
 namespace LLInt {
 class CLoop;
 }
@@ -97,6 +99,15 @@ union EncodedValueDescriptor {
 #endif
 };
 
+#define TagOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.tag))
+#define PayloadOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.payload))
+
+#if USE(JSVALUE64)
+#define CellPayloadOffset 0
+#else
+#define CellPayloadOffset PayloadOffset
+#endif
+
 enum WhichValueWord {
     TagWord,
     PayloadWord
@@ -113,8 +124,18 @@ inline uint32_t toUInt32(double number)
     return toInt32(number);
 }
 
+int64_t tryConvertToInt52(double);
+bool isInt52(double);
+
+enum class SourceCodeRepresentation {
+    Other,
+    Integer,
+    Double
+};
+
 class JSValue {
     friend struct EncodedJSValueHashTraits;
+    friend struct EncodedJSValueWithRepresentationHashTraits;
     friend class AssemblyHelpers;
     friend class JIT;
     friend class JITSlowPathCall;
@@ -128,7 +149,7 @@ class JSValue {
     friend class DFG::OSRExitCompiler;
     friend class DFG::SpeculativeJIT;
 #endif
-#if ENABLE(LLINT_C_LOOP)
+#if !ENABLE(JIT)
     friend class LLInt::CLoop;
 #endif
 
@@ -176,8 +197,7 @@ public:
     explicit JSValue(long long);
     explicit JSValue(unsigned long long);
 
-    typedef void* (JSValue::*UnspecifiedBoolType);
-    operator UnspecifiedBoolType*() const;
+    explicit operator bool() const;
     bool operator==(const JSValue& other) const;
     bool operator!=(const JSValue& other) const;
 
@@ -193,6 +213,8 @@ public:
     double asDouble() const;
     bool asBoolean() const;
     double asNumber() const;
+    
+    int32_t asInt32ForArithmetic() const; // Boolean becomes an int, but otherwise like asInt32().
 
     // Querying the type.
     bool isEmpty() const;
@@ -204,8 +226,10 @@ public:
     bool isMachineInt() const;
     bool isNumber() const;
     bool isString() const;
+    bool isSymbol() const;
     bool isPrimitive() const;
     bool isGetterSetter() const;
+    bool isCustomGetterSetter() const;
     bool isObject() const;
     bool inherits(const ClassInfo*) const;
         
@@ -228,19 +252,19 @@ public:
     // been set in the ExecState already.
     double toNumber(ExecState*) const;
     JSString* toString(ExecState*) const;
+    Identifier toPropertyKey(ExecState*) const;
     WTF::String toWTFString(ExecState*) const;
-    WTF::String toWTFStringInline(ExecState*) const;
     JSObject* toObject(ExecState*) const;
     JSObject* toObject(ExecState*, JSGlobalObject*) const;
 
     // Integer conversions.
     JS_EXPORT_PRIVATE double toInteger(ExecState*) const;
-    double toIntegerPreserveNaN(ExecState*) const;
+    JS_EXPORT_PRIVATE double toIntegerPreserveNaN(ExecState*) const;
     int32_t toInt32(ExecState*) const;
     uint32_t toUInt32(ExecState*) const;
 
-    // Floating point conversions (this is a convenience method for webcore;
-    // signle precision float is not a representation used in JS or JSC).
+    // Floating point conversions (this is a convenience function for WebCore;
+    // single precision float is not a representation used in JS or JSC).
     float toFloat(ExecState* exec) const { return static_cast<float>(toNumber(exec)); }
 
     // Object operations, with the toObject operation included.
@@ -248,9 +272,12 @@ public:
     JSValue get(ExecState*, PropertyName, PropertySlot&) const;
     JSValue get(ExecState*, unsigned propertyName) const;
     JSValue get(ExecState*, unsigned propertyName, PropertySlot&) const;
+
+    bool getPropertySlot(ExecState*, PropertyName, PropertySlot&) const;
+
     void put(ExecState*, PropertyName, JSValue, PutPropertySlot&);
-    void putToPrimitive(ExecState*, PropertyName, JSValue, PutPropertySlot&);
-    void putToPrimitiveByIndex(ExecState*, unsigned propertyName, JSValue, bool shouldThrow);
+    JS_EXPORT_PRIVATE void putToPrimitive(ExecState*, PropertyName, JSValue, PutPropertySlot&);
+    JS_EXPORT_PRIVATE void putToPrimitiveByIndex(ExecState*, unsigned propertyName, JSValue, bool shouldThrow);
     void putByIndex(ExecState*, unsigned propertyName, JSValue, bool shouldThrow);
 
     JSValue toThis(ExecState*, ECMAMode) const;
@@ -266,34 +293,25 @@ public:
     bool isCell() const;
     JSCell* asCell() const;
     JS_EXPORT_PRIVATE bool isValidCallee();
-        
+
     JSValue structureOrUndefined() const;
 
     JS_EXPORT_PRIVATE void dump(PrintStream&) const;
     void dumpInContext(PrintStream&, DumpContext*) const;
+    void dumpInContextAssumingStructure(PrintStream&, DumpContext*, Structure*) const;
+    void dumpForBacktrace(PrintStream&) const;
 
     JS_EXPORT_PRIVATE JSObject* synthesizePrototype(ExecState*) const;
+    bool requireObjectCoercible(ExecState*) const;
 
     // Constants used for Int52. Int52 isn't part of JSValue right now, but JSValues may be
     // converted to Int52s and back again.
     static const unsigned numberOfInt52Bits = 52;
+    static const int64_t notInt52 = static_cast<int64_t>(1) << numberOfInt52Bits;
     static const unsigned int52ShiftAmount = 12;
     
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(JSValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(JSValue, u.asBits.tag); }
-
-private:
-    template <class T> JSValue(WriteBarrierBase<T>);
-
-    enum HashTableDeletedValueTag { HashTableDeletedValue };
-    JSValue(HashTableDeletedValueTag);
-
-    inline const JSValue asValue() const { return *this; }
-    JS_EXPORT_PRIVATE double toNumberSlowCase(ExecState*) const;
-    JS_EXPORT_PRIVATE JSString* toStringSlowCase(ExecState*) const;
-    JS_EXPORT_PRIVATE WTF::String toWTFStringSlowCase(ExecState*) const;
-    JS_EXPORT_PRIVATE JSObject* toObjectSlowCase(ExecState*, JSGlobalObject*) const;
-    JS_EXPORT_PRIVATE JSValue toThisSlowCase(ExecState*, ECMAMode) const;
 
 #if USE(JSVALUE32_64)
     /*
@@ -317,7 +335,7 @@ private:
     uint32_t tag() const;
     int32_t payload() const;
 
-#if ENABLE(LLINT_C_LOOP)
+#if !ENABLE(JIT)
     // This should only be used by the LLInt C Loop interpreter who needs
     // synthesize JSValue from its "register"s holding tag and payload
     // values.
@@ -340,7 +358,7 @@ private:
      *
      * This range of NaN space is represented by 64-bit numbers begining with the 16-bit
      * hex patterns 0xFFFE and 0xFFFF - we rely on the fact that no valid double-precision
-     * numbers will begin fall in these ranges.
+     * numbers will fall in these ranges.
      *
      * The top 16-bits denote the type of the encoded JSValue:
      *
@@ -354,7 +372,7 @@ private:
      * 64-bit integer addition of the value 2^48 to the number. After this manipulation
      * no encoded double-precision value will begin with the pattern 0x0000 or 0xFFFF.
      * Values must be decoded by reversing this operation before subsequent floating point
-     * operations my be peformed.
+     * operations may be peformed.
      *
      * 32-bit signed integers are marked with the 16-bit tag 0xFFFF.
      *
@@ -407,6 +425,19 @@ private:
     #define ValueDeleted 0x4ll
 #endif
 
+private:
+    template <class T> JSValue(WriteBarrierBase<T>);
+
+    enum HashTableDeletedValueTag { HashTableDeletedValue };
+    JSValue(HashTableDeletedValueTag);
+
+    inline const JSValue asValue() const { return *this; }
+    JS_EXPORT_PRIVATE double toNumberSlowCase(ExecState*) const;
+    JS_EXPORT_PRIVATE JSString* toStringSlowCase(ExecState*) const;
+    JS_EXPORT_PRIVATE WTF::String toWTFStringSlowCase(ExecState*) const;
+    JS_EXPORT_PRIVATE JSObject* toObjectSlowCase(ExecState*, JSGlobalObject*) const;
+    JS_EXPORT_PRIVATE JSValue toThisSlowCase(ExecState*, ECMAMode) const;
+
     EncodedValueDescriptor u;
 };
 
@@ -426,7 +457,26 @@ struct EncodedJSValueHashTraits : HashTraits<EncodedJSValue> {
 };
 #endif
 
-typedef HashMap<EncodedJSValue, unsigned, EncodedJSValueHash, EncodedJSValueHashTraits> JSValueMap;
+typedef std::pair<EncodedJSValue, SourceCodeRepresentation> EncodedJSValueWithRepresentation;
+
+struct EncodedJSValueWithRepresentationHashTraits : HashTraits<EncodedJSValueWithRepresentation> {
+    static const bool emptyValueIsZero = false;
+    static EncodedJSValueWithRepresentation emptyValue() { return std::make_pair(JSValue::encode(JSValue()), SourceCodeRepresentation::Other); }
+    static void constructDeletedValue(EncodedJSValueWithRepresentation& slot) { slot = std::make_pair(JSValue::encode(JSValue(JSValue::HashTableDeletedValue)), SourceCodeRepresentation::Other); }
+    static bool isDeletedValue(EncodedJSValueWithRepresentation value) { return value == std::make_pair(JSValue::encode(JSValue(JSValue::HashTableDeletedValue)), SourceCodeRepresentation::Other); }
+};
+
+struct EncodedJSValueWithRepresentationHash {
+    static unsigned hash(const EncodedJSValueWithRepresentation& value)
+    {
+        return WTF::pairIntHash(EncodedJSValueHash::hash(value.first), IntHash<SourceCodeRepresentation>::hash(value.second));
+    }
+    static bool equal(const EncodedJSValueWithRepresentation& a, const EncodedJSValueWithRepresentation& b)
+    {
+        return a == b;
+    }
+    static const bool safeToCompareToEmptyOrDeleted = true;
+};
 
 // Stand-alone helper functions.
 inline JSValue jsNull()
@@ -437,6 +487,11 @@ inline JSValue jsNull()
 inline JSValue jsUndefined()
 {
     return JSValue(JSValue::JSUndefined);
+}
+
+inline JSValue jsTDZValue()
+{
+    return JSValue();
 }
 
 inline JSValue jsBoolean(bool b)
@@ -454,6 +509,11 @@ ALWAYS_INLINE JSValue jsNumber(double d)
 {
     ASSERT(JSValue(d).isNumber());
     return JSValue(d);
+}
+
+ALWAYS_INLINE JSValue jsNumber(MediaTime t)
+{
+    return jsNumber(t.toDouble());
 }
 
 ALWAYS_INLINE JSValue jsNumber(char i)

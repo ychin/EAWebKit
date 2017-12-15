@@ -24,6 +24,7 @@
 #include "RenderTextFragment.h"
 
 #include "RenderBlock.h"
+#include "RenderIterator.h"
 #include "Text.h"
 
 namespace WebCore {
@@ -57,15 +58,9 @@ RenderTextFragment::~RenderTextFragment()
 {
 }
 
-String RenderTextFragment::originalText() const
-{
-    String result = textNode() ? textNode()->data() : contentString();
-    return result.substring(start(), end());
-}
-
 bool RenderTextFragment::canBeSelectionLeaf() const
 {
-    return textNode() && textNode()->rendererIsEditable();
+    return textNode() && textNode()->hasEditableStyle();
 }
 
 void RenderTextFragment::styleDidChange(StyleDifference diff, const RenderStyle* oldStyle)
@@ -73,7 +68,7 @@ void RenderTextFragment::styleDidChange(StyleDifference diff, const RenderStyle*
     RenderText::styleDidChange(diff, oldStyle);
 
     if (RenderBlock* block = blockForAccompanyingFirstLetter()) {
-        block->style()->removeCachedPseudoStyle(FIRST_LETTER);
+        block->style().removeCachedPseudoStyle(FIRST_LETTER);
         block->updateFirstLetter();
     }
 }
@@ -93,21 +88,12 @@ void RenderTextFragment::setText(const String& text, bool force)
     m_end = textLength();
     if (!m_firstLetter)
         return;
-    ASSERT(!m_contentString);
     m_firstLetter->destroy();
     m_firstLetter = 0;
     if (!textNode())
         return;
     ASSERT(!textNode()->renderer());
     textNode()->setRenderer(this);
-}
-
-void RenderTextFragment::transformText()
-{
-    // Don't reset first-letter here because we are only transforming the truncated fragment.
-    String textToTransform = originalText();
-    if (!textToTransform.isNull())
-        RenderText::setText(textToTransform, true);
 }
 
 UChar RenderTextFragment::previousCharacter() const
@@ -121,15 +107,21 @@ UChar RenderTextFragment::previousCharacter() const
     return RenderText::previousCharacter();
 }
 
-RenderBlock* RenderTextFragment::blockForAccompanyingFirstLetter() const
+RenderBlock* RenderTextFragment::blockForAccompanyingFirstLetter()
 {
     if (!m_firstLetter)
-        return 0;
-    for (RenderObject* block = m_firstLetter->parent(); block; block = block->parent()) {
-        if (block->style()->hasPseudoStyle(FIRST_LETTER) && block->canHaveChildren() && block->isRenderBlock())
-            return toRenderBlock(block);
+        return nullptr;
+    for (auto& block : ancestorsOfType<RenderBlock>(*m_firstLetter)) {
+        if (block.style().hasPseudoStyle(FIRST_LETTER) && block.canHaveChildren())
+            return &block;
     }
-    return 0;
+    return nullptr;
+}
+
+void RenderTextFragment::setContentString(const String& text)
+{
+    m_contentString = text;
+    setText(text);
 }
 
 } // namespace WebCore

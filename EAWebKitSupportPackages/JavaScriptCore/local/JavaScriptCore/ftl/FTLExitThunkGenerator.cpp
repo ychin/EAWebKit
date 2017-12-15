@@ -51,10 +51,7 @@ void ExitThunkGenerator::emitThunk(unsigned index)
     OSRExitCompilationInfo& info = m_state.finalizer->osrExit[index];
     
     info.m_thunkLabel = label();
-    if (Options::ftlOSRExitUsesStackmap())
-        push(TrustedImm32(index));
-    else
-        move(TrustedImm32(index), GPRInfo::nonArgGPR0);
+    pushToSaveImmediateWithoutTouchingRegisters(TrustedImm32(index));
     info.m_thunkJump = patchableJump();
     
     m_didThings = true;

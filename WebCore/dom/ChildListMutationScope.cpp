@@ -33,13 +33,9 @@
 #include "ChildListMutationScope.h"
 
 #include "DocumentFragment.h"
-#include "Element.h"
 #include "MutationObserverInterestGroup.h"
 #include "MutationRecord.h"
-#include "Node.h"
 #include "StaticNodeList.h"
-#include <wtf/HashMap.h>
-#include <wtf/OwnPtr.h>
 #include <wtf/StdLibExtras.h>
 
 namespace WebCore {
@@ -47,14 +43,14 @@ namespace WebCore {
 typedef HashMap<ContainerNode*, ChildListMutationAccumulator*> AccumulatorMap;
 static AccumulatorMap& accumulatorMap()
 {
-    DEFINE_STATIC_LOCAL(AccumulatorMap, map, ());
+    DEPRECATED_DEFINE_STATIC_LOCAL(AccumulatorMap, map, ());
     return map;
 }
 
-ChildListMutationAccumulator::ChildListMutationAccumulator(ContainerNode& target, PassOwnPtr<MutationObserverInterestGroup> observers)
+ChildListMutationAccumulator::ChildListMutationAccumulator(ContainerNode& target, std::unique_ptr<MutationObserverInterestGroup> observers)
     : m_target(target)
-    , m_lastAdded(0)
-    , m_observers(observers)
+    , m_lastAdded(nullptr)
+    , m_observers(WTF::move(observers))
 {
 }
 
@@ -62,7 +58,7 @@ ChildListMutationAccumulator::~ChildListMutationAccumulator()
 {
     if (!isEmpty())
         enqueueMutationRecord();
-    accumulatorMap().remove(&m_target.get());
+    accumulatorMap().remove(m_target.ptr());
 }
 
 PassRefPtr<ChildListMutationAccumulator> ChildListMutationAccumulator::getOrCreate(ContainerNode& target)
@@ -89,7 +85,7 @@ void ChildListMutationAccumulator::childAdded(Node& childRef)
 
     Ref<Node> child(childRef);
 
-    if (!isAddedNodeInOrder(child.get()))
+    if (!isAddedNodeInOrder(child))
         enqueueMutationRecord();
 
     if (isEmpty()) {
@@ -97,7 +93,7 @@ void ChildListMutationAccumulator::childAdded(Node& childRef)
         m_nextSibling = child->nextSibling();
     }
 
-    m_lastAdded = &child.get();
+    m_lastAdded = child.ptr();
     m_addedNodes.append(child.get());
 }
 
@@ -112,7 +108,7 @@ void ChildListMutationAccumulator::willRemoveChild(Node& childRef)
 
     Ref<Node> child(childRef);
 
-    if (!m_addedNodes.isEmpty() || !isRemovedNodeInOrder(child.get()))
+    if (!m_addedNodes.isEmpty() || !isRemovedNodeInOrder(child))
         enqueueMutationRecord();
 
     if (isEmpty()) {
@@ -132,7 +128,7 @@ void ChildListMutationAccumulator::enqueueMutationRecord()
 
     RefPtr<NodeList> addedNodes = StaticNodeList::adopt(m_addedNodes);
     RefPtr<NodeList> removedNodes = StaticNodeList::adopt(m_removedNodes);
-    RefPtr<MutationRecord> record = MutationRecord::createChildList(m_target.get(), addedNodes.release(), removedNodes.release(), m_previousSibling.release(), m_nextSibling.release());
+    RefPtr<MutationRecord> record = MutationRecord::createChildList(m_target, addedNodes.release(), removedNodes.release(), m_previousSibling.release(), m_nextSibling.release());
     m_observers->enqueueMutationRecord(record.release());
     m_lastAdded = 0;
     ASSERT(isEmpty());

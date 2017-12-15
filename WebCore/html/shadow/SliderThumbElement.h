@@ -41,63 +41,98 @@ namespace WebCore {
 
 class HTMLInputElement;
 class FloatPoint;
+class TouchEvent;
 
-class SliderThumbElement FINAL : public HTMLDivElement {
+class SliderThumbElement final : public HTMLDivElement {
 public:
-    static PassRefPtr<SliderThumbElement> create(Document&);
+    static Ref<SliderThumbElement> create(Document&);
 
     void setPositionFromValue();
     void dragFrom(const LayoutPoint&);
     HTMLInputElement* hostInput() const;
     void setPositionFromPoint(const LayoutPoint&);
 
+#if ENABLE(IOS_TOUCH_EVENTS)
+    void handleTouchEvent(TouchEvent*);
+
+    void disabledAttributeChanged();
+#endif
+
 private:
     SliderThumbElement(Document&);
 
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&) OVERRIDE;
-    virtual PassRefPtr<Element> cloneElementWithoutAttributesAndChildren() OVERRIDE;
-    virtual bool isDisabledFormControl() const OVERRIDE;
-    virtual bool matchesReadOnlyPseudoClass() const OVERRIDE;
-    virtual bool matchesReadWritePseudoClass() const OVERRIDE;
-    virtual Element* focusDelegate() OVERRIDE;
-    virtual void defaultEventHandler(Event*) OVERRIDE;
-    virtual bool willRespondToMouseMoveEvents() OVERRIDE;
-    virtual bool willRespondToMouseClickEvents() OVERRIDE;
-    virtual void willDetachRenderers() OVERRIDE;
-    virtual const AtomicString& shadowPseudoId() const OVERRIDE;
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual RefPtr<Element> cloneElementWithoutAttributesAndChildren(Document&) override;
+    virtual bool isDisabledFormControl() const override;
+    virtual bool matchesReadWritePseudoClass() const override;
+    virtual Element* focusDelegate() override;
+#if !PLATFORM(IOS)
+    virtual void defaultEventHandler(Event*) override;
+    virtual bool willRespondToMouseMoveEvents() override;
+    virtual bool willRespondToMouseClickEvents() override;
+#endif
+
+#if ENABLE(IOS_TOUCH_EVENTS)
+    virtual void didAttachRenderers() override;
+#endif
+    virtual void willDetachRenderers() override;
+
+    virtual const AtomicString& shadowPseudoId() const override;
 
     void startDragging();
     void stopDragging();
 
+#if ENABLE(IOS_TOUCH_EVENTS)
+    unsigned exclusiveTouchIdentifier() const;
+    void setExclusiveTouchIdentifier(unsigned);
+    void clearExclusiveTouchIdentifier();
+
+    void handleTouchStart(TouchEvent*);
+    void handleTouchMove(TouchEvent*);
+    void handleTouchEndAndCancel(TouchEvent*);
+
+    bool shouldAcceptTouchEvents();
+    void registerForTouchEvents();
+    void unregisterForTouchEvents();
+#endif
+
     bool m_inDragMode;
+
+#if ENABLE(IOS_TOUCH_EVENTS)
+    // FIXME: Currently it is safe to use 0, but this may need to change
+    // if touch identifiers change in the future and can be 0.
+    static const unsigned NoIdentifier = 0;
+    unsigned m_exclusiveTouchIdentifier;
+    bool m_isRegisteredAsTouchEventListener;
+#endif
 };
 
-inline PassRefPtr<SliderThumbElement> SliderThumbElement::create(Document& document)
+inline Ref<SliderThumbElement> SliderThumbElement::create(Document& document)
 {
-    return adoptRef(new SliderThumbElement(document));
+    return adoptRef(*new SliderThumbElement(document));
 }
 
 // --------------------------------
 
-class RenderSliderThumb FINAL : public RenderBlockFlow {
+class RenderSliderThumb final : public RenderBlockFlow {
 public:
-    explicit RenderSliderThumb(SliderThumbElement&);
+    RenderSliderThumb(SliderThumbElement&, Ref<RenderStyle>&&);
     void updateAppearance(RenderStyle* parentStyle);
 
 private:
-    virtual bool isSliderThumb() const;
+    virtual bool isSliderThumb() const override;
 };
 
 // --------------------------------
 
-class SliderContainerElement FINAL : public HTMLDivElement {
+class SliderContainerElement final : public HTMLDivElement {
 public:
-    static PassRefPtr<SliderContainerElement> create(Document&);
+    static Ref<SliderContainerElement> create(Document&);
 
 private:
     SliderContainerElement(Document&);
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&);
-    virtual const AtomicString& shadowPseudoId() const;
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual const AtomicString& shadowPseudoId() const override;
 };
 
 }

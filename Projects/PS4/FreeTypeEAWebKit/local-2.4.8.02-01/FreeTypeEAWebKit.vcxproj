@@ -18,7 +18,6 @@
     <ProjectGuid>{2B72415D-9DAD-0B07-6A83-FC7612921224}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>FreeTypeEAWebKit</ProjectName>
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -42,26 +41,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <Midl />
-    <Masm />
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions> -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/host_tools/lib/clang/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC</AdditionalOptions>
-      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-isystem $(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
+      <CompileAs>CompileAsC</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY</NantUnescapedPreprocessorDefinitions>
+      <NantUnescapedPreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY</NantUnescapedPreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
       <SDLCheck>FALSE</SDLCheck>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\work\15.4.2.0.0\Build\PS4\FreeTypeEAWebKit\local-2.4.8.02-01\kettle-clang-dev-debug\lib\libFreeTypeEAWebKit.a</OutputFile>
+      <OutputFile>kettle-clang-dev-debug\lib\libFreeTypeEAWebKit.a</OutputFile>
     </Lib>
     <PreBuildEvent>
       <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
@@ -85,27 +84,27 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <Midl />
-    <Masm />
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions> -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/host_tools/lib/clang/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC</AdditionalOptions>
-      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-isystem $(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
+      <CompileAs>CompileAsC</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;FT2_BUILD_LIBRARY;NDEBUG</NantUnescapedPreprocessorDefinitions>
+      <NantUnescapedPreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;FT2_BUILD_LIBRARY;NDEBUG</NantUnescapedPreprocessorDefinitions>
       <OptimizationLevel>Level3</OptimizationLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;FT2_BUILD_LIBRARY;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;FT2_BUILD_LIBRARY;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
       <SDLCheck>FALSE</SDLCheck>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\work\15.4.2.0.0\Build\PS4\FreeTypeEAWebKit\local-2.4.8.02-01\kettle-clang-dev-opt\lib\libFreeTypeEAWebKit.a</OutputFile>
+      <OutputFile>kettle-clang-dev-opt\lib\libFreeTypeEAWebKit.a</OutputFile>
     </Lib>
     <PreBuildEvent>
       <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
@@ -125,156 +124,155 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\autofit\autofit.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\autofit\autofit.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\autofit\autofit.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\autofit\autofit.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbase.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbase.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftbase.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftbase.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbbox.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbbox.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftbbox.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftbbox.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbitmap.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbitmap.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftbitmap.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftbitmap.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftdebug.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftdebug.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftdebug.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftdebug.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftfstype.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftfstype.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftfstype.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftfstype.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftgasp.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftgasp.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftgasp.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftgasp.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftglyph.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftglyph.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftglyph.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftglyph.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftinit.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftinit.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftinit.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftinit.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftmm.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftmm.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftmm.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftmm.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftpfr.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftpfr.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftpfr.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftpfr.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftstroke.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftstroke.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftstroke.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftstroke.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftsynth.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftsynth.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftsynth.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftsynth.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftsystem.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftsystem.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftsystem.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftsystem.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\fttype1.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\fttype1.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\fttype1.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\fttype1.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftwinfnt.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftwinfnt.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\base\ftwinfnt.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\base\ftwinfnt.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\bdf\bdf.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\bdf\bdf.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\bdf\bdf.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\bdf\bdf.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cache\ftcache.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cache\ftcache.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\cache\ftcache.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\cache\ftcache.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cff\cff.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cff\cff.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\cff\cff.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\cff\cff.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cid\type1cid.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cid\type1cid.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\cid\type1cid.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\cid\type1cid.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\gzip\ftgzip.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\gzip\ftgzip.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\gzip\ftgzip.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\gzip\ftgzip.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\lzw\ftlzw.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\lzw\ftlzw.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\lzw\ftlzw.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\lzw\ftlzw.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pcf\pcf.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pcf\pcf.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\pcf\pcf.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\pcf\pcf.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pfr\pfr.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pfr\pfr.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\pfr\pfr.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\pfr\pfr.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\psaux\psaux.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\psaux\psaux.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\psaux\psaux.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\psaux\psaux.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pshinter\pshinter.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pshinter\pshinter.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\pshinter\pshinter.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\pshinter\pshinter.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\psnames\psnames.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\psnames\psnames.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\psnames\psnames.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\psnames\psnames.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\raster\raster.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\raster\raster.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\raster\raster.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\raster\raster.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\sfnt\sfnt.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\sfnt\sfnt.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\sfnt\sfnt.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\sfnt\sfnt.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\smooth\smooth.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\smooth\smooth.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\smooth\smooth.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\smooth\smooth.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\truetype\truetype.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\truetype\truetype.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\truetype\truetype.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\truetype\truetype.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\type1\type1.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\type1\type1.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\type1\type1.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\type1\type1.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\type42\type42.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\type42\type42.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\type42\type42.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\type42\type42.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\winfonts\winfnt.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\winfonts\winfnt.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\FreeTypeEAWebKit\winfonts\winfnt.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\FreeTypeEAWebKit\winfonts\winfnt.c.obj</ObjectFileName>
     </ClCompile>
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="C:\packages\Framework\3.34.00\data\FrameworkMsbuild.tasks" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-clang.exe" clang-asm="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-as.exe" clang-librarian="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.05.00\config\data\options_vstomake.xml"></UserProperties>
+      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang.exe" clang-librarian="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

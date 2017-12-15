@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Brent Fulgham
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,88 +28,37 @@
 #include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 
+//+EAWebKitChange
+//1/15/2014
 #include <ea/FontCustomPlatformData.h>
+//-EAWebKitChange
 
-using namespace std;
+#if OS(DARWIN) && USE(CG)
+#include "SharedBuffer.h"
+#include <CoreGraphics/CGFont.h>
+#endif
 
 namespace WebCore {
 
 FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
-    : m_syntheticBold(false)
-    , m_syntheticOblique(false)
-    , m_orientation(Horizontal)
-    , m_size(0)
-    , m_widthVariant(RegularWidth)
-	//+EAWebKitChange
-	//1/15/2014
-#if PLATFORM(EA)
-	, m_privData(hashTableDeletedFontValue())
-	//-EAWebKitChange
-#elif PLATFORM(WIN)
-    , m_font(WTF::HashTableDeletedValue)
-#elif OS(DARWIN)
-    , m_font(hashTableDeletedFontValue())
-#endif
-	//+EAWebKitChange
-	//1/21/2014
-#if PLATFORM(WIN)
-#if USE(CG)
-	, m_cgFont(0)
-#elif USE(CAIRO)
-	, m_scaledFont(hashTableDeletedFontValue())
-#endif
-#endif
-	//-EAWebKitChange
-    , m_isColorBitmapFont(false)
-    , m_isCompositeFontReference(false)
-	//+EAWebKitChange
-	//1/22/2014
-#if OS(DARWIN) && !PLATFORM(EA)
-	, m_isPrinterFont(false)
-#endif
-	//-EAWebKitChange
-#if PLATFORM(WIN)
-    , m_useGDI(false)
-#endif
-
+    : m_isHashTableDeletedValue(true)
 {
+//+EAWebKitChange
+//1/15/2014
+//3/9/2015
+#if PLATFORM(EA)
+	m_privData = hashTableDeletedFontValue();
+#endif
+//-EAWebKitChange
 }
 
 FontPlatformData::FontPlatformData()
-    : m_syntheticBold(false)
-    , m_syntheticOblique(false)
-    , m_orientation(Horizontal)
-    , m_size(0)
-    , m_widthVariant(RegularWidth)
-	//+EAWebKitChange
-	//1/21/2014
+//+EAWebKitChange
+//1/15/2014
 #if PLATFORM(EA)
-	, m_privData(0)
-#elif OS(DARWIN)
-	//-EAWebKitChange
-    , m_font(0)
+	: m_privData(0)
 #endif
-	//+EAWebKitChange
-	//1/21/2014
-#if PLATFORM(WIN)
-#if USE(CG)
-	, m_cgFont(0)
-#elif USE(CAIRO)
-	, m_scaledFont(0)
-#endif
-#endif
-	//-EAWebKitChange
-    , m_isColorBitmapFont(false)
-    , m_isCompositeFontReference(false)
-	//+EAWebKitChange
-	//1/22/2014
-#if OS(DARWIN) && !PLATFORM(EA)
-	, m_isPrinterFont(false)
-#endif
-	//-EAWebKitChange
-#if PLATFORM(WIN)
-    , m_useGDI(false)
-#endif
+//-EAWebKitChange
 {
 }
 
@@ -119,64 +68,29 @@ FontPlatformData::FontPlatformData(float size, bool syntheticBold, bool syntheti
     , m_orientation(orientation)
     , m_size(size)
     , m_widthVariant(widthVariant)
-	//+EAWebKitChange
+//+EAWebKitChange
 	//1/21/2014
 #if PLATFORM(EA)
 	, m_privData(0)
-#elif OS(DARWIN)
-	//-EAWebKitChange
-	, m_font(0)
 #endif
-	//+EAWebKitChange
-	//1/21/2014
-#if PLATFORM(WIN)
-#if USE(CG)
-	, m_cgFont(0)
-#elif USE(CAIRO)
-	, m_scaledFont(0)
-#endif
-#endif
-	//-EAWebKitChange
-    , m_isColorBitmapFont(false)
-    , m_isCompositeFontReference(false)
-#if OS(DARWIN) && !PLATFORM(EA)
-    , m_isPrinterFont(false)
-#endif
-#if PLATFORM(WIN)
-    , m_useGDI(false)
-#endif
+//-EAWebKitChange
 {
-
 }
 
-#if OS(DARWIN) && USE(CG)
+#if USE(CG)
 FontPlatformData::FontPlatformData(CGFontRef cgFont, float size, bool syntheticBold, bool syntheticOblique, FontOrientation orientation, FontWidthVariant widthVariant)
-    : m_syntheticBold(syntheticBold)
-    , m_syntheticOblique(syntheticOblique)
-    , m_orientation(orientation)
-    , m_size(size)
-    , m_widthVariant(widthVariant)
-    , m_font(0)
-    , m_cgFont(cgFont)
-    , m_isColorBitmapFont(false)
-    , m_isCompositeFontReference(false)
-    , m_isPrinterFont(false)
+    : FontPlatformData(size, syntheticBold, syntheticOblique, orientation, widthVariant)
 {
+    m_cgFont = cgFont;
 }
 #endif
 
 FontPlatformData::FontPlatformData(const FontPlatformData& source)
-    : m_syntheticBold(source.m_syntheticBold)
-    , m_syntheticOblique(source.m_syntheticOblique)
-    , m_orientation(source.m_orientation)
-    , m_size(source.m_size)
-    , m_widthVariant(source.m_widthVariant)
-    , m_isColorBitmapFont(source.m_isColorBitmapFont)
-    , m_isCompositeFontReference(source.m_isCompositeFontReference)
-#if OS(DARWIN) && !PLATFORM(EA)
-    , m_isPrinterFont(source.m_isPrinterFont)
-#endif
+    : FontPlatformData(source.m_size, source.m_syntheticBold, source.m_syntheticOblique, source.m_orientation, source.m_widthVariant)
 {
+    m_isHashTableDeletedValue = source.m_isHashTableDeletedValue;
+    m_isColorBitmapFont = source.m_isColorBitmapFont;
+    m_isCompositeFontReference = source.m_isCompositeFontReference;
     platformDataInit(source);
 }
 
@@ -186,6 +100,7 @@ const FontPlatformData& FontPlatformData::operator=(const FontPlatformData& othe
     if (this == &other)
         return *this;
 
+    m_isHashTableDeletedValue = other.m_isHashTableDeletedValue;
     m_syntheticBold = other.m_syntheticBold;
     m_syntheticOblique = other.m_syntheticOblique;
     m_orientation = other.m_orientation;
@@ -193,9 +108,6 @@ const FontPlatformData& FontPlatformData::operator=(const FontPlatformData& othe
     m_widthVariant = other.m_widthVariant;
     m_isColorBitmapFont = other.m_isColorBitmapFont;
     m_isCompositeFontReference = other.m_isCompositeFontReference;
-#if OS(DARWIN) && !PLATFORM(EA)
-    m_isPrinterFont = other.m_isPrinterFont;
-#endif
 
     return platformDataAssign(other);
 }

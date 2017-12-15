@@ -64,7 +64,6 @@ public:
     // committing/decommitting the entire region additional parameters allow a subregion to be
     // specified.
     WTF_EXPORT_PRIVATE static void* reserveAndCommit(size_t reserveSize, size_t commitSize, Usage = UnknownUsage, bool writable = true, bool executable = false);
-    static void decommitAndRelease(void* releaseBase, size_t releaseSize, void* decommitBase, size_t decommitSize);
 
     // Reallocate an existing, committed allocation.
     // The prior allocation must be fully comitted, and the new size will also be fully committed.
@@ -87,17 +86,8 @@ inline void* OSAllocator::reserveAndCommit(size_t reserveSize, size_t commitSize
     return base;
 }
 
-inline void OSAllocator::decommitAndRelease(void* releaseBase, size_t releaseSize, void* decommitBase, size_t decommitSize)
+inline void OSAllocator::decommitAndRelease(void* releaseBase, size_t releaseSize)
 {
-    ASSERT(decommitBase >= releaseBase && (static_cast<char*>(decommitBase) + decommitSize) <= (static_cast<char*>(releaseBase) + releaseSize));
-#if OS(WINCE)
-    // On most platforms we can actually skip this final decommit; releasing the VM will
-    // implicitly decommit any physical memory in the region. This is not true on WINCE.
-    decommit(decommitBase, decommitSize);
-#else
-    UNUSED_PARAM(decommitBase);
-    UNUSED_PARAM(decommitSize);
-#endif
     releaseDecommitted(releaseBase, releaseSize);
 }
 
@@ -118,10 +108,6 @@ inline void OSAllocator::decommitAndReleaseAligned(void* releaseBase, size_t rel
     releaseDecommittedAligned(releaseBase, releaseSize, alignment);
 }
 //-EAWebKitChange
-inline void OSAllocator::decommitAndRelease(void* base, size_t size)
-{
-    decommitAndRelease(base, size, base, size);
-}
 
 template<typename T>
 inline T* OSAllocator::reallocateCommitted(T* oldBase, size_t oldSize, size_t newSize, Usage usage, bool writable, bool executable)

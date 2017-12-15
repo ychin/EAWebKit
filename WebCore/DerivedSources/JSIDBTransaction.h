@@ -24,25 +24,25 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBTransaction.h"
-#include "JSDOMBinding.h"
 #include "JSEventTarget.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBTransaction : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSIDBTransaction* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBTransaction> impl)
+    static JSIDBTransaction* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBTransaction>&& impl)
     {
-        JSIDBTransaction* ptr = new (NotNull, JSC::allocateCell<JSIDBTransaction>(globalObject->vm().heap)) JSIDBTransaction(structure, globalObject, impl);
+        JSIDBTransaction* ptr = new (NotNull, JSC::allocateCell<JSIDBTransaction>(globalObject->vm().heap)) JSIDBTransaction(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBTransaction* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,9 +58,14 @@ public:
         return static_cast<IDBTransaction&>(Base::impl());
     }
 protected:
-    JSIDBTransaction(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBTransaction>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSIDBTransaction(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBTransaction>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBTransactionOwner : public JSC::WeakHandleOwner {
@@ -71,82 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBTransaction*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBTransactionOwner, jsIDBTransactionOwner, ());
-    return &jsIDBTransactionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBTransaction*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBTransactionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBTransaction*);
-IDBTransaction* toIDBTransaction(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBTransaction& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBTransactionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBTransactionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBTransactionPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBTransactionPrototype>(vm.heap)) JSIDBTransactionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBTransactionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSIDBTransactionConstructor : public DOMConstructorObject {
-private:
-    JSIDBTransactionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBTransactionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBTransactionConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBTransactionConstructor>(vm.heap)) JSIDBTransactionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBTransactionPrototypeFunctionObjectStore(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBTransactionPrototypeFunctionAbort(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsIDBTransactionMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBTransactionDb(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBTransactionError(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBTransactionOnabort(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBTransactionOnabort(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBTransactionOncomplete(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBTransactionOncomplete(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBTransactionOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBTransactionOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBTransactionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

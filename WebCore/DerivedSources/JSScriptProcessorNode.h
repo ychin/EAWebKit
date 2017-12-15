@@ -24,25 +24,24 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
 #include "ScriptProcessorNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSScriptProcessorNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSScriptProcessorNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ScriptProcessorNode> impl)
+    static JSScriptProcessorNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ScriptProcessorNode>&& impl)
     {
-        JSScriptProcessorNode* ptr = new (NotNull, JSC::allocateCell<JSScriptProcessorNode>(globalObject->vm().heap)) JSScriptProcessorNode(structure, globalObject, impl);
+        JSScriptProcessorNode* ptr = new (NotNull, JSC::allocateCell<JSScriptProcessorNode>(globalObject->vm().heap)) JSScriptProcessorNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static ScriptProcessorNode* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,67 +55,19 @@ public:
         return static_cast<ScriptProcessorNode&>(Base::impl());
     }
 protected:
-    JSScriptProcessorNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ScriptProcessorNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSScriptProcessorNode(JSC::Structure*, JSDOMGlobalObject*, Ref<ScriptProcessorNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ScriptProcessorNode*);
-ScriptProcessorNode* toScriptProcessorNode(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ScriptProcessorNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSScriptProcessorNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSScriptProcessorNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSScriptProcessorNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSScriptProcessorNodePrototype>(vm.heap)) JSScriptProcessorNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSScriptProcessorNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSScriptProcessorNodeConstructor : public DOMConstructorObject {
-private:
-    JSScriptProcessorNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSScriptProcessorNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSScriptProcessorNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSScriptProcessorNodeConstructor>(vm.heap)) JSScriptProcessorNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsScriptProcessorNodeOnaudioprocess(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSScriptProcessorNodeOnaudioprocess(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsScriptProcessorNodeBufferSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProcessorNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

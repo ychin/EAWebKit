@@ -22,104 +22,53 @@
 #define JSDocumentType_h
 
 #include "DocumentType.h"
-#include "JSDOMBinding.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDocumentType : public JSNode {
 public:
     typedef JSNode Base;
-    static JSDocumentType* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DocumentType> impl)
+    static JSDocumentType* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DocumentType>&& impl)
     {
-        JSDocumentType* ptr = new (NotNull, JSC::allocateCell<JSDocumentType>(globalObject->vm().heap)) JSDocumentType(structure, globalObject, impl);
+        JSDocumentType* ptr = new (NotNull, JSC::allocateCell<JSDocumentType>(globalObject->vm().heap)) JSDocumentType(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DocumentType* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
+
+    // Custom functions
+    JSC::JSValue before(JSC::ExecState*);
+    JSC::JSValue after(JSC::ExecState*);
+    JSC::JSValue replaceWith(JSC::ExecState*);
     DocumentType& impl() const
     {
         return static_cast<DocumentType&>(Base::impl());
     }
 protected:
-    JSDocumentType(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DocumentType>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDocumentType(JSC::Structure*, JSDOMGlobalObject*, Ref<DocumentType>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-DocumentType* toDocumentType(JSC::JSValue);
 
-class JSDocumentTypePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDocumentTypePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDocumentTypePrototype* ptr = new (NotNull, JSC::allocateCell<JSDocumentTypePrototype>(vm.heap)) JSDocumentTypePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDocumentTypePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDocumentTypeConstructor : public DOMConstructorObject {
-private:
-    JSDocumentTypeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDocumentTypeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDocumentTypeConstructor* ptr = new (NotNull, JSC::allocateCell<JSDocumentTypeConstructor>(vm.heap)) JSDocumentTypeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDocumentTypePrototypeFunctionRemove(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDocumentTypeName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDocumentTypeEntities(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDocumentTypeNotations(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDocumentTypePublicId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDocumentTypeSystemId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDocumentTypeInternalSubset(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDocumentTypeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

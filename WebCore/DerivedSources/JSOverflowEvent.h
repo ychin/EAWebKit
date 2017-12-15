@@ -21,10 +21,8 @@
 #ifndef JSOverflowEvent_h
 #define JSOverflowEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "OverflowEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSOverflowEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSOverflowEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OverflowEvent> impl)
+    static JSOverflowEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OverflowEvent>&& impl)
     {
-        JSOverflowEvent* ptr = new (NotNull, JSC::allocateCell<JSOverflowEvent>(globalObject->vm().heap)) JSOverflowEvent(structure, globalObject, impl);
+        JSOverflowEvent* ptr = new (NotNull, JSC::allocateCell<JSOverflowEvent>(globalObject->vm().heap)) JSOverflowEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,75 +54,19 @@ public:
         return static_cast<OverflowEvent&>(Base::impl());
     }
 protected:
-    JSOverflowEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OverflowEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSOverflowEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<OverflowEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSOverflowEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOverflowEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOverflowEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSOverflowEventPrototype>(vm.heap)) JSOverflowEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOverflowEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSOverflowEventConstructor : public DOMConstructorObject {
-private:
-    JSOverflowEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSOverflowEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSOverflowEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSOverflowEventConstructor>(vm.heap)) JSOverflowEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSOverflowEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillOverflowEventInit(OverflowEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsOverflowEventOrient(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsOverflowEventHorizontalOverflow(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsOverflowEventVerticalOverflow(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsOverflowEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsOverflowEventHORIZONTAL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsOverflowEventVERTICAL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsOverflowEventBOTH(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

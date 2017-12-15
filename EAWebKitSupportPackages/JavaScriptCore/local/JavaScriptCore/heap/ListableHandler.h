@@ -21,10 +21,10 @@
 #define ListableHandler_h
 
 #include <stdint.h>
+#include <wtf/Lock.h>
 #include <wtf/Locker.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/ThreadingPrimitives.h>
-#include <wtf/TCSpinLock.h>
 
 namespace JSC {
 
@@ -61,12 +61,11 @@ private:
         List()
             : m_first(0)
         {
-            m_lock.Init();
         }
         
         void addThreadSafe(T* handler)
         {
-            SpinLockHolder locker(&m_lock);
+            LockHolder locker(&m_lock);
             addNotThreadSafe(handler);
         }
         
@@ -104,7 +103,7 @@ private:
             m_first = handler;
         }
         
-        SpinLock m_lock;
+        Lock m_lock;
         T* m_first;
     };
     

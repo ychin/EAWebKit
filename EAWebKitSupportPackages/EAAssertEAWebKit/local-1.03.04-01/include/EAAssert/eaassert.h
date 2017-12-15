@@ -133,7 +133,9 @@ namespace Detail {
 /// not in another function.
 ///
 #if ! defined EA_DEBUG_BREAK && ! defined EA_DEBUG_BREAK_DEFINED
-    #if   defined _MSC_VER
+    #if   defined(EA_PLATFORM_SONY) && defined(EA_PROCESSOR_X86_64)
+        #define EA_DEBUG_BREAK() do { { __asm volatile ("int $0x41"); } } while(0)
+    #elif defined _MSC_VER
         #define EA_DEBUG_BREAK() __debugbreak()
     #elif (defined(EA_PROCESSOR_X86) || defined(EA_PROCESSOR_X86_64)) && defined(__GNUC__)
         #define EA_DEBUG_BREAK() asm("int3") 

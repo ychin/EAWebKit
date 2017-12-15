@@ -23,29 +23,28 @@
 
 #if ENABLE(ENCRYPTED_MEDIA_V2)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MediaKeySession.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaKeySession : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMediaKeySession* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaKeySession> impl)
+    static JSMediaKeySession* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaKeySession>&& impl)
     {
-        JSMediaKeySession* ptr = new (NotNull, JSC::allocateCell<JSMediaKeySession>(globalObject->vm().heap)) JSMediaKeySession(structure, globalObject, impl);
+        JSMediaKeySession* ptr = new (NotNull, JSC::allocateCell<JSMediaKeySession>(globalObject->vm().heap)) JSMediaKeySession(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaKeySession* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMediaKeySession();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     MediaKeySession& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MediaKeySession* m_impl;
 protected:
-    JSMediaKeySession(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaKeySession>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSMediaKeySession(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaKeySession>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaKeySessionOwner : public JSC::WeakHandleOwner {
@@ -83,85 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaKeySession*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaKeySessionOwner, jsMediaKeySessionOwner, ());
-    return &jsMediaKeySessionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MediaKeySession*)
-{
-    return &world;
+    static NeverDestroyed<JSMediaKeySessionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaKeySession*);
-MediaKeySession* toMediaKeySession(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaKeySession& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMediaKeySessionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaKeySessionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaKeySessionPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaKeySessionPrototype>(vm.heap)) JSMediaKeySessionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaKeySessionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSMediaKeySessionConstructor : public DOMConstructorObject {
-private:
-    JSMediaKeySessionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaKeySessionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaKeySessionConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaKeySessionConstructor>(vm.heap)) JSMediaKeySessionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionUpdate(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionClose(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMediaKeySessionError(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeySessionKeySystem(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeySessionSessionId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeySessionOnwebkitkeyadded(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaKeySessionOnwebkitkeyadded(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaKeySessionOnwebkitkeyerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaKeySessionOnwebkitkeyerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaKeySessionOnwebkitkeymessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaKeySessionOnwebkitkeymessage(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaKeySessionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

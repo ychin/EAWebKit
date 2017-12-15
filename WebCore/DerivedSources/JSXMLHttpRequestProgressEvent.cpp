@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSXMLHttpRequestProgressEvent.h"
 
+#include "JSDOMBinding.h"
 #include "XMLHttpRequestProgressEvent.h"
 #include <wtf/GetPtr.h>
 
@@ -28,31 +29,77 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Attributes
+
+JSC::EncodedJSValue jsXMLHttpRequestProgressEventPosition(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsXMLHttpRequestProgressEventTotalSize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsXMLHttpRequestProgressEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSXMLHttpRequestProgressEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSXMLHttpRequestProgressEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSXMLHttpRequestProgressEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestProgressEventPrototype>(vm.heap)) JSXMLHttpRequestProgressEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSXMLHttpRequestProgressEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSXMLHttpRequestProgressEventConstructor : public DOMConstructorObject {
+private:
+    JSXMLHttpRequestProgressEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSXMLHttpRequestProgressEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSXMLHttpRequestProgressEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestProgressEventConstructor>(vm.heap)) JSXMLHttpRequestProgressEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSXMLHttpRequestProgressEventTableIndex[5] = {
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 0, 4 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSXMLHttpRequestProgressEventTableValues[] =
 {
-    { "position", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsXMLHttpRequestProgressEventPosition), (intptr_t)0 },
-    { "totalSize", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsXMLHttpRequestProgressEventTotalSize), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsXMLHttpRequestProgressEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "position", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsXMLHttpRequestProgressEventPosition), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "totalSize", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsXMLHttpRequestProgressEventTotalSize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSXMLHttpRequestProgressEventTable = { 9, 7, JSXMLHttpRequestProgressEventTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSXMLHttpRequestProgressEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSXMLHttpRequestProgressEventConstructorTable = { 1, 0, JSXMLHttpRequestProgressEventConstructorTableValues, 0 };
-static const HashTable& getJSXMLHttpRequestProgressEventConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSXMLHttpRequestProgressEventConstructorTable);
-}
-
-const ClassInfo JSXMLHttpRequestProgressEventConstructor::s_info = { "XMLHttpRequestProgressEventConstructor", &Base::s_info, 0, getJSXMLHttpRequestProgressEventConstructorTable, CREATE_METHOD_TABLE(JSXMLHttpRequestProgressEventConstructor) };
+static const HashTable JSXMLHttpRequestProgressEventTable = { 2, 3, true, JSXMLHttpRequestProgressEventTableValues, 0, JSXMLHttpRequestProgressEventTableIndex };
+const ClassInfo JSXMLHttpRequestProgressEventConstructor::s_info = { "XMLHttpRequestProgressEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSXMLHttpRequestProgressEventConstructor) };
 
 JSXMLHttpRequestProgressEventConstructor::JSXMLHttpRequestProgressEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,89 +110,86 @@ void JSXMLHttpRequestProgressEventConstructor::finishCreation(VM& vm, JSDOMGloba
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSXMLHttpRequestProgressEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSXMLHttpRequestProgressEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSXMLHttpRequestProgressEventConstructor, JSDOMWrapper>(exec, getJSXMLHttpRequestProgressEventConstructorTable(exec), jsCast<JSXMLHttpRequestProgressEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSXMLHttpRequestProgressEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("XMLHttpRequestProgressEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSXMLHttpRequestProgressEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsXMLHttpRequestProgressEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSXMLHttpRequestProgressEventPrototypeTable = { 1, 0, JSXMLHttpRequestProgressEventPrototypeTableValues, 0 };
-static const HashTable& getJSXMLHttpRequestProgressEventPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSXMLHttpRequestProgressEventPrototypeTable);
-}
+const ClassInfo JSXMLHttpRequestProgressEventPrototype::s_info = { "XMLHttpRequestProgressEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSXMLHttpRequestProgressEventPrototype) };
 
-const ClassInfo JSXMLHttpRequestProgressEventPrototype::s_info = { "XMLHttpRequestProgressEventPrototype", &Base::s_info, 0, getJSXMLHttpRequestProgressEventPrototypeTable, CREATE_METHOD_TABLE(JSXMLHttpRequestProgressEventPrototype) };
-
-JSObject* JSXMLHttpRequestProgressEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSXMLHttpRequestProgressEvent>(vm, globalObject);
-}
-
-static const HashTable& getJSXMLHttpRequestProgressEventTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSXMLHttpRequestProgressEventTable);
-}
-
-const ClassInfo JSXMLHttpRequestProgressEvent::s_info = { "XMLHttpRequestProgressEvent", &Base::s_info, 0, getJSXMLHttpRequestProgressEventTable , CREATE_METHOD_TABLE(JSXMLHttpRequestProgressEvent) };
-
-JSXMLHttpRequestProgressEvent::JSXMLHttpRequestProgressEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XMLHttpRequestProgressEvent> impl)
-    : JSProgressEvent(structure, globalObject, impl)
-{
-}
-
-void JSXMLHttpRequestProgressEvent::finishCreation(VM& vm)
+void JSXMLHttpRequestProgressEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSXMLHttpRequestProgressEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSXMLHttpRequestProgressEvent::s_info = { "XMLHttpRequestProgressEvent", &Base::s_info, &JSXMLHttpRequestProgressEventTable, CREATE_METHOD_TABLE(JSXMLHttpRequestProgressEvent) };
+
+JSXMLHttpRequestProgressEvent::JSXMLHttpRequestProgressEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<XMLHttpRequestProgressEvent>&& impl)
+    : JSProgressEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSXMLHttpRequestProgressEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSXMLHttpRequestProgressEventPrototype::create(vm, globalObject, JSXMLHttpRequestProgressEventPrototype::createStructure(vm, globalObject, JSProgressEventPrototype::self(vm, globalObject)));
+    return JSXMLHttpRequestProgressEventPrototype::create(vm, globalObject, JSXMLHttpRequestProgressEventPrototype::createStructure(vm, globalObject, JSProgressEvent::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSXMLHttpRequestProgressEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSXMLHttpRequestProgressEvent>(vm, globalObject);
 }
 
 bool JSXMLHttpRequestProgressEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSXMLHttpRequestProgressEvent* thisObject = jsCast<JSXMLHttpRequestProgressEvent*>(object);
+    auto* thisObject = jsCast<JSXMLHttpRequestProgressEvent*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSXMLHttpRequestProgressEvent, Base>(exec, getJSXMLHttpRequestProgressEventTable(exec), thisObject, propertyName, slot);
+    return getStaticValueSlot<JSXMLHttpRequestProgressEvent, Base>(exec, JSXMLHttpRequestProgressEventTable, thisObject, propertyName, slot);
 }
 
-JSValue jsXMLHttpRequestProgressEventPosition(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsXMLHttpRequestProgressEventPosition(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSXMLHttpRequestProgressEvent* castedThis = jsCast<JSXMLHttpRequestProgressEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    XMLHttpRequestProgressEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSXMLHttpRequestProgressEvent*>(slotBase);
+    JSXMLHttpRequestProgressEvent* castedThisObject = jsDynamicCast<JSXMLHttpRequestProgressEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "XMLHttpRequestProgressEvent", "position");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.position());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsXMLHttpRequestProgressEventTotalSize(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsXMLHttpRequestProgressEventTotalSize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSXMLHttpRequestProgressEvent* castedThis = jsCast<JSXMLHttpRequestProgressEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    XMLHttpRequestProgressEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSXMLHttpRequestProgressEvent*>(slotBase);
+    JSXMLHttpRequestProgressEvent* castedThisObject = jsDynamicCast<JSXMLHttpRequestProgressEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThisObject))
+        reportDeprecatedGetterError(*exec, "XMLHttpRequestProgressEvent", "totalSize");
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.totalSize());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsXMLHttpRequestProgressEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsXMLHttpRequestProgressEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSXMLHttpRequestProgressEvent* domObject = jsCast<JSXMLHttpRequestProgressEvent*>(asObject(slotBase));
-    return JSXMLHttpRequestProgressEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSXMLHttpRequestProgressEventPrototype* domObject = jsDynamicCast<JSXMLHttpRequestProgressEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSXMLHttpRequestProgressEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSXMLHttpRequestProgressEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

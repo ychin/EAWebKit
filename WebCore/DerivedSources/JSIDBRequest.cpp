@@ -25,10 +25,10 @@
 #include "JSIDBRequest.h"
 
 #include "DOMError.h"
-#include "EventListener.h"
 #include "IDBAny.h"
 #include "IDBRequest.h"
 #include "IDBTransaction.h"
+#include "JSDOMBinding.h"
 #include "JSDOMError.h"
 #include "JSEventListener.h"
 #include "JSIDBAny.h"
@@ -41,36 +41,66 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSIDBRequestTableValues[] =
-{
-    { "result", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestResult), (intptr_t)0 },
-    { "error", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestError), (intptr_t)0 },
-    { "source", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestSource), (intptr_t)0 },
-    { "transaction", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestTransaction), (intptr_t)0 },
-    { "readyState", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestReadyState), (intptr_t)0 },
-    { "onsuccess", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestOnsuccess), (intptr_t)setJSIDBRequestOnsuccess },
-    { "onerror", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestOnerror), (intptr_t)setJSIDBRequestOnerror },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsIDBRequestResult(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBRequestError(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBRequestSource(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBRequestTransaction(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBRequestReadyState(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsIDBRequestOnsuccess(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSIDBRequestOnsuccess(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsIDBRequestOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSIDBRequestOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsIDBRequestConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSIDBRequestPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSIDBRequestPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSIDBRequestPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBRequestPrototype>(vm.heap)) JSIDBRequestPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSIDBRequestPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSIDBRequestTable = { 18, 15, JSIDBRequestTableValues, 0 };
-/* Hash table for constructor */
+class JSIDBRequestConstructor : public DOMConstructorObject {
+private:
+    JSIDBRequestConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSIDBRequestConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSIDBRequestConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSIDBRequestConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBRequestConstructor>(vm.heap)) JSIDBRequestConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSIDBRequestConstructorTable = { 1, 0, JSIDBRequestConstructorTableValues, 0 };
-static const HashTable& getJSIDBRequestConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBRequestConstructorTable);
-}
-
-const ClassInfo JSIDBRequestConstructor::s_info = { "IDBRequestConstructor", &Base::s_info, 0, getJSIDBRequestConstructorTable, CREATE_METHOD_TABLE(JSIDBRequestConstructor) };
+const ClassInfo JSIDBRequestConstructor::s_info = { "IDBRequestConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBRequestConstructor) };
 
 JSIDBRequestConstructor::JSIDBRequestConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -81,177 +111,208 @@ void JSIDBRequestConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSIDBRequestPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSIDBRequestConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSIDBRequestConstructor, JSDOMWrapper>(exec, getJSIDBRequestConstructorTable(exec), jsCast<JSIDBRequestConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSIDBRequest::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("IDBRequest"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSIDBRequestPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "result", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestResult), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "error", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestError), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "source", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestSource), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "transaction", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestTransaction), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "readyState", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestReadyState), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onsuccess", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestOnsuccess), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSIDBRequestOnsuccess) },
+    { "onerror", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsIDBRequestOnerror), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSIDBRequestOnerror) },
 };
 
-static const HashTable JSIDBRequestPrototypeTable = { 1, 0, JSIDBRequestPrototypeTableValues, 0 };
-static const HashTable& getJSIDBRequestPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBRequestPrototypeTable);
-}
+const ClassInfo JSIDBRequestPrototype::s_info = { "IDBRequestPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBRequestPrototype) };
 
-const ClassInfo JSIDBRequestPrototype::s_info = { "IDBRequestPrototype", &Base::s_info, 0, getJSIDBRequestPrototypeTable, CREATE_METHOD_TABLE(JSIDBRequestPrototype) };
-
-JSObject* JSIDBRequestPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSIDBRequest>(vm, globalObject);
-}
-
-static const HashTable& getJSIDBRequestTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBRequestTable);
-}
-
-const ClassInfo JSIDBRequest::s_info = { "IDBRequest", &Base::s_info, 0, getJSIDBRequestTable , CREATE_METHOD_TABLE(JSIDBRequest) };
-
-JSIDBRequest::JSIDBRequest(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBRequest> impl)
-    : JSEventTarget(structure, globalObject, impl)
-{
-}
-
-void JSIDBRequest::finishCreation(VM& vm)
+void JSIDBRequestPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSIDBRequestPrototypeTableValues, *this);
+}
+
+const ClassInfo JSIDBRequest::s_info = { "IDBRequest", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBRequest) };
+
+JSIDBRequest::JSIDBRequest(Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBRequest>&& impl)
+    : JSEventTarget(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSIDBRequest::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSIDBRequestPrototype::create(vm, globalObject, JSIDBRequestPrototype::createStructure(vm, globalObject, JSEventTargetPrototype::self(vm, globalObject)));
+    return JSIDBRequestPrototype::create(vm, globalObject, JSIDBRequestPrototype::createStructure(vm, globalObject, JSEventTarget::getPrototype(vm, globalObject)));
 }
 
-bool JSIDBRequest::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSIDBRequest::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSIDBRequest* thisObject = jsCast<JSIDBRequest*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSIDBRequest, Base>(exec, getJSIDBRequestTable(exec), thisObject, propertyName, slot);
+    return getDOMPrototype<JSIDBRequest>(vm, globalObject);
 }
 
-JSValue jsIDBRequestResult(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBRequestResult(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
-    ExceptionCode ec = 0;
-    IDBRequest& impl = castedThis->impl();
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.result(ec)));
-    setDOMException(exec, ec);
-    return result;
-}
-
-
-JSValue jsIDBRequestError(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
-    ExceptionCode ec = 0;
-    IDBRequest& impl = castedThis->impl();
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.error(ec)));
-    setDOMException(exec, ec);
-    return result;
-}
-
-
-JSValue jsIDBRequestSource(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    IDBRequest& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "result");
+        return throwGetterTypeError(*exec, "IDBRequest", "result");
+    }
+    ExceptionCode ec = 0;
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.result(ec)));
+    setDOMException(exec, ec);
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsIDBRequestError(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "error");
+        return throwGetterTypeError(*exec, "IDBRequest", "error");
+    }
+    ExceptionCode ec = 0;
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.error(ec)));
+    setDOMException(exec, ec);
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsIDBRequestSource(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "source");
+        return throwGetterTypeError(*exec, "IDBRequest", "source");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.source()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsIDBRequestTransaction(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBRequestTransaction(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    IDBRequest& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "transaction");
+        return throwGetterTypeError(*exec, "IDBRequest", "transaction");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.transaction()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsIDBRequestReadyState(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBRequestReadyState(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    IDBRequest& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "readyState");
+        return throwGetterTypeError(*exec, "IDBRequest", "readyState");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.readyState());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsIDBRequestOnsuccess(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBRequestOnsuccess(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    IDBRequest& impl = castedThis->impl();
-    if (EventListener* listener = impl.onsuccess()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "onsuccess");
+        return throwGetterTypeError(*exec, "IDBRequest", "onsuccess");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().successEvent));
 }
 
 
-JSValue jsIDBRequestOnerror(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBRequestOnerror(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    IDBRequest& impl = castedThis->impl();
-    if (EventListener* listener = impl.onerror()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "IDBRequest", "onerror");
+        return throwGetterTypeError(*exec, "IDBRequest", "onerror");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().errorEvent));
 }
 
 
-JSValue jsIDBRequestConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsIDBRequestConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSIDBRequest* domObject = jsCast<JSIDBRequest*>(asObject(slotBase));
-    return JSIDBRequest::getConstructor(exec->vm(), domObject->globalObject());
+    JSIDBRequestPrototype* domObject = jsDynamicCast<JSIDBRequestPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSIDBRequest::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSIDBRequest::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSIDBRequestOnsuccess(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSIDBRequest* thisObject = jsCast<JSIDBRequest*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSIDBRequest, Base>(exec, propertyName, value, getJSIDBRequestTable(exec), thisObject, slot);
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "IDBRequest", "onsuccess");
+        else
+            throwSetterTypeError(*exec, "IDBRequest", "onsuccess");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().successEvent, value);
 }
 
-void setJSIDBRequestOnsuccess(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(thisObject);
-    IDBRequest& impl = castedThis->impl();
-    impl.setOnsuccess(createJSAttributeEventListener(exec, value, thisObject));
-}
 
-
-void setJSIDBRequestOnerror(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSIDBRequestOnerror(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSIDBRequest* castedThis = jsCast<JSIDBRequest*>(thisObject);
-    IDBRequest& impl = castedThis->impl();
-    impl.setOnerror(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSIDBRequest* castedThis = jsDynamicCast<JSIDBRequest*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSIDBRequestPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "IDBRequest", "onerror");
+        else
+            throwSetterTypeError(*exec, "IDBRequest", "onerror");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().errorEvent, value);
 }
 
 
@@ -262,42 +323,28 @@ JSValue JSIDBRequest::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 void JSIDBRequest::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSIDBRequest* thisObject = jsCast<JSIDBRequest*>(cell);
+    auto* thisObject = jsCast<JSIDBRequest*>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
     Base::visitChildren(thisObject, visitor);
     thisObject->impl().visitJSEventListeners(visitor);
 }
 
-static inline bool isObservable(JSIDBRequest* jsIDBRequest)
-{
-    if (jsIDBRequest->hasCustomProperties())
-        return true;
-    if (jsIDBRequest->impl().hasEventListeners())
-        return true;
-    return false;
-}
-
 bool JSIDBRequestOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSIDBRequest* jsIDBRequest = jsCast<JSIDBRequest*>(handle.get().asCell());
+    auto* jsIDBRequest = jsCast<JSIDBRequest*>(handle.slot()->asCell());
     if (jsIDBRequest->impl().hasPendingActivity())
         return true;
     if (jsIDBRequest->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsIDBRequest))
-        return false;
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSIDBRequestOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSIDBRequest* jsIDBRequest = jsCast<JSIDBRequest*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsIDBRequest = jsCast<JSIDBRequest*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsIDBRequest->impl(), jsIDBRequest);
-    jsIDBRequest->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -308,11 +355,11 @@ extern "C" { extern void (*const __identifier("??_7IDBRequest@WebCore@@6B@")[])(
 extern "C" { extern void* _ZTVN7WebCore10IDBRequestE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBRequest* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, IDBRequest* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSIDBRequest>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSIDBRequest>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -333,13 +380,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBRequ
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<IDBRequest>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSIDBRequest>(exec, globalObject, impl);
+    return createNewWrapper<JSIDBRequest>(globalObject, impl);
 }
 
-IDBRequest* toIDBRequest(JSC::JSValue value)
+IDBRequest* JSIDBRequest::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSIDBRequest::info()) ? &jsCast<JSIDBRequest*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSIDBRequest*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

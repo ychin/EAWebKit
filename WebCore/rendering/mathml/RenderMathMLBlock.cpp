@@ -43,28 +43,25 @@ namespace WebCore {
     
 using namespace MathMLNames;
     
-RenderMathMLBlock::RenderMathMLBlock(Element& container)
-    : RenderFlexibleBox(container)
-    , m_ignoreInAccessibilityTree(false)
+RenderMathMLBlock::RenderMathMLBlock(Element& container, Ref<RenderStyle>&& style)
+    : RenderFlexibleBox(container, WTF::move(style))
 {
 }
 
-RenderMathMLBlock::RenderMathMLBlock(Document& document)
-    : RenderFlexibleBox(document)
-    , m_ignoreInAccessibilityTree(false)
+RenderMathMLBlock::RenderMathMLBlock(Document& document, Ref<RenderStyle>&& style)
+    : RenderFlexibleBox(document, WTF::move(style))
 {
 }
 
-bool RenderMathMLBlock::isChildAllowed(RenderObject* child, RenderStyle*) const
+bool RenderMathMLBlock::isChildAllowed(const RenderObject& child, const RenderStyle&) const
 {
-    return child->node() && child->node()->nodeType() == Node::ELEMENT_NODE;
+    return is<Element>(child.node());
 }
 
-RenderMathMLBlock* RenderMathMLBlock::createAnonymousMathMLBlock(EDisplay display)
+RenderPtr<RenderMathMLBlock> RenderMathMLBlock::createAnonymousMathMLBlock()
 {
-    RefPtr<RenderStyle> newStyle = RenderStyle::createAnonymousStyleWithDisplay(style(), display);
-    RenderMathMLBlock* newBlock = new (renderArena()) RenderMathMLBlock(document());
-    newBlock->setStyle(newStyle.release());
+    RenderPtr<RenderMathMLBlock> newBlock = createRenderer<RenderMathMLBlock>(document(), RenderStyle::createAnonymousStyleWithDisplay(&style(), FLEX));
+    newBlock->initializeStyle();
     return newBlock;
 }
 
@@ -75,16 +72,15 @@ int RenderMathMLBlock::baselinePosition(FontBaseline baselineType, bool firstLin
     if (linePositionMode == PositionOfInteriorLineBoxes)
         return 0;
     
-    LayoutUnit baseline = firstLineBoxBaseline(); // FIXME: This may be unnecessary after flex baselines are implemented (https://bugs.webkit.org/show_bug.cgi?id=96188).
-    if (baseline != -1)
-        return baseline;
-    
-    return RenderFlexibleBox::baselinePosition(baselineType, firstLine, direction, linePositionMode);
+    // FIXME: This may be unnecessary after flex baselines are implemented (https://bugs.webkit.org/show_bug.cgi?id=96188).
+    return firstLineBaseline().valueOrCompute([&] {
+        return RenderFlexibleBox::baselinePosition(baselineType, firstLine, direction, linePositionMode);
+    });
 }
 
 const char* RenderMathMLBlock::renderName() const
 {
-    EDisplay display = style()->display();
+    EDisplay display = style().display();
     if (display == FLEX)
         return isAnonymous() ? "RenderMathMLBlock (anonymous, flex)" : "RenderMathMLBlock (flex)";
     if (display == INLINE_FLEX)
@@ -225,7 +221,7 @@ bool parseMathMLLength(const String& string, LayoutUnit& lengthValue, const Rend
         return true;
     }
     if (unit == "em") {
-        lengthValue = floatValue * style->font().size();
+        lengthValue = floatValue * style->fontCascade().size();
         return true;
     }
     if (unit == "ex") {
@@ -296,18 +292,18 @@ bool parseMathMLNamedSpace(const String& string, LayoutUnit& lengthValue, const 
             length = -7;        
     }
     if (length) {
-        lengthValue = length * style->font().size() / 18;
+        lengthValue = length * style->fontCascade().size() / 18;
         return true;
     }
     return false;
 }
 
-int RenderMathMLTable::firstLineBoxBaseline() const
+Optional<int> RenderMathMLTable::firstLineBaseline() const
 {
-    // In legal MathML, we'll have a MathML parent. That RenderFlexibleBox parent will use our firstLineBoxBaseline() for baseline alignment, per
+    // In legal MathML, we'll have a MathML parent. That RenderFlexibleBox parent will use our firstLineBaseline() for baseline alignment, per
     // http://dev.w3.org/csswg/css3-flexbox/#flex-baselines. We want to vertically center an <mtable>, such as a matrix. Essentially the whole <mtable> element fits on a
     // single line, whose baseline gives this centering. This is different than RenderTable::firstLineBoxBaseline, which returns the baseline of the first row of a <table>.
-    return (logicalHeight() + style()->fontMetrics().xHeight()) / 2;
+    return (logicalHeight() + style().fontMetrics().xHeight()) / 2;
 }
 
 }    

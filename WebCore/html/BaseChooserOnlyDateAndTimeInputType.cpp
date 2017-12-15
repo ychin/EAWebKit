@@ -31,6 +31,7 @@
 #include "HTMLDivElement.h"
 #include "HTMLInputElement.h"
 #include "Page.h"
+#include "RenderElement.h"
 #include "ScriptController.h"
 #include "ShadowRoot.h"
 
@@ -53,12 +54,11 @@ void BaseChooserOnlyDateAndTimeInputType::handleDOMActivateEvent(Event*)
     DateTimeChooserParameters parameters;
     if (!element().setupDateTimeChooserParameters(parameters))
         return;
-    m_dateTimeChooser = element().document().page()->chrome().openDateTimeChooser(this, parameters);
 }
 
 void BaseChooserOnlyDateAndTimeInputType::createShadowSubtree()
 {
-    DEFINE_STATIC_LOCAL(AtomicString, valueContainerPseudo, ("-webkit-date-and-time-value", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(AtomicString, valueContainerPseudo, ("-webkit-date-and-time-value", AtomicString::ConstructFromLiteral));
 
     RefPtr<HTMLDivElement> valueContainer = HTMLDivElement::create(element().document());
     valueContainer->setPseudo(valueContainerPseudo);
@@ -69,14 +69,14 @@ void BaseChooserOnlyDateAndTimeInputType::createShadowSubtree()
 void BaseChooserOnlyDateAndTimeInputType::updateAppearance()
 {
     Node* node = element().userAgentShadowRoot()->firstChild();
-    if (!node || !node->isHTMLElement())
+    if (!is<HTMLElement>(node))
         return;
     String displayValue = visibleValue();
     if (displayValue.isEmpty()) {
         // Need to put something to keep text baseline.
         displayValue = ASCIILiteral(" ");
     }
-    toHTMLElement(node)->setInnerText(displayValue, ASSERT_NO_EXCEPTION);
+    downcast<HTMLElement>(*node).setInnerText(displayValue, ASSERT_NO_EXCEPTION);
 }
 
 void BaseChooserOnlyDateAndTimeInputType::setValue(const String& value, bool valueChanged, TextFieldEventBehavior eventBehavior)
@@ -98,7 +98,7 @@ void BaseChooserOnlyDateAndTimeInputType::didChooseValue(const String& value)
 
 void BaseChooserOnlyDateAndTimeInputType::didEndChooser()
 {
-    m_dateTimeChooser.clear();
+    m_dateTimeChooser = nullptr;
 }
 
 void BaseChooserOnlyDateAndTimeInputType::closeDateTimeChooser()

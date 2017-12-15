@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2010, 2011, 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2010, 2011, 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -65,7 +65,7 @@ TextPopup::TextPopup(EA::WebKit::View* pView)
     , mTip()
     , mAdjustedTip()
     , mLastTime(0)
-    , mPopupTimer(this, &TextPopup::timerFired)
+    , mPopupTimer(*this, &TextPopup::timerFired)
 {
 }
 
@@ -74,7 +74,7 @@ TextPopup::~TextPopup()
     hide();
 }
   
-void TextPopup::timerFired(WebCore::Timer<TextPopup>* /*pTextPopup*/)
+void TextPopup::timerFired()
 {
     const double curTime = currentTime();
     const double timeDelta = (curTime - mLastTime);
@@ -91,11 +91,6 @@ void TextPopup::timerFired(WebCore::Timer<TextPopup>* /*pTextPopup*/)
 
 void TextPopup::show(const char16_t* pTip, int x, int y) 
 {
-    // The FontCachePurgePreventer locks the font cache as long as it's in scope
-    // This prevents any fonts being removed out from under us while we're accessing cached font data
-    //
-    FontCachePurgePreventer fontCachePurgePreventer;
-
     // Shut off if no text.
     if (!pTip)
     {
@@ -128,13 +123,13 @@ void TextPopup::show(const char16_t* pTip, int x, int y)
     fontDescription.setComputedSize(kToolTipFontSize);
     fontDescription.setSpecifiedSize(kToolTipFontSize);   
     
-    WTF::RefPtr<SimpleFontData> pSFD = fontCache()->getCachedFontData(fontDescription, stdfont, true);
-    const Font toolTipFont(pSFD->platformData(), true);
+	WTF::RefPtr<Font> pSFD = FontCache::singleton().fontForFamily(fontDescription, stdfont, true);
+    const FontCascade toolTipFont(pSFD->platformData(), AutoSmoothing);
     
     // Get the length of the text run using the font.
     const int offset2X = kToolTipTextOffsetX + kToolTipTextOffsetX;
     const int offset2Y = kToolTipTextOffsetY + kToolTipTextOffsetY;
-    const TextRun textRun(mTip.characters(), mTip.length());
+    const TextRun textRun(mTip, mTip.length());
     int width = toolTipFont.width(textRun) + offset2X;  
     const FontMetrics& fontMetrics = toolTipFont.fontMetrics();
     const int height = (int) fontMetrics.floatHeight() + offset2Y;
@@ -163,7 +158,7 @@ void TextPopup::show(const char16_t* pTip, int x, int y)
         {
             //Text does not fit so need to chop off some of the characters.
             int requestedWidth = screenSize.mWidth - x - offset2X;
-            int adjustedWidth = ElidedTextEA(toolTipFont, requestedWidth, kToolTipMinWidth, mTip, mAdjustedTip);
+            int adjustedWidth = ElidedTextEA(toolTipFont.primaryFont(), requestedWidth, kToolTipMinWidth, mTip, mAdjustedTip);
             if (!adjustedWidth)
                 return;
             width = adjustedWidth + offset2X;
@@ -190,7 +185,7 @@ void TextPopup::show(const char16_t* pTip, int x, int y)
 
     // Create and draw the popup surface.
     mpSurface = mpViewEA->CreateOverlaySurface(x, y, width, height);
-    draw(toolTipFont);
+    draw(toolTipFont.primaryFont());
 
     // Set up self destruct timer.
     mLastTime = currentTime();
@@ -239,8 +234,8 @@ void TextPopup::draw(const Font& font)
 
    // Draw the text. 
     context.setFillColor(Color::black, ColorSpaceDeviceRGB);
-    const TextRun textRun(mAdjustedTip.characters(), mAdjustedTip.length());
-    context.drawText(font, textRun, IntPoint(kToolTipTextOffsetX, (int) kToolTipFontSize + kToolTipTextOffsetY));   
+    const TextRun textRun(mAdjustedTip, mAdjustedTip.length());
+    context.drawText(FontCascade(font.platformData()), textRun, IntPoint(kToolTipTextOffsetX, (int) kToolTipFontSize + kToolTipTextOffsetY));   
 
     mpSurface->Unlock();   
 
@@ -254,8 +249,10 @@ int ElidedTextEA(const Font& f, int width, int minWidth, const String& inStr, St
 {     
     int outWidth = 0;
     const int charCount = inStr.length();
-    const TextRun textRun(inStr.characters(), charCount);
-    int runWidth = f.width(textRun);
+    const TextRun textRun(inStr, charCount);
+
+	const FontCascade fc(f.platformData());
+    int runWidth = fc.width(textRun);
     if (runWidth <= width) 
     {
         // Text fits.
@@ -277,13 +274,13 @@ int ElidedTextEA(const Font& f, int width, int minWidth, const String& inStr, St
         {
             String ellipsisStr("...", 3);                
 
-            String adjustedStr(inStr.characters(), nCount); 
+            String adjustedStr(StringView(inStr).upconvertedCharacters(), nCount);
             
             adjustedStr.append(ellipsisStr);
 
             // Get the new width.
-            const TextRun run(adjustedStr.characters(), adjustedStr.length());
-            outWidth = f.width(run);    
+            const TextRun run(adjustedStr, adjustedStr.length());
+            outWidth = fc.width(run);    
             outStr = adjustedStr;
         }
         else

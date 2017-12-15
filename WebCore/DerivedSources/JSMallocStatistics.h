@@ -21,28 +21,28 @@
 #ifndef JSMallocStatistics_h
 #define JSMallocStatistics_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MallocStatistics.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSMallocStatistics : public JSDOMWrapper {
+class WEBCORE_TESTSUPPORT_EXPORT JSMallocStatistics : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMallocStatistics* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MallocStatistics> impl)
+    static JSMallocStatistics* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MallocStatistics>&& impl)
     {
-        JSMallocStatistics* ptr = new (NotNull, JSC::allocateCell<JSMallocStatistics>(globalObject->vm().heap)) JSMallocStatistics(structure, globalObject, impl);
+        JSMallocStatistics* ptr = new (NotNull, JSC::allocateCell<JSMallocStatistics>(globalObject->vm().heap)) JSMallocStatistics(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MallocStatistics* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMallocStatistics();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -51,22 +51,19 @@ public:
     }
 
     MallocStatistics& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MallocStatistics* m_impl;
 protected:
-    JSMallocStatistics(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MallocStatistics>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMallocStatistics(JSC::Structure*, JSDOMGlobalObject*, Ref<MallocStatistics>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMallocStatisticsOwner : public JSC::WeakHandleOwner {
@@ -77,46 +74,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MallocStatistics*)
 {
-    DEFINE_STATIC_LOCAL(JSMallocStatisticsOwner, jsMallocStatisticsOwner, ());
-    return &jsMallocStatisticsOwner;
+    static NeverDestroyed<JSMallocStatisticsOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, MallocStatistics*)
-{
-    return &world;
-}
+WEBCORE_TESTSUPPORT_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MallocStatistics*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MallocStatistics& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MallocStatistics*);
-MallocStatistics* toMallocStatistics(JSC::JSValue);
-
-class JSMallocStatisticsPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMallocStatisticsPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMallocStatisticsPrototype* ptr = new (NotNull, JSC::allocateCell<JSMallocStatisticsPrototype>(vm.heap)) JSMallocStatisticsPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMallocStatisticsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsMallocStatisticsReservedVMBytes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMallocStatisticsCommittedVMBytes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMallocStatisticsFreeListBytes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

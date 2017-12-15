@@ -23,29 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MediaStreamTrack.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaStreamTrack : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMediaStreamTrack* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaStreamTrack> impl)
+    static JSMediaStreamTrack* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaStreamTrack>&& impl)
     {
-        JSMediaStreamTrack* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrack>(globalObject->vm().heap)) JSMediaStreamTrack(structure, globalObject, impl);
+        JSMediaStreamTrack* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrack>(globalObject->vm().heap)) JSMediaStreamTrack(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaStreamTrack* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMediaStreamTrack();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     MediaStreamTrack& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MediaStreamTrack* m_impl;
 protected:
-    JSMediaStreamTrack(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaStreamTrack>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSMediaStreamTrack(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaStreamTrack>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaStreamTrackOwner : public JSC::WeakHandleOwner {
@@ -83,100 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaStreamTrack*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaStreamTrackOwner, jsMediaStreamTrackOwner, ());
-    return &jsMediaStreamTrackOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MediaStreamTrack*)
-{
-    return &world;
+    static NeverDestroyed<JSMediaStreamTrackOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaStreamTrack*);
-MediaStreamTrack* toMediaStreamTrack(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaStreamTrack& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMediaStreamTrackPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaStreamTrackPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaStreamTrackPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrackPrototype>(vm.heap)) JSMediaStreamTrackPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaStreamTrackPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSMediaStreamTrackConstructor : public DOMConstructorObject {
-private:
-    JSMediaStreamTrackConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaStreamTrackConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaStreamTrackConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamTrackConstructor>(vm.heap)) JSMediaStreamTrackConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackConstructorFunctionGetSources(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionConstraints(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionStates(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionCapabilities(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionApplyConstraints(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionClone(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionStop(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaStreamTrackPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMediaStreamTrackKind(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackLabel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackEnabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaStreamTrackEnabled(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaStreamTrackMuted(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackOnmute(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaStreamTrackOnmute(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaStreamTrackOnunmute(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaStreamTrackOnunmute(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaStreamTrackReadonly(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackRemote(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackReadyState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaStreamTrackOnstarted(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaStreamTrackOnstarted(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaStreamTrackOnended(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaStreamTrackOnended(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaStreamTrackOnoverconstrained(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSMediaStreamTrackOnoverconstrained(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsMediaStreamTrackConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

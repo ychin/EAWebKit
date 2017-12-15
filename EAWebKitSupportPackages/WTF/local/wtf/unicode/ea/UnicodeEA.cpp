@@ -2,7 +2,7 @@
  *  Copyright (C) 2006 George Staikos <staikos@kde.org>
  *  Copyright (C) 2006 Alexey Proskuryakov <ap@nypop.com>
  *  Copyright (C) 2006, 2007, 2008, 2009 Apple Inc. All rights reserved.
- *  Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ *  Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,12 +22,9 @@
  */
 
 #include "config.h"
-//EAWebKitTOD: Trim down the number of ICU headers we need to include
-#include "../icu/UnicodeICU.h"
-#include <unicode/unorm.h>
-
 #include "../../../../../../WebKit/ea/Api/EAWebKit/include/EAWebKit/EAWebKitTextInterface.h"
-
+#include <unicode/ustring.h>
+#include <unicode/unorm.h>
 #include <WTF/assertions.h>
 #include <EABase/eabase.h>
 #if defined(EA_PLATFORM_MICROSOFT)

@@ -1,3 +1,0 @@
-partial interface SharedWorkerGlobalScope {
-    [Conditional=SHARED_WORKERS] attribute SharedWorkerGlobalScopeConstructor SharedWorkerGlobalScope;
-};

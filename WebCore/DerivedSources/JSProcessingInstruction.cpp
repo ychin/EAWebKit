@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSProcessingInstruction.h"
 
+#include "JSDOMBinding.h"
 #include "JSStyleSheet.h"
 #include "ProcessingInstruction.h"
 #include "StyleSheet.h"
@@ -31,26 +32,59 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSProcessingInstructionTableValues[] =
-{
-    { "target", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsProcessingInstructionTarget), (intptr_t)0 },
-    { "sheet", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsProcessingInstructionSheet), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsProcessingInstructionConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsProcessingInstructionTarget(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsProcessingInstructionSheet(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsProcessingInstructionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSProcessingInstructionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSProcessingInstructionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSProcessingInstructionPrototype* ptr = new (NotNull, JSC::allocateCell<JSProcessingInstructionPrototype>(vm.heap)) JSProcessingInstructionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSProcessingInstructionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSProcessingInstructionTable = { 8, 7, JSProcessingInstructionTableValues, 0 };
-/* Hash table for constructor */
+class JSProcessingInstructionConstructor : public DOMConstructorObject {
+private:
+    JSProcessingInstructionConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSProcessingInstructionConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSProcessingInstructionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSProcessingInstructionConstructor* ptr = new (NotNull, JSC::allocateCell<JSProcessingInstructionConstructor>(vm.heap)) JSProcessingInstructionConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSProcessingInstructionConstructorTable = { 1, 0, JSProcessingInstructionConstructorTableValues, 0 };
-const ClassInfo JSProcessingInstructionConstructor::s_info = { "ProcessingInstructionConstructor", &Base::s_info, &JSProcessingInstructionConstructorTable, 0, CREATE_METHOD_TABLE(JSProcessingInstructionConstructor) };
+const ClassInfo JSProcessingInstructionConstructor::s_info = { "ProcessingInstructionConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSProcessingInstructionConstructor) };
 
 JSProcessingInstructionConstructor::JSProcessingInstructionConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -61,79 +95,85 @@ void JSProcessingInstructionConstructor::finishCreation(VM& vm, JSDOMGlobalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSProcessingInstructionPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSProcessingInstructionConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSProcessingInstructionConstructor, JSDOMWrapper>(exec, JSProcessingInstructionConstructorTable, jsCast<JSProcessingInstructionConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSProcessingInstruction::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("ProcessingInstruction"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSProcessingInstructionPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsProcessingInstructionConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "target", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsProcessingInstructionTarget), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "sheet", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsProcessingInstructionSheet), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSProcessingInstructionPrototypeTable = { 1, 0, JSProcessingInstructionPrototypeTableValues, 0 };
-const ClassInfo JSProcessingInstructionPrototype::s_info = { "ProcessingInstructionPrototype", &Base::s_info, &JSProcessingInstructionPrototypeTable, 0, CREATE_METHOD_TABLE(JSProcessingInstructionPrototype) };
+const ClassInfo JSProcessingInstructionPrototype::s_info = { "ProcessingInstructionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSProcessingInstructionPrototype) };
 
-JSObject* JSProcessingInstructionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSProcessingInstruction>(vm, globalObject);
-}
-
-const ClassInfo JSProcessingInstruction::s_info = { "ProcessingInstruction", &Base::s_info, &JSProcessingInstructionTable, 0 , CREATE_METHOD_TABLE(JSProcessingInstruction) };
-
-JSProcessingInstruction::JSProcessingInstruction(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ProcessingInstruction> impl)
-    : JSCharacterData(structure, globalObject, impl)
-{
-}
-
-void JSProcessingInstruction::finishCreation(VM& vm)
+void JSProcessingInstructionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSProcessingInstructionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSProcessingInstruction::s_info = { "ProcessingInstruction", &Base::s_info, 0, CREATE_METHOD_TABLE(JSProcessingInstruction) };
+
+JSProcessingInstruction::JSProcessingInstruction(Structure* structure, JSDOMGlobalObject* globalObject, Ref<ProcessingInstruction>&& impl)
+    : JSCharacterData(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSProcessingInstruction::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSProcessingInstructionPrototype::create(vm, globalObject, JSProcessingInstructionPrototype::createStructure(vm, globalObject, JSCharacterDataPrototype::self(vm, globalObject)));
+    return JSProcessingInstructionPrototype::create(vm, globalObject, JSProcessingInstructionPrototype::createStructure(vm, globalObject, JSCharacterData::getPrototype(vm, globalObject)));
 }
 
-bool JSProcessingInstruction::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSProcessingInstruction::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSProcessingInstruction* thisObject = jsCast<JSProcessingInstruction*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSProcessingInstruction, Base>(exec, JSProcessingInstructionTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSProcessingInstruction>(vm, globalObject);
 }
 
-JSValue jsProcessingInstructionTarget(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsProcessingInstructionTarget(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSProcessingInstruction* castedThis = jsCast<JSProcessingInstruction*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ProcessingInstruction& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSProcessingInstruction* castedThis = jsDynamicCast<JSProcessingInstruction*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSProcessingInstructionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "ProcessingInstruction", "target");
+        return throwGetterTypeError(*exec, "ProcessingInstruction", "target");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.target());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsProcessingInstructionSheet(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsProcessingInstructionSheet(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSProcessingInstruction* castedThis = jsCast<JSProcessingInstruction*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    ProcessingInstruction& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSProcessingInstruction* castedThis = jsDynamicCast<JSProcessingInstruction*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSProcessingInstructionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "ProcessingInstruction", "sheet");
+        return throwGetterTypeError(*exec, "ProcessingInstruction", "sheet");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.sheet()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsProcessingInstructionConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsProcessingInstructionConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSProcessingInstruction* domObject = jsCast<JSProcessingInstruction*>(asObject(slotBase));
-    return JSProcessingInstruction::getConstructor(exec->vm(), domObject->globalObject());
+    JSProcessingInstructionPrototype* domObject = jsDynamicCast<JSProcessingInstructionPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSProcessingInstruction::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSProcessingInstruction::getConstructor(VM& vm, JSGlobalObject* globalObject)

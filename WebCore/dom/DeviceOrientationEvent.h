@@ -32,23 +32,23 @@ namespace WebCore {
 
 class DeviceOrientationData;
 
-class DeviceOrientationEvent : public Event {
+class DeviceOrientationEvent final : public Event {
 public:
-    ~DeviceOrientationEvent();
-    static PassRefPtr<DeviceOrientationEvent> create()
+    virtual ~DeviceOrientationEvent();
+    static Ref<DeviceOrientationEvent> create()
     {
-        return adoptRef(new DeviceOrientationEvent);
+        return adoptRef(*new DeviceOrientationEvent);
     }
-    static PassRefPtr<DeviceOrientationEvent> create(const AtomicString& eventType, DeviceOrientationData* orientation)
+    static Ref<DeviceOrientationEvent> create(const AtomicString& eventType, DeviceOrientationData* orientation)
     {
-        return adoptRef(new DeviceOrientationEvent(eventType, orientation));
+        return adoptRef(*new DeviceOrientationEvent(eventType, orientation));
     }
 
     void initDeviceOrientationEvent(const AtomicString& type, bool bubbles, bool cancelable, DeviceOrientationData*);
 
     DeviceOrientationData* orientation() const { return m_orientation.get(); }
 
-    virtual EventInterface eventInterface() const;
+    virtual EventInterface eventInterface() const override;
 
 private:
     DeviceOrientationEvent();

@@ -26,7 +26,6 @@
 #include "config.h"
 #include "EventDispatcher.h"
 
-#include "ContainerNode.h"
 #include "EventContext.h"
 #include "FocusEvent.h"
 #include "FrameView.h"
@@ -38,14 +37,9 @@
 #include "PseudoElement.h"
 #include "ScopedEventQueue.h"
 #include "ShadowRoot.h"
-#include "TouchEvent.h"
-#include <wtf/RefPtr.h>
-
-#if ENABLE(SVG)
-#include "SVGElementInstance.h"
 #include "SVGNames.h"
 #include "SVGUseElement.h"
-#endif
+#include "TouchEvent.h"
 
 namespace WebCore {
 
@@ -65,10 +59,10 @@ private:
 WindowEventContext::WindowEventContext(PassRefPtr<Node> node, const EventContext* topEventContext)
 {
     Node* topLevelContainer = topEventContext ? topEventContext->node() : node.get();
-    if (!topLevelContainer->isDocumentNode())
+    if (!is<Document>(*topLevelContainer))
         return;
 
-    m_window = toDocument(topLevelContainer)->domWindow();
+    m_window = downcast<Document>(*topLevelContainer).domWindow();
     m_target = topEventContext ? topEventContext->target() : node.get();
 }
 
@@ -93,16 +87,16 @@ public:
     EventContext& contextAt(size_t i) { return *m_path[i]; }
 
 #if ENABLE(TOUCH_EVENTS)
-    void updateTouchLists(const TouchEvent&);
+    bool updateTouchLists(const TouchEvent&);
 #endif
-    void setRelatedTarget(EventTarget&);
+    void setRelatedTarget(Node& origin, EventTarget&);
 
     bool hasEventListeners(const AtomicString& eventType) const;
 
     EventContext* lastContextIfExists() { return m_path.isEmpty() ? 0 : m_path.last().get(); }
 
 private:
-#if ENABLE(TOUCH_EVENTS)
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
     void updateTouchListsInEventPath(const TouchList*, TouchEventContext::TouchListType);
 #endif
 
@@ -116,8 +110,30 @@ public:
         , m_relatedNodeTreeScope(relatedNode.treeScope())
         , m_relatedNodeInCurrentTreeScope(nullptr)
         , m_currentTreeScope(nullptr)
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
+        , m_touch(0)
+        , m_touchListType(TouchEventContext::NotTouchList)
+#endif
     {
     }
+
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
+    EventRelatedNodeResolver(Touch& touch, TouchEventContext::TouchListType touchListType)
+        : m_relatedNode(*touch.target()->toNode())
+        , m_relatedNodeTreeScope(m_relatedNode.treeScope())
+        , m_relatedNodeInCurrentTreeScope(nullptr)
+        , m_currentTreeScope(nullptr)
+        , m_touch(&touch)
+        , m_touchListType(touchListType)
+    {
+        ASSERT(touch.target()->toNode());
+    }
+#endif
+
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
+    Touch* touch() const { return m_touch; }
+    TouchEventContext::TouchListType touchListType() const { return m_touchListType; }
+#endif
 
     Node* moveToParentOrShadowHost(Node& newTarget)
     {
@@ -126,21 +142,53 @@ public:
             return m_relatedNodeInCurrentTreeScope;
 
         if (m_currentTreeScope) {
-            ASSERT(m_currentTreeScope->rootNode()->isShadowRoot());
-            ASSERT(&newTarget == toShadowRoot(m_currentTreeScope->rootNode())->hostElement());
+            ASSERT(is<ShadowRoot>(m_currentTreeScope->rootNode()));
+            ASSERT(&newTarget == downcast<ShadowRoot>(m_currentTreeScope->rootNode()).hostElement());
             ASSERT(m_currentTreeScope->parentTreeScope() == &newTreeScope);
         }
 
-        if (m_relatedNodeInCurrentTreeScope) { // relatedNode is under the current tree scope
+        if (&newTreeScope == &m_relatedNodeTreeScope)
+            m_relatedNodeInCurrentTreeScope = &m_relatedNode;
+        else if (m_relatedNodeInCurrentTreeScope) {
             ASSERT(m_currentTreeScope);
             m_relatedNodeInCurrentTreeScope = &newTarget;
-        } else if (&newTreeScope == &m_relatedNodeTreeScope) // relatedNode is in the current tree scope;
-            m_relatedNodeInCurrentTreeScope = &m_relatedNode;
-        // Otherwise, we haven't reached the tree scope that contains relatedNode yet.
+        } else {
+            if (!m_currentTreeScope) {
+                TreeScope* newTreeScopeAncestor = &newTreeScope;
+                do {
+                    m_relatedNodeInCurrentTreeScope = findHostOfTreeScopeInTargetTreeScope(m_relatedNodeTreeScope, *newTreeScopeAncestor);
+                    newTreeScopeAncestor = newTreeScopeAncestor->parentTreeScope();
+                    if (newTreeScopeAncestor == &m_relatedNodeTreeScope) {
+                        m_relatedNodeInCurrentTreeScope = &m_relatedNode;
+                        break;
+                    }
+                } while (newTreeScopeAncestor && !m_relatedNodeInCurrentTreeScope);
+            }
+            ASSERT(m_relatedNodeInCurrentTreeScope || findHostOfTreeScopeInTargetTreeScope(newTreeScope, m_relatedNodeTreeScope)
+                || &newTreeScope.documentScope() != &m_relatedNodeTreeScope.documentScope());
+        }
 
         m_currentTreeScope = &newTreeScope;
 
         return m_relatedNodeInCurrentTreeScope;
+    }
+
+    static Node* findHostOfTreeScopeInTargetTreeScope(const TreeScope& startingTreeScope, const TreeScope& targetScope)
+    {
+        ASSERT(&targetScope != &startingTreeScope);
+        Node* previousHost = nullptr;
+        for (const TreeScope* scope = &startingTreeScope; scope; scope = scope->parentTreeScope()) {
+            if (scope == &targetScope) {
+                ASSERT(previousHost);
+                ASSERT_WITH_SECURITY_IMPLICATION(&previousHost->treeScope() == &targetScope);
+                return previousHost;
+            }
+            if (is<ShadowRoot>(scope->rootNode()))
+                previousHost = downcast<ShadowRoot>(scope->rootNode()).hostElement();
+            else
+                ASSERT_WITH_SECURITY_IMPLICATION(!scope->parentTreeScope());
+        }
+        return nullptr;
     }
 
 private:
@@ -148,40 +196,31 @@ private:
     const TreeScope& m_relatedNodeTreeScope;
     Node* m_relatedNodeInCurrentTreeScope;
     TreeScope* m_currentTreeScope;
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
+    Touch* m_touch;
+    TouchEventContext::TouchListType m_touchListType;
+#endif
 };
 
-inline EventTarget& eventTargetRespectingTargetRules(Node& referenceNode)
+inline EventTarget* eventTargetRespectingTargetRules(Node& referenceNode)
 {
-    if (referenceNode.isPseudoElement()) {
-        EventTarget* hostElement = toPseudoElement(referenceNode).hostElement();
-        ASSERT(hostElement);
-        return *hostElement;
+    if (is<PseudoElement>(referenceNode))
+        return downcast<PseudoElement>(referenceNode).hostElement();
+
+    // Events sent to elements inside an SVG use element's shadow tree go to the use element.
+    if (is<SVGElement>(referenceNode)) {
+        if (auto* useElement = downcast<SVGElement>(referenceNode).correspondingUseElement())
+            return useElement;
     }
 
-#if ENABLE(SVG)
-    if (!referenceNode.isSVGElement() || !referenceNode.isInShadowTree())
-        return referenceNode;
-
-    // Spec: The event handling for the non-exposed tree works as if the referenced element had been textually included
-    // as a deeply cloned child of the 'use' element, except that events are dispatched to the SVGElementInstance objects
-    Node* rootNode = referenceNode.treeScope().rootNode();
-    Element* shadowHostElement = rootNode->isShadowRoot() ? toShadowRoot(rootNode)->hostElement() : 0;
-    // At this time, SVG nodes are not supported in non-<use> shadow trees.
-    if (!shadowHostElement || !shadowHostElement->hasTagName(SVGNames::useTag))
-        return referenceNode;
-    SVGUseElement* useElement = toSVGUseElement(shadowHostElement);
-    if (SVGElementInstance* instance = useElement->instanceForShadowTreeElement(&referenceNode))
-        return *instance;
-#endif
-
-    return referenceNode;
+    return &referenceNode;
 }
 
 void EventDispatcher::dispatchScopedEvent(Node& node, PassRefPtr<Event> event)
 {
     // We need to set the target here because it can go away by the time we actually fire the event.
-    event->setTarget(&eventTargetRespectingTargetRules(node));
-    ScopedEventQueue::instance()->enqueueEvent(event);
+    event->setTarget(eventTargetRespectingTargetRules(node));
+    ScopedEventQueue::singleton().enqueueEvent(event);
 }
 
 void EventDispatcher::dispatchSimulatedClick(Element* element, Event* underlyingEvent, SimulatedClickMouseEventOptions mouseEventOptions, SimulatedClickVisualOptions visualOptions)
@@ -189,28 +228,31 @@ void EventDispatcher::dispatchSimulatedClick(Element* element, Event* underlying
     if (element->isDisabledFormControl())
         return;
 
-    DEFINE_STATIC_LOCAL(HashSet<Element*>, elementsDispatchingSimulatedClicks, ());
+    DEPRECATED_DEFINE_STATIC_LOCAL(HashSet<Element*>, elementsDispatchingSimulatedClicks, ());
     if (!elementsDispatchingSimulatedClicks.add(element).isNewEntry)
         return;
 
     if (mouseEventOptions == SendMouseOverUpDownEvents)
-        dispatchEvent(element, SimulatedMouseEvent::create(eventNames().mouseoverEvent, element->document().defaultView(), underlyingEvent));
+        dispatchEvent(element, SimulatedMouseEvent::create(eventNames().mouseoverEvent, element->document().defaultView(), underlyingEvent, element));
 
     if (mouseEventOptions != SendNoEvents)
-        dispatchEvent(element, SimulatedMouseEvent::create(eventNames().mousedownEvent, element->document().defaultView(), underlyingEvent));
+        dispatchEvent(element, SimulatedMouseEvent::create(eventNames().mousedownEvent, element->document().defaultView(), underlyingEvent, element));
     element->setActive(true, visualOptions == ShowPressedLook);
     if (mouseEventOptions != SendNoEvents)
-        dispatchEvent(element, SimulatedMouseEvent::create(eventNames().mouseupEvent, element->document().defaultView(), underlyingEvent));
+        dispatchEvent(element, SimulatedMouseEvent::create(eventNames().mouseupEvent, element->document().defaultView(), underlyingEvent, element));
     element->setActive(false);
 
     // always send click
-    dispatchEvent(element, SimulatedMouseEvent::create(eventNames().clickEvent, element->document().defaultView(), underlyingEvent));
+    dispatchEvent(element, SimulatedMouseEvent::create(eventNames().clickEvent, element->document().defaultView(), underlyingEvent, element));
 
     elementsDispatchingSimulatedClicks.remove(element);
 }
 
 static void callDefaultEventHandlersInTheBubblingOrder(Event& event, const EventPath& path)
 {
+    if (path.isEmpty())
+        return;
+
     // Non-bubbling events call only one default event handler, the one for the target.
     path.contextAt(0).node()->defaultEventHandler(&event);
     ASSERT(!event.defaultPrevented());
@@ -275,7 +317,7 @@ static void dispatchEventInDOM(Event& event, const EventPath& path, WindowEventC
 
 bool EventDispatcher::dispatchEvent(Node* origin, PassRefPtr<Event> prpEvent)
 {
-    ASSERT(!NoEventDispatchAssertion::isEventDispatchForbidden());
+    ASSERT_WITH_SECURITY_IMPLICATION(!NoEventDispatchAssertion::isEventDispatchForbidden());
     if (!prpEvent)
         return true;
 
@@ -286,35 +328,38 @@ bool EventDispatcher::dispatchEvent(Node* origin, PassRefPtr<Event> prpEvent)
     EventPath eventPath(*node, *event);
 
     if (EventTarget* relatedTarget = event->relatedTarget())
-        eventPath.setRelatedTarget(*relatedTarget);
-#if ENABLE(TOUCH_EVENTS)
-    if (event->isTouchEvent())
-        eventPath.updateTouchLists(*toTouchEvent(event.get()));
+        eventPath.setRelatedTarget(*node, *relatedTarget);
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
+    if (is<TouchEvent>(*event)) {
+        if (!eventPath.updateTouchLists(downcast<TouchEvent>(*event)))
+            return true;
+    }
 #endif
 
     ChildNodesLazySnapshot::takeChildNodesLazySnapshot();
 
-    event->setTarget(&eventTargetRespectingTargetRules(*node));
-    ASSERT(!NoEventDispatchAssertion::isEventDispatchForbidden());
-    ASSERT(event->target());
+    EventTarget* target = eventTargetRespectingTargetRules(*node);
+    event->setTarget(target);
+    if (!event->target())
+        return true;
+
+    ASSERT_WITH_SECURITY_IMPLICATION(!NoEventDispatchAssertion::isEventDispatchForbidden());
+
     WindowEventContext windowEventContext(node.get(), eventPath.lastContextIfExists());
-    bool hasEventListners = (windowEventContext.window() && windowEventContext.window()->hasEventListeners(event->type()))
-        || node->hasEventListeners(event->type()) || eventPath.hasEventListeners(event->type());
-    InspectorInstrumentationCookie cookie = InspectorInstrumentation::willDispatchEvent(&node->document(), *event, hasEventListners);
 
     InputElementClickState clickHandlingState;
-    if (isHTMLInputElement(node.get()))
-        toHTMLInputElement(*node).willDispatchEvent(*event, clickHandlingState);
+    if (is<HTMLInputElement>(*node))
+        downcast<HTMLInputElement>(*node).willDispatchEvent(*event, clickHandlingState);
 
     if (!event->propagationStopped() && !eventPath.isEmpty())
         dispatchEventInDOM(*event, eventPath, windowEventContext);
 
-    event->setTarget(&eventTargetRespectingTargetRules(*node));
-    event->setCurrentTarget(0);
+    event->setTarget(eventTargetRespectingTargetRules(*node));
+    event->setCurrentTarget(nullptr);
     event->setEventPhase(0);
 
     if (clickHandlingState.stateful)
-        toHTMLInputElement(*node).didDispatchClickEvent(*event, clickHandlingState);
+        downcast<HTMLInputElement>(*node).didDispatchClickEvent(*event, clickHandlingState);
 
     // Call default event handlers. While the DOM does have a concept of preventing
     // default handling, the detail of which handlers are called is an internal
@@ -326,7 +371,6 @@ bool EventDispatcher::dispatchEvent(Node* origin, PassRefPtr<Event> prpEvent)
     // outermost shadow DOM boundary.
     event->setTarget(windowEventContext.target());
     event->setCurrentTarget(0);
-    InspectorInstrumentation::didDispatchEvent(cookie);
 
     return !event->defaultPrevented();
 }
@@ -351,7 +395,7 @@ static inline bool shouldEventCrossShadowBoundary(Event& event, ShadowRoot& shad
     // Changing this breaks existing sites.
     // See https://bugs.webkit.org/show_bug.cgi?id=52195 for details.
     const AtomicString& eventType = event.type();
-    bool targetIsInShadowRoot = targetNode && targetNode->treeScope().rootNode() == &shadowRoot;
+    bool targetIsInShadowRoot = targetNode && &targetNode->treeScope().rootNode() == &shadowRoot;
     return !targetIsInShadowRoot
         || !(eventType == eventNames().abortEvent
             || eventType == eventNames().changeEvent
@@ -366,7 +410,7 @@ static inline bool shouldEventCrossShadowBoundary(Event& event, ShadowRoot& shad
 
 static Node* nodeOrHostIfPseudoElement(Node* node)
 {
-    return node->isPseudoElement() ? toPseudoElement(node)->hostElement() : node;
+    return is<PseudoElement>(*node) ? downcast<PseudoElement>(*node).hostElement() : node;
 }
 
 EventPath::EventPath(Node& targetNode, Event& event)
@@ -374,64 +418,74 @@ EventPath::EventPath(Node& targetNode, Event& event)
     bool inDocument = targetNode.inDocument();
     bool isSVGElement = targetNode.isSVGElement();
     bool isMouseOrFocusEvent = event.isMouseEvent() || event.isFocusEvent();
-#if ENABLE(TOUCH_EVENTS)
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
     bool isTouchEvent = event.isTouchEvent();
 #endif
-    EventTarget* target = 0;
+    EventTarget* target = nullptr;
 
     Node* node = nodeOrHostIfPseudoElement(&targetNode);
     while (node) {
         if (!target || !isSVGElement) // FIXME: This code doesn't make sense once we've climbed out of the SVG subtree in a HTML document.
-            target = &eventTargetRespectingTargetRules(*node);
+            target = eventTargetRespectingTargetRules(*node);
         for (; node; node = node->parentNode()) {
-            EventTarget& currentTarget = eventTargetRespectingTargetRules(*node);
+            EventTarget* currentTarget = eventTargetRespectingTargetRules(*node);
             if (isMouseOrFocusEvent)
-                m_path.append(std::make_unique<MouseOrFocusEventContext>(node, &currentTarget, target));
-#if ENABLE(TOUCH_EVENTS)
+                m_path.append(std::make_unique<MouseOrFocusEventContext>(node, currentTarget, target));
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
             else if (isTouchEvent)
-                m_path.append(std::make_unique<TouchEventContext>(node, &currentTarget, target));
+                m_path.append(std::make_unique<TouchEventContext>(node, currentTarget, target));
 #endif
             else
-                m_path.append(std::make_unique<EventContext>(node, &currentTarget, target));
+                m_path.append(std::make_unique<EventContext>(node, currentTarget, target));
             if (!inDocument)
                 return;
-            if (node->isShadowRoot())
+            if (is<ShadowRoot>(*node))
                 break;
         }
-        if (!node || !shouldEventCrossShadowBoundary(event, *toShadowRoot(node), *target))
+        if (!node || !shouldEventCrossShadowBoundary(event, downcast<ShadowRoot>(*node), *target))
             return;
-        node = toShadowRoot(node)->hostElement();
+        node = downcast<ShadowRoot>(*node).hostElement();
     }
 }
 
-#if ENABLE(TOUCH_EVENTS)
-void EventPath::updateTouchListsInEventPath(const TouchList* touchList, TouchEventContext::TouchListType touchListType)
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
+static void addRelatedNodeResolversForTouchList(Vector<EventRelatedNodeResolver, 16>& touchTargetResolvers, TouchList* touchList, TouchEventContext::TouchListType type)
 {
-    if (!touchList)
-        return;
-    for (size_t i = 0; i < touchList->length(); ++i) {
-        const Touch& touch = *touchList->item(i);
+    const size_t touchListSize = touchList->length();
+    for (size_t i = 0; i < touchListSize; ++i)
+        touchTargetResolvers.append(EventRelatedNodeResolver(*touchList->item(i), type));
+}
 
-        ASSERT(touch.target()->toNode());
-        EventRelatedNodeResolver resolver(*touch.target()->toNode());
-        size_t eventPathSize = m_path.size();
-        for (size_t j = 0; j < eventPathSize; ++j) {
-            EventContext& context = *m_path[i];
-            Node* nodeInCurrentTreeScope = resolver.moveToParentOrShadowHost(*context.node());
-            toTouchEventContext(context).touchList(touchListType)->append(touch.cloneWithNewTarget(nodeInCurrentTreeScope));
+bool EventPath::updateTouchLists(const TouchEvent& touchEvent)
+{
+    if (!touchEvent.touches() || !touchEvent.targetTouches() || !touchEvent.changedTouches())
+        return false;
+    
+    Vector<EventRelatedNodeResolver, 16> touchTargetResolvers;
+    const size_t touchNodeCount = touchEvent.touches()->length() + touchEvent.targetTouches()->length() + touchEvent.changedTouches()->length();
+    touchTargetResolvers.reserveInitialCapacity(touchNodeCount);
+
+    addRelatedNodeResolversForTouchList(touchTargetResolvers, touchEvent.touches(), TouchEventContext::Touches);
+    addRelatedNodeResolversForTouchList(touchTargetResolvers, touchEvent.targetTouches(), TouchEventContext::TargetTouches);
+    addRelatedNodeResolversForTouchList(touchTargetResolvers, touchEvent.changedTouches(), TouchEventContext::ChangedTouches);
+
+    ASSERT(touchTargetResolvers.size() == touchNodeCount);
+    size_t eventPathSize = m_path.size();
+    for (size_t i = 0; i < eventPathSize; ++i) {
+        TouchEventContext& context = toTouchEventContext(*m_path[i]);
+        Node& nodeToMoveTo = *context.node();
+        for (size_t resolverIndex = 0; resolverIndex < touchNodeCount; ++resolverIndex) {
+            EventRelatedNodeResolver& currentResolver = touchTargetResolvers[resolverIndex];
+            Node* nodeInCurrentTreeScope = currentResolver.moveToParentOrShadowHost(nodeToMoveTo);
+            ASSERT(currentResolver.touch());
+            context.touchList(currentResolver.touchListType())->append(currentResolver.touch()->cloneWithNewTarget(nodeInCurrentTreeScope));
         }
     }
-}
-
-void EventPath::updateTouchLists(const TouchEvent& touchEvent)
-{
-    updateTouchListsInEventPath(touchEvent.touches(), TouchEventContext::Touches);
-    updateTouchListsInEventPath(touchEvent.targetTouches(), TouchEventContext::TargetTouches);
-    updateTouchListsInEventPath(touchEvent.changedTouches(), TouchEventContext::ChangedTouches);
+    return true;
 }
 #endif
 
-void EventPath::setRelatedTarget(EventTarget& relatedTarget)
+void EventPath::setRelatedTarget(Node& origin, EventTarget& relatedTarget)
 {
     Node* relatedNode = relatedTarget.toNode();
     if (!relatedNode)
@@ -439,9 +493,22 @@ void EventPath::setRelatedTarget(EventTarget& relatedTarget)
 
     EventRelatedNodeResolver resolver(*relatedNode);
 
+    bool originIsRelatedTarget = &origin == relatedNode;
+    Node& rootNodeInOriginTreeScope = origin.treeScope().rootNode();
+
     size_t eventPathSize = m_path.size();
-    for (size_t i = 0; i < eventPathSize; i++)
-        toMouseOrFocusEventContext(*m_path[i]).setRelatedTarget(resolver.moveToParentOrShadowHost(*m_path[i]->node()));
+    size_t i = 0;
+    while (i < eventPathSize) {
+        Node* contextNode = m_path[i]->node();
+        Node* currentRelatedNode = resolver.moveToParentOrShadowHost(*contextNode);
+        if (!originIsRelatedTarget && m_path[i]->target() == currentRelatedNode)
+            break;
+        toMouseOrFocusEventContext(*m_path[i]).setRelatedTarget(currentRelatedNode);
+        i++;
+        if (originIsRelatedTarget && &rootNodeInOriginTreeScope == contextNode)
+            break;
+    }
+    m_path.shrink(i);
 }
 
 bool EventPath::hasEventListeners(const AtomicString& eventType) const

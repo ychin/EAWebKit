@@ -115,6 +115,9 @@ public:
 	virtual void SetName(const char* pName)
 	{
 	}
+	virtual void ChangePriority(int delta)
+	{
+	}
 };
 
 class DefaultThreadLocalStorage : public IThreadLocalStorage

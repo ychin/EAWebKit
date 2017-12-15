@@ -21,11 +21,7 @@
 #ifndef JSWorkerGlobalScope_h
 #define JSWorkerGlobalScope_h
 
-#if ENABLE(WORKERS)
-
-#include "JSDOMBinding.h"
 #include "JSWorkerGlobalScopeBase.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -34,9 +30,9 @@ class WorkerGlobalScope;
 class JSWorkerGlobalScope : public JSWorkerGlobalScopeBase {
 public:
     typedef JSWorkerGlobalScopeBase Base;
-    static JSWorkerGlobalScope* create(JSC::VM& vm, JSC::Structure* structure, PassRefPtr<WorkerGlobalScope> impl)
+    static JSWorkerGlobalScope* create(JSC::VM& vm, JSC::Structure* structure, Ref<WorkerGlobalScope>&& impl)
     {
-        JSWorkerGlobalScope* ptr = new (NotNull, JSC::allocateCell<JSWorkerGlobalScope>(vm.heap)) JSWorkerGlobalScope(vm, structure, impl);
+        JSWorkerGlobalScope* ptr = new (NotNull, JSC::allocateCell<JSWorkerGlobalScope>(vm.heap)) JSWorkerGlobalScope(vm, structure, WTF::move(impl));
         ptr->finishCreation(vm);
         vm.heap.addFinalizer(ptr, destroy);
         return ptr;
@@ -45,9 +41,9 @@ public:
     static const bool needsDestruction = false;
 
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
     bool getOwnPropertySlotDelegate(JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,6 +53,7 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
 
     // Custom functions
@@ -67,9 +64,10 @@ public:
     {
         return static_cast<WorkerGlobalScope&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSWorkerGlobalScope(JSC::VM&, JSC::Structure*, PassRefPtr<WorkerGlobalScope>);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSWorkerGlobalScope(JSC::VM&, JSC::Structure*, Ref<WorkerGlobalScope>&&);
 };
 
 
@@ -84,199 +82,23 @@ public:
     }
 
     DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
 private:
-    JSWorkerGlobalScopePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
+    JSWorkerGlobalScopePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
 
-class JSWorkerGlobalScopeConstructor : public DOMConstructorObject {
-private:
-    JSWorkerGlobalScopeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
+    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
 public:
-    typedef DOMConstructorObject Base;
-    static JSWorkerGlobalScopeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWorkerGlobalScopeConstructor* ptr = new (NotNull, JSC::allocateCell<JSWorkerGlobalScopeConstructor>(vm.heap)) JSWorkerGlobalScopeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionClose(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionImportScripts(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionDispatchEvent(JSC::ExecState*);
-#if ENABLE(SQL_DATABASE) && ENABLE(WORKERS)
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionOpenDatabase(JSC::ExecState*);
-#endif
-#if ENABLE(SQL_DATABASE) && ENABLE(WORKERS)
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionOpenDatabaseSync(JSC::ExecState*);
-#endif
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionSetTimeout(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionClearTimeout(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionSetInterval(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerGlobalScopePrototypeFunctionClearInterval(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsWorkerGlobalScopeSelf(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeSelf(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWorkerGlobalScopeLocation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeLocation(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWorkerGlobalScopeOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWorkerGlobalScopeOnoffline(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeOnoffline(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWorkerGlobalScopeOnonline(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeOnonline(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWorkerGlobalScopeNavigator(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeNavigator(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(BLOB)
-JSC::JSValue jsWorkerGlobalScopeWebkitURLConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitURLConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(WEB_SOCKETS)
-JSC::JSValue jsWorkerGlobalScopeWebSocketConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebSocketConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(CHANNEL_MESSAGING)
-JSC::JSValue jsWorkerGlobalScopeMessageChannelConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeMessageChannelConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsWorkerGlobalScopeMessageEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeMessageEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWorkerGlobalScopeBlobConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeBlobConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(BLOB)
-JSC::JSValue jsWorkerGlobalScopeFileReaderConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeFileReaderConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(BLOB)
-JSC::JSValue jsWorkerGlobalScopeFileReaderSyncConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeFileReaderSyncConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(BLOB)
-JSC::JSValue jsWorkerGlobalScopeURLConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeURLConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsWorkerGlobalScopeEventSourceConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeEventSourceConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(WORKERS)
-JSC::JSValue jsWorkerGlobalScopeWorkerGlobalScopeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWorkerGlobalScopeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(WORKERS)
-JSC::JSValue jsWorkerGlobalScopeWorkerLocationConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWorkerLocationConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsWorkerGlobalScopeXMLHttpRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeXMLHttpRequestConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIndexedDB(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBCursorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBCursorConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBDatabaseConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBDatabaseConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBFactoryConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBFactoryConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBIndexConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBIndexConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBKeyRangeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBKeyRangeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBObjectStoreConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBObjectStoreConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBRequestConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeWebkitIDBTransactionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeWebkitIDBTransactionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIndexedDB(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBCursorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBCursorConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBCursorWithValueConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBCursorWithValueConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBDatabaseConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBDatabaseConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBFactoryConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBFactoryConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBIndexConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBIndexConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBKeyRangeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBKeyRangeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBObjectStoreConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBObjectStoreConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBOpenDBRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBOpenDBRequestConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBRequestConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBTransactionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBTransactionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-#if ENABLE(INDEXED_DATABASE)
-JSC::JSValue jsWorkerGlobalScopeIDBVersionChangeEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerGlobalScopeIDBVersionChangeEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsWorkerGlobalScopeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)
 
 #endif

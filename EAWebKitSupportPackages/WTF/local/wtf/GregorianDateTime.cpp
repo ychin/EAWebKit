@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Patrick Gansterer <paroga@paroga.com>
+ * Copyright (C) 2012, 2014 Patrick Gansterer <paroga@paroga.com>
  * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,13 +48,16 @@ void GregorianDateTime::setToCurrentLocalTime()
     TIME_ZONE_INFORMATION timeZoneInformation;
     DWORD timeZoneId = GetTimeZoneInformation(&timeZoneInformation);
 
-    LONG bias = timeZoneInformation.Bias;
-    if (timeZoneId == TIME_ZONE_ID_DAYLIGHT)
-        bias += timeZoneInformation.DaylightBias;
-    else if (timeZoneId == TIME_ZONE_ID_STANDARD)
-        bias += timeZoneInformation.StandardBias;
-    else
-        ASSERT(timeZoneId == TIME_ZONE_ID_UNKNOWN);
+    LONG bias = 0;
+    if (timeZoneId != TIME_ZONE_ID_INVALID) {
+        bias = timeZoneInformation.Bias;
+        if (timeZoneId == TIME_ZONE_ID_DAYLIGHT)
+            bias += timeZoneInformation.DaylightBias;
+        else if ((timeZoneId == TIME_ZONE_ID_STANDARD) || (timeZoneId == TIME_ZONE_ID_UNKNOWN))
+            bias += timeZoneInformation.StandardBias;
+        else
+            ASSERT(0);
+    }
 
     m_year = systemTime.wYear;
     m_month = systemTime.wMonth - 1;
@@ -73,6 +76,8 @@ void GregorianDateTime::setToCurrentLocalTime()
 //3/12/2014
 #if defined(EA_PLATFORM_MICROSOFT)
     localtime_s(&localTM, &localTime);
+#elif defined(EA_PLATFORM_SONY)
+    localtime_s(&localTime, &localTM);
 #else
     localtime_r(&localTime, &localTM);
 #endif

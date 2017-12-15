@@ -30,7 +30,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DDSImageDecoder_h
 
 #include "ImageDecoder.h"
-#include <wtf/OwnPtr.h>
 
 namespace WebCore {
 

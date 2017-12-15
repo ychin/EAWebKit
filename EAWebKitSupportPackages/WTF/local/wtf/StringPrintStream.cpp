@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,14 +54,7 @@ void StringPrintStream::vprintf(const char* format, va_list argList)
     ASSERT(!m_buffer[m_next]);
     
     va_list firstPassArgList;
-//+EAWebKitChange
-//3/11/2014
-#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
-//-EAWebKitChange
-    firstPassArgList = argList;
-#else
     va_copy(firstPassArgList, argList);
-#endif
     
     int numberOfBytesNotIncludingTerminatorThatWouldHaveBeenWritten =
         vsnprintf(m_buffer + m_next, m_size - m_next, format, firstPassArgList);

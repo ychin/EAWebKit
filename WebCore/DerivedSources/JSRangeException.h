@@ -21,28 +21,30 @@
 #ifndef JSRangeException_h
 #define JSRangeException_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RangeException.h"
 #include <runtime/ErrorPrototype.h>
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRangeException : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRangeException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RangeException> impl)
+    static JSRangeException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RangeException>&& impl)
     {
-        JSRangeException* ptr = new (NotNull, JSC::allocateCell<JSRangeException>(globalObject->vm().heap)) JSRangeException(structure, globalObject, impl);
+        JSRangeException* ptr = new (NotNull, JSC::allocateCell<JSRangeException>(globalObject->vm().heap)) JSRangeException(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RangeException* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSRangeException();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +54,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     RangeException& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RangeException* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSRangeException(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RangeException>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRangeException(JSC::Structure*, JSDOMGlobalObject*, Ref<RangeException>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRangeExceptionOwner : public JSC::WeakHandleOwner {
@@ -78,79 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RangeException*)
 {
-    DEFINE_STATIC_LOCAL(JSRangeExceptionOwner, jsRangeExceptionOwner, ());
-    return &jsRangeExceptionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RangeException*)
-{
-    return &world;
+    static NeverDestroyed<JSRangeExceptionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RangeException*);
-RangeException* toRangeException(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RangeException& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRangeExceptionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRangeExceptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRangeExceptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSRangeExceptionPrototype>(vm.heap)) JSRangeExceptionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRangeExceptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSRangeExceptionConstructor : public DOMConstructorObject {
-private:
-    JSRangeExceptionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSRangeExceptionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSRangeExceptionConstructor* ptr = new (NotNull, JSC::allocateCell<JSRangeExceptionConstructor>(vm.heap)) JSRangeExceptionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsRangeExceptionPrototypeFunctionToString(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsRangeExceptionCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRangeExceptionName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRangeExceptionMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRangeExceptionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsRangeExceptionBAD_BOUNDARYPOINTS_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRangeExceptionINVALID_NODE_TYPE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

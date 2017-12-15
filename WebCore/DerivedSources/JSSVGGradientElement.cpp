@@ -19,56 +19,86 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGGradientElement.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedBoolean.h"
 #include "JSSVGAnimatedEnumeration.h"
+#include "JSSVGAnimatedString.h"
 #include "JSSVGAnimatedTransformList.h"
 #include "SVGGradientElement.h"
 #include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#include "JSSVGAnimatedString.h"
-#endif
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGGradientElementTableValues[] =
-{
-    { "gradientUnits", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementGradientUnits), (intptr_t)0 },
-    { "gradientTransform", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementGradientTransform), (intptr_t)0 },
-    { "spreadMethod", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSpreadMethod), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "href", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementHref), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGGradientElementGradientUnits(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGradientElementGradientTransform(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGradientElementSpreadMethod(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGradientElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGradientElementHref(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGradientElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGGradientElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGGradientElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGGradientElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGGradientElementPrototype>(vm.heap)) JSSVGGradientElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGGradientElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGGradientElementTable = { 16, 15, JSSVGGradientElementTableValues, 0 };
+class JSSVGGradientElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGGradientElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGGradientElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGGradientElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGGradientElementConstructor>(vm.heap)) JSSVGGradientElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGGradientElementConstructorTableValues[] =
 {
-    { "SVG_SPREADMETHOD_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_UNKNOWN), (intptr_t)0 },
-    { "SVG_SPREADMETHOD_PAD", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_PAD), (intptr_t)0 },
-    { "SVG_SPREADMETHOD_REFLECT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_REFLECT), (intptr_t)0 },
-    { "SVG_SPREADMETHOD_REPEAT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_REPEAT), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "SVG_SPREADMETHOD_UNKNOWN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SVG_SPREADMETHOD_PAD", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SVG_SPREADMETHOD_REFLECT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "SVG_SPREADMETHOD_REPEAT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGGradientElementConstructorTable = { 8, 7, JSSVGGradientElementConstructorTableValues, 0 };
-const ClassInfo JSSVGGradientElementConstructor::s_info = { "SVGGradientElementConstructor", &Base::s_info, &JSSVGGradientElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGGradientElementConstructor) };
+const ClassInfo JSSVGGradientElementConstructor::s_info = { "SVGGradientElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGradientElementConstructor) };
 
 JSSVGGradientElementConstructor::JSSVGGradientElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -79,128 +109,149 @@ void JSSVGGradientElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* 
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGGradientElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGGradientElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGGradientElementConstructor, JSDOMWrapper>(exec, JSSVGGradientElementConstructorTable, jsCast<JSSVGGradientElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGGradientElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGGradientElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSSVGGradientElementConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGGradientElementPrototypeTableValues[] =
 {
-    { "SVG_SPREADMETHOD_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_UNKNOWN), (intptr_t)0 },
-    { "SVG_SPREADMETHOD_PAD", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_PAD), (intptr_t)0 },
-    { "SVG_SPREADMETHOD_REFLECT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_REFLECT), (intptr_t)0 },
-    { "SVG_SPREADMETHOD_REPEAT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSVG_SPREADMETHOD_REPEAT), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "gradientUnits", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementGradientUnits), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "gradientTransform", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementGradientTransform), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "spreadMethod", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSpreadMethod), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "href", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementHref), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "SVG_SPREADMETHOD_UNKNOWN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SVG_SPREADMETHOD_PAD", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SVG_SPREADMETHOD_REFLECT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "SVG_SPREADMETHOD_REPEAT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGGradientElementPrototypeTable = { 8, 7, JSSVGGradientElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGGradientElementPrototype::s_info = { "SVGGradientElementPrototype", &Base::s_info, &JSSVGGradientElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGGradientElementPrototype) };
+const ClassInfo JSSVGGradientElementPrototype::s_info = { "SVGGradientElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGradientElementPrototype) };
 
-JSObject* JSSVGGradientElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGGradientElement>(vm, globalObject);
-}
-
-bool JSSVGGradientElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGGradientElementPrototype* thisObject = jsCast<JSSVGGradientElementPrototype*>(object);
-    return getStaticValueSlot<JSSVGGradientElementPrototype, JSObject>(exec, JSSVGGradientElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGGradientElement::s_info = { "SVGGradientElement", &Base::s_info, &JSSVGGradientElementTable, 0 , CREATE_METHOD_TABLE(JSSVGGradientElement) };
-
-JSSVGGradientElement::JSSVGGradientElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGGradientElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGGradientElement::finishCreation(VM& vm)
+void JSSVGGradientElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGGradientElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGGradientElement::s_info = { "SVGGradientElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGradientElement) };
+
+JSSVGGradientElement::JSSVGGradientElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGGradientElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGGradientElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGGradientElementPrototype::create(vm, globalObject, JSSVGGradientElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGGradientElementPrototype::create(vm, globalObject, JSSVGGradientElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGGradientElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGGradientElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGGradientElement* thisObject = jsCast<JSSVGGradientElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGGradientElement, Base>(exec, JSSVGGradientElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGGradientElement>(vm, globalObject);
 }
 
-JSValue jsSVGGradientElementGradientUnits(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGradientElementGradientUnits(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGradientElement* castedThis = jsCast<JSSVGGradientElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGradientElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGradientElement", "gradientUnits");
+        return throwGetterTypeError(*exec, "SVGGradientElement", "gradientUnits");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedEnumeration> obj = impl.gradientUnitsAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGGradientElementGradientTransform(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGradientElementGradientTransform(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGradientElement* castedThis = jsCast<JSSVGGradientElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGradientElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGradientElement", "gradientTransform");
+        return throwGetterTypeError(*exec, "SVGGradientElement", "gradientTransform");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedTransformList> obj = impl.gradientTransformAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGGradientElementSpreadMethod(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGradientElementSpreadMethod(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGradientElement* castedThis = jsCast<JSSVGGradientElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGradientElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGradientElement", "spreadMethod");
+        return throwGetterTypeError(*exec, "SVGGradientElement", "spreadMethod");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedEnumeration> obj = impl.spreadMethodAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGGradientElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGradientElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGradientElement* castedThis = jsCast<JSSVGGradientElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGradientElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGradientElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGGradientElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGGradientElementHref(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGradientElementHref(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGradientElement* castedThis = jsCast<JSSVGGradientElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGradientElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGradientElement", "href");
+        return throwGetterTypeError(*exec, "SVGGradientElement", "href");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedString> obj = impl.hrefAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGGradientElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGradientElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGGradientElement* domObject = jsCast<JSSVGGradientElement*>(asObject(slotBase));
-    return JSSVGGradientElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGGradientElementPrototype* domObject = jsDynamicCast<JSSVGGradientElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGGradientElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGGradientElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -208,33 +259,5 @@ JSValue JSSVGGradientElement::getConstructor(VM& vm, JSGlobalObject* globalObjec
     return getDOMConstructor<JSSVGGradientElementConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-// Constant getters
-
-JSValue jsSVGGradientElementSVG_SPREADMETHOD_UNKNOWN(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsSVGGradientElementSVG_SPREADMETHOD_PAD(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsSVGGradientElementSVG_SPREADMETHOD_REFLECT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsSVGGradientElementSVG_SPREADMETHOD_REPEAT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
 
 }
-
-#endif // ENABLE(SVG)

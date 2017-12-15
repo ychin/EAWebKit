@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EASTL/string.h>
 #include <EABase/eabase.h>
 
+#if defined(EA_PLATFORM_MICROSOFT)
     #pragma warning(push, 0)
     #if defined _MSC_VER
         #include <crtdbg.h>
@@ -42,6 +43,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         #endif
         #include <Windows.h>
     #pragma warning(pop)
+#else
+    #include <stdio.h>
+#endif
 
 
 
@@ -81,8 +85,12 @@ namespace eastl
     ///
     EASTL_API void AssertionFailureFunctionDefault(const char* pExpression, void* /*pContext*/)
     {
+        #if defined(EA_PLATFORM_MICROSOFT)
             OutputDebugStringA(pExpression);
             (void)pExpression;
+        #else
+            printf("%s", pExpression); // Write the message to stdout, which happens to be the trace view for many console debug machines.
+        #endif
 
         EASTL_DEBUG_BREAK();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,16 +28,51 @@
 
 #if ENABLE(DFG_JIT)
 
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
 bool doesWrites(Graph& graph, Node* node)
 {
-    NoOpClobberize addRead;
+    NoOpClobberize noOp;
     CheckClobberize addWrite;
-    clobberize(graph, node, addRead, addWrite);
+    clobberize(graph, node, noOp, addWrite, noOp);
     return addWrite.result();
+}
+
+bool accessesOverlap(Graph& graph, Node* node, AbstractHeap heap)
+{
+    NoOpClobberize noOp;
+    AbstractHeapOverlaps addAccess(heap);
+    clobberize(graph, node, addAccess, addAccess, noOp);
+    return addAccess.result();
+}
+
+bool writesOverlap(Graph& graph, Node* node, AbstractHeap heap)
+{
+    NoOpClobberize noOp;
+    AbstractHeapOverlaps addWrite(heap);
+    clobberize(graph, node, noOp, addWrite, noOp);
+    return addWrite.result();
+}
+
+bool clobbersHeap(Graph& graph, Node* node)
+{
+    bool result = false;
+    clobberize(
+        graph, node, NoOpClobberize(),
+        [&] (AbstractHeap heap) {
+            switch (heap.kind()) {
+            case World:
+            case Heap:
+                result = true;
+                break;
+            default:
+                break;
+            }
+        },
+        NoOpClobberize());
+    return result;
 }
 
 } } // namespace JSC::DFG

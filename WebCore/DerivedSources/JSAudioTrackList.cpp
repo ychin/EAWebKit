@@ -28,7 +28,6 @@
 #include "AudioTrackList.h"
 #include "Element.h"
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSAudioTrack.h"
 #include "JSDOMBinding.h"
@@ -43,61 +42,115 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionGetTrackById(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsAudioTrackListLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAudioTrackListOnchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSAudioTrackListOnchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsAudioTrackListOnaddtrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSAudioTrackListOnaddtrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsAudioTrackListOnremovetrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSAudioTrackListOnremovetrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSAudioTrackListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSAudioTrackListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSAudioTrackListPrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioTrackListPrototype>(vm.heap)) JSAudioTrackListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSAudioTrackListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSAudioTrackListTableIndex[16] = {
+    { -1, -1 },
+    { 0, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 3, -1 },
+    { -1, -1 },
+    { 1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 2, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSAudioTrackListTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListLength), (intptr_t)0 },
-    { "onchange", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListOnchange), (intptr_t)setJSAudioTrackListOnchange },
-    { "onaddtrack", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListOnaddtrack), (intptr_t)setJSAudioTrackListOnaddtrack },
-    { "onremovetrack", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListOnremovetrack), (intptr_t)setJSAudioTrackListOnremovetrack },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onchange", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListOnchange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSAudioTrackListOnchange) },
+    { "onaddtrack", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListOnaddtrack), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSAudioTrackListOnaddtrack) },
+    { "onremovetrack", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAudioTrackListOnremovetrack), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSAudioTrackListOnremovetrack) },
 };
 
-static const HashTable JSAudioTrackListTable = { 9, 7, JSAudioTrackListTableValues, 0 };
+static const HashTable JSAudioTrackListTable = { 4, 15, true, JSAudioTrackListTableValues, 0, JSAudioTrackListTableIndex };
 /* Hash table for prototype */
 
 static const HashTableValue JSAudioTrackListPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionItem), (intptr_t)1 },
-    { "getTrackById", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionGetTrackById), (intptr_t)1 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionItem), (intptr_t) (1) },
+    { "getTrackById", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionGetTrackById), (intptr_t) (1) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsAudioTrackListPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSAudioTrackListPrototypeTable = { 16, 15, JSAudioTrackListPrototypeTableValues, 0 };
-const ClassInfo JSAudioTrackListPrototype::s_info = { "AudioTrackListPrototype", &Base::s_info, &JSAudioTrackListPrototypeTable, 0, CREATE_METHOD_TABLE(JSAudioTrackListPrototype) };
+const ClassInfo JSAudioTrackListPrototype::s_info = { "AudioTrackListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAudioTrackListPrototype) };
 
-JSObject* JSAudioTrackListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSAudioTrackList>(vm, globalObject);
-}
-
-bool JSAudioTrackListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSAudioTrackListPrototype* thisObject = jsCast<JSAudioTrackListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSAudioTrackListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSAudioTrackList::s_info = { "AudioTrackList", &Base::s_info, &JSAudioTrackListTable, 0 , CREATE_METHOD_TABLE(JSAudioTrackList) };
-
-JSAudioTrackList::JSAudioTrackList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioTrackList> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSAudioTrackList::finishCreation(VM& vm)
+void JSAudioTrackListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSAudioTrackListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSAudioTrackList::s_info = { "AudioTrackList", &Base::s_info, &JSAudioTrackListTable, CREATE_METHOD_TABLE(JSAudioTrackList) };
+
+JSAudioTrackList::JSAudioTrackList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioTrackList>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSAudioTrackList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSAudioTrackListPrototype::create(vm, globalObject, JSAudioTrackListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSAudioTrackList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSAudioTrackList>(vm, globalObject);
 }
 
 void JSAudioTrackList::destroy(JSC::JSCell* cell)
@@ -108,22 +161,23 @@ void JSAudioTrackList::destroy(JSC::JSCell* cell)
 
 JSAudioTrackList::~JSAudioTrackList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSAudioTrackList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSAudioTrackList* thisObject = jsCast<JSAudioTrackList*>(object);
+    auto* thisObject = jsCast<JSAudioTrackList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSAudioTrackList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSAudioTrackList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSAudioTrackList, Base>(exec, JSAudioTrackListTable, thisObject, propertyName, slot);
@@ -131,228 +185,205 @@ bool JSAudioTrackList::getOwnPropertySlot(JSObject* object, ExecState* exec, Pro
 
 bool JSAudioTrackList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSAudioTrackList* thisObject = jsCast<JSAudioTrackList*>(object);
+    auto* thisObject = jsCast<JSAudioTrackList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsAudioTrackListLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAudioTrackListLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AudioTrackList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAudioTrackListOnchange(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAudioTrackListOnchange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AudioTrackList& impl = castedThis->impl();
-    if (EventListener* listener = impl.onchange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(slotBase);
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().changeEvent));
 }
 
 
-JSValue jsAudioTrackListOnaddtrack(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAudioTrackListOnaddtrack(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AudioTrackList& impl = castedThis->impl();
-    if (EventListener* listener = impl.onaddtrack()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(slotBase);
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().addtrackEvent));
 }
 
 
-JSValue jsAudioTrackListOnremovetrack(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAudioTrackListOnremovetrack(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AudioTrackList& impl = castedThis->impl();
-    if (EventListener* listener = impl.onremovetrack()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(slotBase);
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().removetrackEvent));
 }
 
 
-void JSAudioTrackList::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSAudioTrackListOnchange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSAudioTrackList* thisObject = jsCast<JSAudioTrackList*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSAudioTrackList, Base>(exec, propertyName, value, JSAudioTrackListTable, thisObject, slot);
-}
-
-void setJSAudioTrackListOnchange(ExecState* exec, JSObject* thisObject, JSValue value)
-{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(thisObject);
-    AudioTrackList& impl = castedThis->impl();
-    impl.setOnchange(createJSAttributeEventListener(exec, value, thisObject));
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().changeEvent, value);
 }
 
 
-void setJSAudioTrackListOnaddtrack(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSAudioTrackListOnaddtrack(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(thisObject);
-    AudioTrackList& impl = castedThis->impl();
-    impl.setOnaddtrack(createJSAttributeEventListener(exec, value, thisObject));
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().addtrackEvent, value);
 }
 
 
-void setJSAudioTrackListOnremovetrack(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSAudioTrackListOnremovetrack(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSAudioTrackList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(thisObject);
-    AudioTrackList& impl = castedThis->impl();
-    impl.setOnremovetrack(createJSAttributeEventListener(exec, value, thisObject));
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().removetrackEvent, value);
 }
 
 
 void JSAudioTrackList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSAudioTrackList* thisObject = jsCast<JSAudioTrackList*>(object);
+    auto* thisObject = jsCast<JSAudioTrackList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSAudioTrackList::info()))
-        return throwVMTypeError(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSAudioTrackList* castedThis = jsDynamicCast<JSAudioTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "AudioTrackList", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSAudioTrackList::info());
-    AudioTrackList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionGetTrackById(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSAudioTrackList::info()))
-        return throwVMTypeError(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSAudioTrackList* castedThis = jsDynamicCast<JSAudioTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "AudioTrackList", "getTrackById");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSAudioTrackList::info());
-    AudioTrackList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& id(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String id = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getTrackById(id)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getTrackById(id)));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSAudioTrackList::info()))
-        return throwVMTypeError(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSAudioTrackList* castedThis = jsDynamicCast<JSAudioTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "AudioTrackList", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSAudioTrackList::info());
-    AudioTrackList& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSAudioTrackList::info()))
-        return throwVMTypeError(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSAudioTrackList* castedThis = jsDynamicCast<JSAudioTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "AudioTrackList", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSAudioTrackList::info());
-    AudioTrackList& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsAudioTrackListPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSAudioTrackList::info()))
-        return throwVMTypeError(exec);
-    JSAudioTrackList* castedThis = jsCast<JSAudioTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSAudioTrackList* castedThis = jsDynamicCast<JSAudioTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "AudioTrackList", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSAudioTrackList::info());
-    AudioTrackList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* evt(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(evt, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-
-JSValue JSAudioTrackList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
+void JSAudioTrackList::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSAudioTrackList* thisObj = jsCast<JSAudioTrackList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
-}
-
-static inline bool isObservable(JSAudioTrackList* jsAudioTrackList)
-{
-    if (jsAudioTrackList->hasCustomProperties())
-        return true;
-    if (jsAudioTrackList->impl().hasEventListeners())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSAudioTrackList*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->impl().visitJSEventListeners(visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSAudioTrackListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSAudioTrackList* jsAudioTrackList = jsCast<JSAudioTrackList*>(handle.get().asCell());
+    auto* jsAudioTrackList = jsCast<JSAudioTrackList*>(handle.slot()->asCell());
     if (jsAudioTrackList->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsAudioTrackList))
-        return false;
-    Element* element = jsAudioTrackList->impl().element();
+    Element* element = WTF::getPtr(jsAudioTrackList->impl().element());
     if (!element)
         return false;
     void* root = WebCore::root(element);
@@ -361,10 +392,9 @@ bool JSAudioTrackListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>
 
 void JSAudioTrackListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSAudioTrackList* jsAudioTrackList = jsCast<JSAudioTrackList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsAudioTrackList = jsCast<JSAudioTrackList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsAudioTrackList->impl(), jsAudioTrackList);
-    jsAudioTrackList->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -375,11 +405,11 @@ extern "C" { extern void (*const __identifier("??_7AudioTrackList@WebCore@@6B@")
 extern "C" { extern void* _ZTVN7WebCore14AudioTrackListE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioTrackList* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, AudioTrackList* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSAudioTrackList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSAudioTrackList>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -400,13 +430,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioTr
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<AudioTrackList>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSAudioTrackList>(exec, globalObject, impl);
+    return createNewWrapper<JSAudioTrackList>(globalObject, impl);
 }
 
-AudioTrackList* toAudioTrackList(JSC::JSValue value)
+AudioTrackList* JSAudioTrackList::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSAudioTrackList::info()) ? &jsCast<JSAudioTrackList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSAudioTrackList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

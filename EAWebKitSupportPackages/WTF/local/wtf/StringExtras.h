@@ -27,10 +27,6 @@
 #ifndef WTF_StringExtras_h
 #define WTF_StringExtras_h
 
-//+EAWebKitChange
-//06/06/2016 - Entire file updated based off changes from w-188436 for VS2015 compatibility
-//-EAWebKitChange
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

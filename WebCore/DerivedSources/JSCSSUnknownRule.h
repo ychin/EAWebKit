@@ -23,21 +23,22 @@
 
 #include "CSSUnknownRule.h"
 #include "JSCSSRule.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSUnknownRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSUnknownRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSUnknownRule> impl)
+    static JSCSSUnknownRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSUnknownRule>&& impl)
     {
-        JSCSSUnknownRule* ptr = new (NotNull, JSC::allocateCell<JSCSSUnknownRule>(globalObject->vm().heap)) JSCSSUnknownRule(structure, globalObject, impl);
+        JSCSSUnknownRule* ptr = new (NotNull, JSC::allocateCell<JSCSSUnknownRule>(globalObject->vm().heap)) JSCSSUnknownRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -50,34 +51,16 @@ public:
         return static_cast<CSSUnknownRule&>(Base::impl());
     }
 protected:
-    JSCSSUnknownRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSUnknownRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+    JSCSSUnknownRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSUnknownRule>&&);
 
-
-class JSCSSUnknownRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSUnknownRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    void finishCreation(JSC::VM& vm)
     {
-        JSCSSUnknownRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSUnknownRulePrototype>(vm.heap)) JSCSSUnknownRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
     }
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSUnknownRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
 };
+
 
 
 } // namespace WebCore

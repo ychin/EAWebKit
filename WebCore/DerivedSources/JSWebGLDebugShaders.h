@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLDebugShaders.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLDebugShaders : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLDebugShaders* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLDebugShaders> impl)
+    static JSWebGLDebugShaders* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLDebugShaders>&& impl)
     {
-        JSWebGLDebugShaders* ptr = new (NotNull, JSC::allocateCell<JSWebGLDebugShaders>(globalObject->vm().heap)) JSWebGLDebugShaders(structure, globalObject, impl);
+        JSWebGLDebugShaders* ptr = new (NotNull, JSC::allocateCell<JSWebGLDebugShaders>(globalObject->vm().heap)) JSWebGLDebugShaders(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLDebugShaders* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLDebugShaders();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     WebGLDebugShaders& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLDebugShaders* m_impl;
 protected:
-    JSWebGLDebugShaders(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLDebugShaders>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSWebGLDebugShaders(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLDebugShaders>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLDebugShadersOwner : public JSC::WeakHandleOwner {
@@ -78,45 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLDebugShaders*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLDebugShadersOwner, jsWebGLDebugShadersOwner, ());
-    return &jsWebGLDebugShadersOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLDebugShaders*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLDebugShadersOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLDebugShaders*);
-WebGLDebugShaders* toWebGLDebugShaders(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLDebugShaders& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebGLDebugShadersPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLDebugShadersPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLDebugShadersPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLDebugShadersPrototype>(vm.heap)) JSWebGLDebugShadersPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLDebugShadersPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWebGLDebugShadersPrototypeFunctionGetTranslatedShaderSource(JSC::ExecState*);
 
 } // namespace WebCore
 

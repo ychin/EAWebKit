@@ -21,7 +21,6 @@
 #ifndef HTMLProgressElement_h
 #define HTMLProgressElement_h
 
-#if ENABLE(PROGRESS_ELEMENT)
 #include "LabelableElement.h"
 
 namespace WebCore {
@@ -29,12 +28,12 @@ namespace WebCore {
 class ProgressValueElement;
 class RenderProgress;
 
-class HTMLProgressElement FINAL : public LabelableElement {
+class HTMLProgressElement final : public LabelableElement {
 public:
     static const double IndeterminatePosition;
     static const double InvalidPosition;
 
-    static PassRefPtr<HTMLProgressElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLProgressElement> create(const QualifiedName&, Document&);
 
     double value() const;
     void setValue(double, ExceptionCode&);
@@ -44,34 +43,30 @@ public:
 
     double position() const;
 
-    virtual bool canContainRangeEndPoint() const OVERRIDE { return false; }
+    virtual bool canContainRangeEndPoint() const override { return false; }
 
 private:
     HTMLProgressElement(const QualifiedName&, Document&);
     virtual ~HTMLProgressElement();
 
-    virtual bool areAuthorShadowsAllowed() const OVERRIDE { return false; }
-    virtual bool shouldAppearIndeterminate() const OVERRIDE;
-    virtual bool supportLabels() const OVERRIDE { return true; }
+    virtual bool shouldAppearIndeterminate() const override;
+    virtual bool supportLabels() const override { return true; }
 
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&) OVERRIDE;
-    virtual bool childShouldCreateRenderer(const Node*) const OVERRIDE;
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual bool childShouldCreateRenderer(const Node&) const override;
     RenderProgress* renderProgress() const;
 
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
 
-    virtual void didAttachRenderers() OVERRIDE;
+    virtual void didAttachRenderers() override;
 
     void didElementStateChange();
-    virtual void didAddUserAgentShadowRoot(ShadowRoot*) OVERRIDE;
+    virtual void didAddUserAgentShadowRoot(ShadowRoot*) override;
     bool isDeterminate() const;
 
     ProgressValueElement* m_value;
 };
 
-NODE_TYPE_CASTS(HTMLProgressElement)
-
 } // namespace
 
-#endif
 #endif

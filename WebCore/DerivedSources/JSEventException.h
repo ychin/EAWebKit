@@ -22,27 +22,29 @@
 #define JSEventException_h
 
 #include "EventException.h"
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include <runtime/ErrorPrototype.h>
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSEventException : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSEventException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EventException> impl)
+    static JSEventException* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<EventException>&& impl)
     {
-        JSEventException* ptr = new (NotNull, JSC::allocateCell<JSEventException>(globalObject->vm().heap)) JSEventException(structure, globalObject, impl);
+        JSEventException* ptr = new (NotNull, JSC::allocateCell<JSEventException>(globalObject->vm().heap)) JSEventException(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static EventException* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSEventException();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +54,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     EventException& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     EventException* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSEventException(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<EventException>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSEventException(JSC::Structure*, JSDOMGlobalObject*, Ref<EventException>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSEventExceptionOwner : public JSC::WeakHandleOwner {
@@ -78,79 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, EventException*)
 {
-    DEFINE_STATIC_LOCAL(JSEventExceptionOwner, jsEventExceptionOwner, ());
-    return &jsEventExceptionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, EventException*)
-{
-    return &world;
+    static NeverDestroyed<JSEventExceptionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, EventException*);
-EventException* toEventException(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EventException& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSEventExceptionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSEventExceptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSEventExceptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSEventExceptionPrototype>(vm.heap)) JSEventExceptionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSEventExceptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSEventExceptionConstructor : public DOMConstructorObject {
-private:
-    JSEventExceptionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSEventExceptionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSEventExceptionConstructor* ptr = new (NotNull, JSC::allocateCell<JSEventExceptionConstructor>(vm.heap)) JSEventExceptionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsEventExceptionPrototypeFunctionToString(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsEventExceptionCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventExceptionName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventExceptionMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventExceptionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsEventExceptionUNSPECIFIED_EVENT_TYPE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsEventExceptionDISPATCH_REQUEST_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

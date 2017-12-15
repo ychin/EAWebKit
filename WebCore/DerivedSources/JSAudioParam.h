@@ -24,28 +24,27 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "AudioParam.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSAudioParam : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSAudioParam* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioParam> impl)
+    static JSAudioParam* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioParam>&& impl)
     {
-        JSAudioParam* ptr = new (NotNull, JSC::allocateCell<JSAudioParam>(globalObject->vm().heap)) JSAudioParam(structure, globalObject, impl);
+        JSAudioParam* ptr = new (NotNull, JSC::allocateCell<JSAudioParam>(globalObject->vm().heap)) JSAudioParam(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static AudioParam* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSAudioParam();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     AudioParam& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     AudioParam* m_impl;
 protected:
-    JSAudioParam(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AudioParam>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAudioParam(JSC::Structure*, JSDOMGlobalObject*, Ref<AudioParam>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSAudioParamOwner : public JSC::WeakHandleOwner {
@@ -81,87 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, AudioParam*)
 {
-    DEFINE_STATIC_LOCAL(JSAudioParamOwner, jsAudioParamOwner, ());
-    return &jsAudioParamOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, AudioParam*)
-{
-    return &world;
+    static NeverDestroyed<JSAudioParamOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AudioParam*);
-AudioParam* toAudioParam(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioParam& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAudioParamPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAudioParamPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAudioParamPrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioParamPrototype>(vm.heap)) JSAudioParamPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAudioParamPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSAudioParamConstructor : public DOMConstructorObject {
-private:
-    JSAudioParamConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSAudioParamConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSAudioParamConstructor* ptr = new (NotNull, JSC::allocateCell<JSAudioParamConstructor>(vm.heap)) JSAudioParamConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionSetValueAtTime(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionLinearRampToValueAtTime(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionExponentialRampToValueAtTime(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionSetTargetAtTime(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionSetValueCurveAtTime(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionCancelScheduledValues(JSC::ExecState*);
-#if ENABLE(LEGACY_WEB_AUDIO)
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioParamPrototypeFunctionSetTargetValueAtTime(JSC::ExecState*);
-#endif
-// Attributes
-
-JSC::JSValue jsAudioParamValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioParamValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioParamMinValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioParamMaxValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioParamDefaultValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioParamName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioParamUnits(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioParamConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

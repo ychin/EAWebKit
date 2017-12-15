@@ -36,24 +36,64 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSMutationObserverTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationObserverConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionObserve(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionTakeRecords(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionDisconnect(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsMutationObserverConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMutationObserverPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMutationObserverPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMutationObserverPrototype* ptr = new (NotNull, JSC::allocateCell<JSMutationObserverPrototype>(vm.heap)) JSMutationObserverPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMutationObserverPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMutationObserverTable = { 2, 1, JSMutationObserverTableValues, 0 };
-/* Hash table for constructor */
+class JSMutationObserverConstructor : public DOMConstructorObject {
+private:
+    JSMutationObserverConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMutationObserverConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMutationObserverConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMutationObserverConstructor* ptr = new (NotNull, JSC::allocateCell<JSMutationObserverConstructor>(vm.heap)) JSMutationObserverConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSMutationObserverConstructorTable = { 1, 0, JSMutationObserverConstructorTableValues, 0 };
-const ClassInfo JSMutationObserverConstructor::s_info = { "MutationObserverConstructor", &Base::s_info, &JSMutationObserverConstructorTable, 0, CREATE_METHOD_TABLE(JSMutationObserverConstructor) };
+const ClassInfo JSMutationObserverConstructor::s_info = { "MutationObserverConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMutationObserverConstructor) };
 
 JSMutationObserverConstructor::JSMutationObserverConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -64,13 +104,9 @@ void JSMutationObserverConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMutationObserverPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMutationObserverConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMutationObserverConstructor, JSDOMWrapper>(exec, JSMutationObserverConstructorTable, jsCast<JSMutationObserverConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMutationObserver::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("MutationObserver"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSMutationObserverConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -83,43 +119,36 @@ ConstructType JSMutationObserverConstructor::getConstructData(JSCell*, Construct
 
 static const HashTableValue JSMutationObserverPrototypeTableValues[] =
 {
-    { "observe", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMutationObserverPrototypeFunctionObserve), (intptr_t)2 },
-    { "takeRecords", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMutationObserverPrototypeFunctionTakeRecords), (intptr_t)0 },
-    { "disconnect", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMutationObserverPrototypeFunctionDisconnect), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationObserverConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "observe", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMutationObserverPrototypeFunctionObserve), (intptr_t) (2) },
+    { "takeRecords", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMutationObserverPrototypeFunctionTakeRecords), (intptr_t) (0) },
+    { "disconnect", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMutationObserverPrototypeFunctionDisconnect), (intptr_t) (0) },
 };
 
-static const HashTable JSMutationObserverPrototypeTable = { 8, 7, JSMutationObserverPrototypeTableValues, 0 };
-const ClassInfo JSMutationObserverPrototype::s_info = { "MutationObserverPrototype", &Base::s_info, &JSMutationObserverPrototypeTable, 0, CREATE_METHOD_TABLE(JSMutationObserverPrototype) };
+const ClassInfo JSMutationObserverPrototype::s_info = { "MutationObserverPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMutationObserverPrototype) };
 
-JSObject* JSMutationObserverPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMutationObserver>(vm, globalObject);
-}
-
-bool JSMutationObserverPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSMutationObserverPrototype* thisObject = jsCast<JSMutationObserverPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSMutationObserverPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSMutationObserver::s_info = { "MutationObserver", &Base::s_info, &JSMutationObserverTable, 0 , CREATE_METHOD_TABLE(JSMutationObserver) };
-
-JSMutationObserver::JSMutationObserver(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MutationObserver> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMutationObserver::finishCreation(VM& vm)
+void JSMutationObserverPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMutationObserverPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMutationObserver::s_info = { "MutationObserver", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMutationObserver) };
+
+JSMutationObserver::JSMutationObserver(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MutationObserver>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMutationObserver::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMutationObserverPrototype::create(vm, globalObject, JSMutationObserverPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMutationObserver::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMutationObserver>(vm, globalObject);
 }
 
 void JSMutationObserver::destroy(JSC::JSCell* cell)
@@ -130,20 +159,15 @@ void JSMutationObserver::destroy(JSC::JSCell* cell)
 
 JSMutationObserver::~JSMutationObserver()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSMutationObserver::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsMutationObserverConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMutationObserver* thisObject = jsCast<JSMutationObserver*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMutationObserver, Base>(exec, JSMutationObserverTable, thisObject, propertyName, slot);
-}
-
-JSValue jsMutationObserverConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMutationObserver* domObject = jsCast<JSMutationObserver*>(asObject(slotBase));
-    return JSMutationObserver::getConstructor(exec->vm(), domObject->globalObject());
+    JSMutationObserverPrototype* domObject = jsDynamicCast<JSMutationObserverPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMutationObserver::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSMutationObserver::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -153,20 +177,20 @@ JSValue JSMutationObserver::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionObserve(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMutationObserver::info()))
-        return throwVMTypeError(exec);
-    JSMutationObserver* castedThis = jsCast<JSMutationObserver*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMutationObserver* castedThis = jsDynamicCast<JSMutationObserver*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MutationObserver", "observe");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMutationObserver::info());
-    MutationObserver& impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Node* target(toNode(exec->argument(0)));
-    if (exec->hadException())
+    Node* target = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    Dictionary options(exec, exec->argument(1));
-    if (exec->hadException())
+    Dictionary options = { exec, exec->argument(1) };
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.observe(target, options, ec);
     setDOMException(exec, ec);
@@ -175,42 +199,40 @@ EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionObserve(ExecStat
 
 EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionTakeRecords(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMutationObserver::info()))
-        return throwVMTypeError(exec);
-    JSMutationObserver* castedThis = jsCast<JSMutationObserver*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMutationObserver* castedThis = jsDynamicCast<JSMutationObserver*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MutationObserver", "takeRecords");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMutationObserver::info());
-    MutationObserver& impl = castedThis->impl();
-
-    JSC::JSValue result = jsArray(exec, castedThis->globalObject(), impl.takeRecords());
+    auto& impl = castedThis->impl();
+    JSValue result = jsArray(exec, castedThis->globalObject(), impl.takeRecords());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionDisconnect(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMutationObserver::info()))
-        return throwVMTypeError(exec);
-    JSMutationObserver* castedThis = jsCast<JSMutationObserver*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMutationObserver* castedThis = jsDynamicCast<JSMutationObserver*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MutationObserver", "disconnect");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMutationObserver::info());
-    MutationObserver& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.disconnect();
     return JSValue::encode(jsUndefined());
 }
 
 void JSMutationObserverOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMutationObserver* jsMutationObserver = jsCast<JSMutationObserver*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMutationObserver = jsCast<JSMutationObserver*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMutationObserver->impl(), jsMutationObserver);
-    jsMutationObserver->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MutationObserver* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MutationObserver* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMutationObserver>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMutationObserver>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -219,13 +241,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Mutatio
     // attribute to MutationObserver.
     COMPILE_ASSERT(!__is_polymorphic(MutationObserver), MutationObserver_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<MutationObserver>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMutationObserver>(exec, globalObject, impl);
+    return createNewWrapper<JSMutationObserver>(globalObject, impl);
 }
 
-MutationObserver* toMutationObserver(JSC::JSValue value)
+MutationObserver* JSMutationObserver::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMutationObserver::info()) ? &jsCast<JSMutationObserver*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMutationObserver*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSNavigatorUserMediaSuccessCallback : public NavigatorUserMediaSuccessCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSNavigatorUserMediaSuccessCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSNavigatorUserMediaSuccessCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSNavigatorUserMediaSuccessCallback(callback, globalObject));
+        return adoptRef(*new JSNavigatorUserMediaSuccessCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

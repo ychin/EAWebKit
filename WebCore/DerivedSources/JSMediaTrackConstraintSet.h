@@ -23,27 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MediaTrackConstraintSet.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaTrackConstraintSet : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMediaTrackConstraintSet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaTrackConstraintSet> impl)
+    static JSMediaTrackConstraintSet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaTrackConstraintSet>&& impl)
     {
-        JSMediaTrackConstraintSet* ptr = new (NotNull, JSC::allocateCell<JSMediaTrackConstraintSet>(globalObject->vm().heap)) JSMediaTrackConstraintSet(structure, globalObject, impl);
+        JSMediaTrackConstraintSet* ptr = new (NotNull, JSC::allocateCell<JSMediaTrackConstraintSet>(globalObject->vm().heap)) JSMediaTrackConstraintSet(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaTrackConstraintSet* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMediaTrackConstraintSet();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     MediaTrackConstraintSet& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MediaTrackConstraintSet* m_impl;
 protected:
-    JSMediaTrackConstraintSet(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaTrackConstraintSet>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSMediaTrackConstraintSet(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaTrackConstraintSet>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaTrackConstraintSetOwner : public JSC::WeakHandleOwner {
@@ -78,40 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaTrackConstraintSet*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaTrackConstraintSetOwner, jsMediaTrackConstraintSetOwner, ());
-    return &jsMediaTrackConstraintSetOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MediaTrackConstraintSet*)
-{
-    return &world;
+    static NeverDestroyed<JSMediaTrackConstraintSetOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaTrackConstraintSet*);
-MediaTrackConstraintSet* toMediaTrackConstraintSet(JSC::JSValue);
-
-class JSMediaTrackConstraintSetPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaTrackConstraintSetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaTrackConstraintSetPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaTrackConstraintSetPrototype>(vm.heap)) JSMediaTrackConstraintSetPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaTrackConstraintSetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaTrackConstraintSet& impl) { return toJS(exec, globalObject, &impl); }
 
 
 } // namespace WebCore

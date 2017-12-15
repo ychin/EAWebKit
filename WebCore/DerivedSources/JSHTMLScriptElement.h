@@ -22,30 +22,28 @@
 #define JSHTMLScriptElement_h
 
 #include "HTMLScriptElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLScriptElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLScriptElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLScriptElement> impl)
+    static JSHTMLScriptElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLScriptElement>&& impl)
     {
-        JSHTMLScriptElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLScriptElement>(globalObject->vm().heap)) JSHTMLScriptElement(structure, globalObject, impl);
+        JSHTMLScriptElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLScriptElement>(globalObject->vm().heap)) JSHTMLScriptElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,84 +52,17 @@ public:
         return static_cast<HTMLScriptElement&>(Base::impl());
     }
 protected:
-    JSHTMLScriptElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLScriptElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLScriptElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLScriptElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSHTMLScriptElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLScriptElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLScriptElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLScriptElementPrototype>(vm.heap)) JSHTMLScriptElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLScriptElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLScriptElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLScriptElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLScriptElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLScriptElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLScriptElementConstructor>(vm.heap)) JSHTMLScriptElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLScriptElementText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementHtmlFor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementHtmlFor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementEvent(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementEvent(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementCharset(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementCharset(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementAsync(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementAsync(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementDefer(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementDefer(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementSrc(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLScriptElementCrossOrigin(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementCrossOrigin(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(CSP_NEXT)
-JSC::JSValue jsHTMLScriptElementNonce(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLScriptElementNonce(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsHTMLScriptElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

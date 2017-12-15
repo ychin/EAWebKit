@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -37,29 +37,35 @@ namespace WebCore {
 class FontFeature {
 public:
     FontFeature(const AtomicString& tag, int value);
-    bool operator==(const FontFeature&);
+
+    bool operator==(const FontFeature& other) const;
+    bool operator<(const FontFeature& other) const;
 
     const AtomicString& tag() const { return m_tag; }
     int value() const { return m_value; }
+    bool enabled() const { return value(); }
+
+    unsigned hash() const;
 
 private:
     AtomicString m_tag;
-    const int m_value;
+    const int m_value { 0 };
 };
 
 class FontFeatureSettings : public RefCounted<FontFeatureSettings> {
 public:
-    static PassRefPtr<FontFeatureSettings> create()
-    {
-        return adoptRef(new FontFeatureSettings());
-    }
-    void append(const FontFeature& feature) { m_list.append(feature); }
+    static Ref<FontFeatureSettings> create();
+
+    void insert(FontFeature&&);
+
     size_t size() const { return m_list.size(); }
     const FontFeature& operator[](int index) const { return m_list[index]; }
     const FontFeature& at(size_t index) const { return m_list.at(index); }
 
+    unsigned hash() const;
+
 private:
-    FontFeatureSettings();
+    FontFeatureSettings() { }
     Vector<FontFeature> m_list;
 };
 

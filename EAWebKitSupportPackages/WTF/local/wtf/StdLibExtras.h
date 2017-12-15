@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2008 Apple Inc. All Rights Reserved.
  * Copyright (C) 2013 Patrick Gansterer <paroga@paroga.com>
- * Copyright (C) 2016 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,24 +27,23 @@
 #ifndef WTF_StdLibExtras_h
 #define WTF_StdLibExtras_h
 
-//+EAWebKitChange
-//06/06/2016 - Most of the file updated based off changes from w-188436 for VS2015 compatibility
-//-EAWebKitChange
-
+#include <chrono>
 #include <memory>
 #include <wtf/Assertions.h>
 #include <wtf/CheckedArithmetic.h>
 
-// Use these to declare and define a static local variable (static T;) so that
-//  it is leaked so that its destructors are not called at exit. Using this
-//  macro also allows workarounds a compiler bug present in Apple's version of GCC 4.0.1.
-#ifndef DEFINE_STATIC_LOCAL
-#if COMPILER(GCC) && defined(__APPLE_CC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ == 1
-#define DEFINE_STATIC_LOCAL(type, name, arguments) \
+// This was used to declare and define a static local variable (static T;) so that
+//  it was leaked so that its destructors were not called at exit. Using this
+//  macro also allowed to workaround a compiler bug present in Apple's version of GCC 4.0.1.
+//
+// Newly written code should use static NeverDestroyed<T> instead.
+#ifndef DEPRECATED_DEFINE_STATIC_LOCAL
+#if COMPILER(GCC_OR_CLANG) && defined(__APPLE_CC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ == 1
+#define DEPRECATED_DEFINE_STATIC_LOCAL(type, name, arguments) \
     static type* name##Ptr = new type arguments; \
     type& name = *name##Ptr
 #else
-#define DEFINE_STATIC_LOCAL(type, name, arguments) \
+#define DEPRECATED_DEFINE_STATIC_LOCAL(type, name, arguments) \
     static type& name = *new type arguments
 #endif
 #endif
@@ -53,14 +51,16 @@
 // Use this macro to declare and define a debug-only global variable that may have a
 // non-trivial constructor and destructor. When building with clang, this will suppress
 // warnings about global constructors and exit-time destructors.
-#ifndef NDEBUG
-#if COMPILER(CLANG)
-#define DEFINE_DEBUG_ONLY_GLOBAL(type, name, arguments) \
+#define DEFINE_GLOBAL_FOR_LOGGING(type, name, arguments) \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") \
     _Pragma("clang diagnostic ignored \"-Wexit-time-destructors\"") \
     static type name arguments; \
     _Pragma("clang diagnostic pop")
+
+#ifndef NDEBUG
+#if COMPILER(CLANG)
+#define DEFINE_DEBUG_ONLY_GLOBAL(type, name, arguments) DEFINE_GLOBAL_FOR_LOGGING(type, name, arguments)
 #else
 #define DEFINE_DEBUG_ONLY_GLOBAL(type, name, arguments) \
     static type name arguments;
@@ -88,7 +88,7 @@
  * - https://bugs.webkit.org/show_bug.cgi?id=38045
  * - http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43976
  */
-#if (CPU(ARM) || CPU(MIPS)) && COMPILER(GCC)
+#if (CPU(ARM) || CPU(MIPS)) && COMPILER(GCC_OR_CLANG)
 template<typename Type>
 inline bool isPointerTypeAlignmentOkay(Type* ptr)
 {
@@ -180,7 +180,7 @@ inline size_t bitCount(uint64_t bits)
 // Macro that returns a compile time constant with the length of an array, but gives an error if passed a non-array.
 template<typename T, size_t Size> char (&ArrayLengthHelperFunction(T (&)[Size]))[Size];
 // GCC needs some help to deduce a 0 length array.
-#if COMPILER(GCC)
+#if COMPILER(GCC_OR_CLANG)
 template<typename T> char (&ArrayLengthHelperFunction(T (&)[0]))[0];
 #endif
 #define WTF_ARRAY_LENGTH(array) sizeof(::WTF::ArrayLengthHelperFunction(array))
@@ -391,6 +391,7 @@ namespace chrono_literals {
 
 using WTF::KB;
 using WTF::MB;
+using WTF::isCompilationThread;
 using WTF::insertIntoBoundedVector;
 using WTF::isPointerAligned;
 using WTF::is8ByteAligned;

@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSRadioNodeList.h"
 
+#include "JSDOMBinding.h"
 #include "JSNode.h"
 #include "Node.h"
 #include "RadioNodeList.h"
@@ -33,61 +34,84 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Attributes
+
+JSC::EncodedJSValue jsRadioNodeListValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRadioNodeListValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSRadioNodeListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRadioNodeListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRadioNodeListPrototype* ptr = new (NotNull, JSC::allocateCell<JSRadioNodeListPrototype>(vm.heap)) JSRadioNodeListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRadioNodeListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSRadioNodeListTableIndex[4] = {
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSRadioNodeListTableValues[] =
 {
-    { "value", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRadioNodeListValue), (intptr_t)setJSRadioNodeListValue },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "value", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRadioNodeListValue), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRadioNodeListValue) },
 };
 
-static const HashTable JSRadioNodeListTable = { 2, 1, JSRadioNodeListTableValues, 0 };
+static const HashTable JSRadioNodeListTable = { 1, 3, true, JSRadioNodeListTableValues, 0, JSRadioNodeListTableIndex };
 /* Hash table for prototype */
+const ClassInfo JSRadioNodeListPrototype::s_info = { "RadioNodeListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRadioNodeListPrototype) };
 
-static const HashTableValue JSRadioNodeListPrototypeTableValues[] =
+const ClassInfo JSRadioNodeList::s_info = { "RadioNodeList", &Base::s_info, &JSRadioNodeListTable, CREATE_METHOD_TABLE(JSRadioNodeList) };
+
+JSRadioNodeList::JSRadioNodeList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RadioNodeList>&& impl)
+    : JSNodeList(structure, globalObject, WTF::move(impl))
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSRadioNodeListPrototypeTable = { 1, 0, JSRadioNodeListPrototypeTableValues, 0 };
-const ClassInfo JSRadioNodeListPrototype::s_info = { "RadioNodeListPrototype", &Base::s_info, &JSRadioNodeListPrototypeTable, 0, CREATE_METHOD_TABLE(JSRadioNodeListPrototype) };
-
-JSObject* JSRadioNodeListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRadioNodeList>(vm, globalObject);
-}
-
-const ClassInfo JSRadioNodeList::s_info = { "RadioNodeList", &Base::s_info, &JSRadioNodeListTable, 0 , CREATE_METHOD_TABLE(JSRadioNodeList) };
-
-JSRadioNodeList::JSRadioNodeList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RadioNodeList> impl)
-    : JSNodeList(structure, globalObject, impl)
-{
-}
-
-void JSRadioNodeList::finishCreation(VM& vm)
-{
-    Base::finishCreation(vm);
-    ASSERT(inherits(info()));
 }
 
 JSObject* JSRadioNodeList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSRadioNodeListPrototype::create(vm, globalObject, JSRadioNodeListPrototype::createStructure(vm, globalObject, JSNodeListPrototype::self(vm, globalObject)));
+    return JSRadioNodeListPrototype::create(vm, globalObject, JSRadioNodeListPrototype::createStructure(vm, globalObject, JSNodeList::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSRadioNodeList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSRadioNodeList>(vm, globalObject);
 }
 
 bool JSRadioNodeList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSRadioNodeList* thisObject = jsCast<JSRadioNodeList*>(object);
+    auto* thisObject = jsCast<JSRadioNodeList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSRadioNodeList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSRadioNodeList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSRadioNodeList, Base>(exec, JSRadioNodeListTable, thisObject, propertyName, slot);
@@ -95,40 +119,39 @@ bool JSRadioNodeList::getOwnPropertySlot(JSObject* object, ExecState* exec, Prop
 
 bool JSRadioNodeList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSRadioNodeList* thisObject = jsCast<JSRadioNodeList*>(object);
+    auto* thisObject = jsCast<JSRadioNodeList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsRadioNodeListValue(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRadioNodeListValue(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRadioNodeList* castedThis = jsCast<JSRadioNodeList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RadioNodeList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSRadioNodeList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.value());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-void JSRadioNodeList::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSRadioNodeListValue(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSRadioNodeList* thisObject = jsCast<JSRadioNodeList*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSRadioNodeList, Base>(exec, propertyName, value, JSRadioNodeListTable, thisObject, slot);
-}
-
-void setJSRadioNodeListValue(ExecState* exec, JSObject* thisObject, JSValue value)
-{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSRadioNodeList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSRadioNodeList* castedThis = jsCast<JSRadioNodeList*>(thisObject);
-    RadioNodeList& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setValue(nativeValue);
 }
@@ -136,19 +159,11 @@ void setJSRadioNodeListValue(ExecState* exec, JSObject* thisObject, JSValue valu
 
 void JSRadioNodeList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSRadioNodeList* thisObject = jsCast<JSRadioNodeList*>(object);
+    auto* thisObject = jsCast<JSRadioNodeList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
-}
-
-
-JSValue JSRadioNodeList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSRadioNodeList* thisObj = jsCast<JSRadioNodeList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -159,11 +174,11 @@ extern "C" { extern void (*const __identifier("??_7RadioNodeList@WebCore@@6B@")[
 extern "C" { extern void* _ZTVN7WebCore13RadioNodeListE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RadioNodeList* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, RadioNodeList* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSRadioNodeList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSRadioNodeList>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -184,8 +199,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RadioNo
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<RadioNodeList>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSRadioNodeList>(exec, globalObject, impl);
+    return createNewWrapper<JSRadioNodeList>(globalObject, impl);
 }
 
 

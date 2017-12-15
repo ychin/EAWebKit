@@ -19,43 +19,69 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGSwitchElement.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedBoolean.h"
 #include "SVGSwitchElement.h"
 #include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#endif
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGSwitchElementTableValues[] =
-{
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSwitchElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSwitchElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGSwitchElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGSwitchElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGSwitchElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGSwitchElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGSwitchElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGSwitchElementPrototype>(vm.heap)) JSSVGSwitchElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGSwitchElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGSwitchElementTable = { 5, 3, JSSVGSwitchElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGSwitchElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGSwitchElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGSwitchElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGSwitchElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGSwitchElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGSwitchElementConstructor>(vm.heap)) JSSVGSwitchElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGSwitchElementConstructorTable = { 1, 0, JSSVGSwitchElementConstructorTableValues, 0 };
-const ClassInfo JSSVGSwitchElementConstructor::s_info = { "SVGSwitchElementConstructor", &Base::s_info, &JSSVGSwitchElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGSwitchElementConstructor) };
+const ClassInfo JSSVGSwitchElementConstructor::s_info = { "SVGSwitchElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGSwitchElementConstructor) };
 
 JSSVGSwitchElementConstructor::JSSVGSwitchElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,72 +92,68 @@ void JSSVGSwitchElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGSwitchElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGSwitchElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGSwitchElementConstructor, JSDOMWrapper>(exec, JSSVGSwitchElementConstructorTable, jsCast<JSSVGSwitchElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGSwitchElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGSwitchElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGSwitchElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSwitchElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSwitchElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGSwitchElementPrototypeTable = { 1, 0, JSSVGSwitchElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGSwitchElementPrototype::s_info = { "SVGSwitchElementPrototype", &Base::s_info, &JSSVGSwitchElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGSwitchElementPrototype) };
+const ClassInfo JSSVGSwitchElementPrototype::s_info = { "SVGSwitchElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGSwitchElementPrototype) };
 
-JSObject* JSSVGSwitchElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGSwitchElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGSwitchElement::s_info = { "SVGSwitchElement", &Base::s_info, &JSSVGSwitchElementTable, 0 , CREATE_METHOD_TABLE(JSSVGSwitchElement) };
-
-JSSVGSwitchElement::JSSVGSwitchElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGSwitchElement> impl)
-    : JSSVGGraphicsElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGSwitchElement::finishCreation(VM& vm)
+void JSSVGSwitchElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGSwitchElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGSwitchElement::s_info = { "SVGSwitchElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGSwitchElement) };
+
+JSSVGSwitchElement::JSSVGSwitchElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGSwitchElement>&& impl)
+    : JSSVGGraphicsElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGSwitchElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGSwitchElementPrototype::create(vm, globalObject, JSSVGSwitchElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElementPrototype::self(vm, globalObject)));
+    return JSSVGSwitchElementPrototype::create(vm, globalObject, JSSVGSwitchElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGSwitchElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGSwitchElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGSwitchElement* thisObject = jsCast<JSSVGSwitchElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGSwitchElement, Base>(exec, JSSVGSwitchElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGSwitchElement>(vm, globalObject);
 }
 
-#if ENABLE(SVG)
-JSValue jsSVGSwitchElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGSwitchElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGSwitchElement* castedThis = jsCast<JSSVGSwitchElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGSwitchElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGSwitchElement* castedThis = jsDynamicCast<JSSVGSwitchElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGSwitchElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGSwitchElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGSwitchElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGSwitchElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGSwitchElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGSwitchElement* domObject = jsCast<JSSVGSwitchElement*>(asObject(slotBase));
-    return JSSVGSwitchElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGSwitchElementPrototype* domObject = jsDynamicCast<JSSVGSwitchElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGSwitchElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGSwitchElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -141,5 +163,3 @@ JSValue JSSVGSwitchElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 
 }
-
-#endif // ENABLE(SVG)

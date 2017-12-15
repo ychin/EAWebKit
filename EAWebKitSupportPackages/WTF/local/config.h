@@ -20,19 +20,15 @@
  *
  */
 
-#if defined(HAVE_CONFIG_H) && HAVE_CONFIG_H
-#ifdef BUILDING_WITH_CMAKE
+#if defined(HAVE_CONFIG_H) && HAVE_CONFIG_H && defined(BUILDING_WITH_CMAKE)
 #include "cmakeconfig.h"
-#else
-#include "autotoolsconfig.h"
-#endif
 #endif
 
 #include <wtf/Platform.h>
 #include <wtf/ExportMacros.h>
 
 //+EAWebKitChange
-//12/12/2013 - EAWebKitTODO: Moving it before wtf/platform.h results in a compile issue (missing char16_t definition).
+//12/12/2013
 #if PLATFORM(EA)
 #include <EABase/eabase.h>
 #endif
@@ -41,14 +37,14 @@
 #if OS(WINDOWS)
 
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0502
+#define _WIN32_WINNT 0x601
 #endif
 
 #ifndef WINVER
-#define WINVER 0x0502
+#define WINVER 0x0601
 #endif
 
-#if !COMPILER(MSVC7_OR_LOWER) && !OS(WINCE)
+#if !COMPILER(MSVC7_OR_LOWER)
 // We need to define this before the first #include of stdlib.h or it won't contain rand_s.
 #ifndef _CRT_RAND_S
 #define _CRT_RAND_S
@@ -57,12 +53,6 @@
 
 #endif
 
-#define WTF_CHANGES 1
-
-//+EAWebKitChange
-//12/13/2013
-// EAWebKitTODO: Investigate following.
-//-EAWebKitChange
 #ifdef __cplusplus
 #undef new
 #undef delete

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -11,10 +11,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,7 +27,17 @@
 // This all-in-one cpp file cuts down on template bloat to allow us to build our Windows release build.
 
 #include "TextBoundaries.cpp"
+//+EAWebKitChange
+//3/20/2015
+#if !PLATFORM(EA)
 #include "TextBreakIterator.cpp"
+#include "TextEncodingDetectorICU.cpp"
+#include "TextCodecICU.cpp"
+#include "UTextProvider.cpp"
+#include "UTextProviderLatin1.cpp"
+#include "UTextProviderUTF16.cpp"
+#endif
+//-EAWebKitChange
 #include "TextCodec.cpp"
 #include "TextCodecLatin1.cpp"
 #include "TextCodecUTF16.cpp"
@@ -36,11 +46,4 @@
 #include "TextEncoding.cpp"
 #include "TextEncodingRegistry.cpp"
 #include "TextStream.cpp"
-//+EAWebKitChange
-//2/3/2014
-#if USE(ICU_UNICODE)
-#include "TextBreakIteratorICU.cpp"
-#include "TextCodecICU.cpp"
-#include "TextEncodingDetectorICU.cpp"
-#endif
-//-EAWebKitChange
+

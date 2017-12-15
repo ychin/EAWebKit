@@ -25,15 +25,12 @@
 
 #include "config.h"
 #include "LLIntExceptions.h"
-
-#if ENABLE(LLINT)
-
 #include "CallFrame.h"
 #include "CodeBlock.h"
 #include "Instruction.h"
 #include "LLIntCommon.h"
 #include "LowLevelInterpreter.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace LLInt {
 
@@ -64,5 +61,3 @@ void* callToThrow(ExecState* exec)
 }
 
 } } // namespace JSC::LLInt
-
-#endif // ENABLE(LLINT)

@@ -21,33 +21,30 @@
 #ifndef JSSVGRect_h
 #define JSSVGRect_h
 
-#if ENABLE(SVG)
-
 #include "FloatRect.h"
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAnimatedPropertyTearOff.h"
 #include "SVGElement.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGRect : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGRect* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPropertyTearOff<FloatRect> > impl)
+    static JSSVGRect* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPropertyTearOff<FloatRect>>&& impl)
     {
-        JSSVGRect* ptr = new (NotNull, JSC::allocateCell<JSSVGRect>(globalObject->vm().heap)) JSSVGRect(structure, globalObject, impl);
+        JSSVGRect* ptr = new (NotNull, JSC::allocateCell<JSSVGRect>(globalObject->vm().heap)) JSSVGRect(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGPropertyTearOff<FloatRect>* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGRect();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,23 +53,20 @@ public:
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
-    SVGPropertyTearOff<FloatRect> & impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    SVGPropertyTearOff<FloatRect>& impl() const { return *m_impl; }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
-    SVGPropertyTearOff<FloatRect> * m_impl;
+    SVGPropertyTearOff<FloatRect>* m_impl;
 protected:
-    JSSVGRect(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPropertyTearOff<FloatRect> >);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGRect(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGPropertyTearOff<FloatRect>>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGRectOwner : public JSC::WeakHandleOwner {
@@ -81,81 +75,16 @@ public:
     virtual void finalize(JSC::Handle<JSC::Unknown>, void* context);
 };
 
-inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGPropertyTearOff<FloatRect> *)
+inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGPropertyTearOff<FloatRect>*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGRectOwner, jsSVGRectOwner, ());
-    return &jsSVGRectOwner;
+    static NeverDestroyed<JSSVGRectOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SVGPropertyTearOff<FloatRect> *)
-{
-    return &world;
-}
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGPropertyTearOff<FloatRect>*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGPropertyTearOff<FloatRect>& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGPropertyTearOff<FloatRect> *);
-SVGPropertyTearOff<FloatRect> * toSVGRect(JSC::JSValue);
-
-class JSSVGRectPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGRectPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGRectPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGRectPrototype>(vm.heap)) JSSVGRectPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGRectPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGRectConstructor : public DOMConstructorObject {
-private:
-    JSSVGRectConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGRectConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGRectConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGRectConstructor>(vm.heap)) JSSVGRectConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGRectX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGRectX(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGRectY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGRectY(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGRectWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGRectWidth(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGRectHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGRectHeight(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGRectConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

@@ -29,7 +29,6 @@
 #include "CachedResourceHandle.h"
 #include "DOMSettableTokenList.h"
 #include "HTMLElement.h"
-#include "IconURL.h"
 #include "LinkLoader.h"
 #include "LinkLoaderClient.h"
 #include "LinkRelAttribute.h"
@@ -37,22 +36,23 @@
 namespace WebCore {
 
 class HTMLLinkElement;
+class RelList;
 class URL;
 
 template<typename T> class EventSender;
 typedef EventSender<HTMLLinkElement> LinkEventSender;
 
-class HTMLLinkElement FINAL : public HTMLElement, public CachedStyleSheetClient, public LinkLoaderClient {
+class HTMLLinkElement final : public HTMLElement, public CachedStyleSheetClient, public LinkLoaderClient {
 public:
-    static PassRefPtr<HTMLLinkElement> create(const QualifiedName&, Document&, bool createdByParser);
+    static Ref<HTMLLinkElement> create(const QualifiedName&, Document&, bool createdByParser);
     virtual ~HTMLLinkElement();
 
     URL href() const;
-    String rel() const;
+    const AtomicString& rel() const;
 
-    virtual String target() const;
+    virtual String target() const override;
 
-    String type() const;
+    const AtomicString& type() const;
 
     IconType iconType() const;
 
@@ -66,43 +66,47 @@ public:
     bool isDisabled() const { return m_disabledState == Disabled; }
     bool isEnabledViaScript() const { return m_disabledState == EnabledViaScript; }
     void setSizes(const String&);
-    DOMSettableTokenList* sizes() const;
+    DOMSettableTokenList& sizes() { return m_sizes.get(); }
 
     void dispatchPendingEvent(LinkEventSender*);
     static void dispatchPendingLoadEvents();
 
-private:
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
+    DOMTokenList& relList();
 
-    virtual bool shouldLoadLink();
+private:
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
+
+    virtual bool shouldLoadLink() override;
     void process();
     static void processCallback(Node*);
     void clearSheet();
 
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
-    virtual void removedFrom(ContainerNode&) OVERRIDE;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
+    virtual void removedFrom(ContainerNode&) override;
 
     // from CachedResourceClient
-    virtual void setCSSStyleSheet(const String& href, const URL& baseURL, const String& charset, const CachedCSSStyleSheet* sheet);
-    virtual bool sheetLoaded();
-    virtual void notifyLoadedSheetAndAllCriticalSubresources(bool errorOccurred);
-    virtual void startLoadingDynamicSheet();
+    virtual void setCSSStyleSheet(const String& href, const URL& baseURL, const String& charset, const CachedCSSStyleSheet* sheet) override;
+    virtual bool sheetLoaded() override;
+    virtual void notifyLoadedSheetAndAllCriticalSubresources(bool errorOccurred) override;
+    virtual void startLoadingDynamicSheet() override;
 
-    virtual void linkLoaded() OVERRIDE;
-    virtual void linkLoadingErrored() OVERRIDE;
+    virtual void linkLoaded() override;
+    virtual void linkLoadingErrored() override;
 
-    bool isAlternate() const { return m_disabledState == Unset && m_relAttribute.m_isAlternate; }
+    bool isAlternate() const { return m_disabledState == Unset && m_relAttribute.isAlternate; }
     
     void setDisabledState(bool);
 
-    virtual bool isURLAttribute(const Attribute&) const OVERRIDE;
+    virtual bool isURLAttribute(const Attribute&) const override;
 
-private:
+    virtual void defaultEventHandler(Event*) override;
+    void handleClick(Event&);
+
     HTMLLinkElement(const QualifiedName&, Document&, bool createdByParser);
 
-    virtual void addSubresourceAttributeURLs(ListHashSet<URL>&) const;
+    virtual void addSubresourceAttributeURLs(ListHashSet<URL>&) const override;
 
-    virtual void finishParsingChildren();
+    virtual void finishParsingChildren() override;
 
     enum PendingSheetType { Unknown, ActiveSheet, InactiveSheet };
     void addPendingSheet(PendingSheetType);
@@ -125,7 +129,7 @@ private:
 
     String m_type;
     String m_media;
-    RefPtr<DOMSettableTokenList> m_sizes;
+    Ref<DOMSettableTokenList> m_sizes;
     DisabledState m_disabledState;
     LinkRelAttribute m_relAttribute;
     bool m_loading;
@@ -135,9 +139,9 @@ private:
     bool m_loadedSheet;
 
     PendingSheetType m_pendingSheetType;
-};
 
-NODE_TYPE_CASTS(HTMLLinkElement)
+    std::unique_ptr<RelList> m_relList;
+};
 
 } //namespace
 

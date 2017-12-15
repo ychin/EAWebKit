@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,10 +42,6 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 
 /* The list below is not comprehensive (meaning it does not include all the webcore/wtf/javascriptcore defines) but we can build over time as needed. */
 
-#if !defined(ENABLE_IFRAME_SEAMLESS)
-#define ENABLE_IFRAME_SEAMLESS 1
-#endif
-
 #if !defined(ENABLE_PROMISES)
 #define ENABLE_PROMISES 1
 #endif
@@ -58,20 +54,12 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_SQL_DATABASE 1
 #endif
 
-#if !defined(ENABLE_FILTERS)
-#define ENABLE_FILTERS 1
-#endif
-
 #if !defined(ENABLE_FULLSCREEN_API)
 #define ENABLE_FULLSCREEN_API 1
 #endif
 
 #if !defined(ENABLE_HIGH_DPI_CANVAS)
 #define ENABLE_HIGH_DPI_CANVAS 1
-#endif
-
-#if !defined(ENABLE_JAVASCRIPT_DEBUGGER)
-#define ENABLE_JAVASCRIPT_DEBUGGER 1
 #endif
 
 #if !defined(ENABLE_LEGACY_CSS_VENDOR_PREFIXES)
@@ -82,34 +70,16 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_METER_ELEMENT 1
 #endif
 
-#if !defined(ENABLE_PAGE_VISIBILITY_API)
-#define ENABLE_PAGE_VISIBILITY_API 1
-#endif
-
 #if !defined(ENABLE_SHARED_WORKERS)
 #define ENABLE_SHARED_WORKERS 1
 #endif
 
-#if !defined(ENABLE_SVG)
-#define ENABLE_SVG 1
-#endif
-
-#if ENABLE_SVG
 #if !defined(ENABLE_SVG_FONTS)
 #define ENABLE_SVG_FONTS 1
-#endif
 #endif
 
 #if !defined(ENABLE_WEB_SOCKETS)
 #define ENABLE_WEB_SOCKETS 1
-#endif
-
-#if !defined(ENABLE_WORKERS)
-#define ENABLE_WORKERS 1
-#endif
-
-#if !defined(ENABLE_PROGRESS_ELEMENT)
-#define ENABLE_PROGRESS_ELEMENT 1
 #endif
 
 #if !defined(ENABLE_NOTIFICATIONS)
@@ -124,20 +94,16 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_VIDEO 1
 #endif
 
-#if !defined(ENABLE_INSPECTOR)
-#define ENABLE_INSPECTOR 1
+#if !defined(ENABLE_VIDEO_TRACK)
+#define ENABLE_VIDEO_TRACK 1
 #endif
 
-#if !defined(ENABLE_INSPECTOR_SERVER)
-#define ENABLE_INSPECTOR_SERVER 1
+#if !defined(ENABLE_WEBVTT_REGIONS)
+#define ENABLE_WEBVTT_REGIONS 1
 #endif
 
 #if !defined(ENABLE_REQUEST_ANIMATION_FRAME)
 #define ENABLE_REQUEST_ANIMATION_FRAME 1
-#endif
-
-#if !defined(ENABLE_IMAGE_COMPRESSION)
-#define ENABLE_IMAGE_COMPRESSION 1 /*Also, need the runtime preference bool in addition to this define*/
 #endif
 
 #if !defined(ENABLE_CSS_BOX_DECORATION_BREAK)
@@ -152,20 +118,29 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_CSS_REGIONS 1
 #endif
 
-#if !defined(ENABLE_CSS_STICKY_POSITION)
-#define ENABLE_CSS_STICKY_POSITION 1
-#endif
-
 #if !defined(ENABLE_CSS_TRANSFORMS_ANIMATIONS_TRANSITIONS_UNPREFIXED)
 #define ENABLE_CSS_TRANSFORMS_ANIMATIONS_TRANSITIONS_UNPREFIXED 1
 #endif
 
-#if !defined(ENABLE_PLUGIN_PACKAGE_SIMPLE_HASH)
-#define ENABLE_PLUGIN_PACKAGE_SIMPLE_HASH 1
+
+#if !defined(ENABLE_CSS_SHAPES)
+#define ENABLE_CSS_SHAPES 1
 #endif
 
-#if !defined(ENABLE_CSS_FILTERS)
-#define ENABLE_CSS_FILTERS 1
+#if !defined(ENABLE_CSS_SELECTORS_LEVEL4)
+#define ENABLE_CSS_SELECTORS_LEVEL4 1
+#endif
+
+#if !defined(ENABLE_CSS_GRID_LAYOUT)
+#define ENABLE_CSS_GRID_LAYOUT 1
+#endif
+
+#if !defined(ENABLE_CSS_SHAPE_INSIDE) 
+#define ENABLE_CSS_SHAPE_INSIDE 1
+#endif
+
+#if !defined(ENABLE_VIEW_MODE_CSS_MEDIA)
+#define ENABLE_VIEW_MODE_CSS_MEDIA 1
 #endif
 
 #if !defined(ENABLE_COMPARE_AND_SWAP) 
@@ -173,15 +148,41 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #endif
 
 // perspective transform (works regardless of CPU/GPU)
-#if !defined(ENABLE_3D_RENDERING)
-#define ENABLE_3D_RENDERING 1
+#if !defined(ENABLE_3D_TRANSFORMS)
+#define ENABLE_3D_TRANSFORMS 1
 #endif
 
 #if !defined(ENABLE_TOUCH_EVENTS)
 #define ENABLE_TOUCH_EVENTS 1
 #endif
 
+#if !defined(ENABLE_WEBVTT_REGIONS)
+#define ENABLE_WEBVTT_REGIONS 1
+#endif
 
+#if !defined(ENABLE_SUBPIXEL_LAYOUT)
+#define ENABLE_SUBPIXEL_LAYOUT 1
+#endif
+
+#if !defined(ENABLE_MEDIA_STATISTICS)
+#define ENABLE_MEDIA_STATISTICS 1
+#endif
+
+#if !defined(ENABLE_MEDIA_CONTROLS_SCRIPT)
+#define ENABLE_MEDIA_CONTROLS_SCRIPT 1
+#endif
+
+#if !defined(ENABLE_XHR_TIMEOUT)
+#define ENABLE_XHR_TIMEOUT 1
+#endif
+
+#if !defined(ENABLE_MOUSE_CURSOR_SCALE)
+#define ENABLE_MOUSE_CURSOR_SCALE 1
+#endif
+
+#if !defined(ENABLE_CURSOR_VISIBILITY)
+#define ENABLE_CURSOR_VISIBILITY 1
+#endif
 
 /**********************************************************************************************
 //
@@ -245,16 +246,8 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_MEDIA_SOURCE 0
 #endif
 
-#if !defined(ENABLE_MEDIA_STATISTICS)
-#define ENABLE_MEDIA_STATISTICS 0
-#endif
-
 #if !defined(ENABLE_MEDIA_STREAM)
 #define ENABLE_MEDIA_STREAM 0
-#endif
-
-#if !defined(ENABLE_VIDEO_TRACK)
-#define ENABLE_VIDEO_TRACK 0
 #endif
 
 #if !defined(ENABLE_TOUCH_ICON_LOADING)
@@ -273,10 +266,6 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_FTPDIR 0
 #endif
 
-#if !defined(ENABLE_VIEW_MODE_CSS_MEDIA)
-#define ENABLE_VIEW_MODE_CSS_MEDIA 0
-#endif
-
 #if !defined(ENABLE_CONTEXT_MENUS)
 #define ENABLE_CONTEXT_MENUS 0
 #endif
@@ -289,16 +278,20 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 #define ENABLE_ACCELERATED_2D_CANVAS 0
 #endif
 
-/* JIT off for now in x86_64 + MSVC */
-
-#if !defined(ENABLE_JIT) && ((CPU(X86_64) && COMPILER(MSVC)) || defined(EA_PLATFORM_CONSOLE))
-#define ENABLE_JIT 0
+#if !defined(ENABLE_CSS_SELECTOR_JIT)
+#define ENABLE_CSS_SELECTOR_JIT 0
 #endif
 
-// Make sure this is off on OSX (and elsewhere)
-// In theory it works on OSX but has a pthread dependency we need to address before it can be turned on
-#if !defined(ENABLE_DFG_JIT)
+/* JIT off for now in x86_64 + MSVC */
+
+#if defined(EA_PLATFORM_CONSOLE)
+#define ENABLE_JIT 0
 #define ENABLE_DFG_JIT 0
+#define ENABLE_LLINT_C_LOOP 1
+#else
+#define ENABLE_LLINT_C_LOOP 0
+#define ENABLE_JIT 1
+#define ENABLE_DFG_JIT 1
 #endif
 
 #endif

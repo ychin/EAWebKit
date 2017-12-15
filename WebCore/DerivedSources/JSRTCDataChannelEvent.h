@@ -25,22 +25,22 @@
 
 #include "JSEvent.h"
 #include "RTCDataChannelEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSRTCDataChannelEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSRTCDataChannelEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDataChannelEvent> impl)
+    static JSRTCDataChannelEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDataChannelEvent>&& impl)
     {
-        JSRTCDataChannelEvent* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannelEvent>(globalObject->vm().heap)) JSRTCDataChannelEvent(structure, globalObject, impl);
+        JSRTCDataChannelEvent* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannelEvent>(globalObject->vm().heap)) JSRTCDataChannelEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,38 +53,17 @@ public:
         return static_cast<RTCDataChannelEvent&>(Base::impl());
     }
 protected:
-    JSRTCDataChannelEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCDataChannelEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRTCDataChannelEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCDataChannelEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSRTCDataChannelEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCDataChannelEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCDataChannelEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannelEventPrototype>(vm.heap)) JSRTCDataChannelEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCDataChannelEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsRTCDataChannelEventChannel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

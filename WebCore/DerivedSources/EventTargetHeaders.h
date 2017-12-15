@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY GOOGLE, INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -48,16 +48,12 @@
 #include "JSDOMApplicationCache.h"
 #include "DOMWindow.h"
 #include "JSDOMWindow.h"
-#if ENABLE(WORKERS)
 #include "DedicatedWorkerGlobalScope.h"
 #include "JSDedicatedWorkerGlobalScope.h"
-#endif
 #include "EventSource.h"
 #include "JSEventSource.h"
-#if ENABLE(BLOB)
 #include "FileReader.h"
 #include "JSFileReader.h"
-#endif
 #if ENABLE(FONT_LOAD_EVENTS)
 #include "FontLoader.h"
 #include "JSFontLoader.h"
@@ -86,6 +82,10 @@
 #include "MediaKeySession.h"
 #include "JSMediaKeySession.h"
 #endif
+#if ENABLE(MEDIA_SESSION)
+#include "MediaRemoteControls.h"
+#include "JSMediaRemoteControls.h"
+#endif
 #if ENABLE(MEDIA_SOURCE)
 #include "MediaSource.h"
 #include "JSMediaSource.h"
@@ -100,10 +100,6 @@
 #endif
 #include "MessagePort.h"
 #include "JSMessagePort.h"
-#if ENABLE(NETWORK_INFO)
-#include "NetworkInfoConnection.h"
-#include "JSNetworkInfoConnection.h"
-#endif
 #include "Node.h"
 #include "JSNode.h"
 #if ENABLE(NOTIFICATIONS) || ENABLE(LEGACY_NOTIFICATIONS)
@@ -126,18 +122,6 @@
 #include "RTCPeerConnection.h"
 #include "JSRTCPeerConnection.h"
 #endif
-#if ENABLE(SVG)
-#include "SVGElementInstance.h"
-#include "JSSVGElementInstance.h"
-#endif
-#if ENABLE(SHARED_WORKERS)
-#include "SharedWorker.h"
-#include "JSSharedWorker.h"
-#endif
-#if ENABLE(SHARED_WORKERS)
-#include "SharedWorkerGlobalScope.h"
-#include "JSSharedWorkerGlobalScope.h"
-#endif
 #if ENABLE(MEDIA_SOURCE)
 #include "SourceBuffer.h"
 #include "JSSourceBuffer.h"
@@ -145,10 +129,6 @@
 #if ENABLE(MEDIA_SOURCE)
 #include "SourceBufferList.h"
 #include "JSSourceBufferList.h"
-#endif
-#if ENABLE(SCRIPTED_SPEECH)
-#include "SpeechRecognition.h"
-#include "JSSpeechRecognition.h"
 #endif
 #if ENABLE(SPEECH_SYNTHESIS)
 #include "SpeechSynthesisUtterance.h"
@@ -170,24 +150,14 @@
 #include "VideoTrackList.h"
 #include "JSVideoTrackList.h"
 #endif
-#if ENABLE(MEDIA_SOURCE)
-#include "WebKitMediaSource.h"
-#include "JSWebKitMediaSource.h"
-#endif
 #include "WebKitNamedFlow.h"
 #include "JSWebKitNamedFlow.h"
-#if ENABLE(MEDIA_SOURCE)
-#include "WebKitSourceBufferList.h"
-#include "JSWebKitSourceBufferList.h"
-#endif
 #if ENABLE(WEB_SOCKETS)
 #include "WebSocket.h"
 #include "JSWebSocket.h"
 #endif
-#if ENABLE(WORKERS)
 #include "Worker.h"
 #include "JSWorker.h"
-#endif
 #include "XMLHttpRequest.h"
 #include "JSXMLHttpRequest.h"
 #include "XMLHttpRequestUpload.h"

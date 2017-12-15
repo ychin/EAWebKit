@@ -45,7 +45,7 @@ public:
     JIT::Call call()
     {
 #if ENABLE(OPCODE_SAMPLING)
-        if (m_jit->m_bytecodeOffset != (unsigned)-1)
+        if (m_jit->m_bytecodeOffset != std::numeric_limits<unsigned>::max())
             m_jit->sampleInstruction(m_jit->m_codeBlock->instructions().begin() + m_jit->m_bytecodeOffset, true);
 #endif
         m_jit->updateTopCallFrame();
@@ -55,12 +55,12 @@ public:
         m_jit->push(JIT::callFrameRegister);
 #elif CPU(X86_64) && OS(WINDOWS)
         m_jit->addPtr(MacroAssembler::TrustedImm32(-16), MacroAssembler::stackPointerRegister);
-        m_jit->move(MacroAssembler::stackPointerRegister, JIT::firstArgumentRegister);
-        m_jit->move(JIT::callFrameRegister, JIT::secondArgumentRegister);
-        m_jit->move(JIT::TrustedImmPtr(m_pc), JIT::thirdArgumentRegister);
+        m_jit->move(MacroAssembler::stackPointerRegister, JIT::argumentGPR0);
+        m_jit->move(JIT::callFrameRegister, JIT::argumentGPR1);
+        m_jit->move(JIT::TrustedImmPtr(m_pc), JIT::argumentGPR2);
 #else
-        m_jit->move(JIT::callFrameRegister, JIT::firstArgumentRegister);
-        m_jit->move(JIT::TrustedImmPtr(m_pc), JIT::secondArgumentRegister);
+        m_jit->move(JIT::callFrameRegister, JIT::argumentGPR0);
+        m_jit->move(JIT::TrustedImmPtr(m_pc), JIT::argumentGPR1);
 #endif
         JIT::Call call = m_jit->call();
         m_jit->m_calls.append(CallRecord(call, m_jit->m_bytecodeOffset, m_stub.value()));
@@ -73,26 +73,11 @@ public:
 #endif
 
 #if ENABLE(OPCODE_SAMPLING)
-        if (m_jit->m_bytecodeOffset != (unsigned)-1)
+        if (m_jit->m_bytecodeOffset != std::numeric_limits<unsigned>::max())
             m_jit->sampleInstruction(m_jit->m_codeBlock->instructions().begin() + m_jit->m_bytecodeOffset, false);
 #endif
         
-#if USE(JSVALUE32_64)
-        m_jit->unmap();
-#else
-        m_jit->killLastResultRegister();
-#endif
-        
-#if USE(JSVALUE32_64)
-        JIT::Jump noException = m_jit->branch32(JIT::Equal, JIT::AbsoluteAddress(reinterpret_cast<char*>(m_jit->m_codeBlock->vm()->addressOfException()) + OBJECT_OFFSETOF(JSValue, u.asBits.tag)), JIT::TrustedImm32(JSValue::EmptyValueTag));
-#else
-        JIT::Jump noException = m_jit->branchTest64(JIT::Zero, JIT::AbsoluteAddress(m_jit->m_codeBlock->vm()->addressOfException()));
-#endif
-        m_jit->updateTopCallFrame();
-        m_jit->move(JIT::TrustedImmPtr(FunctionPtr(ctiVMHandleException).value()), JIT::regT1);
-        m_jit->jump(JIT::regT1);
-        noException.link(m_jit);
-        
+        m_jit->exceptionCheck();
         return call;
     }
 

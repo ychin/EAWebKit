@@ -26,13 +26,13 @@
 #include "config.h"
 
 #include "APICast.h"
-#include "APIShims.h"
 #include "Completion.h"
+#include "Exception.h"
 #include "JSBasePrivate.h"
 #include "VM.h"
 #include "JSScriptRefPrivate.h"
 #include "OpaqueJSString.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include "Parser.h"
 #include "SourceCode.h"
 #include "SourceProvider.h"
@@ -41,12 +41,12 @@ using namespace JSC;
 
 struct OpaqueJSScript : public SourceProvider {
 public:
-    static WTF::PassRefPtr<OpaqueJSScript> create(VM* vm, const String& url, int startingLineNumber, const String& source)
+    static WTF::RefPtr<OpaqueJSScript> create(VM* vm, const String& url, int startingLineNumber, const String& source)
     {
-        return WTF::adoptRef(new OpaqueJSScript(vm, url, startingLineNumber, source));
+        return WTF::adoptRef(*new OpaqueJSScript(vm, url, startingLineNumber, source));
     }
 
-    virtual const String& source() const OVERRIDE
+    virtual const String& source() const override
     {
         return m_source;
     }
@@ -69,7 +69,10 @@ private:
 
 static bool parseScript(VM* vm, const SourceCode& source, ParserError& error)
 {
-    return JSC::parse<JSC::ProgramNode>(vm, source, 0, Identifier(), JSParseNormal, JSParseProgramCode, error);
+    return !!JSC::parse<JSC::ProgramNode>(
+        vm, source, Identifier(), JSParserBuiltinMode::NotBuiltin,
+        JSParserStrictMode::NotStrict, SourceParseMode::ProgramMode, 
+        error);
 }
 
 extern "C" {
@@ -77,21 +80,23 @@ extern "C" {
 JSScriptRef JSScriptCreateReferencingImmortalASCIIText(JSContextGroupRef contextGroup, JSStringRef url, int startingLineNumber, const char* source, size_t length, JSStringRef* errorMessage, int* errorLine)
 {
     VM* vm = toJS(contextGroup);
-    APIEntryShim entryShim(vm);
+    JSLockHolder locker(vm);
     for (size_t i = 0; i < length; i++) {
         if (!isASCII(source[i]))
             return 0;
     }
 
-    RefPtr<OpaqueJSScript> result = OpaqueJSScript::create(vm, url->string(), startingLineNumber, String(StringImpl::createFromLiteral(source, length)));
+    startingLineNumber = std::max(1, startingLineNumber);
+
+    RefPtr<OpaqueJSScript> result = OpaqueJSScript::create(vm, url ? url->string() : String(), startingLineNumber, String(StringImpl::createFromLiteral(source, length)));
 
     ParserError error;
     if (!parseScript(vm, SourceCode(result), error)) {
         if (errorMessage)
-            *errorMessage = OpaqueJSString::create(error.m_message).leakRef();
+            *errorMessage = OpaqueJSString::create(error.message()).leakRef();
         if (errorLine)
-            *errorLine = error.m_line;
-        return 0;
+            *errorLine = error.line();
+        return nullptr;
     }
 
     return result.release().leakRef();
@@ -100,17 +105,19 @@ JSScriptRef JSScriptCreateReferencingImmortalASCIIText(JSContextGroupRef context
 JSScriptRef JSScriptCreateFromString(JSContextGroupRef contextGroup, JSStringRef url, int startingLineNumber, JSStringRef source, JSStringRef* errorMessage, int* errorLine)
 {
     VM* vm = toJS(contextGroup);
-    APIEntryShim entryShim(vm);
+    JSLockHolder locker(vm);
 
-    RefPtr<OpaqueJSScript> result = OpaqueJSScript::create(vm, url->string(), startingLineNumber, source->string());
+    startingLineNumber = std::max(1, startingLineNumber);
+
+    RefPtr<OpaqueJSScript> result = OpaqueJSScript::create(vm, url ? url->string() : String(), startingLineNumber, source->string());
 
     ParserError error;
     if (!parseScript(vm, SourceCode(result), error)) {
         if (errorMessage)
-            *errorMessage = OpaqueJSString::create(error.m_message).leakRef();
+            *errorMessage = OpaqueJSString::create(error.message()).leakRef();
         if (errorLine)
-            *errorLine = error.m_line;
-        return 0;
+            *errorLine = error.line();
+        return nullptr;
     }
 
     return result.release().leakRef();
@@ -118,30 +125,30 @@ JSScriptRef JSScriptCreateFromString(JSContextGroupRef contextGroup, JSStringRef
 
 void JSScriptRetain(JSScriptRef script)
 {
-    APIEntryShim entryShim(script->vm());
+    JSLockHolder locker(script->vm());
     script->ref();
 }
 
 void JSScriptRelease(JSScriptRef script)
 {
-    APIEntryShim entryShim(script->vm());
+    JSLockHolder locker(script->vm());
     script->deref();
 }
 
 JSValueRef JSScriptEvaluate(JSContextRef context, JSScriptRef script, JSValueRef thisValueRef, JSValueRef* exception)
 {
     ExecState* exec = toJS(context);
-    APIEntryShim entryShim(exec);
+    JSLockHolder locker(exec);
     if (script->vm() != &exec->vm()) {
         RELEASE_ASSERT_NOT_REACHED();
         return 0;
     }
-    JSValue internalException;
+    NakedPtr<Exception> internalException;
     JSValue thisValue = thisValueRef ? toJS(exec, thisValueRef) : jsUndefined();
-    JSValue result = evaluate(exec, SourceCode(script), thisValue, &internalException);
+    JSValue result = evaluate(exec, SourceCode(script), thisValue, internalException);
     if (internalException) {
         if (exception)
-            *exception = toRef(exec, internalException);
+            *exception = toRef(exec, internalException->value());
         return 0;
     }
     ASSERT(result);

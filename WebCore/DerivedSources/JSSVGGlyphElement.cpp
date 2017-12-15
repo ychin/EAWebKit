@@ -20,10 +20,11 @@
 
 #include "config.h"
 
-#if ENABLE(SVG) && ENABLE(SVG_FONTS)
+#if ENABLE(SVG_FONTS)
 
 #include "JSSVGGlyphElement.h"
 
+#include "JSDOMBinding.h"
 #include "SVGGlyphElement.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +32,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGGlyphElementTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGlyphElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGGlyphElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGGlyphElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGGlyphElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGGlyphElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGGlyphElementPrototype>(vm.heap)) JSSVGGlyphElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGGlyphElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGGlyphElementTable = { 2, 1, JSSVGGlyphElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGGlyphElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGGlyphElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGGlyphElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGGlyphElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGGlyphElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGGlyphElementConstructor>(vm.heap)) JSSVGGlyphElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGGlyphElementConstructorTable = { 1, 0, JSSVGGlyphElementConstructorTableValues, 0 };
-const ClassInfo JSSVGGlyphElementConstructor::s_info = { "SVGGlyphElementConstructor", &Base::s_info, &JSSVGGlyphElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGGlyphElementConstructor) };
+const ClassInfo JSSVGGlyphElementConstructor::s_info = { "SVGGlyphElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGlyphElementConstructor) };
 
 JSSVGGlyphElementConstructor::JSSVGGlyphElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,59 +93,49 @@ void JSSVGGlyphElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGGlyphElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGGlyphElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGGlyphElementConstructor, JSDOMWrapper>(exec, JSSVGGlyphElementConstructorTable, jsCast<JSSVGGlyphElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGGlyphElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGGlyphElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGGlyphElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGlyphElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGGlyphElementPrototypeTable = { 1, 0, JSSVGGlyphElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGGlyphElementPrototype::s_info = { "SVGGlyphElementPrototype", &Base::s_info, &JSSVGGlyphElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGGlyphElementPrototype) };
+const ClassInfo JSSVGGlyphElementPrototype::s_info = { "SVGGlyphElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGlyphElementPrototype) };
 
-JSObject* JSSVGGlyphElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGGlyphElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGGlyphElement::s_info = { "SVGGlyphElement", &Base::s_info, &JSSVGGlyphElementTable, 0 , CREATE_METHOD_TABLE(JSSVGGlyphElement) };
-
-JSSVGGlyphElement::JSSVGGlyphElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGGlyphElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGGlyphElement::finishCreation(VM& vm)
+void JSSVGGlyphElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGGlyphElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGGlyphElement::s_info = { "SVGGlyphElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGlyphElement) };
+
+JSSVGGlyphElement::JSSVGGlyphElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGGlyphElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGGlyphElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGGlyphElementPrototype::create(vm, globalObject, JSSVGGlyphElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGGlyphElementPrototype::create(vm, globalObject, JSSVGGlyphElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGGlyphElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGGlyphElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGGlyphElement* thisObject = jsCast<JSSVGGlyphElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGGlyphElement, Base>(exec, JSSVGGlyphElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGGlyphElement>(vm, globalObject);
 }
 
-JSValue jsSVGGlyphElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGlyphElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGGlyphElement* domObject = jsCast<JSSVGGlyphElement*>(asObject(slotBase));
-    return JSSVGGlyphElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGGlyphElementPrototype* domObject = jsDynamicCast<JSSVGGlyphElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGGlyphElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGGlyphElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -122,4 +146,4 @@ JSValue JSSVGGlyphElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 }
 
-#endif // ENABLE(SVG) && ENABLE(SVG_FONTS)
+#endif // ENABLE(SVG_FONTS)

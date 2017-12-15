@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2011 Apple Inc. All Rights Reserved.
  * Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,13 +27,10 @@
 
 #include "config.h"
 
-#if ENABLE(INSPECTOR_SERVER)
-
 #include "WebSocketServer.h"
 
 #include "WebSocketServerConnection.h"
 #include <SocketStreamHandle.h>
-#include <wtf/PassOwnPtr.h>
 
 using namespace WebCore;
 
@@ -79,23 +76,23 @@ void WebSocketServer::close()
     m_bindAddress = String();
 }
 
-void WebSocketServer::didAcceptConnection(PassOwnPtr<WebSocketServerConnection> connection)
+void WebSocketServer::didAcceptConnection(std::unique_ptr<WebSocketServerConnection> connection)
 {
-    m_connections.append(connection);
+    m_connections.append(WTF::move(connection));
 }
 
 void WebSocketServer::didCloseWebSocketServerConnection(WebSocketServerConnection* connection)
 {
-    Deque<OwnPtr<WebSocketServerConnection> >::iterator end = m_connections.end();
-    for (Deque<OwnPtr<WebSocketServerConnection> >::iterator it = m_connections.begin(); it != end; ++it) {
+    for (auto it = m_connections.begin(), end = m_connections.end(); it != end; ++it) {
         if (it->get() == connection) {
             m_connections.remove(it);
             return;
         }
     }
+
     ASSERT_NOT_REACHED();
 }
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+

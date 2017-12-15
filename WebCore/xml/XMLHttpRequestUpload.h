@@ -26,53 +26,39 @@
 #ifndef XMLHttpRequestUpload_h
 #define XMLHttpRequestUpload_h
 
-#include "EventListener.h"
-#include "EventNames.h"
-#include "EventTarget.h"
 #include "XMLHttpRequest.h"
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
-#include <wtf/PassOwnPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
-#include <wtf/text/AtomicStringHash.h>
 
 namespace WebCore {
 
     class ScriptExecutionContext;
     class XMLHttpRequest;
 
-    class XMLHttpRequestUpload FINAL : public EventTargetWithInlineData {
+    class XMLHttpRequestUpload final : public EventTargetWithInlineData {
     public:
-        static PassOwnPtr<XMLHttpRequestUpload> create(XMLHttpRequest* xmlHttpRequest)
-        {
-            return adoptPtr(new XMLHttpRequestUpload(xmlHttpRequest));
-        }
+        explicit XMLHttpRequestUpload(XMLHttpRequest*);
 
         void ref() { m_xmlHttpRequest->ref(); }
         void deref() { m_xmlHttpRequest->deref(); }
         XMLHttpRequest* xmlHttpRequest() const { return m_xmlHttpRequest; }
 
-        virtual EventTargetInterface eventTargetInterface() const OVERRIDE { return XMLHttpRequestUploadEventTargetInterfaceType; }
-        virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE { return m_xmlHttpRequest->scriptExecutionContext(); }
+        virtual EventTargetInterface eventTargetInterface() const override { return XMLHttpRequestUploadEventTargetInterfaceType; }
+        virtual ScriptExecutionContext* scriptExecutionContext() const override { return m_xmlHttpRequest->scriptExecutionContext(); }
 
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(abort);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(load);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(loadend);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(loadstart);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(progress);
-
-        void dispatchEventAndLoadEnd(PassRefPtr<Event>);
+        void dispatchThrottledProgressEvent(bool lengthComputable, unsigned long long loaded, unsigned long long total);
+        void dispatchProgressEvent(const AtomicString &type);
 
     private:
-        explicit XMLHttpRequestUpload(XMLHttpRequest*);
-
-        virtual void refEventTarget() OVERRIDE FINAL { ref(); }
-        virtual void derefEventTarget() OVERRIDE FINAL { deref(); }
+        virtual void refEventTarget() override final { ref(); }
+        virtual void derefEventTarget() override final { deref(); }
 
         XMLHttpRequest* m_xmlHttpRequest;
+        bool m_lengthComputable;
+        unsigned long long m_loaded;
+        unsigned long long m_total;
     };
     
 } // namespace WebCore

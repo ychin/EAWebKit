@@ -23,28 +23,28 @@
 
 #if ENABLE(SPEECH_SYNTHESIS)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SpeechSynthesisVoice.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSpeechSynthesisVoice : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSpeechSynthesisVoice* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SpeechSynthesisVoice> impl)
+    static JSSpeechSynthesisVoice* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SpeechSynthesisVoice>&& impl)
     {
-        JSSpeechSynthesisVoice* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisVoice>(globalObject->vm().heap)) JSSpeechSynthesisVoice(structure, globalObject, impl);
+        JSSpeechSynthesisVoice* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisVoice>(globalObject->vm().heap)) JSSpeechSynthesisVoice(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SpeechSynthesisVoice* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSpeechSynthesisVoice();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,19 @@ public:
     }
 
     SpeechSynthesisVoice& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SpeechSynthesisVoice* m_impl;
 protected:
-    JSSpeechSynthesisVoice(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SpeechSynthesisVoice>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSpeechSynthesisVoice(JSC::Structure*, JSDOMGlobalObject*, Ref<SpeechSynthesisVoice>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSpeechSynthesisVoiceOwner : public JSC::WeakHandleOwner {
@@ -79,48 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SpeechSynthesisVoice*)
 {
-    DEFINE_STATIC_LOCAL(JSSpeechSynthesisVoiceOwner, jsSpeechSynthesisVoiceOwner, ());
-    return &jsSpeechSynthesisVoiceOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SpeechSynthesisVoice*)
-{
-    return &world;
+    static NeverDestroyed<JSSpeechSynthesisVoiceOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SpeechSynthesisVoice*);
-SpeechSynthesisVoice* toSpeechSynthesisVoice(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SpeechSynthesisVoice& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSpeechSynthesisVoicePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSpeechSynthesisVoicePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSpeechSynthesisVoicePrototype* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisVoicePrototype>(vm.heap)) JSSpeechSynthesisVoicePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSpeechSynthesisVoicePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSpeechSynthesisVoiceVoiceURI(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSpeechSynthesisVoiceName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSpeechSynthesisVoiceLang(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSpeechSynthesisVoiceLocalService(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSpeechSynthesisVoiceDefault(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

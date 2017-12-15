@@ -31,23 +31,9 @@
 
 namespace WebCore {
 
-class JSGlobalObjectCallback;
-
-class JSGlobalObjectTask FINAL : public ScriptExecutionContext::Task {
+class JSGlobalObjectTask : public ScriptExecutionContext::Task {
 public:
-    static PassOwnPtr<JSGlobalObjectTask> create(JSDOMGlobalObject* globalObject, JSC::GlobalObjectMethodTable::QueueTaskToEventLoopCallbackFunctionPtr functionPtr, PassRefPtr<JSC::TaskContext> taskContext)
-    {
-        return adoptPtr(new JSGlobalObjectTask(globalObject, functionPtr, taskContext));
-    }
-
-    virtual ~JSGlobalObjectTask();
-
-private:
-    JSGlobalObjectTask(JSDOMGlobalObject*, JSC::GlobalObjectMethodTable::QueueTaskToEventLoopCallbackFunctionPtr, PassRefPtr<JSC::TaskContext>);
-
-    virtual void performTask(ScriptExecutionContext*) OVERRIDE;
-
-    RefPtr<JSGlobalObjectCallback> m_callback;
+    JSGlobalObjectTask(JSDOMGlobalObject*, PassRefPtr<JSC::Microtask>);
 };
 
 } // namespace WebCore

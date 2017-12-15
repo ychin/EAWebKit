@@ -27,31 +27,65 @@
 #include "AudioParam.h"
 #include "DelayNode.h"
 #include "JSAudioParam.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSDelayNodeTableValues[] =
-{
-    { "delayTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDelayNodeDelayTime), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDelayNodeConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsDelayNodeDelayTime(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDelayNodeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSDelayNodePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDelayNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDelayNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSDelayNodePrototype>(vm.heap)) JSDelayNodePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDelayNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSDelayNodeTable = { 4, 3, JSDelayNodeTableValues, 0 };
-/* Hash table for constructor */
+class JSDelayNodeConstructor : public DOMConstructorObject {
+private:
+    JSDelayNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSDelayNodeConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSDelayNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSDelayNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSDelayNodeConstructor>(vm.heap)) JSDelayNodeConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSDelayNodeConstructorTable = { 1, 0, JSDelayNodeConstructorTableValues, 0 };
-const ClassInfo JSDelayNodeConstructor::s_info = { "DelayNodeConstructor", &Base::s_info, &JSDelayNodeConstructorTable, 0, CREATE_METHOD_TABLE(JSDelayNodeConstructor) };
+const ClassInfo JSDelayNodeConstructor::s_info = { "DelayNodeConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDelayNodeConstructor) };
 
 JSDelayNodeConstructor::JSDelayNodeConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,69 +96,67 @@ void JSDelayNodeConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObj
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSDelayNodePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSDelayNodeConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSDelayNodeConstructor, JSDOMWrapper>(exec, JSDelayNodeConstructorTable, jsCast<JSDelayNodeConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSDelayNode::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("DelayNode"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSDelayNodePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDelayNodeConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "delayTime", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDelayNodeDelayTime), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSDelayNodePrototypeTable = { 1, 0, JSDelayNodePrototypeTableValues, 0 };
-const ClassInfo JSDelayNodePrototype::s_info = { "DelayNodePrototype", &Base::s_info, &JSDelayNodePrototypeTable, 0, CREATE_METHOD_TABLE(JSDelayNodePrototype) };
+const ClassInfo JSDelayNodePrototype::s_info = { "DelayNodePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDelayNodePrototype) };
 
-JSObject* JSDelayNodePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDelayNode>(vm, globalObject);
-}
-
-const ClassInfo JSDelayNode::s_info = { "DelayNode", &Base::s_info, &JSDelayNodeTable, 0 , CREATE_METHOD_TABLE(JSDelayNode) };
-
-JSDelayNode::JSDelayNode(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DelayNode> impl)
-    : JSAudioNode(structure, globalObject, impl)
-{
-}
-
-void JSDelayNode::finishCreation(VM& vm)
+void JSDelayNodePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDelayNodePrototypeTableValues, *this);
+}
+
+const ClassInfo JSDelayNode::s_info = { "DelayNode", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDelayNode) };
+
+JSDelayNode::JSDelayNode(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DelayNode>&& impl)
+    : JSAudioNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSDelayNode::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSDelayNodePrototype::create(vm, globalObject, JSDelayNodePrototype::createStructure(vm, globalObject, JSAudioNodePrototype::self(vm, globalObject)));
+    return JSDelayNodePrototype::create(vm, globalObject, JSDelayNodePrototype::createStructure(vm, globalObject, JSAudioNode::getPrototype(vm, globalObject)));
 }
 
-bool JSDelayNode::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSDelayNode::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSDelayNode* thisObject = jsCast<JSDelayNode*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSDelayNode, Base>(exec, JSDelayNodeTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSDelayNode>(vm, globalObject);
 }
 
-JSValue jsDelayNodeDelayTime(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDelayNodeDelayTime(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDelayNode* castedThis = jsCast<JSDelayNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DelayNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSDelayNode* castedThis = jsDynamicCast<JSDelayNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSDelayNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "DelayNode", "delayTime");
+        return throwGetterTypeError(*exec, "DelayNode", "delayTime");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.delayTime()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDelayNodeConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDelayNodeConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSDelayNode* domObject = jsCast<JSDelayNode*>(asObject(slotBase));
-    return JSDelayNode::getConstructor(exec->vm(), domObject->globalObject());
+    JSDelayNodePrototype* domObject = jsDynamicCast<JSDelayNodePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSDelayNode::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSDelayNode::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -140,11 +172,11 @@ extern "C" { extern void (*const __identifier("??_7DelayNode@WebCore@@6B@")[])()
 extern "C" { extern void* _ZTVN7WebCore9DelayNodeE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DelayNode* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DelayNode* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDelayNode>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDelayNode>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -165,8 +197,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DelayNo
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<DelayNode>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDelayNode>(exec, globalObject, impl);
+    return createNewWrapper<JSDelayNode>(globalObject, impl);
 }
 
 

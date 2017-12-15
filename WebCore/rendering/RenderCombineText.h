@@ -21,56 +21,44 @@
 #ifndef RenderCombineText_h
 #define RenderCombineText_h
 
-#include "Font.h"
+#include "FontCascade.h"
 #include "RenderElement.h"
 #include "RenderText.h"
 #include "Text.h"
 
 namespace WebCore {
 
-class RenderCombineText FINAL : public RenderText {
+class RenderCombineText final : public RenderText {
 public:
-    RenderCombineText(Text&, PassRefPtr<StringImpl>);
+    RenderCombineText(Text&, const String&);
 
-    Text& textNode() const { return toText(nodeForNonAnonymous()); }
+    Text& textNode() const { return downcast<Text>(nodeForNonAnonymous()); }
 
     void combineText();
     void adjustTextOrigin(FloatPoint& textOrigin, const FloatRect& boxRect) const;
-    void getStringToRender(int, String& string, int& length) const;
+    void getStringToRender(int, String&, int& length) const;
     bool isCombined() const { return m_isCombined; }
-    float combinedTextWidth(const Font& font) const { return font.size(); }
-    const Font& originalFont() const { return parent()->style()->font(); }
-    const Font& textCombineFont() const { return m_combineFontStyle->font(); }
+    float combinedTextWidth(const FontCascade& font) const { return font.size(); }
+    const FontCascade& originalFont() const { return parent()->style().fontCascade(); }
+    const FontCascade& textCombineFont() const { return m_combineFontStyle->fontCascade(); }
 
 private:
-    void node() const WTF_DELETED_FUNCTION;
+    void node() const = delete;
 
-    virtual bool isCombineText() const { return true; }
-    virtual float width(unsigned from, unsigned length, const Font&, float xPosition, HashSet<const SimpleFontData*>* fallbackFonts = 0, GlyphOverflow* = 0) const;
-    virtual const char* renderName() const { return "RenderCombineText"; }
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle);
-    virtual void setTextInternal(const String&) OVERRIDE;
+    virtual bool isCombineText() const override { return true; }
+    virtual float width(unsigned from, unsigned length, const FontCascade&, float xPosition, HashSet<const Font*>* fallbackFonts = 0, GlyphOverflow* = 0) const override;
+    virtual const char* renderName() const override { return "RenderCombineText"; }
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
+    virtual void setRenderedText(const String&) override;
 
     RefPtr<RenderStyle> m_combineFontStyle;
-    float m_combinedTextWidth;
+    FloatSize m_combinedTextSize;
     bool m_isCombined : 1;
     bool m_needsFontUpdate : 1;
 };
 
-inline RenderCombineText& toRenderCombineText(RenderObject& object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isCombineText());
-    return static_cast<RenderCombineText&>(object);
-}
-
-inline const RenderCombineText& toRenderCombineText(const RenderObject& object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isCombineText());
-    return static_cast<const RenderCombineText&>(object);
-}
-
-void toRenderCombineText(const RenderCombineText&);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderCombineText, isCombineText())
 
 #endif // RenderCombineText_h

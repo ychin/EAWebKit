@@ -23,6 +23,7 @@
 
 #include "HTMLNames.h"
 #include "HTMLQuoteElement.h"
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
@@ -31,25 +32,59 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLQuoteElementTableValues[] =
-{
-    { "cite", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLQuoteElementCite), (intptr_t)setJSHTMLQuoteElementCite },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLQuoteElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsHTMLQuoteElementCite(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLQuoteElementCite(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLQuoteElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLQuoteElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLQuoteElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLQuoteElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLQuoteElementPrototype>(vm.heap)) JSHTMLQuoteElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLQuoteElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLQuoteElementTable = { 5, 3, JSHTMLQuoteElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLQuoteElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLQuoteElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLQuoteElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLQuoteElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLQuoteElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLQuoteElementConstructor>(vm.heap)) JSHTMLQuoteElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLQuoteElementConstructorTable = { 1, 0, JSHTMLQuoteElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLQuoteElementConstructor::s_info = { "HTMLQuoteElementConstructor", &Base::s_info, &JSHTMLQuoteElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLQuoteElementConstructor) };
+const ClassInfo JSHTMLQuoteElementConstructor::s_info = { "HTMLQuoteElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLQuoteElementConstructor) };
 
 JSHTMLQuoteElementConstructor::JSHTMLQuoteElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -60,87 +95,86 @@ void JSHTMLQuoteElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLQuoteElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLQuoteElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLQuoteElementConstructor, JSDOMWrapper>(exec, JSHTMLQuoteElementConstructorTable, jsCast<JSHTMLQuoteElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLQuoteElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLQuoteElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLQuoteElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLQuoteElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "cite", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLQuoteElementCite), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLQuoteElementCite) },
 };
 
-static const HashTable JSHTMLQuoteElementPrototypeTable = { 1, 0, JSHTMLQuoteElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLQuoteElementPrototype::s_info = { "HTMLQuoteElementPrototype", &Base::s_info, &JSHTMLQuoteElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLQuoteElementPrototype) };
+const ClassInfo JSHTMLQuoteElementPrototype::s_info = { "HTMLQuoteElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLQuoteElementPrototype) };
 
-JSObject* JSHTMLQuoteElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLQuoteElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLQuoteElement::s_info = { "HTMLQuoteElement", &Base::s_info, &JSHTMLQuoteElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLQuoteElement) };
-
-JSHTMLQuoteElement::JSHTMLQuoteElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLQuoteElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLQuoteElement::finishCreation(VM& vm)
+void JSHTMLQuoteElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLQuoteElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLQuoteElement::s_info = { "HTMLQuoteElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLQuoteElement) };
+
+JSHTMLQuoteElement::JSHTMLQuoteElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLQuoteElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLQuoteElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLQuoteElementPrototype::create(vm, globalObject, JSHTMLQuoteElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLQuoteElementPrototype::create(vm, globalObject, JSHTMLQuoteElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLQuoteElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLQuoteElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLQuoteElement* thisObject = jsCast<JSHTMLQuoteElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLQuoteElement, Base>(exec, JSHTMLQuoteElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLQuoteElement>(vm, globalObject);
 }
 
-JSValue jsHTMLQuoteElementCite(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLQuoteElementCite(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLQuoteElement* castedThis = jsCast<JSHTMLQuoteElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLQuoteElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLQuoteElement* castedThis = jsDynamicCast<JSHTMLQuoteElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLQuoteElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLQuoteElement", "cite");
+        return throwGetterTypeError(*exec, "HTMLQuoteElement", "cite");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::citeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLQuoteElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLQuoteElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLQuoteElement* domObject = jsCast<JSHTMLQuoteElement*>(asObject(slotBase));
-    return JSHTMLQuoteElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLQuoteElementPrototype* domObject = jsDynamicCast<JSHTMLQuoteElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLQuoteElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLQuoteElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLQuoteElementCite(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLQuoteElement* thisObject = jsCast<JSHTMLQuoteElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLQuoteElement, Base>(exec, propertyName, value, JSHTMLQuoteElementTable, thisObject, slot);
-}
-
-void setJSHTMLQuoteElementCite(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLQuoteElement* castedThis = jsCast<JSHTMLQuoteElement*>(thisObject);
-    HTMLQuoteElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLQuoteElement* castedThis = jsDynamicCast<JSHTMLQuoteElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLQuoteElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLQuoteElement", "cite");
+        else
+            throwSetterTypeError(*exec, "HTMLQuoteElement", "cite");
         return;
-    impl.setAttribute(WebCore::HTMLNames::citeAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::citeAttr, nativeValue);
 }
 
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Google Inc. All rights reserved.
- * Copyright (C) 2011 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2014 Apple Inc. All rights reserved.
  * Copyright (C) 2012 Samsung Electronics. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,17 @@
 #ifndef InputType_h
 #define InputType_h
 
-#include "FeatureObserver.h"
 #include "HTMLTextFormControlElement.h"
+#include "RenderPtr.h"
 #include "StepRange.h"
 #include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefPtr.h>
+
+#if PLATFORM(IOS)
+#include "DateComponents.h"
+#endif
 
 namespace WebCore {
 
@@ -57,9 +61,9 @@ class Icon;
 class KeyboardEvent;
 class MouseEvent;
 class Node;
-class RenderArena;
 class RenderStyle;
 class TouchEvent;
+class TextControlInnerTextElement;
 
 struct InputElementClickState;
 
@@ -73,8 +77,8 @@ class InputType {
     WTF_MAKE_FAST_ALLOCATED;
 
 public:
-    static OwnPtr<InputType> create(HTMLInputElement&, const AtomicString&);
-    static OwnPtr<InputType> createText(HTMLInputElement&);
+    static std::unique_ptr<InputType> create(HTMLInputElement&, const AtomicString&);
+    static std::unique_ptr<InputType> createText(HTMLInputElement&);
     virtual ~InputType();
 
     static bool themeSupportsDataListUI(InputType*);
@@ -170,6 +174,7 @@ public:
     virtual bool canSetStringValue() const;
     virtual String localizeValue(const String&) const;
     virtual String visibleValue() const;
+    virtual bool isEmptyValue() const;
     // Returing the null string means "use the default value."
     // This function must be called only by HTMLInputElement::sanitizeValue().
     virtual String sanitizeValue(const String&) const;
@@ -217,22 +222,19 @@ public:
 
     virtual HTMLElement* containerElement() const { return nullptr; }
     virtual HTMLElement* innerBlockElement() const { return nullptr; }
-    virtual HTMLElement* innerTextElement() const { return nullptr; }
+    virtual TextControlInnerTextElement* innerTextElement() const { return nullptr; }
     virtual HTMLElement* innerSpinButtonElement() const { return nullptr; }
+    virtual HTMLElement* capsLockIndicatorElement() const { return nullptr; }
+    virtual HTMLElement* autoFillButtonElement() const { return nullptr; }
     virtual HTMLElement* resultsButtonElement() const { return nullptr; }
     virtual HTMLElement* cancelButtonElement() const { return nullptr; }
     virtual HTMLElement* sliderThumbElement() const { return nullptr; }
     virtual HTMLElement* sliderTrackElement() const { return nullptr; }
     virtual HTMLElement* placeholderElement() const;
 
-#if ENABLE(INPUT_SPEECH)
-    virtual HTMLElement* speechButtonElement() const { return nullptr; }
-#endif
-
     // Miscellaneous functions
-
     virtual bool rendererIsNeeded();
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&) const;
+    virtual RenderPtr<RenderElement> createInputRenderer(Ref<RenderStyle>&&);
     virtual void addSearchResult();
     virtual void attach();
     virtual void detach();
@@ -240,21 +242,25 @@ public:
     virtual void stepAttributeChanged();
     virtual void altAttributeChanged();
     virtual void srcAttributeChanged();
+    virtual void maxResultsAttributeChanged();
     virtual bool shouldRespectAlignAttribute();
     virtual FileList* files();
     virtual void setFiles(PassRefPtr<FileList>);
+#if ENABLE(DRAG_SUPPORT)
     // Should return true if the given DragData has more than one dropped files.
     virtual bool receiveDroppedFiles(const DragData&);
+#endif
     virtual Icon* icon() const;
-    // Should return true if the corresponding renderer for a type can display a suggested value.
-    virtual bool canSetSuggestedValue();
+#if PLATFORM(IOS)
+    virtual String displayString() const;
+#endif
+
     virtual bool shouldSendChangeEventAfterCheckedChanged();
     virtual bool canSetValue(const String&);
     virtual bool storesValueSeparateFromAttribute();
     virtual void setValue(const String&, bool valueChanged, TextFieldEventBehavior);
     virtual bool shouldResetOnDocumentActivation();
     virtual bool shouldRespectListAttribute();
-    virtual bool shouldRespectSpeechAttribute();
     virtual bool isEnumeratable();
     virtual bool isCheckable();
     virtual bool isSteppable() const;
@@ -268,9 +274,9 @@ public:
     virtual void disabledAttributeChanged();
     virtual void readonlyAttributeChanged();
     virtual void requiredAttributeChanged();
-    virtual void valueAttributeChanged();
+    virtual void capsLockStateMayHaveChanged();
+    virtual void updateAutoFillButton();
     virtual String defaultToolTip() const;
-    virtual void updateClearButtonVisibility();
 
 #if ENABLE(DATALIST_ELEMENT)
     virtual void listAttributeTargetChanged();
@@ -294,6 +300,10 @@ public:
     // string. This should not be called for types without valueAsNumber.
     virtual String serialize(const Decimal&) const;
 
+#if PLATFORM(IOS)
+    virtual DateComponents::Type dateType() const;
+#endif
+
     virtual bool supportsIndeterminateAppearance() const;
 
     virtual bool supportsSelectionAPI() const;
@@ -310,7 +320,6 @@ protected:
     HTMLInputElement& element() const { return m_element; }
     Chrome* chrome() const;
     Decimal parseToNumberOrNaN(const String&) const;
-    void observeFeatureIfVisible(FeatureObserver::Feature) const;
 
 private:
     // Helper for stepUp()/stepDown(). Adds step value * count to the current value.

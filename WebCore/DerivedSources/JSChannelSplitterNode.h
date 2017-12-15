@@ -25,23 +25,22 @@
 
 #include "ChannelSplitterNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSChannelSplitterNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSChannelSplitterNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ChannelSplitterNode> impl)
+    static JSChannelSplitterNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ChannelSplitterNode>&& impl)
     {
-        JSChannelSplitterNode* ptr = new (NotNull, JSC::allocateCell<JSChannelSplitterNode>(globalObject->vm().heap)) JSChannelSplitterNode(structure, globalObject, impl);
+        JSChannelSplitterNode* ptr = new (NotNull, JSC::allocateCell<JSChannelSplitterNode>(globalObject->vm().heap)) JSChannelSplitterNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,63 +54,19 @@ public:
         return static_cast<ChannelSplitterNode&>(Base::impl());
     }
 protected:
-    JSChannelSplitterNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ChannelSplitterNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSChannelSplitterNode(JSC::Structure*, JSDOMGlobalObject*, Ref<ChannelSplitterNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ChannelSplitterNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ChannelSplitterNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSChannelSplitterNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSChannelSplitterNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSChannelSplitterNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSChannelSplitterNodePrototype>(vm.heap)) JSChannelSplitterNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSChannelSplitterNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSChannelSplitterNodeConstructor : public DOMConstructorObject {
-private:
-    JSChannelSplitterNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSChannelSplitterNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSChannelSplitterNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSChannelSplitterNodeConstructor>(vm.heap)) JSChannelSplitterNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsChannelSplitterNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

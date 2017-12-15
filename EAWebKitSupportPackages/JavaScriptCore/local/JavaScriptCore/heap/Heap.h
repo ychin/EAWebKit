@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2013 Apple Inc. All rights reserved.
+ *  Copyright (C) 2003-2009, 2013-2014 Apple Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,6 @@
 #define Heap_h
 
 #include "ArrayBuffer.h"
-#include "BlockAllocator.h"
 #include "CodeBlockSet.h"
 #include "CopyVisitor.h"
 #include "GCIncomingRefCountedSet.h"
@@ -38,434 +37,380 @@
 #include "MarkedSpace.h"
 #include "Options.h"
 #include "SlotVisitor.h"
+#include "StructureIDTable.h"
 #include "WeakHandleOwner.h"
+#include "WriteBarrierBuffer.h"
 #include "WriteBarrierSupport.h"
 #include <wtf/HashCountedSet.h>
 #include <wtf/HashSet.h>
 
-#define COLLECT_ON_EVERY_ALLOCATION 0
-
 namespace JSC {
 
-    class CopiedSpace;
-    class CodeBlock;
-    class ExecutableBase;
-    class GCActivityCallback;
-    class GCAwareJITStubRoutine;
-    class GlobalCodeBlock;
-    class Heap;
-    class HeapRootVisitor;
-    class IncrementalSweeper;
-    class JITStubRoutine;
-    class JSCell;
-    class VM;
-    class JSStack;
-    class JSValue;
-    class LiveObjectIterator;
-    class LLIntOffsetsExtractor;
-    class MarkedArgumentBuffer;
-    class WeakGCHandlePool;
-    class SlotVisitor;
+class CopiedSpace;
+class CodeBlock;
+class ExecutableBase;
+class EdenGCActivityCallback;
+class FullGCActivityCallback;
+class GCActivityCallback;
+class GCAwareJITStubRoutine;
+class GlobalCodeBlock;
+class Heap;
+class HeapRootVisitor;
+class HeapVerifier;
+class IncrementalSweeper;
+class JITStubRoutine;
+class JSCell;
+class VM;
+class JSStack;
+class JSValue;
+class LiveObjectIterator;
+class LLIntOffsetsExtractor;
+class MarkedArgumentBuffer;
+class WeakGCHandlePool;
+class SlotVisitor;
 
-    typedef std::pair<JSValue, WTF::String> ValueStringPair;
-    typedef HashCountedSet<JSCell*> ProtectCountSet;
-    typedef HashCountedSet<const char*> TypeCountSet;
+namespace DFG {
+class Worklist;
+}
 
-    enum HeapType { SmallHeap, LargeHeap };
+static void* const zombifiedBits = reinterpret_cast<void*>(static_cast<uintptr_t>(0xdeadbeef));
 
-    class Heap {
-        WTF_MAKE_NONCOPYABLE(Heap);
-    public:
-        friend class JIT;
-        friend class GCThreadSharedData;
-        static Heap* heap(const JSValue); // 0 for immediate values
-        static Heap* heap(const JSCell*);
+typedef HashCountedSet<JSCell*> ProtectCountSet;
+typedef HashCountedSet<const char*> TypeCountSet;
 
-        // This constant determines how many blocks we iterate between checks of our 
-        // deadline when calling Heap::isPagedOut. Decreasing it will cause us to detect 
-        // overstepping our deadline more quickly, while increasing it will cause 
-        // our scan to run faster. 
-        static const unsigned s_timeCheckResolution = 16;
+enum HeapType { SmallHeap, LargeHeap };
 
-        static bool isLive(const void*);
-        static bool isMarked(const void*);
-        static bool testAndSetMarked(const void*);
-        static void setMarked(const void*);
+class Heap {
+    WTF_MAKE_NONCOPYABLE(Heap);
+public:
+    friend class JIT;
+    friend class DFG::SpeculativeJIT;
+    friend class GCThreadSharedData;
+    static Heap* heap(const JSValue); // 0 for immediate values
+    static Heap* heap(const JSCell*);
 
-        static bool isWriteBarrierEnabled();
-        static void writeBarrier(const JSCell*, JSValue);
-        static void writeBarrier(const JSCell*, JSCell*);
-        static uint8_t* addressOfCardFor(JSCell*);
+    // This constant determines how many blocks we iterate between checks of our 
+    // deadline when calling Heap::isPagedOut. Decreasing it will cause us to detect 
+    // overstepping our deadline more quickly, while increasing it will cause 
+    // our scan to run faster. 
+    static const unsigned s_timeCheckResolution = 16;
 
-        Heap(VM*, HeapType);
-        ~Heap();
-        JS_EXPORT_PRIVATE void lastChanceToFinalize();
+    static bool isLive(const void*);
+    static bool isMarked(const void*);
+    static bool testAndSetMarked(const void*);
+    static void setMarked(const void*);
+    static bool isRemembered(const void*);
 
-        VM* vm() const { return m_vm; }
-        MarkedSpace& objectSpace() { return m_objectSpace; }
-        MachineThreads& machineThreads() { return m_machineThreads; }
+    JS_EXPORT_PRIVATE void addToRememberedSet(const JSCell*);
+    static bool isWriteBarrierEnabled();
+    void writeBarrier(const JSCell*);
+    void writeBarrier(const JSCell*, JSValue);
+    void writeBarrier(const JSCell*, JSCell*);
 
-        JS_EXPORT_PRIVATE GCActivityCallback* activityCallback();
-        JS_EXPORT_PRIVATE void setActivityCallback(PassOwnPtr<GCActivityCallback>);
-        JS_EXPORT_PRIVATE void setGarbageCollectionTimerEnabled(bool);
+    WriteBarrierBuffer& writeBarrierBuffer() { return m_writeBarrierBuffer; }
+    void flushWriteBarrierBuffer(JSCell*);
 
-        JS_EXPORT_PRIVATE IncrementalSweeper* sweeper();
+    Heap(VM*, HeapType);
+    ~Heap();
+    JS_EXPORT_PRIVATE void lastChanceToFinalize();
+    void releaseDelayedReleasedObjects();
 
-        // true if collection is in progress
-        inline bool isCollecting();
-        // true if an allocation or collection is in progress
-        inline bool isBusy();
-        
-        MarkedAllocator& allocatorForObjectWithoutDestructor(size_t bytes) { return m_objectSpace.allocatorFor(bytes); }
-        MarkedAllocator& allocatorForObjectWithNormalDestructor(size_t bytes) { return m_objectSpace.normalDestructorAllocatorFor(bytes); }
-        MarkedAllocator& allocatorForObjectWithImmortalStructureDestructor(size_t bytes) { return m_objectSpace.immortalStructureDestructorAllocatorFor(bytes); }
-        CopiedAllocator& storageAllocator() { return m_storageSpace.allocator(); }
-        CheckedBoolean tryAllocateStorage(JSCell* intendedOwner, size_t, void**);
-        CheckedBoolean tryReallocateStorage(JSCell* intendedOwner, void**, size_t, size_t);
-        void ascribeOwner(JSCell* intendedOwner, void*);
+    VM* vm() const { return m_vm; }
+    MarkedSpace& objectSpace() { return m_objectSpace; }
+    CopiedSpace& storageSpace() { return m_storageSpace; }
+    MachineThreads& machineThreads() { return m_machineThreads; }
 
-        typedef void (*Finalizer)(JSCell*);
-        JS_EXPORT_PRIVATE void addFinalizer(JSCell*, Finalizer);
-        void addCompiledCode(ExecutableBase*);
+    const SlotVisitor& slotVisitor() const { return m_slotVisitor; }
 
-        void notifyIsSafeToCollect() { m_isSafeToCollect = true; }
-        bool isSafeToCollect() const { return m_isSafeToCollect; }
+    JS_EXPORT_PRIVATE GCActivityCallback* fullActivityCallback();
+    JS_EXPORT_PRIVATE GCActivityCallback* edenActivityCallback();
+    JS_EXPORT_PRIVATE void setFullActivityCallback(PassRefPtr<FullGCActivityCallback>);
+    JS_EXPORT_PRIVATE void setEdenActivityCallback(PassRefPtr<EdenGCActivityCallback>);
+    JS_EXPORT_PRIVATE void setGarbageCollectionTimerEnabled(bool);
 
-        JS_EXPORT_PRIVATE void collectAllGarbage();
-        enum SweepToggle { DoNotSweep, DoSweep };
-        bool shouldCollect();
-        void collect(SweepToggle);
-        bool collectIfNecessaryOrDefer(); // Returns true if it did collect.
+    JS_EXPORT_PRIVATE IncrementalSweeper* sweeper();
+    JS_EXPORT_PRIVATE void setIncrementalSweeper(std::unique_ptr<IncrementalSweeper>);
 
-        void reportExtraMemoryCost(size_t cost);
-        JS_EXPORT_PRIVATE void reportAbandonedObjectGraph();
+    // true if collection is in progress
+    bool isCollecting();
+    HeapOperation operationInProgress() { return m_operationInProgress; }
+    // true if an allocation or collection is in progress
+    bool isBusy();
+    MarkedSpace::Subspace& subspaceForObjectWithoutDestructor() { return m_objectSpace.subspaceForObjectsWithoutDestructor(); }
+    MarkedSpace::Subspace& subspaceForObjectDestructor() { return m_objectSpace.subspaceForObjectsWithDestructor(); }
+    template<typename ClassType> MarkedSpace::Subspace& subspaceForObjectOfType();
+    MarkedAllocator& allocatorForObjectWithoutDestructor(size_t bytes) { return m_objectSpace.allocatorFor(bytes); }
+    MarkedAllocator& allocatorForObjectWithDestructor(size_t bytes) { return m_objectSpace.destructorAllocatorFor(bytes); }
+    template<typename ClassType> MarkedAllocator& allocatorForObjectOfType(size_t bytes);
+    CopiedAllocator& storageAllocator() { return m_storageSpace.allocator(); }
+    CheckedBoolean tryAllocateStorage(JSCell* intendedOwner, size_t, void**);
+    CheckedBoolean tryReallocateStorage(JSCell* intendedOwner, void**, size_t, size_t);
+    void ascribeOwner(JSCell* intendedOwner, void*);
 
-        JS_EXPORT_PRIVATE void protect(JSValue);
-        JS_EXPORT_PRIVATE bool unprotect(JSValue); // True when the protect count drops to 0.
-        
-        size_t extraSize(); // extra memory usage outside of pages allocated by the heap
-        JS_EXPORT_PRIVATE size_t size();
-        JS_EXPORT_PRIVATE size_t capacity();
-        JS_EXPORT_PRIVATE size_t objectCount();
-        JS_EXPORT_PRIVATE size_t globalObjectCount();
-        JS_EXPORT_PRIVATE size_t protectedObjectCount();
-        JS_EXPORT_PRIVATE size_t protectedGlobalObjectCount();
-        JS_EXPORT_PRIVATE PassOwnPtr<TypeCountSet> protectedObjectTypeCounts();
-        JS_EXPORT_PRIVATE PassOwnPtr<TypeCountSet> objectTypeCounts();
-        void showStatistics();
+    typedef void (*Finalizer)(JSCell*);
+    JS_EXPORT_PRIVATE void addFinalizer(JSCell*, Finalizer);
+    void addCompiledCode(ExecutableBase*);
 
-        void pushTempSortVector(Vector<ValueStringPair, 0, UnsafeVectorOverflow>*);
-        void popTempSortVector(Vector<ValueStringPair, 0, UnsafeVectorOverflow>*);
+    void notifyIsSafeToCollect() { m_isSafeToCollect = true; }
+    bool isSafeToCollect() const { return m_isSafeToCollect; }
+
+    JS_EXPORT_PRIVATE void collectAllGarbageIfNotDoneRecently();
+    void collectAllGarbage() { collectAndSweep(FullCollection); }
+    JS_EXPORT_PRIVATE void collectAndSweep(HeapOperation collectionType = AnyCollection);
+    bool shouldCollect();
+    JS_EXPORT_PRIVATE void collect(HeapOperation collectionType = AnyCollection);
+    bool collectIfNecessaryOrDefer(); // Returns true if it did collect.
+
+    // Use this API to report non-GC memory referenced by GC objects. Be sure to
+    // call both of these functions: Calling only one may trigger catastropic
+    // memory growth.
+    void reportExtraMemoryAllocated(size_t);
+    void reportExtraMemoryVisited(JSCell*, size_t);
+
+    // Use this API to report non-GC memory if you can't use the better API above.
+    void deprecatedReportExtraMemory(size_t);
+
+    JS_EXPORT_PRIVATE void reportAbandonedObjectGraph();
+
+    JS_EXPORT_PRIVATE void protect(JSValue);
+    JS_EXPORT_PRIVATE bool unprotect(JSValue); // True when the protect count drops to 0.
     
-        HashSet<MarkedArgumentBuffer*>& markListSet() { if (!m_markListSet) m_markListSet = adoptPtr(new HashSet<MarkedArgumentBuffer*>); return *m_markListSet; }
-        
-        template<typename Functor> typename Functor::ReturnType forEachProtectedCell(Functor&);
-        template<typename Functor> typename Functor::ReturnType forEachProtectedCell();
+    size_t extraMemorySize(); // Non-GC memory referenced by GC objects.
+    JS_EXPORT_PRIVATE size_t size();
+    JS_EXPORT_PRIVATE size_t capacity();
+    JS_EXPORT_PRIVATE size_t objectCount();
+    JS_EXPORT_PRIVATE size_t globalObjectCount();
+    JS_EXPORT_PRIVATE size_t protectedObjectCount();
+    JS_EXPORT_PRIVATE size_t protectedGlobalObjectCount();
+    JS_EXPORT_PRIVATE std::unique_ptr<TypeCountSet> protectedObjectTypeCounts();
+    JS_EXPORT_PRIVATE std::unique_ptr<TypeCountSet> objectTypeCounts();
+    void showStatistics();
 
-        HandleSet* handleSet() { return &m_handleSet; }
-        HandleStack* handleStack() { return &m_handleStack; }
+    HashSet<MarkedArgumentBuffer*>& markListSet();
+    
+    template<typename Functor> typename Functor::ReturnType forEachProtectedCell(Functor&);
+    template<typename Functor> typename Functor::ReturnType forEachProtectedCell();
+    template<typename Functor> void forEachCodeBlock(Functor&);
 
-        void willStartIterating();
-        void didFinishIterating();
-        void getConservativeRegisterRoots(HashSet<JSCell*>& roots);
+    HandleSet* handleSet() { return &m_handleSet; }
+    HandleStack* handleStack() { return &m_handleStack; }
 
-        double lastGCLength() { return m_lastGCLength; }
-        void increaseLastGCLength(double amount) { m_lastGCLength += amount; }
+    void willStartIterating();
+    void didFinishIterating();
+    void getConservativeRegisterRoots(HashSet<JSCell*>& roots);
 
-        JS_EXPORT_PRIVATE void deleteAllCompiledCode();
+    double lastFullGCLength() const { return m_lastFullGCLength; }
+    double lastEdenGCLength() const { return m_lastEdenGCLength; }
+    void increaseLastFullGCLength(double amount) { m_lastFullGCLength += amount; }
 
-        void didAllocate(size_t);
-        void didAbandon(size_t);
+    size_t sizeBeforeLastEdenCollection() const { return m_sizeBeforeLastEdenCollect; }
+    size_t sizeAfterLastEdenCollection() const { return m_sizeAfterLastEdenCollect; }
+    size_t sizeBeforeLastFullCollection() const { return m_sizeBeforeLastFullCollect; }
+    size_t sizeAfterLastFullCollection() const { return m_sizeAfterLastFullCollect; }
 
-        bool isPagedOut(double deadline);
-        
-        const JITStubRoutineSet& jitStubRoutines() { return m_jitStubRoutines; }
-        
-        void addReference(JSCell*, ArrayBuffer*);
-        
-        bool isDeferred() const { return !!m_deferralDepth; }
+    JS_EXPORT_PRIVATE void deleteAllCompiledCode();
+    void deleteAllUnlinkedFunctionCode();
 
-    private:
-        friend class CodeBlock;
-        friend class CopiedBlock;
-        friend class DeferGC;
-        friend class DeferGCForAWhile;
-        friend class GCAwareJITStubRoutine;
-        friend class HandleSet;
-        friend class JITStubRoutine;
-        friend class LLIntOffsetsExtractor;
-        friend class MarkedSpace;
-        friend class MarkedAllocator;
-        friend class MarkedBlock;
-        friend class CopiedSpace;
-        friend class CopyVisitor;
-        friend class SlotVisitor;
-        friend class SuperRegion;
-        friend class IncrementalSweeper;
-        friend class HeapStatistics;
-        friend class VM;
-        friend class WeakSet;
-        template<typename T> friend void* allocateCell(Heap&);
-        template<typename T> friend void* allocateCell(Heap&, size_t);
+    void didAllocate(size_t);
+    void didAbandon(size_t);
 
-        void* allocateWithImmortalStructureDestructor(size_t); // For use with special objects whose Structures never die.
-        void* allocateWithNormalDestructor(size_t); // For use with objects that inherit directly or indirectly from JSDestructibleObject.
-        void* allocateWithoutDestructor(size_t); // For use with objects without destructors.
+    bool isPagedOut(double deadline);
+    
+    const JITStubRoutineSet& jitStubRoutines() { return m_jitStubRoutines; }
+    
+    void addReference(JSCell*, ArrayBuffer*);
+    
+    bool isDeferred() const { return !!m_deferralDepth || Options::disableGC(); }
 
-        static const size_t minExtraCost = 256;
-        static const size_t maxExtraCost = 1024 * 1024;
-        
-        class FinalizerOwner : public WeakHandleOwner {
-            virtual void finalize(Handle<Unknown>, void* context) OVERRIDE;
-        };
+    StructureIDTable& structureIDTable() { return m_structureIDTable; }
 
-        JS_EXPORT_PRIVATE bool isValidAllocation(size_t);
-        JS_EXPORT_PRIVATE void reportExtraMemoryCostSlowCase(size_t);
-
-        void markRoots();
-        void markProtectedObjects(HeapRootVisitor&);
-        void markTempSortVectors(HeapRootVisitor&);
-        void copyBackingStores();
-        void harvestWeakReferences();
-        void finalizeUnconditionalFinalizers();
-        void deleteUnmarkedCompiledCode();
-        void zombifyDeadObjects();
-        void markDeadObjects();
-
-        size_t sizeAfterCollect();
-
-        JSStack& stack();
-        BlockAllocator& blockAllocator();
-        
-        JS_EXPORT_PRIVATE void incrementDeferralDepth();
-        void decrementDeferralDepth();
-        JS_EXPORT_PRIVATE void decrementDeferralDepthAndGCIfNeeded();
-
-        const HeapType m_heapType;
-        const size_t m_ramSize;
-        const size_t m_minBytesPerCycle;
-        size_t m_sizeAfterLastCollect;
-
-        size_t m_bytesAllocatedLimit;
-        size_t m_bytesAllocated;
-        size_t m_bytesAbandoned;
-
-        size_t m_totalBytesVisited;
-        size_t m_totalBytesCopied;
-        
-        HeapOperation m_operationInProgress;
-        BlockAllocator m_blockAllocator;
-        MarkedSpace m_objectSpace;
-        CopiedSpace m_storageSpace;
-        GCIncomingRefCountedSet<ArrayBuffer> m_arrayBuffers;
-        size_t m_extraMemoryUsage;
-
-#if ENABLE(SIMPLE_HEAP_PROFILING)
-        VTableSpectrum m_destroyedTypeCounts;
+#if USE(CF)
+        template<typename T> void releaseSoon(RetainPtr<T>&&);
 #endif
 
-        ProtectCountSet m_protectedValues;
-        Vector<Vector<ValueStringPair, 0, UnsafeVectorOverflow>* > m_tempSortingVectors;
-        OwnPtr<HashSet<MarkedArgumentBuffer*> > m_markListSet;
+    void removeCodeBlock(CodeBlock* cb) { m_codeBlocks.remove(cb); }
 
-        MachineThreads m_machineThreads;
-        
-        GCThreadSharedData m_sharedData;
-        SlotVisitor m_slotVisitor;
-        CopyVisitor m_copyVisitor;
+    static bool isZombified(JSCell* cell) { return *(void**)cell == zombifiedBits; }
 
-        HandleSet m_handleSet;
-        HandleStack m_handleStack;
-        CodeBlockSet m_codeBlocks;
-        JITStubRoutineSet m_jitStubRoutines;
-        FinalizerOwner m_finalizerOwner;
-        
-        bool m_isSafeToCollect;
+    void registerWeakGCMap(void* weakGCMap, std::function<void()> pruningCallback);
+    void unregisterWeakGCMap(void* weakGCMap);
 
-        VM* m_vm;
-        double m_lastGCLength;
-        double m_lastCodeDiscardTime;
+    void addLogicallyEmptyWeakBlock(WeakBlock*);
 
-        DoublyLinkedList<ExecutableBase> m_compiledCode;
-        
-        OwnPtr<GCActivityCallback> m_activityCallback;
-        OwnPtr<IncrementalSweeper> m_sweeper;
-        Vector<MarkedBlock*> m_blockSnapshot;
-        
-        unsigned m_deferralDepth;
+private:
+    friend class CodeBlock;
+    friend class CopiedBlock;
+    friend class DeferGC;
+    friend class DeferGCForAWhile;
+    friend class GCAwareJITStubRoutine;
+    friend class GCLogging;
+    friend class HandleSet;
+    friend class HeapVerifier;
+    friend class JITStubRoutine;
+    friend class LLIntOffsetsExtractor;
+    friend class MarkedSpace;
+    friend class MarkedAllocator;
+    friend class MarkedBlock;
+    friend class CopiedSpace;
+    friend class CopyVisitor;
+    friend class RecursiveAllocationScope;
+    friend class SlotVisitor;
+    friend class SuperRegion;
+    friend class IncrementalSweeper;
+    friend class HeapStatistics;
+    friend class VM;
+    friend class WeakSet;
+    template<typename T> friend void* allocateCell(Heap&);
+    template<typename T> friend void* allocateCell(Heap&, size_t);
+
+    void* allocateWithDestructor(size_t); // For use with objects with destructors.
+    void* allocateWithoutDestructor(size_t); // For use with objects without destructors.
+    template<typename ClassType> void* allocateObjectOfType(size_t); // Chooses one of the methods above based on type.
+
+    static const size_t minExtraMemory = 256;
+    
+    class FinalizerOwner : public WeakHandleOwner {
+        virtual void finalize(Handle<Unknown>, void* context) override;
     };
 
-    struct MarkedBlockSnapshotFunctor : public MarkedBlock::VoidFunctor {
-        MarkedBlockSnapshotFunctor(Vector<MarkedBlock*>& blocks) 
-            : m_index(0) 
-            , m_blocks(blocks)
-        {
-        }
+    JS_EXPORT_PRIVATE bool isValidAllocation(size_t);
+    JS_EXPORT_PRIVATE void reportExtraMemoryAllocatedSlowCase(size_t);
+    JS_EXPORT_PRIVATE void deprecatedReportExtraMemorySlowCase(size_t);
+
+    void collectImpl(HeapOperation, void* stackOrigin, void* stackTop, MachineThreads::RegisterState&);
+
+    void suspendCompilerThreads();
+    void willStartCollection(HeapOperation collectionType);
+    void deleteOldCode(double gcStartTime);
+    void flushOldStructureIDTables();
+    void flushWriteBarrierBuffer();
+    void stopAllocation();
+
+    void markRoots(double gcStartTime, void* stackOrigin, void* stackTop, MachineThreads::RegisterState&);
+    void gatherStackRoots(ConservativeRoots&, void* stackOrigin, void* stackTop, MachineThreads::RegisterState&);
+    void gatherJSStackRoots(ConservativeRoots&);
+    void gatherScratchBufferRoots(ConservativeRoots&);
+    void clearLivenessData();
+    void visitExternalRememberedSet();
+    void visitSmallStrings();
+    void visitConservativeRoots(ConservativeRoots&);
+    void visitCompilerWorklistWeakReferences();
+    void removeDeadCompilerWorklistEntries();
+    void visitProtectedObjects(HeapRootVisitor&);
+    void visitArgumentBuffers(HeapRootVisitor&);
+    void visitException(HeapRootVisitor&);
+    void visitStrongHandles(HeapRootVisitor&);
+    void visitHandleStack(HeapRootVisitor&);
+    void traceCodeBlocksAndJITStubRoutines();
+    void converge();
+    void visitWeakHandles(HeapRootVisitor&);
+    void clearRememberedSet(Vector<const JSCell*>&);
+    void updateObjectCounts(double gcStartTime);
+    void resetVisitors();
+
+    void reapWeakHandles();
+    void pruneStaleEntriesFromWeakGCMaps();
+    void sweepArrayBuffers();
+    void snapshotMarkedSpace();
+    void deleteSourceProviderCaches();
+    void notifyIncrementalSweeper();
+    void rememberCurrentlyExecutingCodeBlocks();
+    void resetAllocators();
+    void copyBackingStores();
+    void harvestWeakReferences();
+    void finalizeUnconditionalFinalizers();
+    void clearUnmarkedExecutables();
+    void deleteUnmarkedCompiledCode();
+    void updateAllocationLimits();
+    void didFinishCollection(double gcStartTime);
+    void resumeCompilerThreads();
+    void zombifyDeadObjects();
+    void markDeadObjects();
+
+    void sweepAllLogicallyEmptyWeakBlocks();
+    bool sweepNextLogicallyEmptyWeakBlock();
+
+    bool shouldDoFullCollection(HeapOperation requestedCollectionType) const;
+    size_t sizeAfterCollect();
+
+    JSStack& stack();
     
-        void operator()(MarkedBlock* block) { m_blocks[m_index++] = block; }
+    void incrementDeferralDepth();
+    void decrementDeferralDepth();
+    void decrementDeferralDepthAndGCIfNeeded();
+
+    const HeapType m_heapType;
+    const size_t m_ramSize;
+    const size_t m_minBytesPerCycle;
+    size_t m_sizeAfterLastCollect;
+    size_t m_sizeAfterLastFullCollect;
+    size_t m_sizeBeforeLastFullCollect;
+    size_t m_sizeAfterLastEdenCollect;
+    size_t m_sizeBeforeLastEdenCollect;
+
+    size_t m_bytesAllocatedThisCycle;
+    size_t m_bytesAbandonedSinceLastFullCollect;
+    size_t m_maxEdenSize;
+    size_t m_maxHeapSize;
+    bool m_shouldDoFullCollection;
+    size_t m_totalBytesVisited;
+    size_t m_totalBytesCopied;
     
-        size_t m_index;
-        Vector<MarkedBlock*>& m_blocks;
-    };
+    HeapOperation m_operationInProgress;
+    StructureIDTable m_structureIDTable;
+    MarkedSpace m_objectSpace;
+    CopiedSpace m_storageSpace;
+    GCIncomingRefCountedSet<ArrayBuffer> m_arrayBuffers;
+    size_t m_extraMemorySize;
+    size_t m_deprecatedExtraMemorySize;
 
-    inline bool Heap::shouldCollect()
-    {
-        if (isDeferred())
-            return false;
-        if (Options::gcMaxHeapSize())
-            return m_bytesAllocated > Options::gcMaxHeapSize() && m_isSafeToCollect && m_operationInProgress == NoOperation;
-        return m_bytesAllocated > m_bytesAllocatedLimit && m_isSafeToCollect && m_operationInProgress == NoOperation;
-    }
+    HashSet<const JSCell*> m_copyingRememberedSet;
 
-    bool Heap::isBusy()
-    {
-        return m_operationInProgress != NoOperation;
-    }
+    ProtectCountSet m_protectedValues;
+    std::unique_ptr<HashSet<MarkedArgumentBuffer*>> m_markListSet;
 
-    bool Heap::isCollecting()
-    {
-        return m_operationInProgress == Collection;
-    }
-
-    inline Heap* Heap::heap(const JSCell* cell)
-    {
-        return MarkedBlock::blockFor(cell)->heap();
-    }
-
-    inline Heap* Heap::heap(const JSValue v)
-    {
-        if (!v.isCell())
-            return 0;
-        return heap(v.asCell());
-    }
-
-    inline bool Heap::isLive(const void* cell)
-    {
-        return MarkedBlock::blockFor(cell)->isLiveCell(cell);
-    }
-
-    inline bool Heap::isMarked(const void* cell)
-    {
-        return MarkedBlock::blockFor(cell)->isMarked(cell);
-    }
-
-    inline bool Heap::testAndSetMarked(const void* cell)
-    {
-        return MarkedBlock::blockFor(cell)->testAndSetMarked(cell);
-    }
-
-    inline void Heap::setMarked(const void* cell)
-    {
-        MarkedBlock::blockFor(cell)->setMarked(cell);
-    }
-
-    inline bool Heap::isWriteBarrierEnabled()
-    {
-#if ENABLE(WRITE_BARRIER_PROFILING)
-        return true;
-#else
-        return false;
-#endif
-    }
-
-    inline void Heap::writeBarrier(const JSCell*, JSCell*)
-    {
-        WriteBarrierCounters::countWriteBarrier();
-    }
-
-    inline void Heap::writeBarrier(const JSCell*, JSValue)
-    {
-        WriteBarrierCounters::countWriteBarrier();
-    }
-
-    inline void Heap::reportExtraMemoryCost(size_t cost)
-    {
-        if (cost > minExtraCost) 
-            reportExtraMemoryCostSlowCase(cost);
-    }
-
-    template<typename Functor> inline typename Functor::ReturnType Heap::forEachProtectedCell(Functor& functor)
-    {
-        ProtectCountSet::iterator end = m_protectedValues.end();
-        for (ProtectCountSet::iterator it = m_protectedValues.begin(); it != end; ++it)
-            functor(it->key);
-        m_handleSet.forEachStrongHandle(functor, m_protectedValues);
-
-        return functor.returnValue();
-    }
-
-    template<typename Functor> inline typename Functor::ReturnType Heap::forEachProtectedCell()
-    {
-        Functor functor;
-        return forEachProtectedCell(functor);
-    }
-
-    inline void* Heap::allocateWithNormalDestructor(size_t bytes)
-    {
-#if ENABLE(ALLOCATION_LOGGING)
-        dataLogF("JSC GC allocating %lu bytes with normal destructor.\n", bytes);
-#endif
-        ASSERT(isValidAllocation(bytes));
-        return m_objectSpace.allocateWithNormalDestructor(bytes);
-    }
+    MachineThreads m_machineThreads;
     
-    inline void* Heap::allocateWithImmortalStructureDestructor(size_t bytes)
-    {
-#if ENABLE(ALLOCATION_LOGGING)
-        dataLogF("JSC GC allocating %lu bytes with immortal structure destructor.\n", bytes);
-#endif
-        ASSERT(isValidAllocation(bytes));
-        return m_objectSpace.allocateWithImmortalStructureDestructor(bytes);
-    }
-    
-    inline void* Heap::allocateWithoutDestructor(size_t bytes)
-    {
-#if ENABLE(ALLOCATION_LOGGING)
-        dataLogF("JSC GC allocating %lu bytes without destructor.\n", bytes);
-#endif
-        ASSERT(isValidAllocation(bytes));
-        return m_objectSpace.allocateWithoutDestructor(bytes);
-    }
-   
-    inline CheckedBoolean Heap::tryAllocateStorage(JSCell* intendedOwner, size_t bytes, void** outPtr)
-    {
-        CheckedBoolean result = m_storageSpace.tryAllocate(bytes, outPtr);
-#if ENABLE(ALLOCATION_LOGGING)
-        dataLogF("JSC GC allocating %lu bytes of storage for %p: %p.\n", bytes, intendedOwner, *outPtr);
-#else
-        UNUSED_PARAM(intendedOwner);
-#endif
-        return result;
-    }
-    
-    inline CheckedBoolean Heap::tryReallocateStorage(JSCell* intendedOwner, void** ptr, size_t oldSize, size_t newSize)
-    {
-#if ENABLE(ALLOCATION_LOGGING)
-        void* oldPtr = *ptr;
-#endif
-        CheckedBoolean result = m_storageSpace.tryReallocate(ptr, oldSize, newSize);
-#if ENABLE(ALLOCATION_LOGGING)
-        dataLogF("JSC GC reallocating %lu -> %lu bytes of storage for %p: %p -> %p.\n", oldSize, newSize, intendedOwner, oldPtr, *ptr);
-#else
-        UNUSED_PARAM(intendedOwner);
-#endif
-        return result;
-    }
+    GCThreadSharedData m_sharedData;
+    SlotVisitor m_slotVisitor;
+    CopyVisitor m_copyVisitor;
 
-    inline void Heap::ascribeOwner(JSCell* intendedOwner, void* storage)
-    {
-#if ENABLE(ALLOCATION_LOGGING)
-        dataLogF("JSC GC ascribing %p as owner of storage %p.\n", intendedOwner, storage);
-#else
-        UNUSED_PARAM(intendedOwner);
-        UNUSED_PARAM(storage);
-#endif
-    }
+    HandleSet m_handleSet;
+    HandleStack m_handleStack;
+    CodeBlockSet m_codeBlocks;
+    JITStubRoutineSet m_jitStubRoutines;
+    FinalizerOwner m_finalizerOwner;
+    
+    bool m_isSafeToCollect;
 
-    inline BlockAllocator& Heap::blockAllocator()
-    {
-        return m_blockAllocator;
-    }
+    WriteBarrierBuffer m_writeBarrierBuffer;
+
+    VM* m_vm;
+    double m_lastFullGCLength;
+    double m_lastEdenGCLength;
+    double m_lastCodeDiscardTime;
+
+    Vector<ExecutableBase*> m_compiledCode;
+
+    Vector<WeakBlock*> m_logicallyEmptyWeakBlocks;
+    size_t m_indexOfNextLogicallyEmptyWeakBlockToSweep { WTF::notFound };
+    
+    RefPtr<FullGCActivityCallback> m_fullActivityCallback;
+    RefPtr<GCActivityCallback> m_edenActivityCallback;
+    std::unique_ptr<IncrementalSweeper> m_sweeper;
+    Vector<MarkedBlock*> m_blockSnapshot;
+    
+    unsigned m_deferralDepth;
+    Vector<DFG::Worklist*> m_suspendedCompilerWorklists;
+
+    std::unique_ptr<HeapVerifier> m_verifier;
+#if USE(CF)
+    Vector<RetainPtr<CFTypeRef>> m_delayedReleaseObjects;
+    unsigned m_delayedReleaseRecursionCount;
+#endif
+
+    HashMap<void*, std::function<void()>> m_weakGCMaps;
+};
 
 } // namespace JSC
 

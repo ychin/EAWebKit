@@ -21,32 +21,29 @@
 #ifndef JSSVGAnimatedBoolean_h
 #define JSSVGAnimatedBoolean_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAnimatedBoolean.h"
 #include "SVGElement.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGAnimatedBoolean : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGAnimatedBoolean* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGAnimatedBoolean> impl)
+    static JSSVGAnimatedBoolean* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGAnimatedBoolean>&& impl)
     {
-        JSSVGAnimatedBoolean* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedBoolean>(globalObject->vm().heap)) JSSVGAnimatedBoolean(structure, globalObject, impl);
+        JSSVGAnimatedBoolean* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedBoolean>(globalObject->vm().heap)) JSSVGAnimatedBoolean(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGAnimatedBoolean* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGAnimatedBoolean();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,22 +53,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     SVGAnimatedBoolean& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SVGAnimatedBoolean* m_impl;
 protected:
-    JSSVGAnimatedBoolean(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGAnimatedBoolean>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGAnimatedBoolean(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGAnimatedBoolean>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGAnimatedBooleanOwner : public JSC::WeakHandleOwner {
@@ -82,74 +76,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGAnimatedBoolean*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGAnimatedBooleanOwner, jsSVGAnimatedBooleanOwner, ());
-    return &jsSVGAnimatedBooleanOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SVGAnimatedBoolean*)
-{
-    return &world;
+    static NeverDestroyed<JSSVGAnimatedBooleanOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGAnimatedBoolean*);
-SVGAnimatedBoolean* toSVGAnimatedBoolean(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGAnimatedBoolean& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSVGAnimatedBooleanPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGAnimatedBooleanPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGAnimatedBooleanPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedBooleanPrototype>(vm.heap)) JSSVGAnimatedBooleanPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGAnimatedBooleanPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGAnimatedBooleanConstructor : public DOMConstructorObject {
-private:
-    JSSVGAnimatedBooleanConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGAnimatedBooleanConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGAnimatedBooleanConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedBooleanConstructor>(vm.heap)) JSSVGAnimatedBooleanConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGAnimatedBooleanBaseVal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGAnimatedBooleanBaseVal(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGAnimatedBooleanAnimVal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAnimatedBooleanConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

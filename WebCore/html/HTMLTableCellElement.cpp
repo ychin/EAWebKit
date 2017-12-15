@@ -25,15 +25,11 @@
 #include "config.h"
 #include "HTMLTableCellElement.h"
 
-#include "Attribute.h"
 #include "CSSPropertyNames.h"
 #include "CSSValueKeywords.h"
 #include "HTMLNames.h"
 #include "HTMLTableElement.h"
 #include "RenderTableCell.h"
-
-using std::max;
-using std::min;
 
 namespace WebCore {
 
@@ -47,21 +43,21 @@ inline HTMLTableCellElement::HTMLTableCellElement(const QualifiedName& tagName, 
 {
 }
 
-PassRefPtr<HTMLTableCellElement> HTMLTableCellElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLTableCellElement> HTMLTableCellElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLTableCellElement(tagName, document));
+    return adoptRef(*new HTMLTableCellElement(tagName, document));
 }
 
 int HTMLTableCellElement::colSpan() const
 {
     const AtomicString& colSpanValue = fastGetAttribute(colspanAttr);
-    return max(1, colSpanValue.toInt());
+    return std::max(1, colSpanValue.toInt());
 }
 
 int HTMLTableCellElement::rowSpan() const
 {
     const AtomicString& rowSpanValue = fastGetAttribute(rowspanAttr);
-    return max(1, min(rowSpanValue.toInt(), maxRowspan));
+    return std::max(1, std::min(rowSpanValue.toInt(), maxRowspan));
 }
 
 int HTMLTableCellElement::cellIndex() const
@@ -85,7 +81,7 @@ bool HTMLTableCellElement::isPresentationAttribute(const QualifiedName& name) co
     return HTMLTablePartElement::isPresentationAttribute(name);
 }
 
-void HTMLTableCellElement::collectStyleForPresentationAttribute(const QualifiedName& name, const AtomicString& value, MutableStylePropertySet* style)
+void HTMLTableCellElement::collectStyleForPresentationAttribute(const QualifiedName& name, const AtomicString& value, MutableStyleProperties& style)
 {
     if (name == nowrapAttr)
         addPropertyToPresentationAttributeStyle(style, CSSPropertyWhiteSpace, CSSValueWebkitNowrap);
@@ -108,16 +104,16 @@ void HTMLTableCellElement::collectStyleForPresentationAttribute(const QualifiedN
 void HTMLTableCellElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
     if (name == rowspanAttr) {
-        if (renderer() && renderer()->isTableCell())
-            toRenderTableCell(renderer())->colSpanOrRowSpanChanged();
+        if (is<RenderTableCell>(renderer()))
+            downcast<RenderTableCell>(*renderer()).colSpanOrRowSpanChanged();
     } else if (name == colspanAttr) {
-        if (renderer() && renderer()->isTableCell())
-            toRenderTableCell(renderer())->colSpanOrRowSpanChanged();
+        if (is<RenderTableCell>(renderer()))
+            downcast<RenderTableCell>(*renderer()).colSpanOrRowSpanChanged();
     } else
         HTMLTablePartElement::parseAttribute(name, value);
 }
 
-const StylePropertySet* HTMLTableCellElement::additionalPresentationAttributeStyle()
+const StyleProperties* HTMLTableCellElement::additionalPresentationAttributeStyle()
 {
     if (HTMLTableElement* table = findParentTable())
         return table->additionalCellStyle();
@@ -163,21 +159,21 @@ void HTMLTableCellElement::addSubresourceAttributeURLs(ListHashSet<URL>& urls) c
 {
     HTMLTablePartElement::addSubresourceAttributeURLs(urls);
 
-    addSubresourceURL(urls, document().completeURL(getAttribute(backgroundAttr)));
+    addSubresourceURL(urls, document().completeURL(fastGetAttribute(backgroundAttr)));
 }
 
 HTMLTableCellElement* HTMLTableCellElement::cellAbove() const
 {
-    auto cellRenderer = renderer();
-    if (!cellRenderer || !cellRenderer->isTableCell())
+    auto* cellRenderer = renderer();
+    if (!is<RenderTableCell>(cellRenderer))
         return nullptr;
 
-    auto tableCellRenderer = toRenderTableCell(cellRenderer);
-    auto cellAboveRenderer = tableCellRenderer->table()->cellAbove(tableCellRenderer);
+    auto& tableCellRenderer = downcast<RenderTableCell>(*cellRenderer);
+    auto* cellAboveRenderer = tableCellRenderer.table()->cellAbove(&tableCellRenderer);
     if (!cellAboveRenderer)
         return nullptr;
 
-    return toHTMLTableCellElement(cellAboveRenderer->element());
+    return downcast<HTMLTableCellElement>(cellAboveRenderer->element());
 }
 
 } // namespace WebCore

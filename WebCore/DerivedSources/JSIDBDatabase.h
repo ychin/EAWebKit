@@ -24,25 +24,25 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBDatabase.h"
-#include "JSDOMBinding.h"
 #include "JSEventTarget.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBDatabase : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSIDBDatabase* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBDatabase> impl)
+    static JSIDBDatabase* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBDatabase>&& impl)
     {
-        JSIDBDatabase* ptr = new (NotNull, JSC::allocateCell<JSIDBDatabase>(globalObject->vm().heap)) JSIDBDatabase(structure, globalObject, impl);
+        JSIDBDatabase* ptr = new (NotNull, JSC::allocateCell<JSIDBDatabase>(globalObject->vm().heap)) JSIDBDatabase(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBDatabase* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -61,9 +61,14 @@ public:
         return static_cast<IDBDatabase&>(Base::impl());
     }
 protected:
-    JSIDBDatabase(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBDatabase>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSIDBDatabase(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBDatabase>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBDatabaseOwner : public JSC::WeakHandleOwner {
@@ -74,84 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBDatabase*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBDatabaseOwner, jsIDBDatabaseOwner, ());
-    return &jsIDBDatabaseOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBDatabase*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBDatabaseOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBDatabase*);
-IDBDatabase* toIDBDatabase(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBDatabase& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBDatabasePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBDatabasePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBDatabasePrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBDatabasePrototype>(vm.heap)) JSIDBDatabasePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBDatabasePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSIDBDatabaseConstructor : public DOMConstructorObject {
-private:
-    JSIDBDatabaseConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBDatabaseConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBDatabaseConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBDatabaseConstructor>(vm.heap)) JSIDBDatabaseConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBDatabasePrototypeFunctionCreateObjectStore(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBDatabasePrototypeFunctionDeleteObjectStore(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBDatabasePrototypeFunctionTransaction(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBDatabasePrototypeFunctionClose(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsIDBDatabaseName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBDatabaseVersion(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBDatabaseObjectStoreNames(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBDatabaseOnabort(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBDatabaseOnabort(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBDatabaseOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBDatabaseOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBDatabaseOnversionchange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBDatabaseOnversionchange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBDatabaseConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

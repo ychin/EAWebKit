@@ -24,6 +24,7 @@
 
 #include "JSOESStandardDerivatives.h"
 
+#include "JSDOMBinding.h"
 #include "OESStandardDerivatives.h"
 #include <wtf/GetPtr.h>
 
@@ -31,45 +32,62 @@ using namespace JSC;
 
 namespace WebCore {
 
+class JSOESStandardDerivativesPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSOESStandardDerivativesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSOESStandardDerivativesPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESStandardDerivativesPrototype>(vm.heap)) JSOESStandardDerivativesPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSOESStandardDerivativesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSOESStandardDerivativesPrototypeTableValues[] =
 {
-    { "FRAGMENT_SHADER_DERIVATIVE_HINT_OES", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOESStandardDerivativesFRAGMENT_SHADER_DERIVATIVE_HINT_OES), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "FRAGMENT_SHADER_DERIVATIVE_HINT_OES", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x8B8B), (intptr_t) (0) },
 };
 
-static const HashTable JSOESStandardDerivativesPrototypeTable = { 2, 1, JSOESStandardDerivativesPrototypeTableValues, 0 };
-const ClassInfo JSOESStandardDerivativesPrototype::s_info = { "OESStandardDerivativesPrototype", &Base::s_info, &JSOESStandardDerivativesPrototypeTable, 0, CREATE_METHOD_TABLE(JSOESStandardDerivativesPrototype) };
+const ClassInfo JSOESStandardDerivativesPrototype::s_info = { "OESStandardDerivativesPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOESStandardDerivativesPrototype) };
 
-JSObject* JSOESStandardDerivativesPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSOESStandardDerivatives>(vm, globalObject);
-}
-
-bool JSOESStandardDerivativesPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSOESStandardDerivativesPrototype* thisObject = jsCast<JSOESStandardDerivativesPrototype*>(object);
-    return getStaticValueSlot<JSOESStandardDerivativesPrototype, JSObject>(exec, JSOESStandardDerivativesPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSOESStandardDerivatives::s_info = { "OESStandardDerivatives", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSOESStandardDerivatives) };
-
-JSOESStandardDerivatives::JSOESStandardDerivatives(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESStandardDerivatives> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSOESStandardDerivatives::finishCreation(VM& vm)
+void JSOESStandardDerivativesPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSOESStandardDerivativesPrototypeTableValues, *this);
+}
+
+const ClassInfo JSOESStandardDerivatives::s_info = { "OESStandardDerivatives", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOESStandardDerivatives) };
+
+JSOESStandardDerivatives::JSOESStandardDerivatives(Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESStandardDerivatives>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSOESStandardDerivatives::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSOESStandardDerivativesPrototype::create(vm, globalObject, JSOESStandardDerivativesPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSOESStandardDerivatives::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSOESStandardDerivatives>(vm, globalObject);
 }
 
 void JSOESStandardDerivatives::destroy(JSC::JSCell* cell)
@@ -80,39 +98,21 @@ void JSOESStandardDerivatives::destroy(JSC::JSCell* cell)
 
 JSOESStandardDerivatives::~JSOESStandardDerivatives()
 {
-    releaseImplIfNotNull();
-}
-
-// Constant getters
-
-JSValue jsOESStandardDerivativesFRAGMENT_SHADER_DERIVATIVE_HINT_OES(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x8B8B));
-}
-
-static inline bool isObservable(JSOESStandardDerivatives* jsOESStandardDerivatives)
-{
-    if (jsOESStandardDerivatives->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSOESStandardDerivativesOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSOESStandardDerivatives* jsOESStandardDerivatives = jsCast<JSOESStandardDerivatives*>(handle.get().asCell());
-    if (!isObservable(jsOESStandardDerivatives))
-        return false;
-    WebGLRenderingContext* root = jsOESStandardDerivatives->impl().context();
+    auto* jsOESStandardDerivatives = jsCast<JSOESStandardDerivatives*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsOESStandardDerivatives->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSOESStandardDerivativesOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSOESStandardDerivatives* jsOESStandardDerivatives = jsCast<JSOESStandardDerivatives*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsOESStandardDerivatives = jsCast<JSOESStandardDerivatives*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsOESStandardDerivatives->impl(), jsOESStandardDerivatives);
-    jsOESStandardDerivatives->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -123,11 +123,11 @@ extern "C" { extern void (*const __identifier("??_7OESStandardDerivatives@WebCor
 extern "C" { extern void* _ZTVN7WebCore22OESStandardDerivativesE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESStandardDerivatives* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, OESStandardDerivatives* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSOESStandardDerivatives>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSOESStandardDerivatives>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -148,13 +148,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESStan
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<OESStandardDerivatives>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSOESStandardDerivatives>(exec, globalObject, impl);
+    return createNewWrapper<JSOESStandardDerivatives>(globalObject, impl);
 }
 
-OESStandardDerivatives* toOESStandardDerivatives(JSC::JSValue value)
+OESStandardDerivatives* JSOESStandardDerivatives::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSOESStandardDerivatives::info()) ? &jsCast<JSOESStandardDerivatives*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSOESStandardDerivatives*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

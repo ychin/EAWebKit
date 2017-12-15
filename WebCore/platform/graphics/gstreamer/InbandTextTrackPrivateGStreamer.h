@@ -26,53 +26,44 @@
 #ifndef InbandTextTrackPrivateGStreamer_h
 #define InbandTextTrackPrivateGStreamer_h
 
-#if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK) && defined(GST_API_VERSION_1)
+#if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
 
 #include "GRefPtrGStreamer.h"
 #include "InbandTextTrackPrivate.h"
+#include "TrackPrivateBaseGStreamer.h"
+#include <wtf/glib/GThreadSafeMainLoopSource.h>
 
 namespace WebCore {
 
 class MediaPlayerPrivateGStreamer;
 typedef struct _GstSample GstSample;
 
-class InbandTextTrackPrivateGStreamer : public InbandTextTrackPrivate {
+class InbandTextTrackPrivateGStreamer : public InbandTextTrackPrivate, public TrackPrivateBaseGStreamer {
 public:
     static PassRefPtr<InbandTextTrackPrivateGStreamer> create(gint index, GRefPtr<GstPad> pad)
     {
         return adoptRef(new InbandTextTrackPrivateGStreamer(index, pad));
     }
 
-    ~InbandTextTrackPrivateGStreamer();
+    virtual void disconnect() override;
 
-    GstPad* pad() const { return m_pad.get(); }
+    virtual AtomicString label() const override { return m_label; }
+    virtual AtomicString language() const override { return m_language; }
 
-    void disconnect();
-
-    virtual AtomicString label() const OVERRIDE { return m_label; }
-    virtual AtomicString language() const OVERRIDE { return m_language; }
-
-    void setIndex(int index) { m_index =  index; }
-    virtual int textTrackIndex() const OVERRIDE { return m_index; }
+    virtual int trackIndex() const override { return m_index; }
     String streamId() const { return m_streamId; }
 
     void handleSample(GRefPtr<GstSample>);
     void streamChanged();
-    void tagsChanged();
+
     void notifyTrackOfSample();
     void notifyTrackOfStreamChanged();
-    void notifyTrackOfTagsChanged();
 
 private:
     InbandTextTrackPrivateGStreamer(gint index, GRefPtr<GstPad>);
 
-    gint m_index;
-    GRefPtr<GstPad> m_pad;
-    AtomicString m_label;
-    AtomicString m_language;
-    guint m_sampleTimerHandler;
-    guint m_streamTimerHandler;
-    guint m_tagTimerHandler;
+    GThreadSafeMainLoopSource m_sampleTimerHandler;
+    GThreadSafeMainLoopSource m_streamTimerHandler;
     gulong m_eventProbe;
     Vector<GRefPtr<GstSample> > m_pendingSamples;
     String m_streamId;
@@ -81,6 +72,6 @@ private:
 
 } // namespace WebCore
 
-#endif // ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK) && defined(GST_API_VERSION_1)
+#endif // ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
 
 #endif // InbandTextTrackPrivateGStreamer_h

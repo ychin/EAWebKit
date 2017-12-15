@@ -28,8 +28,6 @@
 #include "RenderLayer.h"
 #include "RenderView.h"
 
-using namespace std;
-
 namespace WebCore {
 
 bool RenderLayerModelObject::s_wasFloating = false;
@@ -37,18 +35,23 @@ bool RenderLayerModelObject::s_hadLayer = false;
 bool RenderLayerModelObject::s_hadTransform = false;
 bool RenderLayerModelObject::s_layerWasSelfPainting = false;
 
-RenderLayerModelObject::RenderLayerModelObject(Element& element, unsigned baseTypeFlags)
-    : RenderElement(element, baseTypeFlags | RenderLayerModelObjectFlag)
+RenderLayerModelObject::RenderLayerModelObject(Element& element, Ref<RenderStyle>&& style, unsigned baseTypeFlags)
+    : RenderElement(element, WTF::move(style), baseTypeFlags | RenderLayerModelObjectFlag)
 {
 }
 
-RenderLayerModelObject::RenderLayerModelObject(Document& document, unsigned baseTypeFlags)
-    : RenderElement(document, baseTypeFlags | RenderLayerModelObjectFlag)
+RenderLayerModelObject::RenderLayerModelObject(Document& document, Ref<RenderStyle>&& style, unsigned baseTypeFlags)
+    : RenderElement(document, WTF::move(style), baseTypeFlags | RenderLayerModelObjectFlag)
 {
 }
 
 RenderLayerModelObject::~RenderLayerModelObject()
 {
+    if (isPositioned()) {
+        if (style().hasViewportConstrainedPosition())
+            view().frameView().removeViewportConstrainedObject(this);
+    }
+
     // Our layer should have been destroyed and cleared by now
     ASSERT(!hasLayer());
     ASSERT(!m_layer);
@@ -61,11 +64,9 @@ void RenderLayerModelObject::destroyLayer()
     m_layer = nullptr;
 }
 
-void RenderLayerModelObject::ensureLayer()
+void RenderLayerModelObject::createLayer()
 {
-    if (m_layer)
-        return;
-
+    ASSERT(!m_layer);
     m_layer = std::make_unique<RenderLayer>(*this);
     setHasLayer(true);
     m_layer->insertOnlyThisLayer();
@@ -76,18 +77,7 @@ bool RenderLayerModelObject::hasSelfPaintingLayer() const
     return m_layer && m_layer->isSelfPaintingLayer();
 }
 
-void RenderLayerModelObject::willBeDestroyed()
-{
-    if (isPositioned()) {
-        if (style()->hasViewportConstrainedPosition())
-            view().frameView().removeViewportConstrainedObject(this);
-    }
-
-    // RenderObject::willBeDestroyed calls back to destroyLayer() for layer destruction
-    RenderElement::willBeDestroyed();
-}
-
-void RenderLayerModelObject::styleWillChange(StyleDifference diff, const RenderStyle* newStyle)
+void RenderLayerModelObject::styleWillChange(StyleDifference diff, const RenderStyle& newStyle)
 {
     s_wasFloating = isFloating();
     s_hadLayer = hasLayer();
@@ -97,36 +87,33 @@ void RenderLayerModelObject::styleWillChange(StyleDifference diff, const RenderS
 
     // If our z-index changes value or our visibility changes,
     // we need to dirty our stacking context's z-order list.
-    RenderStyle* oldStyle = style();
-    if (oldStyle && newStyle) {
+    const RenderStyle* oldStyle = hasInitializedStyle() ? &style() : nullptr;
+    if (oldStyle) {
         if (parent()) {
             // Do a repaint with the old style first, e.g., for example if we go from
             // having an outline to not having an outline.
             if (diff == StyleDifferenceRepaintLayer) {
                 layer()->repaintIncludingDescendants();
-                if (!(oldStyle->clip() == newStyle->clip()))
+                if (!(oldStyle->clip() == newStyle.clip()))
                     layer()->clearClipRectsIncludingDescendants();
-            } else if (diff == StyleDifferenceRepaint || newStyle->outlineSize() < oldStyle->outlineSize())
+            } else if (diff == StyleDifferenceRepaint || newStyle.outlineSize() < oldStyle->outlineSize())
                 repaint();
         }
 
         if (diff == StyleDifferenceLayout || diff == StyleDifferenceSimplifiedLayout) {
-            // When a layout hint happens, we go ahead and do a repaint of the layer, since the layer could
-            // end up being destroyed.
+            // When a layout hint happens, we do a repaint of the layer, since the layer could end up being destroyed.
             if (hasLayer()) {
-                if (oldStyle->position() != newStyle->position()
-                    || oldStyle->zIndex() != newStyle->zIndex()
-                    || oldStyle->hasAutoZIndex() != newStyle->hasAutoZIndex()
-                    || !(oldStyle->clip() == newStyle->clip())
-                    || oldStyle->hasClip() != newStyle->hasClip()
-                    || oldStyle->opacity() != newStyle->opacity()
-                    || oldStyle->transform() != newStyle->transform()
-#if ENABLE(CSS_FILTERS)
-                    || oldStyle->filter() != newStyle->filter()
-#endif
+                if (oldStyle->position() != newStyle.position()
+                    || oldStyle->zIndex() != newStyle.zIndex()
+                    || oldStyle->hasAutoZIndex() != newStyle.hasAutoZIndex()
+                    || !(oldStyle->clip() == newStyle.clip())
+                    || oldStyle->hasClip() != newStyle.hasClip()
+                    || oldStyle->opacity() != newStyle.opacity()
+                    || oldStyle->transform() != newStyle.transform()
+                    || oldStyle->filter() != newStyle.filter()
                     )
                 layer()->repaintIncludingDescendants();
-            } else if (newStyle->hasTransform() || newStyle->opacity() < 1 || newStyle->hasFilter()) {
+            } else if (newStyle.hasTransform() || newStyle.opacity() < 1 || newStyle.hasFilter() || newStyle.hasBackdropFilter()) {
                 // If we don't have a layer yet, but we are going to get one because of transform or opacity,
                 //  then we need to repaint the old position of the object.
                 repaint();
@@ -146,7 +133,7 @@ void RenderLayerModelObject::styleDidChange(StyleDifference diff, const RenderSt
         if (!layer() && layerCreationAllowedForSubtree()) {
             if (s_wasFloating && isFloating())
                 setChildNeedsLayout();
-            ensureLayer();
+            createLayer();
             if (parent() && !needsLayout() && containingBlock()) {
                 layer()->setRepaintStatus(NeedsFullRepaint);
                 // There is only one layer to update, it is not worth using |cachedOffset| since
@@ -155,7 +142,11 @@ void RenderLayerModelObject::styleDidChange(StyleDifference diff, const RenderSt
             }
         }
     } else if (layer() && layer()->parent()) {
-        setHasTransform(false); // Either a transform wasn't specified or the object doesn't support transforms, so just null out the bit.
+#if ENABLE(CSS_COMPOSITING)
+        if (oldStyle->hasBlendMode())
+            layer()->parent()->dirtyAncestorChainHasBlendingDescendants();
+#endif
+        setHasTransformRelatedProperty(false); // All transform-related propeties force layers, so we know we don't have one or the object doesn't support them.
         setHasReflection(false);
         layer()->removeOnlyThisLayer(); // calls destroyLayer() which clears m_layer
         if (s_wasFloating && isFloating())
@@ -170,10 +161,10 @@ void RenderLayerModelObject::styleDidChange(StyleDifference diff, const RenderSt
             setChildNeedsLayout();
     }
 
-    bool newStyleIsViewportConstained = style()->hasViewportConstrainedPosition();
+    bool newStyleIsViewportConstrained = style().hasViewportConstrainedPosition();
     bool oldStyleIsViewportConstrained = oldStyle && oldStyle->hasViewportConstrainedPosition();
-    if (newStyleIsViewportConstained != oldStyleIsViewportConstrained) {
-        if (newStyleIsViewportConstained && layer())
+    if (newStyleIsViewportConstrained != oldStyleIsViewportConstrained) {
+        if (newStyleIsViewportConstrained && layer())
             view().frameView().addViewportConstrainedObject(this);
         else
             view().frameView().removeViewportConstrainedObject(this);

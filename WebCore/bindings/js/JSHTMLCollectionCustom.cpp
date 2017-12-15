@@ -45,35 +45,35 @@ bool JSHTMLCollection::canGetItemsForName(ExecState*, HTMLCollection* collection
     return collection->hasNamedItem(propertyNameToAtomicString(propertyName));
 }
 
-JSValue JSHTMLCollection::nameGetter(ExecState* exec, JSValue slotBase, PropertyName propertyName)
+EncodedJSValue JSHTMLCollection::nameGetter(ExecState* exec, JSObject* slotBase, EncodedJSValue, PropertyName propertyName)
 {
-    JSHTMLCollection* collection = jsCast<JSHTMLCollection*>(asObject(slotBase));
+    JSHTMLCollection* collection = jsCast<JSHTMLCollection*>(slotBase);
     const AtomicString& name = propertyNameToAtomicString(propertyName);
-    return toJS(exec, collection->globalObject(), collection->impl().namedItem(name));
+    return JSValue::encode(toJS(exec, collection->globalObject(), collection->impl().namedItem(name)));
 }
 
-JSValue toJS(ExecState* exec, JSDOMGlobalObject* globalObject, HTMLCollection* collection)
+JSValue toJS(ExecState*, JSDOMGlobalObject* globalObject, HTMLCollection* collection)
 {
     if (!collection)
         return jsNull();
 
-    JSObject* wrapper = getCachedWrapper(currentWorld(exec), collection);
+    JSObject* wrapper = getCachedWrapper(globalObject->world(), collection);
 
     if (wrapper)
         return wrapper;
 
     switch (collection->type()) {
     case FormControls:
-        return CREATE_DOM_WRAPPER(exec, globalObject, HTMLFormControlsCollection, collection);
+        return CREATE_DOM_WRAPPER(globalObject, HTMLFormControlsCollection, collection);
     case SelectOptions:
-        return CREATE_DOM_WRAPPER(exec, globalObject, HTMLOptionsCollection, collection);
+        return CREATE_DOM_WRAPPER(globalObject, HTMLOptionsCollection, collection);
     case DocAll:
-        return CREATE_DOM_WRAPPER(exec, globalObject, HTMLAllCollection, collection);
+        return CREATE_DOM_WRAPPER(globalObject, HTMLAllCollection, collection);
     default:
         break;
     }
 
-    return CREATE_DOM_WRAPPER(exec, globalObject, HTMLCollection, collection);
+    return CREATE_DOM_WRAPPER(globalObject, HTMLCollection, collection);
 }
 
 } // namespace WebCore

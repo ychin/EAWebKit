@@ -24,27 +24,27 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBIndex.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBIndex : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSIDBIndex* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBIndex> impl)
+    static JSIDBIndex* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBIndex>&& impl)
     {
-        JSIDBIndex* ptr = new (NotNull, JSC::allocateCell<JSIDBIndex>(globalObject->vm().heap)) JSIDBIndex(structure, globalObject, impl);
+        JSIDBIndex* ptr = new (NotNull, JSC::allocateCell<JSIDBIndex>(globalObject->vm().heap)) JSIDBIndex(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBIndex* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSIDBIndex();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     IDBIndex& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     IDBIndex* m_impl;
 protected:
-    JSIDBIndex(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBIndex>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSIDBIndex(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBIndex>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBIndexOwner : public JSC::WeakHandleOwner {
@@ -80,81 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBIndex*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBIndexOwner, jsIDBIndexOwner, ());
-    return &jsIDBIndexOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBIndex*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBIndexOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBIndex*);
-IDBIndex* toIDBIndex(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBIndex& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBIndexPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBIndexPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBIndexPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBIndexPrototype>(vm.heap)) JSIDBIndexPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBIndexPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSIDBIndexConstructor : public DOMConstructorObject {
-private:
-    JSIDBIndexConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBIndexConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBIndexConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBIndexConstructor>(vm.heap)) JSIDBIndexConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBIndexPrototypeFunctionOpenCursor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBIndexPrototypeFunctionOpenKeyCursor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBIndexPrototypeFunctionGet(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBIndexPrototypeFunctionGetKey(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBIndexPrototypeFunctionCount(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsIDBIndexName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBIndexObjectStore(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBIndexKeyPath(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBIndexMultiEntry(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBIndexUnique(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBIndexConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

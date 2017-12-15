@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -26,13 +26,13 @@
 #ifndef FontSelector_h
 #define FontSelector_h
 
+#include "FontRanges.h"
 #include <wtf/Forward.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 
 namespace WebCore {
 
-class FontData;
 class FontDescription;
 class FontSelectorClient;
 
@@ -40,17 +40,16 @@ class FontSelector : public RefCounted<FontSelector> {
 public:
     virtual ~FontSelector() { }
 
-    // FIXME: Remove the "get" prefix from these two member functions
-    virtual PassRefPtr<FontData> getFontData(const FontDescription&, const AtomicString& familyName) = 0;
-    virtual PassRefPtr<FontData> getFallbackFontData(const FontDescription&, size_t) = 0;
+    virtual FontRanges fontRangesForFamily(const FontDescription&, const AtomicString&) = 0;
+    virtual PassRefPtr<Font> fallbackFontAt(const FontDescription&, size_t) = 0;
 
-    virtual size_t fallbackFontDataCount() = 0;
+    virtual size_t fallbackFontCount() = 0;
     virtual bool resolvesFamilyFor(const FontDescription&) const = 0;
 
     virtual void fontCacheInvalidated() { }
 
-    virtual void registerForInvalidationCallbacks(FontSelectorClient*) = 0;
-    virtual void unregisterForInvalidationCallbacks(FontSelectorClient*) = 0;
+    virtual void registerForInvalidationCallbacks(FontSelectorClient&) = 0;
+    virtual void unregisterForInvalidationCallbacks(FontSelectorClient&) = 0;
 
     virtual unsigned uniqueId() const = 0;
     virtual unsigned version() const = 0;
@@ -60,7 +59,7 @@ class FontSelectorClient {
 public:
     virtual ~FontSelectorClient() { }
 
-    virtual void fontsNeedUpdate(FontSelector*) = 0;
+    virtual void fontsNeedUpdate(FontSelector&) = 0;
 };
 
 } // namespace WebCore

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011-2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -883,13 +883,37 @@ TextSystem::~TextSystem()
 bool TextSystem::Init(void)
 {
 	EA_ASSERT_MSG(!mActiveFonts.size(), "Active fonts list should be empty at the beginning");
+	mCharacterBreakIterator.mBreakIterator = new (EA::WebKit::GetAllocator()->Malloc(sizeof(EA::Text::CharacterBreakIterator), 0, 0)) EA::Text::CharacterBreakIterator();
+	mCursorBreakIterator.mBreakIterator = new (EA::WebKit::GetAllocator()->Malloc(sizeof(EA::Text::CharacterBreakIterator), 0, 0)) EA::Text::CharacterBreakIterator();
+	mWordBreakIterator.mBreakIterator = new (EA::WebKit::GetAllocator()->Malloc(sizeof(EA::Text::WordBreakIterator), 0, 0)) EA::Text::WordBreakIterator();
+	mSentenceBreakIterator.mBreakIterator = new (EA::WebKit::GetAllocator()->Malloc(sizeof(EA::Text::SentenceBreakIterator), 0, 0)) EA::Text::SentenceBreakIterator();
 	return !mActiveFonts.size();
 }
 
 bool TextSystem::Shutdown(void)
 {
     mCurrentGlyphDrawInfoVector.set_capacity(0); 
-    
+
+	if (mCharacterBreakIterator.mBreakIterator) {
+		mCharacterBreakIterator.mBreakIterator->~CharacterBreakIterator();
+		EA::WebKit::GetAllocator()->Free(mCharacterBreakIterator.mBreakIterator, 0);
+		mCharacterBreakIterator.mBreakIterator = NULL;
+	}
+	if (mCursorBreakIterator.mBreakIterator) {
+		mCursorBreakIterator.mBreakIterator->~CharacterBreakIterator();
+		EA::WebKit::GetAllocator()->Free(mCursorBreakIterator.mBreakIterator, 0);
+		mCursorBreakIterator.mBreakIterator = NULL;
+	}
+	if (mWordBreakIterator.mBreakIterator) {
+		mWordBreakIterator.mBreakIterator->~WordBreakIterator();
+		EA::WebKit::GetAllocator()->Free(mWordBreakIterator.mBreakIterator, 0);
+		mWordBreakIterator.mBreakIterator = NULL;
+	}
+	if (mSentenceBreakIterator.mBreakIterator) {
+		mSentenceBreakIterator.mBreakIterator->~SentenceBreakIterator();
+		EA::WebKit::GetAllocator()->Free(mSentenceBreakIterator.mBreakIterator, 0);
+		mSentenceBreakIterator.mBreakIterator = NULL;
+	}
     eastl::list<EA::WebKit::FontImpl*, EA::WebKit::EASTLAllocator> currentlyActiveFonts = mActiveFonts;
 	eastl::list<EA::WebKit::FontImpl*, EA::WebKit::EASTLAllocator>::iterator iter = currentlyActiveFonts.begin();
 	while (iter != currentlyActiveFonts.end())
@@ -921,7 +945,7 @@ EA::WebKit::IFont* TextSystem::GetFont(const EA::WebKit::TextStyle& textStyle, E
         bool savedkOptionSmartFallback = false;
 
         //allow some more flexibility in finding a font
-        savedkOptionSmartFallback = mpFontServer->GetOption(EA::Text::FontServer::kOptionSmartFallback);
+        savedkOptionSmartFallback = mpFontServer->GetOption(EA::Text::FontServer::kOptionSmartFallback) != 0;
         if (savedkOptionSmartFallback != true)
         {
             didChangekOptionSmartFallback = true;
@@ -1121,7 +1145,7 @@ bool TextSystem::GetCachedGlyph(EA::Text::Font* pFontEA, EA::WebKit::GlyphId g, 
 
 uint32_t TextSystem::AddFace(void* data, size_t dataSize)
 {
-	EA::IO::MemoryStream* pFontMemoryStream  = new EA::IO::MemoryStream(data, dataSize, true, false);
+	EA::IO::MemoryStream* pFontMemoryStream = new EA::IO::MemoryStream(data, dataSize, true, false);
 	pFontMemoryStream->AddRef();
 	uint32_t numFontsAdded = mpFontServer->AddFace(pFontMemoryStream,EA::Text::kFontTypeOutline);
 	EAW_ASSERT_MSG(numFontsAdded > 0,"No font face in the data");
@@ -1150,32 +1174,24 @@ bool TextSystem::SupportsFormat(EA::WebKit::FontFormat format)
 }
 
 // Text break iterator statics 
-static EA::Text::CharacterBreakIterator sCharacterBreakIterator;
-static EA::Text::CharacterBreakIterator sCursorBreakIterator;
-static EA::Text::WordBreakIterator      sWordBreakIterator;
-static EA::Text::LineBreakIterator      sLineBreakIterator;
-static EA::Text::SentenceBreakIterator  sSentenceBreakIterator;
 static EA::Text::TextRun                sTextRun;
-static EA::Text::BreakIteratorBase*     sTextBreakIterator;
 
 void* TextSystem::CharacterBreakIterator(EA::WebKit::Char* pText, int length)
 {
     // To do: Have EAText iterators keep a member TextRun so you don't need to maintain one EATextly.
     sTextRun.mpText     = (EA::Text::Char*) pText;
     sTextRun.mnTextSize = (uint32_t)length;
-    sCharacterBreakIterator.GetIterator().SetTextRunArray(&sTextRun, 1);
-    sTextBreakIterator = &sCharacterBreakIterator;
+	mCharacterBreakIterator.mBreakIterator->GetIterator().SetTextRunArray(&sTextRun, 1);
 
-    return sTextBreakIterator;
+    return mCharacterBreakIterator.mBreakIterator;
 }
 
 void* TextSystem::CursorBreakIterator(EA::WebKit::Char* pText, int length)
 {
-	
 	sTextRun.mpText     = (EA::Text::Char*) pText;
 	sTextRun.mnTextSize = (uint32_t)length;
-	sCursorBreakIterator.GetIterator().SetTextRunArray(&sTextRun, 1);
-	return &sCursorBreakIterator;
+	mCursorBreakIterator.mBreakIterator->GetIterator().SetTextRunArray(&sTextRun, 1);
+	return mCursorBreakIterator.mBreakIterator;
 }
 
 void* TextSystem::WordBreakIterator(EA::WebKit::Char* pText, int length)
@@ -1183,21 +1199,9 @@ void* TextSystem::WordBreakIterator(EA::WebKit::Char* pText, int length)
     // To do: Have EAText iterators keep a member TextRun so you don't need to maintain one EATextly.
     sTextRun.mpText     = (EA::Text::Char*) pText;
     sTextRun.mnTextSize = (uint32_t)length;
-    sWordBreakIterator.GetIterator().SetTextRunArray(&sTextRun, 1);
-    sTextBreakIterator = &sWordBreakIterator;
+	mWordBreakIterator.mBreakIterator->GetIterator().SetTextRunArray(&sTextRun, 1);
 
-    return sTextBreakIterator;
-}
-
-void* TextSystem::LineBreakIterator(EA::WebKit::Char* pText, int length)
-{
-    // To do: Have EAText iterators keep a member TextRun so you don't need to maintain one EATextly.
-    sTextRun.mpText     = (EA::Text::Char*) pText;
-    sTextRun.mnTextSize = (uint32_t)length;
-    sLineBreakIterator.GetIterator().SetTextRunArray(&sTextRun, 1);
-    sTextBreakIterator = &sLineBreakIterator;
-
-    return sTextBreakIterator;
+    return mWordBreakIterator.mBreakIterator;
 }
 
 void* TextSystem::SentenceBreakIterator(EA::WebKit::Char* pText, int length)
@@ -1205,10 +1209,9 @@ void* TextSystem::SentenceBreakIterator(EA::WebKit::Char* pText, int length)
     // To do: Have EAText iterators keep a member TextRun so you don't need to maintain one EATextly.
     sTextRun.mpText     = (EA::Text::Char*) pText;
     sTextRun.mnTextSize = (uint32_t)length;
-    sSentenceBreakIterator.GetIterator().SetTextRunArray(&sTextRun, 1);
-    sTextBreakIterator = &sSentenceBreakIterator;
+	mSentenceBreakIterator.mBreakIterator->GetIterator().SetTextRunArray(&sTextRun, 1);
 
-    return sTextBreakIterator;
+    return mSentenceBreakIterator.mBreakIterator;
 }
 
 void* TextSystem::AcquireLineBreakIterator(EA::WebKit::Char* pText, int length)
@@ -1271,17 +1274,17 @@ int TextSystem::TextBreakNext(void* pIter)
 		return TextBreakDone;
 
 	int result;
-
-	if (pIterator == &sCharacterBreakIterator)
-		result		= sCharacterBreakIterator.GetNextCharBreak();
-	else if (pIterator == &sCursorBreakIterator)
-		result		= sCursorBreakIterator.GetNextCharBreak();
-	else if (pIterator == &sWordBreakIterator)
-		result      = sWordBreakIterator.GetNextWordBreak();
-	else if (pIterator == &sLineBreakIterator)
-		result      = sLineBreakIterator.GetNextLineBreak();
-	else // if(pIterator == &sSentenceBreakIterator)
-		result      = sSentenceBreakIterator.GetNextSentenceBreak();
+	// Following may end up returning the STL end() equivalent. This is desired behavior.
+	if (pIterator == mCharacterBreakIterator.mBreakIterator)
+		result = mCharacterBreakIterator.mBreakIterator->GetNextCharBreak();
+	else if (pIterator == mCursorBreakIterator.mBreakIterator)
+		result = mCursorBreakIterator.mBreakIterator->GetNextCharBreak();
+	else if (pIterator == mWordBreakIterator.mBreakIterator)
+		result = mWordBreakIterator.mBreakIterator->GetNextWordBreak();
+	else if (pIterator == mSentenceBreakIterator.mBreakIterator)
+		result = mSentenceBreakIterator.mBreakIterator->GetNextSentenceBreak();
+	else
+		result = reinterpret_cast<EA::Text::LineBreakIterator*>(pIter)->GetNextLineBreak();
 
 	return result;
 }
@@ -1301,16 +1304,16 @@ int TextSystem::TextBreakPrevious(void* pIter)
 		return TextBreakDone;
 
 	int result;
-	if (pIterator == &sCharacterBreakIterator)
-		result      = sCharacterBreakIterator.GetPrevCharBreak();
-	else if (pIterator == &sCursorBreakIterator)
-		result      = sCursorBreakIterator.GetPrevCharBreak();
-	else if (pIterator == &sWordBreakIterator)
-		result      = sWordBreakIterator.GetPrevWordBreak();
-	else if (pIterator == &sLineBreakIterator)
-		result      = sLineBreakIterator.GetPrevLineBreak();
-	else // if(pIterator == &gSentenceBreakIterator)
-		result      = sSentenceBreakIterator.GetPrevSentenceBreak();
+	if (pIterator == mCharacterBreakIterator.mBreakIterator)
+		result = mCharacterBreakIterator.mBreakIterator->GetPrevCharBreak();
+	else if (pIterator == mCursorBreakIterator.mBreakIterator)
+		result = mCursorBreakIterator.mBreakIterator->GetPrevCharBreak();
+	else if (pIterator == mWordBreakIterator.mBreakIterator)
+		result = mWordBreakIterator.mBreakIterator->GetPrevWordBreak();
+	else if (pIterator == mSentenceBreakIterator.mBreakIterator)
+		result = mSentenceBreakIterator.mBreakIterator->GetPrevSentenceBreak();
+	else
+		result = reinterpret_cast<EA::Text::LineBreakIterator*>(pIter)->GetPrevLineBreak();
 
 	return result;
 }

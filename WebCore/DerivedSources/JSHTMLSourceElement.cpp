@@ -26,6 +26,7 @@
 
 #include "HTMLNames.h"
 #include "HTMLSourceElement.h"
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
@@ -34,27 +35,63 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLSourceElementTableValues[] =
-{
-    { "src", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementSrc), (intptr_t)setJSHTMLSourceElementSrc },
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementType), (intptr_t)setJSHTMLSourceElementType },
-    { "media", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementMedia), (intptr_t)setJSHTMLSourceElementMedia },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsHTMLSourceElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLSourceElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLSourceElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLSourceElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLSourceElementMedia(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLSourceElementMedia(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLSourceElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLSourceElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLSourceElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLSourceElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLSourceElementPrototype>(vm.heap)) JSHTMLSourceElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLSourceElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLSourceElementTable = { 9, 7, JSHTMLSourceElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLSourceElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLSourceElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLSourceElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLSourceElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLSourceElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLSourceElementConstructor>(vm.heap)) JSHTMLSourceElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLSourceElementConstructorTable = { 1, 0, JSHTMLSourceElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLSourceElementConstructor::s_info = { "HTMLSourceElementConstructor", &Base::s_info, &JSHTMLSourceElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLSourceElementConstructor) };
+const ClassInfo JSHTMLSourceElementConstructor::s_info = { "HTMLSourceElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLSourceElementConstructor) };
 
 JSHTMLSourceElementConstructor::JSHTMLSourceElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -65,129 +102,160 @@ void JSHTMLSourceElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLSourceElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLSourceElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLSourceElementConstructor, JSDOMWrapper>(exec, JSHTMLSourceElementConstructorTable, jsCast<JSHTMLSourceElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLSourceElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLSourceElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLSourceElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "src", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementSrc), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLSourceElementSrc) },
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLSourceElementType) },
+    { "media", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLSourceElementMedia), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLSourceElementMedia) },
 };
 
-static const HashTable JSHTMLSourceElementPrototypeTable = { 1, 0, JSHTMLSourceElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLSourceElementPrototype::s_info = { "HTMLSourceElementPrototype", &Base::s_info, &JSHTMLSourceElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLSourceElementPrototype) };
+const ClassInfo JSHTMLSourceElementPrototype::s_info = { "HTMLSourceElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLSourceElementPrototype) };
 
-JSObject* JSHTMLSourceElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLSourceElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLSourceElement::s_info = { "HTMLSourceElement", &Base::s_info, &JSHTMLSourceElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLSourceElement) };
-
-JSHTMLSourceElement::JSHTMLSourceElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLSourceElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLSourceElement::finishCreation(VM& vm)
+void JSHTMLSourceElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLSourceElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLSourceElement::s_info = { "HTMLSourceElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLSourceElement) };
+
+JSHTMLSourceElement::JSHTMLSourceElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLSourceElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLSourceElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLSourceElementPrototype::create(vm, globalObject, JSHTMLSourceElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLSourceElementPrototype::create(vm, globalObject, JSHTMLSourceElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLSourceElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLSourceElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLSourceElement* thisObject = jsCast<JSHTMLSourceElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLSourceElement, Base>(exec, JSHTMLSourceElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLSourceElement>(vm, globalObject);
 }
 
-JSValue jsHTMLSourceElementSrc(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLSourceElementSrc(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLSourceElement* castedThis = jsCast<JSHTMLSourceElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLSourceElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLSourceElement* castedThis = jsDynamicCast<JSHTMLSourceElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLSourceElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLSourceElement", "src");
+        return throwGetterTypeError(*exec, "HTMLSourceElement", "src");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::srcAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLSourceElementType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLSourceElementType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLSourceElement* castedThis = jsCast<JSHTMLSourceElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLSourceElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLSourceElement* castedThis = jsDynamicCast<JSHTMLSourceElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLSourceElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLSourceElement", "type");
+        return throwGetterTypeError(*exec, "HTMLSourceElement", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLSourceElementMedia(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLSourceElementMedia(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLSourceElement* castedThis = jsCast<JSHTMLSourceElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLSourceElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLSourceElement* castedThis = jsDynamicCast<JSHTMLSourceElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLSourceElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLSourceElement", "media");
+        return throwGetterTypeError(*exec, "HTMLSourceElement", "media");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.media());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLSourceElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLSourceElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLSourceElement* domObject = jsCast<JSHTMLSourceElement*>(asObject(slotBase));
-    return JSHTMLSourceElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLSourceElementPrototype* domObject = jsDynamicCast<JSHTMLSourceElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLSourceElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLSourceElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLSourceElementSrc(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLSourceElement* thisObject = jsCast<JSHTMLSourceElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLSourceElement, Base>(exec, propertyName, value, JSHTMLSourceElementTable, thisObject, slot);
-}
-
-void setJSHTMLSourceElementSrc(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLSourceElement* castedThis = jsCast<JSHTMLSourceElement*>(thisObject);
-    HTMLSourceElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLSourceElement* castedThis = jsDynamicCast<JSHTMLSourceElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLSourceElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLSourceElement", "src");
+        else
+            throwSetterTypeError(*exec, "HTMLSourceElement", "src");
         return;
-    impl.setAttribute(WebCore::HTMLNames::srcAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::srcAttr, nativeValue);
 }
 
 
-void setJSHTMLSourceElementType(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLSourceElementType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLSourceElement* castedThis = jsCast<JSHTMLSourceElement*>(thisObject);
-    HTMLSourceElement& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLSourceElement* castedThis = jsDynamicCast<JSHTMLSourceElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLSourceElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLSourceElement", "type");
+        else
+            throwSetterTypeError(*exec, "HTMLSourceElement", "type");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setType(nativeValue);
 }
 
 
-void setJSHTMLSourceElementMedia(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLSourceElementMedia(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLSourceElement* castedThis = jsCast<JSHTMLSourceElement*>(thisObject);
-    HTMLSourceElement& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLSourceElement* castedThis = jsDynamicCast<JSHTMLSourceElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLSourceElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLSourceElement", "media");
+        else
+            throwSetterTypeError(*exec, "HTMLSourceElement", "media");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setMedia(nativeValue);
 }

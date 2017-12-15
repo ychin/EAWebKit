@@ -27,7 +27,6 @@
 
 #include "ElementIterator.h"
 #include "HTMLFieldSetElement.h"
-#include "HTMLFormControlElement.h"
 #include "HTMLNames.h"
 
 namespace WebCore {
@@ -41,21 +40,21 @@ inline HTMLLegendElement::HTMLLegendElement(const QualifiedName& tagName, Docume
     ASSERT(hasTagName(legendTag));
 }
 
-PassRefPtr<HTMLLegendElement> HTMLLegendElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLLegendElement> HTMLLegendElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLLegendElement(tagName, document));
+    return adoptRef(*new HTMLLegendElement(tagName, document));
 }
 
 HTMLFormControlElement* HTMLLegendElement::associatedControl()
 {
     // Check if there's a fieldset belonging to this legend.
-    auto enclosingFieldset = ancestorsOfType<HTMLFieldSetElement>(this).first();
+    auto enclosingFieldset = ancestorsOfType<HTMLFieldSetElement>(*this).first();
     if (!enclosingFieldset)
         return nullptr;
 
     // Find first form element inside the fieldset that is not a legend element.
     // FIXME: Should we consider tabindex?
-    return descendantsOfType<HTMLFormControlElement>(enclosingFieldset).first();
+    return descendantsOfType<HTMLFormControlElement>(*enclosingFieldset).first();
 }
 
 void HTMLLegendElement::focus(bool, FocusDirection direction)
@@ -80,10 +79,10 @@ HTMLFormElement* HTMLLegendElement::virtualForm() const
     // its parent, then the form attribute must return the same value as the
     // form attribute on that fieldset element. Otherwise, it must return null.
     ContainerNode* fieldset = parentNode();
-    if (!fieldset || !fieldset->hasTagName(fieldsetTag))
-        return 0;
+    if (!is<HTMLFieldSetElement>(fieldset))
+        return nullptr;
 
-    return static_cast<HTMLFieldSetElement*>(fieldset)->form();
+    return downcast<HTMLFieldSetElement>(*fieldset).form();
 }
     
 } // namespace

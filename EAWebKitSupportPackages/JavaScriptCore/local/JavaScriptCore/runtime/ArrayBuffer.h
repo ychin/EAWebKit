@@ -96,7 +96,7 @@ public:
     static inline PassRefPtr<ArrayBuffer> create(ArrayBufferContents&);
     static inline PassRefPtr<ArrayBuffer> createAdopted(const void* data, unsigned byteLength);
 
-    // Only for use by Uint8ClampedArray::createUninitialized.
+    // Only for use by Uint8ClampedArray::createUninitialized and SharedBuffer::createArrayBuffer.
     static inline PassRefPtr<ArrayBuffer> createUninitialized(unsigned numElements, unsigned elementByteSize);
 
     inline void* data();
@@ -160,6 +160,7 @@ PassRefPtr<ArrayBuffer> ArrayBuffer::create(const void* source, unsigned byteLen
     if (!contents.m_data)
         return 0;
     RefPtr<ArrayBuffer> buffer = adoptRef(new ArrayBuffer(contents));
+    ASSERT(!byteLength || source);
     memcpy(buffer->data(), source, byteLength);
     return buffer.release();
 }

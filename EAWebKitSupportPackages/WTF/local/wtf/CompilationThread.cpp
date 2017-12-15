@@ -27,26 +27,20 @@
 #include "CompilationThread.h"
 
 #include "StdLibExtras.h"
-#include "Threading.h"
 #include "ThreadSpecific.h"
+#include "Threading.h"
+#include <mutex>
 
 namespace WTF {
 
 static ThreadSpecific<bool>* s_isCompilationThread;
-#if USE(PTHREADS)
-static pthread_once_t initializeCompilationThreadsKeyOnce = PTHREAD_ONCE_INIT;
-#endif
-
-static void initializeCompilationThreadsOnce()
-{
-    s_isCompilationThread = new ThreadSpecific<bool>();
-}
 
 static void initializeCompilationThreads()
 {
-#if USE(PTHREADS)
-    pthread_once(&initializeCompilationThreadsKeyOnce, initializeCompilationThreadsOnce);
-#endif
+    static std::once_flag initializeCompilationThreadsOnceFlag;
+    std::call_once(initializeCompilationThreadsOnceFlag, []{
+        s_isCompilationThread = new ThreadSpecific<bool>();
+    });
 }
 
 bool isCompilationThread()

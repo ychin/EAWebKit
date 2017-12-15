@@ -21,32 +21,31 @@
 #ifndef JSSVGStringList_h
 #define JSSVGStringList_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAnimatedListPropertyTearOff.h"
 #include "SVGElement.h"
 #include "SVGStringList.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGStringList : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGStringList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGStaticListPropertyTearOff<SVGStringList> > impl)
+    static JSSVGStringList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGStaticListPropertyTearOff<SVGStringList>>&& impl)
     {
-        JSSVGStringList* ptr = new (NotNull, JSC::allocateCell<JSSVGStringList>(globalObject->vm().heap)) JSSVGStringList(structure, globalObject, impl);
+        JSSVGStringList* ptr = new (NotNull, JSC::allocateCell<JSSVGStringList>(globalObject->vm().heap)) JSSVGStringList(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGStaticListPropertyTearOff<SVGStringList>* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSSVGStringList();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,23 +54,22 @@ public:
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
-    SVGStaticListPropertyTearOff<SVGStringList> & impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    SVGStaticListPropertyTearOff<SVGStringList>& impl() const { return *m_impl; }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
-    SVGStaticListPropertyTearOff<SVGStringList> * m_impl;
+    SVGStaticListPropertyTearOff<SVGStringList>* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSSVGStringList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGStaticListPropertyTearOff<SVGStringList> >);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGStringList(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGStaticListPropertyTearOff<SVGStringList>>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGStringListOwner : public JSC::WeakHandleOwner {
@@ -80,84 +78,16 @@ public:
     virtual void finalize(JSC::Handle<JSC::Unknown>, void* context);
 };
 
-inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGStaticListPropertyTearOff<SVGStringList> *)
+inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGStaticListPropertyTearOff<SVGStringList>*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGStringListOwner, jsSVGStringListOwner, ());
-    return &jsSVGStringListOwner;
+    static NeverDestroyed<JSSVGStringListOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SVGStaticListPropertyTearOff<SVGStringList> *)
-{
-    return &world;
-}
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGStaticListPropertyTearOff<SVGStringList>*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGStaticListPropertyTearOff<SVGStringList>& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGStaticListPropertyTearOff<SVGStringList> *);
-SVGStaticListPropertyTearOff<SVGStringList> * toSVGStringList(JSC::JSValue);
-
-class JSSVGStringListPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGStringListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGStringListPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGStringListPrototype>(vm.heap)) JSSVGStringListPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGStringListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGStringListConstructor : public DOMConstructorObject {
-private:
-    JSSVGStringListConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGStringListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGStringListConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGStringListConstructor>(vm.heap)) JSSVGStringListConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionClear(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionInitialize(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionGetItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionInsertItemBefore(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionReplaceItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionRemoveItem(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGStringListPrototypeFunctionAppendItem(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsSVGStringListNumberOfItems(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGStringListConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -521,7 +521,7 @@ bool SetHeaderMapWrapperFromText(const char* pHeaderMapText, uint32_t textSize, 
 			else
 			{
 				//if(sKey.length() < kMaxKeySize)
-					sKey += (wchar_t)(c);
+					sKey += (char16_t)(c);
 			}
 			break;
 

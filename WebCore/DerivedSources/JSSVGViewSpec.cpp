@@ -19,11 +19,11 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGViewSpec.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedPreserveAspectRatio.h"
+#include "JSSVGAnimatedRect.h"
 #include "JSSVGElement.h"
 #include "JSSVGTransformList.h"
 #include "SVGElement.h"
@@ -33,46 +33,71 @@
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedPreserveAspectRatio.h"
-#include "JSSVGAnimatedRect.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGViewSpecTableValues[] =
-{
-    { "transform", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecTransform), (intptr_t)0 },
-    { "viewTarget", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewTarget), (intptr_t)0 },
-    { "viewBoxString", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewBoxString), (intptr_t)0 },
-    { "preserveAspectRatioString", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecPreserveAspectRatioString), (intptr_t)0 },
-    { "transformString", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecTransformString), (intptr_t)0 },
-    { "viewTargetString", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewTargetString), (intptr_t)0 },
-    { "zoomAndPan", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecZoomAndPan), (intptr_t)setJSSVGViewSpecZoomAndPan },
-#if ENABLE(SVG)
-    { "viewBox", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewBox), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "preserveAspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecPreserveAspectRatio), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGViewSpecTransform(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecViewTarget(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecViewBoxString(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecPreserveAspectRatioString(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecTransformString(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecViewTargetString(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecZoomAndPan(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGViewSpecZoomAndPan(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGViewSpecViewBox(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecPreserveAspectRatio(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGViewSpecConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGViewSpecPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGViewSpecPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGViewSpecPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGViewSpecPrototype>(vm.heap)) JSSVGViewSpecPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGViewSpecPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGViewSpecTable = { 33, 31, JSSVGViewSpecTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGViewSpecConstructor : public DOMConstructorObject {
+private:
+    JSSVGViewSpecConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGViewSpecConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGViewSpecConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGViewSpecConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGViewSpecConstructor>(vm.heap)) JSSVGViewSpecConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGViewSpecConstructorTable = { 1, 0, JSSVGViewSpecConstructorTableValues, 0 };
-const ClassInfo JSSVGViewSpecConstructor::s_info = { "SVGViewSpecConstructor", &Base::s_info, &JSSVGViewSpecConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGViewSpecConstructor) };
+const ClassInfo JSSVGViewSpecConstructor::s_info = { "SVGViewSpecConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGViewSpecConstructor) };
 
 JSSVGViewSpecConstructor::JSSVGViewSpecConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -83,47 +108,51 @@ void JSSVGViewSpecConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGViewSpecPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGViewSpecConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGViewSpecConstructor, JSDOMWrapper>(exec, JSSVGViewSpecConstructorTable, jsCast<JSSVGViewSpecConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGViewSpec::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGViewSpec"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGViewSpecPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "transform", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecTransform), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "viewTarget", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewTarget), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "viewBoxString", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewBoxString), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "preserveAspectRatioString", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecPreserveAspectRatioString), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "transformString", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecTransformString), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "viewTargetString", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewTargetString), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "zoomAndPan", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecZoomAndPan), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGViewSpecZoomAndPan) },
+    { "viewBox", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewBox), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "preserveAspectRatio", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecPreserveAspectRatio), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGViewSpecPrototypeTable = { 1, 0, JSSVGViewSpecPrototypeTableValues, 0 };
-const ClassInfo JSSVGViewSpecPrototype::s_info = { "SVGViewSpecPrototype", &Base::s_info, &JSSVGViewSpecPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGViewSpecPrototype) };
+const ClassInfo JSSVGViewSpecPrototype::s_info = { "SVGViewSpecPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGViewSpecPrototype) };
 
-JSObject* JSSVGViewSpecPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGViewSpec>(vm, globalObject);
-}
-
-const ClassInfo JSSVGViewSpec::s_info = { "SVGViewSpec", &Base::s_info, &JSSVGViewSpecTable, 0 , CREATE_METHOD_TABLE(JSSVGViewSpec) };
-
-JSSVGViewSpec::JSSVGViewSpec(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGViewSpec> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSVGViewSpec::finishCreation(VM& vm)
+void JSSVGViewSpecPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGViewSpecPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGViewSpec::s_info = { "SVGViewSpec", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGViewSpec) };
+
+JSSVGViewSpec::JSSVGViewSpec(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGViewSpec>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSVGViewSpec::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSVGViewSpecPrototype::create(vm, globalObject, JSSVGViewSpecPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSVGViewSpec::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSVGViewSpec>(vm, globalObject);
 }
 
 void JSSVGViewSpec::destroy(JSC::JSCell* cell)
@@ -134,133 +163,188 @@ void JSSVGViewSpec::destroy(JSC::JSCell* cell)
 
 JSSVGViewSpec::~JSSVGViewSpec()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSSVGViewSpec::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsSVGViewSpecTransform(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* thisObject = jsCast<JSSVGViewSpec*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGViewSpec, Base>(exec, JSSVGViewSpecTable, thisObject, propertyName, slot);
-}
-
-JSValue jsSVGViewSpecTransform(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(static_cast<SVGTransformListPropertyTearOff*>(impl.transform())));
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "transform");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "transform");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(static_cast<SVGTransformListPropertyTearOff*>(impl.transform().get())));
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGViewSpecViewTarget(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecViewTarget(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "viewTarget");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "viewTarget");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(static_cast<SVGElement*>(impl.viewTarget())));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGViewSpecViewBoxString(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecViewBoxString(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "viewBoxString");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "viewBoxString");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.viewBoxString());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGViewSpecPreserveAspectRatioString(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecPreserveAspectRatioString(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "preserveAspectRatioString");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "preserveAspectRatioString");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.preserveAspectRatioString());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGViewSpecTransformString(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecTransformString(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "transformString");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "transformString");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.transformString());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGViewSpecViewTargetString(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecViewTargetString(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "viewTargetString");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "viewTargetString");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.viewTargetString());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGViewSpecZoomAndPan(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecZoomAndPan(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "zoomAndPan");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "zoomAndPan");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.zoomAndPan());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGViewSpecViewBox(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecViewBox(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "viewBox");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "viewBox");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedRect> obj = impl.viewBoxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGViewSpecPreserveAspectRatio(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecPreserveAspectRatio(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGViewSpec", "preserveAspectRatio");
+        return throwGetterTypeError(*exec, "SVGViewSpec", "preserveAspectRatio");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedPreserveAspectRatio> obj = impl.preserveAspectRatioAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGViewSpecConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGViewSpecConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGViewSpec* domObject = jsCast<JSSVGViewSpec*>(asObject(slotBase));
-    return JSSVGViewSpec::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGViewSpecPrototype* domObject = jsDynamicCast<JSSVGViewSpecPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGViewSpec::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGViewSpec::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGViewSpecZoomAndPan(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGViewSpec* thisObject = jsCast<JSSVGViewSpec*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGViewSpec, Base>(exec, propertyName, value, JSSVGViewSpecTable, thisObject, slot);
-}
-
-void setJSSVGViewSpecZoomAndPan(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGViewSpec* castedThis = jsCast<JSSVGViewSpec*>(thisObject);
-    SVGViewSpec& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGViewSpecPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGViewSpec", "zoomAndPan");
+        else
+            throwSetterTypeError(*exec, "SVGViewSpec", "zoomAndPan");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    unsigned short nativeValue(toUInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    uint16_t nativeValue = toUInt16(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setZoomAndPan(nativeValue, ec);
     setDOMException(exec, ec);
@@ -272,28 +356,18 @@ JSValue JSSVGViewSpec::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSSVGViewSpecConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSSVGViewSpec* jsSVGViewSpec)
-{
-    if (jsSVGViewSpec->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSSVGViewSpecOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSVGViewSpec* jsSVGViewSpec = jsCast<JSSVGViewSpec*>(handle.get().asCell());
-    if (!isObservable(jsSVGViewSpec))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSVGViewSpecOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSVGViewSpec* jsSVGViewSpec = jsCast<JSSVGViewSpec*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSVGViewSpec = jsCast<JSSVGViewSpec*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSVGViewSpec->impl(), jsSVGViewSpec);
-    jsSVGViewSpec->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -304,11 +378,11 @@ extern "C" { extern void (*const __identifier("??_7SVGViewSpec@WebCore@@6B@")[])
 extern "C" { extern void* _ZTVN7WebCore11SVGViewSpecE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGViewSpec* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SVGViewSpec* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSVGViewSpec>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSVGViewSpec>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -329,15 +403,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGView
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<SVGViewSpec>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSVGViewSpec>(exec, globalObject, impl);
+    return createNewWrapper<JSSVGViewSpec>(globalObject, impl);
 }
 
-SVGViewSpec* toSVGViewSpec(JSC::JSValue value)
+SVGViewSpec* JSSVGViewSpec::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSVGViewSpec::info()) ? &jsCast<JSSVGViewSpec*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSVGViewSpec*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(SVG)

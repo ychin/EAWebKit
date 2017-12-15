@@ -33,6 +33,9 @@
 
 namespace WebCore {
 
+class KeyedDecoder;
+class KeyedEncoder;
+
 enum IDBKeyPathParseError {
     IDBKeyPathParseErrorNone,
     IDBKeyPathParseErrorStart,
@@ -45,8 +48,8 @@ void IDBParseKeyPath(const String&, Vector<String>&, IDBKeyPathParseError&);
 class IDBKeyPath {
 public:
     IDBKeyPath() : m_type(NullType) { }
-    explicit IDBKeyPath(const String&);
-    explicit IDBKeyPath(const Vector<String>& array);
+    WEBCORE_EXPORT explicit IDBKeyPath(const String&);
+    WEBCORE_EXPORT explicit IDBKeyPath(const Vector<String>& array);
 
     enum Type {
         NullType = 0,
@@ -71,6 +74,11 @@ public:
     bool isNull() const { return m_type == NullType; }
     bool isValid() const;
     bool operator==(const IDBKeyPath& other) const;
+
+    IDBKeyPath isolatedCopy() const;
+
+    WEBCORE_EXPORT void encode(KeyedEncoder&) const;
+    WEBCORE_EXPORT static bool decode(KeyedDecoder&, IDBKeyPath&);
 
 private:
     Type m_type;

@@ -25,7 +25,6 @@
 #include "JSRTCDataChannel.h"
 
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSBlob.h"
 #include "JSDOMBinding.h"
@@ -41,71 +40,110 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSRTCDataChannelTableValues[] =
-{
-    { "label", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelLabel), (intptr_t)0 },
-    { "ordered", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOrdered), (intptr_t)0 },
-    { "maxRetransmitTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelMaxRetransmitTime), (intptr_t)0 },
-    { "maxRetransmits", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelMaxRetransmits), (intptr_t)0 },
-    { "protocol", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelProtocol), (intptr_t)0 },
-    { "negotiated", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelNegotiated), (intptr_t)0 },
-    { "id", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelId), (intptr_t)0 },
-    { "readyState", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelReadyState), (intptr_t)0 },
-    { "bufferedAmount", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelBufferedAmount), (intptr_t)0 },
-    { "binaryType", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelBinaryType), (intptr_t)setJSRTCDataChannelBinaryType },
-    { "onopen", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnopen), (intptr_t)setJSRTCDataChannelOnopen },
-    { "onerror", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnerror), (intptr_t)setJSRTCDataChannelOnerror },
-    { "onclose", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnclose), (intptr_t)setJSRTCDataChannelOnclose },
-    { "onmessage", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnmessage), (intptr_t)setJSRTCDataChannelOnmessage },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionClose(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsRTCDataChannelLabel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelOrdered(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelMaxRetransmitTime(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelMaxRetransmits(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelProtocol(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelNegotiated(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelReadyState(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelBufferedAmount(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDataChannelBinaryType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRTCDataChannelBinaryType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsRTCDataChannelOnopen(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRTCDataChannelOnopen(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsRTCDataChannelOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRTCDataChannelOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsRTCDataChannelOnclose(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRTCDataChannelOnclose(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsRTCDataChannelOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRTCDataChannelOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSRTCDataChannelPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRTCDataChannelPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRTCDataChannelPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDataChannelPrototype>(vm.heap)) JSRTCDataChannelPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRTCDataChannelPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSRTCDataChannelTable = { 35, 31, JSRTCDataChannelTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSRTCDataChannelPrototypeTableValues[] =
 {
-    { "send", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionSend), (intptr_t)1 },
-    { "close", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionClose), (intptr_t)0 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "label", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelLabel), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "ordered", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOrdered), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "maxRetransmitTime", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelMaxRetransmitTime), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "maxRetransmits", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelMaxRetransmits), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "protocol", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelProtocol), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "negotiated", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelNegotiated), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "id", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "readyState", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelReadyState), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "bufferedAmount", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelBufferedAmount), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "binaryType", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelBinaryType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRTCDataChannelBinaryType) },
+    { "onopen", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnopen), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRTCDataChannelOnopen) },
+    { "onerror", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnerror), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRTCDataChannelOnerror) },
+    { "onclose", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnclose), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRTCDataChannelOnclose) },
+    { "onmessage", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDataChannelOnmessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRTCDataChannelOnmessage) },
+    { "send", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionSend), (intptr_t) (1) },
+    { "close", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionClose), (intptr_t) (0) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDataChannelPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSRTCDataChannelPrototypeTable = { 16, 15, JSRTCDataChannelPrototypeTableValues, 0 };
-const ClassInfo JSRTCDataChannelPrototype::s_info = { "RTCDataChannelPrototype", &Base::s_info, &JSRTCDataChannelPrototypeTable, 0, CREATE_METHOD_TABLE(JSRTCDataChannelPrototype) };
+const ClassInfo JSRTCDataChannelPrototype::s_info = { "RTCDataChannelPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDataChannelPrototype) };
 
-JSObject* JSRTCDataChannelPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRTCDataChannel>(vm, globalObject);
-}
-
-bool JSRTCDataChannelPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSRTCDataChannelPrototype* thisObject = jsCast<JSRTCDataChannelPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSRTCDataChannelPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSRTCDataChannel::s_info = { "RTCDataChannel", &Base::s_info, &JSRTCDataChannelTable, 0 , CREATE_METHOD_TABLE(JSRTCDataChannel) };
-
-JSRTCDataChannel::JSRTCDataChannel(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDataChannel> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSRTCDataChannel::finishCreation(VM& vm)
+void JSRTCDataChannelPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSRTCDataChannelPrototypeTableValues, *this);
+}
+
+const ClassInfo JSRTCDataChannel::s_info = { "RTCDataChannel", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDataChannel) };
+
+JSRTCDataChannel::JSRTCDataChannel(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDataChannel>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSRTCDataChannel::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSRTCDataChannelPrototype::create(vm, globalObject, JSRTCDataChannelPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSRTCDataChannel::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSRTCDataChannel>(vm, globalObject);
 }
 
 void JSRTCDataChannel::destroy(JSC::JSCell* cell)
@@ -116,250 +154,342 @@ void JSRTCDataChannel::destroy(JSC::JSCell* cell)
 
 JSRTCDataChannel::~JSRTCDataChannel()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSRTCDataChannel::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsRTCDataChannelLabel(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* thisObject = jsCast<JSRTCDataChannel*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSRTCDataChannel, Base>(exec, JSRTCDataChannelTable, thisObject, propertyName, slot);
-}
-
-JSValue jsRTCDataChannelLabel(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "label");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "label");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.label());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelOrdered(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelOrdered(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "ordered");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "ordered");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.ordered());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelMaxRetransmitTime(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelMaxRetransmitTime(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "maxRetransmitTime");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "maxRetransmitTime");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.maxRetransmitTime());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelMaxRetransmits(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelMaxRetransmits(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "maxRetransmits");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "maxRetransmits");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.maxRetransmits());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelProtocol(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelProtocol(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "protocol");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "protocol");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.protocol());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelNegotiated(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelNegotiated(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "negotiated");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "negotiated");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.negotiated());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "id");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "id");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.id());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelReadyState(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelReadyState(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "readyState");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "readyState");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.readyState());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelBufferedAmount(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelBufferedAmount(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "bufferedAmount");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "bufferedAmount");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.bufferedAmount());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelBinaryType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelBinaryType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "binaryType");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "binaryType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.binaryType());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRTCDataChannelOnopen(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelOnopen(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
-    if (EventListener* listener = impl.onopen()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "onopen");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "onopen");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().openEvent));
 }
 
 
-JSValue jsRTCDataChannelOnerror(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelOnerror(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
-    if (EventListener* listener = impl.onerror()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "onerror");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "onerror");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().errorEvent));
 }
 
 
-JSValue jsRTCDataChannelOnclose(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelOnclose(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
-    if (EventListener* listener = impl.onclose()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "onclose");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "onclose");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().closeEvent));
 }
 
 
-JSValue jsRTCDataChannelOnmessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDataChannelOnmessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDataChannel& impl = castedThis->impl();
-    if (EventListener* listener = impl.onmessage()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDataChannel", "onmessage");
+        return throwGetterTypeError(*exec, "RTCDataChannel", "onmessage");
     }
-    return jsNull();
-}
-
-
-void JSRTCDataChannel::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSRTCDataChannel* thisObject = jsCast<JSRTCDataChannel*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSRTCDataChannel, Base>(exec, propertyName, value, JSRTCDataChannelTable, thisObject, slot);
-}
-
-void setJSRTCDataChannelBinaryType(ExecState* exec, JSObject* thisObject, JSValue value)
-{
     UNUSED_PARAM(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(thisObject);
-    RTCDataChannel& impl = castedThis->impl();
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().messageEvent));
+}
+
+
+void setJSRTCDataChannelBinaryType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "RTCDataChannel", "binaryType");
+        else
+            throwSetterTypeError(*exec, "RTCDataChannel", "binaryType");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBinaryType(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSRTCDataChannelOnopen(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSRTCDataChannelOnopen(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(thisObject);
-    RTCDataChannel& impl = castedThis->impl();
-    impl.setOnopen(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "RTCDataChannel", "onopen");
+        else
+            throwSetterTypeError(*exec, "RTCDataChannel", "onopen");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().openEvent, value);
 }
 
 
-void setJSRTCDataChannelOnerror(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSRTCDataChannelOnerror(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(thisObject);
-    RTCDataChannel& impl = castedThis->impl();
-    impl.setOnerror(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "RTCDataChannel", "onerror");
+        else
+            throwSetterTypeError(*exec, "RTCDataChannel", "onerror");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().errorEvent, value);
 }
 
 
-void setJSRTCDataChannelOnclose(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSRTCDataChannelOnclose(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(thisObject);
-    RTCDataChannel& impl = castedThis->impl();
-    impl.setOnclose(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "RTCDataChannel", "onclose");
+        else
+            throwSetterTypeError(*exec, "RTCDataChannel", "onclose");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().closeEvent, value);
 }
 
 
-void setJSRTCDataChannelOnmessage(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSRTCDataChannelOnmessage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(thisObject);
-    RTCDataChannel& impl = castedThis->impl();
-    impl.setOnmessage(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDataChannelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "RTCDataChannel", "onmessage");
+        else
+            throwSetterTypeError(*exec, "RTCDataChannel", "onmessage");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().messageEvent, value);
 }
 
 
 static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend1(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    ArrayBuffer* data(toArrayBuffer(exec->argument(0)));
-    if (exec->hadException())
+    ArrayBuffer* data = toArrayBuffer(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data, ec);
     setDOMException(exec, ec);
@@ -368,17 +498,17 @@ static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend1(ExecS
 
 static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend2(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    RefPtr<ArrayBufferView> data(toArrayBufferView(exec->argument(0)));
-    if (exec->hadException())
+    RefPtr<ArrayBufferView> data = toArrayBufferView(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data.get(), ec);
     setDOMException(exec, ec);
@@ -387,17 +517,17 @@ static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend2(ExecS
 
 static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend3(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Blob* data(toBlob(exec->argument(0)));
-    if (exec->hadException())
+    Blob* data = JSBlob::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data, ec);
     setDOMException(exec, ec);
@@ -406,17 +536,17 @@ static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend3(ExecS
 
 static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend4(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& data(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String data = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data, ec);
     setDOMException(exec, ec);
@@ -425,13 +555,13 @@ static EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend4(ExecS
 
 EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend(ExecState* exec)
 {
-    size_t argsCount = exec->argumentCount();
+    size_t argsCount = std::min<size_t>(1, exec->argumentCount());
     JSValue arg0(exec->argument(0));
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSArrayBuffer::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSArrayBuffer::info())))))
         return jsRTCDataChannelPrototypeFunctionSend1(exec);
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSArrayBufferView::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSArrayBufferView::info())))))
         return jsRTCDataChannelPrototypeFunctionSend2(exec);
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSBlob::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSBlob::info())))))
         return jsRTCDataChannelPrototypeFunctionSend3(exec);
     if (argsCount == 1)
         return jsRTCDataChannelPrototypeFunctionSend4(exec);
@@ -442,102 +572,88 @@ EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionSend(ExecState* ex
 
 EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionClose(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "close");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.close();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsRTCDataChannelPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDataChannel::info()))
-        return throwVMTypeError(exec);
-    JSRTCDataChannel* castedThis = jsCast<JSRTCDataChannel*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDataChannel* castedThis = jsDynamicCast<JSRTCDataChannel*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDataChannel", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDataChannel::info());
-    RTCDataChannel& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* event(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 void JSRTCDataChannel::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSRTCDataChannel* thisObject = jsCast<JSRTCDataChannel*>(cell);
+    auto* thisObject = jsCast<JSRTCDataChannel*>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
     Base::visitChildren(thisObject, visitor);
     thisObject->impl().visitJSEventListeners(visitor);
 }
 
-static inline bool isObservable(JSRTCDataChannel* jsRTCDataChannel)
-{
-    if (jsRTCDataChannel->hasCustomProperties())
-        return true;
-    if (jsRTCDataChannel->impl().hasEventListeners())
-        return true;
-    return false;
-}
-
 bool JSRTCDataChannelOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSRTCDataChannel* jsRTCDataChannel = jsCast<JSRTCDataChannel*>(handle.get().asCell());
+    auto* jsRTCDataChannel = jsCast<JSRTCDataChannel*>(handle.slot()->asCell());
     if (jsRTCDataChannel->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsRTCDataChannel))
-        return false;
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSRTCDataChannelOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSRTCDataChannel* jsRTCDataChannel = jsCast<JSRTCDataChannel*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsRTCDataChannel = jsCast<JSRTCDataChannel*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsRTCDataChannel->impl(), jsRTCDataChannel);
-    jsRTCDataChannel->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -548,11 +664,11 @@ extern "C" { extern void (*const __identifier("??_7RTCDataChannel@WebCore@@6B@")
 extern "C" { extern void* _ZTVN7WebCore14RTCDataChannelE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCDataChannel* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, RTCDataChannel* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSRTCDataChannel>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSRTCDataChannel>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -573,13 +689,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCData
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<RTCDataChannel>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSRTCDataChannel>(exec, globalObject, impl);
+    return createNewWrapper<JSRTCDataChannel>(globalObject, impl);
 }
 
-RTCDataChannel* toRTCDataChannel(JSC::JSValue value)
+RTCDataChannel* JSRTCDataChannel::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSRTCDataChannel::info()) ? &jsCast<JSRTCDataChannel*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSRTCDataChannel*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

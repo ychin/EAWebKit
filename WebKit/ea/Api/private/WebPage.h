@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2007 Staikos Computing Services Inc.
-	Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@ namespace WebCore
     class ChromeClientEA;
     class EditorClientEA;
     class FrameLoaderClientEA;
+	class ProgressTrackerClientEA;
     class InspectorClientEA;
     class InspectorFrontendClientEA;
     class NotificationPresenterClientEA;
@@ -47,9 +48,7 @@ namespace WebCore
 #include "IntSize.h"
 #include "IntRect.h"
 
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
-	#include "InspectorFrontendChannel.h"
-#endif
+#include "InspectorForwarding.h"
 
 namespace EA { namespace WebKit
 {
@@ -61,9 +60,7 @@ class ViewportAttributesPrivate;
 class WebInspector;
 
 class WebPage 
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
     : public WebCore::InspectorFrontendChannel
-#endif
 {
 public:
 	enum NavigationType 
@@ -183,19 +180,15 @@ public:
     WebInspector *GetInspector(void);
     void DestroyInspector(void);
 
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
     void remoteFrontendConnected();
     void remoteFrontendDisconnected();
     void dispatchMessageFromRemoteFrontend(const String& message);
     virtual bool sendMessageToFrontend(const String& message);
-#endif
 
 
 private:
 	WebPagePrivate *d;
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
     int32_t mRemoteInspectorId;
-#endif
 	friend class WebFrame;
 	friend class WebPagePrivate;
 	friend class View;
@@ -206,6 +199,7 @@ private:
 	friend class WebCore::ChromeClientEA;
 	friend class WebCore::EditorClientEA;
 	friend class WebCore::FrameLoaderClientEA;
+	friend class WebCore::ProgressTrackerClientEA;
 	friend class WebCore::ResourceHandle;
 	friend class DumpRenderTreeSupportEA;
     friend class WebCore::InspectorFrontendClientEA;

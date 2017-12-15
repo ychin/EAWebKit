@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSPositionErrorCallback : public PositionErrorCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSPositionErrorCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSPositionErrorCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSPositionErrorCallback(callback, globalObject));
+        return adoptRef(*new JSPositionErrorCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

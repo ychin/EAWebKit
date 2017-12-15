@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Oliver Hunt <ojh16@student.canterbury.ac.nz>
- * Copyright (C) 2006 Apple Computer Inc.
+ * Copyright (C) 2006 Apple Inc.
  * Copyright (C) 2007 Nikolas Zimmermann <zimmermann@kde.org>
  * Copyright (C) 2008 Rob Buis <buis@kde.org>
  * Copyright (C) Research In Motion Limited 2010. All rights reserved.
@@ -22,8 +22,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "RenderSVGInlineText.h"
 
 #include "CSSFontSelector.h"
@@ -70,15 +68,20 @@ static String applySVGWhitespaceRules(const String& string, bool preserveWhiteSp
 RenderSVGInlineText::RenderSVGInlineText(Text& textNode, const String& string)
     : RenderText(textNode, applySVGWhitespaceRules(string, false))
     , m_scalingFactor(1)
-    , m_layoutAttributes(this)
+    , m_layoutAttributes(*this)
 {
 }
 
-void RenderSVGInlineText::setTextInternal(const String& text)
+String RenderSVGInlineText::originalText() const
 {
-    RenderText::setTextInternal(text);
-    if (RenderSVGText* textRenderer = RenderSVGText::locateRenderSVGTextAncestor(this))
-        textRenderer->subtreeTextDidChange(this);
+    return textNode().data();
+}
+
+void RenderSVGInlineText::setRenderedText(const String& text)
+{
+    RenderText::setRenderedText(text);
+    if (auto* textAncestor = RenderSVGText::locateRenderSVGTextAncestor(*this))
+        textAncestor->subtreeTextDidChange(this);
 }
 
 void RenderSVGInlineText::styleDidChange(StyleDifference diff, const RenderStyle* oldStyle)
@@ -86,7 +89,7 @@ void RenderSVGInlineText::styleDidChange(StyleDifference diff, const RenderStyle
     RenderText::styleDidChange(diff, oldStyle);
     updateScaledFont();
 
-    bool newPreserves = style() ? style()->whiteSpace() == PRE : false;
+    bool newPreserves = style().whiteSpace() == PRE;
     bool oldPreserves = oldStyle ? oldStyle->whiteSpace() == PRE : false;
     if (oldPreserves && !newPreserves) {
         setText(applySVGWhitespaceRules(originalText(), false), true);
@@ -102,35 +105,35 @@ void RenderSVGInlineText::styleDidChange(StyleDifference diff, const RenderStyle
         return;
 
     // The text metrics may be influenced by style changes.
-    if (RenderSVGText* textRenderer = RenderSVGText::locateRenderSVGTextAncestor(this))
-        textRenderer->subtreeStyleDidChange(this);
+    if (auto* textAncestor = RenderSVGText::locateRenderSVGTextAncestor(*this))
+        textAncestor->subtreeStyleDidChange(this);
 }
 
-InlineTextBox* RenderSVGInlineText::createTextBox()
+std::unique_ptr<InlineTextBox> RenderSVGInlineText::createTextBox()
 {
-    InlineTextBox* box = new (renderArena()) SVGInlineTextBox(*this);
+    auto box = std::make_unique<SVGInlineTextBox>(*this);
     box->setHasVirtualLogicalHeight();
-    return box;
+    return WTF::move(box);
 }
 
 LayoutRect RenderSVGInlineText::localCaretRect(InlineBox* box, int caretOffset, LayoutUnit*)
 {
-    if (!box || !box->isInlineTextBox())
+    if (!is<InlineTextBox>(box))
         return LayoutRect();
 
-    InlineTextBox* textBox = static_cast<InlineTextBox*>(box);
-    if (static_cast<unsigned>(caretOffset) < textBox->start() || static_cast<unsigned>(caretOffset) > textBox->start() + textBox->len())
+    auto& textBox = downcast<InlineTextBox>(*box);
+    if (static_cast<unsigned>(caretOffset) < textBox.start() || static_cast<unsigned>(caretOffset) > textBox.start() + textBox.len())
         return LayoutRect();
 
     // Use the edge of the selection rect to determine the caret rect.
-    if (static_cast<unsigned>(caretOffset) < textBox->start() + textBox->len()) {
-        LayoutRect rect = textBox->localSelectionRect(caretOffset, caretOffset + 1);
-        LayoutUnit x = box->isLeftToRightDirection() ? rect.x() : rect.maxX();
+    if (static_cast<unsigned>(caretOffset) < textBox.start() + textBox.len()) {
+        LayoutRect rect = textBox.localSelectionRect(caretOffset, caretOffset + 1);
+        LayoutUnit x = textBox.isLeftToRightDirection() ? rect.x() : rect.maxX();
         return LayoutRect(x, rect.y(), caretWidth, rect.height());
     }
 
-    LayoutRect rect = textBox->localSelectionRect(caretOffset - 1, caretOffset);
-    LayoutUnit x = box->isLeftToRightDirection() ? rect.maxX() : rect.x();
+    LayoutRect rect = textBox.localSelectionRect(caretOffset - 1, caretOffset);
+    LayoutUnit x = textBox.isLeftToRightDirection() ? rect.maxX() : rect.x();
     return LayoutRect(x, rect.y(), caretWidth, rect.height());
 }
 
@@ -163,7 +166,7 @@ bool RenderSVGInlineText::characterStartsNewTextChunk(int position) const
     return it->value.x != SVGTextLayoutAttributes::emptyValue() || it->value.y != SVGTextLayoutAttributes::emptyValue();
 }
 
-VisiblePosition RenderSVGInlineText::positionForPoint(const LayoutPoint& point)
+VisiblePosition RenderSVGInlineText::positionForPoint(const LayoutPoint& point, const RenderRegion*)
 {
     if (!firstTextBox() || !textLength())
         return createVisiblePosition(0, DOWNSTREAM);
@@ -179,16 +182,16 @@ VisiblePosition RenderSVGInlineText::positionForPoint(const LayoutPoint& point)
 
     float closestDistance = std::numeric_limits<float>::max();
     float closestDistancePosition = 0;
-    const SVGTextFragment* closestDistanceFragment = 0;
-    SVGInlineTextBox* closestDistanceBox = 0;
+    const SVGTextFragment* closestDistanceFragment = nullptr;
+    SVGInlineTextBox* closestDistanceBox = nullptr;
 
     AffineTransform fragmentTransform;
     for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox()) {
-        if (!box->isSVGInlineTextBox())
+        if (!is<SVGInlineTextBox>(*box))
             continue;
 
-        SVGInlineTextBox* textBox = toSVGInlineTextBox(box);
-        Vector<SVGTextFragment>& fragments = textBox->textFragments();
+        auto& textBox = downcast<SVGInlineTextBox>(*box);
+        Vector<SVGTextFragment>& fragments = textBox.textFragments();
 
         unsigned textFragmentsSize = fragments.size();
         for (unsigned i = 0; i < textFragmentsSize; ++i) {
@@ -203,7 +206,7 @@ VisiblePosition RenderSVGInlineText::positionForPoint(const LayoutPoint& point)
 
             if (distance < closestDistance) {
                 closestDistance = distance;
-                closestDistanceBox = textBox;
+                closestDistanceBox = &textBox;
                 closestDistanceFragment = &fragment;
                 closestDistancePosition = fragmentRect.x();
             }
@@ -219,31 +222,26 @@ VisiblePosition RenderSVGInlineText::positionForPoint(const LayoutPoint& point)
 
 void RenderSVGInlineText::updateScaledFont()
 {
-    computeNewScaledFontForStyle(this, style(), m_scalingFactor, m_scaledFont);
+    computeNewScaledFontForStyle(*this, style(), m_scalingFactor, m_scaledFont);
 }
 
-void RenderSVGInlineText::computeNewScaledFontForStyle(RenderObject* renderer, const RenderStyle* style, float& scalingFactor, Font& scaledFont)
+void RenderSVGInlineText::computeNewScaledFontForStyle(const RenderObject& renderer, const RenderStyle& style, float& scalingFactor, FontCascade& scaledFont)
 {
-    ASSERT(style);
-    ASSERT(renderer);
-
     // Alter font-size to the right on-screen value to avoid scaling the glyphs themselves, except when GeometricPrecision is specified
     scalingFactor = SVGRenderingContext::calculateScreenFontSizeScalingFactor(renderer);
-    if (scalingFactor == 1 || !scalingFactor || style->fontDescription().textRenderingMode() == GeometricPrecision) {
+    if (!scalingFactor || style.fontDescription().textRenderingMode() == GeometricPrecision) {
         scalingFactor = 1;
-        scaledFont = style->font();
+        scaledFont = style.fontCascade();
         return;
     }
 
-    FontDescription fontDescription(style->fontDescription());
+    FontDescription fontDescription(style.fontDescription());
 
     // FIXME: We need to better handle the case when we compute very small fonts below (below 1pt).
-    fontDescription.setComputedSize(Style::computedFontSizeFromSpecifiedSizeForSVGInlineText(fontDescription.computedSize(), fontDescription.isAbsoluteSize(), scalingFactor, renderer->document()));
+    fontDescription.setComputedSize(Style::computedFontSizeFromSpecifiedSizeForSVGInlineText(fontDescription.computedSize(), fontDescription.isAbsoluteSize(), scalingFactor, renderer.document()));
 
-    scaledFont = Font(fontDescription, 0, 0);
-    scaledFont.update(renderer->document().ensureStyleResolver().fontSelector());
+    scaledFont = FontCascade(fontDescription, 0, 0);
+    scaledFont.update(&renderer.document().fontSelector());
 }
 
 }
-
-#endif // ENABLE(SVG)

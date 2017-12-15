@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -78,9 +78,8 @@ namespace WebKit
 // Many applications will want to use their own allocator.
 // The allocator needs to be set when the EAWebKit module is initialized.
 
-//Note by Arpit Baldeva: Microsoft _aligned_malloc needs to be coupled with _aligned_free. We have Malloc and MallocAligned and Free but not FreeAligned. 
-// To tackle the problem, I can think of 2 approaches. One is to allocate all the memory aligned internally which is what we do below. 
-// 2nd approach would be to stick a 4 byte magic number with each allocation to figure out if it was aligned or normal allocation.
+// Note Microsoft _aligned_malloc needs to be coupled with _aligned_free. 
+// We just always alloc alligned to keep things consistent.
 
 class DefaultAllocator : public Allocator
 {
@@ -124,6 +123,11 @@ class DefaultAllocator : public Allocator
 		#elif defined(__GNUC__)
 			free(p);
 		#endif
+	}
+
+	void FreeAligned(void* p, size_t size)
+	{
+		Free(p, size);
 	}
 
 	void* Realloc(void* p, size_t size, int /*flags*/)
@@ -216,6 +220,10 @@ class DefaultAllocator : public Allocator
 	void ReleaseDecommitted(void* address, size_t bytes)
 	{
 #if defined(EA_PLATFORM_WINDOWS)
+		// See comment in Decommit(). Similarly, when bytes is 0, we
+		// don't want to release anything. So, don't call VirtualFree() below.
+		if (!bytes)
+			return;
 		// According to http://msdn.microsoft.com/en-us/library/aa366892(VS.85).aspx,
 		// dwSize must be 0 if dwFreeType is MEM_RELEASE.
 		bool result = VirtualFree(address, 0, MEM_RELEASE);
@@ -271,6 +279,10 @@ class DefaultAllocator : public Allocator
 	virtual void ReleaseDecommittedAligned(void* reserveBase, size_t reserveSize, size_t alignment)
 	{
 #if defined(EA_PLATFORM_WINDOWS)
+		// See comment in Decommit(). Similarly, when bytes is 0, we
+		// don't want to release anything. So, don't call VirtualFree() below.
+		if (!reserveSize)
+			return;
 		// According to http://msdn.microsoft.com/en-us/library/aa366892(VS.85).aspx,
 		// dwSize must be 0 if dwFreeType is MEM_RELEASE.
 		bool result = VirtualFree(reserveBase, 0, MEM_RELEASE);
@@ -299,6 +311,14 @@ class DefaultAllocator : public Allocator
 	void Decommit(void* address, size_t bytes)
 	{
 #if defined(EA_PLATFORM_WINDOWS)
+		// According to http://msdn.microsoft.com/en-us/library/aa366892(VS.85).aspx,
+		// bytes (i.e. dwSize) being 0 when dwFreeType is MEM_DECOMMIT means that we'll
+		// decommit the entire region allocated by VirtualAlloc() instead of decommitting
+		// nothing as we would expect. Hence, we should check if bytes is 0 and handle it
+		// appropriately before calling VirtualFree().
+		// See: https://bugs.webkit.org/show_bug.cgi?id=121972.
+		if (!bytes)
+			return;
 		bool result = VirtualFree(address, bytes, MEM_DECOMMIT);
 		(void) result;
 		EAW_ASSERT_MSG(result, "VirtualFree failed");
@@ -402,11 +422,6 @@ TryMallocReturnValue tryFastCalloc(size_t n_elements, size_t element_size)
 	return fastCalloc(n_elements, element_size);
 }
 
-TryMallocReturnValue tryFastRealloc(void* p, size_t n)
-{
-	return fastRealloc(p,n);
-}
-
 void fastFree(void* p)
 {
 	return EA::WebKit::spEAWebKitAllocator->Free(p, 0);
@@ -435,11 +450,19 @@ void fastMallocAllow()
 }
 #endif
 
-
-void* fastMallocAligned(size_t n, size_t alignment, size_t offset, int flags, const char* pName) 
+void* fastAlignedMalloc(size_t alignment, size_t n)
 {
-	return EA::WebKit::spEAWebKitAllocator->MallocAligned(n, alignment, offset, flags, pName);
+	return EA::WebKit::spEAWebKitAllocator->MallocAligned(n, alignment, 0, 0, NULL);
+}
 
+void fastAlignedFree(void* p)
+{
+	return EA::WebKit::spEAWebKitAllocator->Free(p, 0);
+}
+
+void releaseFastMallocFreeMemoryForThisThread()
+{
+    ASSERT(false);
 }
 
 } // namespace WTF

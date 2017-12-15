@@ -21,7 +21,7 @@
 #define GRefPtrGStreamer_h
 #if USE(GSTREAMER)
 
-#include <wtf/gobject/GRefPtr.h>
+#include <wtf/glib/GRefPtr.h>
 
 typedef struct _GstElement GstElement;
 typedef struct _GstPad GstPad;
@@ -31,10 +31,10 @@ typedef struct _GstTask GstTask;
 typedef struct _GstBus GstBus;
 typedef struct _GstElementFactory GstElementFactory;
 typedef struct _GstBuffer GstBuffer;
-#ifdef GST_API_VERSION_1
 typedef struct _GstSample GstSample;
-#endif
+typedef struct _GstTagList GstTagList;
 typedef struct _GstEvent GstEvent;
+typedef struct _GstToc GstToc;
 
 namespace WTF {
 
@@ -70,15 +70,21 @@ template<> GRefPtr<GstBuffer> adoptGRef(GstBuffer* ptr);
 template<> GstBuffer* refGPtr<GstBuffer>(GstBuffer* ptr);
 template<> void derefGPtr<GstBuffer>(GstBuffer* ptr);
 
-#ifdef GST_API_VERSION_1
 template<> GRefPtr<GstSample> adoptGRef(GstSample* ptr);
 template<> GstSample* refGPtr<GstSample>(GstSample* ptr);
 template<> void derefGPtr<GstSample>(GstSample* ptr);
-#endif
+
+template<> GRefPtr<GstTagList> adoptGRef(GstTagList* ptr);
+template<> GstTagList* refGPtr<GstTagList>(GstTagList* ptr);
+template<> void derefGPtr<GstTagList>(GstTagList* ptr);
 
 template<> GRefPtr<GstEvent> adoptGRef(GstEvent* ptr);
 template<> GstEvent* refGPtr<GstEvent>(GstEvent* ptr);
 template<> void derefGPtr<GstEvent>(GstEvent* ptr);
+
+template<> GRefPtr<GstToc> adoptGRef(GstToc* ptr);
+template<> GstToc* refGPtr<GstToc>(GstToc* ptr);
+template<> void derefGPtr<GstToc>(GstToc* ptr);
 }
 
 #endif // USE(GSTREAMER)

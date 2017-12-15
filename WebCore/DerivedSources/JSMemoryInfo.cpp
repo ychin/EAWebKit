@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSMemoryInfo.h"
 
+#include "JSDOMBinding.h"
 #include "MemoryInfo.h"
 #include <wtf/GetPtr.h>
 
@@ -28,48 +29,68 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSMemoryInfoTableValues[] =
-{
-    { "usedJSHeapSize", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMemoryInfoUsedJSHeapSize), (intptr_t)0 },
-    { "totalJSHeapSize", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMemoryInfoTotalJSHeapSize), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsMemoryInfoUsedJSHeapSize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMemoryInfoTotalJSHeapSize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMemoryInfoPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMemoryInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMemoryInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSMemoryInfoPrototype>(vm.heap)) JSMemoryInfoPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMemoryInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMemoryInfoTable = { 4, 3, JSMemoryInfoTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSMemoryInfoPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "usedJSHeapSize", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMemoryInfoUsedJSHeapSize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "totalJSHeapSize", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMemoryInfoTotalJSHeapSize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMemoryInfoPrototypeTable = { 1, 0, JSMemoryInfoPrototypeTableValues, 0 };
-const ClassInfo JSMemoryInfoPrototype::s_info = { "MemoryInfoPrototype", &Base::s_info, &JSMemoryInfoPrototypeTable, 0, CREATE_METHOD_TABLE(JSMemoryInfoPrototype) };
+const ClassInfo JSMemoryInfoPrototype::s_info = { "MemoryInfoPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMemoryInfoPrototype) };
 
-JSObject* JSMemoryInfoPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMemoryInfo>(vm, globalObject);
-}
-
-const ClassInfo JSMemoryInfo::s_info = { "MemoryInfo", &Base::s_info, &JSMemoryInfoTable, 0 , CREATE_METHOD_TABLE(JSMemoryInfo) };
-
-JSMemoryInfo::JSMemoryInfo(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MemoryInfo> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMemoryInfo::finishCreation(VM& vm)
+void JSMemoryInfoPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMemoryInfoPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMemoryInfo::s_info = { "MemoryInfo", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMemoryInfo) };
+
+JSMemoryInfo::JSMemoryInfo(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MemoryInfo>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMemoryInfo::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMemoryInfoPrototype::create(vm, globalObject, JSMemoryInfoPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMemoryInfo::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMemoryInfo>(vm, globalObject);
 }
 
 void JSMemoryInfo::destroy(JSC::JSCell* cell)
@@ -80,65 +101,62 @@ void JSMemoryInfo::destroy(JSC::JSCell* cell)
 
 JSMemoryInfo::~JSMemoryInfo()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSMemoryInfo::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsMemoryInfoUsedJSHeapSize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMemoryInfo* thisObject = jsCast<JSMemoryInfo*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMemoryInfo, Base>(exec, JSMemoryInfoTable, thisObject, propertyName, slot);
-}
-
-JSValue jsMemoryInfoUsedJSHeapSize(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMemoryInfo* castedThis = jsCast<JSMemoryInfo*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MemoryInfo& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMemoryInfo* castedThis = jsDynamicCast<JSMemoryInfo*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMemoryInfoPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MemoryInfo", "usedJSHeapSize");
+        return throwGetterTypeError(*exec, "MemoryInfo", "usedJSHeapSize");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.usedJSHeapSize());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMemoryInfoTotalJSHeapSize(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMemoryInfoTotalJSHeapSize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMemoryInfo* castedThis = jsCast<JSMemoryInfo*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MemoryInfo& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMemoryInfo* castedThis = jsDynamicCast<JSMemoryInfo*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMemoryInfoPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MemoryInfo", "totalJSHeapSize");
+        return throwGetterTypeError(*exec, "MemoryInfo", "totalJSHeapSize");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.totalJSHeapSize());
-    return result;
+    return JSValue::encode(result);
 }
 
-
-static inline bool isObservable(JSMemoryInfo* jsMemoryInfo)
-{
-    if (jsMemoryInfo->hasCustomProperties())
-        return true;
-    return false;
-}
 
 bool JSMemoryInfoOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMemoryInfo* jsMemoryInfo = jsCast<JSMemoryInfo*>(handle.get().asCell());
-    if (!isObservable(jsMemoryInfo))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMemoryInfoOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMemoryInfo* jsMemoryInfo = jsCast<JSMemoryInfo*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMemoryInfo = jsCast<JSMemoryInfo*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMemoryInfo->impl(), jsMemoryInfo);
-    jsMemoryInfo->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MemoryInfo* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MemoryInfo* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMemoryInfo>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMemoryInfo>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -147,13 +165,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MemoryI
     // attribute to MemoryInfo.
     COMPILE_ASSERT(!__is_polymorphic(MemoryInfo), MemoryInfo_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<MemoryInfo>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMemoryInfo>(exec, globalObject, impl);
+    return createNewWrapper<JSMemoryInfo>(globalObject, impl);
 }
 
-MemoryInfo* toMemoryInfo(JSC::JSValue value)
+MemoryInfo* JSMemoryInfo::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMemoryInfo::info()) ? &jsCast<JSMemoryInfo*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMemoryInfo*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -22,27 +22,27 @@
 #define JSCrypto_h
 
 #include "Crypto.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSCrypto : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSCrypto* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Crypto> impl)
+    static JSCrypto* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Crypto>&& impl)
     {
-        JSCrypto* ptr = new (NotNull, JSC::allocateCell<JSCrypto>(globalObject->vm().heap)) JSCrypto(structure, globalObject, impl);
+        JSCrypto* ptr = new (NotNull, JSC::allocateCell<JSCrypto>(globalObject->vm().heap)) JSCrypto(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Crypto* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSCrypto();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
     // Custom functions
     JSC::JSValue getRandomValues(JSC::ExecState*);
     Crypto& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Crypto* m_impl;
 protected:
-    JSCrypto(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Crypto>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCrypto(JSC::Structure*, JSDOMGlobalObject*, Ref<Crypto>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSCryptoOwner : public JSC::WeakHandleOwner {
@@ -80,50 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Crypto*)
 {
-    DEFINE_STATIC_LOCAL(JSCryptoOwner, jsCryptoOwner, ());
-    return &jsCryptoOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Crypto*)
-{
-    return &world;
+    static NeverDestroyed<JSCryptoOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Crypto*);
-Crypto* toCrypto(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Crypto& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSCryptoPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCryptoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCryptoPrototype* ptr = new (NotNull, JSC::allocateCell<JSCryptoPrototype>(vm.heap)) JSCryptoPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCryptoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCryptoPrototypeFunctionGetRandomValues(JSC::ExecState*);
-// Attributes
-
-#if ENABLE(SUBTLE_CRYPTO)
-JSC::JSValue jsCryptoWebkitSubtle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
 
 } // namespace WebCore
 

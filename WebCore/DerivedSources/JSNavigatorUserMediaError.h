@@ -25,22 +25,23 @@
 
 #include "JSDOMError.h"
 #include "NavigatorUserMediaError.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSNavigatorUserMediaError : public JSDOMError {
 public:
     typedef JSDOMError Base;
-    static JSNavigatorUserMediaError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<NavigatorUserMediaError> impl)
+    static JSNavigatorUserMediaError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<NavigatorUserMediaError>&& impl)
     {
-        JSNavigatorUserMediaError* ptr = new (NotNull, JSC::allocateCell<JSNavigatorUserMediaError>(globalObject->vm().heap)) JSNavigatorUserMediaError(structure, globalObject, impl);
+        JSNavigatorUserMediaError* ptr = new (NotNull, JSC::allocateCell<JSNavigatorUserMediaError>(globalObject->vm().heap)) JSNavigatorUserMediaError(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,40 +53,22 @@ public:
     {
         return static_cast<NavigatorUserMediaError&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSNavigatorUserMediaError(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<NavigatorUserMediaError>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSNavigatorUserMediaError(JSC::Structure*, JSDOMGlobalObject*, Ref<NavigatorUserMediaError>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, NavigatorUserMediaError*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, NavigatorUserMediaError& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSNavigatorUserMediaErrorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSNavigatorUserMediaErrorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSNavigatorUserMediaErrorPrototype* ptr = new (NotNull, JSC::allocateCell<JSNavigatorUserMediaErrorPrototype>(vm.heap)) JSNavigatorUserMediaErrorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSNavigatorUserMediaErrorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsNavigatorUserMediaErrorConstraintName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

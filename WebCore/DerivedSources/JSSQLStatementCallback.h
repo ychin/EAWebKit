@@ -21,8 +21,6 @@
 #ifndef JSSQLStatementCallback_h
 #define JSSQLStatementCallback_h
 
-#if ENABLE(SQL_DATABASE)
-
 #include "ActiveDOMCallback.h"
 #include "JSCallbackData.h"
 #include "SQLStatementCallback.h"
@@ -32,9 +30,9 @@ namespace WebCore {
 
 class JSSQLStatementCallback : public SQLStatementCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSSQLStatementCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSSQLStatementCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSSQLStatementCallback(callback, globalObject));
+        return adoptRef(*new JSSQLStatementCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }
@@ -51,7 +49,5 @@ private:
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif

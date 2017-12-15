@@ -23,28 +23,28 @@
 
 #if ENABLE(XSLT)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "XSLTProcessor.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSXSLTProcessor : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSXSLTProcessor* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XSLTProcessor> impl)
+    static JSXSLTProcessor* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<XSLTProcessor>&& impl)
     {
-        JSXSLTProcessor* ptr = new (NotNull, JSC::allocateCell<JSXSLTProcessor>(globalObject->vm().heap)) JSXSLTProcessor(structure, globalObject, impl);
+        JSXSLTProcessor* ptr = new (NotNull, JSC::allocateCell<JSXSLTProcessor>(globalObject->vm().heap)) JSXSLTProcessor(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static XSLTProcessor* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSXSLTProcessor();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -59,22 +59,19 @@ public:
     JSC::JSValue getParameter(JSC::ExecState*);
     JSC::JSValue removeParameter(JSC::ExecState*);
     XSLTProcessor& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     XSLTProcessor* m_impl;
 protected:
-    JSXSLTProcessor(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<XSLTProcessor>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSXSLTProcessor(JSC::Structure*, JSDOMGlobalObject*, Ref<XSLTProcessor>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSXSLTProcessorOwner : public JSC::WeakHandleOwner {
@@ -85,81 +82,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, XSLTProcessor*)
 {
-    DEFINE_STATIC_LOCAL(JSXSLTProcessorOwner, jsXSLTProcessorOwner, ());
-    return &jsXSLTProcessorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, XSLTProcessor*)
-{
-    return &world;
+    static NeverDestroyed<JSXSLTProcessorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, XSLTProcessor*);
-XSLTProcessor* toXSLTProcessor(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, XSLTProcessor& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSXSLTProcessorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSXSLTProcessorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSXSLTProcessorPrototype* ptr = new (NotNull, JSC::allocateCell<JSXSLTProcessorPrototype>(vm.heap)) JSXSLTProcessorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSXSLTProcessorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSXSLTProcessorConstructor : public DOMConstructorObject {
-private:
-    JSXSLTProcessorConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSXSLTProcessorConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSXSLTProcessorConstructor* ptr = new (NotNull, JSC::allocateCell<JSXSLTProcessorConstructor>(vm.heap)) JSXSLTProcessorConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSXSLTProcessor(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionImportStylesheet(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionTransformToFragment(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionTransformToDocument(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionSetParameter(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionGetParameter(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionRemoveParameter(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionClearParameters(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXSLTProcessorPrototypeFunctionReset(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsXSLTProcessorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

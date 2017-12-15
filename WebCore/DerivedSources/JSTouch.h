@@ -23,28 +23,29 @@
 
 #if ENABLE(TOUCH_EVENTS)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "Touch.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSTouch : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSTouch* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Touch> impl)
+    static JSTouch* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Touch>&& impl)
     {
-        JSTouch* ptr = new (NotNull, JSC::allocateCell<JSTouch>(globalObject->vm().heap)) JSTouch(structure, globalObject, impl);
+        JSTouch* ptr = new (NotNull, JSC::allocateCell<JSTouch>(globalObject->vm().heap)) JSTouch(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Touch* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSTouch();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +55,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     Touch& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Touch* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSTouch(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Touch>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSTouch(JSC::Structure*, JSDOMGlobalObject*, Ref<Touch>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSTouchOwner : public JSC::WeakHandleOwner {
@@ -80,81 +80,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Touch*)
 {
-    DEFINE_STATIC_LOCAL(JSTouchOwner, jsTouchOwner, ());
-    return &jsTouchOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Touch*)
-{
-    return &world;
+    static NeverDestroyed<JSTouchOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Touch*);
-Touch* toTouch(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Touch& impl) { return toJS(exec, globalObject, &impl); }
 JSC::JSValue toJSNewlyCreated(JSC::ExecState*, JSDOMGlobalObject*, Touch*);
 
-class JSTouchPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSTouchPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSTouchPrototype* ptr = new (NotNull, JSC::allocateCell<JSTouchPrototype>(vm.heap)) JSTouchPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSTouchPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSTouchConstructor : public DOMConstructorObject {
-private:
-    JSTouchConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSTouchConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSTouchConstructor* ptr = new (NotNull, JSC::allocateCell<JSTouchConstructor>(vm.heap)) JSTouchConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsTouchClientX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchClientY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchScreenX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchScreenY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchPageX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchPageY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchIdentifier(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchWebkitRadiusX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchWebkitRadiusY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchWebkitRotationAngle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchWebkitForce(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsTouchConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

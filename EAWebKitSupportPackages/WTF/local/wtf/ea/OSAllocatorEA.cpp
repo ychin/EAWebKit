@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
- * Copyright (C) 2011, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -69,7 +69,7 @@ void* OSAllocator::reserveAndCommit(size_t bytes, Usage usage, bool writable, bo
 	}
 	else
 	{
-		return WTF::fastMallocAligned(bytes, WTF::pageSize(), 0, 0, 0);
+		return WTF::fastAlignedMalloc(WTF::pageSize(), bytes);
 	}
 }
 
@@ -82,7 +82,7 @@ void OSAllocator::releaseDecommitted(void* address, size_t bytes)
 	}
 	else
 	{
-		WTF::fastFree(address);
+		WTF::fastAlignedFree(address);
 	}
 }
 
@@ -100,7 +100,7 @@ void* OSAllocator::reserveAndCommitAligned(size_t bytes, size_t alignment, void*
     }
     else
     {
-        reserveBase =  WTF::fastMallocAligned(bytes, alignment, 0, 0, 0);
+        reserveBase =  WTF::fastAlignedMalloc(alignment, bytes);
 		reserveSize = bytes;
 		return reserveBase;
     }
@@ -115,7 +115,7 @@ void OSAllocator::releaseDecommittedAligned(void* address, size_t bytes, size_t 
 	}
 	else
 	{
-		WTF::fastFree(address);
+		WTF::fastAlignedFree(address);
 	}
 }
 

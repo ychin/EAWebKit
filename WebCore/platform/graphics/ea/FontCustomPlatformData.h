@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
-    Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+    Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,9 +21,6 @@
 #ifndef FontCustomPlatformData_h
 #define FontCustomPlatformData_h
 
-#include "FontOrientation.h"
-#include "FontRenderingMode.h"
-#include "FontWidthVariant.h"
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefPtr.h>
@@ -46,7 +43,7 @@ public:
     ~FontCustomPlatformData();
 		
     //create FontPlatformData out of FontCustomPlatformData instance
-	FontPlatformData fontPlatformData(int size, bool bold, bool italic, FontOrientation = Horizontal, FontWidthVariant = RegularWidth, FontRenderingMode = NormalRenderingMode);
+	FontPlatformData fontPlatformData(const FontDescription& fontDescription, bool bold, bool italic);
      
     static bool supportsFormat(const String&);
 
@@ -55,7 +52,7 @@ private:
 };
 
 //Given the already downloaded custom font data, create a specific FontPlatformData
-std::unique_ptr<FontCustomPlatformData> createFontCustomPlatformData(SharedBuffer*);
+std::unique_ptr<FontCustomPlatformData> createFontCustomPlatformData(SharedBuffer&);
 
 } // namespace WebCore
 

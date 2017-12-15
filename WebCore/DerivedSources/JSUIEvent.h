@@ -21,10 +21,8 @@
 #ifndef JSUIEvent_h
 #define JSUIEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "UIEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSUIEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSUIEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<UIEvent> impl)
+    static JSUIEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<UIEvent>&& impl)
     {
-        JSUIEvent* ptr = new (NotNull, JSC::allocateCell<JSUIEvent>(globalObject->vm().heap)) JSUIEvent(structure, globalObject, impl);
+        JSUIEvent* ptr = new (NotNull, JSC::allocateCell<JSUIEvent>(globalObject->vm().heap)) JSUIEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,81 +54,19 @@ public:
         return static_cast<UIEvent&>(Base::impl());
     }
 protected:
-    JSUIEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<UIEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSUIEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<UIEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSUIEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSUIEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSUIEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSUIEventPrototype>(vm.heap)) JSUIEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSUIEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSUIEventConstructor : public DOMConstructorObject {
-private:
-    JSUIEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSUIEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSUIEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSUIEventConstructor>(vm.heap)) JSUIEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSUIEvent(JSC::ExecState*);
-#if ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-#endif // ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-};
 
 bool fillUIEventInit(UIEventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsUIEventPrototypeFunctionInitUIEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsUIEventView(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventDetail(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventKeyCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventCharCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventLayerX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventLayerY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventPageX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventPageY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventWhich(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

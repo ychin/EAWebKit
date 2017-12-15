@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSRTCStatsCallback : public RTCStatsCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSRTCStatsCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSRTCStatsCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSRTCStatsCallback(callback, globalObject));
+        return adoptRef(*new JSRTCStatsCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSWebKitCSSTransformValue.h"
 
+#include "JSDOMBinding.h"
 #include "WebKitCSSTransformValue.h"
 #include <runtime/PropertyNameArray.h>
 #include <wtf/GetPtr.h>
@@ -29,46 +30,99 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Attributes
+
+JSC::EncodedJSValue jsWebKitCSSTransformValueOperationType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebKitCSSTransformValueConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebKitCSSTransformValuePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebKitCSSTransformValuePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebKitCSSTransformValuePrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSTransformValuePrototype>(vm.heap)) JSWebKitCSSTransformValuePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebKitCSSTransformValuePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSWebKitCSSTransformValueConstructor : public DOMConstructorObject {
+private:
+    JSWebKitCSSTransformValueConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebKitCSSTransformValueConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebKitCSSTransformValueConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSTransformValueConstructor>(vm.heap)) JSWebKitCSSTransformValueConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSWebKitCSSTransformValueTableIndex[2] = {
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSWebKitCSSTransformValueTableValues[] =
 {
-    { "operationType", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueOperationType), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSWebKitCSSTransformValueTable = { 5, 3, JSWebKitCSSTransformValueTableValues, 0 };
+static const HashTable JSWebKitCSSTransformValueTable = { 1, 1, true, JSWebKitCSSTransformValueTableValues, 0, JSWebKitCSSTransformValueTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSWebKitCSSTransformValueConstructorTableValues[] =
 {
-    { "CSS_TRANSLATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATE), (intptr_t)0 },
-    { "CSS_TRANSLATEX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATEX), (intptr_t)0 },
-    { "CSS_TRANSLATEY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATEY), (intptr_t)0 },
-    { "CSS_ROTATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATE), (intptr_t)0 },
-    { "CSS_SCALE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALE), (intptr_t)0 },
-    { "CSS_SCALEX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALEX), (intptr_t)0 },
-    { "CSS_SCALEY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALEY), (intptr_t)0 },
-    { "CSS_SKEW", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SKEW), (intptr_t)0 },
-    { "CSS_SKEWX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SKEWX), (intptr_t)0 },
-    { "CSS_SKEWY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SKEWY), (intptr_t)0 },
-    { "CSS_MATRIX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_MATRIX), (intptr_t)0 },
-    { "CSS_TRANSLATEZ", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATEZ), (intptr_t)0 },
-    { "CSS_TRANSLATE3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATE3D), (intptr_t)0 },
-    { "CSS_ROTATEX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATEX), (intptr_t)0 },
-    { "CSS_ROTATEY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATEY), (intptr_t)0 },
-    { "CSS_ROTATEZ", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATEZ), (intptr_t)0 },
-    { "CSS_ROTATE3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATE3D), (intptr_t)0 },
-    { "CSS_SCALEZ", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALEZ), (intptr_t)0 },
-    { "CSS_SCALE3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALE3D), (intptr_t)0 },
-    { "CSS_PERSPECTIVE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_PERSPECTIVE), (intptr_t)0 },
-    { "CSS_MATRIX3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_MATRIX3D), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "CSS_TRANSLATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "CSS_TRANSLATEX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "CSS_TRANSLATEY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "CSS_ROTATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "CSS_SCALE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(5), (intptr_t) (0) },
+    { "CSS_SCALEX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(6), (intptr_t) (0) },
+    { "CSS_SCALEY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(7), (intptr_t) (0) },
+    { "CSS_SKEW", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(8), (intptr_t) (0) },
+    { "CSS_SKEWX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(9), (intptr_t) (0) },
+    { "CSS_SKEWY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(10), (intptr_t) (0) },
+    { "CSS_MATRIX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(11), (intptr_t) (0) },
+    { "CSS_TRANSLATEZ", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(12), (intptr_t) (0) },
+    { "CSS_TRANSLATE3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(13), (intptr_t) (0) },
+    { "CSS_ROTATEX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(14), (intptr_t) (0) },
+    { "CSS_ROTATEY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(15), (intptr_t) (0) },
+    { "CSS_ROTATEZ", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(16), (intptr_t) (0) },
+    { "CSS_ROTATE3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(17), (intptr_t) (0) },
+    { "CSS_SCALEZ", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(18), (intptr_t) (0) },
+    { "CSS_SCALE3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(19), (intptr_t) (0) },
+    { "CSS_PERSPECTIVE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(20), (intptr_t) (0) },
+    { "CSS_MATRIX3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(21), (intptr_t) (0) },
 };
 
-static const HashTable JSWebKitCSSTransformValueConstructorTable = { 68, 63, JSWebKitCSSTransformValueConstructorTableValues, 0 };
-const ClassInfo JSWebKitCSSTransformValueConstructor::s_info = { "WebKitCSSTransformValueConstructor", &Base::s_info, &JSWebKitCSSTransformValueConstructorTable, 0, CREATE_METHOD_TABLE(JSWebKitCSSTransformValueConstructor) };
+const ClassInfo JSWebKitCSSTransformValueConstructor::s_info = { "WebKitCSSTransformValueConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitCSSTransformValueConstructor) };
 
 JSWebKitCSSTransformValueConstructor::JSWebKitCSSTransformValueConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -79,88 +133,79 @@ void JSWebKitCSSTransformValueConstructor::finishCreation(VM& vm, JSDOMGlobalObj
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebKitCSSTransformValuePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebKitCSSTransformValueConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebKitCSSTransformValueConstructor, JSDOMWrapper>(exec, JSWebKitCSSTransformValueConstructorTable, jsCast<JSWebKitCSSTransformValueConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebKitCSSTransformValue::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebKitCSSTransformValue"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSWebKitCSSTransformValueConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSWebKitCSSTransformValuePrototypeTableValues[] =
 {
-    { "CSS_TRANSLATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATE), (intptr_t)0 },
-    { "CSS_TRANSLATEX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATEX), (intptr_t)0 },
-    { "CSS_TRANSLATEY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATEY), (intptr_t)0 },
-    { "CSS_ROTATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATE), (intptr_t)0 },
-    { "CSS_SCALE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALE), (intptr_t)0 },
-    { "CSS_SCALEX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALEX), (intptr_t)0 },
-    { "CSS_SCALEY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALEY), (intptr_t)0 },
-    { "CSS_SKEW", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SKEW), (intptr_t)0 },
-    { "CSS_SKEWX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SKEWX), (intptr_t)0 },
-    { "CSS_SKEWY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SKEWY), (intptr_t)0 },
-    { "CSS_MATRIX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_MATRIX), (intptr_t)0 },
-    { "CSS_TRANSLATEZ", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATEZ), (intptr_t)0 },
-    { "CSS_TRANSLATE3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_TRANSLATE3D), (intptr_t)0 },
-    { "CSS_ROTATEX", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATEX), (intptr_t)0 },
-    { "CSS_ROTATEY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATEY), (intptr_t)0 },
-    { "CSS_ROTATEZ", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATEZ), (intptr_t)0 },
-    { "CSS_ROTATE3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_ROTATE3D), (intptr_t)0 },
-    { "CSS_SCALEZ", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALEZ), (intptr_t)0 },
-    { "CSS_SCALE3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_SCALE3D), (intptr_t)0 },
-    { "CSS_PERSPECTIVE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_PERSPECTIVE), (intptr_t)0 },
-    { "CSS_MATRIX3D", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueCSS_MATRIX3D), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "operationType", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitCSSTransformValueOperationType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "CSS_TRANSLATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "CSS_TRANSLATEX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "CSS_TRANSLATEY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "CSS_ROTATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "CSS_SCALE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(5), (intptr_t) (0) },
+    { "CSS_SCALEX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(6), (intptr_t) (0) },
+    { "CSS_SCALEY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(7), (intptr_t) (0) },
+    { "CSS_SKEW", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(8), (intptr_t) (0) },
+    { "CSS_SKEWX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(9), (intptr_t) (0) },
+    { "CSS_SKEWY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(10), (intptr_t) (0) },
+    { "CSS_MATRIX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(11), (intptr_t) (0) },
+    { "CSS_TRANSLATEZ", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(12), (intptr_t) (0) },
+    { "CSS_TRANSLATE3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(13), (intptr_t) (0) },
+    { "CSS_ROTATEX", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(14), (intptr_t) (0) },
+    { "CSS_ROTATEY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(15), (intptr_t) (0) },
+    { "CSS_ROTATEZ", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(16), (intptr_t) (0) },
+    { "CSS_ROTATE3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(17), (intptr_t) (0) },
+    { "CSS_SCALEZ", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(18), (intptr_t) (0) },
+    { "CSS_SCALE3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(19), (intptr_t) (0) },
+    { "CSS_PERSPECTIVE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(20), (intptr_t) (0) },
+    { "CSS_MATRIX3D", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(21), (intptr_t) (0) },
 };
 
-static const HashTable JSWebKitCSSTransformValuePrototypeTable = { 68, 63, JSWebKitCSSTransformValuePrototypeTableValues, 0 };
-const ClassInfo JSWebKitCSSTransformValuePrototype::s_info = { "WebKitCSSTransformValuePrototype", &Base::s_info, &JSWebKitCSSTransformValuePrototypeTable, 0, CREATE_METHOD_TABLE(JSWebKitCSSTransformValuePrototype) };
+const ClassInfo JSWebKitCSSTransformValuePrototype::s_info = { "WebKitCSSTransformValuePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitCSSTransformValuePrototype) };
 
-JSObject* JSWebKitCSSTransformValuePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebKitCSSTransformValue>(vm, globalObject);
-}
-
-bool JSWebKitCSSTransformValuePrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSWebKitCSSTransformValuePrototype* thisObject = jsCast<JSWebKitCSSTransformValuePrototype*>(object);
-    return getStaticValueSlot<JSWebKitCSSTransformValuePrototype, JSObject>(exec, JSWebKitCSSTransformValuePrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSWebKitCSSTransformValue::s_info = { "WebKitCSSTransformValue", &Base::s_info, &JSWebKitCSSTransformValueTable, 0 , CREATE_METHOD_TABLE(JSWebKitCSSTransformValue) };
-
-JSWebKitCSSTransformValue::JSWebKitCSSTransformValue(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitCSSTransformValue> impl)
-    : JSCSSValueList(structure, globalObject, impl)
-{
-}
-
-void JSWebKitCSSTransformValue::finishCreation(VM& vm)
+void JSWebKitCSSTransformValuePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebKitCSSTransformValuePrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebKitCSSTransformValue::s_info = { "WebKitCSSTransformValue", &Base::s_info, &JSWebKitCSSTransformValueTable, CREATE_METHOD_TABLE(JSWebKitCSSTransformValue) };
+
+JSWebKitCSSTransformValue::JSWebKitCSSTransformValue(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitCSSTransformValue>&& impl)
+    : JSCSSValueList(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSWebKitCSSTransformValue::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSWebKitCSSTransformValuePrototype::create(vm, globalObject, JSWebKitCSSTransformValuePrototype::createStructure(vm, globalObject, JSCSSValueListPrototype::self(vm, globalObject)));
+    return JSWebKitCSSTransformValuePrototype::create(vm, globalObject, JSWebKitCSSTransformValuePrototype::createStructure(vm, globalObject, JSCSSValueList::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSWebKitCSSTransformValue::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebKitCSSTransformValue>(vm, globalObject);
 }
 
 bool JSWebKitCSSTransformValue::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSWebKitCSSTransformValue* thisObject = jsCast<JSWebKitCSSTransformValue*>(object);
+    auto* thisObject = jsCast<JSWebKitCSSTransformValue*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSWebKitCSSTransformValue>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSWebKitCSSTransformValue>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSWebKitCSSTransformValue, Base>(exec, JSWebKitCSSTransformValueTable, thisObject, propertyName, slot);
@@ -168,180 +213,53 @@ bool JSWebKitCSSTransformValue::getOwnPropertySlot(JSObject* object, ExecState* 
 
 bool JSWebKitCSSTransformValue::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSWebKitCSSTransformValue* thisObject = jsCast<JSWebKitCSSTransformValue*>(object);
+    auto* thisObject = jsCast<JSWebKitCSSTransformValue*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsWebKitCSSTransformValueOperationType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebKitCSSTransformValueOperationType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebKitCSSTransformValue* castedThis = jsCast<JSWebKitCSSTransformValue*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebKitCSSTransformValue& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebKitCSSTransformValue* castedThis = jsDynamicCast<JSWebKitCSSTransformValue*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebKitCSSTransformValuePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebKitCSSTransformValue", "operationType");
+        return throwGetterTypeError(*exec, "WebKitCSSTransformValue", "operationType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.operationType());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebKitCSSTransformValueConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebKitCSSTransformValueConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebKitCSSTransformValue* domObject = jsCast<JSWebKitCSSTransformValue*>(asObject(slotBase));
-    return JSWebKitCSSTransformValue::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebKitCSSTransformValue* domObject = jsDynamicCast<JSWebKitCSSTransformValue*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebKitCSSTransformValue::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 void JSWebKitCSSTransformValue::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSWebKitCSSTransformValue* thisObject = jsCast<JSWebKitCSSTransformValue*>(object);
+    auto* thisObject = jsCast<JSWebKitCSSTransformValue*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 JSValue JSWebKitCSSTransformValue::getConstructor(VM& vm, JSGlobalObject* globalObject)
 {
     return getDOMConstructor<JSWebKitCSSTransformValueConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
-}
-
-// Constant getters
-
-JSValue jsWebKitCSSTransformValueCSS_TRANSLATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_TRANSLATEX(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_TRANSLATEY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_ROTATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(4));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SCALE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(5));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SCALEX(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(6));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SCALEY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(7));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SKEW(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(8));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SKEWX(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(9));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SKEWY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(10));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_MATRIX(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(11));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_TRANSLATEZ(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(12));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_TRANSLATE3D(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(13));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_ROTATEX(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(14));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_ROTATEY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(15));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_ROTATEZ(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(16));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_ROTATE3D(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(17));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SCALEZ(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(18));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_SCALE3D(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(19));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_PERSPECTIVE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(20));
-}
-
-JSValue jsWebKitCSSTransformValueCSS_MATRIX3D(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(21));
-}
-
-
-JSValue JSWebKitCSSTransformValue::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSWebKitCSSTransformValue* thisObj = jsCast<JSWebKitCSSTransformValue*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
 }
 
 

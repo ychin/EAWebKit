@@ -2,7 +2,7 @@
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2006, 2007 Apple Inc. All rights reserved.
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
 
 #include "config.h"
 #include "EventHandler.h"
-#include "Clipboard.h"
+#include "DataTransfer.h"
 #include "Cursor.h"
 #include "Document.h"
 #include "EventNames.h"
@@ -79,18 +79,18 @@ bool EventHandler::eventActivatedView(const PlatformMouseEvent&) const
     return false;
 }
 
-bool EventHandler::passWheelEventToWidget(const PlatformWheelEvent& event, Widget* widget)
+bool EventHandler::passWheelEventToWidget(const PlatformWheelEvent& event, Widget& widget)
 {
-    EAW_ASSERT(widget);
-    if (!widget->isFrameView())
+    //EAW_ASSERT(widget);
+    if (!widget.isFrameView())
         return false;
 
-    return static_cast<FrameView*>(widget)->frame().eventHandler().handleWheelEvent(event);
+    return static_cast<FrameView*>(&widget)->frame().eventHandler().handleWheelEvent(event);
 }
 #if ENABLE(DRAG_SUPPORT)
-PassRefPtr<Clipboard> EventHandler::createDraggingClipboard() const
+PassRefPtr<DataTransfer> EventHandler::createDraggingDataTransfer() const
 {
-    return Clipboard::createForDragAndDrop();
+	return nullptr;
 }
 #endif
 

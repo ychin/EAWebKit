@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,22 +27,19 @@
 #ifndef WorkerGlobalScope_h
 #define WorkerGlobalScope_h
 
-#if ENABLE(WORKERS)
-
 #include "ContentSecurityPolicy.h"
 #include "EventListener.h"
-#include "EventNames.h"
 #include "EventTarget.h"
-#include "GroupSettings.h"
 #include "ScriptExecutionContext.h"
 #include "WorkerEventQueue.h"
 #include "WorkerScriptController.h"
+#include <memory>
 #include <wtf/Assertions.h>
 #include <wtf/HashMap.h>
-#include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
+#include <wtf/TypeCasts.h>
 #include <wtf/text/AtomicStringHash.h>
 
 namespace WebCore {
@@ -58,58 +55,48 @@ namespace WebCore {
     public:
         virtual ~WorkerGlobalScope();
 
-        virtual bool isWorkerGlobalScope() const OVERRIDE { return true; }
+        virtual bool isWorkerGlobalScope() const override { return true; }
 
-        virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE FINAL { return const_cast<WorkerGlobalScope*>(this); }
+        virtual ScriptExecutionContext* scriptExecutionContext() const override final { return const_cast<WorkerGlobalScope*>(this); }
 
-        virtual bool isSharedWorkerGlobalScope() const { return false; }
         virtual bool isDedicatedWorkerGlobalScope() const { return false; }
 
-        virtual const URL& url() const OVERRIDE FINAL { return m_url; }
-        virtual URL completeURL(const String&) const OVERRIDE FINAL;
+        virtual const URL& url() const override final { return m_url; }
+        virtual URL completeURL(const String&) const override final;
 
-        const GroupSettings* groupSettings() { return m_groupSettings.get(); }
-        virtual String userAgent(const URL&) const OVERRIDE;
+        virtual String userAgent(const URL&) const override;
 
-        virtual void disableEval(const String& errorMessage) OVERRIDE;
+        virtual void disableEval(const String& errorMessage) override;
 
         WorkerScriptController* script() { return m_script.get(); }
-        void clearScript() { m_script.clear(); }
-#if ENABLE(INSPECTOR)
-        void clearInspector();
-#endif
+        void clearScript() { m_script = nullptr; }
 
-        WorkerThread* thread() const { return m_thread; }
+        WorkerThread& thread() const { return m_thread; }
 
-        bool hasPendingActivity() const;
+        using ScriptExecutionContext::hasPendingActivity;
 
-        virtual void postTask(PassOwnPtr<Task>) OVERRIDE; // Executes the task on context's thread asynchronously.
+        virtual void postTask(Task) override; // Executes the task on context's thread asynchronously.
 
         // WorkerGlobalScope
         WorkerGlobalScope* self() { return this; }
         WorkerLocation* location() const;
         void close();
 
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(offline);
-        DEFINE_ATTRIBUTE_EVENT_LISTENER(online);
-
         // WorkerUtils
         virtual void importScripts(const Vector<String>& urls, ExceptionCode&);
         WorkerNavigator* navigator() const;
 
         // Timers
-        int setTimeout(PassOwnPtr<ScheduledAction>, int timeout);
+        int setTimeout(std::unique_ptr<ScheduledAction>, int timeout);
         void clearTimeout(int timeoutId);
-        int setInterval(PassOwnPtr<ScheduledAction>, int timeout);
+        int setInterval(std::unique_ptr<ScheduledAction>, int timeout);
         void clearInterval(int timeoutId);
 
-        virtual bool isContextThread() const OVERRIDE;
-        virtual bool isJSExecutionForbidden() const OVERRIDE;
+        virtual bool isContextThread() const override;
+        virtual bool isJSExecutionForbidden() const override;
 
-#if ENABLE(INSPECTOR)
-        WorkerInspectorController* workerInspectorController() { return m_workerInspectorController.get(); }
-#endif
+        WorkerInspectorController& workerInspectorController() { return *m_workerInspectorController; }
+
         // These methods are used for GC marking. See JSWorkerGlobalScope::visitChildrenVirtual(SlotVisitor&) in
         // JSWorkerGlobalScopeCustom.cpp.
         WorkerNavigator* optionalNavigator() const { return m_navigator.get(); }
@@ -136,42 +123,45 @@ namespace WebCore {
         void unregisterObserver(Observer*);
         void notifyObserversOfStop();
 
-        virtual SecurityOrigin* topOrigin() const OVERRIDE { return m_topOrigin.get(); }
+        virtual SecurityOrigin* topOrigin() const override { return m_topOrigin.get(); }
+
+        virtual void addConsoleMessage(MessageSource, MessageLevel, const String& message, unsigned long requestIdentifier = 0) override;
+
+#if ENABLE(SUBTLE_CRYPTO)
+        virtual bool wrapCryptoKey(const Vector<uint8_t>& key, Vector<uint8_t>& wrappedKey) override;
+        virtual bool unwrapCryptoKey(const Vector<uint8_t>& wrappedKey, Vector<uint8_t>& key) override;
+#endif
 
     protected:
-        WorkerGlobalScope(const URL&, const String& userAgent, std::unique_ptr<GroupSettings>, WorkerThread*, PassRefPtr<SecurityOrigin> topOrigin);
+        WorkerGlobalScope(const URL&, const String& userAgent, WorkerThread&, PassRefPtr<SecurityOrigin> topOrigin);
         void applyContentSecurityPolicyFromString(const String& contentSecurityPolicy, ContentSecurityPolicy::HeaderType);
 
-        virtual void logExceptionToConsole(const String& errorMessage, const String& sourceURL, int lineNumber, int columnNumber, PassRefPtr<ScriptCallStack>) OVERRIDE;
-        void addMessageToWorkerConsole(MessageSource, MessageLevel, const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber, PassRefPtr<ScriptCallStack>, JSC::ExecState* = 0, unsigned long requestIdentifier = 0);
+        virtual void logExceptionToConsole(const String& errorMessage, const String& sourceURL, int lineNumber, int columnNumber, RefPtr<Inspector::ScriptCallStack>&&) override;
+        void addMessageToWorkerConsole(MessageSource, MessageLevel, const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber, RefPtr<Inspector::ScriptCallStack>&&, JSC::ExecState* = 0, unsigned long requestIdentifier = 0);
 
     private:
-        virtual void refScriptExecutionContext() OVERRIDE { ref(); }
-        virtual void derefScriptExecutionContext() OVERRIDE { deref(); }
+        virtual void refScriptExecutionContext() override { ref(); }
+        virtual void derefScriptExecutionContext() override { deref(); }
 
-        virtual void refEventTarget() OVERRIDE FINAL { ref(); }
-        virtual void derefEventTarget() OVERRIDE FINAL { deref(); }
+        virtual void refEventTarget() override final { ref(); }
+        virtual void derefEventTarget() override final { deref(); }
 
-        virtual void addMessage(MessageSource, MessageLevel, const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber, PassRefPtr<ScriptCallStack>, JSC::ExecState* = 0, unsigned long requestIdentifier = 0) OVERRIDE;
-        virtual void addConsoleMessage(MessageSource, MessageLevel, const String& message, unsigned long requestIdentifier = 0) OVERRIDE;
+        virtual void addMessage(MessageSource, MessageLevel, const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber, RefPtr<Inspector::ScriptCallStack>&&, JSC::ExecState* = 0, unsigned long requestIdentifier = 0) override;
 
-        virtual EventTarget* errorEventTarget() OVERRIDE;
+        virtual EventTarget* errorEventTarget() override;
 
-        virtual WorkerEventQueue& eventQueue() const OVERRIDE FINAL;
+        virtual WorkerEventQueue& eventQueue() const override final;
 
         URL m_url;
         String m_userAgent;
-        std::unique_ptr<GroupSettings> m_groupSettings;
 
         mutable RefPtr<WorkerLocation> m_location;
         mutable RefPtr<WorkerNavigator> m_navigator;
 
-        OwnPtr<WorkerScriptController> m_script;
-        WorkerThread* m_thread;
+        std::unique_ptr<WorkerScriptController> m_script;
+        WorkerThread& m_thread;
 
-#if ENABLE(INSPECTOR)
-        OwnPtr<WorkerInspectorController> m_workerInspectorController;
-#endif
+        const std::unique_ptr<WorkerInspectorController> m_workerInspectorController;
         bool m_closing;
 
         HashSet<Observer*> m_workerObservers;
@@ -183,6 +173,8 @@ namespace WebCore {
 
 } // namespace WebCore
 
-#endif // ENABLE(WORKERS)
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::WorkerGlobalScope)
+    static bool isType(const WebCore::ScriptExecutionContext& context) { return context.isWorkerGlobalScope(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // WorkerGlobalScope_h

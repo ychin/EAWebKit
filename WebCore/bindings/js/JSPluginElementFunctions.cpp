@@ -35,54 +35,52 @@ using namespace HTMLNames;
 
 // JavaScript access to plug-in-exported properties for JSHTMLAppletElement, JSHTMLEmbedElement and JSHTMLObjectElement.
 
-static inline bool isPluginElement(HTMLElement& element)
-{
-    return element.hasTagName(objectTag) || element.hasTagName(embedTag) || element.hasTagName(appletTag);
-}
-
 Instance* pluginInstance(HTMLElement& element)
 {
     // The plugin element holds an owning reference, so we don't have to.
-    if (!isPluginElement(element))
-        return 0;
-    Instance* instance = static_cast<HTMLPlugInElement&>(element).getInstance().get();
+    if (!is<HTMLPlugInElement>(element))
+        return nullptr;
+    Instance* instance = downcast<HTMLPlugInElement>(element).getInstance().get();
     if (!instance || !instance->rootObject())
-        return 0;
+        return nullptr;
     return instance;
 }
 
 static JSObject* pluginScriptObjectFromPluginViewBase(HTMLPlugInElement& pluginElement, JSGlobalObject* globalObject)
 {
     Widget* pluginWidget = pluginElement.pluginWidget();
-    if (!pluginWidget)
-        return 0;
-    
-    if (!pluginWidget->isPluginViewBase())
-        return 0;
+    if (!is<PluginViewBase>(pluginWidget))
+        return nullptr;
 
-    PluginViewBase* pluginViewBase = toPluginViewBase(pluginWidget);
-    return pluginViewBase->scriptObject(globalObject);
+    return downcast<PluginViewBase>(*pluginWidget).scriptObject(globalObject);
 }
 
 static JSObject* pluginScriptObjectFromPluginViewBase(JSHTMLElement* jsHTMLElement)
 {
     HTMLElement& element = jsHTMLElement->impl();
-    if (!isPluginElement(element))
-        return 0;
+    if (!is<HTMLPlugInElement>(element))
+        return nullptr;
 
-    HTMLPlugInElement& pluginElement = toHTMLPlugInElement(element);
+    HTMLPlugInElement& pluginElement = downcast<HTMLPlugInElement>(element);
     return pluginScriptObjectFromPluginViewBase(pluginElement, jsHTMLElement->globalObject());
 }
 
 JSObject* pluginScriptObject(ExecState* exec, JSHTMLElement* jsHTMLElement)
 {
     HTMLElement& element = jsHTMLElement->impl();
-    if (!isPluginElement(element))
-        return 0;
+    if (!is<HTMLPlugInElement>(element))
+        return nullptr;
 
-    HTMLPlugInElement& pluginElement = toHTMLPlugInElement(element);
+    HTMLPlugInElement& pluginElement = downcast<HTMLPlugInElement>(element);
 
-    // First, see if we can ask the plug-in view for its script object.
+    // Choke point for script/plugin interaction; notify DOMTimer of the event.
+    DOMTimer::scriptDidInteractWithPlugin(pluginElement);
+
+    // First, see if the element has a plug-in replacement with a script.
+    if (JSObject* scriptObject = pluginElement.scriptObjectForPluginReplacement())
+        return scriptObject;
+    
+    // Next, see if we can ask the plug-in view for its script object.
     if (JSObject* scriptObject = pluginScriptObjectFromPluginViewBase(pluginElement, jsHTMLElement->globalObject()))
         return scriptObject;
 
@@ -91,19 +89,22 @@ JSObject* pluginScriptObject(ExecState* exec, JSHTMLElement* jsHTMLElement)
     // The plugin element holds an owning reference, so we don't have to.
     Instance* instance = pluginElement.getInstance().get();
     if (!instance || !instance->rootObject())
-        return 0;
+        return nullptr;
 
     return instance->createRuntimeObject(exec);
 }
     
-JSValue pluginElementPropertyGetter(ExecState* exec, JSValue slotBase, PropertyName propertyName)
+EncodedJSValue pluginElementPropertyGetter(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName propertyName)
 {
-    JSHTMLElement* element = jsCast<JSHTMLElement*>(asObject(slotBase));
-    JSObject* scriptObject = pluginScriptObject(exec, element);
+
+    JSHTMLElement* thisObject = jsDynamicCast<JSHTMLElement*>(JSValue::decode(thisValue));
+    if (!thisObject)
+        return throwVMTypeError(exec);
+    JSObject* scriptObject = pluginScriptObject(exec, thisObject);
     if (!scriptObject)
-        return jsUndefined();
+        return JSValue::encode(jsUndefined());
     
-    return scriptObject->get(exec, propertyName);
+    return JSValue::encode(scriptObject->get(exec, propertyName));
 }
 
 bool pluginElementCustomGetOwnPropertySlot(ExecState* exec, PropertyName propertyName, PropertySlot& slot, JSHTMLElement* element)
@@ -122,7 +123,7 @@ bool pluginElementCustomPut(ExecState* exec, PropertyName propertyName, JSValue 
 {
     JSObject* scriptObject = pluginScriptObject(exec, element);
     if (!scriptObject)
-        return 0;
+        return false;
     if (!scriptObject->hasProperty(exec, propertyName))
         return false;
     scriptObject->methodTable()->put(scriptObject, exec, propertyName, value, slot);
@@ -147,7 +148,7 @@ static EncodedJSValue JSC_HOST_CALL callPlugin(ExecState* exec)
     ASSERT(callType == CallTypeHost);
 
     // Call the object.
-    JSValue result = call(exec, scriptObject, callType, callData, exec->hostThisValue(), argumentList);
+    JSValue result = call(exec, scriptObject, callType, callData, exec->thisValue(), argumentList);
     return JSValue::encode(result);
 }
 

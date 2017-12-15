@@ -21,10 +21,8 @@
 #ifndef JSWebKitTransitionEvent_h
 #define JSWebKitTransitionEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "WebKitTransitionEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSWebKitTransitionEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSWebKitTransitionEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitTransitionEvent> impl)
+    static JSWebKitTransitionEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitTransitionEvent>&& impl)
     {
-        JSWebKitTransitionEvent* ptr = new (NotNull, JSC::allocateCell<JSWebKitTransitionEvent>(globalObject->vm().heap)) JSWebKitTransitionEvent(structure, globalObject, impl);
+        JSWebKitTransitionEvent* ptr = new (NotNull, JSC::allocateCell<JSWebKitTransitionEvent>(globalObject->vm().heap)) JSWebKitTransitionEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,69 +54,19 @@ public:
         return static_cast<WebKitTransitionEvent&>(Base::impl());
     }
 protected:
-    JSWebKitTransitionEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebKitTransitionEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebKitTransitionEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<WebKitTransitionEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSWebKitTransitionEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebKitTransitionEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebKitTransitionEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitTransitionEventPrototype>(vm.heap)) JSWebKitTransitionEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebKitTransitionEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWebKitTransitionEventConstructor : public DOMConstructorObject {
-private:
-    JSWebKitTransitionEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebKitTransitionEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebKitTransitionEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitTransitionEventConstructor>(vm.heap)) JSWebKitTransitionEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebKitTransitionEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillWebKitTransitionEventInit(WebKitTransitionEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsWebKitTransitionEventPropertyName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitTransitionEventElapsedTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitTransitionEventPseudoElement(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitTransitionEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

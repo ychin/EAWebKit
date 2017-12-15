@@ -24,6 +24,7 @@
 
 #include "JSWebGLUniformLocation.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLUniformLocation.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +32,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSWebGLUniformLocationTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLUniformLocationConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsWebGLUniformLocationConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebGLUniformLocationPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLUniformLocationPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLUniformLocationPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLUniformLocationPrototype>(vm.heap)) JSWebGLUniformLocationPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLUniformLocationPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebGLUniformLocationTable = { 2, 1, JSWebGLUniformLocationTableValues, 0 };
-/* Hash table for constructor */
+class JSWebGLUniformLocationConstructor : public DOMConstructorObject {
+private:
+    JSWebGLUniformLocationConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSWebGLUniformLocationConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebGLUniformLocationConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebGLUniformLocationConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebGLUniformLocationConstructor>(vm.heap)) JSWebGLUniformLocationConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSWebGLUniformLocationConstructorTable = { 1, 0, JSWebGLUniformLocationConstructorTableValues, 0 };
-const ClassInfo JSWebGLUniformLocationConstructor::s_info = { "WebGLUniformLocationConstructor", &Base::s_info, &JSWebGLUniformLocationConstructorTable, 0, CREATE_METHOD_TABLE(JSWebGLUniformLocationConstructor) };
+const ClassInfo JSWebGLUniformLocationConstructor::s_info = { "WebGLUniformLocationConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLUniformLocationConstructor) };
 
 JSWebGLUniformLocationConstructor::JSWebGLUniformLocationConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,47 +93,42 @@ void JSWebGLUniformLocationConstructor::finishCreation(VM& vm, JSDOMGlobalObject
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebGLUniformLocationPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebGLUniformLocationConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebGLUniformLocationConstructor, JSDOMWrapper>(exec, JSWebGLUniformLocationConstructorTable, jsCast<JSWebGLUniformLocationConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebGLUniformLocation::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebGLUniformLocation"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLUniformLocationPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLUniformLocationConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSWebGLUniformLocationPrototypeTable = { 1, 0, JSWebGLUniformLocationPrototypeTableValues, 0 };
-const ClassInfo JSWebGLUniformLocationPrototype::s_info = { "WebGLUniformLocationPrototype", &Base::s_info, &JSWebGLUniformLocationPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLUniformLocationPrototype) };
+const ClassInfo JSWebGLUniformLocationPrototype::s_info = { "WebGLUniformLocationPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLUniformLocationPrototype) };
 
-JSObject* JSWebGLUniformLocationPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLUniformLocation>(vm, globalObject);
-}
-
-const ClassInfo JSWebGLUniformLocation::s_info = { "WebGLUniformLocation", &Base::s_info, &JSWebGLUniformLocationTable, 0 , CREATE_METHOD_TABLE(JSWebGLUniformLocation) };
-
-JSWebGLUniformLocation::JSWebGLUniformLocation(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLUniformLocation> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLUniformLocation::finishCreation(VM& vm)
+void JSWebGLUniformLocationPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLUniformLocationPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLUniformLocation::s_info = { "WebGLUniformLocation", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLUniformLocation) };
+
+JSWebGLUniformLocation::JSWebGLUniformLocation(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLUniformLocation>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLUniformLocation::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLUniformLocationPrototype::create(vm, globalObject, JSWebGLUniformLocationPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLUniformLocation::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLUniformLocation>(vm, globalObject);
 }
 
 void JSWebGLUniformLocation::destroy(JSC::JSCell* cell)
@@ -110,20 +139,15 @@ void JSWebGLUniformLocation::destroy(JSC::JSCell* cell)
 
 JSWebGLUniformLocation::~JSWebGLUniformLocation()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSWebGLUniformLocation::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsWebGLUniformLocationConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSWebGLUniformLocation* thisObject = jsCast<JSWebGLUniformLocation*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebGLUniformLocation, Base>(exec, JSWebGLUniformLocationTable, thisObject, propertyName, slot);
-}
-
-JSValue jsWebGLUniformLocationConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSWebGLUniformLocation* domObject = jsCast<JSWebGLUniformLocation*>(asObject(slotBase));
-    return JSWebGLUniformLocation::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebGLUniformLocationPrototype* domObject = jsDynamicCast<JSWebGLUniformLocationPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebGLUniformLocation::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSWebGLUniformLocation::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -131,70 +155,41 @@ JSValue JSWebGLUniformLocation::getConstructor(VM& vm, JSGlobalObject* globalObj
     return getDOMConstructor<JSWebGLUniformLocationConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSWebGLUniformLocation* jsWebGLUniformLocation)
-{
-    if (jsWebGLUniformLocation->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSWebGLUniformLocationOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLUniformLocation* jsWebGLUniformLocation = jsCast<JSWebGLUniformLocation*>(handle.get().asCell());
-    if (!isObservable(jsWebGLUniformLocation))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebGLUniformLocationOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLUniformLocation* jsWebGLUniformLocation = jsCast<JSWebGLUniformLocation*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLUniformLocation = jsCast<JSWebGLUniformLocation*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLUniformLocation->impl(), jsWebGLUniformLocation);
-    jsWebGLUniformLocation->releaseImpl();
 }
 
-#if ENABLE(BINDING_INTEGRITY)
-#if PLATFORM(WIN)
-#pragma warning(disable: 4483)
-extern "C" { extern void (*const __identifier("??_7WebGLUniformLocation@WebCore@@6B@")[])(); }
-#else
-extern "C" { extern void* _ZTVN7WebCore20WebGLUniformLocationE[]; }
-#endif
-#endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLUniformLocation* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLUniformLocation* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLUniformLocation>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLUniformLocation>(globalObject, impl))
         return result;
-
-#if ENABLE(BINDING_INTEGRITY)
-    void* actualVTablePointer = *(reinterpret_cast<void**>(impl));
-#if PLATFORM(WIN)
-    void* expectedVTablePointer = reinterpret_cast<void*>(__identifier("??_7WebGLUniformLocation@WebCore@@6B@"));
-#else
-    void* expectedVTablePointer = &_ZTVN7WebCore20WebGLUniformLocationE[2];
 #if COMPILER(CLANG)
-    // If this fails WebGLUniformLocation does not have a vtable, so you need to add the
-    // ImplementationLacksVTable attribute to the interface definition
-    COMPILE_ASSERT(__is_polymorphic(WebGLUniformLocation), WebGLUniformLocation_is_not_polymorphic);
+    // If you hit this failure the interface definition has the ImplementationLacksVTable
+    // attribute. You should remove that attribute. If the class has subclasses
+    // that may be passed through this toJS() function you should use the SkipVTableValidation
+    // attribute to WebGLUniformLocation.
+    COMPILE_ASSERT(!__is_polymorphic(WebGLUniformLocation), WebGLUniformLocation_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-#endif
-    // If you hit this assertion you either have a use after free bug, or
-    // WebGLUniformLocation has subclasses. If WebGLUniformLocation has subclasses that get passed
-    // to toJS() we currently require WebGLUniformLocation you to opt out of binding hardening
-    // by adding the SkipVTableValidation attribute to the interface IDL definition
-    RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
-#endif
-    ReportMemoryCost<WebGLUniformLocation>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLUniformLocation>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLUniformLocation>(globalObject, impl);
 }
 
-WebGLUniformLocation* toWebGLUniformLocation(JSC::JSValue value)
+WebGLUniformLocation* JSWebGLUniformLocation::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLUniformLocation::info()) ? &jsCast<JSWebGLUniformLocation*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLUniformLocation*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

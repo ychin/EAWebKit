@@ -21,28 +21,28 @@
 #ifndef JSRect_h
 #define JSRect_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "Rect.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRect : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRect* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Rect> impl)
+    static JSRect* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Rect>&& impl)
     {
-        JSRect* ptr = new (NotNull, JSC::allocateCell<JSRect>(globalObject->vm().heap)) JSRect(structure, globalObject, impl);
+        JSRect* ptr = new (NotNull, JSC::allocateCell<JSRect>(globalObject->vm().heap)) JSRect(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Rect* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRect();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     Rect& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Rect* m_impl;
 protected:
-    JSRect(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Rect>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRect(JSC::Structure*, JSDOMGlobalObject*, Ref<Rect>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRectOwner : public JSC::WeakHandleOwner {
@@ -78,72 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Rect*)
 {
-    DEFINE_STATIC_LOCAL(JSRectOwner, jsRectOwner, ());
-    return &jsRectOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Rect*)
-{
-    return &world;
+    static NeverDestroyed<JSRectOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Rect*);
-Rect* toRect(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Rect& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRectPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRectPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRectPrototype* ptr = new (NotNull, JSC::allocateCell<JSRectPrototype>(vm.heap)) JSRectPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRectPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSRectConstructor : public DOMConstructorObject {
-private:
-    JSRectConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSRectConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSRectConstructor* ptr = new (NotNull, JSC::allocateCell<JSRectConstructor>(vm.heap)) JSRectConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsRectTop(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRectRight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRectBottom(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRectLeft(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRectConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

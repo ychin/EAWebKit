@@ -20,25 +20,16 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "RenderSVGResourceMarker.h"
 
 #include "GraphicsContext.h"
-#include "RenderSVGContainer.h"
 #include "RenderSVGRoot.h"
-#include "SVGElement.h"
-#include "SVGGraphicsElement.h"
-#include "SVGMarkerElement.h"
-#include "SVGRenderSupport.h"
 #include <wtf/StackStats.h>
 
 namespace WebCore {
 
-RenderSVGResourceType RenderSVGResourceMarker::s_resourceType = MarkerResourceType;
-
-RenderSVGResourceMarker::RenderSVGResourceMarker(SVGMarkerElement& element)
-    : RenderSVGResourceContainer(element)
+RenderSVGResourceMarker::RenderSVGResourceMarker(SVGMarkerElement& element, Ref<RenderStyle>&& style)
+    : RenderSVGResourceContainer(element, WTF::move(style))
 {
 }
 
@@ -64,15 +55,14 @@ void RenderSVGResourceMarker::removeAllClientsFromCache(bool markForInvalidation
     markAllClientsForInvalidation(markForInvalidation ? LayoutAndBoundariesInvalidation : ParentOnlyInvalidation);
 }
 
-void RenderSVGResourceMarker::removeClientFromCache(RenderObject* client, bool markForInvalidation)
+void RenderSVGResourceMarker::removeClientFromCache(RenderElement& client, bool markForInvalidation)
 {
-    ASSERT(client);
     markClientForInvalidation(client, markForInvalidation ? BoundariesInvalidation : ParentOnlyInvalidation);
 }
 
 void RenderSVGResourceMarker::applyViewportClip(PaintInfo& paintInfo)
 {
-    if (SVGRenderSupport::isOverflowHidden(this))
+    if (SVGRenderSupport::isOverflowHidden(*this))
         paintInfo.context->clip(m_viewport);
 }
 
@@ -163,5 +153,3 @@ void RenderSVGResourceMarker::calcViewport()
 }
 
 }
-
-#endif // ENABLE(SVG)

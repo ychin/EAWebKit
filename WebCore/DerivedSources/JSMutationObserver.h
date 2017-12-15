@@ -21,28 +21,28 @@
 #ifndef JSMutationObserver_h
 #define JSMutationObserver_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MutationObserver.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMutationObserver : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMutationObserver* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MutationObserver> impl)
+    static JSMutationObserver* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MutationObserver>&& impl)
     {
-        JSMutationObserver* ptr = new (NotNull, JSC::allocateCell<JSMutationObserver>(globalObject->vm().heap)) JSMutationObserver(structure, globalObject, impl);
+        JSMutationObserver* ptr = new (NotNull, JSC::allocateCell<JSMutationObserver>(globalObject->vm().heap)) JSMutationObserver(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MutationObserver* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMutationObserver();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     MutationObserver& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MutationObserver* m_impl;
 protected:
-    JSMutationObserver(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MutationObserver>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMutationObserver(JSC::Structure*, JSDOMGlobalObject*, Ref<MutationObserver>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMutationObserverOwner : public JSC::WeakHandleOwner {
@@ -78,76 +75,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MutationObserver*)
 {
-    DEFINE_STATIC_LOCAL(JSMutationObserverOwner, jsMutationObserverOwner, ());
-    return &jsMutationObserverOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MutationObserver*)
-{
-    return &world;
+    static NeverDestroyed<JSMutationObserverOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MutationObserver*);
-MutationObserver* toMutationObserver(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MutationObserver& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMutationObserverPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMutationObserverPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMutationObserverPrototype* ptr = new (NotNull, JSC::allocateCell<JSMutationObserverPrototype>(vm.heap)) JSMutationObserverPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSMutationObserver(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMutationObserverPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSMutationObserverConstructor : public DOMConstructorObject {
-private:
-    JSMutationObserverConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMutationObserverConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMutationObserverConstructor* ptr = new (NotNull, JSC::allocateCell<JSMutationObserverConstructor>(vm.heap)) JSMutationObserverConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMutationObserver(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionObserve(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionTakeRecords(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMutationObserverPrototypeFunctionDisconnect(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMutationObserverConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

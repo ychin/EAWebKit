@@ -46,7 +46,7 @@ class Document;
 class Frame;
 class Page;
 class RenderElement;
-class StylePropertySet;
+class StyleProperties;
 class StyleRule;
 
 // This class is used to serialize a page contents back to text (typically HTML).
@@ -78,8 +78,8 @@ private:
     void serializeCSSStyleSheet(CSSStyleSheet*, const URL&);
 
     void addImageToResources(CachedImage*, RenderElement*, const URL&);
-    void retrieveResourcesForProperties(const StylePropertySet*, Document*);
-    void retrieveResourcesForRule(StyleRule*, Document*);
+    void retrieveResourcesForProperties(const StyleProperties*, Document*);
+    void retrieveResourcesForRule(StyleRule&, Document*);
 
     Vector<Resource>* m_resources;
     ListHashSet<URL> m_resourceURLs;

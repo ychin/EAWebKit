@@ -4,7 +4,7 @@
  * Copyright (C) 2008 Collabora Ltd. All rights reserved.
  * Copyright (C) 2010 Apple Inc. All rights reserved.
  * Copyright (C) 2010 INdT - Instituto Nokia de Tecnologia
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,7 +38,6 @@
 #include <Page.h>
 #include <PageGroup.h>
 #include <PlatformCookieJar.h>
-#include <PluginDatabase.h>
 #include <webpage.h>
 #include <wtf/MathExtras.h>
 
@@ -46,7 +45,7 @@ using namespace WebCore;
 
 void PlatformStrategiesEA::initialize()
 {
-    DEFINE_STATIC_LOCAL(PlatformStrategiesEA, platformStrategies, ());
+    DEPRECATED_DEFINE_STATIC_LOCAL(PlatformStrategiesEA, platformStrategies, ());
     (void)platformStrategies;
 }
 
@@ -61,10 +60,10 @@ CookiesStrategy* PlatformStrategiesEA::createCookiesStrategy()
     return this;
 }
 
-DatabaseStrategy* PlatformStrategiesEA::createDatabaseStrategy()
-{
-    return this;
-}
+//DatabaseStrategy* PlatformStrategiesEA::createDatabaseStrategy()
+//{
+//    return this;
+//}
 
 LoaderStrategy* PlatformStrategiesEA::createLoaderStrategy()
 {
@@ -80,20 +79,20 @@ PluginStrategy* PlatformStrategiesEA::createPluginStrategy()
     return this;
 }
 
-SharedWorkerStrategy* PlatformStrategiesEA::createSharedWorkerStrategy()
-{
-    return this;
-}
-
-StorageStrategy* PlatformStrategiesEA::createStorageStrategy()
-{
-    return this;
-}
-
-VisitedLinkStrategy* PlatformStrategiesEA::createVisitedLinkStrategy()
-{
-    return this;
-}
+//SharedWorkerStrategy* PlatformStrategiesEA::createSharedWorkerStrategy()
+//{
+//    return this;
+//}
+//
+//StorageStrategy* PlatformStrategiesEA::createStorageStrategy()
+//{
+//    return this;
+//}
+//
+//VisitedLinkStrategy* PlatformStrategiesEA::createVisitedLinkStrategy()
+//{
+//    return this;
+//}
 
 String PlatformStrategiesEA::cookiesForDOM(const NetworkStorageSession& session, const URL& firstParty, const URL& url)
 {
@@ -127,12 +126,14 @@ void PlatformStrategiesEA::deleteCookie(const NetworkStorageSession& session, co
 
 void PlatformStrategiesEA::refreshPlugins()
 {
-    PluginDatabase::installedPlugins()->refresh();
+    notImplemented();
 }
+
 
 void PlatformStrategiesEA::getPluginInfo(const WebCore::Page* page, Vector<WebCore::PluginInfo>& outPlugins)
 {
-	PluginDatabase* db = PluginDatabase::installedPlugins();
+    notImplemented();
+    /*PluginDatabase* db = PluginDatabase::installedPlugins();
     const Vector<PluginPackage*> &plugins = db->plugins();
 
     outPlugins.resize(plugins.size());
@@ -158,20 +159,12 @@ void PlatformStrategiesEA::getPluginInfo(const WebCore::Page* page, Vector<WebCo
         }
 
         outPlugins.append(info);
-    }
+    }*/
 }
 
-
-// VisitedLinkStrategy
-
-bool PlatformStrategiesEA::isLinkVisited(Page* page, LinkHash hash, const URL& baseURL, const AtomicString& attributeURL)
+void PlatformStrategiesEA::getWebVisiblePluginInfo(const Page* page, Vector<PluginInfo>& plugins)
 {
-    return page->group().isLinkVisited(hash);
-}
-
-void PlatformStrategiesEA::addVisitedLink(Page* page, LinkHash hash)
-{
-    page->group().addVisitedLinkHash(hash);
+	getPluginInfo(page, plugins);
 }
 
 namespace WebCore

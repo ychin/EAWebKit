@@ -44,14 +44,14 @@ InlineTextBox* RenderTextLineBoxes::createAndAppendLineBox(RenderText& renderTex
 {
     auto textBox = renderText.createTextBox();
     if (!m_first) {
-        m_first = textBox;
-        m_last = textBox;
+        m_first = textBox.get();
+        m_last = textBox.get();
     } else {
-        m_last->setNextTextBox(textBox);
+        m_last->setNextTextBox(textBox.get());
         textBox->setPreviousTextBox(m_last);
-        m_last = textBox;
+        m_last = textBox.get();
     }
-    return textBox;
+    return textBox.release();
 }
 
 void RenderTextLineBoxes::extract(InlineTextBox& box)
@@ -109,22 +109,21 @@ void RenderTextLineBoxes::removeAllFromParent(RenderText& renderer)
 {
     if (!m_first) {
         if (renderer.parent())
-            renderer.parent()->dirtyLinesFromChangedChild(&renderer);
+            renderer.parent()->dirtyLinesFromChangedChild(renderer);
         return;
     }
     for (auto box = m_first; box; box = box->nextTextBox())
         box->removeFromParent();
 }
 
-void RenderTextLineBoxes::deleteAll(RenderText& renderer)
+void RenderTextLineBoxes::deleteAll()
 {
     if (!m_first)
         return;
-    auto& arena = renderer.renderArena();
     InlineTextBox* next;
     for (auto current = m_first; current; current = next) {
         next = current->nextTextBox();
-        current->destroy(arena);
+        delete current;
     }
     m_first = nullptr;
     m_last = nullptr;
@@ -161,13 +160,20 @@ IntRect RenderTextLineBoxes::boundingBox(const RenderText& renderer) const
             logicalRightSide = current->logicalRight();
     }
     
-    bool isHorizontal = renderer.style()->isHorizontalWritingMode();
+    bool isHorizontal = renderer.style().isHorizontalWritingMode();
     
     float x = isHorizontal ? logicalLeftSide : m_first->x();
     float y = isHorizontal ? m_first->y() : logicalLeftSide;
     float width = isHorizontal ? logicalRightSide - logicalLeftSide : m_last->logicalBottom() - x;
     float height = isHorizontal ? m_last->logicalBottom() - y : logicalRightSide - logicalLeftSide;
     return enclosingIntRect(FloatRect(x, y, width, height));
+}
+
+IntPoint RenderTextLineBoxes::firstRunLocation() const
+{
+    if (!m_first)
+        return IntPoint();
+    return IntPoint(m_first->topLeft());
 }
 
 LayoutRect RenderTextLineBoxes::visualOverflowBoundingBox(const RenderText& renderer) const
@@ -188,7 +194,7 @@ LayoutRect RenderTextLineBoxes::visualOverflowBoundingBox(const RenderText& rend
     auto logicalHeight = m_last->logicalBottomVisualOverflow() - logicalTop;
     
     LayoutRect rect(logicalLeftSide, logicalTop, logicalWidth, logicalHeight);
-    if (!renderer.style()->isHorizontalWritingMode())
+    if (!renderer.style().isHorizontalWritingMode())
         rect = rect.transposedRect();
     return rect;
 }
@@ -225,6 +231,39 @@ int RenderTextLineBoxes::caretMaxOffset(const RenderText& renderer) const
     return maxOffset;
 }
 
+bool RenderTextLineBoxes::containsOffset(const RenderText& renderer, unsigned offset, OffsetType type) const
+{
+    for (auto box = m_first; box; box = box->nextTextBox()) {
+        if (offset < box->start() && !renderer.containsReversedText())
+            return false;
+        unsigned boxEnd = box->start() + box->len();
+        if (offset >= box->start() && offset <= boxEnd) {
+            if (offset == boxEnd && (type == CharacterOffset || box->isLineBreak()))
+                continue;
+            if (type == CharacterOffset)
+                return true;
+            // Return false for offsets inside composed characters.
+            return !offset || offset == static_cast<unsigned>(renderer.nextOffset(renderer.previousOffset(offset)));
+        }
+    }
+    return false;
+}
+
+unsigned RenderTextLineBoxes::countCharacterOffsetsUntil(unsigned offset) const
+{
+    unsigned result = 0;
+    for (auto box = m_first; box; box = box->nextTextBox()) {
+        if (offset < box->start())
+            return result;
+        if (offset <= box->start() + box->len()) {
+            result += offset - box->start();
+            return result;
+        }
+        result += box->len();
+    }
+    return result;
+}
+
 enum ShouldAffinityBeDownstream { AlwaysDownstream, AlwaysUpstream, UpstreamIfPositionIsNotAtStart };
 
 static bool lineDirectionPointFitsInBox(int pointLineDirection, const InlineTextBox& box, ShouldAffinityBeDownstream& shouldAffinityBeDownstream)
@@ -239,12 +278,14 @@ static bool lineDirectionPointFitsInBox(int pointLineDirection, const InlineText
         return true;
     }
 
+#if !PLATFORM(IOS)
     // and the x coordinate is to the left of the right edge of this box
     // check to see if position goes in this box
     if (pointLineDirection < box.logicalRight()) {
         shouldAffinityBeDownstream = UpstreamIfPositionIsNotAtStart;
         return true;
     }
+#endif
 
     // box is first on line
     // and the x coordinate is to the left of the first text box left edge
@@ -292,7 +333,7 @@ static VisiblePosition createVisiblePositionAfterAdjustingOffsetForBiDi(const In
 
         const InlineBox* prevBox = box.prevLeafChildIgnoringLineBreak();
         if ((prevBox && prevBox->bidiLevel() == box.bidiLevel())
-            || box.renderer().containingBlock()->style()->direction() == box.direction()) // FIXME: left on 12CBA
+            || box.renderer().containingBlock()->style().direction() == box.direction()) // FIXME: left on 12CBA
             return createVisiblePositionForBox(box, box.caretLeftmostOffset(), shouldAffinityBeDownstream);
 
         if (prevBox && prevBox->bidiLevel() > box.bidiLevel()) {
@@ -322,7 +363,7 @@ static VisiblePosition createVisiblePositionAfterAdjustingOffsetForBiDi(const In
 
     const InlineBox* nextBox = box.nextLeafChildIgnoringLineBreak();
     if ((nextBox && nextBox->bidiLevel() == box.bidiLevel())
-        || box.renderer().containingBlock()->style()->direction() == box.direction())
+        || box.renderer().containingBlock()->style().direction() == box.direction())
         return createVisiblePositionForBox(box, box.caretRightmostOffset(), shouldAffinityBeDownstream);
 
     // offset is on the right edge
@@ -358,7 +399,7 @@ VisiblePosition RenderTextLineBoxes::positionForPoint(const RenderText& renderer
 
     LayoutUnit pointLineDirection = m_first->isHorizontal() ? point.x() : point.y();
     LayoutUnit pointBlockDirection = m_first->isHorizontal() ? point.y() : point.x();
-    bool blocksAreFlipped = renderer.style()->isFlippedBlocksWritingMode();
+    bool blocksAreFlipped = renderer.style().isFlippedBlocksWritingMode();
 
     InlineTextBox* lastBox = nullptr;
     for (auto box = m_first; box; box = box->nextTextBox()) {
@@ -374,6 +415,13 @@ VisiblePosition RenderTextLineBoxes::positionForPoint(const RenderText& renderer
 
             if (pointBlockDirection < bottom || (blocksAreFlipped && pointBlockDirection == bottom)) {
                 ShouldAffinityBeDownstream shouldAffinityBeDownstream;
+#if PLATFORM(IOS)
+                if (pointLineDirection != box->logicalLeft() && point.x() < box->x() + box->logicalWidth()) {
+                    int half = box->x() + box->logicalWidth() / 2;
+                    EAffinity affinity = point.x() < half ? DOWNSTREAM : VP_UPSTREAM_IF_POSSIBLE;
+                    return renderer.createVisiblePosition(box->offsetForPosition(pointLineDirection) + box->start(), affinity);
+                }
+#endif
                 if (lineDirectionPointFitsInBox(pointLineDirection, *box, shouldAffinityBeDownstream))
                     return createVisiblePositionAfterAdjustingOffsetForBiDi(*box, box->offsetForPosition(pointLineDirection), shouldAffinityBeDownstream);
             }
@@ -446,6 +494,17 @@ LayoutRect RenderTextLineBoxes::selectionRectForRange(unsigned start, unsigned e
     return rect;
 }
 
+void RenderTextLineBoxes::collectSelectionRectsForRange(unsigned start, unsigned end, Vector<LayoutRect>& rects)
+{
+    for (auto box = m_first; box; box = box->nextTextBox()) {
+        LayoutRect rect;
+        rect.unite(box->localSelectionRect(start, end));
+        rect.unite(ellipsisRectForBox(*box, start, end));
+        if (!rect.size().isEmpty())
+            rects.append(rect);
+    }
+}
+
 Vector<IntRect> RenderTextLineBoxes::absoluteRects(const LayoutPoint& accumulatedOffset) const
 {
     Vector<IntRect> rects;
@@ -491,13 +550,13 @@ Vector<IntRect> RenderTextLineBoxes::absoluteRectsForRange(const RenderText& ren
                     boundaries.setX(selectionRect.x());
                 }
             }
-            rects.append(renderer.localToAbsoluteQuad(boundaries, 0, wasFixed).enclosingBoundingBox());
+            rects.append(renderer.localToAbsoluteQuad(boundaries, UseTransforms, wasFixed).enclosingBoundingBox());
             continue;
         }
         // FIXME: This code is wrong. It's converting local to absolute twice. http://webkit.org/b/65722
         FloatRect rect = localQuadForTextBox(*box, start, end, useSelectionHeight);
         if (!rect.isZero())
-            rects.append(renderer.localToAbsoluteQuad(rect, 0, wasFixed).enclosingBoundingBox());
+            rects.append(renderer.localToAbsoluteQuad(rect, UseTransforms, wasFixed).enclosingBoundingBox());
     }
     return rects;
 }
@@ -512,12 +571,12 @@ Vector<FloatQuad> RenderTextLineBoxes::absoluteQuads(const RenderText& renderer,
         // FIXME: ellipsisRectForBox should switch to return FloatRect soon with the subpixellayout branch.
         IntRect ellipsisRect = (option == ClipToEllipsis) ? ellipsisRectForBox(*box, 0, renderer.textLength()) : IntRect();
         if (!ellipsisRect.isEmpty()) {
-            if (renderer.style()->isHorizontalWritingMode())
+            if (renderer.style().isHorizontalWritingMode())
                 boundaries.setWidth(ellipsisRect.maxX() - boundaries.x());
             else
                 boundaries.setHeight(ellipsisRect.maxY() - boundaries.y());
         }
-        quads.append(renderer.localToAbsoluteQuad(boundaries, 0, wasFixed));
+        quads.append(renderer.localToAbsoluteQuad(boundaries, UseTransforms, wasFixed));
     }
     return quads;
 }
@@ -539,12 +598,12 @@ Vector<FloatQuad> RenderTextLineBoxes::absoluteQuadsForRange(const RenderText& r
                     boundaries.setX(selectionRect.x());
                 }
             }
-            quads.append(renderer.localToAbsoluteQuad(boundaries, 0, wasFixed));
+            quads.append(renderer.localToAbsoluteQuad(boundaries, UseTransforms, wasFixed));
             continue;
         }
         FloatRect rect = localQuadForTextBox(*box, start, end, useSelectionHeight);
         if (!rect.isZero())
-            quads.append(renderer.localToAbsoluteQuad(rect, 0, wasFixed));
+            quads.append(renderer.localToAbsoluteQuad(rect, UseTransforms, wasFixed));
     }
     return quads;
 }
@@ -574,8 +633,7 @@ bool RenderTextLineBoxes::dirtyRange(RenderText& renderer, unsigned start, unsig
             if (!firstRootBox) {
                 firstRootBox = &rootBox;
                 if (!dirtiedLines) {
-                    // The affected area was in between two runs. Go ahead and mark the root box of
-                    // the run after the affected area as dirty.
+                    // The affected area was in between two runs. Mark the root box of the run after the affected area as dirty.
                     firstRootBox->markDirty();
                     dirtiedLines = true;
                 }
@@ -624,7 +682,7 @@ bool RenderTextLineBoxes::dirtyRange(RenderText& renderer, unsigned start, unsig
     
     // If the text node is empty, dirty the line where new text will be inserted.
     if (!m_first && renderer.parent()) {
-        renderer.parent()->dirtyLinesFromChangedChild(&renderer);
+        renderer.parent()->dirtyLinesFromChangedChild(renderer);
         dirtiedLines = true;
     }
     return dirtiedLines;
@@ -650,6 +708,14 @@ RenderTextLineBoxes::~RenderTextLineBoxes()
 {
     ASSERT(!m_first);
     ASSERT(!m_last);
+}
+#endif
+
+#if !ASSERT_WITH_SECURITY_IMPLICATION_DISABLED
+void RenderTextLineBoxes::invalidateParentChildLists()
+{
+    for (auto box = m_first; box; box = box->nextTextBox())
+        box->invalidateParentChildList();
 }
 #endif
 

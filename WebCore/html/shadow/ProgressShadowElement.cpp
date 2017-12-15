@@ -29,7 +29,6 @@
  */
 
 #include "config.h"
-#if ENABLE(PROGRESS_ELEMENT)
 #include "ProgressShadowElement.h"
 
 #include "HTMLNames.h"
@@ -47,13 +46,13 @@ ProgressShadowElement::ProgressShadowElement(Document& document)
 
 HTMLProgressElement* ProgressShadowElement::progressElement() const
 {
-    return toHTMLProgressElement(shadowHost());
+    return downcast<HTMLProgressElement>(shadowHost());
 }
 
 bool ProgressShadowElement::rendererIsNeeded(const RenderStyle& style)
 {
     RenderObject* progressRenderer = progressElement()->renderer();
-    return progressRenderer && !progressRenderer->style()->hasAppearance() && HTMLDivElement::rendererIsNeeded(style);
+    return progressRenderer && !progressRenderer->style().hasAppearance() && HTMLDivElement::rendererIsNeeded(style);
 }
 
 ProgressInnerElement::ProgressInnerElement(Document& document)
@@ -61,18 +60,15 @@ ProgressInnerElement::ProgressInnerElement(Document& document)
 {
 }
 
-RenderElement* ProgressInnerElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> ProgressInnerElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderProgress(*this);
+    return createRenderer<RenderProgress>(*this, WTF::move(style));
 }
 
 bool ProgressInnerElement::rendererIsNeeded(const RenderStyle& style)
 {
-    if (progressElement()->hasAuthorShadowRoot())
-        return HTMLDivElement::rendererIsNeeded(style);
-
     RenderObject* progressRenderer = progressElement()->renderer();
-    return progressRenderer && !progressRenderer->style()->hasAppearance() && HTMLDivElement::rendererIsNeeded(style);    
+    return progressRenderer && !progressRenderer->style().hasAppearance() && HTMLDivElement::rendererIsNeeded(style);    
 }
 
 ProgressBarElement::ProgressBarElement(Document& document)
@@ -91,4 +87,3 @@ void ProgressValueElement::setWidthPercentage(double width)
 }
 
 }
-#endif

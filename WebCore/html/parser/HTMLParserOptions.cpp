@@ -39,7 +39,6 @@ HTMLParserOptions::HTMLParserOptions()
     : scriptEnabled(false)
     , pluginsEnabled(false)
     , usePreHTML5ParserQuirks(false)
-    , useThreading(false)
     , maximumDOMTreeDepth(Settings::defaultMaximumHTMLParserDOMTreeDepth)
 {
 }
@@ -48,18 +47,10 @@ HTMLParserOptions::HTMLParserOptions(Document& document)
 {
     Frame* frame = document.frame();
     scriptEnabled = frame && frame->script().canExecuteScripts(NotAboutToExecuteScript);
-    pluginsEnabled = frame && frame->loader().subframeLoader().allowPlugins(NotAboutToInstantiatePlugin);
+    pluginsEnabled = frame && frame->loader().subframeLoader().allowPlugins();
 
     Settings* settings = document.settings();
     usePreHTML5ParserQuirks = settings && settings->usePreHTML5ParserQuirks();
-#if ENABLE(THREADED_HTML_PARSER)
-    // We force the main-thread parser for about:blank, javascript: and data: urls for compatibility
-    // with historical synchronous loading/parsing behavior of those schemes.
-    useThreading = settings && settings->threadedHTMLParser() && !document->url().isBlankURL()
-        && (settings->useThreadedHTMLParserForDataURLs() || !document->url().protocolIsData());
-#else
-    useThreading = false;
-#endif
     maximumDOMTreeDepth = settings ? settings->maximumHTMLParserDOMTreeDepth() : Settings::defaultMaximumHTMLParserDOMTreeDepth;
 }
 

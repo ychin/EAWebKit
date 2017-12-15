@@ -25,24 +25,22 @@
 
 #include "AnalyserNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSAnalyserNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSAnalyserNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AnalyserNode> impl)
+    static JSAnalyserNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AnalyserNode>&& impl)
     {
-        JSAnalyserNode* ptr = new (NotNull, JSC::allocateCell<JSAnalyserNode>(globalObject->vm().heap)) JSAnalyserNode(structure, globalObject, impl);
+        JSAnalyserNode* ptr = new (NotNull, JSC::allocateCell<JSAnalyserNode>(globalObject->vm().heap)) JSAnalyserNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,78 +54,19 @@ public:
         return static_cast<AnalyserNode&>(Base::impl());
     }
 protected:
-    JSAnalyserNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AnalyserNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAnalyserNode(JSC::Structure*, JSDOMGlobalObject*, Ref<AnalyserNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AnalyserNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AnalyserNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAnalyserNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAnalyserNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAnalyserNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSAnalyserNodePrototype>(vm.heap)) JSAnalyserNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAnalyserNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSAnalyserNodeConstructor : public DOMConstructorObject {
-private:
-    JSAnalyserNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSAnalyserNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSAnalyserNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSAnalyserNodeConstructor>(vm.heap)) JSAnalyserNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsAnalyserNodePrototypeFunctionGetFloatFrequencyData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAnalyserNodePrototypeFunctionGetByteFrequencyData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAnalyserNodePrototypeFunctionGetByteTimeDomainData(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsAnalyserNodeFftSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAnalyserNodeFftSize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAnalyserNodeFrequencyBinCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAnalyserNodeMinDecibels(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAnalyserNodeMinDecibels(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAnalyserNodeMaxDecibels(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAnalyserNodeMaxDecibels(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAnalyserNodeSmoothingTimeConstant(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAnalyserNodeSmoothingTimeConstant(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAnalyserNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

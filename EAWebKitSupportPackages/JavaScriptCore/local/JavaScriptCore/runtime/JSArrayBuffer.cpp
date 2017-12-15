@@ -26,13 +26,13 @@
 #include "config.h"
 #include "JSArrayBuffer.h"
 
-#include "Operations.h"
+#include "JSCInlines.h"
 #include "Reject.h"
 
 namespace JSC {
 
 const ClassInfo JSArrayBuffer::s_info = {
-    "ArrayBuffer", &Base::s_info, 0, 0, CREATE_METHOD_TABLE(JSArrayBuffer)};
+    "ArrayBuffer", &Base::s_info, 0, CREATE_METHOD_TABLE(JSArrayBuffer)};
 
 JSArrayBuffer::JSArrayBuffer(VM& vm, Structure* structure, PassRefPtr<ArrayBuffer> arrayBuffer)
     : Base(vm, structure)
@@ -119,7 +119,7 @@ void JSArrayBuffer::getOwnNonIndexPropertyNames(
 {
     JSArrayBuffer* thisObject = jsCast<JSArrayBuffer*>(object);
     
-    if (mode == IncludeDontEnumProperties)
+    if (mode.includeDontEnumProperties())
         array.add(exec->propertyNames().byteLength);
     
     Base::getOwnNonIndexPropertyNames(thisObject, exec, array, mode);

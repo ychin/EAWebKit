@@ -24,27 +24,27 @@
 #if ENABLE(GEOLOCATION)
 
 #include "Geoposition.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSGeoposition : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSGeoposition* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Geoposition> impl)
+    static JSGeoposition* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Geoposition>&& impl)
     {
-        JSGeoposition* ptr = new (NotNull, JSC::allocateCell<JSGeoposition>(globalObject->vm().heap)) JSGeoposition(structure, globalObject, impl);
+        JSGeoposition* ptr = new (NotNull, JSC::allocateCell<JSGeoposition>(globalObject->vm().heap)) JSGeoposition(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Geoposition* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSGeoposition();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,19 @@ public:
     }
 
     Geoposition& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Geoposition* m_impl;
 protected:
-    JSGeoposition(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Geoposition>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSGeoposition(JSC::Structure*, JSDOMGlobalObject*, Ref<Geoposition>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSGeopositionOwner : public JSC::WeakHandleOwner {
@@ -79,45 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Geoposition*)
 {
-    DEFINE_STATIC_LOCAL(JSGeopositionOwner, jsGeopositionOwner, ());
-    return &jsGeopositionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Geoposition*)
-{
-    return &world;
+    static NeverDestroyed<JSGeopositionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Geoposition*);
-Geoposition* toGeoposition(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Geoposition& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSGeopositionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSGeopositionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSGeopositionPrototype* ptr = new (NotNull, JSC::allocateCell<JSGeopositionPrototype>(vm.heap)) JSGeopositionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSGeopositionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsGeopositionCoords(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsGeopositionTimestamp(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

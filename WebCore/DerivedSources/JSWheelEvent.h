@@ -21,10 +21,8 @@
 #ifndef JSWheelEvent_h
 #define JSWheelEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSMouseEvent.h"
 #include "WheelEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSWheelEvent : public JSMouseEvent {
 public:
     typedef JSMouseEvent Base;
-    static JSWheelEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WheelEvent> impl)
+    static JSWheelEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WheelEvent>&& impl)
     {
-        JSWheelEvent* ptr = new (NotNull, JSC::allocateCell<JSWheelEvent>(globalObject->vm().heap)) JSWheelEvent(structure, globalObject, impl);
+        JSWheelEvent* ptr = new (NotNull, JSC::allocateCell<JSWheelEvent>(globalObject->vm().heap)) JSWheelEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,85 +54,19 @@ public:
         return static_cast<WheelEvent&>(Base::impl());
     }
 protected:
-    JSWheelEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WheelEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWheelEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<WheelEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSWheelEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWheelEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWheelEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSWheelEventPrototype>(vm.heap)) JSWheelEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWheelEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSWheelEventConstructor : public DOMConstructorObject {
-private:
-    JSWheelEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWheelEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWheelEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSWheelEventConstructor>(vm.heap)) JSWheelEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWheelEvent(JSC::ExecState*);
-#if ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-#endif // ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-};
 
 bool fillWheelEventInit(WheelEventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWheelEventPrototypeFunctionInitWebKitWheelEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsWheelEventDeltaX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventDeltaY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventDeltaZ(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventDeltaMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventWheelDeltaX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventWheelDeltaY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventWheelDelta(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventWebkitDirectionInvertedFromDevice(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsWheelEventDOM_DELTA_PIXEL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventDOM_DELTA_LINE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWheelEventDOM_DELTA_PAGE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

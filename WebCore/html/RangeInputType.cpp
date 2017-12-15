@@ -34,9 +34,7 @@
 
 #include "AXObjectCache.h"
 #include "ExceptionCodePlaceholder.h"
-#include "HTMLDivElement.h"
 #include "HTMLInputElement.h"
-#include "HTMLNames.h"
 #include "HTMLParserIdioms.h"
 #include "InputTypeNames.h"
 #include "KeyboardEvent.h"
@@ -46,10 +44,8 @@
 #include "ScopedEventQueue.h"
 #include "ShadowRoot.h"
 #include "SliderThumbElement.h"
-#include "StepRange.h"
 #include <limits>
 #include <wtf/MathExtras.h>
-#include <wtf/PassOwnPtr.h>
 
 #if ENABLE(TOUCH_EVENTS)
 #include "Touch.h"
@@ -65,7 +61,6 @@
 namespace WebCore {
 
 using namespace HTMLNames;
-using namespace std;
 
 static const int rangeDefaultMinimum = 0;
 static const int rangeDefaultMaximum = 100;
@@ -78,22 +73,12 @@ static Decimal ensureMaximum(const Decimal& proposedValue, const Decimal& minimu
     return proposedValue >= minimum ? proposedValue : std::max(minimum, fallbackValue);
 }
 
-OwnPtr<InputType> RangeInputType::create(HTMLInputElement& element)
-{
-    return adoptPtr(new RangeInputType(element));
-}
-
 RangeInputType::RangeInputType(HTMLInputElement& element)
     : InputType(element)
 #if ENABLE(DATALIST_ELEMENT)
     , m_tickMarkValuesDirty(true)
 #endif
 {
-}
-
-void RangeInputType::attach()
-{
-    observeFeatureIfVisible(FeatureObserver::InputTypeRange);
 }
 
 bool RangeInputType::isRangeControl() const
@@ -128,7 +113,7 @@ bool RangeInputType::supportsRequired() const
 
 StepRange RangeInputType::createStepRange(AnyStepHandling anyStepHandling) const
 {
-    DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (rangeDefaultStep, rangeDefaultStepBase, rangeStepScaleFactor));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (rangeDefaultStep, rangeDefaultStepBase, rangeStepScaleFactor));
 
     const Decimal minimum = parseToNumber(element().fastGetAttribute(minAttr), rangeDefaultMinimum);
     const Decimal maximum = ensureMaximum(parseToNumber(element().fastGetAttribute(maxAttr), rangeDefaultMaximum), minimum, rangeDefaultMaximum);
@@ -148,6 +133,7 @@ bool RangeInputType::isSteppable() const
     return true;
 }
 
+#if !PLATFORM(IOS)
 void RangeInputType::handleMouseDownEvent(MouseEvent* event)
 {
     if (element().isDisabledOrReadOnly())
@@ -164,11 +150,14 @@ void RangeInputType::handleMouseDownEvent(MouseEvent* event)
         return;
     thumb.dragFrom(event->absoluteLocation());
 }
+#endif
 
 #if ENABLE(TOUCH_EVENTS)
-#if ENABLE(TOUCH_SLIDER)
 void RangeInputType::handleTouchEvent(TouchEvent* event)
 {
+#if PLATFORM(IOS)
+    typedSliderThumbElement().handleTouchEvent(event);
+#elif ENABLE(TOUCH_SLIDER)
     if (element().isDisabledOrReadOnly())
         return;
 
@@ -182,14 +171,25 @@ void RangeInputType::handleTouchEvent(TouchEvent* event)
         typedSliderThumbElement().setPositionFromPoint(touches->item(0)->absoluteLocation());
         event->setDefaultHandled();
     }
+#else
+    UNUSED_PARAM(event);
+#endif
 }
 
+#if ENABLE(TOUCH_SLIDER)
 bool RangeInputType::hasTouchEventHandler() const
 {
     return true;
 }
 #endif
+
+#if PLATFORM(IOS)
+void RangeInputType::disabledAttributeChanged()
+{
+    typedSliderThumbElement().disabledAttributeChanged();
+}
 #endif
+#endif // ENABLE(TOUCH_EVENTS)
 
 void RangeInputType::handleKeydownEvent(KeyboardEvent* event)
 {
@@ -207,11 +207,11 @@ void RangeInputType::handleKeydownEvent(KeyboardEvent* event)
     // FIXME: We can't use stepUp() for the step value "any". So, we increase
     // or decrease the value by 1/100 of the value range. Is it reasonable?
     const Decimal step = equalIgnoringCase(element().fastGetAttribute(stepAttr), "any") ? (stepRange.maximum() - stepRange.minimum()) / 100 : stepRange.step();
-    const Decimal bigStep = max((stepRange.maximum() - stepRange.minimum()) / 10, step);
+    const Decimal bigStep = std::max((stepRange.maximum() - stepRange.minimum()) / 10, step);
 
     bool isVertical = false;
     if (element().renderer()) {
-        ControlPart part = element().renderer()->style()->appearance();
+        ControlPart part = element().renderer()->style().appearance();
         isVertical = part == SliderVerticalPart || part == MediaVolumeSliderPart;
     }
 
@@ -239,12 +239,10 @@ void RangeInputType::handleKeydownEvent(KeyboardEvent* event)
 
     if (newValue != current) {
         EventQueueScope scope;
-        TextFieldEventBehavior eventBehavior = DispatchChangeEvent;
-        setValueAsDecimal(newValue, eventBehavior, IGNORE_EXCEPTION);
+        setValueAsDecimal(newValue, DispatchInputAndChangeEvent, IGNORE_EXCEPTION);
 
         if (AXObjectCache* cache = element().document().existingAXObjectCache())
             cache->postNotification(&element(), AXObjectCache::AXValueChanged);
-        element().dispatchFormControlChangeEvent();
     }
 
     event->setDefaultHandled();
@@ -270,7 +268,7 @@ HTMLElement* RangeInputType::sliderTrackElement() const
     ASSERT(element().userAgentShadowRoot()->firstChild()->isHTMLElement());
     ASSERT(element().userAgentShadowRoot()->firstChild()->firstChild()); // track
 
-    return &toHTMLElement(*element().userAgentShadowRoot()->firstChild()->firstChild());
+    return downcast<HTMLElement>(element().userAgentShadowRoot()->firstChild()->firstChild());
 }
 
 SliderThumbElement& RangeInputType::typedSliderThumbElement() const
@@ -286,9 +284,9 @@ HTMLElement* RangeInputType::sliderThumbElement() const
     return &typedSliderThumbElement();
 }
 
-RenderElement* RangeInputType::createRenderer(RenderArena& arena, RenderStyle&) const
+RenderPtr<RenderElement> RangeInputType::createInputRenderer(Ref<RenderStyle>&& style)
 {
-    return new (arena) RenderSlider(element());
+    return createRenderer<RenderSlider>(element(), WTF::move(style));
 }
 
 Decimal RangeInputType::parseToNumber(const String& src, const Decimal& defaultValue) const
@@ -329,6 +327,9 @@ void RangeInputType::setValue(const String& value, bool valueChanged, TextFieldE
     if (!valueChanged)
         return;
 
+    if (eventBehavior == DispatchNoEvent)
+        element().setTextAsOfLastFormControlChangeEvent(value);
+
     typedSliderThumbElement().setPositionFromValue();
 }
 
@@ -367,12 +368,12 @@ void RangeInputType::updateTickMarkValues()
     HTMLDataListElement* dataList = element().dataList();
     if (!dataList)
         return;
-    RefPtr<HTMLCollection> options = dataList->options();
+    Ref<HTMLCollection> options = dataList->options();
     m_tickMarkValues.reserveCapacity(options->length());
     for (unsigned i = 0; i < options->length(); ++i) {
         Node* node = options->item(i);
-        HTMLOptionElement* optionElement = toHTMLOptionElement(node);
-        String optionValue = optionElement->value();
+        HTMLOptionElement& optionElement = downcast<HTMLOptionElement>(*node);
+        String optionValue = optionElement.value();
         if (!element().isValidValue(optionValue))
             continue;
         m_tickMarkValues.append(parseToNumber(optionValue, Decimal::nan()));

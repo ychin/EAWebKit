@@ -22,6 +22,7 @@
 #include "JSCrypto.h"
 
 #include "Crypto.h"
+#include "JSDOMBinding.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
@@ -34,56 +35,77 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSCryptoTableValues[] =
-{
+JSC::EncodedJSValue JSC_HOST_CALL jsCryptoPrototypeFunctionGetRandomValues(JSC::ExecState*);
+
+// Attributes
+
 #if ENABLE(SUBTLE_CRYPTO)
-    { "webkitSubtle", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCryptoWebkitSubtle), (intptr_t)0 },
+JSC::EncodedJSValue jsCryptoWebkitSubtle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
 #endif
-    { 0, 0, NoIntrinsic, 0, 0 }
+
+class JSCryptoPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCryptoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCryptoPrototype* ptr = new (NotNull, JSC::allocateCell<JSCryptoPrototype>(vm.heap)) JSCryptoPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCryptoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCryptoTable = { 2, 1, JSCryptoTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSCryptoPrototypeTableValues[] =
 {
-    { "getRandomValues", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCryptoPrototypeFunctionGetRandomValues), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+#if ENABLE(SUBTLE_CRYPTO)
+    { "webkitSubtle", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCryptoWebkitSubtle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "getRandomValues", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCryptoPrototypeFunctionGetRandomValues), (intptr_t) (1) },
 };
 
-static const HashTable JSCryptoPrototypeTable = { 2, 1, JSCryptoPrototypeTableValues, 0 };
-const ClassInfo JSCryptoPrototype::s_info = { "CryptoPrototype", &Base::s_info, &JSCryptoPrototypeTable, 0, CREATE_METHOD_TABLE(JSCryptoPrototype) };
+const ClassInfo JSCryptoPrototype::s_info = { "CryptoPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCryptoPrototype) };
 
-JSObject* JSCryptoPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCrypto>(vm, globalObject);
-}
-
-bool JSCryptoPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSCryptoPrototype* thisObject = jsCast<JSCryptoPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSCryptoPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSCrypto::s_info = { "Crypto", &Base::s_info, &JSCryptoTable, 0 , CREATE_METHOD_TABLE(JSCrypto) };
-
-JSCrypto::JSCrypto(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Crypto> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSCrypto::finishCreation(VM& vm)
+void JSCryptoPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCryptoPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCrypto::s_info = { "Crypto", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCrypto) };
+
+JSCrypto::JSCrypto(Structure* structure, JSDOMGlobalObject* globalObject, Ref<Crypto>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSCrypto::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSCryptoPrototype::create(vm, globalObject, JSCryptoPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSCrypto::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCrypto>(vm, globalObject);
 }
 
 void JSCrypto::destroy(JSC::JSCell* cell)
@@ -94,51 +116,42 @@ void JSCrypto::destroy(JSC::JSCell* cell)
 
 JSCrypto::~JSCrypto()
 {
-    releaseImplIfNotNull();
-}
-
-bool JSCrypto::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSCrypto* thisObject = jsCast<JSCrypto*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCrypto, Base>(exec, JSCryptoTable, thisObject, propertyName, slot);
+    releaseImpl();
 }
 
 #if ENABLE(SUBTLE_CRYPTO)
-JSValue jsCryptoWebkitSubtle(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCryptoWebkitSubtle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCrypto* castedThis = jsCast<JSCrypto*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Crypto& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCrypto* castedThis = jsDynamicCast<JSCrypto*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCryptoPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Crypto", "webkitSubtle");
+        return throwGetterTypeError(*exec, "Crypto", "webkitSubtle");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.subtle()));
-    return result;
+    return JSValue::encode(result);
 }
 
 #endif
 
 EncodedJSValue JSC_HOST_CALL jsCryptoPrototypeFunctionGetRandomValues(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCrypto::info()))
-        return throwVMTypeError(exec);
-    JSCrypto* castedThis = jsCast<JSCrypto*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCrypto* castedThis = jsDynamicCast<JSCrypto*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "Crypto", "getRandomValues");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCrypto::info());
     return JSValue::encode(castedThis->getRandomValues(exec));
 }
 
-static inline bool isObservable(JSCrypto* jsCrypto)
-{
-    if (jsCrypto->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSCryptoOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSCrypto* jsCrypto = jsCast<JSCrypto*>(handle.get().asCell());
-    if (!isObservable(jsCrypto))
-        return false;
-    Document* root = jsCrypto->impl().document();
+    auto* jsCrypto = jsCast<JSCrypto*>(handle.slot()->asCell());
+    Document* root = WTF::getPtr(jsCrypto->impl().document());
     if (!root)
         return false;
     return visitor.containsOpaqueRoot(root);
@@ -146,10 +159,9 @@ bool JSCryptoOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle,
 
 void JSCryptoOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSCrypto* jsCrypto = jsCast<JSCrypto*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsCrypto = jsCast<JSCrypto*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsCrypto->impl(), jsCrypto);
-    jsCrypto->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -160,11 +172,11 @@ extern "C" { extern void (*const __identifier("??_7Crypto@WebCore@@6B@")[])(); }
 extern "C" { extern void* _ZTVN7WebCore6CryptoE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Crypto* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, Crypto* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSCrypto>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSCrypto>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -185,13 +197,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Crypto*
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<Crypto>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSCrypto>(exec, globalObject, impl);
+    return createNewWrapper<JSCrypto>(globalObject, impl);
 }
 
-Crypto* toCrypto(JSC::JSValue value)
+Crypto* JSCrypto::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSCrypto::info()) ? &jsCast<JSCrypto*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSCrypto*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

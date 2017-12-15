@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008,2009 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2007 Staikos Computing Services Inc.
-	Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2013, 2014, 2016 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -159,6 +159,8 @@ public:
 
 	float zoomFactor() const;
 	void setZoomFactor(float factor);
+
+    void setZoomFactorAndTextSizeMultiplier(float page, float text);
 
 	bool hasFocus() const;
 	void setFocus();

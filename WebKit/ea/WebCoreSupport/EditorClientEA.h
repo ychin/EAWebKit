@@ -2,7 +2,7 @@
  * Copyright (C) 2006 Nikolas Zimmermann <zimmermann@kde.org>
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2006 Apple Computer, Inc.
- * Copyright (C) 2011, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * All rights reserved.
  *
@@ -50,66 +50,71 @@ class EditorClientEA : public EditorClient {
 public:
 	EditorClientEA(EA::WebKit::WebPage* page);
     
-    virtual void pageDestroyed() OVERRIDE;
+    virtual void pageDestroyed() override;
     
-    virtual bool shouldDeleteRange(Range*) OVERRIDE;
-    virtual bool smartInsertDeleteEnabled() OVERRIDE; 
-    virtual bool isSelectTrailingWhitespaceEnabled() OVERRIDE; 
-    virtual bool isContinuousSpellCheckingEnabled() OVERRIDE;
-    virtual void toggleContinuousSpellChecking() OVERRIDE;
-    virtual bool isGrammarCheckingEnabled() OVERRIDE;
-    virtual void toggleGrammarChecking() OVERRIDE;
-    virtual int spellCheckerDocumentTag() OVERRIDE;
+    virtual bool shouldDeleteRange(Range*) override;
+    virtual bool smartInsertDeleteEnabled() override; 
+    virtual bool isSelectTrailingWhitespaceEnabled() override; 
+    virtual bool isContinuousSpellCheckingEnabled() override;
+    virtual void toggleContinuousSpellChecking() override;
+    virtual bool isGrammarCheckingEnabled() override;
+    virtual void toggleGrammarChecking() override;
+    virtual int spellCheckerDocumentTag() override;
 
-    virtual bool shouldBeginEditing(Range*) OVERRIDE;
-    virtual bool shouldEndEditing(Range*) OVERRIDE;
-    virtual bool shouldInsertNode(Node*, Range*, EditorInsertAction) OVERRIDE;
-    virtual bool shouldInsertText(const String&, Range*, EditorInsertAction) OVERRIDE;
-    virtual bool shouldChangeSelectedRange(Range* fromRange, Range* toRange, EAffinity, bool stillSelecting) OVERRIDE;
+    virtual bool shouldBeginEditing(Range*) override;
+    virtual bool shouldEndEditing(Range*) override;
+    virtual bool shouldInsertNode(Node*, Range*, EditorInsertAction) override;
+    virtual bool shouldInsertText(const String&, Range*, EditorInsertAction) override;
+    virtual bool shouldChangeSelectedRange(Range* fromRange, Range* toRange, EAffinity, bool stillSelecting) override;
 
-    virtual bool shouldApplyStyle(StylePropertySet*, Range*) OVERRIDE;
+    virtual bool shouldApplyStyle(StyleProperties*, Range*) override;
+	virtual void didApplyStyle() override;
 
-    virtual bool shouldMoveRangeAfterDelete(Range*, Range*) OVERRIDE;
+    virtual bool shouldMoveRangeAfterDelete(Range*, Range*) override;
 
-    virtual void didBeginEditing() OVERRIDE;
-    virtual void respondToChangedContents() OVERRIDE;
-    virtual void respondToChangedSelection(Frame*) OVERRIDE;
-    virtual void didEndEditing() OVERRIDE;
-    virtual void willWriteSelectionToPasteboard(Range*) OVERRIDE;
-    virtual void didWriteSelectionToPasteboard() OVERRIDE;
-    virtual void getClientPasteboardDataForRange(Range*, Vector<String>& pasteboardTypes, Vector<RefPtr<WebCore::SharedBuffer> >& pasteboardData) OVERRIDE;
+    virtual void didBeginEditing() override;
+    virtual void respondToChangedContents() override;
+    virtual void respondToChangedSelection(Frame*) override;
+	virtual void didChangeSelectionAndUpdateLayout() override { }
+    virtual void didEndEditing() override;
+    virtual void willWriteSelectionToPasteboard(Range*) override;
+    virtual void didWriteSelectionToPasteboard() override;
+    virtual void getClientPasteboardDataForRange(Range*, Vector<String>& pasteboardTypes, Vector<RefPtr<WebCore::SharedBuffer> >& pasteboardData) override;
     
-    virtual void registerUndoStep(PassRefPtr<UndoStep>) OVERRIDE;
-    virtual void registerRedoStep(PassRefPtr<UndoStep>) OVERRIDE;
-    virtual void clearUndoRedoOperations() OVERRIDE;
+    virtual void registerUndoStep(PassRefPtr<UndoStep>) override;
+    virtual void registerRedoStep(PassRefPtr<UndoStep>) override;
+    virtual void clearUndoRedoOperations() override;
 
-    virtual bool canCopyCut(Frame*, bool defaultValue) const OVERRIDE;
-    virtual bool canPaste(Frame*, bool defaultValue) const OVERRIDE;
-    virtual bool canUndo() const OVERRIDE;
-    virtual bool canRedo() const OVERRIDE;
+    virtual bool canCopyCut(Frame*, bool defaultValue) const override;
+    virtual bool canPaste(Frame*, bool defaultValue) const override;
+    virtual bool canUndo() const override;
+    virtual bool canRedo() const override;
     
-    virtual void undo() OVERRIDE;
-    virtual void redo() OVERRIDE;
+    virtual void undo() override;
+    virtual void redo() override;
 
-    virtual void handleKeyboardEvent(KeyboardEvent*) OVERRIDE;
-    virtual void handleInputMethodKeydown(KeyboardEvent*) OVERRIDE;
+    virtual void handleKeyboardEvent(KeyboardEvent*) override;
+    virtual void handleInputMethodKeydown(KeyboardEvent*) override;
 
-    virtual void textFieldDidBeginEditing(Element*) OVERRIDE;
-    virtual void textFieldDidEndEditing(Element*) OVERRIDE;
-    virtual void textDidChangeInTextField(Element*) OVERRIDE;
-    virtual bool doTextFieldCommandFromEvent(Element*, KeyboardEvent*) OVERRIDE;
-    virtual void textWillBeDeletedInTextField(Element*) OVERRIDE;
-    virtual void textDidChangeInTextArea(Element*) OVERRIDE;
+    virtual void textFieldDidBeginEditing(Element*) override;
+    virtual void textFieldDidEndEditing(Element*) override;
+    virtual void textDidChangeInTextField(Element*) override;
+    virtual bool doTextFieldCommandFromEvent(Element*, KeyboardEvent*) override;
+    virtual void textWillBeDeletedInTextField(Element*) override;
+    virtual void textDidChangeInTextArea(Element*) override;
 
-    virtual void updateSpellingUIWithGrammarString(const String&, const GrammarDetail&) OVERRIDE;
-    virtual void updateSpellingUIWithMisspelledWord(const String&) OVERRIDE;
-    virtual void showSpellingUI(bool show) OVERRIDE;
-    virtual bool spellingUIIsShowing() OVERRIDE;
-    virtual void willSetInputMethodState() OVERRIDE;
-    virtual void setInputMethodState(bool enabled) OVERRIDE;
+    virtual void updateSpellingUIWithGrammarString(const String&, const GrammarDetail&) override;
+    virtual void updateSpellingUIWithMisspelledWord(const String&) override;
+    virtual void showSpellingUI(bool show) override;
+    virtual bool spellingUIIsShowing() override;
+    virtual void willSetInputMethodState() override;
+    virtual void setInputMethodState(bool enabled) override;
     virtual TextCheckerClient* textChecker() { return NULL; }
 
-    virtual bool supportsGlobalSelection() OVERRIDE;
+    virtual bool supportsGlobalSelection() override;
+
+	virtual void discardedComposition(Frame*) override {}
+	virtual void overflowScrollPositionChanged() override {}
 
     bool isEditing() const;
 

@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGAnimatedString.h"
 
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
@@ -32,26 +30,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGAnimatedStringTableValues[] =
-{
-    { "baseVal", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGAnimatedStringBaseVal), (intptr_t)setJSSVGAnimatedStringBaseVal },
-    { "animVal", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGAnimatedStringAnimVal), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGAnimatedStringConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGAnimatedStringBaseVal(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGAnimatedStringBaseVal(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGAnimatedStringAnimVal(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGAnimatedStringConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGAnimatedStringPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGAnimatedStringPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGAnimatedStringPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedStringPrototype>(vm.heap)) JSSVGAnimatedStringPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGAnimatedStringPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGAnimatedStringTable = { 8, 7, JSSVGAnimatedStringTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGAnimatedStringConstructor : public DOMConstructorObject {
+private:
+    JSSVGAnimatedStringConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGAnimatedStringConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGAnimatedStringConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGAnimatedStringConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedStringConstructor>(vm.heap)) JSSVGAnimatedStringConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGAnimatedStringConstructorTable = { 1, 0, JSSVGAnimatedStringConstructorTableValues, 0 };
-const ClassInfo JSSVGAnimatedStringConstructor::s_info = { "SVGAnimatedStringConstructor", &Base::s_info, &JSSVGAnimatedStringConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGAnimatedStringConstructor) };
+const ClassInfo JSSVGAnimatedStringConstructor::s_info = { "SVGAnimatedStringConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGAnimatedStringConstructor) };
 
 JSSVGAnimatedStringConstructor::JSSVGAnimatedStringConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,47 +94,44 @@ void JSSVGAnimatedStringConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGAnimatedStringPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGAnimatedStringConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGAnimatedStringConstructor, JSDOMWrapper>(exec, JSSVGAnimatedStringConstructorTable, jsCast<JSSVGAnimatedStringConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGAnimatedString::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGAnimatedString"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGAnimatedStringPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGAnimatedStringConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "baseVal", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGAnimatedStringBaseVal), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGAnimatedStringBaseVal) },
+    { "animVal", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGAnimatedStringAnimVal), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGAnimatedStringPrototypeTable = { 1, 0, JSSVGAnimatedStringPrototypeTableValues, 0 };
-const ClassInfo JSSVGAnimatedStringPrototype::s_info = { "SVGAnimatedStringPrototype", &Base::s_info, &JSSVGAnimatedStringPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGAnimatedStringPrototype) };
+const ClassInfo JSSVGAnimatedStringPrototype::s_info = { "SVGAnimatedStringPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGAnimatedStringPrototype) };
 
-JSObject* JSSVGAnimatedStringPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGAnimatedString>(vm, globalObject);
-}
-
-const ClassInfo JSSVGAnimatedString::s_info = { "SVGAnimatedString", &Base::s_info, &JSSVGAnimatedStringTable, 0 , CREATE_METHOD_TABLE(JSSVGAnimatedString) };
-
-JSSVGAnimatedString::JSSVGAnimatedString(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGAnimatedString> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSVGAnimatedString::finishCreation(VM& vm)
+void JSSVGAnimatedStringPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGAnimatedStringPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGAnimatedString::s_info = { "SVGAnimatedString", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGAnimatedString) };
+
+JSSVGAnimatedString::JSSVGAnimatedString(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGAnimatedString>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSVGAnimatedString::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSVGAnimatedStringPrototype::create(vm, globalObject, JSSVGAnimatedStringPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSVGAnimatedString::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSVGAnimatedString>(vm, globalObject);
 }
 
 void JSSVGAnimatedString::destroy(JSC::JSCell* cell)
@@ -113,57 +142,67 @@ void JSSVGAnimatedString::destroy(JSC::JSCell* cell)
 
 JSSVGAnimatedString::~JSSVGAnimatedString()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSSVGAnimatedString::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsSVGAnimatedStringBaseVal(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGAnimatedString* thisObject = jsCast<JSSVGAnimatedString*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGAnimatedString, Base>(exec, JSSVGAnimatedStringTable, thisObject, propertyName, slot);
-}
-
-JSValue jsSVGAnimatedStringBaseVal(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSSVGAnimatedString* castedThis = jsCast<JSSVGAnimatedString*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGAnimatedString& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGAnimatedString* castedThis = jsDynamicCast<JSSVGAnimatedString*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGAnimatedStringPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGAnimatedString", "baseVal");
+        return throwGetterTypeError(*exec, "SVGAnimatedString", "baseVal");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.baseVal());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGAnimatedStringAnimVal(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGAnimatedStringAnimVal(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGAnimatedString* castedThis = jsCast<JSSVGAnimatedString*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGAnimatedString& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGAnimatedString* castedThis = jsDynamicCast<JSSVGAnimatedString*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGAnimatedStringPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGAnimatedString", "animVal");
+        return throwGetterTypeError(*exec, "SVGAnimatedString", "animVal");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.animVal());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGAnimatedStringConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGAnimatedStringConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGAnimatedString* domObject = jsCast<JSSVGAnimatedString*>(asObject(slotBase));
-    return JSSVGAnimatedString::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGAnimatedStringPrototype* domObject = jsDynamicCast<JSSVGAnimatedStringPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGAnimatedString::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGAnimatedString::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGAnimatedStringBaseVal(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGAnimatedString* thisObject = jsCast<JSSVGAnimatedString*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGAnimatedString, Base>(exec, propertyName, value, JSSVGAnimatedStringTable, thisObject, slot);
-}
-
-void setJSSVGAnimatedStringBaseVal(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGAnimatedString* castedThis = jsCast<JSSVGAnimatedString*>(thisObject);
-    SVGAnimatedString& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGAnimatedString* castedThis = jsDynamicCast<JSSVGAnimatedString*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGAnimatedStringPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGAnimatedString", "baseVal");
+        else
+            throwSetterTypeError(*exec, "SVGAnimatedString", "baseVal");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBaseVal(nativeValue, ec);
     setDOMException(exec, ec);
@@ -175,45 +214,34 @@ JSValue JSSVGAnimatedString::getConstructor(VM& vm, JSGlobalObject* globalObject
     return getDOMConstructor<JSSVGAnimatedStringConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSSVGAnimatedString* jsSVGAnimatedString)
-{
-    if (jsSVGAnimatedString->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSSVGAnimatedStringOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSVGAnimatedString* jsSVGAnimatedString = jsCast<JSSVGAnimatedString*>(handle.get().asCell());
-    if (!isObservable(jsSVGAnimatedString))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSVGAnimatedStringOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSVGAnimatedString* jsSVGAnimatedString = jsCast<JSSVGAnimatedString*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSVGAnimatedString = jsCast<JSSVGAnimatedString*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSVGAnimatedString->impl(), jsSVGAnimatedString);
-    jsSVGAnimatedString->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGAnimatedString* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SVGAnimatedString* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSVGAnimatedString>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSVGAnimatedString>(globalObject, impl))
         return result;
-    ReportMemoryCost<SVGAnimatedString>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSVGAnimatedString>(exec, globalObject, impl);
+    return createNewWrapper<JSSVGAnimatedString>(globalObject, impl);
 }
 
-SVGAnimatedString* toSVGAnimatedString(JSC::JSValue value)
+SVGAnimatedString* JSSVGAnimatedString::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSVGAnimatedString::info()) ? &jsCast<JSSVGAnimatedString*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSVGAnimatedString*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(SVG)

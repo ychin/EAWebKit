@@ -23,29 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RTCSessionDescription.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRTCSessionDescription : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRTCSessionDescription* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCSessionDescription> impl)
+    static JSRTCSessionDescription* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCSessionDescription>&& impl)
     {
-        JSRTCSessionDescription* ptr = new (NotNull, JSC::allocateCell<JSRTCSessionDescription>(globalObject->vm().heap)) JSRTCSessionDescription(structure, globalObject, impl);
+        JSRTCSessionDescription* ptr = new (NotNull, JSC::allocateCell<JSRTCSessionDescription>(globalObject->vm().heap)) JSRTCSessionDescription(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RTCSessionDescription* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRTCSessionDescription();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     RTCSessionDescription& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RTCSessionDescription* m_impl;
 protected:
-    JSRTCSessionDescription(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCSessionDescription>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRTCSessionDescription(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCSessionDescription>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRTCSessionDescriptionOwner : public JSC::WeakHandleOwner {
@@ -81,74 +77,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RTCSessionDescription*)
 {
-    DEFINE_STATIC_LOCAL(JSRTCSessionDescriptionOwner, jsRTCSessionDescriptionOwner, ());
-    return &jsRTCSessionDescriptionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RTCSessionDescription*)
-{
-    return &world;
+    static NeverDestroyed<JSRTCSessionDescriptionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RTCSessionDescription*);
-RTCSessionDescription* toRTCSessionDescription(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCSessionDescription& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRTCSessionDescriptionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCSessionDescriptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCSessionDescriptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCSessionDescriptionPrototype>(vm.heap)) JSRTCSessionDescriptionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSRTCSessionDescription(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCSessionDescriptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSRTCSessionDescriptionConstructor : public DOMConstructorObject {
-private:
-    JSRTCSessionDescriptionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSRTCSessionDescriptionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSRTCSessionDescriptionConstructor* ptr = new (NotNull, JSC::allocateCell<JSRTCSessionDescriptionConstructor>(vm.heap)) JSRTCSessionDescriptionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSRTCSessionDescription(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Attributes
-
-JSC::JSValue jsRTCSessionDescriptionType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCSessionDescriptionType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCSessionDescriptionSdp(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCSessionDescriptionSdp(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsRTCSessionDescriptionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

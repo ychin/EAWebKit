@@ -22,6 +22,8 @@
 #ifndef PlatformPathCairo_h
 #define PlatformPathCairo_h
 
+#if USE(CAIRO)
+
 #include "RefPtrCairo.h"
 
 namespace WebCore {
@@ -38,7 +40,7 @@ public:
     //+EAWebKitChange
 	//10/14/2011
 	//This is an important change to avoid allocation before Init call. TODO: Contribute back to the community.
-	static cairo_surface_t* pathSurface();
+	static cairo_surface_t* getPathSurface();
 	static void finalize();
 	//-EAWebKitChange
 
@@ -52,5 +54,7 @@ private:
 };
 
 } // namespace WebCore
+
+#endif // USE(CAIRO)
 
 #endif // PlatformPathCairo_h

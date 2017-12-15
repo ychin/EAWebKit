@@ -38,34 +38,34 @@
 
 namespace WebCore {
 
-static const long minToneDurationMs = 70;
+static const long minToneDurationMs = 40;
 static const long defaultToneDurationMs = 100;
 static const long maxToneDurationMs = 6000;
-static const long minInterToneGapMs = 50;
-static const long defaultInterToneGapMs = 50;
+static const long minInterToneGapMs = 30;
+static const long defaultInterToneGapMs = 70;
 
-PassRefPtr<RTCDTMFSender> RTCDTMFSender::create(ScriptExecutionContext* context, RTCPeerConnectionHandler* peerConnectionHandler, PassRefPtr<MediaStreamTrack> prpTrack, ExceptionCode& ec)
+RefPtr<RTCDTMFSender> RTCDTMFSender::create(ScriptExecutionContext* context, RTCPeerConnectionHandler* peerConnectionHandler, PassRefPtr<MediaStreamTrack> prpTrack, ExceptionCode& ec)
 {
     RefPtr<MediaStreamTrack> track = prpTrack;
-    OwnPtr<RTCDTMFSenderHandler> handler = peerConnectionHandler->createDTMFSender(track->source());
+    std::unique_ptr<RTCDTMFSenderHandler> handler = peerConnectionHandler->createDTMFSender(track->source());
     if (!handler) {
         ec = NOT_SUPPORTED_ERR;
-        return 0;
+        return nullptr;
     }
 
-    RefPtr<RTCDTMFSender> dtmfSender = adoptRef(new RTCDTMFSender(context, track, handler.release()));
+    RefPtr<RTCDTMFSender> dtmfSender = adoptRef(new RTCDTMFSender(context, track, WTF::move(handler)));
     dtmfSender->suspendIfNeeded();
-    return dtmfSender.release();
+    return dtmfSender;
 }
 
-RTCDTMFSender::RTCDTMFSender(ScriptExecutionContext* context, PassRefPtr<MediaStreamTrack> track, PassOwnPtr<RTCDTMFSenderHandler> handler)
+RTCDTMFSender::RTCDTMFSender(ScriptExecutionContext* context, PassRefPtr<MediaStreamTrack> track, std::unique_ptr<RTCDTMFSenderHandler> handler)
     : ActiveDOMObject(context)
     , m_track(track)
     , m_duration(defaultToneDurationMs)
     , m_interToneGap(defaultInterToneGapMs)
-    , m_handler(handler)
+    , m_handler(WTF::move(handler))
     , m_stopped(false)
-    , m_scheduledEventTimer(this, &RTCDTMFSender::scheduledEventTimerFired)
+    , m_scheduledEventTimer(*this, &RTCDTMFSender::scheduledEventTimerFired)
 {
     m_handler->setClient(this);
 }
@@ -131,7 +131,18 @@ void RTCDTMFSender::didPlayTone(const String& tone)
 void RTCDTMFSender::stop()
 {
     m_stopped = true;
-    m_handler->setClient(0);
+    m_handler->setClient(nullptr);
+}
+
+const char* RTCDTMFSender::activeDOMObjectName() const
+{
+    return "RTCDTMFSender";
+}
+
+bool RTCDTMFSender::canSuspendForPageCache() const
+{
+    // FIXME: We should try and do better here.
+    return false;
 }
 
 void RTCDTMFSender::scheduleDispatchEvent(PassRefPtr<Event> event)
@@ -142,17 +153,16 @@ void RTCDTMFSender::scheduleDispatchEvent(PassRefPtr<Event> event)
         m_scheduledEventTimer.startOneShot(0);
 }
 
-void RTCDTMFSender::scheduledEventTimerFired(Timer<RTCDTMFSender>*)
+void RTCDTMFSender::scheduledEventTimerFired()
 {
     if (m_stopped)
         return;
 
-    Vector<RefPtr<Event> > events;
+    Vector<RefPtr<Event>> events;
     events.swap(m_scheduledEvents);
 
-    Vector<RefPtr<Event> >::iterator it = events.begin();
-    for (; it != events.end(); ++it)
-        dispatchEvent((*it).release());
+    for (auto& event : events)
+        dispatchEvent(event.release());
 }
 
 } // namespace WebCore

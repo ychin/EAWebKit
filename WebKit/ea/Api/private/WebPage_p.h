@@ -28,8 +28,6 @@
 #include "IntPoint.h"
 #include "URL.h"
 
-
-#include <wtf/OwnPtr.h>
 #include <wtf/RefPtr.h>
 
 #include "ViewportArguments.h"
@@ -118,7 +116,7 @@ public:
 
 	WebPage* webPage;
 	WebCore::Page* page;
-	OwnPtr<WebPageClient> client;
+	std::unique_ptr<WebPageClient> client;
 	WebFrame* mainFrame;
 
 	View* webView;

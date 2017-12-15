@@ -3,7 +3,7 @@
  * Copyright (C) 2007 Holger Hans Peter Freyther
  * Copyright (C) 2008 Apple, Inc. All rights reserved.
  * Copyright (C) 2008 Collabora, Ltd. All rights reserved.
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -114,7 +114,7 @@ bool fileExists(const String& path)
 	if(pFS)
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength]; 
-		EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+		EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		return pFS->FileExists(path8);
 	}
 
@@ -127,7 +127,7 @@ bool directoryExists(const String& path)
 	if(pFS)
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength]; 
-		EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+        EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		return pFS->DirectoryExists(path8);
 	}
 
@@ -140,7 +140,7 @@ bool deleteFile(const String& path)
 	if(pFS)
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength];
-		EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+        EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		return pFS->RemoveFile(path8);
 	}
 
@@ -153,7 +153,7 @@ bool deleteEmptyDirectory(const String& path)
 	if(pFS)
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength]; 
-		EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+        EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		return pFS->DeleteDirectory(path8);
 	}
 
@@ -166,7 +166,7 @@ bool getFileSize(const String& path, long long& result)
 	if(pFS)
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength];
-		EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+        EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		int64_t resultInt64;
 		bool returnbool =  pFS->GetFileSize(path8, resultInt64);
 		result = resultInt64;
@@ -183,7 +183,7 @@ bool getFileModificationTime(const String& path, time_t& result)
 	if(pFS)
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength];
-		EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+        EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		return pFS->GetFileModificationTime(path8, result);
 	}
 
@@ -197,7 +197,7 @@ bool makeAllDirectories(const String& path)
 	if(pFS) 
 	{
 		char path8[EA::WebKit::FileSystem::kMaxPathLength];
-		int  length = EA::Internal::Strlcpy(path8, path.characters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
+        int  length = EA::Internal::Strlcpy(path8, StringView(path).upconvertedCharacters(), EA::WebKit::FileSystem::kMaxPathLength, path.length());
 		(void) length;
 		if(!pFS->DirectoryExists(path8))
 		{
@@ -304,10 +304,10 @@ Vector<String> listDirectory(const String& path, const String& filter)
 	using namespace EA::IO;
 	DirectoryIterator di;
 	DirectoryIterator::EntryList entryList;
-	di.Read((pathDup.charactersWithNullTermination().data()), entryList, (filterDup.charactersWithNullTermination().data()), EA::IO::kDirectoryEntryFile, 1000);
+	di.Read(pathDup.charactersWithNullTermination().data(), entryList, filterDup.charactersWithNullTermination().data(), EA::IO::kDirectoryEntryFile, 1000);
 	for(DirectoryIterator::EntryList::const_iterator iter = entryList.begin(); iter != entryList.end(); ++iter)
 	{
-		entries.append((iter->msName.c_str()));
+		entries.append(reinterpret_cast<const UChar*>(iter->msName.c_str()));
 	}
 		
 	return entries;
@@ -338,6 +338,45 @@ bool getFileMetadata(const String& path, FileMetadata& result)
 	}
 
     return false;
+}
+
+bool unloadModule(PlatformModule/* module*/)
+{
+	// This function is only called from the plugin related code which we don't support.
+	ASSERT_NOT_REACHED();
+	return false;
+}
+
+long long seekFile(PlatformFileHandle handle, long long offset, FileSeekOrigin origin)
+{
+	//Note: this function does not seem to be used in an important place, so we're passing on an implementation for now
+	ASSERT_NOT_REACHED();
+
+	return -1;
+}
+
+int readFromFile(PlatformFileHandle handle, char* data, int length)
+{
+	EA::WebKit::FileSystem* pFS = EA::WebKit::GetFileSystem();
+	if (pFS)
+	{
+		return pFS->ReadFile(handle, data, length);
+	}
+
+	return -1;
+}
+
+bool getFileCreationTime(const String& path, time_t& time)
+{
+	//Note: currently only used by SQLiteFileSystem in the webdatabasemodule, so skipping an implementation for now.
+    // This is a simple API addition.
+	ASSERT_NOT_REACHED();
+	return true;
+}
+
+CString fileSystemRepresentation(const String& path)
+{
+	 return path.utf8();
 }
 
 //
@@ -373,7 +412,8 @@ String pathGetFileName(const String& path)
 String directoryName(const String& path)
 {
 	// EA::IO::Path doesn't have a function to get the end of a directory, just a function to get start of file name.
-	const UChar* pPath     = path.characters();
+    StringView::UpconvertedCharacters  upConverted(StringView(path).upconvertedCharacters());
+    const UChar* pPath = upConverted.get();
 	const UChar* pFileName = GetFileName(pPath);  // Note that (PathString::iterator == UChar* == char16_t*)
 
 	if(pFileName > pPath)
@@ -385,14 +425,6 @@ String directoryName(const String& path)
 	return String(pPath, (unsigned)((pFileName + 1) - pPath));
 }
 
-
-
-bool unloadModule(PlatformModule/* module*/)
-{
-	// This function is only called from the plugin related code which we don't support.
-	ASSERT_NOT_REACHED();
-	return false;
-}
 
 }
 

@@ -22,26 +22,27 @@
 #define JSEventTarget_h
 
 #include "EventTarget.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSEventTarget : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSEventTarget* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EventTarget> impl)
+    static JSEventTarget* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<EventTarget>&& impl)
     {
-        JSEventTarget* ptr = new (NotNull, JSC::allocateCell<JSEventTarget>(globalObject->vm().heap)) JSEventTarget(structure, globalObject, impl);
+        JSEventTarget* ptr = new (NotNull, JSC::allocateCell<JSEventTarget>(globalObject->vm().heap)) JSEventTarget(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static EventTarget* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSEventTarget();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     EventTarget& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     EventTarget* m_impl;
 protected:
-    JSEventTarget(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<EventTarget>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSEventTarget(JSC::Structure*, JSDOMGlobalObject*, Ref<EventTarget>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSEventTargetOwner : public JSC::WeakHandleOwner {
@@ -78,47 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, EventTarget*)
 {
-    DEFINE_STATIC_LOCAL(JSEventTargetOwner, jsEventTargetOwner, ());
-    return &jsEventTargetOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, EventTarget*)
-{
-    return &world;
+    static NeverDestroyed<JSEventTargetOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, EventTarget*);
-EventTarget* toEventTarget(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EventTarget& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSEventTargetPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSEventTargetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSEventTargetPrototype* ptr = new (NotNull, JSC::allocateCell<JSEventTargetPrototype>(vm.heap)) JSEventTargetPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSEventTargetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsEventTargetPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsEventTargetPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsEventTargetPrototypeFunctionDispatchEvent(JSC::ExecState*);
 
 } // namespace WebCore
 

@@ -38,22 +38,22 @@ class AudioContext;
     
 class OfflineAudioDestinationNode : public AudioDestinationNode {
 public:
-    static PassRefPtr<OfflineAudioDestinationNode> create(AudioContext* context, AudioBuffer* renderTarget)
+    static Ref<OfflineAudioDestinationNode> create(AudioContext* context, AudioBuffer* renderTarget)
     {
-        return adoptRef(new OfflineAudioDestinationNode(context, renderTarget));     
+        return adoptRef(*new OfflineAudioDestinationNode(context, renderTarget));     
     }
 
     virtual ~OfflineAudioDestinationNode();
     
     // AudioNode   
-    virtual void initialize() OVERRIDE;
-    virtual void uninitialize() OVERRIDE;
+    virtual void initialize() override;
+    virtual void uninitialize() override;
 
     // AudioDestinationNode
-    virtual void enableInput(const String&) OVERRIDE { }
-    virtual void startRendering() OVERRIDE;
+    virtual void enableInput(const String&) override { }
+    virtual void startRendering() override;
 
-    virtual float sampleRate() const OVERRIDE { return m_renderTarget->sampleRate(); }
+    virtual float sampleRate() const override { return m_renderTarget->sampleRate(); }
 
 private:
     OfflineAudioDestinationNode(AudioContext*, AudioBuffer* renderTarget);

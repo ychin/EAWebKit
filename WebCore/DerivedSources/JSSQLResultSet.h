@@ -21,30 +21,28 @@
 #ifndef JSSQLResultSet_h
 #define JSSQLResultSet_h
 
-#if ENABLE(SQL_DATABASE)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SQLResultSet.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSQLResultSet : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSQLResultSet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SQLResultSet> impl)
+    static JSSQLResultSet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SQLResultSet>&& impl)
     {
-        JSSQLResultSet* ptr = new (NotNull, JSC::allocateCell<JSSQLResultSet>(globalObject->vm().heap)) JSSQLResultSet(structure, globalObject, impl);
+        JSSQLResultSet* ptr = new (NotNull, JSC::allocateCell<JSSQLResultSet>(globalObject->vm().heap)) JSSQLResultSet(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SQLResultSet* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSQLResultSet();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +51,19 @@ public:
     }
 
     SQLResultSet& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SQLResultSet* m_impl;
 protected:
-    JSSQLResultSet(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SQLResultSet>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSQLResultSet(JSC::Structure*, JSDOMGlobalObject*, Ref<SQLResultSet>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSQLResultSetOwner : public JSC::WeakHandleOwner {
@@ -79,49 +74,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SQLResultSet*)
 {
-    DEFINE_STATIC_LOCAL(JSSQLResultSetOwner, jsSQLResultSetOwner, ());
-    return &jsSQLResultSetOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SQLResultSet*)
-{
-    return &world;
+    static NeverDestroyed<JSSQLResultSetOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SQLResultSet*);
-SQLResultSet* toSQLResultSet(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SQLResultSet& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSQLResultSetPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSQLResultSetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSQLResultSetPrototype* ptr = new (NotNull, JSC::allocateCell<JSSQLResultSetPrototype>(vm.heap)) JSSQLResultSetPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSQLResultSetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSQLResultSetRows(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLResultSetInsertId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLResultSetRowsAffected(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif

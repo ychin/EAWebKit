@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -25,20 +25,13 @@
 
 #ifndef RenderTreeAsText_h
 #define RenderTreeAsText_h
-#include "TextStream.h"
 
 #include <wtf/Forward.h>
 
 namespace WebCore {
 
 class Element;
-class FloatPoint;
-class FloatSize;
 class Frame;
-class IntPoint;
-class IntRect;
-class LayoutPoint;
-class LayoutRect;
 class RenderObject;
 class TextStream;
 
@@ -57,48 +50,23 @@ enum RenderAsTextBehaviorFlags {
 typedef unsigned RenderAsTextBehavior;
 
 // You don't need pageWidthInPixels if you don't specify RenderAsTextInPrintingMode.
-String externalRepresentation(Frame*, RenderAsTextBehavior = RenderAsTextBehaviorNormal);
-String externalRepresentation(Element*, RenderAsTextBehavior = RenderAsTextBehaviorNormal);
+WEBCORE_EXPORT String externalRepresentation(Frame*, RenderAsTextBehavior = RenderAsTextBehaviorNormal);
+WEBCORE_EXPORT String externalRepresentation(Element*, RenderAsTextBehavior = RenderAsTextBehaviorNormal);
 void write(TextStream&, const RenderObject&, int indent = 0, RenderAsTextBehavior = RenderAsTextBehaviorNormal);
-void writeIndent(TextStream&, int indent);
 
 class RenderTreeAsText {
 // FIXME: This is a cheesy hack to allow easy access to RenderStyle colors.  It won't be needed if we convert
 // it to use visitedDependentColor instead. (This just involves rebaselining many results though, so for now it's
 // not being done).
 public:
-static void writeRenderObject(TextStream& ts, const RenderObject& o, RenderAsTextBehavior behavior);
+    static void writeRenderObject(TextStream&, const RenderObject&, RenderAsTextBehavior);
 };
 
-TextStream& operator<<(TextStream&, const IntPoint&);
-TextStream& operator<<(TextStream&, const IntRect&);
-TextStream& operator<<(TextStream&, const LayoutPoint&);
-TextStream& operator<<(TextStream&, const LayoutRect&);
-TextStream& operator<<(TextStream&, const FloatPoint&);
-TextStream& operator<<(TextStream&, const FloatSize&);
-
-template<typename Item>
-TextStream& operator<<(TextStream& ts, const Vector<Item>& vector)
-{
-    ts << "[";
-
-    unsigned size = vector.size();
-    for (unsigned i = 0; i < size; ++i) {
-        ts << vector[i];
-        if (i < size - 1)
-            ts << ", ";
-    }
-
-    ts << "]";
-    return ts;
-}
-
 // Helper function shared with SVGRenderTreeAsText
-String quoteAndEscapeNonPrintables(const String&);
+String quoteAndEscapeNonPrintables(StringView);
 
-String counterValueForElement(Element*);
-
-String markerTextForListItem(Element*);
+WEBCORE_EXPORT String counterValueForElement(Element*);
+WEBCORE_EXPORT String markerTextForListItem(Element*);
 
 } // namespace WebCore
 

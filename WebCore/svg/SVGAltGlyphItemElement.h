@@ -20,25 +20,23 @@
 #ifndef SVGAltGlyphItemElement_h
 #define SVGAltGlyphItemElement_h
 
-#if ENABLE(SVG) && ENABLE(SVG_FONTS)
+#if ENABLE(SVG_FONTS)
 #include "SVGElement.h"
 #include <wtf/Vector.h>
 
 namespace WebCore {
 
-class SVGAltGlyphItemElement FINAL : public SVGElement {
+class SVGAltGlyphItemElement final : public SVGElement {
 public:
-    static PassRefPtr<SVGAltGlyphItemElement> create(const QualifiedName&, Document&);
+    static Ref<SVGAltGlyphItemElement> create(const QualifiedName&, Document&);
 
     bool hasValidGlyphElements(Vector<String>& glyphNames) const;
 
 private:
     SVGAltGlyphItemElement(const QualifiedName&, Document&);
 
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE { return false; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 };
-
-NODE_TYPE_CASTS(SVGAltGlyphItemElement)
 
 }
 

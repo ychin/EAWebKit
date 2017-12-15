@@ -276,6 +276,10 @@ static int EAWebKitSQLiteVFS_Sync( sqlite3_file* pFile, int Flags )
     EA::WebKit::FileSystem* fileSystem = EA::WebKit::GetFileSystem();    
     fileSystem->FlushFile(pFileEA->fileObject);
     
+#if defined(EA_PLATFORM_SONY) 
+    fileSystem->CloseFile(pFileEA->fileObject);
+    fileSystem->OpenFile( pFileEA->fileObject, NULL, EA::WebKit::FileSystem::kWrite|EA::WebKit::FileSystem::kRead, EA::WebKit::FileSystem::kCDOOpenAlways);
+#endif
 
 
     return SQLITE_OK;

@@ -30,11 +30,12 @@
 #include <wtf/HashMap.h>
 #include <wtf/ListHashSet.h>
 #include <wtf/RefCounted.h>
+#include <wtf/TypeCasts.h>
 #include <wtf/text/AtomicString.h>
 
 namespace WebCore {
 
-class Clipboard;
+class DataTransfer;
 class EventTarget;
 class HTMLIFrameElement;
 
@@ -82,18 +83,18 @@ public:
         CHANGE              = 32768
     };
 
-    static PassRefPtr<Event> create()
+    static Ref<Event> create()
     {
-        return adoptRef(new Event);
+        return adoptRef(*new Event);
     }
-    static PassRefPtr<Event> create(const AtomicString& type, bool canBubble, bool cancelable)
+    static Ref<Event> create(const AtomicString& type, bool canBubble, bool cancelable)
     {
-        return adoptRef(new Event(type, canBubble, cancelable));
+        return adoptRef(*new Event(type, canBubble, cancelable));
     }
 
-    static PassRefPtr<Event> create(const AtomicString& type, const EventInit& initializer)
+    static Ref<Event> create(const AtomicString& type, const EventInit& initializer)
     {
-        return adoptRef(new Event(type, initializer));
+        return adoptRef(*new Event(type, initializer));
     }
 
     virtual ~Event();
@@ -125,7 +126,7 @@ public:
     bool legacyReturnValue() const { return !defaultPrevented(); }
     void setLegacyReturnValue(bool returnValue) { setDefaultPrevented(!returnValue); }
 
-    Clipboard* clipboardData() const { return isClipboardEvent() ? clipboard() : 0; }
+    DataTransfer* clipboardData() const { return isClipboardEvent() ? internalDataTransfer() : 0; }
 
     virtual EventInterface eventInterface() const;
 
@@ -144,6 +145,10 @@ public:
     virtual bool isBeforeTextInsertedEvent() const;
 
     virtual bool isBeforeUnloadEvent() const;
+
+    virtual bool isErrorEvent() const;
+    virtual bool isTextEvent() const;
+    virtual bool isWheelEvent() const;
 
     bool propagationStopped() const { return m_propagationStopped || m_immediatePropagationStopped; }
     bool immediatePropagationStopped() const { return m_immediatePropagationStopped; }
@@ -165,7 +170,7 @@ public:
     Event* underlyingEvent() const { return m_underlyingEvent.get(); }
     void setUnderlyingEvent(PassRefPtr<Event>);
 
-    virtual Clipboard* clipboard() const { return 0; }
+    virtual DataTransfer* internalDataTransfer() const { return 0; }
 
     bool isBeingDispatched() const { return eventPhase(); }
 
@@ -175,7 +180,7 @@ public:
 
 protected:
     Event();
-    Event(const AtomicString& type, bool canBubble, bool cancelable);
+    WEBCORE_EXPORT Event(const AtomicString& type, bool canBubble, bool cancelable);
     Event(const AtomicString& type, bool canBubble, bool cancelable, double timestamp);
     Event(const AtomicString& type, const EventInit&);
 
@@ -202,5 +207,10 @@ private:
 };
 
 } // namespace WebCore
+
+#define SPECIALIZE_TYPE_TRAITS_EVENT(ToValueTypeName) \
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::ToValueTypeName) \
+    static bool isType(const WebCore::Event& event) { return event.is##ToValueTypeName(); } \
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // Event_h

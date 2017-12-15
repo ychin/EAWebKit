@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY GOOGLE, INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -29,14 +29,21 @@
 #include "EventFactory.h"
 
 #include "EventHeaders.h"
+#include <runtime/StructureInlines.h>
 
 namespace WebCore {
 
 PassRefPtr<Event> EventFactory::create(const String& type)
 {
+    if (type == "AnimationEvent")
+        return AnimationEvent::create();
 #if ENABLE(WEB_AUDIO)
     if (type == "AudioProcessingEvent")
         return AudioProcessingEvent::create();
+#endif
+#if ENABLE(REQUEST_AUTOCOMPLETE)
+    if (type == "AutocompleteErrorEvent")
+        return AutocompleteErrorEvent::create();
 #endif
     if (type == "BeforeLoadEvent")
         return BeforeLoadEvent::create();
@@ -72,6 +79,14 @@ PassRefPtr<Event> EventFactory::create(const String& type)
         return Event::create();
     if (type == "FocusEvent")
         return FocusEvent::create();
+#if ENABLE(GAMEPAD)
+    if (type == "GamepadEvent")
+        return GamepadEvent::create();
+#endif
+#if ENABLE(IOS_GESTURE_EVENTS)
+    if (type == "GestureEvent")
+        return GestureEvent::create();
+#endif
     if (type == "HTMLEvents")
         return Event::create();
     if (type == "HashChangeEvent")
@@ -142,33 +157,15 @@ PassRefPtr<Event> EventFactory::create(const String& type)
     if (type == "RTCIceCandidateEvent")
         return RTCIceCandidateEvent::create();
 #endif
-#if ENABLE(SVG)
     if (type == "SVGEvents")
         return Event::create();
-#endif
-#if ENABLE(SVG)
     if (type == "SVGZoomEvent")
         return SVGZoomEvent::create();
-#endif
-#if ENABLE(SVG)
     if (type == "SVGZoomEvents")
         return SVGZoomEvent::create();
-#endif
 #if ENABLE(CSP_NEXT)
     if (type == "SecurityPolicyViolationEvent")
         return SecurityPolicyViolationEvent::create();
-#endif
-#if ENABLE(INPUT_SPEECH)
-    if (type == "SpeechInputEvent")
-        return SpeechInputEvent::create();
-#endif
-#if ENABLE(SCRIPTED_SPEECH)
-    if (type == "SpeechRecognitionError")
-        return SpeechRecognitionError::create();
-#endif
-#if ENABLE(SCRIPTED_SPEECH)
-    if (type == "SpeechRecognitionEvent")
-        return SpeechRecognitionEvent::create();
 #endif
 #if ENABLE(SPEECH_SYNTHESIS)
     if (type == "SpeechSynthesisEvent")
@@ -202,6 +199,10 @@ PassRefPtr<Event> EventFactory::create(const String& type)
 #endif
     if (type == "WebKitAnimationEvent")
         return WebKitAnimationEvent::create();
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+    if (type == "WebKitPlaybackTargetAvailabilityEvent")
+        return WebKitPlaybackTargetAvailabilityEvent::create();
+#endif
     if (type == "WebKitTransitionEvent")
         return WebKitTransitionEvent::create();
     if (type == "WheelEvent")

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2012, 2014, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -32,38 +32,48 @@
 #include "JSScope.h"
 #include "PropertyDescriptor.h"
 #include "SymbolTable.h"
+#include "VariableWriteFireDetail.h"
 
 namespace JSC {
+
+class JSSymbolTableObject;
 
 class JSSymbolTableObject : public JSScope {
 public:
     typedef JSScope Base;
+    static const unsigned StructureFlags = Base::StructureFlags | IsEnvironmentRecord | OverridesGetPropertyNames;
     
-    SharedSymbolTable* symbolTable() const { return m_symbolTable.get(); }
+    SymbolTable* symbolTable() const { return m_symbolTable.get(); }
     
     JS_EXPORT_PRIVATE static bool deleteProperty(JSCell*, ExecState*, PropertyName);
     JS_EXPORT_PRIVATE static void getOwnNonIndexPropertyNames(JSObject*, ExecState*, PropertyNameArray&, EnumerationMode);
     
-protected:
-    static const unsigned StructureFlags = IsEnvironmentRecord | OverridesVisitChildren | OverridesGetPropertyNames | Base::StructureFlags;
+    static ptrdiff_t offsetOfSymbolTable() { return OBJECT_OFFSETOF(JSSymbolTableObject, m_symbolTable); }
     
-    JSSymbolTableObject(VM& vm, Structure* structure, JSScope* scope, SharedSymbolTable* symbolTable = 0)
+protected:
+    JSSymbolTableObject(VM& vm, Structure* structure, JSScope* scope)
         : Base(vm, structure, scope)
     {
-        if (symbolTable)
-            m_symbolTable.set(vm, this, symbolTable);
     }
-
-    void finishCreation(VM& vm)
+    
+    JSSymbolTableObject(VM& vm, Structure* structure, JSScope* scope, SymbolTable* symbolTable)
+        : Base(vm, structure, scope)
     {
-        Base::finishCreation(vm);
-        if (!m_symbolTable)
-            m_symbolTable.set(vm, this, SharedSymbolTable::create(vm));
+        ASSERT(symbolTable);
+        setSymbolTable(vm, symbolTable);
     }
-
+    
+    void setSymbolTable(VM& vm, SymbolTable* symbolTable)
+    {
+        ASSERT(!m_symbolTable);
+        symbolTable->singletonScope()->notifyWrite(vm, this, "Allocated a scope");
+        m_symbolTable.set(vm, this, symbolTable);
+    }
+    
     static void visitChildren(JSCell*, SlotVisitor&);
-
-    WriteBarrier<SharedSymbolTable> m_symbolTable;
+    
+private:
+    WriteBarrier<SymbolTable> m_symbolTable;
 };
 
 template<typename SymbolTableObjectType>
@@ -72,12 +82,12 @@ inline bool symbolTableGet(
 {
     SymbolTable& symbolTable = *object->symbolTable();
     ConcurrentJITLocker locker(symbolTable.m_lock);
-    SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.publicName());
+    SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.uid());
     if (iter == symbolTable.end(locker))
         return false;
     SymbolTableEntry::Fast entry = iter->value;
     ASSERT(!entry.isNull());
-    slot.setValue(object, entry.getAttributes() | DontDelete, object->registerAt(entry.getIndex()).get());
+    slot.setValue(object, entry.getAttributes() | DontDelete, object->variableAt(entry.scopeOffset()).get());
     return true;
 }
 
@@ -87,13 +97,13 @@ inline bool symbolTableGet(
 {
     SymbolTable& symbolTable = *object->symbolTable();
     ConcurrentJITLocker locker(symbolTable.m_lock);
-    SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.publicName());
+    SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.uid());
     if (iter == symbolTable.end(locker))
         return false;
     SymbolTableEntry::Fast entry = iter->value;
     ASSERT(!entry.isNull());
     descriptor.setDescriptor(
-        object->registerAt(entry.getIndex()).get(), entry.getAttributes() | DontDelete);
+        object->variableAt(entry.scopeOffset()).get(), entry.getAttributes() | DontDelete);
     return true;
 }
 
@@ -104,12 +114,12 @@ inline bool symbolTableGet(
 {
     SymbolTable& symbolTable = *object->symbolTable();
     ConcurrentJITLocker locker(symbolTable.m_lock);
-    SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.publicName());
+    SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.uid());
     if (iter == symbolTable.end(locker))
         return false;
     SymbolTableEntry::Fast entry = iter->value;
     ASSERT(!entry.isNull());
-    slot.setValue(object, entry.getAttributes() | DontDelete, object->registerAt(entry.getIndex()).get());
+    slot.setValue(object, entry.getAttributes() | DontDelete, object->variableAt(entry.scopeOffset()).get());
     slotIsWriteable = !entry.isReadOnly();
     return true;
 }
@@ -123,10 +133,13 @@ inline bool symbolTablePut(
     ASSERT(!Heap::heap(value) || Heap::heap(value) == Heap::heap(object));
     
     WriteBarrierBase<Unknown>* reg;
+    WatchpointSet* set;
     {
         SymbolTable& symbolTable = *object->symbolTable();
-        ConcurrentJITLocker locker(symbolTable.m_lock);
-        SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.publicName());
+        // FIXME: This is very suspicious. We shouldn't need a GC-safe lock here.
+        // https://bugs.webkit.org/show_bug.cgi?id=134601
+        GCSafeConcurrentJITLocker locker(symbolTable.m_lock, exec->vm().heap);
+        SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.uid());
         if (iter == symbolTable.end(locker))
             return false;
         bool wasFat;
@@ -137,14 +150,15 @@ inline bool symbolTablePut(
                 throwTypeError(exec, StrictModeReadonlyPropertyWriteError);
             return true;
         }
-        if (UNLIKELY(wasFat))
-            iter->value.notifyWrite();
-        reg = &object->registerAt(fastEntry.getIndex());
+        set = iter->value.watchpointSet();
+        reg = &object->variableAt(fastEntry.scopeOffset());
     }
     // I'd prefer we not hold lock while executing barriers, since I prefer to reserve
     // the right for barriers to be able to trigger GC. And I don't want to hold VM
     // locks while GC'ing.
     reg->set(vm, object, value);
+    if (set)
+        VariableWriteFireDetail::touch(set, object, propertyName);
     return true;
 }
 
@@ -156,19 +170,22 @@ inline bool symbolTablePutWithAttributes(
     ASSERT(!Heap::heap(value) || Heap::heap(value) == Heap::heap(object));
 
     WriteBarrierBase<Unknown>* reg;
+    WatchpointSet* set;
     {
         SymbolTable& symbolTable = *object->symbolTable();
         ConcurrentJITLocker locker(symbolTable.m_lock);
-        SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.publicName());
+        SymbolTable::Map::iterator iter = symbolTable.find(locker, propertyName.uid());
         if (iter == symbolTable.end(locker))
             return false;
         SymbolTableEntry& entry = iter->value;
         ASSERT(!entry.isNull());
-        entry.notifyWrite();
+        set = entry.watchpointSet();
         entry.setAttributes(attributes);
-        reg = &object->registerAt(entry.getIndex());
+        reg = &object->variableAt(entry.scopeOffset());
     }
     reg->set(vm, object, value);
+    if (set)
+        VariableWriteFireDetail::touch(set, object, propertyName);
     return true;
 }
 

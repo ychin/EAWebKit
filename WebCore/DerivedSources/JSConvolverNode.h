@@ -25,24 +25,22 @@
 
 #include "ConvolverNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSConvolverNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSConvolverNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ConvolverNode> impl)
+    static JSConvolverNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ConvolverNode>&& impl)
     {
-        JSConvolverNode* ptr = new (NotNull, JSC::allocateCell<JSConvolverNode>(globalObject->vm().heap)) JSConvolverNode(structure, globalObject, impl);
+        JSConvolverNode* ptr = new (NotNull, JSC::allocateCell<JSConvolverNode>(globalObject->vm().heap)) JSConvolverNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,67 +54,19 @@ public:
         return static_cast<ConvolverNode&>(Base::impl());
     }
 protected:
-    JSConvolverNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ConvolverNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSConvolverNode(JSC::Structure*, JSDOMGlobalObject*, Ref<ConvolverNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ConvolverNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ConvolverNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSConvolverNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSConvolverNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSConvolverNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSConvolverNodePrototype>(vm.heap)) JSConvolverNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSConvolverNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSConvolverNodeConstructor : public DOMConstructorObject {
-private:
-    JSConvolverNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSConvolverNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSConvolverNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSConvolverNodeConstructor>(vm.heap)) JSConvolverNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsConvolverNodeBuffer(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSConvolverNodeBuffer(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsConvolverNodeNormalize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSConvolverNodeNormalize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsConvolverNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -24,6 +24,7 @@
 
 #include "JSWebGLCompressedTextureS3TC.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLCompressedTextureS3TC.h"
 #include <wtf/GetPtr.h>
 
@@ -31,48 +32,65 @@ using namespace JSC;
 
 namespace WebCore {
 
+class JSWebGLCompressedTextureS3TCPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLCompressedTextureS3TCPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLCompressedTextureS3TCPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLCompressedTextureS3TCPrototype>(vm.heap)) JSWebGLCompressedTextureS3TCPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLCompressedTextureS3TCPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLCompressedTextureS3TCPrototypeTableValues[] =
 {
-    { "COMPRESSED_RGB_S3TC_DXT1_EXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureS3TCCOMPRESSED_RGB_S3TC_DXT1_EXT), (intptr_t)0 },
-    { "COMPRESSED_RGBA_S3TC_DXT1_EXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureS3TCCOMPRESSED_RGBA_S3TC_DXT1_EXT), (intptr_t)0 },
-    { "COMPRESSED_RGBA_S3TC_DXT3_EXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureS3TCCOMPRESSED_RGBA_S3TC_DXT3_EXT), (intptr_t)0 },
-    { "COMPRESSED_RGBA_S3TC_DXT5_EXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLCompressedTextureS3TCCOMPRESSED_RGBA_S3TC_DXT5_EXT), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "COMPRESSED_RGB_S3TC_DXT1_EXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x83F0), (intptr_t) (0) },
+    { "COMPRESSED_RGBA_S3TC_DXT1_EXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x83F1), (intptr_t) (0) },
+    { "COMPRESSED_RGBA_S3TC_DXT3_EXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x83F2), (intptr_t) (0) },
+    { "COMPRESSED_RGBA_S3TC_DXT5_EXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x83F3), (intptr_t) (0) },
 };
 
-static const HashTable JSWebGLCompressedTextureS3TCPrototypeTable = { 8, 7, JSWebGLCompressedTextureS3TCPrototypeTableValues, 0 };
-const ClassInfo JSWebGLCompressedTextureS3TCPrototype::s_info = { "WebGLCompressedTextureS3TCPrototype", &Base::s_info, &JSWebGLCompressedTextureS3TCPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLCompressedTextureS3TCPrototype) };
+const ClassInfo JSWebGLCompressedTextureS3TCPrototype::s_info = { "WebGLCompressedTextureS3TCPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLCompressedTextureS3TCPrototype) };
 
-JSObject* JSWebGLCompressedTextureS3TCPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLCompressedTextureS3TC>(vm, globalObject);
-}
-
-bool JSWebGLCompressedTextureS3TCPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSWebGLCompressedTextureS3TCPrototype* thisObject = jsCast<JSWebGLCompressedTextureS3TCPrototype*>(object);
-    return getStaticValueSlot<JSWebGLCompressedTextureS3TCPrototype, JSObject>(exec, JSWebGLCompressedTextureS3TCPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSWebGLCompressedTextureS3TC::s_info = { "WebGLCompressedTextureS3TC", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSWebGLCompressedTextureS3TC) };
-
-JSWebGLCompressedTextureS3TC::JSWebGLCompressedTextureS3TC(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLCompressedTextureS3TC> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLCompressedTextureS3TC::finishCreation(VM& vm)
+void JSWebGLCompressedTextureS3TCPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLCompressedTextureS3TCPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLCompressedTextureS3TC::s_info = { "WebGLCompressedTextureS3TC", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLCompressedTextureS3TC) };
+
+JSWebGLCompressedTextureS3TC::JSWebGLCompressedTextureS3TC(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLCompressedTextureS3TC>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLCompressedTextureS3TC::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLCompressedTextureS3TCPrototype::create(vm, globalObject, JSWebGLCompressedTextureS3TCPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLCompressedTextureS3TC::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLCompressedTextureS3TC>(vm, globalObject);
 }
 
 void JSWebGLCompressedTextureS3TC::destroy(JSC::JSCell* cell)
@@ -83,57 +101,21 @@ void JSWebGLCompressedTextureS3TC::destroy(JSC::JSCell* cell)
 
 JSWebGLCompressedTextureS3TC::~JSWebGLCompressedTextureS3TC()
 {
-    releaseImplIfNotNull();
-}
-
-// Constant getters
-
-JSValue jsWebGLCompressedTextureS3TCCOMPRESSED_RGB_S3TC_DXT1_EXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x83F0));
-}
-
-JSValue jsWebGLCompressedTextureS3TCCOMPRESSED_RGBA_S3TC_DXT1_EXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x83F1));
-}
-
-JSValue jsWebGLCompressedTextureS3TCCOMPRESSED_RGBA_S3TC_DXT3_EXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x83F2));
-}
-
-JSValue jsWebGLCompressedTextureS3TCCOMPRESSED_RGBA_S3TC_DXT5_EXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x83F3));
-}
-
-static inline bool isObservable(JSWebGLCompressedTextureS3TC* jsWebGLCompressedTextureS3TC)
-{
-    if (jsWebGLCompressedTextureS3TC->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSWebGLCompressedTextureS3TCOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLCompressedTextureS3TC* jsWebGLCompressedTextureS3TC = jsCast<JSWebGLCompressedTextureS3TC*>(handle.get().asCell());
-    if (!isObservable(jsWebGLCompressedTextureS3TC))
-        return false;
-    WebGLRenderingContext* root = jsWebGLCompressedTextureS3TC->impl().context();
+    auto* jsWebGLCompressedTextureS3TC = jsCast<JSWebGLCompressedTextureS3TC*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsWebGLCompressedTextureS3TC->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSWebGLCompressedTextureS3TCOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLCompressedTextureS3TC* jsWebGLCompressedTextureS3TC = jsCast<JSWebGLCompressedTextureS3TC*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLCompressedTextureS3TC = jsCast<JSWebGLCompressedTextureS3TC*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLCompressedTextureS3TC->impl(), jsWebGLCompressedTextureS3TC);
-    jsWebGLCompressedTextureS3TC->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -144,11 +126,11 @@ extern "C" { extern void (*const __identifier("??_7WebGLCompressedTextureS3TC@We
 extern "C" { extern void* _ZTVN7WebCore26WebGLCompressedTextureS3TCE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLCompressedTextureS3TC* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLCompressedTextureS3TC* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLCompressedTextureS3TC>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLCompressedTextureS3TC>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -169,13 +151,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLCo
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebGLCompressedTextureS3TC>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLCompressedTextureS3TC>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLCompressedTextureS3TC>(globalObject, impl);
 }
 
-WebGLCompressedTextureS3TC* toWebGLCompressedTextureS3TC(JSC::JSValue value)
+WebGLCompressedTextureS3TC* JSWebGLCompressedTextureS3TC::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLCompressedTextureS3TC::info()) ? &jsCast<JSWebGLCompressedTextureS3TC*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLCompressedTextureS3TC*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

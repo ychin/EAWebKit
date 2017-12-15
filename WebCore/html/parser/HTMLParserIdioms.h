@@ -25,7 +25,6 @@
 #ifndef HTMLParserIdioms_h
 #define HTMLParserIdioms_h
 
-#include "HTMLIdentifier.h"
 #include "QualifiedName.h"
 #include <wtf/Forward.h>
 #include <wtf/text/WTFString.h>
@@ -35,18 +34,12 @@ namespace WebCore {
 class Decimal;
 
 // Space characters as defined by the HTML specification.
-bool isHTMLSpace(UChar);
 bool isHTMLLineBreak(UChar);
 bool isNotHTMLSpace(UChar);
 bool isHTMLSpaceButNotLineBreak(UChar character);
 
 // Strip leading and trailing whitespace as defined by the HTML specification. 
-String stripLeadingAndTrailingHTMLSpaces(const String&);
-template<size_t inlineCapacity>
-String stripLeadingAndTrailingHTMLSpaces(const Vector<UChar, inlineCapacity>& vector)
-{
-    return stripLeadingAndTrailingHTMLSpaces(StringImpl::create8BitIfPossible(vector));
-}
+WEBCORE_EXPORT String stripLeadingAndTrailingHTMLSpaces(const String&);
 
 // An implementation of the HTML specification's algorithm to convert a number to a string for number and range types.
 String serializeForNumberType(const Decimal&);
@@ -67,8 +60,8 @@ bool parseHTMLInteger(const String&, int&);
 bool parseHTMLNonNegativeInteger(const String&, unsigned int&);
 
 // Inline implementations of some of the functions declared above.
-
-inline bool isHTMLSpace(UChar character)
+template<typename CharType>
+inline bool isHTMLSpace(CharType character)
 {
     // Histogram from Apple's page load test combined with some ad hoc browsing some other test suites.
     //
@@ -88,6 +81,18 @@ inline bool isHTMLLineBreak(UChar character)
     return character <= '\r' && (character == '\n' || character == '\r');
 }
 
+template<typename CharType>
+inline bool isComma(CharType character)
+{
+    return character == ',';
+}
+
+template<typename CharType>
+inline bool isHTMLSpaceOrComma(CharType character)
+{
+    return isComma(character) || isHTMLSpace<CharType>(character);
+}
+
 inline bool isNotHTMLSpace(UChar character)
 {
     return !isHTMLSpace(character);
@@ -99,18 +104,6 @@ inline bool isHTMLSpaceButNotLineBreak(UChar character)
 }
 
 bool threadSafeMatch(const QualifiedName&, const QualifiedName&);
-#if ENABLE(THREADED_HTML_PARSER)
-bool threadSafeMatch(const HTMLIdentifier&, const QualifiedName&);
-inline bool threadSafeHTMLNamesMatch(const HTMLIdentifier& tagName, const QualifiedName& qName)
-{
-    // When the QualifiedName is known to HTMLIdentifier,
-    // all we have to do is a pointer compare.
-    ASSERT(HTMLIdentifier::hasIndex(qName.localName().impl()));
-    return tagName.asStringImpl() == qName.localName().impl();
-}
-#endif
-
-String bestFitSourceForImageAttributes(float deviceScaleFactor, const String& srcAttribute, const String& sourceSetAttribute);
 
 }
 

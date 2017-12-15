@@ -26,28 +26,21 @@
 #include "config.h"
 #include "JSPromiseConstructor.h"
 
-#if ENABLE(PROMISES)
-
 #include "Error.h"
+#include "Exception.h"
+#include "IteratorOperations.h"
+#include "JSCBuiltins.h"
 #include "JSCJSValueInlines.h"
 #include "JSCellInlines.h"
 #include "JSPromise.h"
-#include "JSPromiseCallback.h"
 #include "JSPromisePrototype.h"
-#include "JSPromiseResolver.h"
 #include "Lookup.h"
+#include "NumberObject.h"
 #include "StructureInlines.h"
 
 namespace JSC {
 
 STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(JSPromiseConstructor);
-
-// static Promise fulfill(any value);
-static EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncFulfill(ExecState*);
-// static Promise resolve(any value); // same as any(value)
-static EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncResolve(ExecState*);
-// static Promise reject(any value);
-static EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncReject(ExecState*);
 
 }
 
@@ -55,13 +48,14 @@ static EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncReject(ExecState*);
 
 namespace JSC {
 
-const ClassInfo JSPromiseConstructor::s_info = { "Function", &InternalFunction::s_info, 0, ExecState::promiseConstructorTable, CREATE_METHOD_TABLE(JSPromiseConstructor) };
+const ClassInfo JSPromiseConstructor::s_info = { "Function", &InternalFunction::s_info, &promiseConstructorTable, CREATE_METHOD_TABLE(JSPromiseConstructor) };
 
 /* Source for JSPromiseConstructor.lut.h
 @begin promiseConstructorTable
-  fulfill         JSPromiseConstructorFuncFulfill             DontEnum|Function 1
   resolve         JSPromiseConstructorFuncResolve             DontEnum|Function 1
   reject          JSPromiseConstructorFuncReject              DontEnum|Function 1
+  race            JSPromiseConstructorFuncRace                DontEnum|Function 1
+  all             JSPromiseConstructorFuncAll                 DontEnum|Function 1
 @end
 */
 
@@ -84,45 +78,26 @@ JSPromiseConstructor::JSPromiseConstructor(VM& vm, Structure* structure)
 
 void JSPromiseConstructor::finishCreation(VM& vm, JSPromisePrototype* promisePrototype)
 {
-    Base::finishCreation(vm, "Promise");
+    Base::finishCreation(vm, ASCIILiteral("Promise"));
     putDirectWithoutTransition(vm, vm.propertyNames->prototype, promisePrototype, DontEnum | DontDelete | ReadOnly);
     putDirectWithoutTransition(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum | DontDelete);
 }
 
 static EncodedJSValue JSC_HOST_CALL constructPromise(ExecState* exec)
 {
-    if (!exec->argumentCount())
-        return throwVMError(exec, createTypeError(exec, "Expected at least one argument"));
+    VM& vm = exec->vm();
+    JSGlobalObject* globalObject = exec->callee()->globalObject();
 
-    JSValue function = exec->uncheckedArgument(0);
+    JSPromise* promise = JSPromise::create(vm, globalObject);
 
+    JSFunction* initializePromise = globalObject->initializePromiseFunction();
     CallData callData;
-    CallType callType = getCallData(function, callData);
-    if (callType == CallTypeNone)
-        return throwVMError(exec, createTypeError(exec, "Expected function as as first argument"));
+    CallType callType = getCallData(initializePromise, callData);
+    ASSERT(callType != CallTypeNone);
 
-    JSGlobalObject* globalObject = asInternalFunction(exec->callee())->globalObject();
-    
-    // 1. Let promise be a new promise.
-    JSPromise* promise = JSPromise::createWithResolver(exec->vm(), globalObject);
-
-    // 2. Let resolver be promise's associated resolver.
-    JSPromiseResolver* resolver = promise->resolver();
-
-    // 3. Set init's callback this value to promise.
-    // 4. Invoke init with resolver passed as parameter.
-    MarkedArgumentBuffer initArguments;
-    initArguments.append(resolver);
-    call(exec, function, callType, callData, promise, initArguments);
-
-    // 5. If init threw an exception, catch it, and then, if resolver's resolved flag
-    //    is unset, run resolver's reject with the thrown exception as argument.
-    if (exec->hadException()) {
-        JSValue exception = exec->exception();
-        exec->clearException();
-
-        resolver->rejectIfNotResolved(exec, exception);
-    }
+    MarkedArgumentBuffer arguments;
+    arguments.append(exec->argument(0));
+    call(exec, initializePromise, callType, callData, promise, arguments);
 
     return JSValue::encode(promise);
 }
@@ -133,55 +108,15 @@ ConstructType JSPromiseConstructor::getConstructData(JSCell*, ConstructData& con
     return ConstructTypeHost;
 }
 
-CallType JSPromiseConstructor::getCallData(JSCell*, CallData&)
+CallType JSPromiseConstructor::getCallData(JSCell*, CallData& callData)
 {
-    return CallTypeNone;
+    callData.native.function = constructPromise;
+    return CallTypeHost;
 }
 
 bool JSPromiseConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    return getStaticFunctionSlot<InternalFunction>(exec, ExecState::promiseConstructorTable(exec), jsCast<JSPromiseConstructor*>(object), propertyName, slot);
-}
-
-EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncFulfill(ExecState* exec)
-{
-    if (!exec->argumentCount())
-        return throwVMError(exec, createTypeError(exec, "Expected at least one argument"));
-
-    JSGlobalObject* globalObject = exec->callee()->globalObject();
-
-    JSPromise* promise = JSPromise::createWithResolver(exec->vm(), globalObject);
-    promise->resolver()->fulfill(exec, exec->uncheckedArgument(0));
-
-    return JSValue::encode(promise);
-}
-
-EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncResolve(ExecState* exec)
-{
-    if (!exec->argumentCount())
-        return throwVMError(exec, createTypeError(exec, "Expected at least one argument"));
-
-    JSGlobalObject* globalObject = exec->callee()->globalObject();
-
-    JSPromise* promise = JSPromise::createWithResolver(exec->vm(), globalObject);
-    promise->resolver()->resolve(exec, exec->uncheckedArgument(0));
-
-    return JSValue::encode(promise);
-}
-
-EncodedJSValue JSC_HOST_CALL JSPromiseConstructorFuncReject(ExecState* exec)
-{
-    if (!exec->argumentCount())
-        return throwVMError(exec, createTypeError(exec, "Expected at least one argument"));
-
-    JSGlobalObject* globalObject = exec->callee()->globalObject();
-
-    JSPromise* promise = JSPromise::createWithResolver(exec->vm(), globalObject);
-    promise->resolver()->reject(exec, exec->uncheckedArgument(0));
-
-    return JSValue::encode(promise);
+    return getStaticFunctionSlot<InternalFunction>(exec, promiseConstructorTable, jsCast<JSPromiseConstructor*>(object), propertyName, slot);
 }
 
 } // namespace JSC
-
-#endif // ENABLE(PROMISES)

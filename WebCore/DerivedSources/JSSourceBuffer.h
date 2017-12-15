@@ -25,23 +25,24 @@
 
 #include "JSEventTarget.h"
 #include "SourceBuffer.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSSourceBuffer : public JSEventTarget {
+class WEBCORE_EXPORT JSSourceBuffer : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSSourceBuffer* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SourceBuffer> impl)
+    static JSSourceBuffer* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SourceBuffer>&& impl)
     {
-        JSSourceBuffer* ptr = new (NotNull, JSC::allocateCell<JSSourceBuffer>(globalObject->vm().heap)) JSSourceBuffer(structure, globalObject, impl);
+        JSSourceBuffer* ptr = new (NotNull, JSC::allocateCell<JSSourceBuffer>(globalObject->vm().heap)) JSSourceBuffer(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SourceBuffer* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,9 +57,14 @@ public:
         return static_cast<SourceBuffer&>(Base::impl());
     }
 protected:
-    JSSourceBuffer(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SourceBuffer>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSSourceBuffer(JSC::Structure*, JSDOMGlobalObject*, Ref<SourceBuffer>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSourceBufferOwner : public JSC::WeakHandleOwner {
@@ -69,51 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SourceBuffer*)
 {
-    DEFINE_STATIC_LOCAL(JSSourceBufferOwner, jsSourceBufferOwner, ());
-    return &jsSourceBufferOwner;
+    static NeverDestroyed<JSSourceBufferOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SourceBuffer*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SourceBuffer*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SourceBuffer& impl) { return toJS(exec, globalObject, &impl); }
 
-SourceBuffer* toSourceBuffer(JSC::JSValue);
-
-class JSSourceBufferPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSourceBufferPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSourceBufferPrototype* ptr = new (NotNull, JSC::allocateCell<JSSourceBufferPrototype>(vm.heap)) JSSourceBufferPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSourceBufferPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsSourceBufferPrototypeFunctionAppendBuffer(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSourceBufferPrototypeFunctionAbort(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsSourceBufferUpdating(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSourceBufferBuffered(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSourceBufferTimestampOffset(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSourceBufferTimestampOffset(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

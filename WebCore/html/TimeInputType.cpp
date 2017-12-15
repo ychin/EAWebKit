@@ -32,14 +32,12 @@
 #if ENABLE(INPUT_TYPE_TIME)
 #include "TimeInputType.h"
 
-#include "DateComponents.h"
 #include "HTMLInputElement.h"
 #include "HTMLNames.h"
 #include "InputTypeNames.h"
 #include <wtf/CurrentTime.h>
 #include <wtf/DateMath.h>
 #include <wtf/MathExtras.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
@@ -50,18 +48,8 @@ static const int timeDefaultStepBase = 0;
 static const int timeStepScaleFactor = 1000;
 
 TimeInputType::TimeInputType(HTMLInputElement& element)
-    : BaseTimeInputType(element)
+    : BaseChooserOnlyDateAndTimeInputType(element)
 {
-}
-
-OwnPtr<InputType> TimeInputType::create(HTMLInputElement& element)
-{
-    return adoptPtr(new TimeInputType(element));
-}
-
-void TimeInputType::attach()
-{
-    observeFeatureIfVisible(FeatureObserver::InputTypeTime);
 }
 
 const AtomicString& TimeInputType::formControlType() const
@@ -89,7 +77,7 @@ Decimal TimeInputType::defaultValueForStepUp() const
 
 StepRange TimeInputType::createStepRange(AnyStepHandling anyStepHandling) const
 {
-    DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (timeDefaultStep, timeDefaultStepBase, timeStepScaleFactor, StepRange::ScaledStepValueShouldBeInteger));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (timeDefaultStep, timeDefaultStepBase, timeStepScaleFactor, StepRange::ScaledStepValueShouldBeInteger));
 
     const Decimal stepBase = parseToNumber(element().fastGetAttribute(minAttr), 0);
     const Decimal minimum = parseToNumber(element().fastGetAttribute(minAttr), Decimal::fromDouble(DateComponents::minimumTime()));

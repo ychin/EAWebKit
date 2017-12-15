@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Nokia Inc. All rights reserved.
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -54,12 +54,12 @@ public:
 	void Close();
 
 private:
-	void timerFired(WebCore::Timer<SocketStreamHandlePrivate>*);
+	void timerFired();
 	
 	SocketStreamHandle* m_streamHandle;
 	EA::WebKit::SocketHandle m_socketHandle;
 	EA::WebKit::SocketHandle m_CleanupTansportHandlerSocketHandle; // same as m_socketHandle, but when we set our m_socketHandle to NULL then we can't actually change the TransportHandler for it anymore, so we keep track of it and retain the original logic
-	WebCore::Timer<SocketStreamHandlePrivate>   mPendingDataTimer;    // Timer to trigger send operation for pending data.    
+	WebCore::Timer   mPendingDataTimer;    // Timer to trigger send operation for pending data.    
 };
 
 }

@@ -43,7 +43,7 @@ JSVoidCallback::~JSVoidCallback()
     if (!context || context->isContextThread())
         delete m_data;
     else
-        context->postTask(DeleteCallbackDataTask::create(m_data));
+        context->postTask(DeleteCallbackDataTask(m_data));
 #ifndef NDEBUG
     m_data = 0;
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,11 @@ namespace JSC { namespace FTL {
 
 using namespace DFG;
 
+static bool verboseCapabilities()
+{
+    return verboseCompilationEnabled() || Options::verboseFTLFailure();
+}
+
 inline CapabilityLevel canCompile(Node* node)
 {
     // NOTE: If we ever have phantom arguments, we can compile them but we cannot
@@ -39,10 +44,11 @@ inline CapabilityLevel canCompile(Node* node)
     
     switch (node->op()) {
     case JSConstant:
-    case WeakJSConstant:
     case GetLocal:
     case SetLocal:
-    case MovHintAndCheck:
+    case PutStack:
+    case KillStack:
+    case GetStack:
     case MovHint:
     case ZombieHint:
     case Phantom:
@@ -57,17 +63,23 @@ inline CapabilityLevel canCompile(Node* node)
     case BitLShift:
     case BitURShift:
     case CheckStructure:
-    case StructureTransitionWatchpoint:
+    case DoubleAsInt32:
     case ArrayifyToStructure:
     case PutStructure:
-    case PhantomPutStructure:
     case GetButterfly:
+    case NewObject:
+    case NewArray:
+    case NewArrayBuffer:
     case GetByOffset:
+    case GetGetterSetterByOffset:
+    case GetGetter:
+    case GetSetter:
     case PutByOffset:
     case GetGlobalVar:
     case PutGlobalVar:
     case ValueAdd:
     case ArithAdd:
+    case ArithClz32:
     case ArithSub:
     case ArithMul:
     case ArithDiv:
@@ -75,29 +87,131 @@ inline CapabilityLevel canCompile(Node* node)
     case ArithMin:
     case ArithMax:
     case ArithAbs:
+    case ArithSin:
+    case ArithCos:
+    case ArithPow:
+    case ArithRound:
+    case ArithSqrt:
+    case ArithLog:
+    case ArithFRound:
     case ArithNegate:
     case UInt32ToNumber:
-    case Int32ToDouble:
     case CompareEqConstant:
-    case CompareStrictEqConstant:
     case Jump:
     case ForceOSRExit:
     case Phi:
     case Upsilon:
     case ExtractOSREntryLocal:
     case LoopHint:
-    case Call:
-    case Construct:
-    case GlobalVarWatchpoint:
-    case GetMyScope:
     case SkipScope:
-    case GetClosureRegisters:
+    case CreateActivation:
+    case NewFunction:
     case GetClosureVar:
     case PutClosureVar:
+    case CreateDirectArguments:
+    case CreateScopedArguments:
+    case CreateClonedArguments:
+    case GetFromArguments:
+    case PutToArguments:
+    case InvalidationPoint:
+    case StringCharAt:
+    case CheckCell:
+    case CheckBadCell:
+    case CheckNotEmpty:
+    case CheckIdent:
+    case StringCharCodeAt:
+    case AllocatePropertyStorage:
+    case ReallocatePropertyStorage:
+    case GetTypedArrayByteOffset:
+    case NotifyWrite:
+    case StoreBarrier:
+    case Call:
+    case Construct:
+    case CallVarargs:
+    case CallForwardVarargs:
+    case ConstructVarargs:
+    case ConstructForwardVarargs:
+    case LoadVarargs:
+    case ValueToInt32:
+    case Branch:
+    case LogicalNot:
+    case CheckInBounds:
+    case ConstantStoragePointer:
+    case Check:
+    case CountExecution:
+    case GetExecutable:
+    case GetScope:
+    case GetCallee:
+    case GetArgumentCount:
+    case ToString:
+    case CallStringConstructor:
+    case MakeRope:
+    case NewArrayWithSize:
     case GetById:
+    case ToThis:
+    case MultiGetByOffset:
+    case MultiPutByOffset:
+    case ToPrimitive:
+    case Throw:
+    case ThrowReferenceError:
+    case Unreachable:
+    case IsUndefined:
+    case IsBoolean:
+    case IsNumber:
+    case IsString:
+    case IsObject:
+    case IsObjectOrNull:
+    case IsFunction:
+    case CheckHasInstance:
+    case InstanceOf:
+    case DoubleRep:
+    case ValueRep:
+    case Int52Rep:
+    case DoubleConstant:
+    case Int52Constant:
+    case BooleanToNumber:
+    case HasGenericProperty:
+    case HasStructureProperty:
+    case GetDirectPname:
+    case GetEnumerableLength:
+    case GetPropertyEnumerator:
+    case GetEnumeratorStructurePname:
+    case GetEnumeratorGenericPname:
+    case ToIndexString:
+    case BottomValue:
+    case PhantomNewObject:
+    case PhantomNewFunction:
+    case PhantomCreateActivation:
+    case PutHint:
+    case CheckStructureImmediate:
+    case MaterializeNewObject:
+    case MaterializeCreateActivation:
+    case PhantomDirectArguments:
+    case PhantomClonedArguments:
+    case GetMyArgumentByVal:
+    case ForwardVarargs:
+    case Switch:
+    case TypeOf:
         // These are OK.
         break;
+    case Identity:
+        // No backend handles this because it will be optimized out. But we may check
+        // for capabilities before optimization. It would be a deep error to remove this
+        // case because it would prevent us from catching bugs where the FTL backend
+        // pipeline failed to optimize out an Identity.
+        break;
+    case In:
+        if (node->child2().useKind() == CellUse)
+            break;
+        return CannotCompile;
+    case PutByIdDirect:
+    case PutById:
+        if (node->child1().useKind() == CellUse)
+            break;
+        return CannotCompile;
     case GetIndexedPropertyStorage:
+        if (node->arrayMode().type() == Array::String)
+            break;
         if (isTypedView(node->arrayMode().typedArrayType()))
             break;
         return CannotCompile;
@@ -106,6 +220,8 @@ inline CapabilityLevel canCompile(Node* node)
         case Array::Int32:
         case Array::Double:
         case Array::Contiguous:
+        case Array::DirectArguments:
+        case Array::ScopedArguments:
             break;
         default:
             if (isTypedView(node->arrayMode().typedArrayType()))
@@ -118,6 +234,9 @@ inline CapabilityLevel canCompile(Node* node)
         case Array::Int32:
         case Array::Double:
         case Array::Contiguous:
+        case Array::String:
+        case Array::DirectArguments:
+        case Array::ScopedArguments:
             break;
         default:
             if (isTypedView(node->arrayMode().typedArrayType()))
@@ -125,32 +244,41 @@ inline CapabilityLevel canCompile(Node* node)
             return CannotCompile;
         }
         break;
-    case GetByVal:
+    case HasIndexedProperty:
         switch (node->arrayMode().type()) {
         case Array::ForceExit:
-            return CanCompileAndOSREnter;
         case Array::Int32:
         case Array::Double:
         case Array::Contiguous:
             break;
         default:
-            if (isTypedView(node->arrayMode().typedArrayType()))
-                return CanCompileAndOSREnter;
             return CannotCompile;
         }
-        switch (node->arrayMode().speculation()) {
-        case Array::SaneChain:
-        case Array::InBounds:
+        break;
+    case GetByVal:
+        switch (node->arrayMode().type()) {
+        case Array::ForceExit:
+        case Array::Generic:
+        case Array::String:
+        case Array::Int32:
+        case Array::Double:
+        case Array::Contiguous:
+        case Array::Undecided:
+        case Array::DirectArguments:
+        case Array::ScopedArguments:
             break;
         default:
+            if (isTypedView(node->arrayMode().typedArrayType()))
+                return CanCompileAndOSREnter;
             return CannotCompile;
         }
         break;
     case PutByVal:
     case PutByValAlias:
+    case PutByValDirect:
         switch (node->arrayMode().type()) {
         case Array::ForceExit:
-            return CanCompileAndOSREnter;
+        case Array::Generic:
         case Array::Int32:
         case Array::Double:
         case Array::Contiguous:
@@ -161,15 +289,61 @@ inline CapabilityLevel canCompile(Node* node)
             return CannotCompile;
         }
         break;
+    case ArrayPush:
+    case ArrayPop:
+        switch (node->arrayMode().type()) {
+        case Array::Int32:
+        case Array::Contiguous:
+        case Array::Double:
+            break;
+        default:
+            return CannotCompile;
+        }
+        break;
     case CompareEq:
+        if (node->isBinaryUseKind(Int32Use))
+            break;
+        if (node->isBinaryUseKind(Int52RepUse))
+            break;
+        if (node->isBinaryUseKind(DoubleRepUse))
+            break;
+        if (node->isBinaryUseKind(StringIdentUse))
+            break;
+        if (node->isBinaryUseKind(ObjectUse))
+            break;
+        if (node->isBinaryUseKind(UntypedUse))
+            break;
+        if (node->isBinaryUseKind(BooleanUse))
+            break;
+        if (node->isBinaryUseKind(ObjectUse, ObjectOrOtherUse))
+            break;
+        if (node->isBinaryUseKind(ObjectOrOtherUse, ObjectUse))
+            break;
+        return CannotCompile;
     case CompareStrictEq:
         if (node->isBinaryUseKind(Int32Use))
             break;
-        if (node->isBinaryUseKind(MachineIntUse))
+        if (node->isBinaryUseKind(Int52RepUse))
             break;
-        if (node->isBinaryUseKind(NumberUse))
+        if (node->isBinaryUseKind(DoubleRepUse))
+            break;
+        if (node->isBinaryUseKind(StringIdentUse))
+            break;
+        if (node->isBinaryUseKind(ObjectUse, UntypedUse))
+            break;
+        if (node->isBinaryUseKind(UntypedUse, ObjectUse))
             break;
         if (node->isBinaryUseKind(ObjectUse))
+            break;
+        if (node->isBinaryUseKind(BooleanUse))
+            break;
+        if (node->isBinaryUseKind(MiscUse, UntypedUse))
+            break;
+        if (node->isBinaryUseKind(UntypedUse, MiscUse))
+            break;
+        if (node->isBinaryUseKind(StringIdentUse, NotStringVarUse))
+            break;
+        if (node->isBinaryUseKind(NotStringVarUse, StringIdentUse))
             break;
         return CannotCompile;
     case CompareLess:
@@ -178,37 +352,13 @@ inline CapabilityLevel canCompile(Node* node)
     case CompareGreaterEq:
         if (node->isBinaryUseKind(Int32Use))
             break;
-        if (node->isBinaryUseKind(MachineIntUse))
+        if (node->isBinaryUseKind(Int52RepUse))
             break;
-        if (node->isBinaryUseKind(NumberUse))
+        if (node->isBinaryUseKind(DoubleRepUse))
+            break;
+        if (node->isBinaryUseKind(UntypedUse))
             break;
         return CannotCompile;
-    case Branch:
-    case LogicalNot:
-        switch (node->child1().useKind()) {
-        case BooleanUse:
-        case Int32Use:
-        case NumberUse:
-        case StringUse:
-        case ObjectOrOtherUse:
-            break;
-        default:
-            return CannotCompile;
-        }
-        break;
-    case Switch:
-        switch (node->switchData()->kind) {
-        case SwitchImm:
-        case SwitchChar:
-            break;
-        default:
-            return CannotCompile;
-        }
-        break;
-    case ValueToInt32:
-        if (node->child1().useKind() != BooleanUse)
-            return CannotCompile;
-        break;
     default:
         // Don't know how to handle anything else.
         return CannotCompile;
@@ -218,9 +368,15 @@ inline CapabilityLevel canCompile(Node* node)
 
 CapabilityLevel canCompile(Graph& graph)
 {
+    if (graph.m_codeBlock->instructionCount() > Options::maximumFTLCandidateInstructionCount()) {
+        if (verboseCapabilities())
+            dataLog("FTL rejecting ", *graph.m_codeBlock, " because it's too big.\n");
+        return CannotCompile;
+    }
+    
     if (graph.m_codeBlock->codeType() != FunctionCode) {
-        if (verboseCompilationEnabled())
-            dataLog("FTL rejecting code block that doesn't belong to a function.\n");
+        if (verboseCapabilities())
+            dataLog("FTL rejecting ", *graph.m_codeBlock, " because it doesn't belong to a function.\n");
         return CannotCompile;
     }
     
@@ -246,22 +402,36 @@ CapabilityLevel canCompile(Graph& graph)
                 case UntypedUse:
                 case Int32Use:
                 case KnownInt32Use:
-                case MachineIntUse:
+                case Int52RepUse:
                 case NumberUse:
-                case KnownNumberUse:
                 case RealNumberUse:
+                case DoubleRepUse:
+                case DoubleRepRealUse:
                 case BooleanUse:
                 case CellUse:
                 case KnownCellUse:
                 case ObjectUse:
+                case FunctionUse:
                 case ObjectOrOtherUse:
                 case StringUse:
+                case KnownStringUse:
+                case StringObjectUse:
+                case StringOrStringObjectUse:
+                case SymbolUse:
+                case FinalObjectUse:
+                case NotCellUse:
+                case OtherUse:
+                case MiscUse:
+                case StringIdentUse:
+                case NotStringVarUse:
+                case MachineIntUse:
+                case DoubleRepMachineIntUse:
                     // These are OK.
                     break;
                 default:
                     // Don't know how to handle anything else.
-                    if (verboseCompilationEnabled()) {
-                        dataLog("FTL rejecting node because of bad use kind: ", edge.useKind(), " in node:\n");
+                    if (verboseCapabilities()) {
+                        dataLog("FTL rejecting node in ", *graph.m_codeBlock, " because of bad use kind: ", edge.useKind(), " in node:\n");
                         graph.dump(WTF::dataFile(), "    ", node);
                     }
                     return CannotCompile;
@@ -270,8 +440,8 @@ CapabilityLevel canCompile(Graph& graph)
             
             switch (canCompile(node)) {
             case CannotCompile: 
-                if (verboseCompilationEnabled()) {
-                    dataLog("FTL rejecting node:\n");
+                if (verboseCapabilities()) {
+                    dataLog("FTL rejecting node in ", *graph.m_codeBlock, ":\n");
                     graph.dump(WTF::dataFile(), "    ", node);
                 }
                 return CannotCompile;

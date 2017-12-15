@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Apple Inc. All rights reserved.
- * Copyright (C) 2011, 2012, 2013, 2014, 2016 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,116 +28,90 @@
  */
 
 #include "config.h"
-#include "Collator.h"
-#include <wtf/FastMalloc.h>
+#include <wtf/unicode/Collator.h>
+#include "WTFString.h"
 
-namespace EA
-{
-namespace WebKit
-{
-const char8_t* GetLocale();
-}
-}
-
-#if defined(EA_PLATFORM_MICROSOFT)
-#include EAWEBKIT_PLATFORM_HEADER
-#define strdup _strdup
+#if defined(EA_PLATFORM_WINDOWS)
+#include <windows.h>
 #endif
 
 namespace WTF {
 
-Collator::Collator(const char* locale)
-	: m_locale(locale ? strdup(locale) : 0)
-	, m_lowerFirst(false)
-{
-	/*
-	if(locale && locale[0])
-	{
-		size_t length = strlen(locale);
-		m_locale = (char*) fastMalloc(length + 1);
-		strncpy(m_locale,locale,length);
-		m_locale[length] = 0;
-	}
-	*/
-}
+Collator::Collator(const char* locale, bool shouldSortLowerCaseFirst)
+{}
 
 Collator::~Collator()
-{
-	free(m_locale);
-}
+{}
 
-void Collator::setOrderLowerFirst(bool lowerFirst)
-{
-	m_lowerFirst = lowerFirst;
-}
-
-std::unique_ptr<Collator> Collator::userDefault()
-{
-    // Note by Arpit Baldeva: The JavaScript API specification says that the localCompare method should use the default system locale (Note that this may be
-	// different from the locale selected by the user but that is what the standard says).
-	// On Windows, default locale is identified by LOCALE_USER_DEFAULT. 
-	// We request the user of this library to pass the default locale on Initialization. If NULL is passed, en-us is assumed.
-
-	const char* userDefaultlocale = EA::WebKit::GetLocale();
-	if(!(userDefaultlocale && userDefaultlocale[0]))
-		userDefaultlocale = "en-US";
-
-	return  std::make_unique<Collator>(userDefaultlocale);
-}
-
-Collator::Result Collator::collate(const UChar* lhs, size_t lhsLength, const UChar* rhs, size_t rhsLength) const
+int Collator::collate(StringView a, StringView b) const
 {
 	// As it turns out, the collation code implementation in EAText is not currently finished. So for now, we disable the code and use 
-	// old code. That code works correctly on Windows but has issues on platform other than Windows.
-#if 0
-	EA::Text::Collator collator;
-	collator.SetLocale(m_locale);
-	// We don't set any options and use the EAText defaults.
-	//collator.SetSortOption(EA::Text::Collator::kSOLocaleFirst, 1);
-
-	eastl::string16 lhsStr(lhs, lhsLength);
-	eastl::string16 rhsStr(rhs, rhsLength);
-
-	int result = collator.Compare(lhsStr.c_str(), rhsStr.c_str());
-	return (Collator::Result)result;
+	// old code. That code works correctly on Windows but has issues on platform other than Windows.  Note that to complete this we would
+	// need to include collator functions in the TextWrappter not call EA::Text directly.
+	#if 0
+		EA::Text::Collator collator;
+		collator.SetLocale(m_locale);
+		// We don't set any options and use the EAText defaults.
+		//collator.SetSortOption(EA::Text::Collator::kSOLocaleFirst, 1);
 	
-#else
-	// Test link - http://www.tutorialspoint.com/cgi-bin/practice.cgi?file=javascript_79 
-	// A.localeCompare(B) returns -1 on all Browsers (including ours).
-	// A.localeCompare(a) returns 1 on IE/Firefox. Chrome returns -32(basically -1). Safari in unable to handle the link.
+		eastl::string16 lhsStr(lhs, lhsLength);
+		eastl::string16 rhsStr(rhs, rhsLength);
 	
-	// In our implementation, A.localeCompare(a) returns 1 on Windows while returns -1 on Consoles. There is no easy way to fix this behavior consistently
-	// across all locales. In practice, it is probably not that important for our usage.
-	#if defined(EA_PLATFORM_WINDOWS)
-		// The reason to subtract 2 is documented at http://msdn.microsoft.com/en-us/library/dd317761%28v=vs.85%29.aspx 
-		//
-		// Returns one of the following values if successful. To maintain the C runtime convention of comparing strings, the value 2 can be subtracted from a 
-		// nonzero return value. Then, the meaning of <0, ==0, and >0 is consistent with the C runtime.
-		//
-		int result = CompareStringW(LOCALE_USER_DEFAULT, 0, reinterpret_cast<PCNZWCH>(lhs), (int)lhsLength, reinterpret_cast<PCNZWCH>(rhs), (int)rhsLength) - 2;
+		int result = collator.Compare(lhsStr.c_str(), rhsStr.c_str());
 		return (Collator::Result)result;
+		
 	#else
-		// Following does not conform to Unicode so it may be incorrect for some locales. Ported from CollatorDefault.cpp.
-		int lmin = lhsLength < rhsLength ? lhsLength : rhsLength;
-		int l = 0;
-		while (l < lmin && *lhs == *rhs) {
-			lhs++;
-			rhs++;
-			l++;
-		}
 
-		if (l < lmin)
-			return (*lhs > *rhs) ? Greater : Less;
+		// Test link - http://www.tutorialspoint.com/cgi-bin/practice.cgi?file=javascript_79 
+		// A.localeCompare(B) returns -1 on all Browsers (including ours).
+		// A.localeCompare(a) returns 1 on IE/Firefox. Chrome returns -32(basically -1). Safari in unable to handle the link.
+		
+		// In our implementation, A.localeCompare(a) returns 1 on Windows while returns -1 on Consoles. There is no easy way to fix this behavior consistently
+		// across all locales. In practice, it is probably not that important for our usage.
+		#if defined(EA_PLATFORM_WINDOWS)
 
-		if (lhsLength == rhsLength)
-			return Equal;
+			ASSERT(a.is8Bit() == b.is8Bit());
+			int result = 0;
+			if (a.is8Bit())
+			{
+				result = CompareStringA(LOCALE_USER_DEFAULT, 0, (const char *)a.characters8(), a.length(), (const char *)b.characters8(), b.length());
+			}
+			else
+			{
+				result = CompareStringW(LOCALE_USER_DEFAULT, 0, reinterpret_cast<PCNZWCH>(a.characters16()), a.length(), reinterpret_cast<PCNZWCH>(b.characters16()), b.length());
+			}
 
-		return (lhsLength > rhsLength) ? Greater : Less;
+			// The reason to subtract 2 is documented at http://msdn.microsoft.com/en-us/library/dd317761%28v=vs.85%29.aspx 
+			//
+			// Returns one of the following values if successful. To maintain the C runtime convention of comparing strings, the value 2 can be subtracted from a 
+			// nonzero return value. Then, the meaning of <0, ==0, and >0 is consistent with the C runtime.
+			//			
+			ASSERT(result != 0);
+			return result - 2;
+		#else
+			// Following does not conform to Unicode so it may be incorrect for some locales. Ported from CollatorDefault.cpp.
+			unsigned commonLength = std::min(a.length(), b.length());
+			for (unsigned i = 0; i < commonLength; ++i) {
+				if (a[i] < b[i])
+					return -1;
+				if (a[i] > b[i])
+					return 1;
+			}
+
+			if (a.length() < b.length())
+				return -1;
+			if (a.length() > b.length())
+				return 1;
+
+			return 0;
+		#endif
 	#endif
-#endif
-
 }
 
+int Collator::collateUTF8(const char* a, const char* b) const
+{
+	return collate(String::fromUTF8(a), String::fromUTF8(b));
+}
 
 }
 

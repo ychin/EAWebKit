@@ -19,9 +19,6 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SQL_DATABASE)
-
 #include "JSSQLTransactionCallback.h"
 
 #include "JSSQLTransaction.h"
@@ -47,7 +44,7 @@ JSSQLTransactionCallback::~JSSQLTransactionCallback()
     if (!context || context->isContextThread())
         delete m_data;
     else
-        context->postTask(DeleteCallbackDataTask::create(m_data));
+        context->postTask(DeleteCallbackDataTask(m_data));
 #ifndef NDEBUG
     m_data = 0;
 #endif
@@ -75,5 +72,3 @@ bool JSSQLTransactionCallback::handleEvent(SQLTransaction* transaction)
 }
 
 }
-
-#endif // ENABLE(SQL_DATABASE)

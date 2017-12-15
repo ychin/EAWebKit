@@ -14,7 +14,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,28 +27,30 @@
 #ifndef TouchEvent_h
 #define TouchEvent_h
 
-#if ENABLE(TOUCH_EVENTS)
+#if ENABLE(IOS_TOUCH_EVENTS)
+#include <WebKitAdditions/TouchEventIOS.h>
+#elif ENABLE(TOUCH_EVENTS)
 
 #include "MouseRelatedEvent.h"
 #include "TouchList.h"
 
 namespace WebCore {
 
-class TouchEvent : public MouseRelatedEvent {
+class TouchEvent final : public MouseRelatedEvent {
 public:
     virtual ~TouchEvent();
 
-    static PassRefPtr<TouchEvent> create()
+    static Ref<TouchEvent> create()
     {
-        return adoptRef(new TouchEvent);
+        return adoptRef(*new TouchEvent);
     }
-    static PassRefPtr<TouchEvent> create(TouchList* touches, 
+    static Ref<TouchEvent> create(TouchList* touches, 
             TouchList* targetTouches, TouchList* changedTouches, 
             const AtomicString& type, PassRefPtr<AbstractView> view,
             int screenX, int screenY, int pageX, int pageY,
             bool ctrlKey, bool altKey, bool shiftKey, bool metaKey)
     {
-        return adoptRef(new TouchEvent(touches, targetTouches, changedTouches,
+        return adoptRef(*new TouchEvent(touches, targetTouches, changedTouches,
                 type, view, screenX, screenY, pageX, pageY,
                 ctrlKey, altKey, shiftKey, metaKey));
     }
@@ -67,15 +69,9 @@ public:
     void setTargetTouches(PassRefPtr<TouchList> targetTouches) { m_targetTouches = targetTouches; }
     void setChangedTouches(PassRefPtr<TouchList> changedTouches) { m_changedTouches = changedTouches; }
 
-#if PLATFORM(BLACKBERRY)
-    void setDoubleTap(bool doubleTap) { m_doubleTap = doubleTap; }
-    bool isDoubleTap() const { return m_doubleTap; }
-    void setTouchHold(bool touchHold) { m_touchHold = touchHold; }
-    bool isTouchHold() const { return m_touchHold; }
-#endif
-    virtual bool isTouchEvent() const OVERRIDE;
+    virtual bool isTouchEvent() const override;
 
-    virtual EventInterface eventInterface() const;
+    virtual EventInterface eventInterface() const override;
 
 private:
     TouchEvent();
@@ -88,25 +84,11 @@ private:
     RefPtr<TouchList> m_touches;
     RefPtr<TouchList> m_targetTouches;
     RefPtr<TouchList> m_changedTouches;
-#if PLATFORM(BLACKBERRY)
-    bool m_touchHold;
-    bool m_doubleTap;
-#endif
 };
 
-inline TouchEvent* toTouchEvent(Event* event)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(event && event->isTouchEvent());
-    return static_cast<TouchEvent*>(event);
-}
-
-inline TouchEvent& toTouchEvent(Event& event)
-{
-    ASSERT(event.isTouchEvent());
-    return static_cast<TouchEvent&>(event);
-}
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_EVENT(TouchEvent)
 
 #endif // ENABLE(TOUCH_EVENTS)
 

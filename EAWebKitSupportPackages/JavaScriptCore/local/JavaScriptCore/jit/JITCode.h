@@ -26,14 +26,13 @@
 #ifndef JITCode_h
 #define JITCode_h
 
-#if ENABLE(JIT) || ENABLE(LLINT)
+#include "ArityCheckMode.h"
 #include "CallFrame.h"
 #include "Disassembler.h"
 #include "JITStubs.h"
 #include "JSCJSValue.h"
-#include "LegacyProfiler.h"
 #include "MacroAssemblerCodeRef.h"
-#endif
+#include "RegisterPreservationMode.h"
 
 namespace JSC {
 
@@ -46,18 +45,26 @@ class ForOSREntryJITCode;
 class JITCode;
 }
 
-#if ENABLE(JIT)
+struct ProtoCallFrame;
+class TrackedReferences;
 class VM;
-class JSStack;
-#endif
 
 class JITCode : public ThreadSafeRefCounted<JITCode> {
 public:
     typedef MacroAssemblerCodeRef CodeRef;
     typedef MacroAssemblerCodePtr CodePtr;
 
-    enum JITType { None, HostCallThunk, InterpreterThunk, BaselineJIT, DFGJIT, FTLJIT };
+    enum JITType : uint8_t {
+        None,
+        HostCallThunk,
+        InterpreterThunk,
+        BaselineJIT,
+        DFGJIT,
+        FTLJIT
+    };
     
+    static const char* typeName(JITType);
+
     static JITType bottomTierJIT()
     {
         return BaselineJIT;
@@ -166,7 +173,7 @@ public:
         return jitCode->jitType();
     }
     
-    virtual CodePtr addressForCall() = 0;
+    virtual CodePtr addressForCall(VM&, ExecutableBase*, ArityCheckMode, RegisterPreservationMode) = 0;
     virtual void* executableAddressAtOffset(size_t offset) = 0;
     void* executableAddress() { return executableAddressAtOffset(0); }
     virtual void* dataAddressAtOffset(size_t offset) = 0;
@@ -177,7 +184,9 @@ public:
     virtual FTL::JITCode* ftl();
     virtual FTL::ForOSREntryJITCode* ftlForOSREntry();
     
-    JSValue execute(JSStack*, CallFrame*, VM*);
+    virtual void validateReferences(const TrackedReferences&);
+    
+    JSValue execute(VM*, ProtoCallFrame*);
     
     void* start() { return dataAddressAtOffset(0); }
     virtual size_t size() = 0;
@@ -185,29 +194,60 @@ public:
     
     virtual bool contains(void*) = 0;
 
-    static PassRefPtr<JITCode> hostFunction(CodeRef);
-
 private:
     JITType m_jitType;
 };
 
-class DirectJITCode : public JITCode {
+class JITCodeWithCodeRef : public JITCode {
+protected:
+    JITCodeWithCodeRef(JITType);
+    JITCodeWithCodeRef(CodeRef, JITType);
+
+public:
+    virtual ~JITCodeWithCodeRef();
+
+    virtual void* executableAddressAtOffset(size_t offset) override;
+    virtual void* dataAddressAtOffset(size_t offset) override;
+    virtual unsigned offsetOf(void* pointerIntoCode) override;
+    virtual size_t size() override;
+    virtual bool contains(void*) override;
+
+protected:
+    CodeRef m_ref;
+};
+
+class DirectJITCode : public JITCodeWithCodeRef {
 public:
     DirectJITCode(JITType);
-    DirectJITCode(const CodeRef, JITType);
+    DirectJITCode(CodeRef, CodePtr withArityCheck, JITType);
     virtual ~DirectJITCode();
     
-    void initializeCodeRef(CodeRef ref);
+    void initializeCodeRef(CodeRef, CodePtr withArityCheck);
 
-    virtual CodePtr addressForCall() OVERRIDE;
-    virtual void* executableAddressAtOffset(size_t offset) OVERRIDE;
-    virtual void* dataAddressAtOffset(size_t offset) OVERRIDE;
-    virtual unsigned offsetOf(void* pointerIntoCode) OVERRIDE;
-    virtual size_t size() OVERRIDE;
-    virtual bool contains(void*) OVERRIDE;
+    virtual CodePtr addressForCall(VM&, ExecutableBase*, ArityCheckMode, RegisterPreservationMode) override;
 
 private:
-    CodeRef m_ref;
+    struct RegisterPreservationWrappers {
+        CodeRef withoutArityCheck;
+        CodeRef withArityCheck;
+    };
+
+    RegisterPreservationWrappers* ensureWrappers();
+    
+    CodePtr m_withArityCheck;
+    
+    std::unique_ptr<RegisterPreservationWrappers> m_wrappers;
+};
+
+class NativeJITCode : public JITCodeWithCodeRef {
+public:
+    NativeJITCode(JITType);
+    NativeJITCode(CodeRef, JITType);
+    virtual ~NativeJITCode();
+    
+    void initializeCodeRef(CodeRef);
+
+    virtual CodePtr addressForCall(VM&, ExecutableBase*, ArityCheckMode, RegisterPreservationMode) override;
 };
 
 } // namespace JSC

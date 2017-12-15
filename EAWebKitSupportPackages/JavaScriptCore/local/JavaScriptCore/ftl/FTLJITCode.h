@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,54 +26,71 @@
 #ifndef FTLJITCode_h
 #define FTLJITCode_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(FTL_JIT)
 
 #include "DFGCommonData.h"
+#include "FTLDataSection.h"
 #include "FTLOSRExit.h"
 #include "FTLStackMaps.h"
+#include "FTLUnwindInfo.h"
 #include "JITCode.h"
 #include "LLVMAPI.h"
 #include <wtf/RefCountedArray.h>
 
-namespace JSC { namespace FTL {
+#if OS(DARWIN)
+#define SECTION_NAME_PREFIX "__"
+#elif OS(LINUX)
+#define SECTION_NAME_PREFIX "."
+#else
+#error "Unsupported platform"
+#endif
 
-typedef int64_t LSectionWord; // We refer to LLVM data sections using LSectionWord*, just to be clear about our intended alignment restrictions.
+#define SECTION_NAME(NAME) (SECTION_NAME_PREFIX NAME)
+
+namespace JSC {
+
+class TrackedReferences;
+
+namespace FTL {
 
 class JITCode : public JSC::JITCode {
 public:
     JITCode();
     ~JITCode();
     
-    CodePtr addressForCall();
-    void* executableAddressAtOffset(size_t offset);
-    void* dataAddressAtOffset(size_t offset);
-    unsigned offsetOf(void* pointerIntoCode);
-    size_t size();
-    bool contains(void*);
+    CodePtr addressForCall(VM&, ExecutableBase*, ArityCheckMode, RegisterPreservationMode) override;
+    void* executableAddressAtOffset(size_t offset) override;
+    void* dataAddressAtOffset(size_t offset) override;
+    unsigned offsetOf(void* pointerIntoCode) override;
+    size_t size() override;
+    bool contains(void*) override;
     
     void initializeExitThunks(CodeRef);
     void addHandle(PassRefPtr<ExecutableMemoryHandle>);
-    void addDataSection(RefCountedArray<LSectionWord>);
-    void initializeCode(CodeRef entrypoint);
+    void addDataSection(PassRefPtr<DataSection>);
+    void initializeArityCheckEntrypoint(CodeRef);
+    void initializeAddressForCall(CodePtr);
+    
+    void validateReferences(const TrackedReferences&) override;
     
     const Vector<RefPtr<ExecutableMemoryHandle>>& handles() const { return m_handles; }
-    const Vector<RefCountedArray<LSectionWord>>& dataSections() const { return m_dataSections; }
+    const Vector<RefPtr<DataSection>>& dataSections() const { return m_dataSections; }
     
     CodePtr exitThunks();
     
-    JITCode* ftl();
-    DFG::CommonData* dfgCommon();
+    JITCode* ftl() override;
+    DFG::CommonData* dfgCommon() override;
     
     DFG::CommonData common;
     SegmentedVector<OSRExit, 8> osrExit;
     StackMaps stackmaps;
+    UnwindInfo unwindInfo;
     
 private:
-    Vector<RefCountedArray<LSectionWord>> m_dataSections;
+    Vector<RefPtr<DataSection>> m_dataSections;
     Vector<RefPtr<ExecutableMemoryHandle>> m_handles;
-    CodeRef m_entrypoint;
+    CodePtr m_addressForCall;
+    CodeRef m_arityCheckEntrypoint;
     CodeRef m_exitThunks;
 };
 

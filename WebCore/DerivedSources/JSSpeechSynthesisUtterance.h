@@ -23,29 +23,28 @@
 
 #if ENABLE(SPEECH_SYNTHESIS)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SpeechSynthesisUtterance.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSpeechSynthesisUtterance : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSpeechSynthesisUtterance* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SpeechSynthesisUtterance> impl)
+    static JSSpeechSynthesisUtterance* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SpeechSynthesisUtterance>&& impl)
     {
-        JSSpeechSynthesisUtterance* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisUtterance>(globalObject->vm().heap)) JSSpeechSynthesisUtterance(structure, globalObject, impl);
+        JSSpeechSynthesisUtterance* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisUtterance>(globalObject->vm().heap)) JSSpeechSynthesisUtterance(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SpeechSynthesisUtterance* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSpeechSynthesisUtterance();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,22 +56,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     SpeechSynthesisUtterance& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SpeechSynthesisUtterance* m_impl;
 protected:
-    JSSpeechSynthesisUtterance(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SpeechSynthesisUtterance>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSSpeechSynthesisUtterance(JSC::Structure*, JSDOMGlobalObject*, Ref<SpeechSynthesisUtterance>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSpeechSynthesisUtteranceOwner : public JSC::WeakHandleOwner {
@@ -83,96 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SpeechSynthesisUtterance*)
 {
-    DEFINE_STATIC_LOCAL(JSSpeechSynthesisUtteranceOwner, jsSpeechSynthesisUtteranceOwner, ());
-    return &jsSpeechSynthesisUtteranceOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SpeechSynthesisUtterance*)
-{
-    return &world;
+    static NeverDestroyed<JSSpeechSynthesisUtteranceOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SpeechSynthesisUtterance*);
-SpeechSynthesisUtterance* toSpeechSynthesisUtterance(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SpeechSynthesisUtterance& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSpeechSynthesisUtterancePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSpeechSynthesisUtterancePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSpeechSynthesisUtterancePrototype* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisUtterancePrototype>(vm.heap)) JSSpeechSynthesisUtterancePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSpeechSynthesisUtterancePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSSpeechSynthesisUtteranceConstructor : public DOMConstructorObject {
-private:
-    JSSpeechSynthesisUtteranceConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSpeechSynthesisUtteranceConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSpeechSynthesisUtteranceConstructor* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisUtteranceConstructor>(vm.heap)) JSSpeechSynthesisUtteranceConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSSpeechSynthesisUtterance(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Attributes
-
-JSC::JSValue jsSpeechSynthesisUtteranceText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceText(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceLang(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceLang(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceVoice(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceVoice(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceVolume(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceVolume(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceRate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceRate(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtterancePitch(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtterancePitch(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnstart(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnstart(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnend(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnend(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnpause(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnpause(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnresume(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnresume(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnmark(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnmark(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceOnboundary(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSpeechSynthesisUtteranceOnboundary(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSpeechSynthesisUtteranceConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

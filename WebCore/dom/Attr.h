@@ -31,7 +31,7 @@
 namespace WebCore {
 
 class CSSStyleDeclaration;
-class MutableStylePropertySet;
+class MutableStyleProperties;
 
 // Attr can have Text and EntityReference children
 // therefore it has to be a fullblown Node. The plan
@@ -39,14 +39,14 @@ class MutableStylePropertySet;
 // resulting nodevalue in the attribute upon
 // destruction. however, this is not yet implemented.
 
-class Attr FINAL : public ContainerNode {
+class Attr final : public ContainerNode {
 public:
-    static PassRefPtr<Attr> create(Element*, const QualifiedName&);
-    static PassRefPtr<Attr> create(Document&, const QualifiedName&, const AtomicString& value);
+    static RefPtr<Attr> create(Element*, const QualifiedName&);
+    static RefPtr<Attr> create(Document&, const QualifiedName&, const AtomicString& value);
     virtual ~Attr();
 
     String name() const { return qualifiedName().toString(); }
-    bool specified() const { return m_specified; }
+    bool specified() const { return true; }
     Element* ownerElement() const { return m_element; }
 
     const AtomicString& value() const;
@@ -59,12 +59,10 @@ public:
 
     CSSStyleDeclaration* style();
 
-    void setSpecified(bool specified) { m_specified = specified; }
-
     void attachToElement(Element*);
     void detachFromElementWithValue(const AtomicString&);
 
-    virtual const AtomicString& namespaceURI() const OVERRIDE { return m_name.namespaceURI(); }
+    virtual const AtomicString& namespaceURI() const override { return m_name.namespaceURI(); }
 
 private:
     Attr(Element*, const QualifiedName&);
@@ -72,22 +70,22 @@ private:
 
     void createTextChild();
 
-    virtual String nodeName() const OVERRIDE { return name(); }
-    virtual NodeType nodeType() const OVERRIDE { return ATTRIBUTE_NODE; }
+    virtual String nodeName() const override { return name(); }
+    virtual NodeType nodeType() const override { return ATTRIBUTE_NODE; }
 
-    virtual const AtomicString& localName() const OVERRIDE { return m_name.localName(); }
-    virtual const AtomicString& prefix() const OVERRIDE { return m_name.prefix(); }
+    virtual const AtomicString& localName() const override { return m_name.localName(); }
+    virtual const AtomicString& prefix() const override { return m_name.prefix(); }
 
-    virtual void setPrefix(const AtomicString&, ExceptionCode&) OVERRIDE;
+    virtual void setPrefix(const AtomicString&, ExceptionCode&) override;
 
-    virtual String nodeValue() const OVERRIDE { return value(); }
-    virtual void setNodeValue(const String&, ExceptionCode&) OVERRIDE;
-    virtual PassRefPtr<Node> cloneNode(bool deep) OVERRIDE;
+    virtual String nodeValue() const override { return value(); }
+    virtual void setNodeValue(const String&, ExceptionCode&) override;
+    virtual RefPtr<Node> cloneNodeInternal(Document&, CloningOperation) override;
 
-    virtual bool isAttributeNode() const OVERRIDE { return true; }
-    virtual bool childTypeAllowed(NodeType) const OVERRIDE;
+    virtual bool isAttributeNode() const override { return true; }
+    virtual bool childTypeAllowed(NodeType) const override;
 
-    virtual void childrenChanged(const ChildChange&) OVERRIDE;
+    virtual void childrenChanged(const ChildChange&) override;
 
     Attribute& elementAttribute();
 
@@ -97,16 +95,14 @@ private:
     QualifiedName m_name;
     AtomicString m_standaloneValue;
 
-    RefPtr<MutableStylePropertySet> m_style;
-    unsigned m_ignoreChildrenChanged : 31;
-    bool m_specified : 1;
+    RefPtr<MutableStyleProperties> m_style;
+    unsigned m_ignoreChildrenChanged;
 };
 
-inline bool isAttr(const Node& node) { return node.isAttributeNode(); }
-void isAttr(const Attr&); // Catch unnecessary runtime check of type known at compile time.
-
-NODE_TYPE_CASTS(Attr)
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::Attr)
+    static bool isType(const WebCore::Node& node) { return node.isAttributeNode(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // Attr_h

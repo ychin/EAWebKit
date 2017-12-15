@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,8 @@
 #include "CodeBlock.h"
 #include "DFGNode.h"
 #include "DFGPlan.h"
-#include "Operations.h"
+#include "JSCInlines.h"
+#include "TrackedReferences.h"
 #include "VM.h"
 
 namespace JSC { namespace DFG {
@@ -40,9 +41,9 @@ void CommonData::notifyCompilingStructureTransition(Plan& plan, CodeBlock* codeB
 {
     plan.transitions.addLazily(
         codeBlock,
-        node->codeOrigin.codeOriginOwner(),
-        node->structureTransitionData().previousStructure,
-        node->structureTransitionData().newStructure);
+        node->origin.semantic.codeOriginOwner(),
+        node->transition()->previous,
+        node->transition()->next);
 }
 
 unsigned CommonData::addCodeOrigin(CodeOrigin codeOrigin)
@@ -60,6 +61,37 @@ void CommonData::shrinkToFit()
     codeOrigins.shrinkToFit();
     weakReferences.shrinkToFit();
     transitions.shrinkToFit();
+}
+
+bool CommonData::invalidate()
+{
+    if (!isStillValid)
+        return false;
+    for (unsigned i = jumpReplacements.size(); i--;)
+        jumpReplacements[i].fire();
+    isStillValid = false;
+    return true;
+}
+
+void CommonData::validateReferences(const TrackedReferences& trackedReferences)
+{
+    if (InlineCallFrameSet* set = inlineCallFrames.get()) {
+        for (InlineCallFrame* inlineCallFrame : *set) {
+            for (ValueRecovery& recovery : inlineCallFrame->arguments) {
+                if (recovery.isConstant())
+                    trackedReferences.check(recovery.constant());
+            }
+            
+            if (ScriptExecutable* executable = inlineCallFrame->executable.get())
+                trackedReferences.check(executable);
+            
+            if (inlineCallFrame->calleeRecovery.isConstant())
+                trackedReferences.check(inlineCallFrame->calleeRecovery.constant());
+        }
+    }
+    
+    for (AdaptiveStructureWatchpoint* watchpoint : adaptiveStructureWatchpoints)
+        watchpoint->key().validateReferences(trackedReferences);
 }
 
 } } // namespace JSC::DFG

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,11 +30,24 @@
 
 namespace JSC {
 
+class CodeBlock;
+class FunctionExecutable;
+
+JS_EXPORT_PRIVATE FunctionExecutable* getExecutableForFunction(JSValue theFunctionValue);
+JS_EXPORT_PRIVATE CodeBlock* getSomeBaselineCodeBlockForFunction(JSValue theFunctionValue);
+
 JS_EXPORT_PRIVATE JSValue numberOfDFGCompiles(JSValue function);
 JS_EXPORT_PRIVATE JSValue setNeverInline(JSValue function);
+JS_EXPORT_PRIVATE JSValue optimizeNextInvocation(JSValue function);
 
 JS_EXPORT_PRIVATE JSValue numberOfDFGCompiles(ExecState*);
 JS_EXPORT_PRIVATE JSValue setNeverInline(ExecState*);
+JS_EXPORT_PRIVATE JSValue optimizeNextInvocation(ExecState*);
+
+JS_EXPORT_PRIVATE unsigned numberOfExceptionFuzzChecks();
+JS_EXPORT_PRIVATE unsigned numberOfExecutableAllocationFuzzChecks();
+JS_EXPORT_PRIVATE unsigned numberOfStaticOSRExitFuzzChecks();
+JS_EXPORT_PRIVATE unsigned numberOfOSRExitFuzzChecks();
 
 } // namespace JSC
 

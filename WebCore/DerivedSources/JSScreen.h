@@ -21,28 +21,28 @@
 #ifndef JSScreen_h
 #define JSScreen_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "Screen.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSScreen : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSScreen* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Screen> impl)
+    static JSScreen* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Screen>&& impl)
     {
-        JSScreen* ptr = new (NotNull, JSC::allocateCell<JSScreen>(globalObject->vm().heap)) JSScreen(structure, globalObject, impl);
+        JSScreen* ptr = new (NotNull, JSC::allocateCell<JSScreen>(globalObject->vm().heap)) JSScreen(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Screen* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSScreen();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     Screen& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Screen* m_impl;
 protected:
-    JSScreen(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Screen>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSScreen(JSC::Structure*, JSDOMGlobalObject*, Ref<Screen>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSScreenOwner : public JSC::WeakHandleOwner {
@@ -78,76 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Screen*)
 {
-    DEFINE_STATIC_LOCAL(JSScreenOwner, jsScreenOwner, ());
-    return &jsScreenOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Screen*)
-{
-    return &world;
+    static NeverDestroyed<JSScreenOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Screen*);
-Screen* toScreen(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Screen& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSScreenPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSScreenPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSScreenPrototype* ptr = new (NotNull, JSC::allocateCell<JSScreenPrototype>(vm.heap)) JSScreenPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSScreenPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSScreenConstructor : public DOMConstructorObject {
-private:
-    JSScreenConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSScreenConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSScreenConstructor* ptr = new (NotNull, JSC::allocateCell<JSScreenConstructor>(vm.heap)) JSScreenConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsScreenHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenColorDepth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenPixelDepth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenAvailLeft(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenAvailTop(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenAvailHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenAvailWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScreenConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

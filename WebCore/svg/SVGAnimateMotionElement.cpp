@@ -20,16 +20,12 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGAnimateMotionElement.h"
 
 #include "AffineTransform.h"
-#include "Attribute.h"
 #include "ElementIterator.h"
-#include "RenderObject.h"
+#include "PathTraversalState.h"
 #include "RenderSVGResource.h"
-#include "SVGElementInstance.h"
 #include "SVGImageElement.h"
 #include "SVGMPathElement.h"
 #include "SVGNames.h"
@@ -40,6 +36,7 @@
 #include "SVGTransformList.h"
 #include <wtf/MathExtras.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/text/StringView.h>
 
 namespace WebCore {
     
@@ -53,9 +50,9 @@ inline SVGAnimateMotionElement::SVGAnimateMotionElement(const QualifiedName& tag
     ASSERT(hasTagName(animateMotionTag));
 }
 
-PassRefPtr<SVGAnimateMotionElement> SVGAnimateMotionElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGAnimateMotionElement> SVGAnimateMotionElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGAnimateMotionElement(tagName, document));
+    return adoptRef(*new SVGAnimateMotionElement(tagName, document));
 }
 
 bool SVGAnimateMotionElement::hasValidAttributeType()
@@ -72,7 +69,7 @@ bool SVGAnimateMotionElement::hasValidAttributeType()
     if (targetElement->hasTagName(gTag)
         || targetElement->hasTagName(defsTag)
         || targetElement->hasTagName(useTag)
-        || isSVGImageElement(targetElement)
+        || is<SVGImageElement>(*targetElement)
         || targetElement->hasTagName(switchTag)
         || targetElement->hasTagName(pathTag)
         || targetElement->hasTagName(rectTag)
@@ -97,21 +94,8 @@ bool SVGAnimateMotionElement::hasValidAttributeName()
     return true;
 }
 
-bool SVGAnimateMotionElement::isSupportedAttribute(const QualifiedName& attrName)
-{
-    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());
-    if (supportedAttributes.isEmpty())
-        supportedAttributes.add(SVGNames::pathAttr);
-    return supportedAttributes.contains<SVGAttributeHashTranslator>(attrName);
-}
-
 void SVGAnimateMotionElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
-    if (!isSupportedAttribute(name)) {
-        SVGAnimationElement::parseAttribute(name, value);
-        return;
-    }
-
     if (name == SVGNames::pathAttr) {
         m_path = Path();
         buildPathFromString(value, m_path);
@@ -119,13 +103,13 @@ void SVGAnimateMotionElement::parseAttribute(const QualifiedName& name, const At
         return;
     }
 
-    ASSERT_NOT_REACHED();
+    SVGAnimationElement::parseAttribute(name, value);
 }
     
 SVGAnimateMotionElement::RotateMode SVGAnimateMotionElement::rotateMode() const
 {
-    DEFINE_STATIC_LOCAL(const AtomicString, autoVal, ("auto", AtomicString::ConstructFromLiteral));
-    DEFINE_STATIC_LOCAL(const AtomicString, autoReverse, ("auto-reverse", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const AtomicString, autoVal, ("auto", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const AtomicString, autoReverse, ("auto-reverse", AtomicString::ConstructFromLiteral));
     const AtomicString& rotate = getAttribute(SVGNames::rotateAttr);
     if (rotate == autoVal)
         return RotateAuto;
@@ -139,9 +123,8 @@ void SVGAnimateMotionElement::updateAnimationPath()
     m_animationPath = Path();
     bool foundMPath = false;
 
-    auto mPathChildren = childrenOfType<SVGMPathElement>(this);
-    for (auto mPath = mPathChildren.begin(), end = mPathChildren.end(); mPath != end; ++mPath) {
-        SVGPathElement* pathElement = mPath->pathElement();
+    for (auto& mPath : childrenOfType<SVGMPathElement>(*this)) {
+        SVGPathElement* pathElement = mPath.pathElement();
         if (pathElement) {
             updatePathFromGraphicsElement(pathElement, m_animationPath);
             foundMPath = true;
@@ -159,7 +142,8 @@ static bool parsePoint(const String& s, FloatPoint& point)
 {
     if (s.isEmpty())
         return false;
-    const UChar* cur = s.characters();
+    auto upconvertedCharacters = StringView(s).upconvertedCharacters();
+    const UChar* cur = upconvertedCharacters;
     const UChar* end = cur + s.length();
     
     if (!skipOptionalSVGSpaces(cur, end))
@@ -229,16 +213,19 @@ void SVGAnimateMotionElement::buildTransformForProgress(AffineTransform* transfo
 {
     ASSERT(!m_animationPath.isEmpty());
 
-    bool ok = false;
+    bool success = false;
     float positionOnPath = m_animationPath.length() * percentage;
-    FloatPoint position = m_animationPath.pointAtLength(positionOnPath, ok);
-    if (!ok)
+    auto traversalState(m_animationPath.traversalStateAtLength(positionOnPath, success));
+    if (!success)
         return;
+
+    FloatPoint position = traversalState.current();
+    float angle = traversalState.normalAngle();
+
     transform->translate(position.x(), position.y());
     RotateMode rotateMode = this->rotateMode();
     if (rotateMode != RotateAuto && rotateMode != RotateAutoReverse)
         return;
-    float angle = m_animationPath.normalAngleAtLength(positionOnPath, ok);
     if (rotateMode == RotateAutoReverse)
         angle += 180;
     transform->rotate(angle);
@@ -290,26 +277,22 @@ void SVGAnimateMotionElement::applyResultsToTarget()
     if (!targetElement)
         return;
 
-    if (RenderObject* renderer = targetElement->renderer())
-        RenderSVGResource::markForLayoutAndParentResourceInvalidation(renderer);
+    if (RenderElement* renderer = targetElement->renderer())
+        RenderSVGResource::markForLayoutAndParentResourceInvalidation(*renderer);
 
-    AffineTransform* t = targetElement->supplementalTransform();
-    if (!t)
+    AffineTransform* targetSupplementalTransform = targetElement->supplementalTransform();
+    if (!targetSupplementalTransform)
         return;
 
     // ...except in case where we have additional instances in <use> trees.
-    const HashSet<SVGElementInstance*>& instances = targetElement->instancesForElement();
-    const HashSet<SVGElementInstance*>::const_iterator end = instances.end();
-    for (HashSet<SVGElementInstance*>::const_iterator it = instances.begin(); it != end; ++it) {
-        SVGElement* shadowTreeElement = (*it)->shadowTreeElement();
-        ASSERT(shadowTreeElement);
-        AffineTransform* transform = shadowTreeElement->supplementalTransform();
-        if (!transform)
+    for (auto* instance : targetElement->instances()) {
+        AffineTransform* transform = instance->supplementalTransform();
+        if (!transform || *transform == *targetSupplementalTransform)
             continue;
-        transform->setMatrix(t->a(), t->b(), t->c(), t->d(), t->e(), t->f());
-        if (RenderObject* renderer = shadowTreeElement->renderer()) {
+        *transform = *targetSupplementalTransform;
+        if (RenderElement* renderer = instance->renderer()) {
             renderer->setNeedsTransformUpdate();
-            RenderSVGResource::markForLayoutAndParentResourceInvalidation(renderer);
+            RenderSVGResource::markForLayoutAndParentResourceInvalidation(*renderer);
         }
     }
 }
@@ -335,4 +318,3 @@ void SVGAnimateMotionElement::updateAnimationMode()
 }
 
 }
-#endif // ENABLE(SVG)

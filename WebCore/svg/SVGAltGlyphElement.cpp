@@ -21,9 +21,9 @@
  */
 
 #include "config.h"
+#include "SVGAltGlyphElement.h"
 
 #if ENABLE(SVG_FONTS)
-#include "SVGAltGlyphElement.h"
 
 #include "ExceptionCode.h"
 #include "RenderInline.h"
@@ -50,9 +50,9 @@ inline SVGAltGlyphElement::SVGAltGlyphElement(const QualifiedName& tagName, Docu
     registerAnimatedPropertiesForSVGAltGlyphElement();
 }
 
-PassRefPtr<SVGAltGlyphElement> SVGAltGlyphElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGAltGlyphElement> SVGAltGlyphElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGAltGlyphElement(tagName, document));
+    return adoptRef(*new SVGAltGlyphElement(tagName, document));
 }
 
 void SVGAltGlyphElement::setGlyphRef(const AtomicString&, ExceptionCode& ec)
@@ -75,16 +75,16 @@ const AtomicString& SVGAltGlyphElement::format() const
     return fastGetAttribute(SVGNames::formatAttr);
 }
 
-bool SVGAltGlyphElement::childShouldCreateRenderer(const Node* child) const
+bool SVGAltGlyphElement::childShouldCreateRenderer(const Node& child) const
 {
-    if (child->isTextNode())
+    if (child.isTextNode())
         return true;
     return false;
 }
 
-RenderElement* SVGAltGlyphElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> SVGAltGlyphElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderSVGTSpan(*this);
+    return createRenderer<RenderSVGTSpan>(*this, WTF::move(style));
 }
 
 bool SVGAltGlyphElement::hasValidGlyphElements(Vector<String>& glyphNames) const
@@ -94,13 +94,13 @@ bool SVGAltGlyphElement::hasValidGlyphElements(Vector<String>& glyphNames) const
     if (!element)
         return false;
 
-    if (isSVGGlyphElement(element)) {
+    if (is<SVGGlyphElement>(*element)) {
         glyphNames.append(target);
         return true;
     }
 
-    if (isSVGAltGlyphDefElement(element)
-        && toSVGAltGlyphDefElement(element)->hasValidGlyphElements(glyphNames))
+    if (is<SVGAltGlyphDefElement>(*element)
+        && downcast<SVGAltGlyphDefElement>(*element).hasValidGlyphElements(glyphNames))
         return true;
 
     return false;
@@ -108,4 +108,4 @@ bool SVGAltGlyphElement::hasValidGlyphElements(Vector<String>& glyphNames) const
 
 }
 
-#endif // ENABLE(SVG)
+#endif

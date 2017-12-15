@@ -24,24 +24,23 @@
 #if ENABLE(CSS_REGIONS)
 
 #include "JSCSSRule.h"
-#include "JSDOMBinding.h"
 #include "WebKitCSSRegionRule.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSWebKitCSSRegionRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSWebKitCSSRegionRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitCSSRegionRule> impl)
+    static JSWebKitCSSRegionRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitCSSRegionRule>&& impl)
     {
-        JSWebKitCSSRegionRule* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSRegionRule>(globalObject->vm().heap)) JSWebKitCSSRegionRule(structure, globalObject, impl);
+        JSWebKitCSSRegionRule* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSRegionRule>(globalObject->vm().heap)) JSWebKitCSSRegionRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,63 +54,17 @@ public:
         return static_cast<WebKitCSSRegionRule&>(Base::impl());
     }
 protected:
-    JSWebKitCSSRegionRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebKitCSSRegionRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebKitCSSRegionRule(JSC::Structure*, JSDOMGlobalObject*, Ref<WebKitCSSRegionRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSWebKitCSSRegionRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebKitCSSRegionRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebKitCSSRegionRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSRegionRulePrototype>(vm.heap)) JSWebKitCSSRegionRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebKitCSSRegionRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWebKitCSSRegionRuleConstructor : public DOMConstructorObject {
-private:
-    JSWebKitCSSRegionRuleConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebKitCSSRegionRuleConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebKitCSSRegionRuleConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSRegionRuleConstructor>(vm.heap)) JSWebKitCSSRegionRuleConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsWebKitCSSRegionRuleCssRules(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSRegionRuleConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

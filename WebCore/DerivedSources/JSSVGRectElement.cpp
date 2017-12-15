@@ -19,50 +19,76 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGRectElement.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedBoolean.h"
 #include "JSSVGAnimatedLength.h"
 #include "SVGRectElement.h"
 #include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#endif
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGRectElementTableValues[] =
-{
-    { "x", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementX), (intptr_t)0 },
-    { "y", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementY), (intptr_t)0 },
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementWidth), (intptr_t)0 },
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementHeight), (intptr_t)0 },
-    { "rx", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementRx), (intptr_t)0 },
-    { "ry", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementRy), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGRectElementX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementRx(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementRy(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGRectElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGRectElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGRectElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGRectElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGRectElementPrototype>(vm.heap)) JSSVGRectElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGRectElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGRectElementTable = { 19, 15, JSSVGRectElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGRectElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGRectElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGRectElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGRectElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGRectElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGRectElementConstructor>(vm.heap)) JSSVGRectElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGRectElementConstructorTable = { 1, 0, JSSVGRectElementConstructorTableValues, 0 };
-const ClassInfo JSSVGRectElementConstructor::s_info = { "SVGRectElementConstructor", &Base::s_info, &JSSVGRectElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGRectElementConstructor) };
+const ClassInfo JSSVGRectElementConstructor::s_info = { "SVGRectElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGRectElementConstructor) };
 
 JSSVGRectElementConstructor::JSSVGRectElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -73,138 +99,182 @@ void JSSVGRectElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGRectElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGRectElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGRectElementConstructor, JSDOMWrapper>(exec, JSSVGRectElementConstructorTable, jsCast<JSSVGRectElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGRectElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGRectElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGRectElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "y", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "rx", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementRx), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "ry", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementRy), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGRectElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGRectElementPrototypeTable = { 1, 0, JSSVGRectElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGRectElementPrototype::s_info = { "SVGRectElementPrototype", &Base::s_info, &JSSVGRectElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGRectElementPrototype) };
+const ClassInfo JSSVGRectElementPrototype::s_info = { "SVGRectElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGRectElementPrototype) };
 
-JSObject* JSSVGRectElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGRectElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGRectElement::s_info = { "SVGRectElement", &Base::s_info, &JSSVGRectElementTable, 0 , CREATE_METHOD_TABLE(JSSVGRectElement) };
-
-JSSVGRectElement::JSSVGRectElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGRectElement> impl)
-    : JSSVGGraphicsElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGRectElement::finishCreation(VM& vm)
+void JSSVGRectElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGRectElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGRectElement::s_info = { "SVGRectElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGRectElement) };
+
+JSSVGRectElement::JSSVGRectElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGRectElement>&& impl)
+    : JSSVGGraphicsElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGRectElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGRectElementPrototype::create(vm, globalObject, JSSVGRectElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElementPrototype::self(vm, globalObject)));
+    return JSSVGRectElementPrototype::create(vm, globalObject, JSSVGRectElementPrototype::createStructure(vm, globalObject, JSSVGGraphicsElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGRectElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGRectElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGRectElement* thisObject = jsCast<JSSVGRectElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGRectElement, Base>(exec, JSSVGRectElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGRectElement>(vm, globalObject);
 }
 
-JSValue jsSVGRectElementX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "x");
+        return throwGetterTypeError(*exec, "SVGRectElement", "x");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.xAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGRectElementY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "y");
+        return throwGetterTypeError(*exec, "SVGRectElement", "y");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.yAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGRectElementWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "width");
+        return throwGetterTypeError(*exec, "SVGRectElement", "width");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.widthAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGRectElementHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "height");
+        return throwGetterTypeError(*exec, "SVGRectElement", "height");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.heightAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGRectElementRx(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementRx(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "rx");
+        return throwGetterTypeError(*exec, "SVGRectElement", "rx");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.rxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGRectElementRy(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementRy(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "ry");
+        return throwGetterTypeError(*exec, "SVGRectElement", "ry");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedLength> obj = impl.ryAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGRectElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGRectElement* castedThis = jsCast<JSSVGRectElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGRectElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGRectElement* castedThis = jsDynamicCast<JSSVGRectElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGRectElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGRectElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGRectElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGRectElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGRectElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGRectElement* domObject = jsCast<JSSVGRectElement*>(asObject(slotBase));
-    return JSSVGRectElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGRectElementPrototype* domObject = jsDynamicCast<JSSVGRectElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGRectElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGRectElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -214,5 +284,3 @@ JSValue JSSVGRectElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 
 }
-
-#endif // ENABLE(SVG)

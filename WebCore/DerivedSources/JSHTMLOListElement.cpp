@@ -23,6 +23,7 @@
 
 #include "HTMLNames.h"
 #include "HTMLOListElement.h"
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
@@ -31,28 +32,65 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLOListElementTableValues[] =
-{
-    { "compact", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementCompact), (intptr_t)setJSHTMLOListElementCompact },
-    { "start", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementStart), (intptr_t)setJSHTMLOListElementStart },
-    { "reversed", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementReversed), (intptr_t)setJSHTMLOListElementReversed },
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementType), (intptr_t)setJSHTMLOListElementType },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsHTMLOListElementCompact(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLOListElementCompact(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLOListElementStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLOListElementStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLOListElementReversed(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLOListElementReversed(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLOListElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLOListElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLOListElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLOListElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLOListElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLOListElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLOListElementPrototype>(vm.heap)) JSHTMLOListElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLOListElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLOListElementTable = { 16, 15, JSHTMLOListElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLOListElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLOListElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLOListElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLOListElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLOListElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLOListElementConstructor>(vm.heap)) JSHTMLOListElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLOListElementConstructorTable = { 1, 0, JSHTMLOListElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLOListElementConstructor::s_info = { "HTMLOListElementConstructor", &Base::s_info, &JSHTMLOListElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLOListElementConstructor) };
+const ClassInfo JSHTMLOListElementConstructor::s_info = { "HTMLOListElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLOListElementConstructor) };
 
 JSHTMLOListElementConstructor::JSHTMLOListElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,153 +101,200 @@ void JSHTMLOListElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLOListElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLOListElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLOListElementConstructor, JSDOMWrapper>(exec, JSHTMLOListElementConstructorTable, jsCast<JSHTMLOListElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLOListElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLOListElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLOListElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "compact", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementCompact), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLOListElementCompact) },
+    { "start", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLOListElementStart) },
+    { "reversed", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementReversed), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLOListElementReversed) },
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLOListElementType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLOListElementType) },
 };
 
-static const HashTable JSHTMLOListElementPrototypeTable = { 1, 0, JSHTMLOListElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLOListElementPrototype::s_info = { "HTMLOListElementPrototype", &Base::s_info, &JSHTMLOListElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLOListElementPrototype) };
+const ClassInfo JSHTMLOListElementPrototype::s_info = { "HTMLOListElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLOListElementPrototype) };
 
-JSObject* JSHTMLOListElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLOListElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLOListElement::s_info = { "HTMLOListElement", &Base::s_info, &JSHTMLOListElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLOListElement) };
-
-JSHTMLOListElement::JSHTMLOListElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLOListElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLOListElement::finishCreation(VM& vm)
+void JSHTMLOListElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLOListElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLOListElement::s_info = { "HTMLOListElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLOListElement) };
+
+JSHTMLOListElement::JSHTMLOListElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLOListElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLOListElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLOListElementPrototype::create(vm, globalObject, JSHTMLOListElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLOListElementPrototype::create(vm, globalObject, JSHTMLOListElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLOListElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLOListElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLOListElement* thisObject = jsCast<JSHTMLOListElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLOListElement, Base>(exec, JSHTMLOListElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLOListElement>(vm, globalObject);
 }
 
-JSValue jsHTMLOListElementCompact(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLOListElementCompact(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLOListElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLOListElement", "compact");
+        return throwGetterTypeError(*exec, "HTMLOListElement", "compact");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::compactAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLOListElementStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLOListElementStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLOListElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLOListElement", "start");
+        return throwGetterTypeError(*exec, "HTMLOListElement", "start");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.start());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLOListElementReversed(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLOListElementReversed(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLOListElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLOListElement", "reversed");
+        return throwGetterTypeError(*exec, "HTMLOListElement", "reversed");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::reversedAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLOListElementType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLOListElementType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLOListElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLOListElement", "type");
+        return throwGetterTypeError(*exec, "HTMLOListElement", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::typeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLOListElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLOListElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLOListElement* domObject = jsCast<JSHTMLOListElement*>(asObject(slotBase));
-    return JSHTMLOListElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLOListElementPrototype* domObject = jsDynamicCast<JSHTMLOListElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLOListElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLOListElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLOListElementCompact(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLOListElement* thisObject = jsCast<JSHTMLOListElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLOListElement, Base>(exec, propertyName, value, JSHTMLOListElementTable, thisObject, slot);
-}
-
-void setJSHTMLOListElementCompact(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(thisObject);
-    HTMLOListElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLOListElement", "compact");
+        else
+            throwSetterTypeError(*exec, "HTMLOListElement", "compact");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::compactAttr, nativeValue);
 }
 
 
-void setJSHTMLOListElementStart(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLOListElementStart(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(thisObject);
-    HTMLOListElement& impl = castedThis->impl();
-    int nativeValue(toInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLOListElement", "start");
+        else
+            throwSetterTypeError(*exec, "HTMLOListElement", "start");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int nativeValue = toInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setStart(nativeValue);
 }
 
 
-void setJSHTMLOListElementReversed(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLOListElementReversed(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(thisObject);
-    HTMLOListElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLOListElement", "reversed");
+        else
+            throwSetterTypeError(*exec, "HTMLOListElement", "reversed");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::reversedAttr, nativeValue);
 }
 
 
-void setJSHTMLOListElementType(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLOListElementType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLOListElement* castedThis = jsCast<JSHTMLOListElement*>(thisObject);
-    HTMLOListElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLOListElement* castedThis = jsDynamicCast<JSHTMLOListElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLOListElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLOListElement", "type");
+        else
+            throwSetterTypeError(*exec, "HTMLOListElement", "type");
         return;
-    impl.setAttribute(WebCore::HTMLNames::typeAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::typeAttr, nativeValue);
 }
 
 

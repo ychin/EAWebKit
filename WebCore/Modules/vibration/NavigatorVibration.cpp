@@ -40,7 +40,7 @@ NavigatorVibration::~NavigatorVibration()
 
 bool NavigatorVibration::vibrate(Navigator* navigator, unsigned time)
 {
-    return NavigatorVibration::vibrate(navigator, VibrationPattern(time));
+    return NavigatorVibration::vibrate(navigator, VibrationPattern(1, time));
 }
 
 bool NavigatorVibration::vibrate(Navigator* navigator, const VibrationPattern& pattern)
@@ -48,10 +48,8 @@ bool NavigatorVibration::vibrate(Navigator* navigator, const VibrationPattern& p
     if (!navigator->frame()->page())
         return false;
 
-#if ENABLE(PAGE_VISIBILITY_API)
     if (navigator->frame()->page()->visibilityState() == PageVisibilityStateHidden)
         return false;
-#endif
 
     return Vibration::from(navigator->frame()->page())->vibrate(pattern);
 }

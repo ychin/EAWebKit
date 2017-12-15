@@ -21,25 +21,24 @@
 #ifndef JSMutationEvent_h
 #define JSMutationEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "MutationEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSMutationEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSMutationEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MutationEvent> impl)
+    static JSMutationEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MutationEvent>&& impl)
     {
-        JSMutationEvent* ptr = new (NotNull, JSC::allocateCell<JSMutationEvent>(globalObject->vm().heap)) JSMutationEvent(structure, globalObject, impl);
+        JSMutationEvent* ptr = new (NotNull, JSC::allocateCell<JSMutationEvent>(globalObject->vm().heap)) JSMutationEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,76 +52,17 @@ public:
         return static_cast<MutationEvent&>(Base::impl());
     }
 protected:
-    JSMutationEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MutationEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMutationEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<MutationEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSMutationEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMutationEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMutationEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSMutationEventPrototype>(vm.heap)) JSMutationEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMutationEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSMutationEventConstructor : public DOMConstructorObject {
-private:
-    JSMutationEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMutationEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMutationEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSMutationEventConstructor>(vm.heap)) JSMutationEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMutationEventPrototypeFunctionInitMutationEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMutationEventRelatedNode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventPrevValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventNewValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventAttrName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventAttrChange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsMutationEventMODIFICATION(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventADDITION(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationEventREMOVAL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

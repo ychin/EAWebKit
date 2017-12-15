@@ -55,14 +55,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	#pragma warning(pop)
 
 // EA_PLATFORM_UNIX is defined when EA_PLATFORM_OSX is defined.
-#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+#elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 	#include <stdio.h>
 	#include <errno.h>
 	#include <fcntl.h>
 	#include <unistd.h>
 	#include <sys/stat.h>
 	#include <sys/types.h>
+#if !defined(EA_PLATFORM_SONY)
 	#include <utime.h>		// Some versions may require <sys/utime.h>. Take this header out if not required on OS X.
+#endif
 	#ifndef S_ISREG
 		#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
 	#endif
@@ -369,7 +371,7 @@ bool FileSystemDefault::FileExists(const char* path)
 		const DWORD dwAttributes = ::GetFileAttributesA(path);
 		return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0));
 
-#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+#elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 
 		struct stat tempStat;
 		const int result = stat(path, &tempStat);
@@ -394,7 +396,7 @@ bool FileSystemDefault::DirectoryExists(const char* path)
 			const DWORD dwAttributes = ::GetFileAttributesA(path);
 		    return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0));
 	
-		#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+		#elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 			
 			struct stat tempStat;
 			const int result = stat(path, &tempStat);
@@ -417,7 +419,7 @@ bool FileSystemDefault::RemoveFile(const char* path)
         const BOOL bResult = ::DeleteFileA(path);
         return (bResult != 0);
 
-    #elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+    #elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 
 		const int result = unlink(path);
 		return (result == 0);
@@ -445,7 +447,7 @@ bool FileSystemDefault::DeleteDirectory(const char* path)
 		{
 			#if defined(EA_PLATFORM_MICROSOFT)
 				return (RemoveDirectoryA(path) != 0);
-			#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+			#elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 				return (rmdir(path) == 0);
 			#endif
 		}
@@ -482,7 +484,7 @@ bool FileSystemDefault::GetFileSize(const char* path, int64_t& size)
 
 			return false;
 
-	  #elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+	  #elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 
 			struct stat tempStat;
 			const int result = stat(path, &tempStat);
@@ -525,7 +527,7 @@ bool FileSystemDefault::GetFileModificationTime(const char* path, time_t& result
 
 			return false;
 
-		#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+		#elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 
 			struct stat tempStat;
 			const int r = stat(path, &tempStat);
@@ -571,7 +573,7 @@ bool FileSystemDefault::MakeDirectoryInternal(const char* path)
 			const BOOL bResult = CreateDirectoryA(path, NULL);
 			return bResult || (GetLastError() == ERROR_ALREADY_EXISTS);
 
-#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+#elif defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
 
 			const int result = mkdir(path, 0777);
 			return ((result == 0) || (errno == EEXIST));
@@ -689,6 +691,11 @@ bool FileSystemDefault::GetDataDirectory(char* path, size_t pathBufferCapacity)
 			strcpy(path, "E:\\");
 			return true;
 
+		#elif defined(EA_PLATFORM_SONY) 
+
+			strcpy(path, "./");
+			return true;
+
 		#elif defined(EA_PLATFORM_UNIX)
 
             getcwd(path,pathBufferCapacity-7); // 7 = 1 + 6(/data/)
@@ -716,6 +723,8 @@ bool FileSystemDefault::GetTempDirectory(char8_t* path, size_t pathBufferCapacit
 		strcpy(baseDir,"c:\\temp\\EAWebKit\\pc\\");
 #elif defined(EA_PLATFORM_MICROSOFT)
 		strcpy(baseDir,"e:\\temp\\EAWebKit\\microsoft\\");
+#elif defined (EA_PLATFORM_SONY)
+		strcpy(baseDir,"/hostapp/temp/sony/");
 #elif defined(EA_PLATFORM_OSX)
         getcwd(baseDir,EA::WebKit::FileSystem::kMaxPathLength-1);
         strcat(baseDir,"/temp/osx/");

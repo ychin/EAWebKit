@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Lars Knoll <lars@trolltech.com>
- * Copyright (C) 2011, 2012 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,8 @@
 #include <EAWebKit/EAWebKitTextInterface.h>
 #include <internal/include/EAWebkit_p.h>
 #include <internal/include/EAWebKitAssert.h>
+#include <internal/include/EAWebKitString.h>
+
 
 // Most of these APIs from webcore are not documented at all. The comments below come after reading the ICU based 
 // implementation of these functions.
@@ -44,42 +46,29 @@ class TextBreakIterator
 {
 public:
 	void* mpBreakIterator;
-    void* mUCharBuffer;
-
-    TextBreakIterator()
-        : mpBreakIterator(NULL)
-        , mUCharBuffer(NULL)
-    {
-
-    }
-
-    ~TextBreakIterator()
-    {
-        if (mUCharBuffer)
-        {
-            delete[] mUCharBuffer;
-            mUCharBuffer = NULL;
-        }
-    }
+	eastl::string16 mBreakIteratorText;
 };
 
 static TextBreakIterator swordBreakIterator;
 static TextBreakIterator sSentenceBreakIterator;
 static TextBreakIterator sCursorMovementIterator;
 
+
 // WebCore expects only one iterator to exist at a time. If it wants to change the text for the iterator, this function is called with the new text run info.
 // The implication is that we only need to maintain one word break iterator.
-TextBreakIterator* wordBreakIterator(const UChar* pText, int length)
+TextBreakIterator* wordBreakIterator(StringView string)
 {
-	swordBreakIterator.mpBreakIterator = EA::WebKit::GetTextSystem()->WordBreakIterator((EA::WebKit::Char*) pText, length);
+	swordBreakIterator.mBreakIteratorText.assign(string.upconvertedCharacters(), string.length());
+	swordBreakIterator.mpBreakIterator = EA::WebKit::GetTextSystem()->WordBreakIterator((EA::WebKit::Char *)swordBreakIterator.mBreakIteratorText.c_str(), swordBreakIterator.mBreakIteratorText.length());
 	return &swordBreakIterator;
 }
 
 // WebCore expects only one iterator to exist at a time. If it wants to change the text for the iterator, this function is called with the new text run info.
 // The implication is that we only need to maintain one sentence break iterator.
-TextBreakIterator* sentenceBreakIterator(const UChar* pText, int length)
+TextBreakIterator* sentenceBreakIterator(StringView string)
 {
-	sSentenceBreakIterator.mpBreakIterator = EA::WebKit::GetTextSystem()->SentenceBreakIterator((EA::WebKit::Char *) pText, length);
+	sSentenceBreakIterator.mBreakIteratorText.assign(string.upconvertedCharacters(), string.length());
+	sSentenceBreakIterator.mpBreakIterator = EA::WebKit::GetTextSystem()->SentenceBreakIterator((EA::WebKit::Char *) sSentenceBreakIterator.mBreakIteratorText.c_str(), sSentenceBreakIterator.mBreakIteratorText.length());
 	return &sSentenceBreakIterator;
 }
 
@@ -141,46 +130,78 @@ bool isWordTextBreak(TextBreakIterator* pIterator)
 	return true; 
 }
 
-TextBreakIterator* acquireLineBreakIterator(const UChar* pText, int length, const AtomicString& locale, const UChar* priorContext, unsigned priorContextLength)
-{ 
+TextBreakIterator* acquireLineBreakIterator(StringView string, const AtomicString& locale, const UChar* priorContext, unsigned priorContextLength, LineBreakIteratorMode mode, bool isCJK)
+{
+    //Ignoring mode and isCJK - Chinese/Japanese/Korean
     (void)locale;
-    
-    TextBreakIterator *newIterator = new TextBreakIterator();
 
-    UChar* totalString = const_cast<UChar*>(pText);
-    int totalLength = length;
+    TextBreakIterator *newIterator = new TextBreakIterator();
+    if (!newIterator)
+       return nullptr;
+        
     if (priorContextLength > 0)
     {
-        totalLength += priorContextLength;
-
+        const UChar* stringUChar = string.upconvertedCharacters().get();
+        int stringLength = std::char_traits<UChar>::length(stringUChar);
+        int totalLength = stringLength + priorContextLength;
         UChar* totalString = new UChar[totalLength];
 
-        for (int i = 0; i <priorContextLength; ++i)
+        for (int i = 0; i < priorContextLength; ++i)
         {
             totalString[i] = priorContext[i];
         }
 
-        for (int i = 0; i <length; ++i)
+        for (int i = 0; i < stringLength; ++i)
         {
-            totalString[i + priorContextLength] = pText[i];
+            totalString[i + priorContextLength] = stringUChar[i];
         }
-
-        newIterator->mUCharBuffer = totalString;
+        newIterator->mBreakIteratorText.assign(totalString, totalLength);
+        delete[] totalString;
     }
-   
-	newIterator->mpBreakIterator = EA::WebKit::GetTextSystem()->AcquireLineBreakIterator((EA::WebKit::Char *)totalString, totalLength);
+    else
+    {
+        newIterator->mBreakIteratorText.assign(string.upconvertedCharacters().get(), string.length());
+    }
+
+	newIterator->mpBreakIterator = EA::WebKit::GetTextSystem()->AcquireLineBreakIterator((EA::WebKit::Char *)newIterator->mBreakIteratorText.c_str(), newIterator->mBreakIteratorText.length());
 	return newIterator;
 }
 
 void releaseLineBreakIterator(TextBreakIterator* pIterator)
 {
 	EA::WebKit::GetTextSystem()->ReleaseLineBreakIterator(pIterator->mpBreakIterator);
+
+	pIterator->mBreakIteratorText.clear();
+
 	delete pIterator;
+}
+
+// Recognize BCP47 compliant primary language values of 'zh', 'ja', 'ko'
+// (in any combination of case), optionally followed by subtags. Don't
+// recognize 3-letter variants 'chi'/'zho', 'jpn', or 'kor' since BCP47
+// requires use of shortest language tag.
+bool isCJKLocale(const AtomicString& locale)
+{
+	size_t length = locale.length();
+	if (length < 2)
+		return false;
+	auto c1 = locale[0];
+	auto c2 = locale[1];
+	auto c3 = length == 2 ? 0 : locale[2];
+	if (!c3 || c3 == '-' || c3 == '_' || c3 == '@') {
+		if (c1 == 'z' || c1 == 'Z')
+			return c2 == 'h' || c2 == 'H';
+		if (c1 == 'j' || c1 == 'J')
+			return c2 == 'a' || c2 == 'A';
+		if (c1 == 'k' || c1 == 'K')
+			return c2 == 'o' || c2 == 'O';
+	}
+	return false;
 }
 
 //EAWebKitToDo: It is not entirely clear if this code is doing the right thing. Also, because our text implementation keeps a shared iterator anyway.
 static TextBreakIterator* nonSharedCharacterBreakIterator; 
-NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(const UChar* buffer, int length)
+NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(StringView string)
 {
 	EAW_ASSERT_MSG(WTF::isMainThread(),"We don't support multiple threads for this function at the moment");
 
@@ -188,12 +209,14 @@ NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(const UChar* bu
 	bool createdIterator = m_iterator && WTF::weakCompareAndSwap(reinterpret_cast<void**>(&nonSharedCharacterBreakIterator), m_iterator, 0);
 	if (!createdIterator)
 		m_iterator = new TextBreakIterator();
-	
-	m_iterator->mpBreakIterator = EA::WebKit::GetTextSystem()->CharacterBreakIterator((EA::WebKit::Char *) buffer, length); 
+
+	m_iterator->mBreakIteratorText.assign(string.upconvertedCharacters(), string.length());
+	m_iterator->mpBreakIterator = EA::WebKit::GetTextSystem()->CharacterBreakIterator((EA::WebKit::Char*)m_iterator->mBreakIteratorText.c_str(), m_iterator->mBreakIteratorText.length());
 }
 
 NonSharedCharacterBreakIterator::~NonSharedCharacterBreakIterator()
 {
+	m_iterator->mBreakIteratorText.clear();
 	if (!WTF::weakCompareAndSwap(reinterpret_cast<void**>(&nonSharedCharacterBreakIterator), 0, m_iterator))
 		delete m_iterator;
 }
@@ -202,6 +225,13 @@ NonSharedCharacterBreakIterator::~NonSharedCharacterBreakIterator()
 TextBreakIterator* cursorMovementIterator(const UChar* string, int length)
 {
 	sCursorMovementIterator.mpBreakIterator = EA::WebKit::GetTextSystem()->CursorBreakIterator((EA::WebKit::Char *) string, length);
+	return &sCursorMovementIterator;
+}
+
+TextBreakIterator* cursorMovementIterator(StringView string)
+{
+	sCursorMovementIterator.mBreakIteratorText.assign(string.upconvertedCharacters(), string.length());
+	sCursorMovementIterator.mpBreakIterator = EA::WebKit::GetTextSystem()->CursorBreakIterator((EA::WebKit::Char *) sCursorMovementIterator.mBreakIteratorText.c_str(), sCursorMovementIterator.mBreakIteratorText.length());
 	return &sCursorMovementIterator;
 }
 
@@ -224,6 +254,64 @@ void findWordBoundary(UChar const* buffer, int len, int position, int* start, in
 	EA::WebKit::GetTextSystem()->FindWordBoundary((EA::WebKit::Char*) buffer, len, position, start, end);
 }
 
+int findNextWordFromIndex(StringView text, int position, bool forward)
+{
+    return findNextWordFromIndex(text.upconvertedCharacters(), text.length(), position, forward);
+}
+
+void findWordBoundary(StringView text, int position, int* start, int* end)
+{
+    findWordBoundary(text.upconvertedCharacters(), text.length(), position, start, end);
+}
+
+void findEndWordBoundary(StringView text, int position, int* end)
+{
+	int start = 0;
+	findWordBoundary(text.upconvertedCharacters(), text.length(), position, &start, end);
+}
+
+unsigned numGraphemeClusters(const String& s)
+{
+	unsigned stringLength = s.length();
+
+	if (!stringLength)
+		return 0;
+
+	// The only Latin-1 Extended Grapheme Cluster is CR LF
+	if (s.is8Bit() && !s.contains('\r'))
+		return stringLength;
+
+	NonSharedCharacterBreakIterator it(s);
+	if (!it)
+		return stringLength;
+
+	unsigned num = 0;
+	while (textBreakNext(it) != TextBreakDone)
+		++num;
+	return num;
+}
+
+unsigned numCharactersInGraphemeClusters(const StringView& s, unsigned numGraphemeClusters)
+{
+	unsigned stringLength = s.length();
+
+	if (!stringLength)
+		return 0;
+
+	// The only Latin-1 Extended Grapheme Cluster is CR LF
+	if (s.is8Bit() && !s.contains('\r'))
+		return std::min(stringLength, numGraphemeClusters);
+
+	NonSharedCharacterBreakIterator it(s);
+	if (!it)
+		return std::min(stringLength, numGraphemeClusters);
+
+	for (unsigned i = 0; i < numGraphemeClusters; ++i) {
+		if (textBreakNext(it) == TextBreakDone)
+			return stringLength;
+	}
+	return textBreakCurrent(it);
+}
 
 
 }

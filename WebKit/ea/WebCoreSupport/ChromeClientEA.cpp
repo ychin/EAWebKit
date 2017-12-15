@@ -64,7 +64,6 @@
 #include "webpage.h"
 #include "webpage_p.h"
 #include <wtf/CurrentTime.h>
-#include <wtf/OwnPtr.h>
 #include "HTMLNames.h"
 
 #if USE(ACCELERATED_COMPOSITING)
@@ -185,17 +184,17 @@ Page* ChromeClientEA::createWindow(Frame*, const FrameLoadRequest& request, cons
 		createViewInfo.mpView = m_webPage->view();
 		createViewInfo.mpUserData = createViewInfo.mpView->GetUserData();
 
-		if(features.xSet)
-			createViewInfo.mLeft = (uint16_t)features.x;
+		if(features.x)
+			createViewInfo.mLeft = (uint16_t)*features.x;
 
-		if(features.ySet)
-			createViewInfo.mTop	= (uint16_t)features.y;
+		if(features.y)
+			createViewInfo.mTop	= (uint16_t)*features.y;
 
-		if(features.widthSet)
-			createViewInfo.mWidth = (uint16_t)features.width;
+		if(features.width)
+			createViewInfo.mWidth = (uint16_t)*features.width;
 
-		if(features.heightSet)
-			createViewInfo.mHeight = (uint16_t)features.height;
+		if(features.height)
+			createViewInfo.mHeight = (uint16_t)*features.height;
 
 		createViewInfo.mResizable = features.resizable;
 		createViewInfo.mScrollBars = features.scrollbarsVisible;
@@ -203,7 +202,7 @@ Page* ChromeClientEA::createWindow(Frame*, const FrameLoadRequest& request, cons
 		createViewInfo.mEventType = EA::WebKit::CreateViewInfo::kEventWindowOpen;
 		
 		const WTF::String& urlString = request.resourceRequest().url().string();
-		EA::WebKit::FixedString16_128 urlToOpen(urlString.characters(),urlString.length());
+        EA::WebKit::FixedString16_128 urlToOpen(StringView(urlString).upconvertedCharacters(), urlString.length());
 		createViewInfo.mpURLToOpen = urlToOpen.c_str();
 		
 		pClient->CreateView(createViewInfo);
@@ -304,10 +303,10 @@ void ChromeClientEA::addMessageToConsole(MessageSource, MessageLevel level, cons
         eastl::string8 prefix;
         switch (level)
         {
-		case WarningMessageLevel: 
+		case MessageLevel::Warning: 
 			prefix = "EAWebKit: JS Warning - "; 
 			break;
-		case ErrorMessageLevel: 
+		case MessageLevel::Error: 
 			prefix = "EAWebKit: JS Error -"; 
 			break;
         default: 
@@ -362,7 +361,7 @@ void ChromeClientEA::runJavaScriptAlert(Frame* f, const String& msg)
         info.mpUserData = info.mpView->GetUserData();
         info.mType = EA::WebKit::kJSMessageBoxAlert;
         
-        GetFixedString(info.mMessage)->assign(msg.characters(), msg.length());
+        GetFixedString(info.mMessage)->assign(StringView(msg).upconvertedCharacters(), msg.length());
         info.mConfirm = false;
 
         pClient->JSMessageBox(info);
@@ -378,7 +377,7 @@ bool ChromeClientEA::runJavaScriptConfirm(Frame* f, const String& msg)
         info.mpUserData = info.mpView->GetUserData();
         info.mType = EA::WebKit::kJSMessageBoxConfirm;
 
-        GetFixedString(info.mMessage)->assign(msg.characters(), msg.length());
+        GetFixedString(info.mMessage)->assign(StringView(msg).upconvertedCharacters(), msg.length());
         info.mConfirm = false;
 
         pClient->JSMessageBox(info);
@@ -398,9 +397,9 @@ bool ChromeClientEA::runJavaScriptPrompt(Frame* f, const String& message, const 
         info.mpUserData = info.mpView->GetUserData();
         info.mType = EA::WebKit::kJSMessageBoxPrompt;
 
-        GetFixedString(info.mMessage)->assign(message.characters(), message.length());
+        GetFixedString(info.mMessage)->assign(StringView(message).upconvertedCharacters(), message.length());
         info.mConfirm = false;
-        GetFixedString(info.mPromptDefault)->assign(defaultValue.characters(), defaultValue.length());
+        GetFixedString(info.mPromptDefault)->assign(StringView(defaultValue).upconvertedCharacters(), defaultValue.length());
 
         pClient->JSMessageBox(info);
         
@@ -417,52 +416,25 @@ void ChromeClientEA::setStatusbarText(const WTF::String& msg)
     // Do nothing.
 }
 
-// This notification is called when the JavaScript is unresponsive. We simply let the WatchDog know and it can take the required action.
-bool ChromeClientEA::shouldInterruptJavaScript() 
-{
-	bool shouldInterruptScript = true;
-	
-	if (EA::WebKit::EAWebKitClient *pClient = EA::WebKit::GetEAWebKitClient(m_webPage->view()))
-	{
-		EA::WebKit::WatchDogNotificationInfo info;
-		info.mpView = m_webPage->view();
-		info.mpUserData = info.mpView->GetUserData();
-		info.mWatchDogNotificationType = EA::WebKit::WatchDogNotificationInfo::kScriptRunningTooLong;
-
-		pClient->WatchDogNotification(info);
-
-		shouldInterruptScript = info.mInterruptScript;
-	}
-	
-	
-	return shouldInterruptScript;
-}
-
 KeyboardUIMode ChromeClientEA::keyboardUIMode(void) 
 {
 	return KeyboardAccessTabsToLinks; //Allows us to tab to links
 }
 
-
-IntRect ChromeClientEA::windowResizerRect() const
+void ChromeClientEA::invalidateRootView(const IntRect &windowRect)
 {
-	notImplemented();
-	return IntRect();
-}
-
-void ChromeClientEA::invalidateRootView(const IntRect &windowRect, bool)
-{
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
     if (platformPageClient()) {
-        WebCore::TiledBackingStore* backingStore = EA::WebKit::WebFramePrivate::core(m_webPage->mainFrame())->tiledBackingStore();
-        if (!backingStore)
-            return;
-        backingStore->invalidate(windowRect);
+		//EAWEBKITBUILDFIX - tiledBackingStore isn't there anymore
+        //WebCore::TiledBackingStore* backingStore = EA::WebKit::WebFramePrivate::core(m_webPage->mainFrame())->tiledBackingStore();
+        //if (!backingStore)
+        //    return;
+        //backingStore->invalidate(windowRect);
     }
 #endif
 }
 
-void ChromeClientEA::invalidateContentsAndRootView(const IntRect& windowRect, bool immediate)
+void ChromeClientEA::invalidateContentsAndRootView(const IntRect& windowRect)
 {
 	if (platformPageClient()) {
         IntRect rect(windowRect);
@@ -471,22 +443,19 @@ void ChromeClientEA::invalidateContentsAndRootView(const IntRect& windowRect, bo
 		if (!rect.isEmpty())
 			platformPageClient()->update(rect);
     }
-
-    // FIXME: There is no "immediate" support for window painting.  This should be done always whenever the flag
-    // is set.
 }
 // invalidateContentsForSlowScroll is meant to be for slow scroll. Based on various conditions like if the platform is capable of blitting or the
 // number of fixed objects, WebCore calls this and sends us the window rect of the dirty region(usually the entire visible screen).
 // In software mode, we simply pass on the Dirty region to our dirty region list for a paint.
 // In hardware mode(when using Tiled backing storage), we have special case code in platformPageClient()->scroll to invalidate the tiled backing 
 // store. This special case code works around the existing bugs in the tiled backing storage backend implementation.
-void ChromeClientEA::invalidateContentsForSlowScroll(const IntRect& windowRect, bool immediate)
+void ChromeClientEA::invalidateContentsForSlowScroll(const IntRect& windowRect)
 {
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	if (platformPageClient())
 		platformPageClient()->scroll(0, 0, windowRect);
 #else
-	invalidateContentsAndRootView(windowRect, immediate);
+	invalidateContentsAndRootView(windowRect);
 #endif
 }
 
@@ -499,13 +468,6 @@ void ChromeClientEA::scroll(const IntSize& delta, const IntRect& scrollViewRect,
     if (platformPageClient())
         platformPageClient()->scroll(delta.width(), delta.height(), scrollViewRect);
 }
-
-#if USE(TILED_BACKING_STORE)
-void ChromeClientEA::delegatedScrollRequested(const IntPoint& delta)
-{
-	EAW_ASSERT_MSG(false, "This method should not be called on our port");
-}
-#endif
 
 IntRect ChromeClientEA::rootViewToScreen(const IntRect& rect) const
 {
@@ -565,8 +527,8 @@ void ChromeClientEA::exceededDatabaseQuota(Frame* frame, const String& databaseN
 {
 	uint64_t quota = 50* 1024 * 1024; //50 MB - If needed, we can expose it. This is disk usage, not RAM.
 
-    if (!DatabaseManager::manager().hasEntryForOrigin(frame->document()->securityOrigin()))
-        DatabaseManager::manager().setQuota(frame->document()->securityOrigin(), quota);
+    if (!DatabaseManager::singleton().hasEntryForOrigin(frame->document()->securityOrigin()))
+        DatabaseManager::singleton().setQuota(frame->document()->securityOrigin(), quota);
 
 }
 #endif
@@ -605,7 +567,7 @@ void ChromeClientEA::setCursor(const Cursor& cursor)
     WebPageClient* pageClient = platformPageClient();
 	if (!pageClient)
         return;
-    pageClient->setCursor(cursor.impl());
+    pageClient->setCursor(cursor.type());
 
 }
 
@@ -624,7 +586,7 @@ void ChromeClientEA::scheduleAnimation(void)
 void ChromeClientEA::attachRootGraphicsLayer(Frame* frame, GraphicsLayer* graphicsLayer)
 {
 	if (!m_textureMapperLayerClient)
-		m_textureMapperLayerClient = adoptPtr(new TextureMapperLayerClientEA(m_webPage->mainFrame()));
+		m_textureMapperLayerClient = std::make_unique<TextureMapperLayerClientEA>(m_webPage->mainFrame());
 	m_textureMapperLayerClient->setRootGraphicsLayer(graphicsLayer);
 }
 
@@ -667,7 +629,7 @@ bool ChromeClientEA::allowsAcceleratedCompositing() const
 #endif
 
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 IntRect ChromeClientEA::visibleRectForTiledBackingStore() const
 {
     if (!platformPageClient() || !m_webPage)
@@ -703,20 +665,14 @@ bool ChromeClientEA::hasOpenedPopup() const
     return false;
 }
 
-PassRefPtr<PopupMenu> ChromeClientEA::createPopupMenu(PopupMenuClient* client) const
+RefPtr<PopupMenu> ChromeClientEA::createPopupMenu(PopupMenuClient* client) const
 {
 	return adoptRef(new PopupMenuEA(client, this));
 }
 
-PassRefPtr<SearchPopupMenu> ChromeClientEA::createSearchPopupMenu(PopupMenuClient* client) const
+RefPtr<SearchPopupMenu> ChromeClientEA::createSearchPopupMenu(PopupMenuClient* client) const
 {
     return adoptRef(new SearchPopupMenuEA(createPopupMenu(client)));
-}
-
-void ChromeClientEA::populateVisitedLinks()
-{
-    // We don't need to do anything here because history is tied to QWebPage rather than stored
-    // in a separate database
 }
 
 } // namespace WebCore

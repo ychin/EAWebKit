@@ -26,8 +26,6 @@
 #include "config.h"
 #include "ContainerNodeAlgorithms.h"
 
-#include "Element.h"
-#include "HTMLFrameOwnerElement.h"
 
 namespace WebCore {
 
@@ -39,23 +37,23 @@ void ChildNodeInsertionNotifier::notifyDescendantInsertedIntoDocument(ContainerN
         // we don't want to tell the rest of our children that they've been
         // inserted into the document because they haven't.
         if (node.inDocument() && child->parentNode() == &node)
-            notifyNodeInsertedIntoDocument(*child.get(), postInsertionNotificationTargets);
+            notifyNodeInsertedIntoDocument(*child, postInsertionNotificationTargets);
     }
 
-    if (!node.isElementNode())
+    if (!is<Element>(node))
         return;
 
-    if (RefPtr<ShadowRoot> root = toElement(node).shadowRoot()) {
+    if (RefPtr<ShadowRoot> root = downcast<Element>(node).shadowRoot()) {
         if (node.inDocument() && root->hostElement() == &node)
-            notifyNodeInsertedIntoDocument(*root.get(), postInsertionNotificationTargets);
+            notifyNodeInsertedIntoDocument(*root, postInsertionNotificationTargets);
     }
 }
 
 void ChildNodeInsertionNotifier::notifyDescendantInsertedIntoTree(ContainerNode& node, NodeVector& postInsertionNotificationTargets)
 {
     for (Node* child = node.firstChild(); child; child = child->nextSibling()) {
-        if (child->isContainerNode())
-            notifyNodeInsertedIntoTree(*toContainerNode(child), postInsertionNotificationTargets);
+        if (is<ContainerNode>(*child))
+            notifyNodeInsertedIntoTree(downcast<ContainerNode>(*child), postInsertionNotificationTargets);
     }
 
     if (ShadowRoot* root = node.shadowRoot())
@@ -73,13 +71,13 @@ void ChildNodeRemovalNotifier::notifyDescendantRemovedFromDocument(ContainerNode
             notifyNodeRemovedFromDocument(*child.get());
     }
 
-    if (!node.isElementNode())
+    if (!is<Element>(node))
         return;
 
     if (node.document().cssTarget() == &node)
         node.document().setCSSTarget(0);
 
-    if (RefPtr<ShadowRoot> root = toElement(node).shadowRoot()) {
+    if (RefPtr<ShadowRoot> root = downcast<Element>(node).shadowRoot()) {
         if (!node.inDocument() && root->hostElement() == &node)
             notifyNodeRemovedFromDocument(*root.get());
     }
@@ -88,44 +86,95 @@ void ChildNodeRemovalNotifier::notifyDescendantRemovedFromDocument(ContainerNode
 void ChildNodeRemovalNotifier::notifyDescendantRemovedFromTree(ContainerNode& node)
 {
     for (Node* child = node.firstChild(); child; child = child->nextSibling()) {
-        if (child->isContainerNode())
-            notifyNodeRemovedFromTree(*toContainerNode(child));
+        if (is<ContainerNode>(*child))
+            notifyNodeRemovedFromTree(downcast<ContainerNode>(*child));
     }
 
-    if (!node.isElementNode())
+    if (!is<Element>(node))
         return;
 
-    if (RefPtr<ShadowRoot> root = toElement(node).shadowRoot())
+    if (RefPtr<ShadowRoot> root = downcast<Element>(node).shadowRoot())
         notifyNodeRemovedFromTree(*root.get());
 }
 
 #ifndef NDEBUG
-unsigned assertConnectedSubrameCountIsConsistent(Node& node)
+static unsigned assertConnectedSubrameCountIsConsistent(ContainerNode& node)
 {
     unsigned count = 0;
 
-    if (node.isElementNode()) {
-        if (node.isFrameOwnerElement() && toHTMLFrameOwnerElement(node).contentFrame())
-            count++;
+    if (is<Element>(node)) {
+        if (is<HTMLFrameOwnerElement>(node) && downcast<HTMLFrameOwnerElement>(node).contentFrame())
+            ++count;
 
-        if (ShadowRoot* root = toElement(node).shadowRoot())
+        if (ShadowRoot* root = downcast<Element>(node).shadowRoot())
             count += assertConnectedSubrameCountIsConsistent(*root);
     }
 
-    for (Node* child = node.firstChild(); child; child = child->nextSibling())
-        count += assertConnectedSubrameCountIsConsistent(*child);
+    for (auto& child : childrenOfType<Element>(node))
+        count += assertConnectedSubrameCountIsConsistent(child);
 
     // If we undercount there's possibly a security bug since we'd leave frames
     // in subtrees outside the document.
     ASSERT(node.connectedSubframeCount() >= count);
 
     // If we overcount it's safe, but not optimal because it means we'll traverse
-    // through the document in ChildFrameDisconnector looking for frames that have
+    // through the document in disconnectSubframes looking for frames that have
     // already been disconnected.
     ASSERT(node.connectedSubframeCount() == count);
 
     return count;
 }
 #endif
+
+static void collectFrameOwners(Vector<Ref<HTMLFrameOwnerElement>>& frameOwners, ContainerNode& root)
+{
+    auto elementDescendants = descendantsOfType<Element>(root);
+    auto it = elementDescendants.begin();
+    auto end = elementDescendants.end();
+    while (it != end) {
+        Element& element = *it;
+        if (!element.connectedSubframeCount()) {
+            it.traverseNextSkippingChildren();
+            continue;
+        }
+
+        if (is<HTMLFrameOwnerElement>(element))
+            frameOwners.append(downcast<HTMLFrameOwnerElement>(element));
+
+        if (ShadowRoot* shadowRoot = element.shadowRoot())
+            collectFrameOwners(frameOwners, *shadowRoot);
+        ++it;
+    }
+}
+
+void disconnectSubframes(ContainerNode& root, SubframeDisconnectPolicy policy)
+{
+#ifndef NDEBUG
+    assertConnectedSubrameCountIsConsistent(root);
+#endif
+    ASSERT(root.connectedSubframeCount());
+
+    Vector<Ref<HTMLFrameOwnerElement>> frameOwners;
+
+    if (policy == RootAndDescendants) {
+        if (is<HTMLFrameOwnerElement>(root))
+            frameOwners.append(downcast<HTMLFrameOwnerElement>(root));
+    }
+
+    collectFrameOwners(frameOwners, root);
+
+    // Must disable frame loading in the subtree so an unload handler cannot
+    // insert more frames and create loaded frames in detached subtrees.
+    SubframeLoadingDisabler disabler(root);
+
+    bool isFirst = true;
+    for (auto& owner : frameOwners) {
+        // Don't need to traverse up the tree for the first owner since no
+        // script could have moved it.
+        if (isFirst || root.containsIncludingShadowDOM(&owner.get()))
+            owner.get().disconnectContentFrame();
+        isFirst = false;
+    }
+}
 
 }

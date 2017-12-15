@@ -26,16 +26,11 @@
 #ifndef LazyOperandValueProfile_h
 #define LazyOperandValueProfile_h
 
-#include <wtf/Platform.h>
-
-#if ENABLE(VALUE_PROFILER)
-
 #include "ConcurrentJITLock.h"
 #include "ValueProfile.h"
 #include "VirtualRegister.h"
 #include <wtf/HashMap.h>
 #include <wtf/Noncopyable.h>
-#include <wtf/OwnPtr.h>
 #include <wtf/SegmentedVector.h>
 
 namespace JSC {
@@ -165,7 +160,7 @@ public:
     
 private:
     friend class LazyOperandValueProfileParser;
-    OwnPtr<LazyOperandValueProfile::List> m_data;
+    std::unique_ptr<LazyOperandValueProfile::List> m_data;
 };
 
 class LazyOperandValueProfileParser {
@@ -187,8 +182,6 @@ private:
 };
 
 } // namespace JSC
-
-#endif // ENABLE(VALUE_PROFILER)
 
 #endif // LazyOperandValueProfile_h
 

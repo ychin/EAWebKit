@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2011 Apple Inc. All Rights Reserved.
  * Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,7 +27,6 @@
 
 #include "config.h"
 
-#if ENABLE(INSPECTOR_SERVER)
 
 #include "WebInspectorServer.h"
 
@@ -124,10 +123,10 @@ void WebInspectorServer::didReceiveUnrecognizedHTTPRequest(WebSocketServerConnec
     bool found = platformResourceForPath(path, body, contentType);
 
     HTTPHeaderMap headerFields;
-    headerFields.set("Connection", "close");
-    headerFields.set("Content-Length", String::number(body.size()));
+    headerFields.set(HTTPHeaderName::Connection, "close");
+    headerFields.set(HTTPHeaderName::ContentLength, String::number(body.size()));
     if (found)
-        headerFields.set("Content-Type", contentType);
+        headerFields.set(HTTPHeaderName::ContentType, contentType);
 
     // Send when ready and close immediately afterwards.
     connection->sendHTTPResponseHeader(found ? 200 : 404, found ? "OK" : "Not Found", headerFields);
@@ -140,7 +139,7 @@ bool WebInspectorServer::didReceiveWebSocketUpgradeHTTPRequest(WebSocketServerCo
     String path = request->url();
 
     // NOTE: Keep this in sync with WebCore/inspector/front-end/inspector.js.
-    DEFINE_STATIC_LOCAL(const String, inspectorWebSocketConnectionPathPrefix, (ASCIILiteral("/devtools/page/")));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const String, inspectorWebSocketConnectionPathPrefix, (ASCIILiteral("/devtools/page/")));
 
     // Unknown path requested.
     if (!path.startsWith(inspectorWebSocketConnectionPathPrefix))
@@ -215,4 +214,4 @@ void WebInspectorServer::closeConnection(EA::WebKit::WebPage* client, WebSocketS
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+

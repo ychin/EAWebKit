@@ -3,7 +3,7 @@
  * Copyright (C) 2011, 2012 Google Inc. All rights reserved.
  * Copyright (C) 2012 Zan Dobersek <zandobersek@gmail.com>
  * Copyright (C) 2012 Igalia S.L.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,19 +44,19 @@ public:
     // Called from port-specific parent create function to create custom controls.
     static PassRefPtr<MediaControlsEA> createControls(Document&);
 
-    virtual void setMediaController(MediaControllerInterface*) OVERRIDE;
-    virtual void reset() OVERRIDE;
-    virtual void playbackStarted() OVERRIDE;
-    void changedMute() OVERRIDE;
-    virtual void updateCurrentTimeDisplay() OVERRIDE;
-    virtual void showVolumeSlider() OVERRIDE;
-    virtual void makeTransparent() OVERRIDE;
-    virtual void toggleClosedCaptionTrackList() OVERRIDE;
+    virtual void setMediaController(MediaControllerInterface*) override;
+    virtual void reset() override;
+    virtual void playbackStarted() override;
+    void changedMute() override;
+    virtual void updateCurrentTimeDisplay() override;
+    virtual void showVolumeSlider() override;
+    virtual void makeTransparent() override;
+    virtual void toggleClosedCaptionTrackList() override;
 
     void handleClickEvent(Event*);
 
 #if ENABLE(VIDEO_TRACK)
-    void createTextTrackDisplay() OVERRIDE;
+    void createTextTrackDisplay() override;
 #endif
 
 protected:

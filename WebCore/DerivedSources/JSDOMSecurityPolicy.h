@@ -24,27 +24,27 @@
 #if ENABLE(CSP_NEXT)
 
 #include "DOMSecurityPolicy.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDOMSecurityPolicy : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMSecurityPolicy* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMSecurityPolicy> impl)
+    static JSDOMSecurityPolicy* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMSecurityPolicy>&& impl)
     {
-        JSDOMSecurityPolicy* ptr = new (NotNull, JSC::allocateCell<JSDOMSecurityPolicy>(globalObject->vm().heap)) JSDOMSecurityPolicy(structure, globalObject, impl);
+        JSDOMSecurityPolicy* ptr = new (NotNull, JSC::allocateCell<JSDOMSecurityPolicy>(globalObject->vm().heap)) JSDOMSecurityPolicy(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMSecurityPolicy* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDOMSecurityPolicy();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     DOMSecurityPolicy& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMSecurityPolicy* m_impl;
 protected:
-    JSDOMSecurityPolicy(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMSecurityPolicy>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDOMSecurityPolicy(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMSecurityPolicy>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMSecurityPolicyOwner : public JSC::WeakHandleOwner {
@@ -80,86 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMSecurityPolicy*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMSecurityPolicyOwner, jsDOMSecurityPolicyOwner, ());
-    return &jsDOMSecurityPolicyOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, DOMSecurityPolicy*)
-{
-    return &world;
+    static NeverDestroyed<JSDOMSecurityPolicyOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMSecurityPolicy*);
-DOMSecurityPolicy* toDOMSecurityPolicy(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMSecurityPolicy& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMSecurityPolicyPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMSecurityPolicyPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMSecurityPolicyPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMSecurityPolicyPrototype>(vm.heap)) JSDOMSecurityPolicyPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMSecurityPolicyPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDOMSecurityPolicyConstructor : public DOMConstructorObject {
-private:
-    JSDOMSecurityPolicyConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDOMSecurityPolicyConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDOMSecurityPolicyConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMSecurityPolicyConstructor>(vm.heap)) JSDOMSecurityPolicyConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsConnectionTo(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsFontFrom(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsFormAction(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsFrameFrom(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsImageFrom(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsMediaFrom(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsObjectFrom(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsPluginType(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsScriptFrom(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMSecurityPolicyPrototypeFunctionAllowsStyleFrom(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDOMSecurityPolicyAllowsEval(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMSecurityPolicyAllowsInlineScript(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMSecurityPolicyAllowsInlineStyle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMSecurityPolicyIsActive(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMSecurityPolicyReportURIs(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMSecurityPolicyConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

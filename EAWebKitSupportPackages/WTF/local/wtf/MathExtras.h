@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2013 Apple Inc. All rights reserved.
- * Copyright (C) 2016 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -11,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -44,18 +43,6 @@
 #include <machine/ieee.h>
 #endif
 
-#if OS(QNX)
-// FIXME: Look into a way to have cmath import its functions into both the standard and global
-// namespace. For now, we include math.h since the QNX cmath header only imports its functions
-// into the standard namespace.
-#include <math.h>
-// These macros from math.h conflict with the real functions in the std namespace.
-#undef signbit
-#undef isnan
-#undef isinf
-#undef isfinite
-#endif
-
 #ifndef M_PI
 const double piDouble = 3.14159265358979323846;
 const float piFloat = 3.14159265358979323846f;
@@ -80,13 +67,12 @@ const double piOverFourDouble = M_PI_4;
 const float piOverFourFloat = static_cast<float>(M_PI_4);
 #endif
 
-#if OS(DARWIN)
-
-// Work around a bug in the Mac OS X libc where ceil(-0.1) return +0.
-inline double wtf_ceil(double x) { return copysign(ceil(x), x); }
-
-#define ceil(x) wtf_ceil(x)
-
+#ifndef M_SQRT2
+const double sqrtOfTwoDouble = 1.41421356237309504880;
+const float sqrtOfTwoFloat = 1.41421356237309504880f;
+#else
+const double sqrtOfTwoDouble = M_SQRT2;
+const float sqrtOfTwoFloat = static_cast<float>(M_SQRT2);
 #endif
 
 #if OS(SOLARIS)
@@ -107,27 +93,8 @@ inline bool isinf(double x) { return !finite(x) && !isnand(x); }
 
 #endif
 
-#if OS(OPENBSD)
-
-namespace std {
-
-#ifndef isfinite
-inline bool isfinite(double x) { return finite(x); }
-#endif
-#ifndef signbit
-inline bool signbit(double x) { struct ieee_double *p = (struct ieee_double *)&x; return p->dbl_sign; }
-#endif
-
-} // namespace std
-
-#endif
-
 #if COMPILER(MSVC)
 
-//+EAWebKitChange
-//06/06/2016 - Updated based off changes from w-188436 for VS2015 compatibility
-//removed a lot of code
-//-EAWebKitChange
 // Work around a bug in Win, where atan2(+-infinity, +-infinity) yields NaN instead of specific values.
 extern "C" inline double wtf_atan2(double x, double y)
 {
@@ -160,11 +127,6 @@ extern "C" inline double wtf_pow(double x, double y) { return y == 0 ? 1 : pow(x
 #define atan2(x, y) wtf_atan2(x, y)
 #define fmod(x, y) wtf_fmod(x, y)
 #define pow(x, y) wtf_pow(x, y)
-
-//+EAWebKitChange
-//06/06/2016 - Updated based off changes from w-188436 for VS2015 compatibilityy
-//removed lrint code
-//-EAWebKitChange
 
 #endif // COMPILER(MSVC)
 
@@ -404,6 +366,38 @@ inline unsigned fastLog2(unsigned i)
     if (i >> 1)
         log2 += 1;
     return log2;
+}
+
+template <typename T>
+inline typename std::enable_if<std::is_floating_point<T>::value, T>::type safeFPDivision(T u, T v)
+{
+    // Protect against overflow / underflow.
+    if (v < 1 && u > v * std::numeric_limits<T>::max())
+        return std::numeric_limits<T>::max();
+    if (v > 1 && u < v * std::numeric_limits<T>::min())
+        return 0;
+    return u / v;
+}
+
+// Floating point numbers comparison:
+// u is "essentially equal" [1][2] to v if: | u - v | / |u| <= e and | u - v | / |v| <= e
+//
+// [1] Knuth, D. E. "Accuracy of Floating Point Arithmetic." The Art of Computer Programming. 3rd ed. Vol. 2.
+//     Boston: Addison-Wesley, 1998. 229-45.
+// [2] http://www.boost.org/doc/libs/1_34_0/libs/test/doc/components/test_tools/floating_point_comparison.html
+template <typename T>
+inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type areEssentiallyEqual(T u, T v, T epsilon = std::numeric_limits<T>::epsilon())
+{
+    if (u == v)
+        return true;
+
+    const T delta = std::abs(u - v);
+    return safeFPDivision(delta, std::abs(u)) <= epsilon && safeFPDivision(delta, std::abs(v)) <= epsilon;
+}
+
+inline bool isIntegral(float value)
+{
+    return static_cast<int>(value) == value;
 }
 
 } // namespace WTF

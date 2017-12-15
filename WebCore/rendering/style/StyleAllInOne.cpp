@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2010 Apple Inc. All Rights Reserved.
- * Copyright (C) 2014 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,13 +25,11 @@
 
 // This all-in-one cpp file cuts down on template bloat to allow us to build our Windows release build.
 
-//+EAWebKitChange
-//1/16/2014
 #include "BasicShapes.cpp"
-//-EAWebKitChange
 #include "ContentData.cpp"
 #include "CounterDirectives.cpp"
 #include "FillLayer.cpp"
+#include "GridResolvedPosition.cpp"
 #include "KeyframeList.cpp"
 #include "NinePieceImage.cpp"
 #include "QuotesData.cpp"
@@ -40,6 +37,7 @@
 #include "SVGRenderStyle.cpp"
 #include "SVGRenderStyleDefs.cpp"
 #include "ShadowData.cpp"
+#include "ShapeValue.cpp"
 #include "StyleBackgroundData.cpp"
 #include "StyleBoxData.cpp"
 #include "StyleCachedImage.cpp"
@@ -55,6 +53,8 @@
 #include "StyleMultiColData.cpp"
 #include "StyleRareInheritedData.cpp"
 #include "StyleRareNonInheritedData.cpp"
+#include "StyleScrollSnapPoints.cpp"
 #include "StyleSurroundData.cpp"
 #include "StyleTransformData.cpp"
 #include "StyleVisualData.cpp"
+#include "WillChangeData.cpp"

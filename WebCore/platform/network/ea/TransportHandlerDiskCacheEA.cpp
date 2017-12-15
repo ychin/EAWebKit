@@ -39,6 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Added a shared buffer for blocking reads.
 
 #include "config.h"
+#include "HTTPHeaderNames.h"
 #include "TransportHandlerDiskCacheEA.h"
 #include "SharedBuffer.h"
 #include "INetMIMEEA.h"
@@ -53,8 +54,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/include/EAWebKitNewDelete.h>
 #include <stdio.h>
 #include <time.h>
-#include <EAWebKit/EAWebKit.h>  
-#include "DateEA.h"           
+#include <EAWebKit/EAWebKit.h>
+#include "DateEA.h"
 #include <EAIO/FnEncode.h>
 #include <EAWebKit/EAWebKitFileSystem.h>
 #include <internal/include/EAWebkit_p.h>
@@ -339,7 +340,7 @@ bool CacheResponseHeaderInfo::SetDirectivesFromHeader(const EA::WebKit::Transpor
 		return false;
 	}
 	//Another check on the content type in case the url does not specify the type of content.
-	EA::WebKit::HeaderMap::const_iterator contentTypeEntry = headers.find(EA_CHAR16("Content-Type"));
+    EA::WebKit::HeaderMap::const_iterator contentTypeEntry = headers.find((const char16_t*)httpHeaderNameString(WebCore::HTTPHeaderName::ContentType).upconvertedCharacters());
 	if(contentTypeEntry != headers.end())
 	{
 		if(contentTypeEntry->second.find(EA_CHAR16("text/html")) != EA::WebKit::FixedString16_128::npos 
@@ -363,7 +364,7 @@ bool CacheResponseHeaderInfo::SetDirectivesFromHeader(const EA::WebKit::Transpor
 		return false;
 	}
     
-	EA::WebKit::HeaderMap::const_iterator entry = headers.find(EA_CHAR16("Cache-Control"));
+    EA::WebKit::HeaderMap::const_iterator entry = headers.find((const char16_t*)httpHeaderNameString(WebCore::HTTPHeaderName::CacheControl).upconvertedCharacters());
     if (entry != headers.end())
     {
         FixedString16_128 curHeader;	
@@ -402,7 +403,7 @@ bool CacheResponseHeaderInfo::SetDirectivesFromHeader(const EA::WebKit::Transpor
     // Check for the expired only if max-age is was not set
     if(!m_MaxAgeFound)
     {
-        entry = headers.find(EA_CHAR16("Expires"));
+        entry = headers.find((const char16_t*)httpHeaderNameString(WebCore::HTTPHeaderName::Expires).upconvertedCharacters());
         if (entry != headers.end())
         {
             if(!ExtractExpiresDirective(entry->second.c_str()))
@@ -1464,7 +1465,7 @@ bool TransportHandlerDiskCache::RemoveUnusedCachedFiles()
     EA::IO::DirectoryIterator            directoryIterator;
     EA::IO::DirectoryIterator::EntryList entryList;
 
-    if(directoryIterator.Read((msCacheDirectory.c_str()), entryList, (kSearchCachedFileExtension), EA::IO::kDirectoryEntryFile))
+    if(directoryIterator.Read(msCacheDirectory.c_str(), entryList, kSearchCachedFileExtension, EA::IO::kDirectoryEntryFile))
     {
         for(EA::IO::DirectoryIterator::EntryList::iterator it = entryList.begin(); it != entryList.end(); ++it)
         {
@@ -1475,12 +1476,12 @@ bool TransportHandlerDiskCache::RemoveUnusedCachedFiles()
             {
                 const Info& cacheInfo = (*itMap).second;
 
-                if(EA::Internal::Stricmp(cacheInfo.msCachedFileName.c_str(), (entry.msName.c_str())) == 0) // If the disk file is also in our cache map...
+                if(EA::Internal::Stricmp(cacheInfo.msCachedFileName.c_str(), reinterpret_cast<const char16_t*>(entry.msName.c_str())) == 0) // If the disk file is also in our cache map...
                     break;
             }
 
             if(itMap == mDataMap.end()) // If the file was not in our list...
-                RemoveCachedFile((entry.msName.c_str()));
+                RemoveCachedFile(reinterpret_cast<const char16_t*>(entry.msName.c_str()));
         }
     }
     return true;

@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSTypeConversions.h"
 
+#include "JSDOMBinding.h"
 #include "TypeConversions.h"
 #include <wtf/GetPtr.h>
 
@@ -28,58 +29,112 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSTypeConversionsTableValues[] =
-{
-    { "testLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestLong), (intptr_t)setJSTypeConversionsTestLong },
-    { "testEnforceRangeLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeLong), (intptr_t)setJSTypeConversionsTestEnforceRangeLong },
-    { "testUnsignedLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestUnsignedLong), (intptr_t)setJSTypeConversionsTestUnsignedLong },
-    { "testEnforceRangeUnsignedLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeUnsignedLong), (intptr_t)setJSTypeConversionsTestEnforceRangeUnsignedLong },
-    { "testLongLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestLongLong), (intptr_t)setJSTypeConversionsTestLongLong },
-    { "testEnforceRangeLongLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeLongLong), (intptr_t)setJSTypeConversionsTestEnforceRangeLongLong },
-    { "testUnsignedLongLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestUnsignedLongLong), (intptr_t)setJSTypeConversionsTestUnsignedLongLong },
-    { "testEnforceRangeUnsignedLongLong", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeUnsignedLongLong), (intptr_t)setJSTypeConversionsTestEnforceRangeUnsignedLongLong },
-    { "testByte", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestByte), (intptr_t)setJSTypeConversionsTestByte },
-    { "testEnforceRangeByte", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeByte), (intptr_t)setJSTypeConversionsTestEnforceRangeByte },
-    { "testOctet", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestOctet), (intptr_t)setJSTypeConversionsTestOctet },
-    { "testEnforceRangeOctet", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeOctet), (intptr_t)setJSTypeConversionsTestEnforceRangeOctet },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsTypeConversionsTestLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestUnsignedLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestUnsignedLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeUnsignedLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeUnsignedLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestUnsignedLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestUnsignedLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeUnsignedLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeUnsignedLongLong(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestByte(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestByte(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeByte(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeByte(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestOctet(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestOctet(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeOctet(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeOctet(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestUnsignedShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestUnsignedShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTypeConversionsTestEnforceRangeUnsignedShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTypeConversionsTestEnforceRangeUnsignedShort(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSTypeConversionsPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSTypeConversionsPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSTypeConversionsPrototype* ptr = new (NotNull, JSC::allocateCell<JSTypeConversionsPrototype>(vm.heap)) JSTypeConversionsPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSTypeConversionsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSTypeConversionsTable = { 34, 31, JSTypeConversionsTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSTypeConversionsPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "testLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestLong) },
+    { "testEnforceRangeLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeLong) },
+    { "testUnsignedLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestUnsignedLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestUnsignedLong) },
+    { "testEnforceRangeUnsignedLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeUnsignedLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeUnsignedLong) },
+    { "testLongLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestLongLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestLongLong) },
+    { "testEnforceRangeLongLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeLongLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeLongLong) },
+    { "testUnsignedLongLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestUnsignedLongLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestUnsignedLongLong) },
+    { "testEnforceRangeUnsignedLongLong", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeUnsignedLongLong), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeUnsignedLongLong) },
+    { "testByte", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestByte), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestByte) },
+    { "testEnforceRangeByte", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeByte), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeByte) },
+    { "testOctet", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestOctet), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestOctet) },
+    { "testEnforceRangeOctet", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeOctet), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeOctet) },
+    { "testShort", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestShort), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestShort) },
+    { "testEnforceRangeShort", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeShort), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeShort) },
+    { "testUnsignedShort", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestUnsignedShort), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestUnsignedShort) },
+    { "testEnforceRangeUnsignedShort", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTypeConversionsTestEnforceRangeUnsignedShort), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTypeConversionsTestEnforceRangeUnsignedShort) },
 };
 
-static const HashTable JSTypeConversionsPrototypeTable = { 1, 0, JSTypeConversionsPrototypeTableValues, 0 };
-const ClassInfo JSTypeConversionsPrototype::s_info = { "TypeConversionsPrototype", &Base::s_info, &JSTypeConversionsPrototypeTable, 0, CREATE_METHOD_TABLE(JSTypeConversionsPrototype) };
+const ClassInfo JSTypeConversionsPrototype::s_info = { "TypeConversionsPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTypeConversionsPrototype) };
 
-JSObject* JSTypeConversionsPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSTypeConversions>(vm, globalObject);
-}
-
-const ClassInfo JSTypeConversions::s_info = { "TypeConversions", &Base::s_info, &JSTypeConversionsTable, 0 , CREATE_METHOD_TABLE(JSTypeConversions) };
-
-JSTypeConversions::JSTypeConversions(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TypeConversions> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSTypeConversions::finishCreation(VM& vm)
+void JSTypeConversionsPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSTypeConversionsPrototypeTableValues, *this);
+}
+
+const ClassInfo JSTypeConversions::s_info = { "TypeConversions", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTypeConversions) };
+
+JSTypeConversions::JSTypeConversions(Structure* structure, JSDOMGlobalObject* globalObject, Ref<TypeConversions>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSTypeConversions::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSTypeConversionsPrototype::create(vm, globalObject, JSTypeConversionsPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSTypeConversions::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSTypeConversions>(vm, globalObject);
 }
 
 void JSTypeConversions::destroy(JSC::JSCell* cell)
@@ -90,316 +145,620 @@ void JSTypeConversions::destroy(JSC::JSCell* cell)
 
 JSTypeConversions::~JSTypeConversions()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSTypeConversions::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsTypeConversionsTestLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* thisObject = jsCast<JSTypeConversions*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSTypeConversions, Base>(exec, JSTypeConversionsTable, thisObject, propertyName, slot);
-}
-
-JSValue jsTypeConversionsTestLong(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestEnforceRangeLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestEnforceRangeLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testEnforceRangeLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestUnsignedLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestUnsignedLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testUnsignedLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testUnsignedLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testUnsignedLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestEnforceRangeUnsignedLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestEnforceRangeUnsignedLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeUnsignedLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeUnsignedLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testEnforceRangeUnsignedLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestLongLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestLongLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testLongLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testLongLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testLongLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestEnforceRangeLongLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestEnforceRangeLongLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeLongLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeLongLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testEnforceRangeLongLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestUnsignedLongLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestUnsignedLongLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testUnsignedLongLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testUnsignedLongLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testUnsignedLongLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestEnforceRangeUnsignedLongLong(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestEnforceRangeUnsignedLongLong(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeUnsignedLongLong");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeUnsignedLongLong");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testEnforceRangeUnsignedLongLong());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestByte(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestByte(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testByte");
+        return throwGetterTypeError(*exec, "TypeConversions", "testByte");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testByte());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestEnforceRangeByte(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestEnforceRangeByte(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeByte");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeByte");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testEnforceRangeByte());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestOctet(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestOctet(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testOctet");
+        return throwGetterTypeError(*exec, "TypeConversions", "testOctet");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testOctet());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTypeConversionsTestEnforceRangeOctet(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTypeConversionsTestEnforceRangeOctet(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TypeConversions& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeOctet");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeOctet");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.testEnforceRangeOctet());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-void JSTypeConversions::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSTypeConversions* thisObject = jsCast<JSTypeConversions*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSTypeConversions, Base>(exec, propertyName, value, JSTypeConversionsTable, thisObject, slot);
-}
-
-void setJSTypeConversionsTestLong(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsTypeConversionsTestShort(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    int nativeValue(toInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testShort");
+        return throwGetterTypeError(*exec, "TypeConversions", "testShort");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.testShort());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTypeConversionsTestEnforceRangeShort(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeShort");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeShort");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.testEnforceRangeShort());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTypeConversionsTestUnsignedShort(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testUnsignedShort");
+        return throwGetterTypeError(*exec, "TypeConversions", "testUnsignedShort");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.testUnsignedShort());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTypeConversionsTestEnforceRangeUnsignedShort(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TypeConversions", "testEnforceRangeUnsignedShort");
+        return throwGetterTypeError(*exec, "TypeConversions", "testEnforceRangeUnsignedShort");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.testEnforceRangeUnsignedShort());
+    return JSValue::encode(result);
+}
+
+
+void setJSTypeConversionsTestLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int nativeValue = toInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestEnforceRangeLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestEnforceRangeLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    int nativeValue(toInt32(exec, value, EnforceRange));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int nativeValue = toInt32(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestEnforceRangeLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestUnsignedLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestUnsignedLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    unsigned nativeValue(toUInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testUnsignedLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testUnsignedLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    unsigned nativeValue = toUInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestUnsignedLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestEnforceRangeUnsignedLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestEnforceRangeUnsignedLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    unsigned nativeValue(toUInt32(exec, value, EnforceRange));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeUnsignedLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeUnsignedLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    unsigned nativeValue = toUInt32(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestEnforceRangeUnsignedLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestLongLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestLongLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    long long nativeValue(toInt64(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testLongLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testLongLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    long long nativeValue = toInt64(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestLongLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestEnforceRangeLongLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestEnforceRangeLongLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    long long nativeValue(toInt64(exec, value, EnforceRange));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeLongLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeLongLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    long long nativeValue = toInt64(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestEnforceRangeLongLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestUnsignedLongLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestUnsignedLongLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    unsigned long long nativeValue(toUInt64(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testUnsignedLongLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testUnsignedLongLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    unsigned long long nativeValue = toUInt64(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestUnsignedLongLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestEnforceRangeUnsignedLongLong(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestEnforceRangeUnsignedLongLong(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    unsigned long long nativeValue(toUInt64(exec, value, EnforceRange));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeUnsignedLongLong");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeUnsignedLongLong");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    unsigned long long nativeValue = toUInt64(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestEnforceRangeUnsignedLongLong(nativeValue);
 }
 
 
-void setJSTypeConversionsTestByte(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestByte(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    int8_t nativeValue(toInt8(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testByte");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testByte");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int8_t nativeValue = toInt8(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestByte(nativeValue);
 }
 
 
-void setJSTypeConversionsTestEnforceRangeByte(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestEnforceRangeByte(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    int8_t nativeValue(toInt8(exec, value, EnforceRange));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeByte");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeByte");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int8_t nativeValue = toInt8(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestEnforceRangeByte(nativeValue);
 }
 
 
-void setJSTypeConversionsTestOctet(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestOctet(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    uint8_t nativeValue(toUInt8(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testOctet");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testOctet");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    uint8_t nativeValue = toUInt8(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestOctet(nativeValue);
 }
 
 
-void setJSTypeConversionsTestEnforceRangeOctet(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTypeConversionsTestEnforceRangeOctet(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSTypeConversions* castedThis = jsCast<JSTypeConversions*>(thisObject);
-    TypeConversions& impl = castedThis->impl();
-    uint8_t nativeValue(toUInt8(exec, value, EnforceRange));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeOctet");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeOctet");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    uint8_t nativeValue = toUInt8(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setTestEnforceRangeOctet(nativeValue);
 }
 
 
-static inline bool isObservable(JSTypeConversions* jsTypeConversions)
+void setJSTypeConversionsTestShort(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    if (jsTypeConversions->hasCustomProperties())
-        return true;
-    return false;
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testShort");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testShort");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int16_t nativeValue = toInt16(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setTestShort(nativeValue);
 }
+
+
+void setJSTypeConversionsTestEnforceRangeShort(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeShort");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeShort");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    int16_t nativeValue = toInt16(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setTestEnforceRangeShort(nativeValue);
+}
+
+
+void setJSTypeConversionsTestUnsignedShort(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testUnsignedShort");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testUnsignedShort");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    uint16_t nativeValue = toUInt16(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setTestUnsignedShort(nativeValue);
+}
+
+
+void setJSTypeConversionsTestEnforceRangeUnsignedShort(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTypeConversions* castedThis = jsDynamicCast<JSTypeConversions*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTypeConversionsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TypeConversions", "testEnforceRangeUnsignedShort");
+        else
+            throwSetterTypeError(*exec, "TypeConversions", "testEnforceRangeUnsignedShort");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    uint16_t nativeValue = toUInt16(exec, value, EnforceRange);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setTestEnforceRangeUnsignedShort(nativeValue);
+}
+
 
 bool JSTypeConversionsOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSTypeConversions* jsTypeConversions = jsCast<JSTypeConversions*>(handle.get().asCell());
-    if (!isObservable(jsTypeConversions))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSTypeConversionsOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSTypeConversions* jsTypeConversions = jsCast<JSTypeConversions*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsTypeConversions = jsCast<JSTypeConversions*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsTypeConversions->impl(), jsTypeConversions);
-    jsTypeConversions->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TypeConversions* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, TypeConversions* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSTypeConversions>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSTypeConversions>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -408,13 +767,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TypeCon
     // attribute to TypeConversions.
     COMPILE_ASSERT(!__is_polymorphic(TypeConversions), TypeConversions_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<TypeConversions>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSTypeConversions>(exec, globalObject, impl);
+    return createNewWrapper<JSTypeConversions>(globalObject, impl);
 }
 
-TypeConversions* toTypeConversions(JSC::JSValue value)
+TypeConversions* JSTypeConversions::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSTypeConversions::info()) ? &jsCast<JSTypeConversions*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSTypeConversions*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

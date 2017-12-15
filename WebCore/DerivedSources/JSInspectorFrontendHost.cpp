@@ -19,14 +19,13 @@
 */
 
 #include "config.h"
-
-#if ENABLE(INSPECTOR)
-
 #include "JSInspectorFrontendHost.h"
 
+#include "Event.h"
 #include "ExceptionCode.h"
 #include "InspectorFrontendHost.h"
 #include "JSDOMBinding.h"
+#include "JSEvent.h"
 #include "URL.h"
 #include <runtime/Error.h>
 #include <runtime/JSString.h>
@@ -36,77 +35,122 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLoaded(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCloseWindow(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionBringToFront(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetZoomFactor(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionInspectedURLChanged(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRequestSetDockSide(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowHeight(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowWidth(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetToolbarHeight(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionStartWindowDrag(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionMoveWindowBy(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLocalizedStringsURL(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionDebuggableType(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCopyText(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionOpenInNewTab(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanSave(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSave(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionAppend(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionClose(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionPlatform(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionPort(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionShowContextMenu(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionDispatchEventAsContextMenuEvent(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSendMessageToBackend(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionUnbufferedLog(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionIsUnderTest(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionBeep(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanInspectWorkers(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanSaveAs(JSC::ExecState*);
+
+class JSInspectorFrontendHostPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSInspectorFrontendHostPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSInspectorFrontendHostPrototype* ptr = new (NotNull, JSC::allocateCell<JSInspectorFrontendHostPrototype>(vm.heap)) JSInspectorFrontendHostPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSInspectorFrontendHostPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSInspectorFrontendHostPrototypeTableValues[] =
 {
-    { "loaded", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionLoaded), (intptr_t)0 },
-    { "closeWindow", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCloseWindow), (intptr_t)0 },
-    { "bringToFront", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionBringToFront), (intptr_t)0 },
-    { "setZoomFactor", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetZoomFactor), (intptr_t)1 },
-    { "inspectedURLChanged", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionInspectedURLChanged), (intptr_t)1 },
-    { "requestSetDockSide", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRequestSetDockSide), (intptr_t)1 },
-    { "setAttachedWindowHeight", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowHeight), (intptr_t)1 },
-    { "setAttachedWindowWidth", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowWidth), (intptr_t)1 },
-    { "setToolbarHeight", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetToolbarHeight), (intptr_t)1 },
-    { "moveWindowBy", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionMoveWindowBy), (intptr_t)2 },
-    { "setInjectedScriptForOrigin", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetInjectedScriptForOrigin), (intptr_t)2 },
-    { "localizedStringsURL", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionLocalizedStringsURL), (intptr_t)0 },
-    { "copyText", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCopyText), (intptr_t)1 },
-    { "openInNewTab", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionOpenInNewTab), (intptr_t)1 },
-    { "canSave", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCanSave), (intptr_t)0 },
-    { "save", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSave), (intptr_t)4 },
-    { "append", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionAppend), (intptr_t)2 },
-    { "close", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionClose), (intptr_t)1 },
-    { "platform", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionPlatform), (intptr_t)0 },
-    { "port", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionPort), (intptr_t)0 },
-    { "showContextMenu", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionShowContextMenu), (intptr_t)2 },
-    { "sendMessageToBackend", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSendMessageToBackend), (intptr_t)1 },
-    { "recordActionTaken", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRecordActionTaken), (intptr_t)1 },
-    { "recordPanelShown", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRecordPanelShown), (intptr_t)1 },
-    { "recordSettingChanged", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRecordSettingChanged), (intptr_t)1 },
-    { "loadResourceSynchronously", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionLoadResourceSynchronously), (intptr_t)1 },
-    { "supportsFileSystems", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSupportsFileSystems), (intptr_t)0 },
-    { "requestFileSystems", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRequestFileSystems), (intptr_t)0 },
-    { "addFileSystem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionAddFileSystem), (intptr_t)0 },
-    { "removeFileSystem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRemoveFileSystem), (intptr_t)1 },
-    { "isUnderTest", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionIsUnderTest), (intptr_t)0 },
-    { "canInspectWorkers", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCanInspectWorkers), (intptr_t)0 },
-    { "canSaveAs", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCanSaveAs), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "loaded", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionLoaded), (intptr_t) (0) },
+    { "closeWindow", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCloseWindow), (intptr_t) (0) },
+    { "bringToFront", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionBringToFront), (intptr_t) (0) },
+    { "setZoomFactor", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetZoomFactor), (intptr_t) (1) },
+    { "inspectedURLChanged", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionInspectedURLChanged), (intptr_t) (1) },
+    { "requestSetDockSide", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionRequestSetDockSide), (intptr_t) (1) },
+    { "setAttachedWindowHeight", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowHeight), (intptr_t) (1) },
+    { "setAttachedWindowWidth", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowWidth), (intptr_t) (1) },
+    { "setToolbarHeight", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSetToolbarHeight), (intptr_t) (1) },
+    { "startWindowDrag", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionStartWindowDrag), (intptr_t) (0) },
+    { "moveWindowBy", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionMoveWindowBy), (intptr_t) (2) },
+    { "localizedStringsURL", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionLocalizedStringsURL), (intptr_t) (0) },
+    { "debuggableType", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionDebuggableType), (intptr_t) (0) },
+    { "copyText", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCopyText), (intptr_t) (1) },
+    { "openInNewTab", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionOpenInNewTab), (intptr_t) (1) },
+    { "canSave", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCanSave), (intptr_t) (0) },
+    { "save", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSave), (intptr_t) (4) },
+    { "append", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionAppend), (intptr_t) (2) },
+    { "close", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionClose), (intptr_t) (1) },
+    { "platform", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionPlatform), (intptr_t) (0) },
+    { "port", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionPort), (intptr_t) (0) },
+    { "showContextMenu", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionShowContextMenu), (intptr_t) (2) },
+    { "dispatchEventAsContextMenuEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionDispatchEventAsContextMenuEvent), (intptr_t) (1) },
+    { "sendMessageToBackend", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionSendMessageToBackend), (intptr_t) (1) },
+    { "unbufferedLog", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionUnbufferedLog), (intptr_t) (1) },
+    { "isUnderTest", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionIsUnderTest), (intptr_t) (0) },
+    { "beep", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionBeep), (intptr_t) (0) },
+    { "canInspectWorkers", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCanInspectWorkers), (intptr_t) (0) },
+    { "canSaveAs", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsInspectorFrontendHostPrototypeFunctionCanSaveAs), (intptr_t) (0) },
 };
 
-static const HashTable JSInspectorFrontendHostPrototypeTable = { 134, 127, JSInspectorFrontendHostPrototypeTableValues, 0 };
-const ClassInfo JSInspectorFrontendHostPrototype::s_info = { "InspectorFrontendHostPrototype", &Base::s_info, &JSInspectorFrontendHostPrototypeTable, 0, CREATE_METHOD_TABLE(JSInspectorFrontendHostPrototype) };
+const ClassInfo JSInspectorFrontendHostPrototype::s_info = { "InspectorFrontendHostPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSInspectorFrontendHostPrototype) };
 
-JSObject* JSInspectorFrontendHostPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSInspectorFrontendHost>(vm, globalObject);
-}
-
-bool JSInspectorFrontendHostPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSInspectorFrontendHostPrototype* thisObject = jsCast<JSInspectorFrontendHostPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSInspectorFrontendHostPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSInspectorFrontendHost::s_info = { "InspectorFrontendHost", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSInspectorFrontendHost) };
-
-JSInspectorFrontendHost::JSInspectorFrontendHost(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<InspectorFrontendHost> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSInspectorFrontendHost::finishCreation(VM& vm)
+void JSInspectorFrontendHostPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSInspectorFrontendHostPrototypeTableValues, *this);
+}
+
+const ClassInfo JSInspectorFrontendHost::s_info = { "InspectorFrontendHost", &Base::s_info, 0, CREATE_METHOD_TABLE(JSInspectorFrontendHost) };
+
+JSInspectorFrontendHost::JSInspectorFrontendHost(Structure* structure, JSDOMGlobalObject* globalObject, Ref<InspectorFrontendHost>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSInspectorFrontendHost::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSInspectorFrontendHostPrototype::create(vm, globalObject, JSInspectorFrontendHostPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSInspectorFrontendHost::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSInspectorFrontendHost>(vm, globalObject);
 }
 
 void JSInspectorFrontendHost::destroy(JSC::JSCell* cell)
@@ -117,57 +161,57 @@ void JSInspectorFrontendHost::destroy(JSC::JSCell* cell)
 
 JSInspectorFrontendHost::~JSInspectorFrontendHost()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLoaded(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "loaded");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.loaded();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCloseWindow(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "closeWindow");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.closeWindow();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionBringToFront(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "bringToFront");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.bringToFront();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetZoomFactor(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "setZoomFactor");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    float zoom(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float zoom = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setZoomFactor(zoom);
     return JSValue::encode(jsUndefined());
@@ -175,16 +219,16 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetZoomFact
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionInspectedURLChanged(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "inspectedURLChanged");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& newURL(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String newURL = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.inspectedURLChanged(newURL);
     return JSValue::encode(jsUndefined());
@@ -192,16 +236,16 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionInspectedUR
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRequestSetDockSide(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "requestSetDockSide");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& side(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String side = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.requestSetDockSide(side);
     return JSValue::encode(jsUndefined());
@@ -209,16 +253,16 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRequestSetD
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowHeight(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "setAttachedWindowHeight");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned height(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned height = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setAttachedWindowHeight(height);
     return JSValue::encode(jsUndefined());
@@ -226,16 +270,16 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttached
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttachedWindowWidth(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "setAttachedWindowWidth");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned width(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned width = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setAttachedWindowWidth(width);
     return JSValue::encode(jsUndefined());
@@ -243,86 +287,89 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetAttached
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetToolbarHeight(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "setToolbarHeight");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    float height(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float height = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setToolbarHeight(height);
     return JSValue::encode(jsUndefined());
 }
 
+EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionStartWindowDrag(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "startWindowDrag");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
+    auto& impl = castedThis->impl();
+    impl.startWindowDrag();
+    return JSValue::encode(jsUndefined());
+}
+
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionMoveWindowBy(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "moveWindowBy");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.moveWindowBy(x, y);
     return JSValue::encode(jsUndefined());
 }
 
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSetInjectedScriptForOrigin(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
-        return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& origin(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-    const String& script(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-    impl.setInjectedScriptForOrigin(origin, script);
-    return JSValue::encode(jsUndefined());
-}
-
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLocalizedStringsURL(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "localizedStringsURL");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.localizedStringsURL());
+    return JSValue::encode(result);
+}
 
-    JSC::JSValue result = jsStringWithCache(exec, impl.localizedStringsURL());
+EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionDebuggableType(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "debuggableType");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.debuggableType());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCopyText(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "copyText");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& text(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String text = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.copyText(text);
     return JSValue::encode(jsUndefined());
@@ -330,16 +377,16 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCopyText(Ex
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionOpenInNewTab(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "openInNewTab");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String url = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.openInNewTab(url);
     return JSValue::encode(jsUndefined());
@@ -347,38 +394,37 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionOpenInNewTa
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanSave(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "canSave");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.canSave());
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.canSave());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSave(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "save");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 4)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 4))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String url = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& content(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String content = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool base64Encoded(exec->argument(2).toBoolean(exec));
-    if (exec->hadException())
+    bool base64Encoded = exec->argument(2).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool forceSaveAs(exec->argument(3).toBoolean(exec));
-    if (exec->hadException())
+    bool forceSaveAs = exec->argument(3).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.save(url, content, base64Encoded, forceSaveAs);
     return JSValue::encode(jsUndefined());
@@ -386,19 +432,19 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSave(ExecSt
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionAppend(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "append");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String url = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& content(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String content = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.append(url, content);
     return JSValue::encode(jsUndefined());
@@ -406,16 +452,16 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionAppend(Exec
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionClose(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "close");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String url = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.close(url);
     return JSValue::encode(jsUndefined());
@@ -423,221 +469,152 @@ EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionClose(ExecS
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionPlatform(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "platform");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
     return JSValue::encode(castedThis->platform(exec));
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionPort(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "port");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
     return JSValue::encode(castedThis->port(exec));
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionShowContextMenu(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "showContextMenu");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
     return JSValue::encode(castedThis->showContextMenu(exec));
 }
 
+EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionDispatchEventAsContextMenuEvent(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "dispatchEventAsContextMenuEvent");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.dispatchEventAsContextMenuEvent(event);
+    return JSValue::encode(jsUndefined());
+}
+
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSendMessageToBackend(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "sendMessageToBackend");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& message(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String message = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.sendMessageToBackend(message);
     return JSValue::encode(jsUndefined());
 }
 
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRecordActionTaken(ExecState* exec)
+EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionUnbufferedLog(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "unbufferedLog");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    return JSValue::encode(castedThis->recordActionTaken(exec));
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRecordPanelShown(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    return JSValue::encode(castedThis->recordPanelShown(exec));
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRecordSettingChanged(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    return JSValue::encode(castedThis->recordSettingChanged(exec));
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionLoadResourceSynchronously(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String message = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsStringWithCache(exec, impl.loadResourceSynchronously(url));
-    return JSValue::encode(result);
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionSupportsFileSystems(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.supportsFileSystems());
-    return JSValue::encode(result);
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRequestFileSystems(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    impl.requestFileSystems();
-    return JSValue::encode(jsUndefined());
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionAddFileSystem(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    impl.addFileSystem();
-    return JSValue::encode(jsUndefined());
-}
-
-EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionRemoveFileSystem(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
-        return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& fileSystemPath(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-    impl.removeFileSystem(fileSystemPath);
+    impl.unbufferedLog(message);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionIsUnderTest(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "isUnderTest");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.isUnderTest());
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.isUnderTest());
     return JSValue::encode(result);
+}
+
+EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionBeep(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "beep");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
+    auto& impl = castedThis->impl();
+    impl.beep();
+    return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanInspectWorkers(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "canInspectWorkers");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.canInspectWorkers());
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.canInspectWorkers());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsInspectorFrontendHostPrototypeFunctionCanSaveAs(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSInspectorFrontendHost::info()))
-        return throwVMTypeError(exec);
-    JSInspectorFrontendHost* castedThis = jsCast<JSInspectorFrontendHost*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSInspectorFrontendHost* castedThis = jsDynamicCast<JSInspectorFrontendHost*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "InspectorFrontendHost", "canSaveAs");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSInspectorFrontendHost::info());
-    InspectorFrontendHost& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.canSaveAs());
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.canSaveAs());
     return JSValue::encode(result);
-}
-
-static inline bool isObservable(JSInspectorFrontendHost* jsInspectorFrontendHost)
-{
-    if (jsInspectorFrontendHost->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSInspectorFrontendHostOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSInspectorFrontendHost* jsInspectorFrontendHost = jsCast<JSInspectorFrontendHost*>(handle.get().asCell());
-    if (!isObservable(jsInspectorFrontendHost))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSInspectorFrontendHostOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSInspectorFrontendHost* jsInspectorFrontendHost = jsCast<JSInspectorFrontendHost*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsInspectorFrontendHost = jsCast<JSInspectorFrontendHost*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsInspectorFrontendHost->impl(), jsInspectorFrontendHost);
-    jsInspectorFrontendHost->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, InspectorFrontendHost* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, InspectorFrontendHost* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSInspectorFrontendHost>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSInspectorFrontendHost>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -646,15 +623,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Inspect
     // attribute to InspectorFrontendHost.
     COMPILE_ASSERT(!__is_polymorphic(InspectorFrontendHost), InspectorFrontendHost_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<InspectorFrontendHost>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSInspectorFrontendHost>(exec, globalObject, impl);
+    return createNewWrapper<JSInspectorFrontendHost>(globalObject, impl);
 }
 
-InspectorFrontendHost* toInspectorFrontendHost(JSC::JSValue value)
+InspectorFrontendHost* JSInspectorFrontendHost::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSInspectorFrontendHost::info()) ? &jsCast<JSInspectorFrontendHost*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSInspectorFrontendHost*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(INSPECTOR)

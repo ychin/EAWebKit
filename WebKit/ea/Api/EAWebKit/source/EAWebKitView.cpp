@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -37,6 +37,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wtf/CurrentTime.h>
 #include "WebPageClientEA.h"
 #include "Settings.h"
+#if ENABLE(REQUEST_ANIMATION_FRAME)
+#include "AnimationController.h"
+#endif
 #include "WebFrame.h"
 #include "WebPage_p.h"
 #include "WebFrame_p.h"
@@ -50,11 +53,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/include/EAWebKitString.h>
 #include "DOMTimeStamp.h"
 #include "PageClientEA.h"
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 #include "TileEA.h"
 #endif
 #if USE(ACCELERATED_COMPOSITING)
 #include "TextureMapperEA.h"
+#include "BitmapTextureEA.h"
 #include "texmap/TextureMapper.h"
 #include "texmap/TextureMapperPlatformLayer.h"
 #include "TextureMapperLayerClientEA.h"
@@ -188,7 +192,7 @@ public:
 #endif
     WebCore::TextPopup mToolTip;
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	typedef eastl::list<WebCore::TileEA*> Tiles;
 	Tiles mTiles;
 #endif	
@@ -245,6 +249,7 @@ void View::Paint()
 #if ENABLE(REQUEST_ANIMATION_FRAME)
                     if (d->mNeedsAnimation)
                     {
+						WebCore::AnimationUpdateBlock updateBlock(&coreView->frame().animation());
                         d->mNeedsAnimation = false;
                         NOTIFY_PROCESS_STATUS(kVProcessTypeAnimation, EA::WebKit::kVProcessStatusStarted, this);
                         coreView->serviceScriptedAnimations(WebCore::convertSecondsToDOMTimeStamp(WTF::currentTime()));
@@ -255,13 +260,14 @@ void View::Paint()
 					// after we send the ViewUpdateInfo::Begin event (unless we rework code).
 					if(IsUsingTiledBackingStore())
 					{
-#if USE(TILED_BACKING_STORE)
-						if (WebCore::TiledBackingStore *backingStore = WebFramePrivate::core(d->page->mainFrame())->tiledBackingStore())
-						{
-							NOTIFY_PROCESS_STATUS(kVProcessTypePaintTilesCPU, EA::WebKit::kVProcessStatusStarted, this);
-							backingStore->updateTilesIfNeeded();
-							NOTIFY_PROCESS_STATUS(kVProcessTypePaintTilesCPU, EA::WebKit::kVProcessStatusEnded, this);
-						}
+#if USE(COORDINATED_GRAPHICS)
+						//EAWEBKITBUILDFIX - MainFrame no longer has tiled backing store
+						//if (WebCore::TiledBackingStore *backingStore = WebFramePrivate::core(d->page->mainFrame())->tiledBackingStore())
+						//{
+						//	NOTIFY_PROCESS_STATUS(kVProcessTypePaintTilesCPU, EA::WebKit::kVProcessStatusStarted, this);
+						//	backingStore->updateTilesIfNeeded();
+						//	NOTIFY_PROCESS_STATUS(kVProcessTypePaintTilesCPU, EA::WebKit::kVProcessStatusEnded, this);
+						//}
 #endif
 					}
 					else
@@ -471,15 +477,16 @@ bool View::InitView(const ViewParameters& vp)
 		EAW_ASSERT_MSG(!d->page, "Page for this view already exists !");
 		d->page = new WebPage(this);
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 		if(d->mUsingTiledBackingStore)
 		{
-			Page()->handle()->page->settings().setTiledBackingStoreEnabled(true);
-			Page()->handle()->page->mainFrame().tiledBackingStore()->setTileSize(WebCore::IntSize(d->mTileSize,d->mTileSize));
+			//EAWEBKITBUILDFIX - commented out methods no longer exist
+			//Page()->handle()->page->settings().setTiledBackingStoreEnabled(true);
+			//Page()->handle()->page->mainFrame().tiledBackingStore()->setTileSize(WebCore::IntSize(d->mTileSize,d->mTileSize));
 		}
 		else
 		{
-			Page()->handle()->page->settings().setTiledBackingStoreEnabled(false);
+			//Page()->handle()->page->settings().setTiledBackingStoreEnabled(false);
 		}
 #endif
 		SetSize(IntSize(vp.mWidth, vp.mHeight));
@@ -503,8 +510,9 @@ void View::ShutdownView(void)
 		{
 			if(d->page->GetInspector())
 				d->page->GetInspector()->Shutdown();
-			if(d->mUsingTiledBackingStore)
-				d->page->handle()->page->settings().setTiledBackingStoreEnabled(false);
+			//EAWEBKITBUILDFIX - method no longer exists
+			//if(d->mUsingTiledBackingStore)
+			//	d->page->handle()->page->settings().setTiledBackingStoreEnabled(false);
 		}
 
 		if(d->mDisplaySurface)
@@ -610,7 +618,7 @@ const char16_t* View::Title(void) const
 	if (d->page)
 	{
 		WTF::String titleStr = d->page->mainFrame()->title();
-		d->mTitle.assign(titleStr.characters(), titleStr.length());
+        d->mTitle.assign(StringView(titleStr).upconvertedCharacters(), titleStr.length());
 		return d->mTitle.c_str();
 	}
 
@@ -625,7 +633,7 @@ const char16_t* View::GetURI(void) const
 	if (d->page)
 	{
 		WTF::String urlStr = d->page->mainFrame()->url().string();
-		d->mURL.assign(urlStr.characters(), urlStr.length());
+        d->mURL.assign(StringView(urlStr).upconvertedCharacters(), urlStr.length());
 		return d->mURL.c_str();
 	}
 
@@ -644,7 +652,7 @@ const char16_t *View::GetEncodedURI(const char16_t *url)
     }
 
     WebCore::URL kurl(WebCore::URL(), url);
-    d->mEncodedURICache.assign(kurl.string().characters(), kurl.string().length());
+    d->mEncodedURICache.assign(StringView(kurl.string()).upconvertedCharacters(), kurl.string().length());
 
     return d->mEncodedURICache.c_str();
 }
@@ -824,7 +832,7 @@ void View::SaveSurfacePNG(const char8_t *filepath)
 	eastl::string8 sPath(filepath);
 	sPath.erase(sPath.find(".png"));
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	dumpContainerSurfaces(d->mTiles,sPath.c_str(),"tiles");
 #endif
 #if USE(ACCELERATED_COMPOSITING)
@@ -1206,6 +1214,57 @@ float View::ZoomFactor(void) const
     return factor;
 }
 
+void View::SetZoomFactorAndTextSizeMultiplier(float page, float text)
+{
+    SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);
+    EAWEBKIT_THREAD_CHECK();
+    EAWWBKIT_INIT_CHECK();
+    EAW_ASSERT_MSG(d->mInitialized, "View must be initialized!");
+    if (d->page)
+    {
+        WebFrame *frame = d->page->mainFrame();
+        if (frame)
+        {
+            frame->setZoomFactorAndTextSizeMultiplier(page, text);
+            d->OverlayChangeNotify();
+        }
+    }
+}
+
+void View::SetTextSizeMultiplier(float factor)
+{
+    SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);
+    EAWEBKIT_THREAD_CHECK();
+    EAWWBKIT_INIT_CHECK();
+    EAW_ASSERT_MSG(d->mInitialized, "View must be initialized!");
+    if (d->page)
+    {
+        WebFrame *frame = d->page->mainFrame();
+        if (frame)
+        {
+            frame->setTextSizeMultiplier(factor);
+            d->OverlayChangeNotify();
+        }
+    }
+}
+
+float View::TextSizeMultiplier(void) const
+{
+    SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);
+    EAWEBKIT_THREAD_CHECK();
+    EAWWBKIT_INIT_CHECK();
+    float factor = 1.0f;
+
+    if (d->page)
+    {
+        WebFrame *frame = d->page->mainFrame();
+        if (frame)
+            factor = frame->textSizeMultiplier();
+    }
+    return factor;
+}
+
+
 void View::SetDrawDebugVisuals(bool on)
 {
     d->mDrawDebugVisuals = on;
@@ -1231,15 +1290,17 @@ void View::ForceInvalidateFullView()
 		AddDirtyRegion(fullSurfaceRect);
 	}
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	if (d->mUsingTiledBackingStore)
 	{
-		if (WebCore::TiledBackingStore *backingStore = WebFramePrivate::core(d->page->mainFrame())->tiledBackingStore())
-		{
-			// Force the entire backing store to update by using a very large size.
-			const IntRect largeRect(IntPoint(0,0), IntSize(100000,100000));           
-			backingStore->invalidate(largeRect);
-		}
+		//EAWEBKITBUILDFIX
+		//tiledBackingStore no longer exists
+		//if (WebCore::TiledBackingStore *backingStore = WebFramePrivate::core(d->page->mainFrame())->tiledBackingStore())
+		//{
+		//	// Force the entire backing store to update by using a very large size.
+		//	const IntRect largeRect(IntPoint(0,0), IntSize(100000,100000));           
+		//	backingStore->invalidate(largeRect);
+		//}
 	}
 #endif
 }
@@ -1478,13 +1539,13 @@ bool View::AllowJSTextInputStateNotificationOnConsole() const
 
 void View::AddTile(WebCore::TileEA* tile)
 {
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	d->mTiles.push_back(tile);
 #endif
 }
 void View::RemoveTile(WebCore::TileEA* tile)
 {
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	d->mTiles.remove(tile);
 #endif
 }

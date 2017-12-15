@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011-2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,10 +29,11 @@
 #include "CodeBlock.h"
 #include "CodeSpecializationKind.h"
 #include "ExceptionHelpers.h"
-#include "NameInstance.h"
-#include <wtf/Platform.h>
-
-#if ENABLE(JIT) || ENABLE(LLINT)
+#include "JSStackInlines.h"
+#include "StackAlignment.h"
+#include "Symbol.h"
+#include "VM.h"
+#include <wtf/StdLibExtras.h>
 
 namespace JSC {
 
@@ -45,6 +46,12 @@ namespace JSC {
 
 namespace CommonSlowPaths {
 
+struct ArityCheckData {
+    unsigned paddedStackSpace;
+    void* thunkToCall;
+    void* returnPC;
+};
+
 ALWAYS_INLINE int arityCheckFor(ExecState* exec, JSStack* stack, CodeSpecializationKind kind)
 {
     JSFunction* callee = jsCast<JSFunction*>(exec->callee());
@@ -52,21 +59,20 @@ ALWAYS_INLINE int arityCheckFor(ExecState* exec, JSStack* stack, CodeSpecializat
     CodeBlock* newCodeBlock = callee->jsExecutable()->codeBlockFor(kind);
     int argumentCountIncludingThis = exec->argumentCountIncludingThis();
     
-    // This ensures enough space for the worst case scenario of zero arguments passed by the caller.
-    if (!stack->grow(exec->registers() - newCodeBlock->numParameters() - newCodeBlock->m_numCalleeRegisters))
-        return -1;
-    
     ASSERT(argumentCountIncludingThis < newCodeBlock->numParameters());
-    
-    // Too few arguments, return the number of missing arguments so the caller can
-    // grow the frame in place and fill in undefined values for the missing args.
-    return(newCodeBlock->numParameters() - argumentCountIncludingThis);
+    int missingArgumentCount = newCodeBlock->numParameters() - argumentCountIncludingThis;
+    int neededStackSpace = missingArgumentCount + 1; // Allow space to save the original return PC.
+    int paddedStackSpace = WTF::roundUpToMultipleOf(stackAlignmentRegisters(), neededStackSpace);
+
+    if (!stack->ensureCapacityFor(exec->registers() - paddedStackSpace))
+        return -1;
+    return paddedStackSpace / stackAlignmentRegisters();
 }
 
 inline bool opIn(ExecState* exec, JSValue propName, JSValue baseVal)
 {
     if (!baseVal.isObject()) {
-        exec->vm().throwException(exec, createInvalidParameterError(exec, "in", baseVal));
+        exec->vm().throwException(exec, createInvalidInParameterError(exec, baseVal));
         return false;
     }
 
@@ -76,13 +82,37 @@ inline bool opIn(ExecState* exec, JSValue propName, JSValue baseVal)
     if (propName.getUInt32(i))
         return baseObj->hasProperty(exec, i);
 
-    if (isName(propName))
-        return baseObj->hasProperty(exec, jsCast<NameInstance*>(propName.asCell())->privateName());
-
-    Identifier property(exec, propName.toString(exec)->value(exec));
+    auto property = propName.toPropertyKey(exec);
     if (exec->vm().exception())
         return false;
     return baseObj->hasProperty(exec, property);
+}
+
+inline void tryCachePutToScopeGlobal(
+    ExecState* exec, CodeBlock* codeBlock, Instruction* pc, JSObject* scope,
+    ResolveModeAndType modeAndType, PutPropertySlot& slot)
+{
+    // Covers implicit globals. Since they don't exist until they first execute, we didn't know how to cache them at compile time.
+    
+    if (modeAndType.type() != GlobalProperty && modeAndType.type() != GlobalPropertyWithVarInjectionChecks)
+        return;
+    
+    if (!slot.isCacheablePut()
+        || slot.base() != scope
+        || !scope->structure()->propertyAccessesAreCacheable())
+        return;
+    
+    if (slot.type() == PutPropertySlot::NewProperty) {
+        // Don't cache if we've done a transition. We want to detect the first replace so that we
+        // can invalidate the watchpoint.
+        return;
+    }
+    
+    scope->structure()->didCachePropertyReplacement(exec->vm(), slot.cachedOffset());
+
+    ConcurrentJITLocker locker(codeBlock->m_lock);
+    pc[5].u.structure.set(exec->vm(), codeBlock->ownerExecutable(), scope->structure());
+    pc[6].u.operand = slot.cachedOffset();
 }
 
 } // namespace CommonSlowPaths
@@ -96,10 +126,10 @@ struct Instruction;
 // warnings, or worse, a change in the ABI used to return these types.
 struct SlowPathReturnType {
     void* a;
-    ExecState* b;
+    void* b;
 };
 
-inline SlowPathReturnType encodeResult(void* a, ExecState* b)
+inline SlowPathReturnType encodeResult(void* a, void* b)
 {
     SlowPathReturnType result;
     result.a = a;
@@ -107,7 +137,7 @@ inline SlowPathReturnType encodeResult(void* a, ExecState* b)
     return result;
 }
 
-inline void decodeResult(SlowPathReturnType result, void*& a, ExecState*& b)
+inline void decodeResult(SlowPathReturnType result, void*& a, void*& b)
 {
     a = result.a;
     b = result.b;
@@ -119,12 +149,12 @@ typedef int64_t SlowPathReturnType;
 typedef union {
     struct {
         void* a;
-        ExecState* b;
+        void* b;
     } pair;
     int64_t i;
 } SlowPathReturnTypeEncoding;
 
-inline SlowPathReturnType encodeResult(void* a, ExecState* b)
+inline SlowPathReturnType encodeResult(void* a, void* b)
 {
     SlowPathReturnTypeEncoding u;
     u.pair.a = a;
@@ -132,7 +162,7 @@ inline SlowPathReturnType encodeResult(void* a, ExecState* b)
     return u.i;
 }
 
-inline void decodeResult(SlowPathReturnType result, void*& a, ExecState*& b)
+inline void decodeResult(SlowPathReturnType result, void*& a, void*& b)
 {
     SlowPathReturnTypeEncoding u;
     u.i = result;
@@ -151,10 +181,14 @@ SLOW_PATH_DECL(name) WTF_INTERNAL
     
 SLOW_PATH_HIDDEN_DECL(slow_path_call_arityCheck);
 SLOW_PATH_HIDDEN_DECL(slow_path_construct_arityCheck);
-SLOW_PATH_HIDDEN_DECL(slow_path_create_arguments);
+SLOW_PATH_HIDDEN_DECL(slow_path_create_direct_arguments);
+SLOW_PATH_HIDDEN_DECL(slow_path_create_scoped_arguments);
+SLOW_PATH_HIDDEN_DECL(slow_path_create_out_of_band_arguments);
 SLOW_PATH_HIDDEN_DECL(slow_path_create_this);
+SLOW_PATH_HIDDEN_DECL(slow_path_enter);
 SLOW_PATH_HIDDEN_DECL(slow_path_get_callee);
 SLOW_PATH_HIDDEN_DECL(slow_path_to_this);
+SLOW_PATH_HIDDEN_DECL(slow_path_throw_tdz_error);
 SLOW_PATH_HIDDEN_DECL(slow_path_not);
 SLOW_PATH_HIDDEN_DECL(slow_path_eq);
 SLOW_PATH_HIDDEN_DECL(slow_path_neq);
@@ -167,6 +201,7 @@ SLOW_PATH_HIDDEN_DECL(slow_path_greatereq);
 SLOW_PATH_HIDDEN_DECL(slow_path_inc);
 SLOW_PATH_HIDDEN_DECL(slow_path_dec);
 SLOW_PATH_HIDDEN_DECL(slow_path_to_number);
+SLOW_PATH_HIDDEN_DECL(slow_path_to_string);
 SLOW_PATH_HIDDEN_DECL(slow_path_negate);
 SLOW_PATH_HIDDEN_DECL(slow_path_add);
 SLOW_PATH_HIDDEN_DECL(slow_path_mul);
@@ -176,19 +211,31 @@ SLOW_PATH_HIDDEN_DECL(slow_path_mod);
 SLOW_PATH_HIDDEN_DECL(slow_path_lshift);
 SLOW_PATH_HIDDEN_DECL(slow_path_rshift);
 SLOW_PATH_HIDDEN_DECL(slow_path_urshift);
+SLOW_PATH_HIDDEN_DECL(slow_path_unsigned);
 SLOW_PATH_HIDDEN_DECL(slow_path_bitand);
 SLOW_PATH_HIDDEN_DECL(slow_path_bitor);
 SLOW_PATH_HIDDEN_DECL(slow_path_bitxor);
 SLOW_PATH_HIDDEN_DECL(slow_path_typeof);
 SLOW_PATH_HIDDEN_DECL(slow_path_is_object);
+SLOW_PATH_HIDDEN_DECL(slow_path_is_object_or_null);
 SLOW_PATH_HIDDEN_DECL(slow_path_is_function);
 SLOW_PATH_HIDDEN_DECL(slow_path_in);
 SLOW_PATH_HIDDEN_DECL(slow_path_del_by_val);
 SLOW_PATH_HIDDEN_DECL(slow_path_strcat);
 SLOW_PATH_HIDDEN_DECL(slow_path_to_primitive);
+SLOW_PATH_HIDDEN_DECL(slow_path_get_enumerable_length);
+SLOW_PATH_HIDDEN_DECL(slow_path_has_generic_property);
+SLOW_PATH_HIDDEN_DECL(slow_path_has_structure_property);
+SLOW_PATH_HIDDEN_DECL(slow_path_has_indexed_property);
+SLOW_PATH_HIDDEN_DECL(slow_path_get_direct_pname);
+SLOW_PATH_HIDDEN_DECL(slow_path_get_property_enumerator);
+SLOW_PATH_HIDDEN_DECL(slow_path_next_structure_enumerator_pname);
+SLOW_PATH_HIDDEN_DECL(slow_path_next_generic_enumerator_pname);
+SLOW_PATH_HIDDEN_DECL(slow_path_to_index_string);
+SLOW_PATH_HIDDEN_DECL(slow_path_profile_type_clear_log);
+SLOW_PATH_HIDDEN_DECL(slow_path_create_lexical_environment);
+SLOW_PATH_HIDDEN_DECL(slow_path_push_with_scope);
 
 } // namespace JSC
-
-#endif // ENABLE(JIT) || ENABLE(LLINT)
 
 #endif // CommonSlowPaths_h

@@ -17,9 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-[
-    OperationsNotDeletable
-] interface CharacterData : Node {
+interface CharacterData : Node {
 
     [TreatNullAs=NullString, SetterRaisesException] attribute DOMString data;
 
@@ -42,4 +40,4 @@
 };
 
 CharacterData implements ChildNode;
-
+CharacterData implements NonDocumentTypeChildNode;

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,23 +28,23 @@
 
 #include "CSSFontFaceRule.h"
 #include "CSSFontFaceSource.h"
-#include "FontTraitsMask.h"
+#include "TextFlags.h"
+#include <memory>
 #include <wtf/Forward.h>
 #include <wtf/HashSet.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
-#include <wtf/unicode/Unicode.h>
 
 namespace WebCore {
 
 class CSSSegmentedFontFace;
 class FontDescription;
-class SimpleFontData;
+class Font;
 
 class CSSFontFace : public RefCounted<CSSFontFace> {
 public:
-    static PassRefPtr<CSSFontFace> create(FontTraitsMask traitsMask, PassRefPtr<CSSFontFaceRule> rule, bool isLocalFallback = false) { return adoptRef(new CSSFontFace(traitsMask, rule, isLocalFallback)); }
+    static Ref<CSSFontFace> create(FontTraitsMask traitsMask, PassRefPtr<CSSFontFaceRule> rule, bool isLocalFallback = false) { return adoptRef(*new CSSFontFace(traitsMask, rule, isLocalFallback)); }
 
     FontTraitsMask traitsMask() const { return m_traitsMask; }
 
@@ -61,11 +61,11 @@ public:
 
     bool isLocalFallback() const { return m_isLocalFallback; }
 
-    void addSource(PassOwnPtr<CSSFontFaceSource>);
+    void addSource(std::unique_ptr<CSSFontFaceSource>);
 
     void fontLoaded(CSSFontFaceSource*);
 
-    PassRefPtr<SimpleFontData> getFontData(const FontDescription&, bool syntheticBold, bool syntheticItalic);
+    RefPtr<Font> font(const FontDescription&, bool syntheticBold, bool syntheticItalic);
 
     struct UnicodeRange {
         UnicodeRange(UChar32 from, UChar32 to)
@@ -107,7 +107,7 @@ private:
     FontTraitsMask m_traitsMask;
     Vector<UnicodeRange> m_ranges;
     HashSet<CSSSegmentedFontFace*> m_segmentedFontFaces;
-    Vector<OwnPtr<CSSFontFaceSource> > m_sources;
+    Vector<std::unique_ptr<CSSFontFaceSource>> m_sources;
     CSSFontFaceSource* m_activeSource;
     bool m_isLocalFallback;
 #if ENABLE(FONT_LOAD_EVENTS)

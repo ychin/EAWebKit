@@ -21,7 +21,6 @@
 #ifndef SVGViewElement_h
 #define SVGViewElement_h
 
-#if ENABLE(SVG)
 #include "SVGAnimatedBoolean.h"
 #include "SVGAnimatedPreserveAspectRatio.h"
 #include "SVGAnimatedRect.h"
@@ -33,12 +32,12 @@
 
 namespace WebCore {
 
-class SVGViewElement FINAL : public SVGElement,
+class SVGViewElement final : public SVGElement,
                              public SVGExternalResourcesRequired,
                              public SVGFitToViewBox,
                              public SVGZoomAndPan {
 public:
-    static PassRefPtr<SVGViewElement> create(const QualifiedName&, Document&);
+    static Ref<SVGViewElement> create(const QualifiedName&, Document&);
 
     using SVGElement::ref;
     using SVGElement::deref;
@@ -51,13 +50,12 @@ private:
     SVGViewElement(const QualifiedName&, Document&);
 
     // FIXME: svgAttributeChanged missing.
-    bool isSupportedAttribute(const QualifiedName&);
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
 
-    virtual bool rendererIsNeeded(const RenderStyle&) { return false; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 
     BEGIN_DECLARE_ANIMATED_PROPERTIES(SVGViewElement)
-        DECLARE_ANIMATED_BOOLEAN(ExternalResourcesRequired, externalResourcesRequired)
+        DECLARE_ANIMATED_BOOLEAN_OVERRIDE(ExternalResourcesRequired, externalResourcesRequired)
         DECLARE_ANIMATED_RECT(ViewBox, viewBox)
         DECLARE_ANIMATED_PRESERVEASPECTRATIO(PreserveAspectRatio, preserveAspectRatio)
     END_DECLARE_ANIMATED_PROPERTIES
@@ -66,9 +64,6 @@ private:
     SVGStringList m_viewTarget;
 };
 
-NODE_TYPE_CASTS(SVGViewElement)
-
 } // namespace WebCore
 
-#endif // ENABLE(SVG)
 #endif

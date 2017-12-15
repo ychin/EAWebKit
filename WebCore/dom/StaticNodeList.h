@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -37,7 +37,7 @@
 
 namespace WebCore {
 
-class StaticNodeList FINAL : public NodeList {
+class WEBCORE_EXPORT StaticNodeList final : public NodeList {
 public:
     static PassRefPtr<StaticNodeList> adopt(Vector<Ref<Node>>& nodes)
     {
@@ -46,14 +46,14 @@ public:
         return nodeList.release();
     }
 
-    static PassRefPtr<StaticNodeList> createEmpty()
+    static Ref<StaticNodeList> createEmpty()
     {
-        return adoptRef(new StaticNodeList);
+        return adoptRef(*new StaticNodeList);
     }
 
-    virtual unsigned length() const OVERRIDE;
-    virtual Node* item(unsigned index) const OVERRIDE;
-    virtual Node* namedItem(const AtomicString&) const OVERRIDE;
+    virtual unsigned length() const override;
+    virtual Node* item(unsigned index) const override;
+    virtual Node* namedItem(const AtomicString&) const override;
 
 private:
     StaticNodeList() { }
@@ -61,7 +61,7 @@ private:
     Vector<Ref<Node>> m_nodes;
 };
 
-class StaticElementList FINAL : public NodeList {
+class StaticElementList final : public NodeList {
 public:
     static PassRefPtr<StaticElementList> adopt(Vector<Ref<Element>>& elements)
     {
@@ -70,14 +70,14 @@ public:
         return nodeList.release();
     }
 
-    static PassRefPtr<StaticElementList> createEmpty()
+    static Ref<StaticElementList> createEmpty()
     {
-        return adoptRef(new StaticElementList);
+        return adoptRef(*new StaticElementList);
     }
 
-    virtual unsigned length() const OVERRIDE;
-    virtual Node* item(unsigned index) const OVERRIDE;
-    virtual Node* namedItem(const AtomicString&) const OVERRIDE;
+    virtual unsigned length() const override;
+    virtual Node* item(unsigned index) const override;
+    virtual Node* namedItem(const AtomicString&) const override;
 
 private:
     StaticElementList()

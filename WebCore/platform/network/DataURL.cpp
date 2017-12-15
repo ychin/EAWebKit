@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -36,6 +36,7 @@
 #include "TextEncoding.h"
 #include <wtf/text/Base64.h>
 #include <wtf/text/CString.h>
+#include <wtf/text/StringView.h>
 
 namespace WebCore {
 
@@ -81,7 +82,7 @@ void handleDataURL(ResourceHandle* handle)
         //-EAWebKitChange
         {
             Vector<char> out;
-            if (base64Decode(data, out, Base64IgnoreWhitespace) && out.size() > 0) {
+            if (base64Decode(data, out, Base64IgnoreSpacesAndNewLines) && out.size() > 0) {
                 response.setExpectedContentLength(out.size());
                 handle->client()->didReceiveData(handle, out.data(), out.size(), 0);
             }
@@ -96,7 +97,7 @@ void handleDataURL(ResourceHandle* handle)
         if (handle->client())
         //-EAWebKitChange
         {
-            CString encodedData = encoding.encode(data.characters(), data.length(), URLEncodedEntitiesForUnencodables);
+            CString encodedData = encoding.encode(data, URLEncodedEntitiesForUnencodables);
             response.setExpectedContentLength(encodedData.length());
             if (encodedData.length())
                 handle->client()->didReceiveData(handle, encodedData.data(), encodedData.length(), 0);

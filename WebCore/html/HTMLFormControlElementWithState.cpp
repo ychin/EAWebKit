@@ -64,20 +64,10 @@ bool HTMLFormControlElementWithState::shouldAutocomplete() const
     return form()->shouldAutocomplete();
 }
 
-void HTMLFormControlElementWithState::notifyFormStateChanged()
-{
-    Frame* frame = document().frame();
-    if (!frame)
-        return;
-
-    if (Page* page = frame->page())
-        page->chrome().client().formStateDidChange(this);
-}
-
 bool HTMLFormControlElementWithState::shouldSaveAndRestoreFormControlState() const
 {
     // We don't save/restore control state in a form with autocomplete=off.
-    return attached() && shouldAutocomplete();
+    return inDocument() && shouldAutocomplete();
 }
 
 FormControlState HTMLFormControlElementWithState::saveFormControlState() const

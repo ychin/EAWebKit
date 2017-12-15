@@ -19,8 +19,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGAnimatedProperty.h"
 
 #include "SVGElement.h"
@@ -39,10 +37,9 @@ SVGAnimatedProperty::SVGAnimatedProperty(SVGElement* contextElement, const Quali
 SVGAnimatedProperty::~SVGAnimatedProperty()
 {
     // Remove wrapper from cache.
-    Cache& cache = *animatedPropertyCache();
-    for (auto it = cache.begin(), end = cache.end(); it != end; ++it) {
-        if (it->value == this) {
-            cache.remove(it);
+    for (auto& cache : *animatedPropertyCache()) {
+        if (cache.value == this) {
+            animatedPropertyCache()->remove(cache.key);
             break;
         }
     }
@@ -57,6 +54,8 @@ void SVGAnimatedProperty::commitChange()
     ASSERT(!m_contextElement->m_deletionHasBegun);
     m_contextElement->invalidateSVGAttributes();
     m_contextElement->svgAttributeChanged(m_attributeName);
+    // Needed to synchronize with CSSOM for presentation attributes with SVG DOM.
+    m_contextElement->synchronizeAnimatedSVGAttribute(m_attributeName);
 }
 
 SVGAnimatedProperty::Cache* SVGAnimatedProperty::animatedPropertyCache()
@@ -66,5 +65,3 @@ SVGAnimatedProperty::Cache* SVGAnimatedProperty::animatedPropertyCache()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)

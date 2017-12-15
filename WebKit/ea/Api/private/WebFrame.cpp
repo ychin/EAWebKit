@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008,2009 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2007 Staikos Computing Services Inc.
-	Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -69,7 +69,9 @@
 #include "Settings.h"
 #include "SubstituteData.h"
 #include "SVGSMILElement.h"
+#if USE(COORDINATED_GRAPHICS)
 #include "TiledBackingStore.h"
+#endif
 #include "htmlediting.h"
 #include "markup.h"
 
@@ -104,8 +106,6 @@ namespace EA
 {
 namespace WebKit
 {
-    const bool kZoomTextOnly = false;   // QT had this as a user option, not sure we would even need it.  
-    
     WebFrameData::WebFrameData(WebCore::Page* parentPage, WebCore::Frame* parentFrame,
                              WebCore::HTMLFrameOwnerElement* ownerFrameElement,
                              const WTF::String& frameName)
@@ -183,9 +183,10 @@ WebFrame::WebFrame(WebPage *parent, WebFrameData *frameData)
 	if (!frameData->url.isEmpty()) 
 	{
 		WebCore::ResourceRequest request(frameData->url, frameData->referrer);
-		d->frame->loader().load(WebCore::FrameLoadRequest(d->frame, request));
+		d->frame->loader().load(WebCore::FrameLoadRequest(d->frame, request, WebCore::ShouldOpenExternalURLsPolicy::ShouldAllow));
 	}
 }
+
 
 WebFrame::WebFrame(WebFrame *parent, WebFrameData *frameData)
 : d(new WebFramePrivate)
@@ -244,9 +245,11 @@ void WebFrame::addToJavaScriptWindowObject(const char8_t *name, IJSBoundObject *
 	JSC::JSLockHolder lock(exec);
     
 	JSC::JSObject* runtimeObject = JSC::Bindings::EAInstance::create(obj, root)->createRuntimeObject(exec);
-	JSC::Identifier ident(&exec->vm(), name);
-    JSC::PutPropertySlot slot;
-    window->methodTable()->put(window, exec, ident, runtimeObject, slot);
+	JSC::Identifier ident = JSC::Identifier::fromString(&exec->vm(), name);
+
+    JSC::PutPropertySlot slot(window);
+
+	window->methodTable()->put(window, exec, ident, runtimeObject, slot);
 }
 
 void WebFrame::GetJavaScriptCallstack(eastl::vector<eastl::string8> *namesOut, eastl::vector<eastl::string8> *argsOut, eastl::vector<int> *linesOut, eastl::vector<eastl::string8> *urlsOut)
@@ -344,7 +347,7 @@ void WebFrame::load(const WebCore::URL& url)
 	if (d->parentFrame())
 		d->page->d->insideOpenCall = true;
 
-	d->frame->loader().load(WebCore::FrameLoadRequest(d->frame,WebCore::ResourceRequest(url)));
+	d->frame->loader().load(WebCore::FrameLoadRequest(d->frame,WebCore::ResourceRequest(url), WebCore::ShouldOpenExternalURLsPolicy::ShouldAllow));
 
 	if (d->parentFrame())
 		d->page->d->insideOpenCall = false;
@@ -368,8 +371,10 @@ void WebFrame::setContent(const char8_t* data, size_t length, const char8_t* pMe
 		actualMimeType = WebCore::extractMIMETypeFromMediaType(mediaType);
 		encoding = WebCore::extractCharsetFromMediaType(mediaType);
 	}
-	WebCore::SubstituteData substituteData(buffer, actualMimeType, encoding, WebCore::URL());
-	d->frame->loader().load(WebCore::FrameLoadRequest(d->frame,request,substituteData));
+	WebCore::ResourceResponse response(WebCore::URL(), actualMimeType, buffer->size(), encoding);
+	WebCore::SubstituteData substituteData(buffer, WebCore::URL(), response, WebCore::SubstituteData::SessionHistoryVisibility::Hidden);
+	EAW_ASSERT(false); // Passing the newly needed parameter- failingUrl to SubstitueData as  a null string. Reference from the win port. get rid of this assert, if nothing is broken/unexpected because of above change.
+	d->frame->loader().load(WebCore::FrameLoadRequest(d->frame, request, WebCore::ShouldOpenExternalURLsPolicy::ShouldAllow, substituteData));
 }
 
 
@@ -426,7 +431,7 @@ void WebFrame::setScrollBarValue(EA::WebKit::ScrollbarOrientation orientation, i
             value = 0;
         else if (value > scrollBarMaximum(orientation))
             value = scrollBarMaximum(orientation);
-        sb->scrollableArea()->scrollToOffsetWithoutAnimation(orientation == EA::WebKit::ScrollbarHorizontal ? WebCore::HorizontalScrollbar : WebCore::VerticalScrollbar, value);
+        sb->scrollableArea().scrollToOffsetWithoutAnimation(orientation == EA::WebKit::ScrollbarHorizontal ? WebCore::HorizontalScrollbar : WebCore::VerticalScrollbar, value);
     }
 }
 
@@ -565,7 +570,7 @@ void WebFrame::renderNonTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface 
 
 void WebFrame::renderTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface* surface, const eastl::vector<WebCore::IntRect> &dirtyRegions)
 {
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	EAW_ASSERT_MSG(d->page->view()->IsUsingTiledBackingStore(), "tiled rendering path called but not using tiled backing store");
 	
 	if(!d->page->view()->IsUsingTiledBackingStore())
@@ -595,7 +600,8 @@ void WebFrame::renderTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface* su
 				graphicsContext.translate(-scrollX, -scrollY); // This is simply written so due to the way TileCairo is implemented 
 
 				WebCore::IntRect dirtyRectContents(scrollX+dirty.x(), scrollY+dirty.y(), dirty.width(),dirty.height());
-				d->frame->tiledBackingStore()->paint(&graphicsContext, dirtyRectContents);
+				//EAWEBKITBUILDFIX - method no longer exists on object
+				//d->frame->tiledBackingStore()->paint(&graphicsContext, dirtyRectContents);
 
 				graphicsContext.translate(scrollX, scrollY); // Scroll bars stay at place so translate back the scroll offset
 				d->frame->view()->paintScrollbars(&graphicsContext, dirty); //scroll bars check if the dirty rect intersect them so we don't explicitly do it outside (well, at least on CPU path for now)
@@ -660,7 +666,8 @@ void WebFrame::renderCompositedLayers(EA::WebKit::IHardwareRenderer* renderer, I
 
 			WebCore::GraphicsContext graphicsContext(cairoContext.get());
 			graphicsContext.translate(-scrollX, -scrollY);
-			d->frame->tiledBackingStore()->paint(&graphicsContext/*context*/, scrolledScreen);
+			//EAWEBKITBUILDFIX - method no longer exists on object
+			//d->frame->tiledBackingStore()->paint(&graphicsContext/*context*/, scrolledScreen);
 			
 			if(renderer->UseCustomClip())
 				renderer->EndClip();
@@ -782,9 +789,8 @@ void WebFrame::renderScrollbar(WebCore::Scrollbar *bar, IHardwareRenderer *rende
 
 void WebFrame::drawHighlightedNodeFromInspector(EA::WebKit::ISurface* surface)
 {
-#if ENABLE(INSPECTOR)
 	WebCore::Frame* coreFrame = d->core(this);
-	if (coreFrame->page()->inspectorController()->highlightedNode()) 
+	if (coreFrame->page()->inspectorController().highlightedNode()) 
 	{
 		int width = 0;
 		int height = 0;
@@ -797,37 +803,36 @@ void WebFrame::drawHighlightedNodeFromInspector(EA::WebKit::ISurface* surface)
 		RefPtr<cairo_t> cairoContext = adoptRef(cairo_create(cairoSurface.get()));
 		
 		WebCore::GraphicsContext graphicsContext(cairoContext.get());
-		coreFrame->page()->inspectorController()->drawHighlight(graphicsContext);
+		coreFrame->page()->inspectorController().drawHighlight(graphicsContext);
 
 		surface->Unlock();
 	}
-#endif
+
 }
 
 void WebFrame::setTextSizeMultiplier(float factor)
 {
-    // Note: QT sets the mZoomTextEnabled param here but we  want to leave it up to the global params
-    //EA::WebKit::Parameters &params = EA::WebKit::GetParameters();
-    //params.mZoomTextEnabled = true;
-	d->frame->setPageAndTextZoomFactors(1, factor);
+    d->frame->setTextZoomFactor(factor);
 }
 
 float WebFrame::textSizeMultiplier() const
 {
-    return  kZoomTextOnly ? d->frame->textZoomFactor() : d->frame->pageZoomFactor();
+    return d->frame->textZoomFactor();
 }
 
 void WebFrame::setZoomFactor(float factor)
 {
-    if (kZoomTextOnly)
-		d->frame->setTextZoomFactor(factor);
-	else
-		d->frame->setPageZoomFactor(factor);
+    d->frame->setPageZoomFactor(factor);
 }
 
 float WebFrame::zoomFactor() const
 {
-	return kZoomTextOnly ? d->frame->textZoomFactor() : d->frame->pageZoomFactor();
+	return d->frame->pageZoomFactor();
+}
+
+void WebFrame::setZoomFactorAndTextSizeMultiplier(float page, float text)
+{
+    d->frame->setPageAndTextZoomFactors(page, text);
 }
 
 bool WebFrame::hasFocus() const
@@ -895,7 +900,7 @@ WebHitTestResult WebFrame::hitTestContent(const WebCore::IntPoint &pos, bool exc
 bool WebFrame::evaluateJavaScript(const WTF::String& scriptSource, JavascriptValue *resultOut)
 {
     WebCore::ScriptController& scriptController = d->frame->script();
-	WebCore::ScriptValue sv = scriptController.executeScript(WebCore::ScriptSourceCode(scriptSource));
+	Deprecated::ScriptValue sv = scriptController.executeScript(WebCore::ScriptSourceCode(scriptSource));
 
 	if (!sv.hasNoValue()) 
 	{

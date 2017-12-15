@@ -22,27 +22,27 @@
 #define JSCounter_h
 
 #include "Counter.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSCounter : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSCounter* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Counter> impl)
+    static JSCounter* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Counter>&& impl)
     {
-        JSCounter* ptr = new (NotNull, JSC::allocateCell<JSCounter>(globalObject->vm().heap)) JSCounter(structure, globalObject, impl);
+        JSCounter* ptr = new (NotNull, JSC::allocateCell<JSCounter>(globalObject->vm().heap)) JSCounter(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Counter* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSCounter();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     Counter& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Counter* m_impl;
 protected:
-    JSCounter(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Counter>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCounter(JSC::Structure*, JSDOMGlobalObject*, Ref<Counter>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSCounterOwner : public JSC::WeakHandleOwner {
@@ -78,71 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Counter*)
 {
-    DEFINE_STATIC_LOCAL(JSCounterOwner, jsCounterOwner, ());
-    return &jsCounterOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Counter*)
-{
-    return &world;
+    static NeverDestroyed<JSCounterOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Counter*);
-Counter* toCounter(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Counter& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSCounterPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCounterPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCounterPrototype* ptr = new (NotNull, JSC::allocateCell<JSCounterPrototype>(vm.heap)) JSCounterPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCounterPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSCounterConstructor : public DOMConstructorObject {
-private:
-    JSCounterConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCounterConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCounterConstructor* ptr = new (NotNull, JSC::allocateCell<JSCounterConstructor>(vm.heap)) JSCounterConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCounterIdentifier(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCounterListStyle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCounterSeparator(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCounterConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

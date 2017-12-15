@@ -21,14 +21,13 @@
 #ifndef RenderSVGTextPath_h
 #define RenderSVGTextPath_h
 
-#if ENABLE(SVG)
 #include "RenderSVGInline.h"
 
 namespace WebCore {
 
-class RenderSVGTextPath FINAL : public RenderSVGInline {
+class RenderSVGTextPath final : public RenderSVGInline {
 public:
-    explicit RenderSVGTextPath(SVGTextPathElement&);
+    RenderSVGTextPath(SVGTextPathElement&, Ref<RenderStyle>&&);
 
     SVGTextPathElement& textPathElement() const;
 
@@ -38,24 +37,16 @@ public:
     bool stretchMethod() const;
 
 private:
-    void graphicsElement() const WTF_DELETED_FUNCTION;
+    void graphicsElement() const = delete;
 
-    virtual bool isSVGTextPath() const OVERRIDE { return true; }
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGTextPath"; }
+    virtual bool isSVGTextPath() const override { return true; }
+    virtual const char* renderName() const override { return "RenderSVGTextPath"; }
 
     Path m_layoutPath;
 };
 
-inline RenderSVGTextPath* toRenderSVGTextPath(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGTextPath());
-    return static_cast<RenderSVGTextPath*>(object);
-}
+} // namespace WebCore
 
-// This will catch anyone doing an unnecessary cast.
-void toRenderSVGTextPath(const RenderSVGTextPath*);
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSVGTextPath, isSVGTextPath())
 
-}
-
-#endif // ENABLE(SVG)
 #endif // RenderSVGTextPath_h

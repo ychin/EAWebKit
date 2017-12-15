@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,8 +26,6 @@
 #ifndef DFGValueSource_h
 #define DFGValueSource_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "DFGCommon.h"
@@ -47,7 +45,6 @@ enum ValueSourceKind {
     CellInJSStack,
     BooleanInJSStack,
     DoubleInJSStack,
-    ArgumentsSource,
     SourceIsDead,
     HaveNode
 };
@@ -67,8 +64,6 @@ static inline ValueSourceKind dataFormatToValueSourceKind(DataFormat dataFormat)
         return CellInJSStack;
     case DataFormatDead:
         return SourceIsDead;
-    case DataFormatArguments:
-        return ArgumentsSource;
     default:
         RELEASE_ASSERT(dataFormat & DataFormatJS);
         return ValueInJSStack;
@@ -90,8 +85,6 @@ static inline DataFormat valueSourceKindToDataFormat(ValueSourceKind kind)
         return DataFormatBoolean;
     case DoubleInJSStack:
         return DataFormatDouble;
-    case ArgumentsSource:
-        return DataFormatArguments;
     case SourceIsDead:
         return DataFormatDead;
     default:
@@ -122,7 +115,7 @@ public:
     explicit ValueSource(ValueSourceKind valueSourceKind)
         : m_kind(valueSourceKind)
     {
-        ASSERT(kind() == ArgumentsSource || kind() == SourceIsDead);
+        ASSERT(kind() == SourceIsDead);
     }
     
     explicit ValueSource(MinifiedID id)
@@ -145,6 +138,7 @@ public:
     {
         switch (format) {
         case DeadFlush:
+        case ConflictingFlush:
             return ValueSource(SourceIsDead);
         case FlushedJSValue:
             return ValueSource(ValueInJSStack, where);
@@ -173,6 +167,8 @@ public:
         return kind() != SourceNotSet;
     }
     
+    bool operator!() const { return !isSet(); }
+    
     ValueSourceKind kind() const
     {
         return m_kind;
@@ -193,9 +189,6 @@ public:
         case SourceIsDead:
             return ValueRecovery::constant(jsUndefined());
             
-        case ArgumentsSource:
-            return ValueRecovery::argumentsThatWereNotCreated();
-            
         default:
             return ValueRecovery::displacedInJSStack(virtualRegister(), dataFormat());
         }
@@ -214,6 +207,7 @@ public:
     }
     
     void dump(PrintStream&) const;
+    void dumpInContext(PrintStream&, DumpContext*) const;
     
 private:
     ValueSourceKind m_kind;

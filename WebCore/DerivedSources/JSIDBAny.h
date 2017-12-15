@@ -24,26 +24,27 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBAny.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBAny : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSIDBAny* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBAny> impl)
+    static JSIDBAny* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBAny>&& impl)
     {
-        JSIDBAny* ptr = new (NotNull, JSC::allocateCell<JSIDBAny>(globalObject->vm().heap)) JSIDBAny(structure, globalObject, impl);
+        JSIDBAny* ptr = new (NotNull, JSC::allocateCell<JSIDBAny>(globalObject->vm().heap)) JSIDBAny(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBAny* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSIDBAny();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     IDBAny& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     IDBAny* m_impl;
 protected:
-    JSIDBAny(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBAny>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSIDBAny(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBAny>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBAnyOwner : public JSC::WeakHandleOwner {
@@ -78,40 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBAny*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBAnyOwner, jsIDBAnyOwner, ());
-    return &jsIDBAnyOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBAny*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBAnyOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBAny*);
-IDBAny* toIDBAny(JSC::JSValue);
-
-class JSIDBAnyPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBAnyPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBAnyPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBAnyPrototype>(vm.heap)) JSIDBAnyPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBAnyPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBAny& impl) { return toJS(exec, globalObject, &impl); }
 
 
 } // namespace WebCore

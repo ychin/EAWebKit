@@ -19,19 +19,13 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "RenderSVGResourceLinearGradient.h"
 
-#include "LinearGradientAttributes.h"
-#include "SVGLinearGradientElement.h"
 
 namespace WebCore {
 
-RenderSVGResourceType RenderSVGResourceLinearGradient::s_resourceType = LinearGradientResourceType;
-
-RenderSVGResourceLinearGradient::RenderSVGResourceLinearGradient(SVGLinearGradientElement& element)
-    : RenderSVGResourceGradient(element)
+RenderSVGResourceLinearGradient::RenderSVGResourceLinearGradient(SVGLinearGradientElement& element, Ref<RenderStyle>&& style)
+    : RenderSVGResourceGradient(element, WTF::move(style))
 {
 }
 
@@ -63,5 +57,3 @@ void RenderSVGResourceLinearGradient::buildGradient(GradientData* gradientData) 
 }
 
 }
-
-#endif

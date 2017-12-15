@@ -6,7 +6,7 @@
 * Copyright (C) 2008 Collabora Ltd.
 * All rights reserved.
 *
-* Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+* Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
@@ -80,7 +80,7 @@ size_t FormDataStream::read(void* ptr, size_t blockSize, size_t numberOfBlocks)
 	size_t                 sent             = 0;
 
 	
-    if(element.m_type == FormDataElement::encodedFile)
+    if(element.m_type == FormDataElement::Type::EncodedFile)
     {
 		EA::WebKit::FileSystem* pFS = GetFileSystem();
         EAW_ASSERT(pFS != NULL);
@@ -127,7 +127,7 @@ size_t FormDataStream::read(void* ptr, size_t blockSize, size_t numberOfBlocks)
             }
         }
     } 
-    else if(element.m_type == FormDataElement::data)
+    else if(element.m_type == FormDataElement::Type::Data)
     {
 		size_t elementSize = element.m_data.size() - m_formDataElementDataOffset;
 		sent = elementSize > toSend ? toSend : elementSize;

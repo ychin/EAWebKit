@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * All rights reserved.
  *
@@ -83,14 +83,27 @@ COMPILE_ASSERT( (int)EA::WebKit::kCursorIdGrabbing					== (int) Cursor::Grabbing
 COMPILE_ASSERT( (int)EA::WebKit::kCursorIdCustom					== (int) Cursor::Custom,					CursorTypeOutOfSync);
 
 Cursor::Cursor(const Cursor& other)
-    : m_platformCursor(other.m_platformCursor)
+    : m_type(other.m_type),
+      m_platformCursor(other.m_platformCursor)
 {
 }
 
 Cursor::Cursor(Image* image, const IntPoint& hotSpot)
-    : m_platformCursor(0)
+    : m_type(Pointer),
+      m_platformCursor(0)
 {
 }
+
+#if ENABLE(MOUSE_CURSOR_SCALE)
+Cursor::Cursor(Image* image, const IntPoint& hotSpot, float scale)
+	: m_type(Custom)
+	, m_image(image)
+	, m_hotSpot(determineHotSpot(image, hotSpot))
+	, m_imageScaleFactor(scale)
+	, m_platformCursor(0)
+{
+}
+#endif
 
 Cursor::~Cursor()
 {
@@ -99,14 +112,9 @@ Cursor::~Cursor()
 Cursor& Cursor::operator=(const Cursor& other)
 {
     m_platformCursor = other.m_platformCursor;
+    m_type = other.m_type;
     return *this;
 }
-
-Cursor::Cursor(PlatformCursor c)
-    : m_platformCursor(c)
-{
-}
-
 
 Cursor* Cursor::m_spCursorArray = NULL;
 Cursor* Cursor::GetCursorArray()
@@ -131,6 +139,7 @@ const Cursor& Cursor::EnumeratedType(Cursor::Type id)
     Cursor& cursor = Cursor::GetCursorArray()[id];
     
     cursor.m_platformCursor = id;
+    cursor.m_type = id;
     return cursor;
 }
 

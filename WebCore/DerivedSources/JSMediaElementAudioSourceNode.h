@@ -24,24 +24,23 @@
 #if ENABLE(VIDEO) && ENABLE(WEB_AUDIO)
 
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
 #include "MediaElementAudioSourceNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSMediaElementAudioSourceNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSMediaElementAudioSourceNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaElementAudioSourceNode> impl)
+    static JSMediaElementAudioSourceNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaElementAudioSourceNode>&& impl)
     {
-        JSMediaElementAudioSourceNode* ptr = new (NotNull, JSC::allocateCell<JSMediaElementAudioSourceNode>(globalObject->vm().heap)) JSMediaElementAudioSourceNode(structure, globalObject, impl);
+        JSMediaElementAudioSourceNode* ptr = new (NotNull, JSC::allocateCell<JSMediaElementAudioSourceNode>(globalObject->vm().heap)) JSMediaElementAudioSourceNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,64 +54,19 @@ public:
         return static_cast<MediaElementAudioSourceNode&>(Base::impl());
     }
 protected:
-    JSMediaElementAudioSourceNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaElementAudioSourceNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMediaElementAudioSourceNode(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaElementAudioSourceNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaElementAudioSourceNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaElementAudioSourceNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMediaElementAudioSourceNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaElementAudioSourceNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaElementAudioSourceNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaElementAudioSourceNodePrototype>(vm.heap)) JSMediaElementAudioSourceNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaElementAudioSourceNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSMediaElementAudioSourceNodeConstructor : public DOMConstructorObject {
-private:
-    JSMediaElementAudioSourceNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaElementAudioSourceNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaElementAudioSourceNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaElementAudioSourceNodeConstructor>(vm.heap)) JSMediaElementAudioSourceNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsMediaElementAudioSourceNodeMediaElement(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaElementAudioSourceNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

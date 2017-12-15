@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -29,26 +29,32 @@
 #ifndef HTMLTableRowsCollection_h
 #define HTMLTableRowsCollection_h
 
-#include "HTMLCollection.h"
+#include "CachedHTMLCollection.h"
+#include "HTMLTableElement.h"
 
 namespace WebCore {
 
-class HTMLTableElement;
 class HTMLTableRowElement;
 
-class HTMLTableRowsCollection FINAL : public HTMLCollection {
+class HTMLTableRowsCollection final : public CachedHTMLCollection<HTMLTableRowsCollection, CollectionTypeTraits<TableRows>::traversalType> {
 public:
-    static PassRefPtr<HTMLTableRowsCollection> create(Node&, CollectionType);
+    static Ref<HTMLTableRowsCollection> create(HTMLTableElement&, CollectionType);
 
-    static HTMLTableRowElement* rowAfter(HTMLTableElement*, HTMLTableRowElement*);
-    static HTMLTableRowElement* lastRow(HTMLTableElement*);
+    HTMLTableElement& tableElement() { return downcast<HTMLTableElement>(ownerNode()); }
+    const HTMLTableElement& tableElement() const { return downcast<HTMLTableElement>(ownerNode()); }
+
+    static HTMLTableRowElement* rowAfter(HTMLTableElement&, HTMLTableRowElement*);
+    static HTMLTableRowElement* lastRow(HTMLTableElement&);
+
+    // For CachedHTMLCollection.
+    Element* customElementAfter(Element*) const;
 
 private:
     explicit HTMLTableRowsCollection(HTMLTableElement&);
-
-    virtual Element* virtualItemAfter(unsigned& offsetInArray, Element*) const OVERRIDE;
 };
 
-} // namespace
+} // namespace WebCore
 
-#endif
+SPECIALIZE_TYPE_TRAITS_HTMLCOLLECTION(HTMLTableRowsCollection, TableRows)
+
+#endif // HTMLTableRowsCollection_h

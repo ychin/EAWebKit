@@ -24,12 +24,38 @@
 
 #include "JSMediaTrackConstraintSet.h"
 
+#include "JSDOMBinding.h"
 #include "MediaTrackConstraintSet.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
+
+class JSMediaTrackConstraintSetPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaTrackConstraintSetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaTrackConstraintSetPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaTrackConstraintSetPrototype>(vm.heap)) JSMediaTrackConstraintSetPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaTrackConstraintSetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
 
 /* Hash table for prototype */
 
@@ -38,31 +64,30 @@ static const HashTableValue JSMediaTrackConstraintSetPrototypeTableValues[] =
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSMediaTrackConstraintSetPrototypeTable = { 1, 0, JSMediaTrackConstraintSetPrototypeTableValues, 0 };
-const ClassInfo JSMediaTrackConstraintSetPrototype::s_info = { "MediaTrackConstraintSetPrototype", &Base::s_info, &JSMediaTrackConstraintSetPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaTrackConstraintSetPrototype) };
+const ClassInfo JSMediaTrackConstraintSetPrototype::s_info = { "MediaTrackConstraintSetPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaTrackConstraintSetPrototype) };
 
-JSObject* JSMediaTrackConstraintSetPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaTrackConstraintSet>(vm, globalObject);
-}
-
-const ClassInfo JSMediaTrackConstraintSet::s_info = { "MediaTrackConstraintSet", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSMediaTrackConstraintSet) };
-
-JSMediaTrackConstraintSet::JSMediaTrackConstraintSet(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaTrackConstraintSet> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMediaTrackConstraintSet::finishCreation(VM& vm)
+void JSMediaTrackConstraintSetPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaTrackConstraintSetPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaTrackConstraintSet::s_info = { "MediaTrackConstraintSet", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaTrackConstraintSet) };
+
+JSMediaTrackConstraintSet::JSMediaTrackConstraintSet(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaTrackConstraintSet>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMediaTrackConstraintSet::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMediaTrackConstraintSetPrototype::create(vm, globalObject, JSMediaTrackConstraintSetPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMediaTrackConstraintSet::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMediaTrackConstraintSet>(vm, globalObject);
 }
 
 void JSMediaTrackConstraintSet::destroy(JSC::JSCell* cell)
@@ -73,31 +98,21 @@ void JSMediaTrackConstraintSet::destroy(JSC::JSCell* cell)
 
 JSMediaTrackConstraintSet::~JSMediaTrackConstraintSet()
 {
-    releaseImplIfNotNull();
-}
-
-static inline bool isObservable(JSMediaTrackConstraintSet* jsMediaTrackConstraintSet)
-{
-    if (jsMediaTrackConstraintSet->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSMediaTrackConstraintSetOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMediaTrackConstraintSet* jsMediaTrackConstraintSet = jsCast<JSMediaTrackConstraintSet*>(handle.get().asCell());
-    if (!isObservable(jsMediaTrackConstraintSet))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMediaTrackConstraintSetOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMediaTrackConstraintSet* jsMediaTrackConstraintSet = jsCast<JSMediaTrackConstraintSet*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMediaTrackConstraintSet = jsCast<JSMediaTrackConstraintSet*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMediaTrackConstraintSet->impl(), jsMediaTrackConstraintSet);
-    jsMediaTrackConstraintSet->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -108,11 +123,11 @@ extern "C" { extern void (*const __identifier("??_7MediaTrackConstraintSet@WebCo
 extern "C" { extern void* _ZTVN7WebCore23MediaTrackConstraintSetE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaTrackConstraintSet* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MediaTrackConstraintSet* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMediaTrackConstraintSet>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMediaTrackConstraintSet>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -133,13 +148,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaTr
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<MediaTrackConstraintSet>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMediaTrackConstraintSet>(exec, globalObject, impl);
+    return createNewWrapper<JSMediaTrackConstraintSet>(globalObject, impl);
 }
 
-MediaTrackConstraintSet* toMediaTrackConstraintSet(JSC::JSValue value)
+MediaTrackConstraintSet* JSMediaTrackConstraintSet::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMediaTrackConstraintSet::info()) ? &jsCast<JSMediaTrackConstraintSet*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMediaTrackConstraintSet*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

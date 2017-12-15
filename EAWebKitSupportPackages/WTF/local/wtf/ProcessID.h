@@ -27,10 +27,9 @@
 #ifndef ProcessID_h
 #define ProcessID_h
 
-#include <wtf/Platform.h>
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_OSX)
+#if OS(UNIX) || defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_OSX)
 //-EAWebKitChange
 #include <unistd.h>
 #endif

@@ -25,7 +25,6 @@
 #include "JSWebSocket.h"
 
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSBlob.h"
 #include "JSDOMBinding.h"
@@ -41,38 +40,95 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSWebSocketTableValues[] =
-{
-    { "URL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketURL), (intptr_t)0 },
-    { "url", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketUrl), (intptr_t)0 },
-    { "readyState", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketReadyState), (intptr_t)0 },
-    { "bufferedAmount", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketBufferedAmount), (intptr_t)0 },
-    { "onopen", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnopen), (intptr_t)setJSWebSocketOnopen },
-    { "onmessage", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnmessage), (intptr_t)setJSWebSocketOnmessage },
-    { "onerror", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnerror), (intptr_t)setJSWebSocketOnerror },
-    { "onclose", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnclose), (intptr_t)setJSWebSocketOnclose },
-    { "protocol", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketProtocol), (intptr_t)0 },
-    { "extensions", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketExtensions), (intptr_t)0 },
-    { "binaryType", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketBinaryType), (intptr_t)setJSWebSocketBinaryType },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionClose(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsWebSocketURL(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebSocketUrl(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebSocketReadyState(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebSocketBufferedAmount(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebSocketOnopen(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebSocketOnopen(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebSocketOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebSocketOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebSocketOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebSocketOnerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebSocketOnclose(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebSocketOnclose(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebSocketProtocol(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebSocketExtensions(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebSocketBinaryType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebSocketBinaryType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebSocketConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebSocketPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebSocketPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebSocketPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebSocketPrototype>(vm.heap)) JSWebSocketPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebSocketPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebSocketTable = { 34, 31, JSWebSocketTableValues, 0 };
+class JSWebSocketConstructor : public DOMConstructorObject {
+private:
+    JSWebSocketConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebSocketConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebSocketConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebSocketConstructor>(vm.heap)) JSWebSocketConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebSocket(JSC::ExecState*);
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebSocket1(JSC::ExecState*);
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebSocket2(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
+};
+
 /* Hash table for constructor */
 
 static const HashTableValue JSWebSocketConstructorTableValues[] =
 {
-    { "CONNECTING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketCONNECTING), (intptr_t)0 },
-    { "OPEN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOPEN), (intptr_t)0 },
-    { "CLOSING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketCLOSING), (intptr_t)0 },
-    { "CLOSED", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketCLOSED), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "CONNECTING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "OPEN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "CLOSING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "CLOSED", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
 };
 
-static const HashTable JSWebSocketConstructorTable = { 8, 7, JSWebSocketConstructorTableValues, 0 };
 
 COMPILE_ASSERT(0 == WebSocket::CONNECTING, WebSocketEnumCONNECTINGIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(1 == WebSocket::OPEN, WebSocketEnumOPENIsWrongUseDoNotCheckConstants);
@@ -81,17 +137,20 @@ COMPILE_ASSERT(3 == WebSocket::CLOSED, WebSocketEnumCLOSEDIsWrongUseDoNotCheckCo
 
 EncodedJSValue JSC_HOST_CALL JSWebSocketConstructor::constructJSWebSocket1(ExecState* exec)
 {
-    JSWebSocketConstructor* castedThis = jsCast<JSWebSocketConstructor*>(exec->callee());
-    if (exec->argumentCount() < 1)
+    auto* castedThis = jsCast<JSWebSocketConstructor*>(exec->callee());
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String url = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    Vector<String> protocols = toNativeArray<String>(exec, exec->argument(1));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     ScriptExecutionContext* context = castedThis->scriptExecutionContext();
     if (!context)
-        return throwVMError(exec, createReferenceError(exec, "WebSocket constructor associated document is unavailable"));
-    RefPtr<WebSocket> object = WebSocket::create(context, url, ec);
+        return throwConstructorDocumentUnavailableError(*exec, "WebSocket");
+    RefPtr<WebSocket> object = WebSocket::create(*context, url, protocols, ec);
     if (ec) {
         setDOMException(exec, ec);
         return JSValue::encode(JSValue());
@@ -101,43 +160,20 @@ EncodedJSValue JSC_HOST_CALL JSWebSocketConstructor::constructJSWebSocket1(ExecS
 
 EncodedJSValue JSC_HOST_CALL JSWebSocketConstructor::constructJSWebSocket2(ExecState* exec)
 {
-    JSWebSocketConstructor* castedThis = jsCast<JSWebSocketConstructor*>(exec->callee());
-    if (exec->argumentCount() < 2)
+    auto* castedThis = jsCast<JSWebSocketConstructor*>(exec->callee());
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String url = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    Vector<String> protocols(toNativeArray<String>(exec, exec->argument(1)));
-    if (exec->hadException())
+    String protocol = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     ScriptExecutionContext* context = castedThis->scriptExecutionContext();
     if (!context)
-        return throwVMError(exec, createReferenceError(exec, "WebSocket constructor associated document is unavailable"));
-    RefPtr<WebSocket> object = WebSocket::create(context, url, protocols, ec);
-    if (ec) {
-        setDOMException(exec, ec);
-        return JSValue::encode(JSValue());
-    }
-    return JSValue::encode(asObject(toJS(exec, castedThis->globalObject(), object.get())));
-}
-
-EncodedJSValue JSC_HOST_CALL JSWebSocketConstructor::constructJSWebSocket3(ExecState* exec)
-{
-    JSWebSocketConstructor* castedThis = jsCast<JSWebSocketConstructor*>(exec->callee());
-    if (exec->argumentCount() < 2)
-        return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    ExceptionCode ec = 0;
-    const String& url(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-    const String& protocol(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-    ScriptExecutionContext* context = castedThis->scriptExecutionContext();
-    if (!context)
-        return throwVMError(exec, createReferenceError(exec, "WebSocket constructor associated document is unavailable"));
-    RefPtr<WebSocket> object = WebSocket::create(context, url, protocol, ec);
+        return throwConstructorDocumentUnavailableError(*exec, "WebSocket");
+    RefPtr<WebSocket> object = WebSocket::create(*context, url, protocol, ec);
     if (ec) {
         setDOMException(exec, ec);
         return JSValue::encode(JSValue());
@@ -147,25 +183,18 @@ EncodedJSValue JSC_HOST_CALL JSWebSocketConstructor::constructJSWebSocket3(ExecS
 
 EncodedJSValue JSC_HOST_CALL JSWebSocketConstructor::constructJSWebSocket(ExecState* exec)
 {
-    size_t argsCount = exec->argumentCount();
-    if (argsCount == 1)
-        return JSWebSocketConstructor::constructJSWebSocket1(exec);
+    size_t argsCount = std::min<size_t>(2, exec->argumentCount());
     JSValue arg1(exec->argument(1));
-    if ((argsCount == 2 && (arg1.isObject() && isJSArray(arg1))))
-        return JSWebSocketConstructor::constructJSWebSocket2(exec);
+    if (argsCount == 1 || (argsCount == 2 && (arg1.isUndefined() || arg1.isNull() || (arg1.isObject() && isJSArray(arg1)))))
+        return JSWebSocketConstructor::constructJSWebSocket1(exec);
     if (argsCount == 2)
-        return JSWebSocketConstructor::constructJSWebSocket3(exec);
+        return JSWebSocketConstructor::constructJSWebSocket2(exec);
     if (argsCount < 1)
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     return throwVMTypeError(exec);
 }
 
-static const HashTable& getJSWebSocketConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSWebSocketConstructorTable);
-}
-
-const ClassInfo JSWebSocketConstructor::s_info = { "WebSocketConstructor", &Base::s_info, 0, getJSWebSocketConstructorTable, CREATE_METHOD_TABLE(JSWebSocketConstructor) };
+const ClassInfo JSWebSocketConstructor::s_info = { "WebSocketConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebSocketConstructor) };
 
 JSWebSocketConstructor::JSWebSocketConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -176,13 +205,10 @@ void JSWebSocketConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObj
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebSocketPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebSocketConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebSocketConstructor, JSDOMWrapper>(exec, getJSWebSocketConstructorTable(exec), jsCast<JSWebSocketConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebSocket::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebSocket"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSWebSocketConstructorTableValues, *this);
 }
 
 ConstructType JSWebSocketConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -195,59 +221,53 @@ ConstructType JSWebSocketConstructor::getConstructData(JSCell*, ConstructData& c
 
 static const HashTableValue JSWebSocketPrototypeTableValues[] =
 {
-    { "CONNECTING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketCONNECTING), (intptr_t)0 },
-    { "OPEN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOPEN), (intptr_t)0 },
-    { "CLOSING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketCLOSING), (intptr_t)0 },
-    { "CLOSED", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketCLOSED), (intptr_t)0 },
-    { "send", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionSend), (intptr_t)1 },
-    { "close", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionClose), (intptr_t)0 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "URL", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketURL), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "url", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketUrl), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "readyState", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketReadyState), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "bufferedAmount", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketBufferedAmount), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onopen", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnopen), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebSocketOnopen) },
+    { "onmessage", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnmessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebSocketOnmessage) },
+    { "onerror", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnerror), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebSocketOnerror) },
+    { "onclose", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketOnclose), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebSocketOnclose) },
+    { "protocol", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketProtocol), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "extensions", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketExtensions), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "binaryType", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebSocketBinaryType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebSocketBinaryType) },
+    { "CONNECTING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "OPEN", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "CLOSING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "CLOSED", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "send", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionSend), (intptr_t) (1) },
+    { "close", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionClose), (intptr_t) (0) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsWebSocketPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSWebSocketPrototypeTable = { 34, 31, JSWebSocketPrototypeTableValues, 0 };
-static const HashTable& getJSWebSocketPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSWebSocketPrototypeTable);
-}
+const ClassInfo JSWebSocketPrototype::s_info = { "WebSocketPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebSocketPrototype) };
 
-const ClassInfo JSWebSocketPrototype::s_info = { "WebSocketPrototype", &Base::s_info, 0, getJSWebSocketPrototypeTable, CREATE_METHOD_TABLE(JSWebSocketPrototype) };
-
-JSObject* JSWebSocketPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebSocket>(vm, globalObject);
-}
-
-bool JSWebSocketPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSWebSocketPrototype* thisObject = jsCast<JSWebSocketPrototype*>(object);
-    return getStaticPropertySlot<JSWebSocketPrototype, JSObject>(exec, getJSWebSocketPrototypeTable(exec), thisObject, propertyName, slot);
-}
-
-static const HashTable& getJSWebSocketTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSWebSocketTable);
-}
-
-const ClassInfo JSWebSocket::s_info = { "WebSocket", &Base::s_info, 0, getJSWebSocketTable , CREATE_METHOD_TABLE(JSWebSocket) };
-
-JSWebSocket::JSWebSocket(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebSocket> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebSocket::finishCreation(VM& vm)
+void JSWebSocketPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebSocketPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebSocket::s_info = { "WebSocket", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebSocket) };
+
+JSWebSocket::JSWebSocket(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebSocket>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebSocket::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebSocketPrototype::create(vm, globalObject, JSWebSocketPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebSocket::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebSocket>(vm, globalObject);
 }
 
 void JSWebSocket::destroy(JSC::JSCell* cell)
@@ -258,206 +278,279 @@ void JSWebSocket::destroy(JSC::JSCell* cell)
 
 JSWebSocket::~JSWebSocket()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSWebSocket::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsWebSocketURL(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* thisObject = jsCast<JSWebSocket*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebSocket, Base>(exec, getJSWebSocketTable(exec), thisObject, propertyName, slot);
-}
-
-JSValue jsWebSocketURL(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "URL");
+        return throwGetterTypeError(*exec, "WebSocket", "URL");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.url());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketUrl(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketUrl(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "url");
+        return throwGetterTypeError(*exec, "WebSocket", "url");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.url());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketReadyState(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketReadyState(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "readyState");
+        return throwGetterTypeError(*exec, "WebSocket", "readyState");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.readyState());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketBufferedAmount(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketBufferedAmount(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "bufferedAmount");
+        return throwGetterTypeError(*exec, "WebSocket", "bufferedAmount");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.bufferedAmount());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketOnopen(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketOnopen(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
-    if (EventListener* listener = impl.onopen()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "onopen");
+        return throwGetterTypeError(*exec, "WebSocket", "onopen");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().openEvent));
 }
 
 
-JSValue jsWebSocketOnmessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketOnmessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
-    if (EventListener* listener = impl.onmessage()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "onmessage");
+        return throwGetterTypeError(*exec, "WebSocket", "onmessage");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().messageEvent));
 }
 
 
-JSValue jsWebSocketOnerror(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketOnerror(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
-    if (EventListener* listener = impl.onerror()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "onerror");
+        return throwGetterTypeError(*exec, "WebSocket", "onerror");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().errorEvent));
 }
 
 
-JSValue jsWebSocketOnclose(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketOnclose(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
-    if (EventListener* listener = impl.onclose()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "onclose");
+        return throwGetterTypeError(*exec, "WebSocket", "onclose");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().closeEvent));
 }
 
 
-JSValue jsWebSocketProtocol(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketProtocol(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "protocol");
+        return throwGetterTypeError(*exec, "WebSocket", "protocol");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrUndefined(exec, impl.protocol());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketExtensions(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketExtensions(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "extensions");
+        return throwGetterTypeError(*exec, "WebSocket", "extensions");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrUndefined(exec, impl.extensions());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketBinaryType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketBinaryType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebSocket& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebSocket", "binaryType");
+        return throwGetterTypeError(*exec, "WebSocket", "binaryType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.binaryType());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebSocketConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebSocketConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSWebSocket* domObject = jsCast<JSWebSocket*>(asObject(slotBase));
-    return JSWebSocket::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebSocketPrototype* domObject = jsDynamicCast<JSWebSocketPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebSocket::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSWebSocket::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSWebSocketOnopen(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSWebSocket* thisObject = jsCast<JSWebSocket*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSWebSocket, Base>(exec, propertyName, value, getJSWebSocketTable(exec), thisObject, slot);
-}
-
-void setJSWebSocketOnopen(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(thisObject);
-    WebSocket& impl = castedThis->impl();
-    impl.setOnopen(createJSAttributeEventListener(exec, value, thisObject));
-}
-
-
-void setJSWebSocketOnmessage(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(thisObject);
-    WebSocket& impl = castedThis->impl();
-    impl.setOnmessage(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebSocket", "onopen");
+        else
+            throwSetterTypeError(*exec, "WebSocket", "onopen");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().openEvent, value);
 }
 
 
-void setJSWebSocketOnerror(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebSocketOnmessage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(thisObject);
-    WebSocket& impl = castedThis->impl();
-    impl.setOnerror(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebSocket", "onmessage");
+        else
+            throwSetterTypeError(*exec, "WebSocket", "onmessage");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().messageEvent, value);
 }
 
 
-void setJSWebSocketOnclose(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebSocketOnerror(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(thisObject);
-    WebSocket& impl = castedThis->impl();
-    impl.setOnclose(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebSocket", "onerror");
+        else
+            throwSetterTypeError(*exec, "WebSocket", "onerror");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().errorEvent, value);
 }
 
 
-void setJSWebSocketBinaryType(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebSocketOnclose(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(thisObject);
-    WebSocket& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebSocket", "onclose");
+        else
+            throwSetterTypeError(*exec, "WebSocket", "onclose");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().closeEvent, value);
+}
+
+
+void setJSWebSocketBinaryType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebSocketPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebSocket", "binaryType");
+        else
+            throwSetterTypeError(*exec, "WebSocket", "binaryType");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBinaryType(nativeValue);
 }
@@ -470,17 +563,17 @@ JSValue JSWebSocket::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend1(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    ArrayBuffer* data(toArrayBuffer(exec->argument(0)));
-    if (exec->hadException())
+    ArrayBuffer* data = toArrayBuffer(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data, ec);
     setDOMException(exec, ec);
@@ -489,17 +582,17 @@ static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend1(ExecState*
 
 static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend2(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    RefPtr<ArrayBufferView> data(toArrayBufferView(exec->argument(0)));
-    if (exec->hadException())
+    RefPtr<ArrayBufferView> data = toArrayBufferView(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data.get(), ec);
     setDOMException(exec, ec);
@@ -508,17 +601,17 @@ static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend2(ExecState*
 
 static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend3(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Blob* data(toBlob(exec->argument(0)));
-    if (exec->hadException())
+    Blob* data = JSBlob::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data, ec);
     setDOMException(exec, ec);
@@ -527,17 +620,17 @@ static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend3(ExecState*
 
 static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend4(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "send");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& data(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String data = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.send(data, ec);
     setDOMException(exec, ec);
@@ -546,13 +639,13 @@ static EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend4(ExecState*
 
 EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend(ExecState* exec)
 {
-    size_t argsCount = exec->argumentCount();
+    size_t argsCount = std::min<size_t>(1, exec->argumentCount());
     JSValue arg0(exec->argument(0));
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSArrayBuffer::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSArrayBuffer::info())))))
         return jsWebSocketPrototypeFunctionSend1(exec);
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSArrayBufferView::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSArrayBufferView::info())))))
         return jsWebSocketPrototypeFunctionSend2(exec);
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSBlob::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSBlob::info())))))
         return jsWebSocketPrototypeFunctionSend3(exec);
     if (argsCount == 1)
         return jsWebSocketPrototypeFunctionSend4(exec);
@@ -563,12 +656,12 @@ EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionSend(ExecState* exec)
 
 EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionClose(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "close");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
 
     size_t argsCount = exec->argumentCount();
@@ -580,7 +673,7 @@ EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionClose(ExecState* exec)
 
     unsigned short code = 0;
     double codeNativeValue = exec->argument(0).toNumber(exec);
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     if (!std::isnan(codeNativeValue))
@@ -592,8 +685,8 @@ EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionClose(ExecState* exec)
         return JSValue::encode(jsUndefined());
     }
 
-    const String& reason(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String reason = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.close(code, reason, ec);
     setDOMException(exec, ec);
@@ -602,118 +695,78 @@ EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionClose(ExecState* exec)
 
 EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsWebSocketPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSWebSocket::info()))
-        return throwVMTypeError(exec);
-    JSWebSocket* castedThis = jsCast<JSWebSocket*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSWebSocket* castedThis = jsDynamicCast<JSWebSocket*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "WebSocket", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSWebSocket::info());
-    WebSocket& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* evt(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(evt, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 void JSWebSocket::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSWebSocket* thisObject = jsCast<JSWebSocket*>(cell);
+    auto* thisObject = jsCast<JSWebSocket*>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
     Base::visitChildren(thisObject, visitor);
     thisObject->impl().visitJSEventListeners(visitor);
 }
 
-// Constant getters
-
-JSValue jsWebSocketCONNECTING(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsWebSocketOPEN(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsWebSocketCLOSING(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsWebSocketCLOSED(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
-static inline bool isObservable(JSWebSocket* jsWebSocket)
-{
-    if (jsWebSocket->hasCustomProperties())
-        return true;
-    if (jsWebSocket->impl().hasEventListeners())
-        return true;
-    return false;
-}
-
 bool JSWebSocketOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebSocket* jsWebSocket = jsCast<JSWebSocket*>(handle.get().asCell());
+    auto* jsWebSocket = jsCast<JSWebSocket*>(handle.slot()->asCell());
     if (jsWebSocket->impl().hasPendingActivity())
         return true;
     if (jsWebSocket->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsWebSocket))
-        return false;
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebSocketOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebSocket* jsWebSocket = jsCast<JSWebSocket*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebSocket = jsCast<JSWebSocket*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebSocket->impl(), jsWebSocket);
-    jsWebSocket->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -724,11 +777,11 @@ extern "C" { extern void (*const __identifier("??_7WebSocket@WebCore@@6B@")[])()
 extern "C" { extern void* _ZTVN7WebCore9WebSocketE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebSocket* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebSocket* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebSocket>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebSocket>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -749,13 +802,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebSock
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebSocket>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebSocket>(exec, globalObject, impl);
+    return createNewWrapper<JSWebSocket>(globalObject, impl);
 }
 
-WebSocket* toWebSocket(JSC::JSValue value)
+WebSocket* JSWebSocket::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebSocket::info()) ? &jsCast<JSWebSocket*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebSocket*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,6 +28,8 @@
 
 #if ENABLE(DFG_JIT)
 
+#include "JSCInlines.h"
+
 namespace WTF {
 
 using namespace JSC::DFG;
@@ -55,6 +57,9 @@ void printInternal(PrintStream& out, FlushFormat format)
         return;
     case FlushedJSValue:
         out.print("FlushedJSValue");
+        return;
+    case ConflictingFlush:
+        out.print("ConflictingFlush");
         return;
     }
     RELEASE_ASSERT_NOT_REACHED();

@@ -22,6 +22,7 @@
 #include "JSEntity.h"
 
 #include "Entity.h"
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <wtf/GetPtr.h>
 
@@ -29,27 +30,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSEntityTableValues[] =
-{
-    { "publicId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityPublicId), (intptr_t)0 },
-    { "systemId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntitySystemId), (intptr_t)0 },
-    { "notationName", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityNotationName), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsEntityPublicId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsEntitySystemId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsEntityNotationName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsEntityConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSEntityPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSEntityPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSEntityPrototype* ptr = new (NotNull, JSC::allocateCell<JSEntityPrototype>(vm.heap)) JSEntityPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSEntityPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSEntityTable = { 10, 7, JSEntityTableValues, 0 };
-/* Hash table for constructor */
+class JSEntityConstructor : public DOMConstructorObject {
+private:
+    JSEntityConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSEntityConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSEntityConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSEntityConstructor* ptr = new (NotNull, JSC::allocateCell<JSEntityConstructor>(vm.heap)) JSEntityConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSEntityConstructorTable = { 1, 0, JSEntityConstructorTableValues, 0 };
-const ClassInfo JSEntityConstructor::s_info = { "EntityConstructor", &Base::s_info, &JSEntityConstructorTable, 0, CREATE_METHOD_TABLE(JSEntityConstructor) };
+const ClassInfo JSEntityConstructor::s_info = { "EntityConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEntityConstructor) };
 
 JSEntityConstructor::JSEntityConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -60,89 +94,103 @@ void JSEntityConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObject
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSEntityPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSEntityConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSEntityConstructor, JSDOMWrapper>(exec, JSEntityConstructorTable, jsCast<JSEntityConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSEntity::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("Entity"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSEntityPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "publicId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityPublicId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "systemId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntitySystemId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "notationName", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityNotationName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSEntityPrototypeTable = { 1, 0, JSEntityPrototypeTableValues, 0 };
-const ClassInfo JSEntityPrototype::s_info = { "EntityPrototype", &Base::s_info, &JSEntityPrototypeTable, 0, CREATE_METHOD_TABLE(JSEntityPrototype) };
+const ClassInfo JSEntityPrototype::s_info = { "EntityPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEntityPrototype) };
 
-JSObject* JSEntityPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSEntity>(vm, globalObject);
-}
-
-const ClassInfo JSEntity::s_info = { "Entity", &Base::s_info, &JSEntityTable, 0 , CREATE_METHOD_TABLE(JSEntity) };
-
-JSEntity::JSEntity(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Entity> impl)
-    : JSNode(structure, globalObject, impl)
-{
-}
-
-void JSEntity::finishCreation(VM& vm)
+void JSEntityPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSEntityPrototypeTableValues, *this);
+}
+
+const ClassInfo JSEntity::s_info = { "Entity", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEntity) };
+
+JSEntity::JSEntity(Structure* structure, JSDOMGlobalObject* globalObject, Ref<Entity>&& impl)
+    : JSNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSEntity::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSEntityPrototype::create(vm, globalObject, JSEntityPrototype::createStructure(vm, globalObject, JSNodePrototype::self(vm, globalObject)));
+    return JSEntityPrototype::create(vm, globalObject, JSEntityPrototype::createStructure(vm, globalObject, JSNode::getPrototype(vm, globalObject)));
 }
 
-bool JSEntity::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSEntity::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSEntity* thisObject = jsCast<JSEntity*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSEntity, Base>(exec, JSEntityTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSEntity>(vm, globalObject);
 }
 
-JSValue jsEntityPublicId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEntityPublicId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSEntity* castedThis = jsCast<JSEntity*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Entity& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSEntity* castedThis = jsDynamicCast<JSEntity*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSEntityPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Entity", "publicId");
+        return throwGetterTypeError(*exec, "Entity", "publicId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.publicId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsEntitySystemId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEntitySystemId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSEntity* castedThis = jsCast<JSEntity*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Entity& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSEntity* castedThis = jsDynamicCast<JSEntity*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSEntityPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Entity", "systemId");
+        return throwGetterTypeError(*exec, "Entity", "systemId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.systemId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsEntityNotationName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEntityNotationName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSEntity* castedThis = jsCast<JSEntity*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Entity& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSEntity* castedThis = jsDynamicCast<JSEntity*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSEntityPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Entity", "notationName");
+        return throwGetterTypeError(*exec, "Entity", "notationName");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.notationName());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsEntityConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEntityConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSEntity* domObject = jsCast<JSEntity*>(asObject(slotBase));
-    return JSEntity::getConstructor(exec->vm(), domObject->globalObject());
+    JSEntityPrototype* domObject = jsDynamicCast<JSEntityPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSEntity::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSEntity::getConstructor(VM& vm, JSGlobalObject* globalObject)

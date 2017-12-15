@@ -29,7 +29,7 @@
 namespace WebCore {
 
 DocumentType::DocumentType(Document& document, const String& name, const String& publicId, const String& systemId)
-    : Node(&document, CreateOther)
+    : Node(document, CreateOther)
     , m_name(name)
     , m_publicId(publicId)
     , m_systemId(systemId)
@@ -51,9 +51,9 @@ Node::NodeType DocumentType::nodeType() const
     return DOCUMENT_TYPE_NODE;
 }
 
-PassRefPtr<Node> DocumentType::cloneNode(bool /*deep*/)
+RefPtr<Node> DocumentType::cloneNodeInternal(Document& documentTarget, CloningOperation)
 {
-    return create(document(), m_name, m_publicId, m_systemId);
+    return create(documentTarget, m_name, m_publicId, m_systemId);
 }
 
 }

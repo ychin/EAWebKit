@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2011 Google Inc. All rights reserved.
- * Copyright (C) 2011 Ericsson AB. All rights reserved.
+ * Copyright (C) 2011, 2015 Ericsson AB. All rights reserved.
  * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,206 +32,117 @@
 
 #include "AllAudioCapabilities.h"
 #include "AllVideoCapabilities.h"
-#include "AudioStreamTrack.h"
 #include "Dictionary.h"
 #include "Event.h"
 #include "ExceptionCode.h"
+#include "ExceptionCodePlaceholder.h"
 #include "MediaConstraintsImpl.h"
 #include "MediaSourceStates.h"
 #include "MediaStream.h"
-#include "MediaStreamCenter.h"
-#include "MediaStreamDescriptor.h"
-#include "MediaStreamTrackSourcesCallback.h"
-#include "MediaStreamTrackSourcesRequest.h"
+#include "MediaStreamPrivate.h"
 #include "MediaTrackConstraints.h"
 #include "NotImplemented.h"
-#include "UUID.h"
-#include "VideoStreamTrack.h"
 #include <wtf/Functional.h>
 #include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-MediaStreamTrack::MediaStreamTrack(ScriptExecutionContext* context, MediaStreamSource* source, const Dictionary*)
-    : ActiveDOMObject(context)
-    , m_source(0)
-    , m_readyState(MediaStreamSource::New)
-    , m_stopped(false)
-    , m_enabled(true)
-    , m_muted(false)
-    , m_eventDispatchScheduled(false)
+Ref<MediaStreamTrack> MediaStreamTrack::create(ScriptExecutionContext& context, MediaStreamTrackPrivate& privateTrack)
 {
-    suspendIfNeeded();
-    if (source)
-        setSource(source);
+    return adoptRef(*new MediaStreamTrack(context, privateTrack));
 }
 
-MediaStreamTrack::MediaStreamTrack(MediaStreamTrack* other)
-    : ActiveDOMObject(other->scriptExecutionContext())
+MediaStreamTrack::MediaStreamTrack(ScriptExecutionContext& context, MediaStreamTrackPrivate& privateTrack)
+    : RefCounted()
+    , ActiveDOMObject(&context)
+    , m_private(privateTrack)
 {
     suspendIfNeeded();
 
-    // When the clone() method is invoked, the user agent must run the following steps:
-    // 1. Let trackClone be a newly constructed MediaStreamTrack object.
-    // 2. Initialize trackClone's id attribute to a newly generated value.
-    m_id = createCanonicalUUIDString();
-
-    // 3. Let trackClone inherit this track's underlying source, kind, label and enabled attributes.
-    setSource(other->source());
-    m_readyState = m_source ? m_source->readyState() : MediaStreamSource::New;
-    m_enabled = other->enabled();
-
-    // Note: the "clone" steps don't say anything about 'muted', but 4.3.1 says:
-    // For a newly created MediaStreamTrack object, the following applies. The track is always enabled
-    // unless stated otherwise (for examlpe when cloned) and the muted state reflects the state of the
-    // source at the time the track is created.
-    m_muted = other->muted();
-
-    m_eventDispatchScheduled =false;
-    m_stopped = other->stopped();
+    m_private->setClient(this);
 }
 
 MediaStreamTrack::~MediaStreamTrack()
 {
-    if (m_source)
-        m_source->removeObserver(this);
+    m_private->setClient(nullptr);
 }
 
 const AtomicString& MediaStreamTrack::kind() const
 {
-    if (!m_source)
-        return emptyAtom;
-
     static NeverDestroyed<AtomicString> audioKind("audio", AtomicString::ConstructFromLiteral);
     static NeverDestroyed<AtomicString> videoKind("video", AtomicString::ConstructFromLiteral);
 
-    switch (m_source->type()) {
-    case MediaStreamSource::Audio:
+    if (m_private->type() == RealtimeMediaSource::Audio)
         return audioKind;
-    case MediaStreamSource::Video:
-        return videoKind;
-    }
-
-    ASSERT_NOT_REACHED();
-    return emptyAtom;
-}
-
-void MediaStreamTrack::setSource(MediaStreamSource* source)
-{
-    ASSERT(!source || !m_source);
-
-    if (m_source)
-        m_source->removeObserver(this);
-
-    if (source) {
-        source->addObserver(this);
-        m_muted = source->muted();
-    }
-
-    m_source = source;
+    return videoKind;
 }
 
 const String& MediaStreamTrack::id() const
 {
-    if (!m_id.isEmpty())
-        return m_id;
-
-    // The spec says:
-    //   Unless a MediaStreamTrack object is created as a part a of special purpose algorithm that
-    //   specifies how the track id must be initialized, the user agent must generate a globally
-    //   unique identifier string and initialize the object's id attribute to that string.
-    if (m_source && m_source->useIDForTrackID())
-        return m_source->id();
-
-    m_id = createCanonicalUUIDString();
-    return m_id;
+    return m_private->id();
 }
 
 const String& MediaStreamTrack::label() const
 {
-    if (m_source)
-        return m_source->name();
-    return emptyString();
+    return m_private->label();
 }
 
 bool MediaStreamTrack::enabled() const
 {
-    return m_enabled;
+    return m_private->enabled();
 }
 
 void MediaStreamTrack::setEnabled(bool enabled)
 {
-    if (m_stopped)
-        return;
-
-    // 4.3.3.1
-    // ... after a MediaStreamTrack is disassociated from its track, its enabled attribute still
-    // changes value when set; it just doesn't do anything with that new value.
-    m_enabled = enabled;
-
-    if (!m_source)
-        return;
-
-    m_source->setEnabled(enabled);
+    m_private->setEnabled(enabled);
 }
 
 bool MediaStreamTrack::muted() const
 {
-    if (m_stopped || !m_source)
-        return false;
-
-    return m_source->muted();
+    return m_private->muted();
 }
 
 bool MediaStreamTrack::readonly() const
 {
-    if (m_stopped || !m_source)
-        return true;
-
-    return m_source->readonly();
+    return m_private->readonly();
 }
 
 bool MediaStreamTrack::remote() const
 {
-    if (!m_source)
-        return false;
-
-    return m_source->remote();
+    return m_private->remote();
 }
 
 const AtomicString& MediaStreamTrack::readyState() const
 {
-    static NeverDestroyed<AtomicString> ended("ended", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> live("live", AtomicString::ConstructFromLiteral);
-    static NeverDestroyed<AtomicString> newState("new", AtomicString::ConstructFromLiteral);
+    static NeverDestroyed<AtomicString> endedState("ended", AtomicString::ConstructFromLiteral);
+    static NeverDestroyed<AtomicString> liveState("live", AtomicString::ConstructFromLiteral);
 
-    if (!m_source)
-        return newState;
-
-    if (m_stopped)
-        return ended;
-
-    switch (m_source->readyState()) {
-    case MediaStreamSource::Live:
-        return live;
-    case MediaStreamSource::New:
-        return newState;
-    case MediaStreamSource::Ended:
-        return ended;
-    }
-
-    ASSERT_NOT_REACHED();
-    return emptyAtom;
+    return ended() ? endedState : liveState;
 }
 
-void MediaStreamTrack::getSources(ScriptExecutionContext* context, PassRefPtr<MediaStreamTrackSourcesCallback> callback, ExceptionCode& ec)
+bool MediaStreamTrack::ended() const
 {
-    RefPtr<MediaStreamTrackSourcesRequest> request = MediaStreamTrackSourcesRequest::create(context, callback);
-    if (!MediaStreamCenter::shared().getMediaStreamTrackSources(request.release()))
-        ec = NOT_SUPPORTED_ERR;
+    return m_private->ended();
 }
 
-RefPtr<MediaTrackConstraints> MediaStreamTrack::constraints() const
+RefPtr<MediaStreamTrack> MediaStreamTrack::clone()
+{
+    return MediaStreamTrack::create(*scriptExecutionContext(), *m_private->clone());
+}
+
+void MediaStreamTrack::stopProducingData()
+{
+    // NOTE: this method is called when the "stop" method is called from JS, using
+    // the "ImplementedAs" IDL attribute. This is done because ActiveDOMObject requires
+    // a "stop" method.
+
+    if (remote() || ended())
+        return;
+
+    m_private->endTrack();
+}
+
+RefPtr<MediaTrackConstraints> MediaStreamTrack::getConstraints() const
 {
     // FIXME: https://bugs.webkit.org/show_bug.cgi?id=122428
     notImplemented();
@@ -239,117 +151,67 @@ RefPtr<MediaTrackConstraints> MediaStreamTrack::constraints() const
 
 RefPtr<MediaSourceStates> MediaStreamTrack::states() const
 {
-    if (!m_source)
-        return 0;
-    
-    return MediaSourceStates::create(m_source->states());
+    return MediaSourceStates::create(m_private->states());
 }
 
-RefPtr<MediaStreamCapabilities> MediaStreamTrack::capabilities() const
+RefPtr<MediaStreamCapabilities> MediaStreamTrack::getCapabilities() const
 {
-    if (!m_source)
-        return 0;
-
-    return MediaStreamCapabilities::create(m_source->capabilities());
+    // The source may be shared by multiple tracks, so its states is not necessarily
+    // in sync with the track state. A track that has ended always has a source
+    // type of "none".
+    RefPtr<RealtimeMediaSourceCapabilities> sourceCapabilities = m_private->capabilities();
+    if (ended())
+        sourceCapabilities->setSourceType(RealtimeMediaSourceStates::None);
+    
+    return MediaStreamCapabilities::create(sourceCapabilities.release());
 }
 
 void MediaStreamTrack::applyConstraints(const Dictionary& constraints)
 {
+    m_constraints->initialize(constraints);
+    m_private->applyConstraints(*m_constraints);
+}
+
+void MediaStreamTrack::applyConstraints(const MediaConstraints&)
+{
     // FIXME: apply the new constraints to the track
     // https://bugs.webkit.org/show_bug.cgi?id=122428
-    m_constraints->initialize(constraints);
 }
 
-RefPtr<MediaStreamTrack> MediaStreamTrack::clone()
+void MediaStreamTrack::addObserver(MediaStreamTrack::Observer* observer)
 {
-    if (m_source && m_source->type() == MediaStreamSource::Audio)
-        return AudioStreamTrack::create(this);
-
-    return VideoStreamTrack::create(this);
+    m_observers.append(observer);
 }
 
-void MediaStreamTrack::stopProducingData()
+void MediaStreamTrack::removeObserver(MediaStreamTrack::Observer* observer)
 {
-    if (m_stopped || !m_source)
-        return;
-
-    // Set m_stopped before stopping the source because that may result in a call to sourceChangedState
-    // and we only want to dispatch the 'ended' event if necessary.
-    m_stopped = true;
-    m_source->stop();
-
-    if (m_readyState != MediaStreamSource::Ended)
-        scheduleEventDispatch(Event::create(eventNames().endedEvent, false, false));
+    size_t pos = m_observers.find(observer);
+    if (pos != notFound)
+        m_observers.remove(pos);
 }
 
-bool MediaStreamTrack::ended() const
+void MediaStreamTrack::trackEnded()
 {
-    return m_stopped || (m_source && m_source->readyState() == MediaStreamSource::Ended);
-}
+    dispatchEvent(Event::create(eventNames().endedEvent, false, false));
 
-void MediaStreamTrack::sourceStateChanged()
-{
-    if (m_stopped)
-        return;
-
-    MediaStreamSource::ReadyState oldReadyState = m_readyState;
-    m_readyState = m_source->readyState();
-
-    if (m_readyState >= MediaStreamSource::Live && oldReadyState == MediaStreamSource::New)
-        scheduleEventDispatch(Event::create(eventNames().startedEvent, false, false));
-    if (m_readyState == MediaStreamSource::Ended && oldReadyState != MediaStreamSource::Ended)
-        scheduleEventDispatch(Event::create(eventNames().endedEvent, false, false));
-}
-    
-void MediaStreamTrack::sourceMutedChanged()
-{
-    if (m_stopped)
-        return;
-
-    bool muted = m_source->muted();
-    if (m_muted == muted)
-        return;
-
-    m_muted = muted;
-    if (m_muted)
-        scheduleEventDispatch(Event::create(eventNames().muteEvent, false, false));
-    else
-        scheduleEventDispatch(Event::create(eventNames().unmuteEvent, false, false));
+    for (auto& observer : m_observers)
+        observer->trackDidEnd();
 
     configureTrackRendering();
 }
-
-void MediaStreamTrack::sourceEnabledChanged()
-{
-    if (m_stopped)
-        return;
     
-    // media from the source only flows when a MediaStreamTrack object is both unmuted and enabled
+void MediaStreamTrack::trackMutedChanged()
+{
+    AtomicString eventType = muted() ? eventNames().muteEvent : eventNames().unmuteEvent;
+    dispatchEvent(Event::create(eventType, false, false));
+
     configureTrackRendering();
 }
 
 void MediaStreamTrack::configureTrackRendering()
 {
-    if (m_stopped)
-        return;
-
     // 4.3.1
     // ... media from the source only flows when a MediaStreamTrack object is both unmuted and enabled
-}
-
-bool MediaStreamTrack::stopped()
-{
-    return m_stopped;
-}
-
-void MediaStreamTrack::trackDidEnd()
-{
-    // FIXME: this is wrong, the track shouldn't have to call the descriptor's client!
-    MediaStreamDescriptorClient* client = m_source ? m_source->stream()->client() : 0;
-    if (!client)
-        return;
-    
-    client->trackDidEnd();
 }
 
 void MediaStreamTrack::stop()
@@ -357,34 +219,15 @@ void MediaStreamTrack::stop()
     stopProducingData();
 }
 
-void MediaStreamTrack::scheduleEventDispatch(PassRefPtr<Event> event)
+const char* MediaStreamTrack::activeDOMObjectName() const
 {
-    {
-        MutexLocker locker(m_mutex);
-        m_scheduledEvents.append(event);
-        if (m_eventDispatchScheduled)
-            return;
-        m_eventDispatchScheduled = true;
-    }
-
-    callOnMainThread(bind(&MediaStreamTrack::dispatchQueuedEvents, this));
+    return "MediaStreamTrack";
 }
 
-void MediaStreamTrack::dispatchQueuedEvents()
+bool MediaStreamTrack::canSuspendForPageCache() const
 {
-    Vector<RefPtr<Event>> events;
-    {
-        MutexLocker locker(m_mutex);
-        m_eventDispatchScheduled = false;
-        events.swap(m_scheduledEvents);
-    }
-    if (!scriptExecutionContext())
-        return;
-
-    for (auto it = events.begin(); it != events.end(); ++it)
-        dispatchEvent((*it).release());
-
-    events.clear();
+    // FIXME: We should try and do better here.
+    return false;
 }
 
 } // namespace WebCore

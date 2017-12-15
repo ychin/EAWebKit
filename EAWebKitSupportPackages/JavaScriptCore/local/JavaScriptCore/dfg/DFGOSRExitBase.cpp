@@ -31,54 +31,17 @@
 #include "CodeBlock.h"
 #include "DFGBasicBlock.h"
 #include "DFGNode.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
-bool OSRExitBase::considerAddingAsFrequentExitSiteSlow(CodeBlock* profiledCodeBlock)
+void OSRExitBase::considerAddingAsFrequentExitSiteSlow(CodeBlock* profiledCodeBlock, ExitingJITType jitType)
 {
-    return baselineCodeBlockForOriginAndBaselineCodeBlock(
-        m_codeOriginForExitProfile, profiledCodeBlock)->addFrequentExitSite(
-            FrequentExitSite(m_codeOriginForExitProfile.bytecodeIndex, m_kind));
-}
-
-bool OSRExitBase::doSearchForForwardConversion(
-    BasicBlock* block, Node* currentNode, unsigned nodeIndex, bool hasValueRecovery,
-    Node*& node, Node*& lastMovHint)
-{
-    // Check that either the current node is a SetLocal, or the preceding node was a
-    // SetLocal with the same code origin, or that we've provided a valueRecovery.
-    if (!ASSERT_DISABLED
-        && !hasValueRecovery
-        && !currentNode->containsMovHint()) {
-        Node* setLocal = block->at(nodeIndex - 1);
-        ASSERT_UNUSED(setLocal, setLocal->containsMovHint());
-        ASSERT_UNUSED(setLocal, setLocal->codeOriginForExitTarget == currentNode->codeOriginForExitTarget);
-    }
-    
-    // Find the first node for the next bytecode instruction. Also track the last mov hint
-    // on this node.
-    unsigned indexInBlock = nodeIndex + 1;
-    node = 0;
-    lastMovHint = 0;
-    for (;;) {
-        if (indexInBlock == block->size()) {
-            // This is an inline return. Give up and do a backwards speculation. This is safe
-            // because an inline return has its own bytecode index and it's always safe to
-            // reexecute that bytecode.
-            ASSERT(node->op() == Jump);
-            return false;
-        }
-        node = block->at(indexInBlock);
-        if (node->containsMovHint() && node->child1() == currentNode)
-            lastMovHint = node;
-        if (node->codeOriginForExitTarget != currentNode->codeOriginForExitTarget)
-            break;
-        indexInBlock++;
-    }
-    
-    ASSERT(node->codeOriginForExitTarget != currentNode->codeOriginForExitTarget);
-    return true;
+    CodeBlock* sourceProfiledCodeBlock =
+        baselineCodeBlockForOriginAndBaselineCodeBlock(
+            m_codeOriginForExitProfile, profiledCodeBlock);
+    if (sourceProfiledCodeBlock)
+        sourceProfiledCodeBlock->addFrequentExitSite(FrequentExitSite(m_codeOriginForExitProfile.bytecodeIndex, m_kind, jitType));
 }
 
 } } // namespace JSC::DFG

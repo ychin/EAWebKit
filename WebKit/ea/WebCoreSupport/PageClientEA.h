@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +26,9 @@
 #include "GraphicsContext.h"
 #include "IntRect.h"
 #include "WebPageClientEA.h"
+#if USE(COORDINATED_GRAPHICS)
 #include "TiledBackingStore.h"
+#endif
 #include "Timer.h"
 
 #if USE(ACCELERATED_COMPOSITING)
@@ -55,8 +57,8 @@ public:
 	PageClientWebView(EA::WebKit::View* newView, EA::WebKit::WebPage* newPage)
     : view(newView)
     , page(newPage)
-#if USE(TILED_BACKING_STORE)
-	, mNonVisibleTilesRemovalTimer(this,&PageClientWebView::removeNonVisibleTiles)
+#if USE(COORDINATED_GRAPHICS)
+	, mNonVisibleTilesRemovalTimer(*this,&PageClientWebView::removeNonVisibleTiles)
 #endif
 	{
         ASSERT(view);
@@ -80,11 +82,11 @@ public:
 	EA::WebKit::View* view;
     EA::WebKit::WebPage* page;
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 private:
 	// We need a timer otherwise if the user scrolls really fast, it results in screen artifacts.
-	WebCore::Timer<PageClientWebView>   mNonVisibleTilesRemovalTimer; 
-	void removeNonVisibleTiles(WebCore::Timer<PageClientWebView>*);
+	WebCore::Timer   mNonVisibleTilesRemovalTimer; 
+	void removeNonVisibleTiles();
 #endif
 
 };

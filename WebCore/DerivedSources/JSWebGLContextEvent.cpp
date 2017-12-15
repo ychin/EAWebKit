@@ -24,6 +24,7 @@
 
 #include "JSWebGLContextEvent.h"
 
+#include "JSDOMBinding.h"
 #include "JSDictionary.h"
 #include "URL.h"
 #include "WebGLContextEvent.h"
@@ -35,34 +36,70 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSWebGLContextEventTableValues[] =
-{
-    { "statusMessage", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextEventStatusMessage), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsWebGLContextEventStatusMessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsWebGLContextEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebGLContextEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLContextEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLContextEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextEventPrototype>(vm.heap)) JSWebGLContextEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLContextEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebGLContextEventTable = { 4, 3, JSWebGLContextEventTableValues, 0 };
-/* Hash table for constructor */
+class JSWebGLContextEventConstructor : public DOMConstructorObject {
+private:
+    JSWebGLContextEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSWebGLContextEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebGLContextEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebGLContextEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextEventConstructor>(vm.heap)) JSWebGLContextEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebGLContextEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSWebGLContextEventConstructorTable = { 1, 0, JSWebGLContextEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSWebGLContextEventConstructor::constructJSWebGLContextEvent(ExecState* exec)
 {
-    JSWebGLContextEventConstructor* jsConstructor = jsCast<JSWebGLContextEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSWebGLContextEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     WebGLContextEventInit eventInit;
@@ -94,7 +131,7 @@ bool fillWebGLContextEventInit(WebGLContextEventInit& eventInit, JSDictionary& d
     return true;
 }
 
-const ClassInfo JSWebGLContextEventConstructor::s_info = { "WebGLContextEventConstructor", &Base::s_info, &JSWebGLContextEventConstructorTable, 0, CREATE_METHOD_TABLE(JSWebGLContextEventConstructor) };
+const ClassInfo JSWebGLContextEventConstructor::s_info = { "WebGLContextEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLContextEventConstructor) };
 
 JSWebGLContextEventConstructor::JSWebGLContextEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -105,13 +142,9 @@ void JSWebGLContextEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebGLContextEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebGLContextEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebGLContextEventConstructor, JSDOMWrapper>(exec, JSWebGLContextEventConstructorTable, jsCast<JSWebGLContextEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebGLContextEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebGLContextEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSWebGLContextEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -124,56 +157,58 @@ ConstructType JSWebGLContextEventConstructor::getConstructData(JSCell*, Construc
 
 static const HashTableValue JSWebGLContextEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "statusMessage", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextEventStatusMessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSWebGLContextEventPrototypeTable = { 1, 0, JSWebGLContextEventPrototypeTableValues, 0 };
-const ClassInfo JSWebGLContextEventPrototype::s_info = { "WebGLContextEventPrototype", &Base::s_info, &JSWebGLContextEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLContextEventPrototype) };
+const ClassInfo JSWebGLContextEventPrototype::s_info = { "WebGLContextEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLContextEventPrototype) };
 
-JSObject* JSWebGLContextEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLContextEvent>(vm, globalObject);
-}
-
-const ClassInfo JSWebGLContextEvent::s_info = { "WebGLContextEvent", &Base::s_info, &JSWebGLContextEventTable, 0 , CREATE_METHOD_TABLE(JSWebGLContextEvent) };
-
-JSWebGLContextEvent::JSWebGLContextEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLContextEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSWebGLContextEvent::finishCreation(VM& vm)
+void JSWebGLContextEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLContextEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLContextEvent::s_info = { "WebGLContextEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLContextEvent) };
+
+JSWebGLContextEvent::JSWebGLContextEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLContextEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSWebGLContextEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSWebGLContextEventPrototype::create(vm, globalObject, JSWebGLContextEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSWebGLContextEventPrototype::create(vm, globalObject, JSWebGLContextEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSWebGLContextEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSWebGLContextEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSWebGLContextEvent* thisObject = jsCast<JSWebGLContextEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebGLContextEvent, Base>(exec, JSWebGLContextEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSWebGLContextEvent>(vm, globalObject);
 }
 
-JSValue jsWebGLContextEventStatusMessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextEventStatusMessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextEvent* castedThis = jsCast<JSWebGLContextEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextEvent* castedThis = jsDynamicCast<JSWebGLContextEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextEvent", "statusMessage");
+        return throwGetterTypeError(*exec, "WebGLContextEvent", "statusMessage");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.statusMessage());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLContextEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSWebGLContextEvent* domObject = jsCast<JSWebGLContextEvent*>(asObject(slotBase));
-    return JSWebGLContextEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebGLContextEventPrototype* domObject = jsDynamicCast<JSWebGLContextEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebGLContextEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSWebGLContextEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

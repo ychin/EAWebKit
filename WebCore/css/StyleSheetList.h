@@ -34,7 +34,7 @@ class StyleSheet;
 
 class StyleSheetList : public RefCounted<StyleSheetList> {
 public:
-    static PassRefPtr<StyleSheetList> create(Document* document) { return adoptRef(new StyleSheetList(document)); }
+    static Ref<StyleSheetList> create(Document* document) { return adoptRef(*new StyleSheetList(document)); }
     ~StyleSheetList();
 
     unsigned length() const;
@@ -48,10 +48,10 @@ public:
 
 private:
     StyleSheetList(Document*);
-    const Vector<RefPtr<StyleSheet> >& styleSheets() const;
+    const Vector<RefPtr<StyleSheet>>& styleSheets() const;
 
     Document* m_document;
-    Vector<RefPtr<StyleSheet> > m_detachedStyleSheets;
+    Vector<RefPtr<StyleSheet>> m_detachedStyleSheets;
 };
 
 } // namespace WebCore

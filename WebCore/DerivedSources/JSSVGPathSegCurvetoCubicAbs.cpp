@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGPathSegCurvetoCubicAbs.h"
 
+#include "JSDOMBinding.h"
 #include "SVGPathSegCurvetoCubicAbs.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
@@ -32,30 +30,69 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGPathSegCurvetoCubicAbsTableValues[] =
-{
-    { "x", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsX), (intptr_t)setJSSVGPathSegCurvetoCubicAbsX },
-    { "y", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsY), (intptr_t)setJSSVGPathSegCurvetoCubicAbsY },
-    { "x1", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsX1), (intptr_t)setJSSVGPathSegCurvetoCubicAbsX1 },
-    { "y1", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsY1), (intptr_t)setJSSVGPathSegCurvetoCubicAbsY1 },
-    { "x2", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsX2), (intptr_t)setJSSVGPathSegCurvetoCubicAbsX2 },
-    { "y2", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsY2), (intptr_t)setJSSVGPathSegCurvetoCubicAbsY2 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicAbsX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicAbsY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsX1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicAbsX1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsY1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicAbsY1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsX2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicAbsX2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsY2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicAbsY2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicAbsConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGPathSegCurvetoCubicAbsPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGPathSegCurvetoCubicAbsPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGPathSegCurvetoCubicAbsPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicAbsPrototype>(vm.heap)) JSSVGPathSegCurvetoCubicAbsPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGPathSegCurvetoCubicAbsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGPathSegCurvetoCubicAbsTable = { 16, 15, JSSVGPathSegCurvetoCubicAbsTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGPathSegCurvetoCubicAbsConstructor : public DOMConstructorObject {
+private:
+    JSSVGPathSegCurvetoCubicAbsConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGPathSegCurvetoCubicAbsConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGPathSegCurvetoCubicAbsConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGPathSegCurvetoCubicAbsConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicAbsConstructor>(vm.heap)) JSSVGPathSegCurvetoCubicAbsConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGPathSegCurvetoCubicAbsConstructorTable = { 1, 0, JSSVGPathSegCurvetoCubicAbsConstructorTableValues, 0 };
-const ClassInfo JSSVGPathSegCurvetoCubicAbsConstructor::s_info = { "SVGPathSegCurvetoCubicAbsConstructor", &Base::s_info, &JSSVGPathSegCurvetoCubicAbsConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicAbsConstructor) };
+const ClassInfo JSSVGPathSegCurvetoCubicAbsConstructor::s_info = { "SVGPathSegCurvetoCubicAbsConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicAbsConstructor) };
 
 JSSVGPathSegCurvetoCubicAbsConstructor::JSSVGPathSegCurvetoCubicAbsConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,195 +103,274 @@ void JSSVGPathSegCurvetoCubicAbsConstructor::finishCreation(VM& vm, JSDOMGlobalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegCurvetoCubicAbsPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGPathSegCurvetoCubicAbsConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGPathSegCurvetoCubicAbsConstructor, JSDOMWrapper>(exec, JSSVGPathSegCurvetoCubicAbsConstructorTable, jsCast<JSSVGPathSegCurvetoCubicAbsConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegCurvetoCubicAbs::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGPathSegCurvetoCubicAbs"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGPathSegCurvetoCubicAbsPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicAbsX) },
+    { "y", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicAbsY) },
+    { "x1", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsX1), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicAbsX1) },
+    { "y1", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsY1), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicAbsY1) },
+    { "x2", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsX2), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicAbsX2) },
+    { "y2", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicAbsY2), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicAbsY2) },
 };
 
-static const HashTable JSSVGPathSegCurvetoCubicAbsPrototypeTable = { 1, 0, JSSVGPathSegCurvetoCubicAbsPrototypeTableValues, 0 };
-const ClassInfo JSSVGPathSegCurvetoCubicAbsPrototype::s_info = { "SVGPathSegCurvetoCubicAbsPrototype", &Base::s_info, &JSSVGPathSegCurvetoCubicAbsPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicAbsPrototype) };
+const ClassInfo JSSVGPathSegCurvetoCubicAbsPrototype::s_info = { "SVGPathSegCurvetoCubicAbsPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicAbsPrototype) };
 
-JSObject* JSSVGPathSegCurvetoCubicAbsPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGPathSegCurvetoCubicAbs>(vm, globalObject);
-}
-
-const ClassInfo JSSVGPathSegCurvetoCubicAbs::s_info = { "SVGPathSegCurvetoCubicAbs", &Base::s_info, &JSSVGPathSegCurvetoCubicAbsTable, 0 , CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicAbs) };
-
-JSSVGPathSegCurvetoCubicAbs::JSSVGPathSegCurvetoCubicAbs(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPathSegCurvetoCubicAbs> impl)
-    : JSSVGPathSeg(structure, globalObject, impl)
-{
-}
-
-void JSSVGPathSegCurvetoCubicAbs::finishCreation(VM& vm)
+void JSSVGPathSegCurvetoCubicAbsPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGPathSegCurvetoCubicAbsPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGPathSegCurvetoCubicAbs::s_info = { "SVGPathSegCurvetoCubicAbs", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicAbs) };
+
+JSSVGPathSegCurvetoCubicAbs::JSSVGPathSegCurvetoCubicAbs(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPathSegCurvetoCubicAbs>&& impl)
+    : JSSVGPathSeg(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGPathSegCurvetoCubicAbs::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGPathSegCurvetoCubicAbsPrototype::create(vm, globalObject, JSSVGPathSegCurvetoCubicAbsPrototype::createStructure(vm, globalObject, JSSVGPathSegPrototype::self(vm, globalObject)));
+    return JSSVGPathSegCurvetoCubicAbsPrototype::create(vm, globalObject, JSSVGPathSegCurvetoCubicAbsPrototype::createStructure(vm, globalObject, JSSVGPathSeg::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGPathSegCurvetoCubicAbs::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGPathSegCurvetoCubicAbs::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGPathSegCurvetoCubicAbs* thisObject = jsCast<JSSVGPathSegCurvetoCubicAbs*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGPathSegCurvetoCubicAbs, Base>(exec, JSSVGPathSegCurvetoCubicAbsTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGPathSegCurvetoCubicAbs>(vm, globalObject);
 }
 
-JSValue jsSVGPathSegCurvetoCubicAbsX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicAbs", "x");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "x");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicAbsY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicAbs", "y");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "y");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicAbsX1(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsX1(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicAbs", "x1");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "x1");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x1());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicAbsY1(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsY1(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicAbs", "y1");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "y1");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y1());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicAbsX2(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsX2(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicAbs", "x2");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "x2");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x2());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicAbsY2(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsY2(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicAbs", "y2");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "y2");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y2());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicAbsConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicAbsConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicAbs* domObject = jsCast<JSSVGPathSegCurvetoCubicAbs*>(asObject(slotBase));
-    return JSSVGPathSegCurvetoCubicAbs::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGPathSegCurvetoCubicAbsPrototype* domObject = jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGPathSegCurvetoCubicAbs::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGPathSegCurvetoCubicAbs::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGPathSegCurvetoCubicAbsX(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGPathSegCurvetoCubicAbs* thisObject = jsCast<JSSVGPathSegCurvetoCubicAbs*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGPathSegCurvetoCubicAbs, Base>(exec, propertyName, value, JSSVGPathSegCurvetoCubicAbsTable, thisObject, slot);
-}
-
-void setJSSVGPathSegCurvetoCubicAbsX(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(thisObject);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicAbs", "x");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "x");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicAbsY(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicAbsY(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(thisObject);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicAbs", "y");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "y");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicAbsX1(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicAbsX1(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(thisObject);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicAbs", "x1");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "x1");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX1(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicAbsY1(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicAbsY1(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(thisObject);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicAbs", "y1");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "y1");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY1(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicAbsX2(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicAbsX2(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(thisObject);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicAbs", "x2");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "x2");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX2(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicAbsY2(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicAbsY2(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicAbs* castedThis = jsCast<JSSVGPathSegCurvetoCubicAbs*>(thisObject);
-    SVGPathSegCurvetoCubicAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicAbs* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicAbs", "y2");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicAbs", "y2");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY2(nativeValue);
 }
@@ -267,5 +383,3 @@ JSValue JSSVGPathSegCurvetoCubicAbs::getConstructor(VM& vm, JSGlobalObject* glob
 
 
 }
-
-#endif // ENABLE(SVG)

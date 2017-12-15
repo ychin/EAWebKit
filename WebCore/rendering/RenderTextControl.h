@@ -27,25 +27,33 @@
 
 namespace WebCore {
 
+class TextControlInnerTextElement;
 class HTMLTextFormControlElement;
 
 class RenderTextControl : public RenderBlockFlow {
 public:
     virtual ~RenderTextControl();
 
-    HTMLTextFormControlElement& textFormControlElement() const;
-    virtual PassRefPtr<RenderStyle> createInnerTextStyle(const RenderStyle* startStyle) const = 0;
+    WEBCORE_EXPORT HTMLTextFormControlElement& textFormControlElement() const;
+    virtual Ref<RenderStyle> createInnerTextStyle(const RenderStyle* startStyle) const = 0;
+
+#if PLATFORM(IOS)
+    bool canScroll() const;
+
+    // Returns the line height of the inner renderer.
+    virtual int innerLineHeight() const override;
+#endif
 
 protected:
-    explicit RenderTextControl(HTMLTextFormControlElement&);
+    RenderTextControl(HTMLTextFormControlElement&, Ref<RenderStyle>&&);
 
     // This convenience function should not be made public because innerTextElement may outlive the render tree.
-    HTMLElement* innerTextElement() const;
+    TextControlInnerTextElement* innerTextElement() const;
 
     int scrollbarThickness() const;
-    void adjustInnerTextStyle(const RenderStyle* startStyle, RenderStyle* textBlockStyle) const;
+    void adjustInnerTextStyle(const RenderStyle* startStyle, RenderStyle& textBlockStyle) const;
 
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
 
     void hitInnerTextElement(HitTestResult&, const LayoutPoint& pointInContainer, const LayoutPoint& accumulatedOffset);
 
@@ -54,71 +62,53 @@ protected:
 
     float scaleEmToUnits(int x) const;
 
-    static bool hasValidAvgCharWidth(AtomicString family);
-    virtual float getAvgCharWidth(AtomicString family);
+    virtual float getAverageCharWidth();
     virtual LayoutUnit preferredContentLogicalWidth(float charWidth) const = 0;
     virtual LayoutUnit computeControlLogicalHeight(LayoutUnit lineHeight, LayoutUnit nonContentHeight) const = 0;
-    virtual RenderStyle* textBaseStyle() const = 0;
 
-    virtual void updateFromElement() OVERRIDE;
-    virtual void computeLogicalHeight(LayoutUnit logicalHeight, LayoutUnit logicalTop, LogicalExtentComputedValues&) const OVERRIDE;
-    virtual RenderObject* layoutSpecialExcludedChild(bool relayoutChildren) OVERRIDE;
+    virtual void computeLogicalHeight(LayoutUnit logicalHeight, LayoutUnit logicalTop, LogicalExtentComputedValues&) const override;
+    virtual RenderObject* layoutSpecialExcludedChild(bool relayoutChildren) override;
 
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual const char* renderName() const OVERRIDE { return "RenderTextControl"; }
-    virtual bool isTextControl() const OVERRIDE FINAL { return true; }
-    virtual void computeIntrinsicLogicalWidths(LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const OVERRIDE;
-    virtual void computePreferredLogicalWidths() OVERRIDE;
-    virtual void removeLeftoverAnonymousBlock(RenderBlock*) OVERRIDE { }
-    virtual bool avoidsFloats() const OVERRIDE { return true; }
-    virtual bool canHaveGeneratedChildren() const OVERRIDE { return false; }
-    virtual bool canBeReplacedWithInlineRunIn() const OVERRIDE;
+    virtual const char* renderName() const override { return "RenderTextControl"; }
+    virtual bool isTextControl() const override final { return true; }
+    virtual void computeIntrinsicLogicalWidths(LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const override;
+    virtual void computePreferredLogicalWidths() override;
+    virtual void removeLeftoverAnonymousBlock(RenderBlock*) override { }
+    virtual bool avoidsFloats() const override { return true; }
+    virtual bool canHaveGeneratedChildren() const override { return false; }
     
-    virtual void addFocusRingRects(Vector<IntRect>&, const LayoutPoint& additionalOffset, const RenderLayerModelObject* paintContainer = 0) OVERRIDE;
+    virtual void addFocusRingRects(Vector<IntRect>&, const LayoutPoint& additionalOffset, const RenderLayerModelObject* paintContainer = 0) override;
 
-    virtual bool canBeProgramaticallyScrolled() const OVERRIDE { return true; }
+    virtual bool canBeProgramaticallyScrolled() const override { return true; }
 
-    virtual bool requiresForcedStyleRecalcPropagation() const OVERRIDE { return true; }
+    virtual bool requiresForcedStyleRecalcPropagation() const override { return true; }
 };
-
-inline RenderTextControl* toRenderTextControl(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isTextControl());
-    return static_cast<RenderTextControl*>(object);
-}
-
-inline const RenderTextControl* toRenderTextControl(const RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isTextControl());
-    return static_cast<const RenderTextControl*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderTextControl(const RenderTextControl*);
 
 // Renderer for our inner container, for <search> and others.
 // We can't use RenderFlexibleBox directly, because flexboxes have a different
 // baseline definition, and then inputs of different types wouldn't line up
 // anymore.
-class RenderTextControlInnerContainer FINAL : public RenderFlexibleBox {
+class RenderTextControlInnerContainer final : public RenderFlexibleBox {
 public:
-    explicit RenderTextControlInnerContainer(Element& element)
-        : RenderFlexibleBox(element)
+    explicit RenderTextControlInnerContainer(Element& element, Ref<RenderStyle>&& style)
+        : RenderFlexibleBox(element, WTF::move(style))
     { }
     virtual ~RenderTextControlInnerContainer() { }
 
-    virtual int baselinePosition(FontBaseline baseline, bool firstLine, LineDirectionMode direction, LinePositionMode position) const OVERRIDE
+    virtual int baselinePosition(FontBaseline baseline, bool firstLine, LineDirectionMode direction, LinePositionMode position) const override
     {
         return RenderBlock::baselinePosition(baseline, firstLine, direction, position);
     }
-    virtual int firstLineBoxBaseline() const OVERRIDE { return RenderBlock::firstLineBoxBaseline(); }
-    virtual int inlineBlockBaseline(LineDirectionMode direction) const OVERRIDE { return RenderBlock::inlineBlockBaseline(direction); }
+    virtual Optional<int> firstLineBaseline() const override { return RenderBlock::firstLineBaseline(); }
+    virtual Optional<int> inlineBlockBaseline(LineDirectionMode direction) const override { return RenderBlock::inlineBlockBaseline(direction); }
 
 };
 
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderTextControl, isTextControl())
 
 #endif // RenderTextControl_h

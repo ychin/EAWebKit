@@ -3,7 +3,7 @@
     Copyright (C) 2008 Holger Hans Peter Freyther
     Copyright (C) 2006, 2008 Apple Inc. All rights reserved.
     Copyright (C) 2007 Nicholas Shanks <webkit@nickshanks.com>
-    Copyright (C) 2011, 2012, 2014, 2016 Electronic Arts, Inc. All rights reserved.
+    Copyright (C) 2011, 2012, 2014, 2015, 2016 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -101,7 +101,7 @@ static void CopyFontFamilyName(char16_t* pDest, const WTF::AtomicString& name)
 {
 	size_t numCharsToCopy = eastl::min_alt<size_t>(name.length(), EA::WebKit::kFamilyNameCapacity - 1);
 	EAW_ASSERT_MSG(numCharsToCopy < EA::WebKit::kFamilyNameCapacity, "Font family name too long. Font is not going to be detected properly");
-	EA::Internal::Strncpy(pDest, name.characters(),numCharsToCopy);
+    EA::Internal::Strncpy(pDest, StringView(name).upconvertedCharacters(), numCharsToCopy);
 	pDest[numCharsToCopy] = 0;
 }
 
@@ -235,20 +235,20 @@ static EA::WebKit::IFont* createFont(const FontDescription& fontDescription, con
 
 	return nullptr;
 }
-PassOwnPtr<FontPlatformData> FontCache::createFontPlatformData(const FontDescription& fontDescription, const AtomicString& familyName)
+std::unique_ptr<FontPlatformData> FontCache::createFontPlatformData(const FontDescription& fontDescription, const AtomicString& familyName)
 {
 	if(EA::WebKit::IFont* pFont = createFont(fontDescription,familyName))
 	{
 		FontPlatformDataPrivate* privData = new FontPlatformDataPrivate();
 		privData->mpFont = pFont;
-		return adoptPtr(new FontPlatformData(privData,fontDescription.computedSize(),fontDescription.weight() >= FontWeightBold,fontDescription.italic() == FontItalicOn));
+		return std::make_unique<FontPlatformData>(privData,fontDescription.computedSize(),fontDescription.weight() >= FontWeightBold,fontDescription.italic() == FontItalicOn);
 	}
 
 	return nullptr;
 }
 
 
-PassRefPtr<SimpleFontData> FontCache::systemFallbackForCharacters(const FontDescription& fontDescription, const WebCore::SimpleFontData*, bool, const UChar* sampleChars, int length)
+RefPtr<Font> FontCache::systemFallbackForCharacters(const FontDescription& fontDescription, const WebCore::Font*, bool, const UChar* sampleChars, unsigned length)
 {
     // This function is called if WebCore can't display the character with the font data it received from the platform earlier. The situation mostly arises for lightweight font resources.
 	// For example, by default, our "Times New Roman" does not contain foreign language characters (such as Chinese). A page might request Times New Roman for Chinese script. Since during the initial query
@@ -260,21 +260,28 @@ PassRefPtr<SimpleFontData> FontCache::systemFallbackForCharacters(const FontDesc
 		FontPlatformDataPrivate* privData = new FontPlatformDataPrivate();
 		privData->mpFont = pFont;
 		FontPlatformData fontPlatformData(privData,fontDescription.computedSize(),fontDescription.weight() >= FontWeightBold,fontDescription.italic() == FontItalicOn);
-		return getCachedFontData(&fontPlatformData, DoNotRetain);
+		return fontForPlatformData(fontPlatformData); 
 	}
 	
 	return NULL;
 }
 
-PassRefPtr<SimpleFontData> FontCache::getLastResortFallbackFont(const FontDescription& fontDescription, ShouldRetain shouldRetain)
+Vector<String> FontCache::systemFontFamilies()
+{
+    // FIXME: <https://webkit.org/b/147017> Web Inspector: [Win] Allow inspector to retrieve a list of system fonts
+    Vector<String> fontFamilies;
+    return fontFamilies;
+}
+
+Ref<Font> FontCache::lastResortFallbackFont(const FontDescription& fontDescription)
 {
 	// If a font could not be obtained, just get one which the application trusts most. This will also be the font that will
 	// be used in case downloadable font fails.
 
 	AtomicString fontFamily(EA::WebKit::GetParameters().mFontFamilyStandard);
 
-	FontPlatformData* platformData = getCachedFontPlatformData(fontDescription,  fontFamily, false); 
-	return getCachedFontData(platformData,shouldRetain);
+	FontPlatformData* platformData = getCachedFontPlatformData(fontDescription,  fontFamily, false);
+	return fontForPlatformData(*platformData);
 }
 
 void FontCache::getTraitsInFamily(const AtomicString&, Vector<unsigned>&)

@@ -102,21 +102,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	#define EA_PLATFORM_DESKTOP 1
 #endif
 
-#if   defined(EA_PLATFORM_PS4) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
+#if   defined(EA_PLATFORM_PS4) || defined(__ORBIS__) || defined(EA_PLATFORM_KETTLE)
 	#if defined(EA_PLATFORM_PS4)
 		#undef  EA_PLATFORM_PS4
 	#endif
 	#define EA_PLATFORM_PS4 1
 
 	// Backward compatibility:
+		#if defined(EA_PLATFORM_KETTLE)
+			#undef  EA_PLATFORM_KETTLE
+		#endif
 	// End backward compatbility
 
-	#define CS_UNDEFINED_STRING 1
+	#define EA_PLATFORM_KETTLE 1
 	#define EA_PLATFORM_NAME "PS4"
 	#define EA_SYSTEM_LITTLE_ENDIAN 1
 	#define EA_PLATFORM_DESCRIPTION "PS4 on x64"
 	#define EA_PLATFORM_CONSOLE 1
-	#define CS_UNDEFINED_STRING 1
+	#define EA_PLATFORM_SONY 1
 	#define EA_PLATFORM_POSIX 1
 	// #define EA_POSIX_THREADS_AVAILABLE 1  // POSIX threading API is available but discouraged.  Sony indicated use of the scePthreads* API is preferred. 
 	#define EA_PROCESSOR_X86_64 1
@@ -124,14 +127,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		#define EA_ASM_STYLE_ATT 1
 	#endif
 
-#elif defined(EA_PLATFORM_XBOXONE) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
+#elif defined(EA_PLATFORM_XBOXONE) || defined(_DURANGO) || defined(EA_PLATFORM_CAPILANO)
 	#if defined(EA_PLATFORM_XBOXONE)
 		#undef  EA_PLATFORM_XBOXONE
 	#endif
 	#define EA_PLATFORM_XBOXONE 1
 
 	// Backward compatibility:
-		#define CS_UNDEFINED_STRING 1
+		#if defined(EA_PLATFORM_CAPILANO)
+			#undef  EA_PLATFORM_CAPILANO
+		#endif
+		#define EA_PLATFORM_CAPILANO 1
 		#if defined(EA_PLATFORM_CAPILANO_XDK) && !defined(EA_PLATFORM_XBOXONE_XDK)
 			#define EA_PLATFORM_XBOXONE_XDK 1
 		#endif
@@ -140,7 +146,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		#endif
 	// End backward compatibility
 
-		#define CS_UNDEFINED_STRING
+	#if !defined(_DURANGO)
+		#define _DURANGO
+	#endif
 	#define EA_PLATFORM_NAME "XBox One"
   //#define EA_PROCESSOR_X86  Currently our policy is that we don't define this, even though x64 is something of a superset of x86.
 	#define EA_PROCESSOR_X86_64 1

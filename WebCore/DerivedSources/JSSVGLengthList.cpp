@@ -19,9 +19,6 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGLengthList.h"
 
 #include "ExceptionCode.h"
@@ -36,25 +33,82 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionClear(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionInitialize(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionGetItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionInsertItemBefore(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionReplaceItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionRemoveItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionAppendItem(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsSVGLengthListNumberOfItems(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGLengthListConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGLengthListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGLengthListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGLengthListPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGLengthListPrototype>(vm.heap)) JSSVGLengthListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGLengthListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSSVGLengthListConstructor : public DOMConstructorObject {
+private:
+    JSSVGLengthListConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGLengthListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGLengthListConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGLengthListConstructor>(vm.heap)) JSSVGLengthListConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSSVGLengthListTableIndex[2] = {
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSSVGLengthListTableValues[] =
 {
-    { "numberOfItems", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGLengthListNumberOfItems), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGLengthListConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "numberOfItems", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGLengthListNumberOfItems), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGLengthListTable = { 4, 3, JSSVGLengthListTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSSVGLengthListConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSSVGLengthListConstructorTable = { 1, 0, JSSVGLengthListConstructorTableValues, 0 };
-const ClassInfo JSSVGLengthListConstructor::s_info = { "SVGLengthListConstructor", &Base::s_info, &JSSVGLengthListConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGLengthListConstructor) };
+static const HashTable JSSVGLengthListTable = { 1, 1, true, JSSVGLengthListTableValues, 0, JSSVGLengthListTableIndex };
+const ClassInfo JSSVGLengthListConstructor::s_info = { "SVGLengthListConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGLengthListConstructor) };
 
 JSSVGLengthListConstructor::JSSVGLengthListConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -65,60 +119,49 @@ void JSSVGLengthListConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globa
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGLengthListPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGLengthListConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGLengthListConstructor, JSDOMWrapper>(exec, JSSVGLengthListConstructorTable, jsCast<JSSVGLengthListConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGLengthList::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGLengthList"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGLengthListPrototypeTableValues[] =
 {
-    { "clear", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionClear), (intptr_t)0 },
-    { "initialize", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionInitialize), (intptr_t)1 },
-    { "getItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionGetItem), (intptr_t)1 },
-    { "insertItemBefore", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionInsertItemBefore), (intptr_t)2 },
-    { "replaceItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionReplaceItem), (intptr_t)2 },
-    { "removeItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionRemoveItem), (intptr_t)1 },
-    { "appendItem", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionAppendItem), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGLengthListConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "clear", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionClear), (intptr_t) (0) },
+    { "initialize", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionInitialize), (intptr_t) (1) },
+    { "getItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionGetItem), (intptr_t) (1) },
+    { "insertItemBefore", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionInsertItemBefore), (intptr_t) (2) },
+    { "replaceItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionReplaceItem), (intptr_t) (2) },
+    { "removeItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionRemoveItem), (intptr_t) (1) },
+    { "appendItem", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGLengthListPrototypeFunctionAppendItem), (intptr_t) (1) },
 };
 
-static const HashTable JSSVGLengthListPrototypeTable = { 18, 15, JSSVGLengthListPrototypeTableValues, 0 };
-const ClassInfo JSSVGLengthListPrototype::s_info = { "SVGLengthListPrototype", &Base::s_info, &JSSVGLengthListPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGLengthListPrototype) };
+const ClassInfo JSSVGLengthListPrototype::s_info = { "SVGLengthListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGLengthListPrototype) };
 
-JSObject* JSSVGLengthListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGLengthList>(vm, globalObject);
-}
-
-bool JSSVGLengthListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGLengthListPrototype* thisObject = jsCast<JSSVGLengthListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSSVGLengthListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGLengthList::s_info = { "SVGLengthList", &Base::s_info, &JSSVGLengthListTable, 0 , CREATE_METHOD_TABLE(JSSVGLengthList) };
-
-JSSVGLengthList::JSSVGLengthList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGListPropertyTearOff<SVGLengthList> > impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSVGLengthList::finishCreation(VM& vm)
+void JSSVGLengthListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGLengthListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGLengthList::s_info = { "SVGLengthList", &Base::s_info, &JSSVGLengthListTable, CREATE_METHOD_TABLE(JSSVGLengthList) };
+
+JSSVGLengthList::JSSVGLengthList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGListPropertyTearOff<SVGLengthList>>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSVGLengthList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSVGLengthListPrototype::create(vm, globalObject, JSSVGLengthListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSVGLengthList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSVGLengthList>(vm, globalObject);
 }
 
 void JSSVGLengthList::destroy(JSC::JSCell* cell)
@@ -129,29 +172,33 @@ void JSSVGLengthList::destroy(JSC::JSCell* cell)
 
 JSSVGLengthList::~JSSVGLengthList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSSVGLengthList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSSVGLengthList* thisObject = jsCast<JSSVGLengthList*>(object);
+    auto* thisObject = jsCast<JSSVGLengthList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSSVGLengthList, Base>(exec, JSSVGLengthListTable, thisObject, propertyName, slot);
 }
 
-JSValue jsSVGLengthListNumberOfItems(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGLengthListNumberOfItems(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSSVGLengthList*>(slotBase);
     JSValue result =  jsNumber(castedThis->impl().numberOfItems());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGLengthListConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGLengthListConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGLengthList* domObject = jsCast<JSSVGLengthList*>(asObject(slotBase));
-    return JSSVGLengthList::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGLengthListPrototype* domObject = jsDynamicCast<JSSVGLengthListPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGLengthList::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGLengthList::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -161,12 +208,12 @@ JSValue JSSVGLengthList::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionClear(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "clear");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     impl.clear(ec);
     setDOMException(exec, ec);
@@ -175,177 +222,166 @@ EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionClear(ExecState* ex
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionInitialize(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "initialize");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<SVGLength>* item(toSVGLength(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGLengthList", "initialize", "SVGLength");
+    SVGPropertyTearOff<SVGLength>* item = JSSVGLength::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.initialize(item, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.initialize(item, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionGetItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "getItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getItem(index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getItem(index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionInsertItemBefore(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "insertItemBefore");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<SVGLength>* item(toSVGLength(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGLengthList", "insertItemBefore", "SVGLength");
+    SVGPropertyTearOff<SVGLength>* item = JSSVGLength::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned index(toUInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.insertItemBefore(item, index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.insertItemBefore(item, index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionReplaceItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "replaceItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<SVGLength>* item(toSVGLength(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGLengthList", "replaceItem", "SVGLength");
+    SVGPropertyTearOff<SVGLength>* item = JSSVGLength::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned index(toUInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.replaceItem(item, index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.replaceItem(item, index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionRemoveItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "removeItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.removeItem(index, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.removeItem(index, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGLengthListPrototypeFunctionAppendItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGLengthList::info()))
-        return throwVMTypeError(exec);
-    JSSVGLengthList* castedThis = jsCast<JSSVGLengthList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGLengthList* castedThis = jsDynamicCast<JSSVGLengthList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGLengthList", "appendItem");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGLengthList::info());
-    SVGListPropertyTearOff<SVGLengthList> & impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<SVGLength>* item(toSVGLength(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGLength::info()))
+        return throwArgumentTypeError(*exec, 0, "item", "SVGLengthList", "appendItem", "SVGLength");
+    SVGPropertyTearOff<SVGLength>* item = JSSVGLength::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.appendItem(item, ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.appendItem(item, ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-static inline bool isObservable(JSSVGLengthList* jsSVGLengthList)
-{
-    if (jsSVGLengthList->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSSVGLengthListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSVGLengthList* jsSVGLengthList = jsCast<JSSVGLengthList*>(handle.get().asCell());
-    if (!isObservable(jsSVGLengthList))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSVGLengthListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSVGLengthList* jsSVGLengthList = jsCast<JSSVGLengthList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSVGLengthList = jsCast<JSSVGLengthList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSVGLengthList->impl(), jsSVGLengthList);
-    jsSVGLengthList->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGListPropertyTearOff<SVGLengthList> * impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SVGListPropertyTearOff<SVGLengthList>* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSVGLengthList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSVGLengthList>(globalObject, impl))
         return result;
-    ReportMemoryCost<SVGListPropertyTearOff<SVGLengthList> >::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSVGLengthList>(exec, globalObject, impl);
+    return createNewWrapper<JSSVGLengthList>(globalObject, impl);
 }
 
-SVGListPropertyTearOff<SVGLengthList> * toSVGLengthList(JSC::JSValue value)
+SVGListPropertyTearOff<SVGLengthList>* JSSVGLengthList::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSVGLengthList::info()) ? &jsCast<JSSVGLengthList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSVGLengthList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(SVG)

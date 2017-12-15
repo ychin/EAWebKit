@@ -30,7 +30,6 @@
 #include "DOMStringList.h"
 #include "Event.h"
 #include "EventListener.h"
-#include "EventNames.h"
 #include "EventTarget.h"
 #include "MediaStreamTrack.h"
 #include "RTCStatsReport.h"
@@ -42,19 +41,19 @@ namespace WebCore {
 
 class RTCStatsResponse : public RTCStatsResponseBase, public ScriptWrappable {
 public:
-    static PassRefPtr<RTCStatsResponse> create();
+    static Ref<RTCStatsResponse> create();
 
-    const Vector<RefPtr<RTCStatsReport> >& result() const { return m_result; };
+    const Vector<RefPtr<RTCStatsReport>>& result() const { return m_result; };
 
     PassRefPtr<RTCStatsReport> namedItem(const AtomicString&);
     bool canGetItemsForName(const AtomicString&);
 
-    virtual size_t addReport(String id, String type, double timestamp) OVERRIDE;
-    virtual void addStatistic(size_t report, String name, String value) OVERRIDE;
+    virtual size_t addReport(String id, String type, double timestamp) override;
+    virtual void addStatistic(size_t report, String name, String value) override;
 
 private:
     RTCStatsResponse();
-    Vector<RefPtr<RTCStatsReport> > m_result;
+    Vector<RefPtr<RTCStatsReport>> m_result;
     HashMap<String, int> m_idmap;
 };
 

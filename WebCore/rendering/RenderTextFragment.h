@@ -31,7 +31,7 @@ namespace WebCore {
 // first letter and that must therefore have different styles (and positions in the render tree).
 // We cache offsets so that text transformations can be applied in such a way that we can recover
 // the original unaltered string from our corresponding DOM node.
-class RenderTextFragment FINAL : public RenderText {
+class RenderTextFragment final : public RenderText {
 public:
     RenderTextFragment(Text&, const String&, int startOffset, int length);
     RenderTextFragment(Document&, const String&, int startOffset, int length);
@@ -39,51 +39,44 @@ public:
 
     virtual ~RenderTextFragment();
 
-    virtual bool isTextFragment() const OVERRIDE { return true; }
-
-    virtual bool canBeSelectionLeaf() const OVERRIDE;
+    virtual bool canBeSelectionLeaf() const override;
 
     unsigned start() const { return m_start; }
     unsigned end() const { return m_end; }
 
-    RenderObject* firstLetter() const { return m_firstLetter; }
-    void setFirstLetter(RenderObject* firstLetter) { m_firstLetter = firstLetter; }
+    RenderBoxModelObject* firstLetter() const { return m_firstLetter; }
+    void setFirstLetter(RenderBoxModelObject& firstLetter) { m_firstLetter = &firstLetter; }
+    
+    RenderBlock* blockForAccompanyingFirstLetter();
 
+    void setContentString(const String& text);
     StringImpl* contentString() const { return m_contentString.impl(); }
-    virtual String originalText() const OVERRIDE;
 
-    virtual void setText(const String&, bool force = false) OVERRIDE;
+    virtual void setText(const String&, bool force = false) override;
 
-    virtual void transformText() OVERRIDE;
-
+    const String& altText() const { return m_altText; }
+    void setAltText(const String& altText) { m_altText = altText; }
+    
 private:
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
-    virtual void willBeDestroyed() OVERRIDE;
+    virtual bool isTextFragment() const override { return true; }
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
+    virtual void willBeDestroyed() override;
 
-    virtual UChar previousCharacter() const OVERRIDE;
-    RenderBlock* blockForAccompanyingFirstLetter() const;
+    virtual UChar previousCharacter() const override;
 
     unsigned m_start;
     unsigned m_end;
+    // Alternative description that can be used for accessibility instead of the native text.
+    String m_altText;
     String m_contentString;
-    RenderObject* m_firstLetter;
+    RenderBoxModelObject* m_firstLetter;
 };
 
-inline RenderTextFragment* toRenderTextFragment(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || toRenderText(object)->isTextFragment());
-    return static_cast<RenderTextFragment*>(object);
-}
-
-inline const RenderTextFragment* toRenderTextFragment(const RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || toRenderText(object)->isTextFragment());
-    return static_cast<const RenderTextFragment*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderTextFragment(const RenderTextFragment*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::RenderTextFragment)
+    static bool isType(const WebCore::RenderText& renderer) { return renderer.isTextFragment(); }
+    static bool isType(const WebCore::RenderObject& renderer) { return is<WebCore::RenderText>(renderer) && isType(downcast<WebCore::RenderText>(renderer)); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // RenderTextFragment_h

@@ -22,35 +22,35 @@
 #define JSHTMLObjectElement_h
 
 #include "HTMLObjectElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
 #include <runtime/CallData.h>
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLObjectElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLObjectElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLObjectElement> impl)
+    static JSHTMLObjectElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLObjectElement>&& impl)
     {
-        JSHTMLObjectElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLObjectElement>(globalObject->vm().heap)) JSHTMLObjectElement(structure, globalObject, impl);
+        JSHTMLObjectElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLObjectElement>(globalObject->vm().heap)) JSHTMLObjectElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
     bool getOwnPropertySlotDelegate(JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
     static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void putByIndex(JSC::JSCell*, JSC::ExecState*, unsigned propertyName, JSC::JSValue, bool shouldThrow);
     bool putDelegate(JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::CallType getCallData(JSC::JSCell*, JSC::CallData&);
@@ -60,106 +60,20 @@ public:
     {
         return static_cast<HTMLObjectElement&>(Base::impl());
     }
-protected:
-    JSHTMLObjectElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLObjectElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSHTMLObjectElementPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLObjectElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLObjectElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLObjectElementPrototype>(vm.heap)) JSHTMLObjectElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLObjectElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::TypeOfShouldCallGetCallData | Base::StructureFlags;
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
+    JSHTMLObjectElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLObjectElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-class JSHTMLObjectElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLObjectElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLObjectElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLObjectElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLObjectElementConstructor>(vm.heap)) JSHTMLObjectElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLObjectElementPrototypeFunctionCheckValidity(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLObjectElementPrototypeFunctionSetCustomValidity(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLObjectElementPrototypeFunctionGetSVGDocument(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsHTMLObjectElementForm(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLObjectElementCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementCode(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementAlign(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementAlign(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementArchive(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementArchive(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementBorder(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementBorder(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementCodeBase(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementCodeBase(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementCodeType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementCodeType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementData(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementData(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementDeclare(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementDeclare(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementHspace(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementHspace(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementName(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementStandby(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementStandby(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementUseMap(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementUseMap(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementVspace(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementVspace(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLObjectElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLObjectElementWillValidate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLObjectElementValidity(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLObjectElementValidationMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLObjectElementContentDocument(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLObjectElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

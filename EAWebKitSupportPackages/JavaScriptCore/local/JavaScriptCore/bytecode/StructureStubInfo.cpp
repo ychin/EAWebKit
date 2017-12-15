@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2008, 2014, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,8 +27,8 @@
 #include "StructureStubInfo.h"
 
 #include "JSObject.h"
+#include "PolymorphicGetByIdList.h"
 #include "PolymorphicPutByIdList.h"
-
 
 namespace JSC {
 
@@ -36,14 +36,8 @@ namespace JSC {
 void StructureStubInfo::deref()
 {
     switch (accessType) {
-    case access_get_by_id_self_list: {
-        PolymorphicAccessStructureList* polymorphicStructures = u.getByIdSelfList.structureList;
-        delete polymorphicStructures;
-        return;
-    }
-    case access_get_by_id_proto_list: {
-        PolymorphicAccessStructureList* polymorphicStructures = u.getByIdProtoList.structureList;
-        delete polymorphicStructures;
+    case access_get_by_id_list: {
+        delete u.getByIdList.list;
         return;
     }
     case access_put_by_id_list:
@@ -54,17 +48,14 @@ void StructureStubInfo::deref()
         delete polymorphicStructures;
         return;
     }
-    case access_get_by_id_self:
-    case access_get_by_id_proto:
-    case access_get_by_id_chain:
     case access_put_by_id_transition_normal:
     case access_put_by_id_transition_direct:
+        ObjectPropertyConditionSet::adoptRawPointer(u.putByIdTransition.rawConditionSet);
+        u.putByIdTransition.rawConditionSet = nullptr;
+        return;
+    case access_get_by_id_self:
     case access_put_by_id_replace:
     case access_unset:
-    case access_get_by_id_generic:
-    case access_put_by_id_generic:
-    case access_get_array_length:
-    case access_get_string_length:
         // These instructions don't have to release any allocated memory
         return;
     default:
@@ -72,40 +63,24 @@ void StructureStubInfo::deref()
     }
 }
 
-bool StructureStubInfo::visitWeakReferences()
+bool StructureStubInfo::visitWeakReferences(RepatchBuffer& repatchBuffer)
 {
     switch (accessType) {
     case access_get_by_id_self:
         if (!Heap::isMarked(u.getByIdSelf.baseObjectStructure.get()))
             return false;
         break;
-    case access_get_by_id_proto:
-        if (!Heap::isMarked(u.getByIdProto.baseObjectStructure.get())
-            || !Heap::isMarked(u.getByIdProto.prototypeStructure.get()))
-            return false;
-        break;
-    case access_get_by_id_chain:
-        if (!Heap::isMarked(u.getByIdChain.baseObjectStructure.get())
-            || !Heap::isMarked(u.getByIdChain.chain.get()))
-            return false;
-        break;
-    case access_get_by_id_self_list: {
-        PolymorphicAccessStructureList* polymorphicStructures = u.getByIdSelfList.structureList;
-        if (!polymorphicStructures->visitWeak(u.getByIdSelfList.listSize))
-            return false;
-        break;
-    }
-    case access_get_by_id_proto_list: {
-        PolymorphicAccessStructureList* polymorphicStructures = u.getByIdProtoList.structureList;
-        if (!polymorphicStructures->visitWeak(u.getByIdProtoList.listSize))
+    case access_get_by_id_list: {
+        if (!u.getByIdList.list->visitWeak(repatchBuffer))
             return false;
         break;
     }
     case access_put_by_id_transition_normal:
     case access_put_by_id_transition_direct:
         if (!Heap::isMarked(u.putByIdTransition.previousStructure.get())
-            || !Heap::isMarked(u.putByIdTransition.structure.get())
-            || !Heap::isMarked(u.putByIdTransition.chain.get()))
+            || !Heap::isMarked(u.putByIdTransition.structure.get()))
+            return false;
+        if (!ObjectPropertyConditionSet::fromRawPointer(u.putByIdTransition.rawConditionSet).areStillLive())
             return false;
         break;
     case access_put_by_id_replace:
@@ -113,7 +88,7 @@ bool StructureStubInfo::visitWeakReferences()
             return false;
         break;
     case access_put_by_id_list:
-        if (!u.putByIdList.list->visitWeak())
+        if (!u.putByIdList.list->visitWeak(repatchBuffer))
             return false;
         break;
     case access_in_list: {

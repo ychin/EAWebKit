@@ -26,13 +26,13 @@
 #include "FunctionPrototype.h"
 #include "JSGlobalObject.h"
 #include "JSString.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 
 STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(InternalFunction);
 
-const ClassInfo InternalFunction::s_info = { "Function", &Base::s_info, 0, 0, CREATE_METHOD_TABLE(InternalFunction) };
+const ClassInfo InternalFunction::s_info = { "Function", &Base::s_info, 0, CREATE_METHOD_TABLE(InternalFunction) };
 
 InternalFunction::InternalFunction(VM& vm, Structure* structure)
     : JSDestructibleObject(vm, structure)

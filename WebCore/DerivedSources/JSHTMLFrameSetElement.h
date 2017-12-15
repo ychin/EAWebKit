@@ -22,31 +22,30 @@
 #define JSHTMLFrameSetElement_h
 
 #include "HTMLFrameSetElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLFrameSetElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLFrameSetElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLFrameSetElement> impl)
+    static JSHTMLFrameSetElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLFrameSetElement>&& impl)
     {
-        JSHTMLFrameSetElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameSetElement>(globalObject->vm().heap)) JSHTMLFrameSetElement(structure, globalObject, impl);
+        JSHTMLFrameSetElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameSetElement>(globalObject->vm().heap)) JSHTMLFrameSetElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -54,100 +53,23 @@ public:
     {
         return static_cast<HTMLFrameSetElement&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::HasImpureGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSHTMLFrameSetElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLFrameSetElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::HasImpureGetOwnPropertySlot | Base::StructureFlags;
+    JSHTMLFrameSetElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLFrameSetElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 private:
     static bool canGetItemsForName(JSC::ExecState*, HTMLFrameSetElement*, JSC::PropertyName);
-    static JSC::JSValue nameGetter(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
+    static JSC::EncodedJSValue nameGetter(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
 };
 
 
-class JSHTMLFrameSetElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLFrameSetElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLFrameSetElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameSetElementPrototype>(vm.heap)) JSHTMLFrameSetElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLFrameSetElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLFrameSetElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLFrameSetElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLFrameSetElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLFrameSetElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameSetElementConstructor>(vm.heap)) JSHTMLFrameSetElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLFrameSetElementCols(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementCols(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementRows(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementRows(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnbeforeunload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnbeforeunload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnhashchange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnhashchange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnmessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnoffline(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnoffline(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnonline(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnonline(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnpopstate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnpopstate(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnresize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnresize(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnstorage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnstorage(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnunload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnunload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(ORIENTATION_EVENTS)
-JSC::JSValue jsHTMLFrameSetElementOnorientationchange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnorientationchange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsHTMLFrameSetElementOnblur(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnblur(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnfocus(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnfocus(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementOnload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLFrameSetElementOnload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLFrameSetElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

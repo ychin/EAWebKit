@@ -27,9 +27,8 @@
 #include "config.h"
 #include "ContentDistributor.h"
 
-#include "ElementTraversal.h"
+#include "ElementIterator.h"
 #include "InsertionPoint.h"
-#include "ShadowRoot.h"
 
 namespace WebCore {
 
@@ -49,7 +48,7 @@ void ContentDistributor::invalidateInsertionPointList()
     m_insertionPointList.clear();
 }
 
-const Vector<RefPtr<InsertionPoint> >& ContentDistributor::ensureInsertionPointList(ShadowRoot* shadowRoot)
+const Vector<RefPtr<InsertionPoint>>& ContentDistributor::ensureInsertionPointList(ShadowRoot* shadowRoot)
 {
     if (m_insertionPointListIsValid)
         return m_insertionPointList;
@@ -57,10 +56,8 @@ const Vector<RefPtr<InsertionPoint> >& ContentDistributor::ensureInsertionPointL
     m_insertionPointListIsValid = true;
     ASSERT(m_insertionPointList.isEmpty());
 
-    for (Element* element = ElementTraversal::firstWithin(shadowRoot); element; element = ElementTraversal::next(element, shadowRoot)) {
-        if (element->isInsertionPoint())
-            m_insertionPointList.append(toInsertionPoint(element));
-    }
+    for (auto& element : descendantsOfType<InsertionPoint>(*shadowRoot))
+        m_insertionPointList.append(&element);
 
     return m_insertionPointList;
 }
@@ -79,7 +76,7 @@ void ContentDistributor::distribute(Element* host)
     m_validity = Valid;
 
     if (ShadowRoot* root = host->shadowRoot()) {
-        const Vector<RefPtr<InsertionPoint> >& insertionPoints = ensureInsertionPointList(root);
+        const Vector<RefPtr<InsertionPoint>>& insertionPoints = ensureInsertionPointList(root);
         for (size_t i = 0; i < insertionPoints.size(); ++i) {
             InsertionPoint* point = insertionPoints[i].get();
             if (!point->isActive())
@@ -96,7 +93,7 @@ bool ContentDistributor::invalidate(Element* host)
     bool needsReattach = (m_validity == Undetermined) || !m_nodeToInsertionPoint.isEmpty();
 
     if (ShadowRoot* root = host->shadowRoot()) {
-        const Vector<RefPtr<InsertionPoint> >& insertionPoints = ensureInsertionPointList(root);
+        const Vector<RefPtr<InsertionPoint>>& insertionPoints = ensureInsertionPointList(root);
         for (size_t i = 0; i < insertionPoints.size(); ++i) {
             needsReattach = true;
             insertionPoints[i]->clearDistribution();
@@ -145,11 +142,8 @@ void ContentDistributor::invalidateDistribution(Element* host)
     bool didNeedInvalidation = needsInvalidation();
     bool needsReattach = didNeedInvalidation ? invalidate(host) : false;
 
-    if (needsReattach && host->attached()) {
-        for (Element* element = ElementTraversal::firstWithin(host); element; element = ElementTraversal::nextSibling(element))
-            element->lazyReattach();
-        host->setNeedsStyleRecalc();
-    }
+    if (needsReattach)
+        host->setNeedsStyleRecalc(ReconstructRenderTree);
 
     if (didNeedInvalidation) {
         ASSERT(m_validity == Invalidating);

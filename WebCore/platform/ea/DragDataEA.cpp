@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2007, 2008, 2009 Apple Inc. All rights reserved.
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -68,12 +68,12 @@ bool DragData::containsPlainText() const
 	return false; 
 }
 
-String DragData::asPlainText(Frame *frame) const
+String DragData::asPlainText() const
 {
     if (!m_platformDragData)
         return String();
     // FIXME: Should handle rich text here
-    return asURL(frame, DoNotConvertFilenames, 0);
+    return asURL(DoNotConvertFilenames, 0);
 }
 
 Color DragData::asColor() const
@@ -90,7 +90,7 @@ bool DragData::containsCompatibleContent() const
     return false;
 }
 
-bool DragData::containsURL(Frame*, FilenameConversionPolicy filenamePolicy) const
+bool DragData::containsURL(FilenameConversionPolicy filenamePolicy) const
 {
     // FIXME: Use filenamePolicy.
     if (!m_platformDragData)
@@ -98,18 +98,13 @@ bool DragData::containsURL(Frame*, FilenameConversionPolicy filenamePolicy) cons
     return false;
 }
 
-String DragData::asURL(Frame*, FilenameConversionPolicy filenamePolicy, String*) const
+String DragData::asURL(FilenameConversionPolicy filenamePolicy, String*) const
 {
     // FIXME: Use filenamePolicy.
     if (!m_platformDragData)
         return String();
 
 	return String();
-}
-
-PassRefPtr<DocumentFragment> DragData::asFragment(Frame*, Range& context, bool allowPlainText, bool& chosePlainText) const
-{
-    return 0;
 }
 
 unsigned DragData::numberOfFiles() const

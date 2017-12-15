@@ -26,9 +26,7 @@
 #include "HTMLParserIdioms.h"
 
 #include "Decimal.h"
-#include "HTMLIdentifier.h"
 #include "URL.h"
-#include "QualifiedName.h"
 #include <limits>
 #include <wtf/MathExtras.h>
 #include <wtf/text/AtomicString.h>
@@ -73,7 +71,7 @@ String stripLeadingAndTrailingHTMLSpaces(const String& string)
     if (string.is8Bit())
         return stripLeadingAndTrailingHTMLSpaces(string, string.characters8(), length);
 
-    return stripLeadingAndTrailingHTMLSpaces(string, string.characters(), length);
+    return stripLeadingAndTrailingHTMLSpaces(string, string.characters16(), length);
 }
 
 String serializeForNumberType(const Decimal& number)
@@ -269,168 +267,27 @@ bool parseHTMLNonNegativeInteger(const String& input, unsigned& value)
     // Step 1
     // Step 2
     unsigned length = input.length();
-    if (length && input.is8Bit()) {
+    if (!length || input.is8Bit()) {
         const LChar* start = input.characters8();
         return parseHTMLNonNegativeIntegerInternal(start, start + length, value);
     }
     
-    const UChar* start = input.characters();
+    const UChar* start = input.characters16();
     return parseHTMLNonNegativeIntegerInternal(start, start + length, value);
 }
 
-static bool threadSafeEqual(const StringImpl* a, const StringImpl* b)
+static bool threadSafeEqual(const StringImpl& a, const StringImpl& b)
 {
-    if (a == b)
+    if (&a == &b)
         return true;
-    if (a->hash() != b->hash())
+    if (a.hash() != b.hash())
         return false;
-    return equalNonNull(a, b);
+    return equal(a, b);
 }
 
 bool threadSafeMatch(const QualifiedName& a, const QualifiedName& b)
 {
-    return threadSafeEqual(a.localName().impl(), b.localName().impl());
-}
-
-#if ENABLE(THREADED_HTML_PARSER)
-bool threadSafeMatch(const HTMLIdentifier& localName, const QualifiedName& qName)
-{
-    return threadSafeEqual(localName.asStringImpl(), qName.localName().impl());
-}
-#endif
-
-struct ImageWithScale {
-    unsigned imageURLStart;
-    unsigned imageURLLength;
-    float scaleFactor;
-
-    ImageWithScale()
-        : imageURLStart(0)
-        , imageURLLength(0)
-        , scaleFactor(1)
-    { 
-    }
-
-    bool hasImageURL() const
-    {
-        return imageURLLength;
-    }
-};
-typedef Vector<ImageWithScale> ImageCandidates;
-
-static inline bool compareByScaleFactor(const ImageWithScale& first, const ImageWithScale& second)
-{
-    return first.scaleFactor < second.scaleFactor;
-}
-
-static inline bool isHTMLSpaceOrComma(UChar character)
-{
-    return isHTMLSpace(character) || character == ',';
-}
-
-// See the specifications for more details about the algorithm to follow.
-// http://www.w3.org/TR/2013/WD-html-srcset-20130228/#processing-the-image-candidates.
-static void parseImagesWithScaleFromSrcsetAttribute(const String& srcsetAttribute, ImageCandidates& imageCandidates)
-{
-    ASSERT(imageCandidates.isEmpty());
-
-    size_t imageCandidateStart = 0;
-    unsigned srcsetAttributeLength = srcsetAttribute.length();
-
-    while (imageCandidateStart < srcsetAttributeLength) {
-        float imageScaleFactor = 1;
-        size_t separator;
-
-        // 4. Splitting loop: Skip whitespace.
-        size_t imageURLStart = srcsetAttribute.find(isNotHTMLSpace, imageCandidateStart);
-        if (imageURLStart == notFound)
-            break;
-        // If The current candidate is either totally empty or only contains space, skipping.
-        if (srcsetAttribute[imageURLStart] == ',') {
-            imageCandidateStart = imageURLStart + 1;
-            continue;
-        }
-        // 5. Collect a sequence of characters that are not space characters, and let that be url.
-        size_t imageURLEnd = srcsetAttribute.find(isHTMLSpace, imageURLStart + 1);
-        if (imageURLEnd == notFound) {
-            imageURLEnd = srcsetAttributeLength;
-            separator = srcsetAttributeLength;
-        } else if (srcsetAttribute[imageURLEnd - 1] == ',') {
-            --imageURLEnd;
-            separator = imageURLEnd;
-        } else {
-            // 7. Collect a sequence of characters that are not "," (U+002C) characters, and let that be descriptors.
-            size_t imageScaleStart = srcsetAttribute.find(isNotHTMLSpace, imageURLEnd + 1);
-            if (imageScaleStart == notFound)
-                separator = srcsetAttributeLength;
-            else if (srcsetAttribute[imageScaleStart] == ',')
-                separator = imageScaleStart;
-            else {
-                // This part differs from the spec as the current implementation only supports pixel density descriptors for now.
-                size_t imageScaleEnd = srcsetAttribute.find(isHTMLSpaceOrComma, imageScaleStart + 1);
-                imageScaleEnd = (imageScaleEnd == notFound) ? srcsetAttributeLength : imageScaleEnd;
-                size_t commaPosition = imageScaleEnd;
-                // Make sure there are no other descriptors.
-                while ((commaPosition < srcsetAttributeLength - 1) && isHTMLSpace(srcsetAttribute[commaPosition]))
-                    ++commaPosition;
-                // If the first not html space character after the scale modifier is not a comma,
-                // the current candidate is an invalid input.
-                if ((commaPosition < srcsetAttributeLength - 1) && srcsetAttribute[commaPosition] != ',') {
-                    // Find the nearest comma and skip the input.
-                    commaPosition = srcsetAttribute.find(',', commaPosition + 1);
-                    if (commaPosition == notFound)
-                        break;
-                    imageCandidateStart = commaPosition + 1;
-                    continue;
-                }
-                separator = commaPosition;
-                if (srcsetAttribute[imageScaleEnd - 1] != 'x') {
-                    imageCandidateStart = separator + 1;
-                    continue;
-                }
-                bool validScaleFactor = false;
-                size_t scaleFactorLengthWithoutUnit = imageScaleEnd - imageScaleStart - 1;
-                imageScaleFactor = charactersToFloat(srcsetAttribute.characters() + imageScaleStart, scaleFactorLengthWithoutUnit, &validScaleFactor);
-
-                if (!validScaleFactor) {
-                    imageCandidateStart = separator + 1;
-                    continue;
-                }
-            }
-        }
-        ImageWithScale image;
-        image.imageURLStart = imageURLStart;
-        image.imageURLLength = imageURLEnd - imageURLStart;
-        image.scaleFactor = imageScaleFactor;
-
-        imageCandidates.append(image);
-        // 11. Return to the step labeled splitting loop.
-        imageCandidateStart = separator + 1;
-    }
-}
-
-String bestFitSourceForImageAttributes(float deviceScaleFactor, const String& srcAttribute, const String& srcsetAttribute)
-{
-    ImageCandidates imageCandidates;
-
-    parseImagesWithScaleFromSrcsetAttribute(srcsetAttribute, imageCandidates);
-
-    if (!srcAttribute.isEmpty()) {
-        ImageWithScale srcPlaceholderImage;
-        imageCandidates.append(srcPlaceholderImage);
-    }
-
-    if (imageCandidates.isEmpty())
-        return String();
-
-    std::stable_sort(imageCandidates.begin(), imageCandidates.end(), compareByScaleFactor);
-
-    for (size_t i = 0; i < imageCandidates.size() - 1; ++i) {
-        if (imageCandidates[i].scaleFactor >= deviceScaleFactor)
-            return imageCandidates[i].hasImageURL() ? srcsetAttribute.substringSharingImpl(imageCandidates[i].imageURLStart, imageCandidates[i].imageURLLength) : srcAttribute;
-    }
-    const ImageWithScale& lastCandidate = imageCandidates.last();
-    return lastCandidate.hasImageURL() ? srcsetAttribute.substringSharingImpl(lastCandidate.imageURLStart, lastCandidate.imageURLLength) : srcAttribute;
+    return threadSafeEqual(*a.localName().impl(), *b.localName().impl());
 }
 
 }

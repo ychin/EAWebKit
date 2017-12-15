@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2008, 2010 Apple Inc. All Rights Reserved.
  * Copyright (C) 2009 Google Inc. All Rights Reserved.
+ * Copyright (C) 2016 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -11,10 +12,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,8 +28,6 @@
 
 #include "config.h"
 
-#if ENABLE(WORKERS)
-
 #include "Worker.h"
 
 #include "DOMWindow.h"
@@ -38,7 +37,6 @@
 #include "EventListener.h"
 #include "EventNames.h"
 #include "ExceptionCode.h"
-#include "FeatureObserver.h"
 #include "Frame.h"
 #include "FrameLoader.h"
 #include "InspectorInstrumentation.h"
@@ -51,19 +49,24 @@
 #include <wtf/HashSet.h>
 #include <wtf/MainThread.h>
 
+//+EAWebKitChange
+//01/07/2016 - 
+#include <internal/include/EAWebKit_p.h>
+#include <internal/include/EAWebKitAssert.h>
+//-EAWebKitChange
+
 namespace WebCore {
 
 static HashSet<Worker*>* allWorkers;
 
 void networkStateChanged(bool isOnLine)
 {
-    HashSet<Worker*>::iterator end = allWorkers->end();
-    for (HashSet<Worker*>::iterator it = allWorkers->begin(); it != end; ++it)
-        (*it)->notifyNetworkStateChange(isOnLine);
+    for (auto& worker : *allWorkers)
+        worker->notifyNetworkStateChange(isOnLine);
 }
 
 inline Worker::Worker(ScriptExecutionContext& context)
-    : AbstractWorker(context)
+    : ActiveDOMObject(&context)
     , m_contextProxy(WorkerGlobalScopeProxy::create(this))
 {
     if (!allWorkers) {
@@ -75,34 +78,28 @@ inline Worker::Worker(ScriptExecutionContext& context)
     ASSERT_UNUSED(addResult, addResult.isNewEntry);
 }
 
-PassRefPtr<Worker> Worker::create(ScriptExecutionContext& context, const String& url, ExceptionCode& ec)
+RefPtr<Worker> Worker::create(ScriptExecutionContext& context, const String& url, ExceptionCode& ec)
 {
     ASSERT(isMainThread());
 
     // We don't currently support nested workers, so workers can only be created from documents.
     ASSERT_WITH_SECURITY_IMPLICATION(context.isDocument());
-    Document& document = static_cast<Document&>(context);
 
-    FeatureObserver::observe(document.domWindow(), FeatureObserver::WorkerStart);
-
-    RefPtr<Worker> worker = adoptRef(new Worker(context));
+    Ref<Worker> worker = adoptRef(*new Worker(context));
 
     worker->suspendIfNeeded();
 
     URL scriptURL = worker->resolveURL(url, ec);
     if (scriptURL.isEmpty())
-        return 0;
+        return nullptr;
 
     // The worker context does not exist while loading, so we must ensure that the worker object is not collected, nor are its event listeners.
-    worker->setPendingActivity(worker.get());
+    worker->setPendingActivity(worker.ptr());
 
     worker->m_scriptLoader = WorkerScriptLoader::create();
-#if PLATFORM(BLACKBERRY)
-    worker->m_scriptLoader->setTargetType(ResourceRequest::TargetIsWorker);
-#endif
-    worker->m_scriptLoader->loadAsynchronously(&context, scriptURL, DenyCrossOriginRequests, worker.get());
+    worker->m_scriptLoader->loadAsynchronously(&context, scriptURL, DenyCrossOriginRequests, worker.ptr());
 
-    return worker.release();
+    return WTF::move(worker);
 }
 
 Worker::~Worker()
@@ -124,10 +121,10 @@ void Worker::postMessage(PassRefPtr<SerializedScriptValue> message, MessagePort*
 void Worker::postMessage(PassRefPtr<SerializedScriptValue> message, const MessagePortArray* ports, ExceptionCode& ec)
 {
     // Disentangle the port in preparation for sending it to the remote context.
-    OwnPtr<MessagePortChannelArray> channels = MessagePort::disentanglePorts(ports, ec);
+    std::unique_ptr<MessagePortChannelArray> channels = MessagePort::disentanglePorts(ports, ec);
     if (ec)
         return;
-    m_contextProxy->postMessageToWorkerGlobalScope(message, channels.release());
+    m_contextProxy->postMessageToWorkerGlobalScope(message, WTF::move(channels));
 }
 
 void Worker::terminate()
@@ -135,10 +132,15 @@ void Worker::terminate()
     m_contextProxy->terminateWorkerGlobalScope();
 }
 
-bool Worker::canSuspend() const
+bool Worker::canSuspendForPageCache() const
 {
     // FIXME: It is not currently possible to suspend a worker, so pages with workers can not go into page cache.
     return false;
+}
+
+const char* Worker::activeDOMObjectName() const
+{
+    return "Worker";
 }
 
 void Worker::stop()
@@ -164,7 +166,17 @@ void Worker::didReceiveResponse(unsigned long identifier, const ResourceResponse
 void Worker::notifyFinished()
 {
     if (m_scriptLoader->failed())
+    {
         dispatchEvent(Event::create(eventNames().errorEvent, false, true));
+    }
+    //+EAWebKitChange
+    //01/07/2016 - runtime boolean check before creating the thread 
+    else if (!EA::WebKit::GetParameters().mEnableWebWorkers)
+    {
+        dispatchEvent(Event::create(eventNames().errorEvent, false, true));
+        EAW_ASSERT_MSG(false, "Using Web workers when it is disabled at library init.\n");
+    }
+	//-EAWebKitChange
     else {
         WorkerThreadStartMode startMode = DontPauseWorkerGlobalScopeOnStart;
         if (InspectorInstrumentation::shouldPauseDedicatedWorkerOnStart(scriptExecutionContext()))
@@ -178,5 +190,3 @@ void Worker::notifyFinished()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)

@@ -22,6 +22,7 @@
 #include "JSDOMFormData.h"
 
 #include "DOMFormData.h"
+#include "JSDOMBinding.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
@@ -29,24 +30,62 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSDOMFormDataTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMFormDataConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMFormDataPrototypeFunctionAppend(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsDOMFormDataConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSDOMFormDataPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDOMFormDataPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDOMFormDataPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMFormDataPrototype>(vm.heap)) JSDOMFormDataPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDOMFormDataPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSDOMFormDataTable = { 2, 1, JSDOMFormDataTableValues, 0 };
-/* Hash table for constructor */
+class JSDOMFormDataConstructor : public DOMConstructorObject {
+private:
+    JSDOMFormDataConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSDOMFormDataConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSDOMFormDataConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSDOMFormDataConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMFormDataConstructor>(vm.heap)) JSDOMFormDataConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSDOMFormDataConstructorTable = { 1, 0, JSDOMFormDataConstructorTableValues, 0 };
-const ClassInfo JSDOMFormDataConstructor::s_info = { "FormDataConstructor", &Base::s_info, &JSDOMFormDataConstructorTable, 0, CREATE_METHOD_TABLE(JSDOMFormDataConstructor) };
+const ClassInfo JSDOMFormDataConstructor::s_info = { "FormDataConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMFormDataConstructor) };
 
 JSDOMFormDataConstructor::JSDOMFormDataConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -57,13 +96,9 @@ void JSDOMFormDataConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSDOMFormDataPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSDOMFormDataConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSDOMFormDataConstructor, JSDOMWrapper>(exec, JSDOMFormDataConstructorTable, jsCast<JSDOMFormDataConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSDOMFormData::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("FormData"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 ConstructType JSDOMFormDataConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -76,41 +111,34 @@ ConstructType JSDOMFormDataConstructor::getConstructData(JSCell*, ConstructData&
 
 static const HashTableValue JSDOMFormDataPrototypeTableValues[] =
 {
-    { "append", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMFormDataPrototypeFunctionAppend), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMFormDataConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "append", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMFormDataPrototypeFunctionAppend), (intptr_t) (0) },
 };
 
-static const HashTable JSDOMFormDataPrototypeTable = { 2, 1, JSDOMFormDataPrototypeTableValues, 0 };
-const ClassInfo JSDOMFormDataPrototype::s_info = { "FormDataPrototype", &Base::s_info, &JSDOMFormDataPrototypeTable, 0, CREATE_METHOD_TABLE(JSDOMFormDataPrototype) };
+const ClassInfo JSDOMFormDataPrototype::s_info = { "FormDataPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMFormDataPrototype) };
 
-JSObject* JSDOMFormDataPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDOMFormData>(vm, globalObject);
-}
-
-bool JSDOMFormDataPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDOMFormDataPrototype* thisObject = jsCast<JSDOMFormDataPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDOMFormDataPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSDOMFormData::s_info = { "FormData", &Base::s_info, &JSDOMFormDataTable, 0 , CREATE_METHOD_TABLE(JSDOMFormData) };
-
-JSDOMFormData::JSDOMFormData(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMFormData> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSDOMFormData::finishCreation(VM& vm)
+void JSDOMFormDataPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDOMFormDataPrototypeTableValues, *this);
+}
+
+const ClassInfo JSDOMFormData::s_info = { "FormData", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMFormData) };
+
+JSDOMFormData::JSDOMFormData(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMFormData>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSDOMFormData::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSDOMFormDataPrototype::create(vm, globalObject, JSDOMFormDataPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSDOMFormData::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSDOMFormData>(vm, globalObject);
 }
 
 void JSDOMFormData::destroy(JSC::JSCell* cell)
@@ -121,20 +149,15 @@ void JSDOMFormData::destroy(JSC::JSCell* cell)
 
 JSDOMFormData::~JSDOMFormData()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSDOMFormData::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsDOMFormDataConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSDOMFormData* thisObject = jsCast<JSDOMFormData*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSDOMFormData, Base>(exec, JSDOMFormDataTable, thisObject, propertyName, slot);
-}
-
-JSValue jsDOMFormDataConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSDOMFormData* domObject = jsCast<JSDOMFormData*>(asObject(slotBase));
-    return JSDOMFormData::getConstructor(exec->vm(), domObject->globalObject());
+    JSDOMFormDataPrototype* domObject = jsDynamicCast<JSDOMFormDataPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSDOMFormData::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSDOMFormData::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -144,43 +167,33 @@ JSValue JSDOMFormData::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsDOMFormDataPrototypeFunctionAppend(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMFormData::info()))
-        return throwVMTypeError(exec);
-    JSDOMFormData* castedThis = jsCast<JSDOMFormData*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMFormData* castedThis = jsDynamicCast<JSDOMFormData*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMFormData", "append");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMFormData::info());
     return JSValue::encode(castedThis->append(exec));
 }
 
-static inline bool isObservable(JSDOMFormData* jsDOMFormData)
-{
-    if (jsDOMFormData->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSDOMFormDataOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSDOMFormData* jsDOMFormData = jsCast<JSDOMFormData*>(handle.get().asCell());
-    if (!isObservable(jsDOMFormData))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSDOMFormDataOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSDOMFormData* jsDOMFormData = jsCast<JSDOMFormData*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsDOMFormData = jsCast<JSDOMFormData*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsDOMFormData->impl(), jsDOMFormData);
-    jsDOMFormData->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMFormData* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DOMFormData* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDOMFormData>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDOMFormData>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -189,13 +202,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMForm
     // attribute to DOMFormData.
     COMPILE_ASSERT(!__is_polymorphic(DOMFormData), DOMFormData_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<DOMFormData>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDOMFormData>(exec, globalObject, impl);
+    return createNewWrapper<JSDOMFormData>(globalObject, impl);
 }
 
-DOMFormData* toDOMFormData(JSC::JSValue value)
+DOMFormData* JSDOMFormData::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSDOMFormData::info()) ? &jsCast<JSDOMFormData*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSDOMFormData*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

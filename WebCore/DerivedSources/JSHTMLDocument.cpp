@@ -21,12 +21,10 @@
 #include "config.h"
 #include "JSHTMLDocument.h"
 
-#include "Element.h"
 #include "ExceptionCode.h"
 #include "HTMLCollection.h"
 #include "HTMLDocument.h"
 #include "JSDOMBinding.h"
-#include "JSElement.h"
 #include "JSHTMLCollection.h"
 #include "URL.h"
 #include "wtf/text/AtomicString.h"
@@ -38,39 +36,150 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionClose(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionWrite(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionWriteln(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionClear(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionCaptureEvents(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionReleaseEvents(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsHTMLDocumentEmbeds(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLDocumentPlugins(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLDocumentScripts(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLDocumentAll(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentAll(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLDocumentHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLDocumentDir(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentDir(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentDesignMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentDesignMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentCompatMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLDocumentBgColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentBgColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentFgColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentFgColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentAlinkColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentAlinkColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentLinkColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentLinkColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentVlinkColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDocumentVlinkColor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLDocumentConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLDocumentPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLDocumentPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLDocumentPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLDocumentPrototype>(vm.heap)) JSHTMLDocumentPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLDocumentPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSHTMLDocumentConstructor : public DOMConstructorObject {
+private:
+    JSHTMLDocumentConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLDocumentConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLDocumentConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLDocumentConstructor>(vm.heap)) JSHTMLDocumentConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSHTMLDocumentTableIndex[36] = {
+    { 10, 35 },
+    { -1, -1 },
+    { 12, -1 },
+    { 5, -1 },
+    { -1, -1 },
+    { 2, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 6, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 11, -1 },
+    { -1, -1 },
+    { 14, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 4, -1 },
+    { 1, 32 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 3, 33 },
+    { 0, 34 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 7, -1 },
+    { 8, -1 },
+    { 9, -1 },
+    { 13, -1 },
+};
+
 
 static const HashTableValue JSHTMLDocumentTableValues[] =
 {
-    { "embeds", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentEmbeds), (intptr_t)0 },
-    { "plugins", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentPlugins), (intptr_t)0 },
-    { "scripts", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentScripts), (intptr_t)0 },
-    { "all", 0, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentAll), (intptr_t)setJSHTMLDocumentAll },
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentWidth), (intptr_t)0 },
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentHeight), (intptr_t)0 },
-    { "dir", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentDir), (intptr_t)setJSHTMLDocumentDir },
-    { "designMode", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentDesignMode), (intptr_t)setJSHTMLDocumentDesignMode },
-    { "compatMode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentCompatMode), (intptr_t)0 },
-    { "activeElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentActiveElement), (intptr_t)0 },
-    { "bgColor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentBgColor), (intptr_t)setJSHTMLDocumentBgColor },
-    { "fgColor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentFgColor), (intptr_t)setJSHTMLDocumentFgColor },
-    { "alinkColor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentAlinkColor), (intptr_t)setJSHTMLDocumentAlinkColor },
-    { "linkColor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentLinkColor), (intptr_t)setJSHTMLDocumentLinkColor },
-    { "vlinkColor", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentVlinkColor), (intptr_t)setJSHTMLDocumentVlinkColor },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "embeds", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentEmbeds), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "plugins", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentPlugins), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "scripts", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentScripts), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "all", CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentAll), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentAll) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "dir", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentDir), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentDir) },
+    { "designMode", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentDesignMode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentDesignMode) },
+    { "compatMode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentCompatMode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "bgColor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentBgColor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentBgColor) },
+    { "fgColor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentFgColor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentFgColor) },
+    { "alinkColor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentAlinkColor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentAlinkColor) },
+    { "linkColor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentLinkColor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentLinkColor) },
+    { "vlinkColor", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDocumentVlinkColor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDocumentVlinkColor) },
 };
 
-static const HashTable JSHTMLDocumentTable = { 36, 31, JSHTMLDocumentTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSHTMLDocumentConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSHTMLDocumentConstructorTable = { 1, 0, JSHTMLDocumentConstructorTableValues, 0 };
-const ClassInfo JSHTMLDocumentConstructor::s_info = { "HTMLDocumentConstructor", &Base::s_info, &JSHTMLDocumentConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLDocumentConstructor) };
+static const HashTable JSHTMLDocumentTable = { 15, 31, true, JSHTMLDocumentTableValues, 0, JSHTMLDocumentTableIndex };
+const ClassInfo JSHTMLDocumentConstructor::s_info = { "HTMLDocumentConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLDocumentConstructor) };
 
 JSHTMLDocumentConstructor::JSHTMLDocumentConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -81,78 +190,54 @@ void JSHTMLDocumentConstructor::finishCreation(VM& vm, JSDOMGlobalObject* global
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLDocumentPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLDocumentConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLDocumentConstructor, JSDOMWrapper>(exec, JSHTMLDocumentConstructorTable, jsCast<JSHTMLDocumentConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLDocument::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLDocument"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLDocumentPrototypeTableValues[] =
 {
-    { "open", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionOpen), (intptr_t)0 },
-    { "close", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionClose), (intptr_t)0 },
-    { "write", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionWrite), (intptr_t)0 },
-    { "writeln", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionWriteln), (intptr_t)0 },
-    { "clear", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionClear), (intptr_t)0 },
-    { "captureEvents", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionCaptureEvents), (intptr_t)0 },
-    { "releaseEvents", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionReleaseEvents), (intptr_t)0 },
-    { "hasFocus", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionHasFocus), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "open", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionOpen), (intptr_t) (0) },
+    { "close", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionClose), (intptr_t) (0) },
+    { "write", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionWrite), (intptr_t) (0) },
+    { "writeln", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionWriteln), (intptr_t) (0) },
+    { "clear", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionClear), (intptr_t) (0) },
+    { "captureEvents", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionCaptureEvents), (intptr_t) (0) },
+    { "releaseEvents", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLDocumentPrototypeFunctionReleaseEvents), (intptr_t) (0) },
 };
 
-static const HashTable JSHTMLDocumentPrototypeTable = { 17, 15, JSHTMLDocumentPrototypeTableValues, 0 };
-const ClassInfo JSHTMLDocumentPrototype::s_info = { "HTMLDocumentPrototype", &Base::s_info, &JSHTMLDocumentPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLDocumentPrototype) };
+const ClassInfo JSHTMLDocumentPrototype::s_info = { "HTMLDocumentPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLDocumentPrototype) };
 
-JSObject* JSHTMLDocumentPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLDocument>(vm, globalObject);
-}
-
-bool JSHTMLDocumentPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSHTMLDocumentPrototype* thisObject = jsCast<JSHTMLDocumentPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSHTMLDocumentPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSHTMLDocument::s_info = { "HTMLDocument", &Base::s_info, &JSHTMLDocumentTable, 0 , CREATE_METHOD_TABLE(JSHTMLDocument) };
-
-JSHTMLDocument::JSHTMLDocument(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLDocument> impl)
-    : JSDocument(structure, globalObject, impl)
-{
-}
-
-void JSHTMLDocument::finishCreation(VM& vm)
+void JSHTMLDocumentPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLDocumentPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLDocument::s_info = { "HTMLDocument", &Base::s_info, &JSHTMLDocumentTable, CREATE_METHOD_TABLE(JSHTMLDocument) };
+
+JSHTMLDocument::JSHTMLDocument(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLDocument>&& impl)
+    : JSDocument(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLDocument::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLDocumentPrototype::create(vm, globalObject, JSHTMLDocumentPrototype::createStructure(vm, globalObject, JSDocumentPrototype::self(vm, globalObject)));
+    return JSHTMLDocumentPrototype::create(vm, globalObject, JSHTMLDocumentPrototype::createStructure(vm, globalObject, JSDocument::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLDocument::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLDocument::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLDocument* thisObject = jsCast<JSHTMLDocument*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    if (canGetItemsForName(exec, &thisObject->impl(), propertyName)) {
-        slot.setCustom(thisObject, ReadOnly | DontDelete | DontEnum, thisObject->nameGetter);
-        return true;
-    }
-    return getStaticValueSlot<JSHTMLDocument, Base>(exec, JSHTMLDocumentTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLDocument>(vm, globalObject);
 }
 
 bool JSHTMLDocument::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSHTMLDocument* thisObject = jsCast<JSHTMLDocument*>(object);
+    auto* thisObject = jsCast<JSHTMLDocument*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    PropertyName propertyName = Identifier::from(exec, index);
+    Identifier propertyName = Identifier::from(exec, index);
     if (canGetItemsForName(exec, &thisObject->impl(), propertyName)) {
         slot.setCustom(thisObject, ReadOnly | DontDelete | DontEnum, thisObject->nameGetter);
         return true;
@@ -160,252 +245,299 @@ bool JSHTMLDocument::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsHTMLDocumentEmbeds(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentEmbeds(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.embeds()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentPlugins(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentPlugins(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.plugins()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentScripts(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentScripts(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.scripts()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentAll(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentAll(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
-    return castedThis->all(exec);
-}
-
-
-JSValue jsHTMLDocumentWidth(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    return JSValue::encode(castedThis->all(exec));
+}
+
+
+EncodedJSValue jsHTMLDocumentWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.width());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.height());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentDir(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentDir(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.dir());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentDesignMode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentDesignMode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.designMode());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentCompatMode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentCompatMode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.compatMode());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentActiveElement(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentBgColor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.activeElement()));
-    return result;
-}
-
-
-JSValue jsHTMLDocumentBgColor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.bgColor());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentFgColor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentFgColor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fgColor());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentAlinkColor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentAlinkColor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.alinkColor());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentLinkColor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentLinkColor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.linkColor());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentVlinkColor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentVlinkColor(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDocument& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.vlinkColor());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLDocumentConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDocumentConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDocument* domObject = jsCast<JSHTMLDocument*>(asObject(slotBase));
-    return JSHTMLDocument::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLDocument* domObject = jsDynamicCast<JSHTMLDocument*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLDocument::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLDocument::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLDocumentAll(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLDocument* thisObject = jsCast<JSHTMLDocument*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLDocument, Base>(exec, propertyName, value, JSHTMLDocumentTable, thisObject, slot);
-}
-
-void setJSHTMLDocumentAll(ExecState* exec, JSObject* thisObject, JSValue value)
-{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSHTMLDocument*>(thisObject)->setAll(exec, value);
+    castedThis->setAll(exec, value);
 }
 
 
-void setJSHTMLDocumentDir(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentDir(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setDir(nativeValue);
 }
 
 
-void setJSHTMLDocumentDesignMode(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentDesignMode(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setDesignMode(nativeValue);
 }
 
 
-void setJSHTMLDocumentBgColor(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentBgColor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBgColor(nativeValue);
 }
 
 
-void setJSHTMLDocumentFgColor(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentFgColor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setFgColor(nativeValue);
 }
 
 
-void setJSHTMLDocumentAlinkColor(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentAlinkColor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setAlinkColor(nativeValue);
 }
 
 
-void setJSHTMLDocumentLinkColor(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentLinkColor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setLinkColor(nativeValue);
 }
 
 
-void setJSHTMLDocumentVlinkColor(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLDocumentVlinkColor(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLDocument*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(thisObject);
-    HTMLDocument& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setVlinkColor(nativeValue);
 }
@@ -418,93 +550,80 @@ JSValue JSHTMLDocument::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionOpen(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "open");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
     return JSValue::encode(castedThis->open(exec));
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionClose(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "close");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
-    HTMLDocument& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.close();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionWrite(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "write");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
     return JSValue::encode(castedThis->write(exec));
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionWriteln(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "writeln");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
     return JSValue::encode(castedThis->writeln(exec));
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionClear(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "clear");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
-    HTMLDocument& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.clear();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionCaptureEvents(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "captureEvents");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
-    HTMLDocument& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.captureEvents();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionReleaseEvents(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLDocument* castedThis = jsDynamicCast<JSHTMLDocument*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLDocument", "releaseEvents");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
-    HTMLDocument& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.releaseEvents();
     return JSValue::encode(jsUndefined());
-}
-
-EncodedJSValue JSC_HOST_CALL jsHTMLDocumentPrototypeFunctionHasFocus(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLDocument::info()))
-        return throwVMTypeError(exec);
-    JSHTMLDocument* castedThis = jsCast<JSHTMLDocument*>(asObject(thisValue));
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLDocument::info());
-    HTMLDocument& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.hasFocus());
-    return JSValue::encode(result);
 }
 
 

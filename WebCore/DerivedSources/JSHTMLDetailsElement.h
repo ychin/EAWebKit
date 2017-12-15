@@ -25,28 +25,27 @@
 
 #include "HTMLDetailsElement.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLDetailsElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLDetailsElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLDetailsElement> impl)
+    static JSHTMLDetailsElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLDetailsElement>&& impl)
     {
-        JSHTMLDetailsElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLDetailsElement>(globalObject->vm().heap)) JSHTMLDetailsElement(structure, globalObject, impl);
+        JSHTMLDetailsElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLDetailsElement>(globalObject->vm().heap)) JSHTMLDetailsElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     HTMLDetailsElement& impl() const
@@ -54,39 +53,17 @@ public:
         return static_cast<HTMLDetailsElement&>(Base::impl());
     }
 protected:
-    JSHTMLDetailsElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLDetailsElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLDetailsElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLDetailsElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSHTMLDetailsElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLDetailsElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLDetailsElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLDetailsElementPrototype>(vm.heap)) JSHTMLDetailsElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLDetailsElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLDetailsElementOpen(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLDetailsElementOpen(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

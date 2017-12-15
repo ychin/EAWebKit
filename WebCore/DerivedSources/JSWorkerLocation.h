@@ -21,30 +21,28 @@
 #ifndef JSWorkerLocation_h
 #define JSWorkerLocation_h
 
-#if ENABLE(WORKERS)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WorkerLocation.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWorkerLocation : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWorkerLocation* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WorkerLocation> impl)
+    static JSWorkerLocation* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WorkerLocation>&& impl)
     {
-        JSWorkerLocation* ptr = new (NotNull, JSC::allocateCell<JSWorkerLocation>(globalObject->vm().heap)) JSWorkerLocation(structure, globalObject, impl);
+        JSWorkerLocation* ptr = new (NotNull, JSC::allocateCell<JSWorkerLocation>(globalObject->vm().heap)) JSWorkerLocation(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WorkerLocation* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWorkerLocation();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     WorkerLocation& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WorkerLocation* m_impl;
 protected:
-    JSWorkerLocation(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WorkerLocation>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWorkerLocation(JSC::Structure*, JSDOMGlobalObject*, Ref<WorkerLocation>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWorkerLocationOwner : public JSC::WeakHandleOwner {
@@ -80,83 +75,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WorkerLocation*)
 {
-    DEFINE_STATIC_LOCAL(JSWorkerLocationOwner, jsWorkerLocationOwner, ());
-    return &jsWorkerLocationOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WorkerLocation*)
-{
-    return &world;
+    static NeverDestroyed<JSWorkerLocationOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WorkerLocation*);
-WorkerLocation* toWorkerLocation(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WorkerLocation& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWorkerLocationPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWorkerLocationPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWorkerLocationPrototype* ptr = new (NotNull, JSC::allocateCell<JSWorkerLocationPrototype>(vm.heap)) JSWorkerLocationPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWorkerLocationPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSWorkerLocationConstructor : public DOMConstructorObject {
-private:
-    JSWorkerLocationConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWorkerLocationConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWorkerLocationConstructor* ptr = new (NotNull, JSC::allocateCell<JSWorkerLocationConstructor>(vm.heap)) JSWorkerLocationConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerLocationPrototypeFunctionToString(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsWorkerLocationHref(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationProtocol(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationHost(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationHostname(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationPort(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationPathname(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationSearch(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationHash(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWorkerLocationConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)
 
 #endif

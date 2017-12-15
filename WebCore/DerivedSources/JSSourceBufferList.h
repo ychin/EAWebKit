@@ -25,23 +25,26 @@
 
 #include "JSEventTarget.h"
 #include "SourceBufferList.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSourceBufferList : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSSourceBufferList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SourceBufferList> impl)
+    static JSSourceBufferList* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SourceBufferList>&& impl)
     {
-        JSSourceBufferList* ptr = new (NotNull, JSC::allocateCell<JSSourceBufferList>(globalObject->vm().heap)) JSSourceBufferList(structure, globalObject, impl);
+        JSSourceBufferList* ptr = new (NotNull, JSC::allocateCell<JSSourceBufferList>(globalObject->vm().heap)) JSSourceBufferList(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SourceBufferList* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -49,52 +52,41 @@ public:
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
-    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode mode = JSC::ExcludeDontEnumProperties);
+    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode = JSC::EnumerationMode());
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     SourceBufferList& impl() const
     {
         return static_cast<SourceBufferList&>(Base::impl());
     }
-protected:
-    JSSourceBufferList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SourceBufferList>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
-    static JSC::JSValue indexGetter(JSC::ExecState*, JSC::JSValue, unsigned);
-};
-
-SourceBufferList* toSourceBufferList(JSC::JSValue);
-
-class JSSourceBufferListPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSourceBufferListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSourceBufferListPrototype* ptr = new (NotNull, JSC::allocateCell<JSSourceBufferListPrototype>(vm.heap)) JSSourceBufferListPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSourceBufferListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesGetPropertyNames | Base::StructureFlags;
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSSourceBufferList(JSC::Structure*, JSDOMGlobalObject*, Ref<SourceBufferList>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-// Functions
+class JSSourceBufferListOwner : public JSC::WeakHandleOwner {
+public:
+    virtual bool isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>, void* context, JSC::SlotVisitor&);
+    virtual void finalize(JSC::Handle<JSC::Unknown>, void* context);
+};
 
-JSC::EncodedJSValue JSC_HOST_CALL jsSourceBufferListPrototypeFunctionItem(JSC::ExecState*);
-// Attributes
+inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SourceBufferList*)
+{
+    static NeverDestroyed<JSSourceBufferListOwner> owner;
+    return &owner.get();
+}
 
-JSC::JSValue jsSourceBufferListLength(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SourceBufferList*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SourceBufferList& impl) { return toJS(exec, globalObject, &impl); }
+
 
 } // namespace WebCore
 

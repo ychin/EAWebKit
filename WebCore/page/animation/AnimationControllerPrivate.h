@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -29,6 +29,7 @@
 #ifndef AnimationControllerPrivate_h
 #define AnimationControllerPrivate_h
 
+#include "AnimationBase.h"
 #include "CSSPropertyNames.h"
 #include "Timer.h"
 #include <wtf/HashMap.h>
@@ -46,7 +47,6 @@ class CompositeAnimation;
 class Document;
 class Element;
 class Frame;
-class Node;
 class RenderElement;
 class RenderStyle;
 
@@ -65,13 +65,13 @@ public:
     double updateAnimations(SetChanged callSetChanged = DoNotCallSetChanged);
     void updateAnimationTimer(SetChanged callSetChanged = DoNotCallSetChanged);
 
-    CompositeAnimation& ensureCompositeAnimation(RenderElement*);
-    bool clear(RenderElement*);
+    CompositeAnimation& ensureCompositeAnimation(RenderElement&);
+    bool clear(RenderElement&);
 
-    void updateStyleIfNeededDispatcherFired(Timer<AnimationControllerPrivate>*);
+    void updateStyleIfNeededDispatcherFired();
     void startUpdateStyleIfNeededDispatcher();
     void addEventToDispatch(PassRefPtr<Element> element, const AtomicString& eventType, const String& name, double elapsedTime);
-    void addNodeChangeToDispatch(PassRefPtr<Node>);
+    void addElementChangeToDispatch(Ref<Element>&&);
 
     bool hasAnimations() const { return !m_compositeAnimations.isEmpty(); }
 
@@ -86,17 +86,21 @@ public:
     void resumeAnimationsForDocument(Document*);
     void startAnimationsIfNotSuspended(Document*);
 
-    bool isRunningAnimationOnRenderer(RenderElement*, CSSPropertyID, bool isRunningNow) const;
-    bool isRunningAcceleratedAnimationOnRenderer(RenderElement*, CSSPropertyID, bool isRunningNow) const;
+    bool isRunningAnimationOnRenderer(RenderElement&, CSSPropertyID, AnimationBase::RunningState) const;
+    bool isRunningAcceleratedAnimationOnRenderer(RenderElement&, CSSPropertyID, AnimationBase::RunningState) const;
 
     bool pauseAnimationAtTime(RenderElement*, const AtomicString& name, double t);
     bool pauseTransitionAtTime(RenderElement*, const String& property, double t);
     unsigned numberOfActiveAnimations(Document*) const;
 
-    PassRefPtr<RenderStyle> getAnimatedStyleForRenderer(RenderElement* renderer);
+    PassRefPtr<RenderStyle> getAnimatedStyleForRenderer(RenderElement&);
+
+    bool computeExtentOfAnimation(RenderElement&, LayoutRect&) const;
 
     double beginAnimationUpdateTime();
     void setBeginAnimationUpdateTime(double t) { m_beginAnimationUpdateTime = t; }
+    
+    void beginAnimationUpdate();
     void endAnimationUpdate();
     void receivedStartTimeResponse(double);
     
@@ -108,21 +112,30 @@ public:
 
     void animationWillBeRemoved(AnimationBase*);
 
-    void updateAnimationTimerForRenderer(RenderElement*);
+    void updateAnimationTimerForRenderer(RenderElement&);
 
     bool allowsNewAnimationsWhileSuspended() const { return m_allowsNewAnimationsWhileSuspended; }
     void setAllowsNewAnimationsWhileSuspended(bool);
 
+#if ENABLE(CSS_ANIMATIONS_LEVEL_2)
+    bool wantsScrollUpdates() const { return !m_animationsDependentOnScroll.isEmpty(); }
+    void addToAnimationsDependentOnScroll(AnimationBase*);
+    void removeFromAnimationsDependentOnScroll(AnimationBase*);
+
+    void scrollWasUpdated();
+    float scrollPosition() const { return m_scrollPosition; }
+#endif
+
 private:
-    void animationTimerFired(Timer<AnimationControllerPrivate>*);
+    void animationTimerFired();
 
     void styleAvailable();
     void fireEventsAndUpdateStyle();
     void startTimeResponse(double t);
 
     HashMap<RenderElement*, RefPtr<CompositeAnimation>> m_compositeAnimations;
-    Timer<AnimationControllerPrivate> m_animationTimer;
-    Timer<AnimationControllerPrivate> m_updateStyleIfNeededDispatcher;
+    Timer m_animationTimer;
+    Timer m_updateStyleIfNeededDispatcher;
     Frame& m_frame;
     
     class EventToDispatch {
@@ -134,13 +147,16 @@ private:
     };
     
     Vector<EventToDispatch> m_eventsToDispatch;
-    Vector<RefPtr<Node> > m_nodeChangesToDispatch;
+    Vector<Ref<Element>> m_elementChangesToDispatch;
     
     double m_beginAnimationUpdateTime;
 
-    typedef HashSet<RefPtr<AnimationBase> > WaitingAnimationsSet;
-    WaitingAnimationsSet m_animationsWaitingForStyle;
-    WaitingAnimationsSet m_animationsWaitingForStartTimeResponse;
+    typedef HashSet<RefPtr<AnimationBase>> AnimationsSet;
+    AnimationsSet m_animationsWaitingForStyle;
+    AnimationsSet m_animationsWaitingForStartTimeResponse;
+
+    int m_beginAnimationUpdateCount;
+
     bool m_waitingForAsyncStartNotification;
     bool m_isSuspended;
 
@@ -148,6 +164,11 @@ private:
     // behavior of allowing new transitions and animations to
     // run even when this object is suspended.
     bool m_allowsNewAnimationsWhileSuspended;
+
+#if ENABLE(CSS_ANIMATIONS_LEVEL_2)
+    AnimationsSet m_animationsDependentOnScroll;
+    float m_scrollPosition { 0 };
+#endif
 };
 
 } // namespace WebCore

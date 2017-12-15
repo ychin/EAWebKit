@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -30,31 +30,30 @@
 
 #include "InbandTextTrack.h"
 #include "WebVTTParser.h"
+#include <memory>
 #include <wtf/RefPtr.h>
 
 namespace WebCore {
 
-class InbandWebVTTTextTrack : public InbandTextTrack, private WebVTTParserClient {
+class InbandWebVTTTextTrack final : public InbandTextTrack, private WebVTTParserClient {
 public:
-    static PassRefPtr<InbandTextTrack> create(ScriptExecutionContext*, TextTrackClient*, PassRefPtr<InbandTextTrackPrivate>);
+    static Ref<InbandTextTrack> create(ScriptExecutionContext*, TextTrackClient*, PassRefPtr<InbandTextTrackPrivate>);
     virtual ~InbandWebVTTTextTrack();
 
 private:
     InbandWebVTTTextTrack(ScriptExecutionContext*, TextTrackClient*, PassRefPtr<InbandTextTrackPrivate>);
 
-    virtual void parseWebVTTCueData(InbandTextTrackPrivate*, const char* data, unsigned length) OVERRIDE;
+    WebVTTParser& parser();
+    virtual void parseWebVTTCueData(InbandTextTrackPrivate*, const char* data, unsigned length) override;
+    virtual void parseWebVTTCueData(InbandTextTrackPrivate*, const ISOWebVTTCue&) override;
 
-    virtual void newCuesParsed() OVERRIDE;
+    virtual void newCuesParsed() override;
 #if ENABLE(WEBVTT_REGIONS)
-    virtual void newRegionsParsed() OVERRIDE;
+    virtual void newRegionsParsed() override;
 #endif
-    virtual void fileFailedToParse() OVERRIDE;
+    virtual void fileFailedToParse() override;
 
-    virtual void addGenericCue(InbandTextTrackPrivate*, PassRefPtr<GenericCueData>) OVERRIDE { ASSERT_NOT_REACHED(); }
-    virtual void updateGenericCue(InbandTextTrackPrivate*, GenericCueData*) OVERRIDE { ASSERT_NOT_REACHED(); }
-    virtual void removeGenericCue(InbandTextTrackPrivate*, GenericCueData*) OVERRIDE { ASSERT_NOT_REACHED(); }
-
-    OwnPtr<WebVTTParser> m_webVTTParser;
+    std::unique_ptr<WebVTTParser> m_webVTTParser;
 };
 
 } // namespace WebCore

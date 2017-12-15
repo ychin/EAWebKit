@@ -21,28 +21,26 @@
 #ifndef JSWebKitCSSFilterValue_h
 #define JSWebKitCSSFilterValue_h
 
-#if ENABLE(CSS_FILTERS)
-
 #include "JSCSSValueList.h"
-#include "JSDOMBinding.h"
 #include "WebKitCSSFilterValue.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSWebKitCSSFilterValue : public JSCSSValueList {
 public:
     typedef JSCSSValueList Base;
-    static JSWebKitCSSFilterValue* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitCSSFilterValue> impl)
+    static JSWebKitCSSFilterValue* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitCSSFilterValue>&& impl)
     {
-        JSWebKitCSSFilterValue* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSFilterValue>(globalObject->vm().heap)) JSWebKitCSSFilterValue(structure, globalObject, impl);
+        JSWebKitCSSFilterValue* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSFilterValue>(globalObject->vm().heap)) JSWebKitCSSFilterValue(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static bool getOwnPropertySlotByIndex(JSC::JSObject*, JSC::ExecState*, unsigned propertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -50,88 +48,27 @@ public:
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
-    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode mode = JSC::ExcludeDontEnumProperties);
+    static void getOwnPropertyNames(JSC::JSObject*, JSC::ExecState*, JSC::PropertyNameArray&, JSC::EnumerationMode = JSC::EnumerationMode());
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     WebKitCSSFilterValue& impl() const
     {
         return static_cast<WebKitCSSFilterValue&>(Base::impl());
     }
-protected:
-    JSWebKitCSSFilterValue(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebKitCSSFilterValue>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-    static JSC::JSValue indexGetter(JSC::ExecState*, JSC::JSValue, unsigned);
-};
-
-
-class JSWebKitCSSFilterValuePrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebKitCSSFilterValuePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebKitCSSFilterValuePrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSFilterValuePrototype>(vm.heap)) JSWebKitCSSFilterValuePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebKitCSSFilterValuePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesGetPropertyNames | Base::StructureFlags;
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
+    JSWebKitCSSFilterValue(JSC::Structure*, JSDOMGlobalObject*, Ref<WebKitCSSFilterValue>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-class JSWebKitCSSFilterValueConstructor : public DOMConstructorObject {
-private:
-    JSWebKitCSSFilterValueConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebKitCSSFilterValueConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebKitCSSFilterValueConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitCSSFilterValueConstructor>(vm.heap)) JSWebKitCSSFilterValueConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsWebKitCSSFilterValueOperationType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_REFERENCE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_GRAYSCALE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_SEPIA(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_SATURATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_HUE_ROTATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_INVERT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_OPACITY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_BRIGHTNESS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_CONTRAST(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_BLUR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebKitCSSFilterValueCSS_FILTER_DROP_SHADOW(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(CSS_FILTERS)
 
 #endif

@@ -19,8 +19,8 @@
  */
 
 #include "config.h"
-#if ENABLE(SVG)
 #include "SVGMetadataElement.h"
+
 #include "SVGNames.h"
 
 namespace WebCore {
@@ -31,11 +31,9 @@ inline SVGMetadataElement::SVGMetadataElement(const QualifiedName& tagName, Docu
     ASSERT(hasTagName(SVGNames::metadataTag));
 }
 
-PassRefPtr<SVGMetadataElement> SVGMetadataElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGMetadataElement> SVGMetadataElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGMetadataElement(tagName, document));
+    return adoptRef(*new SVGMetadataElement(tagName, document));
 }
 
 }
-
-#endif // ENABLE(SVG)

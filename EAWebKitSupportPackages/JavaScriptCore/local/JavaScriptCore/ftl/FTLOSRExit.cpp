@@ -34,7 +34,7 @@
 #include "FTLExitArgument.h"
 #include "FTLExitArgumentList.h"
 #include "FTLJITCode.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace FTL {
 
@@ -43,13 +43,12 @@ using namespace DFG;
 OSRExit::OSRExit(
     ExitKind exitKind, ValueFormat profileValueFormat,
     MethodOfGettingAValueProfile valueProfile, CodeOrigin codeOrigin,
-    CodeOrigin originForProfile, int lastSetOperand, unsigned numberOfArguments,
+    CodeOrigin originForProfile, unsigned numberOfArguments,
     unsigned numberOfLocals)
     : OSRExitBase(exitKind, codeOrigin, originForProfile)
     , m_profileValueFormat(profileValueFormat)
     , m_valueProfile(valueProfile)
     , m_patchableCodeOffset(0)
-    , m_lastSetOperand(lastSetOperand)
     , m_values(numberOfArguments, numberOfLocals)
 {
 }
@@ -62,40 +61,13 @@ CodeLocationJump OSRExit::codeLocationForRepatch(CodeBlock* ftlCodeBlock) const
         m_patchableCodeOffset);
 }
 
-void OSRExit::convertToForward(
-    BasicBlock* block, Node* currentNode, unsigned nodeIndex,
-    const FormattedValue &value, ExitArgumentList& arguments)
+void OSRExit::validateReferences(const TrackedReferences& trackedReferences)
 {
-    Node* node;
-    Node* lastMovHint;
-    if (!doSearchForForwardConversion(block, currentNode, nodeIndex, !!value, node, lastMovHint))
-        return;
-
-    ASSERT(node->codeOrigin != currentNode->codeOrigin);
+    for (unsigned i = m_values.size(); i--;)
+        m_values[i].validateReferences(trackedReferences);
     
-    m_codeOrigin = node->codeOrigin;
-    
-    if (!value)
-        return;
-    
-    VirtualRegister overriddenOperand = lastMovHint->local();
-    m_lastSetOperand = overriddenOperand;
-    
-    // Is the value for this operand being passed as an argument to the exit, or is
-    // it something else? If it's an argument already, then replace that argument;
-    // otherwise add another argument.
-    if (m_values.operand(overriddenOperand).isArgument()) {
-        ExitArgument exitArgument = m_values.operand(overriddenOperand).exitArgument();
-        arguments[exitArgument.argument()] = value.value();
-        m_values.operand(overriddenOperand) = ExitValue::exitArgument(
-            exitArgument.withFormat(value.format()));
-        return;
-    }
-    
-    unsigned argument = arguments.size();
-    arguments.append(value.value());
-    m_values.operand(m_lastSetOperand) = ExitValue::exitArgument(
-        ExitArgument(value.format(), argument));
+    for (ExitTimeObjectMaterialization* materialization : m_materializations)
+        materialization->validateReferences(trackedReferences);
 }
 
 } } // namespace JSC::FTL

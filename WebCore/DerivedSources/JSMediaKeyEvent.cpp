@@ -24,6 +24,7 @@
 
 #include "JSMediaKeyEvent.h"
 
+#include "JSDOMBinding.h"
 #include "JSDictionary.h"
 #include "JSMediaKeyError.h"
 #include "MediaKeyError.h"
@@ -37,40 +38,76 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSMediaKeyEventTableValues[] =
-{
-    { "keySystem", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventKeySystem), (intptr_t)0 },
-    { "sessionId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventSessionId), (intptr_t)0 },
-    { "initData", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventInitData), (intptr_t)0 },
-    { "message", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventMessage), (intptr_t)0 },
-    { "defaultURL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventDefaultURL), (intptr_t)0 },
-    { "errorCode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventErrorCode), (intptr_t)0 },
-    { "systemCode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventSystemCode), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsMediaKeyEventKeySystem(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventSessionId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventInitData(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventMessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventDefaultURL(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventErrorCode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventSystemCode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeyEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMediaKeyEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaKeyEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaKeyEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaKeyEventPrototype>(vm.heap)) JSMediaKeyEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaKeyEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMediaKeyEventTable = { 18, 15, JSMediaKeyEventTableValues, 0 };
-/* Hash table for constructor */
+class JSMediaKeyEventConstructor : public DOMConstructorObject {
+private:
+    JSMediaKeyEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMediaKeyEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMediaKeyEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMediaKeyEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaKeyEventConstructor>(vm.heap)) JSMediaKeyEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMediaKeyEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSMediaKeyEventConstructorTable = { 1, 0, JSMediaKeyEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSMediaKeyEventConstructor::constructJSMediaKeyEvent(ExecState* exec)
 {
-    JSMediaKeyEventConstructor* jsConstructor = jsCast<JSMediaKeyEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSMediaKeyEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     MediaKeyEventInit eventInit;
@@ -114,7 +151,7 @@ bool fillMediaKeyEventInit(MediaKeyEventInit& eventInit, JSDictionary& dictionar
     return true;
 }
 
-const ClassInfo JSMediaKeyEventConstructor::s_info = { "MediaKeyEventConstructor", &Base::s_info, &JSMediaKeyEventConstructorTable, 0, CREATE_METHOD_TABLE(JSMediaKeyEventConstructor) };
+const ClassInfo JSMediaKeyEventConstructor::s_info = { "MediaKeyEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeyEventConstructor) };
 
 JSMediaKeyEventConstructor::JSMediaKeyEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -125,13 +162,9 @@ void JSMediaKeyEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globa
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMediaKeyEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMediaKeyEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMediaKeyEventConstructor, JSDOMWrapper>(exec, JSMediaKeyEventConstructorTable, jsCast<JSMediaKeyEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMediaKeyEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("MediaKeyEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSMediaKeyEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -144,116 +177,166 @@ ConstructType JSMediaKeyEventConstructor::getConstructData(JSCell*, ConstructDat
 
 static const HashTableValue JSMediaKeyEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "keySystem", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventKeySystem), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "sessionId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventSessionId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "initData", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventInitData), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "message", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventMessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "defaultURL", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventDefaultURL), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "errorCode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventErrorCode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "systemCode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeyEventSystemCode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMediaKeyEventPrototypeTable = { 1, 0, JSMediaKeyEventPrototypeTableValues, 0 };
-const ClassInfo JSMediaKeyEventPrototype::s_info = { "MediaKeyEventPrototype", &Base::s_info, &JSMediaKeyEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaKeyEventPrototype) };
+const ClassInfo JSMediaKeyEventPrototype::s_info = { "MediaKeyEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeyEventPrototype) };
 
-JSObject* JSMediaKeyEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaKeyEvent>(vm, globalObject);
-}
-
-const ClassInfo JSMediaKeyEvent::s_info = { "MediaKeyEvent", &Base::s_info, &JSMediaKeyEventTable, 0 , CREATE_METHOD_TABLE(JSMediaKeyEvent) };
-
-JSMediaKeyEvent::JSMediaKeyEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaKeyEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSMediaKeyEvent::finishCreation(VM& vm)
+void JSMediaKeyEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaKeyEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaKeyEvent::s_info = { "MediaKeyEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeyEvent) };
+
+JSMediaKeyEvent::JSMediaKeyEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaKeyEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSMediaKeyEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSMediaKeyEventPrototype::create(vm, globalObject, JSMediaKeyEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSMediaKeyEventPrototype::create(vm, globalObject, JSMediaKeyEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSMediaKeyEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSMediaKeyEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSMediaKeyEvent* thisObject = jsCast<JSMediaKeyEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMediaKeyEvent, Base>(exec, JSMediaKeyEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSMediaKeyEvent>(vm, globalObject);
 }
 
-JSValue jsMediaKeyEventKeySystem(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventKeySystem(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "keySystem");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "keySystem");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.keySystem());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventSessionId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventSessionId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "sessionId");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "sessionId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.sessionId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventInitData(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventInitData(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "initData");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "initData");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.initData()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventMessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventMessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "message");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "message");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.message()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventDefaultURL(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventDefaultURL(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "defaultURL");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "defaultURL");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.defaultURL());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventErrorCode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventErrorCode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "errorCode");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "errorCode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.errorCode()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventSystemCode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventSystemCode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeyEvent* castedThis = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeyEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeyEvent* castedThis = jsDynamicCast<JSMediaKeyEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeyEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeyEvent", "systemCode");
+        return throwGetterTypeError(*exec, "MediaKeyEvent", "systemCode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.systemCode());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeyEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeyEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMediaKeyEvent* domObject = jsCast<JSMediaKeyEvent*>(asObject(slotBase));
-    return JSMediaKeyEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSMediaKeyEventPrototype* domObject = jsDynamicCast<JSMediaKeyEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMediaKeyEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSMediaKeyEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

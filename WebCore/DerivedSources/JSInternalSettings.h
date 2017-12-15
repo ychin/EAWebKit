@@ -23,21 +23,22 @@
 
 #include "InternalSettings.h"
 #include "JSInternalSettingsGenerated.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
-class JSInternalSettings : public JSInternalSettingsGenerated {
+class WEBCORE_TESTSUPPORT_EXPORT JSInternalSettings : public JSInternalSettingsGenerated {
 public:
     typedef JSInternalSettingsGenerated Base;
-    static JSInternalSettings* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<InternalSettings> impl)
+    static JSInternalSettings* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<InternalSettings>&& impl)
     {
-        JSInternalSettings* ptr = new (NotNull, JSC::allocateCell<JSInternalSettings>(globalObject->vm().heap)) JSInternalSettings(structure, globalObject, impl);
+        JSInternalSettings* ptr = new (NotNull, JSC::allocateCell<JSInternalSettings>(globalObject->vm().heap)) JSInternalSettings(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -50,75 +51,19 @@ public:
         return static_cast<InternalSettings&>(Base::impl());
     }
 protected:
-    JSInternalSettings(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<InternalSettings>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+    JSInternalSettings(JSC::Structure*, JSDOMGlobalObject*, Ref<InternalSettings>&&);
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, InternalSettings*);
-
-class JSInternalSettingsPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSInternalSettingsPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    void finishCreation(JSC::VM& vm)
     {
-        JSInternalSettingsPrototype* ptr = new (NotNull, JSC::allocateCell<JSInternalSettingsPrototype>(vm.heap)) JSInternalSettingsPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
     }
 
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSInternalSettingsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
-// Functions
+WEBCORE_TESTSUPPORT_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, InternalSettings*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, InternalSettings& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetMockScrollbarsEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetTouchEventEmulationEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetShadowDOMEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetAuthorShadowDOMForAnyElementEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetStandardFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetSerifFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetSansSerifFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetFixedFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetCursiveFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetFantasyFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetPictographFontFamily(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetTextAutosizingEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetTextAutosizingWindowSizeOverride(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetTextAutosizingFontScaleFactor(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetMediaTypeOverride(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetCSSExclusionsEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetCSSShapesEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetCSSVariablesEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionCssVariablesEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetCanStartMedia(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetEditingBehavior(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetLangAttributeAwareFormControlUIEnabled(JSC::ExecState*);
-#if ENABLE(VIDEO_TRACK)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetShouldDisplayTrackKind(JSC::ExecState*);
-#endif
-#if ENABLE(VIDEO_TRACK)
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionShouldDisplayTrackKind(JSC::ExecState*);
-#endif
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetStorageBlockingPolicy(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetImagesEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetMinimumTimerInterval(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetDefaultVideoPosterURL(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetTimeWithoutMouseMovementBeforeHidingControls(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetUseLegacyBackgroundSizeShorthandBehavior(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetAutoscrollForDragAndDropEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsInternalSettingsPrototypeFunctionSetFontFallbackPrefersPictographs(JSC::ExecState*);
 
 } // namespace WebCore
 

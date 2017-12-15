@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 Nokia Inc. All rights reserved.
  * Copyright (C) 2009 Google Inc.  All rights reserved.
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -51,7 +51,7 @@ SocketStreamHandlePrivate::SocketStreamHandlePrivate(SocketStreamHandle* streamH
 : m_streamHandle(streamHandle)
 , m_socketHandle(NULL)
 , m_CleanupTansportHandlerSocketHandle(NULL)
-, mPendingDataTimer(this, &SocketStreamHandlePrivate::timerFired)
+, mPendingDataTimer(*this, &SocketStreamHandlePrivate::timerFired)
 {
 	ASSERT(WTF::isMainThread());
 
@@ -75,7 +75,7 @@ SocketStreamHandlePrivate::SocketStreamHandlePrivate(SocketStreamHandle* streamH
 : m_streamHandle(streamHandle)
 , m_socketHandle(socketHandle)
 , m_CleanupTansportHandlerSocketHandle(socketHandle)
-, mPendingDataTimer(this, &SocketStreamHandlePrivate::timerFired)
+, mPendingDataTimer(*this, &SocketStreamHandlePrivate::timerFired)
 {
 	ASSERT(WTF::isMainThread());
 	ASSERT(m_streamHandle);
@@ -165,7 +165,7 @@ int32_t SocketStreamHandlePrivate::Send(const char8_t* data, int32_t length)
 	return sentSize;
 }
 
-void SocketStreamHandlePrivate::timerFired(WebCore::Timer<SocketStreamHandlePrivate>*)
+void SocketStreamHandlePrivate::timerFired()
 {
 	if(m_streamHandle)
 		m_streamHandle->writeReady();
@@ -248,6 +248,18 @@ void SocketStreamHandle::receivedCancellation(const AuthenticationChallenge&)
 {
 	ASSERT(WTF::isMainThread());
 	notImplemented();
+}
+
+void SocketStreamHandle::receivedRequestToPerformDefaultHandling(const AuthenticationChallenge&)
+{
+    ASSERT(WTF::isMainThread());
+    notImplemented();
+}
+
+void SocketStreamHandle::receivedChallengeRejection(const AuthenticationChallenge&)
+{
+    ASSERT(WTF::isMainThread());
+    notImplemented();
 }
 
 } // namespace WebCore

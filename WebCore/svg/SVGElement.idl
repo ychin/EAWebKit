@@ -22,8 +22,6 @@
 
 [
     JSGenerateToNativeObject,
-    Conditional=SVG,
-    OperationsNotDeletable
 ] interface SVGElement : Element {
     [TreatNullAs=NullString, SetterRaisesException] attribute DOMString xmlbase;
     readonly attribute SVGSVGElement ownerSVGElement;
@@ -34,6 +32,8 @@
 
     readonly attribute SVGAnimatedString className;
     readonly attribute CSSStyleDeclaration style;
+
+    attribute long tabIndex;
 
     CSSValue getPresentationAttribute([Default=Undefined] optional DOMString name);
 };

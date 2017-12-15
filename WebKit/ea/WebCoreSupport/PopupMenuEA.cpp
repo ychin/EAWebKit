@@ -5,7 +5,7 @@
  * Copyright (C) 2006 Apple Computer, Inc.
  * Copyright (C) 2006 Michael Emmel mike.emmel@gmail.com
  * Coypright (C) 2006 Nikolas Zimmermann <zimmermann@kde.org>
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -82,7 +82,7 @@ PopupMenuEA::PopupMenuEA(PopupMenuClient* client, const ChromeClientEA* chromeCl
     , m_viewEA(0)
     , m_surface(0)
 {
-    m_scrollBar = Scrollbar::createNativeScrollbar( this, VerticalScrollbar , RegularScrollbar);
+    m_scrollBar = Scrollbar::createNativeScrollbar( *this, VerticalScrollbar , RegularScrollbar);
 }
 
 PopupMenuEA::~PopupMenuEA()
@@ -207,15 +207,14 @@ bool PopupMenuEA::layout()
 
     for(int i = 0; i < m_itemCount; ++i)
     {
-        String text = m_popupClient->itemText(i);
-		if(text.isEmpty())
+		if(m_popupClient->itemText(i).isEmpty())
 			continue;
         
 		PopupMenuStyle itemStyle = m_popupClient->itemStyle(i);
-        const WebCore::Font& itemFont = itemStyle.font();            
+        const WebCore::FontCascade& itemFont = itemStyle.font();            
             
         int fontWidth = 0;    
-        const TextRun textRun(text.characters(), text.length());           
+        const TextRun textRun(m_popupClient->itemText(i));
 
         if(m_popupClient->itemIsLabel(i))
         {
@@ -223,7 +222,7 @@ bool PopupMenuEA::layout()
 			FontDescription d = itemFont.fontDescription();  
             d.setWeight(d.bolderWeight());
 
-            Font itemFontBold(d, itemFont.letterSpacing(), itemFont.wordSpacing());
+            FontCascade itemFontBold(d, itemFont.letterSpacing(), itemFont.wordSpacing());
             itemFontBold.update(m_popupClient->fontSelector());
             
 			fontWidth = (int) (ceilf(itemFontBold.width(textRun)));
@@ -232,7 +231,7 @@ bool PopupMenuEA::layout()
         {
             fontWidth = (int) (ceilf(itemFont.width(textRun)));   
         }
-        itemWidth = max(itemWidth, fontWidth);
+        itemWidth = std::max(itemWidth, fontWidth);
     }
 
     // Set up the width (this needs to be done before the scroll bar calc).  
@@ -419,11 +418,10 @@ void PopupMenuEA::draw(void)
         }
     
         // Draw the text
-        const Font& font = itemStyle.font();
+        const FontCascade& font = itemStyle.font();
         const FontMetrics& fontMetrics = font.fontMetrics();
  		const int fontAscent = (int) fontMetrics.floatAscent();
-        const String  text(m_popupClient->itemText(i));
-        const TextRun textRun(text.characters(), text.length());
+        const TextRun textRun(m_popupClient->itemText(i));
         context.setFillColor(textColor, ColorSpaceDeviceRGB);    // The fill color is used for the text draw
         context.drawText(font, textRun, IntPoint(itemRect.x() + ThemeEA::kPopupMenuBorderPadding, itemRect.y() + fontAscent));
     }
@@ -665,8 +663,8 @@ void PopupMenuEA::OnMouseMoveEvent(const EA::WebKit::MouseMoveEvent& mouseMoveEv
            mousePressType = PlatformEvent::Type::MouseReleased;
         
         PlatformMouseEvent evt(localPos,globalPos, LeftButton, mousePressType, 1, 
-            (mouseMoveEvent.mModifiers & kModifierMaskShift),(mouseMoveEvent.mModifiers & kModifierMaskControl),
-            (mouseMoveEvent.mModifiers & kModifierMaskAlt),(mouseMoveEvent.mModifiers & kModifierMaskOS) ,0);      
+        (mouseMoveEvent.mModifiers & kModifierMaskShift), (mouseMoveEvent.mModifiers & kModifierMaskControl),
+        (mouseMoveEvent.mModifiers & kModifierMaskAlt), (mouseMoveEvent.mModifiers & kModifierMaskOS), 0.0, WebCore::ForceAtClick);
         
         // Make sure mouse is in the scroll bar area
         if(m_mouseScrollRect.contains(mouseMoveEvent.mX, mouseMoveEvent.mY))
@@ -752,7 +750,7 @@ void PopupMenuEA::OnMouseButtonEvent(const EA::WebKit::MouseButtonEvent& mouseBu
 
                 PlatformMouseEvent evt(localPos,globalPos, LeftButton, PlatformEvent::Type::MousePressed, 1, 
                 (mouseButtonEvent.mModifiers & kModifierMaskShift),(mouseButtonEvent.mModifiers & kModifierMaskControl),
-                (mouseButtonEvent.mModifiers & kModifierMaskAlt),(mouseButtonEvent.mModifiers & kModifierMaskOS) ,0);                
+                (mouseButtonEvent.mModifiers & kModifierMaskAlt),(mouseButtonEvent.mModifiers & kModifierMaskOS), 0.0, WebCore::ForceAtClick);              
 
                 m_scrollBar->mouseDown(evt);        
                 m_scrollbarCapturingMouse = true;  
@@ -879,14 +877,10 @@ void PopupMenuEA::setScrollOffset(const IntPoint& offset)
    m_scrollOffset = offset.y();
 }
 
-int PopupMenuEA::visibleHeight() const
-{
-	return m_scrollBar ? m_scrollBar->visibleSize() : m_poppedUpSurfaceRect.height();
-}
 
-int PopupMenuEA::visibleWidth() const
+IntSize PopupMenuEA::visibleSize() const
 {
-	return m_poppedUpSurfaceRect.width();
+	return IntSize(m_poppedUpSurfaceRect.width(), m_scrollBar ? m_scrollBar->visibleSize() : m_poppedUpSurfaceRect.height());
 }
 
 IntSize PopupMenuEA::contentsSize() const

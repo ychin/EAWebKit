@@ -32,9 +32,8 @@
 #include "DOMError.h"
 #include "Event.h"
 #include "EventListener.h"
-#include "EventNames.h"
 #include "EventTarget.h"
-#include "IDBMetadata.h"
+#include "IDBDatabaseMetadata.h"
 #include "IndexedDB.h"
 #include "ScriptWrappable.h"
 #include <wtf/HashSet.h>
@@ -44,16 +43,16 @@ namespace WebCore {
 
 class IDBCursor;
 class IDBDatabase;
-class IDBDatabaseBackendInterface;
+class IDBDatabaseBackend;
 class IDBDatabaseError;
 class IDBObjectStore;
 class IDBOpenDBRequest;
 struct IDBObjectStoreMetadata;
 
-class IDBTransaction FINAL : public ScriptWrappable, public RefCounted<IDBTransaction>, public EventTargetWithInlineData, public ActiveDOMObject {
+class IDBTransaction final : public ScriptWrappable, public RefCounted<IDBTransaction>, public EventTargetWithInlineData, public ActiveDOMObject {
 public:
-    static PassRefPtr<IDBTransaction> create(ScriptExecutionContext*, int64_t, const Vector<String>& objectStoreNames, IndexedDB::TransactionMode, IDBDatabase*);
-    static PassRefPtr<IDBTransaction> create(ScriptExecutionContext*, int64_t, IDBDatabase*, IDBOpenDBRequest*, const IDBDatabaseMetadata& previousMetadata);
+    static Ref<IDBTransaction> create(ScriptExecutionContext*, int64_t, const Vector<String>& objectStoreNames, IndexedDB::TransactionMode, IDBDatabase*);
+    static Ref<IDBTransaction> create(ScriptExecutionContext*, int64_t, IDBDatabase*, IDBOpenDBRequest*, const IDBDatabaseMetadata& previousMetadata);
     virtual ~IDBTransaction();
 
     static const AtomicString& modeReadOnly();
@@ -65,13 +64,13 @@ public:
     static IndexedDB::TransactionMode stringToMode(const String&, ExceptionCode&);
     static const AtomicString& modeToString(IndexedDB::TransactionMode);
 
-    IDBDatabaseBackendInterface* backendDB() const;
+    IDBDatabaseBackend* backendDB() const;
 
     int64_t id() const { return m_id; }
     bool isActive() const { return m_state == Active; }
     bool isFinished() const { return m_state == Finished; }
-    bool isReadOnly() const { return m_mode == IndexedDB::TransactionReadOnly; }
-    bool isVersionChange() const { return m_mode == IndexedDB::TransactionVersionChange; }
+    bool isReadOnly() const { return m_mode == IndexedDB::TransactionMode::ReadOnly; }
+    bool isVersionChange() const { return m_mode == IndexedDB::TransactionMode::VersionChange; }
 
     // Implement the IDBTransaction IDL
     const String& mode() const;
@@ -97,22 +96,18 @@ public:
     void setActive(bool);
     void setError(PassRefPtr<DOMError>, const String& errorMessage);
 
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(abort);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(complete);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-
     void onAbort(PassRefPtr<IDBDatabaseError>);
     void onComplete();
 
     // EventTarget
-    virtual EventTargetInterface eventTargetInterface() const OVERRIDE { return IDBTransactionEventTargetInterfaceType; }
-    virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE { return ActiveDOMObject::scriptExecutionContext(); }
+    virtual EventTargetInterface eventTargetInterface() const override { return IDBTransactionEventTargetInterfaceType; }
+    virtual ScriptExecutionContext* scriptExecutionContext() const override { return ActiveDOMObject::scriptExecutionContext(); }
 
     using EventTarget::dispatchEvent;
-    virtual bool dispatchEvent(PassRefPtr<Event>) OVERRIDE;
+    virtual bool dispatchEvent(PassRefPtr<Event>) override;
 
     // ActiveDOMObject
-    virtual bool hasPendingActivity() const OVERRIDE;
+    bool hasPendingActivity() const override;
 
     using RefCounted<IDBTransaction>::ref;
     using RefCounted<IDBTransaction>::deref;
@@ -126,13 +121,14 @@ private:
     void registerOpenCursor(IDBCursor*);
     void unregisterOpenCursor(IDBCursor*);
 
-    // ActiveDOMObject
-    virtual bool canSuspend() const OVERRIDE;
-    virtual void stop() OVERRIDE;
+    // ActiveDOMObject API.
+    bool canSuspendForPageCache() const override;
+    void stop() override;
+    const char* activeDOMObjectName() const override;
 
-    // EventTarget
-    virtual void refEventTarget() OVERRIDE { ref(); }
-    virtual void derefEventTarget() OVERRIDE { deref(); }
+    // EventTarget API.
+    virtual void refEventTarget() override { ref(); }
+    virtual void derefEventTarget() override { deref(); }
 
     enum State {
         Inactive, // Created or started, but not in an event callback
@@ -152,12 +148,12 @@ private:
     RefPtr<DOMError> m_error;
     String m_errorMessage;
 
-    ListHashSet<RefPtr<IDBRequest> > m_requestList;
+    ListHashSet<RefPtr<IDBRequest>> m_requestList;
 
-    typedef HashMap<String, RefPtr<IDBObjectStore> > IDBObjectStoreMap;
+    typedef HashMap<String, RefPtr<IDBObjectStore>> IDBObjectStoreMap;
     IDBObjectStoreMap m_objectStoreMap;
 
-    typedef HashSet<RefPtr<IDBObjectStore> > IDBObjectStoreSet;
+    typedef HashSet<RefPtr<IDBObjectStore>> IDBObjectStoreSet;
     IDBObjectStoreSet m_deletedObjectStores;
 
     typedef HashMap<RefPtr<IDBObjectStore>, IDBObjectStoreMetadata> IDBObjectStoreMetadataMap;

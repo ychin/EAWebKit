@@ -77,6 +77,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Implements support for the definition of EA_PLATFORM_MICROSOFT for the case
 // of using EABase versions prior to the addition of its EA_PLATFORM_MICROSOFT support.
 //
+#if (EABASE_VERSION_N < 20022) && !defined(EA_PLATFORM_MICROSOFT)
+    #if defined(EA_PLATFORM_WINDOWS) 
+        #define EA_PLATFORM_MICROSOFT 1
+    #endif
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

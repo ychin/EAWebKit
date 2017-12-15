@@ -20,7 +20,6 @@
 #ifndef SVGAnimatedPropertyTearOff_h
 #define SVGAnimatedPropertyTearOff_h
 
-#if ENABLE(SVG)
 #include "SVGAnimatedProperty.h"
 #include "SVGPropertyTearOff.h"
 
@@ -36,11 +35,11 @@ public:
     {
         if (m_baseVal) {
             ASSERT(m_baseVal->animatedProperty() == this);
-            m_baseVal->setAnimatedProperty(0);
+            m_baseVal->setAnimatedProperty(nullptr);
         }
         if (m_animVal) {
             ASSERT(m_animVal->animatedProperty() == this);
-            m_animVal->setAnimatedProperty(0);
+            m_animVal->setAnimatedProperty(nullptr);
         }
     }
 
@@ -58,10 +57,10 @@ public:
         return m_animVal.get();
     }
 
-    static PassRefPtr<SVGAnimatedPropertyTearOff<PropertyType> > create(SVGElement* contextElement, const QualifiedName& attributeName, AnimatedPropertyType animatedPropertyType, PropertyType& property)
+    static Ref<SVGAnimatedPropertyTearOff<PropertyType>> create(SVGElement* contextElement, const QualifiedName& attributeName, AnimatedPropertyType animatedPropertyType, PropertyType& property)
     {
         ASSERT(contextElement);
-        return adoptRef(new SVGAnimatedPropertyTearOff<PropertyType>(contextElement, attributeName, animatedPropertyType, property));
+        return adoptRef(*new SVGAnimatedPropertyTearOff<PropertyType>(contextElement, attributeName, animatedPropertyType, property));
     }
 
     PropertyType& currentAnimatedValue()
@@ -120,5 +119,4 @@ private:
 
 }
 
-#endif // ENABLE(SVG)
 #endif // SVGAnimatedPropertyTearOff_h

@@ -24,11 +24,24 @@
 #include "HeapRootVisitor.h"
 #include "JSCJSValue.h"
 #include "JSObject.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 using std::min;
 
 namespace JSC {
+
+void MarkedArgumentBuffer::addMarkSet(JSValue v)
+{
+    if (m_markSet)
+        return;
+
+    Heap* heap = Heap::heap(v);
+    if (!heap)
+        return;
+
+    m_markSet = &heap->markListSet();
+    m_markSet->add(this);
+}
 
 void ArgList::getSlice(int startIndex, ArgList& result) const
 {
@@ -51,39 +64,31 @@ void MarkedArgumentBuffer::markLists(HeapRootVisitor& heapRootVisitor, ListSet& 
     }
 }
 
-void MarkedArgumentBuffer::slowAppend(JSValue v)
+void MarkedArgumentBuffer::expandCapacity()
 {
-    int newCapacity = m_capacity * 4;
-    EncodedJSValue* newBuffer = new EncodedJSValue[newCapacity];
-    for (int i = 0; i < m_capacity; ++i)
-        newBuffer[i] = m_buffer[i];
+	int newCapacity = m_capacity * 4;
+	EncodedJSValue* newBuffer = new EncodedJSValue[newCapacity];
+	for (int i = 0; i < m_capacity; ++i) {
+		newBuffer[i] = m_buffer[i];
+		addMarkSet(JSValue::decode(m_buffer[i]));
+	}
 
-    if (EncodedJSValue* base = mallocBase())
-        delete [] base;
+	if (EncodedJSValue* base = mallocBase())
+		delete[] base;
 
-    m_buffer = newBuffer;
-    m_capacity = newCapacity;
+	m_buffer = newBuffer;
+	m_capacity = newCapacity;
+}
+
+void MarkedArgumentBuffer::slowAppend(JSValue v) 
+{
+	if (m_size >= m_capacity)
+		expandCapacity();
 
     slotFor(m_size) = JSValue::encode(v);
     ++m_size;
 
-    if (m_markSet)
-        return;
-
-    // As long as our size stays within our Vector's inline 
-    // capacity, all our values are allocated on the stack, and 
-    // therefore don't need explicit marking. Once our size exceeds
-    // our Vector's inline capacity, though, our values move to the 
-    // heap, where they do need explicit marking.
-    for (int i = 0; i < m_size; ++i) {
-        Heap* heap = Heap::heap(JSValue::decode(slotFor(i)));
-        if (!heap)
-            continue;
-
-        m_markSet = &heap->markListSet();
-        m_markSet->add(this);
-        break;
-    }
+	addMarkSet(v);
 }
 
 } // namespace JSC

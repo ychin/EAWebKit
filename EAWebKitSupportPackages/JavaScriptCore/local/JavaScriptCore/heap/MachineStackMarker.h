@@ -1,8 +1,7 @@
 /*
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009 Apple Inc. All rights reserved.
- *  Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2015 Apple Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,55 +22,71 @@
 #ifndef MachineThreads_h
 #define MachineThreads_h
 
-//+EAWebKitChange
-// 2/10/2014 - Added ENABLE(JSC_MULTIPLE_THREADS) in this file as we are not ready for this thing yet. 
-// Fortunately, this is only required if JSGlobalContextCreate is exposed and can be used.
-// It is not directly called anywhere within WebCore (even for web workers).
-//-EAWebKitChange
-
+#include <setjmp.h>
+#include <wtf/Lock.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/ThreadSpecific.h>
-#include <wtf/ThreadingPrimitives.h>
 
 namespace JSC {
 
+    class CodeBlockSet;
     class ConservativeRoots;
     class Heap;
+    class JITStubRoutineSet;
 
     class MachineThreads {
         WTF_MAKE_NONCOPYABLE(MachineThreads);
     public:
+        typedef jmp_buf RegisterState;
+
         MachineThreads(Heap*);
         ~MachineThreads();
 
-        void gatherConservativeRoots(ConservativeRoots&, void* stackCurrent);
+        void gatherConservativeRoots(ConservativeRoots&, JITStubRoutineSet&, CodeBlockSet&, void* stackOrigin, void* stackTop, RegisterState& calleeSavedRegisters);
 
-        void makeUsableFromMultipleThreads();
         JS_EXPORT_PRIVATE void addCurrentThread(); // Only needs to be called by clients that can use the same heap from multiple threads.
 
     private:
-        void gatherFromCurrentThread(ConservativeRoots&, void* stackCurrent);
+        class Thread;
 
-		
-#if ENABLE(JSC_MULTIPLE_THREADS)
-		class Thread;
+        void gatherFromCurrentThread(ConservativeRoots&, JITStubRoutineSet&, CodeBlockSet&, void* stackOrigin, void* stackTop, RegisterState& calleeSavedRegisters);
+
+        void tryCopyOtherThreadStack(Thread*, void*, size_t capacity, size_t*);
+        bool tryCopyOtherThreadStacks(LockHolder&, void*, size_t capacity, size_t*);
 
         static void removeThread(void*);
-        void removeCurrentThread();
 
-        void gatherFromOtherThread(ConservativeRoots&, Thread*);
+        template<typename PlatformThread>
+        void removeThreadIfFound(PlatformThread);
 
-        Mutex m_registeredThreadsMutex;
+        Lock m_registeredThreadsMutex;
         Thread* m_registeredThreads;
-		
-		WTF::ThreadSpecificKey m_threadSpecific;
-#endif
-
+        WTF::ThreadSpecificKey m_threadSpecific;
 #if !ASSERT_DISABLED
         Heap* m_heap;
 #endif
     };
 
 } // namespace JSC
+
+#if COMPILER(GCC_OR_CLANG)
+#define REGISTER_BUFFER_ALIGNMENT __attribute__ ((aligned (sizeof(void*))))
+#else
+#define REGISTER_BUFFER_ALIGNMENT
+#endif
+
+// ALLOCATE_AND_GET_REGISTER_STATE() is a macro so that it is always "inlined" even in debug builds.
+#if COMPILER(MSVC)
+#pragma warning(push)
+#pragma warning(disable: 4611)
+#define ALLOCATE_AND_GET_REGISTER_STATE(registers) \
+    MachineThreads::RegisterState registers REGISTER_BUFFER_ALIGNMENT; \
+    setjmp(registers)
+#pragma warning(pop)
+#else
+#define ALLOCATE_AND_GET_REGISTER_STATE(registers) \
+    MachineThreads::RegisterState registers REGISTER_BUFFER_ALIGNMENT; \
+    setjmp(registers)
+#endif
 
 #endif // MachineThreads_h

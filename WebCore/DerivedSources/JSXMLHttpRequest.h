@@ -21,29 +21,29 @@
 #ifndef JSXMLHttpRequest_h
 #define JSXMLHttpRequest_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "XMLHttpRequest.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSXMLHttpRequest : public JSDOMWrapper {
+class WEBCORE_EXPORT JSXMLHttpRequest : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSXMLHttpRequest* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XMLHttpRequest> impl)
+    static JSXMLHttpRequest* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<XMLHttpRequest>&& impl)
     {
-        JSXMLHttpRequest* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequest>(globalObject->vm().heap)) JSXMLHttpRequest(structure, globalObject, impl);
+        JSXMLHttpRequest* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequest>(globalObject->vm().heap)) JSXMLHttpRequest(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static XMLHttpRequest* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSXMLHttpRequest();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,6 +54,7 @@ public:
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     JSC::WriteBarrier<JSC::Unknown> m_response;
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
 
     // Custom attributes
@@ -64,22 +65,21 @@ public:
     JSC::JSValue open(JSC::ExecState*);
     JSC::JSValue send(JSC::ExecState*);
     XMLHttpRequest& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     XMLHttpRequest* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSXMLHttpRequest(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<XMLHttpRequest>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSXMLHttpRequest(JSC::Structure*, JSDOMGlobalObject*, Ref<XMLHttpRequest>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSXMLHttpRequestOwner : public JSC::WeakHandleOwner {
@@ -90,123 +90,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, XMLHttpRequest*)
 {
-    DEFINE_STATIC_LOCAL(JSXMLHttpRequestOwner, jsXMLHttpRequestOwner, ());
-    return &jsXMLHttpRequestOwner;
+    static NeverDestroyed<JSXMLHttpRequestOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, XMLHttpRequest*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, XMLHttpRequest*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, XMLHttpRequest& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, XMLHttpRequest*);
-XMLHttpRequest* toXMLHttpRequest(JSC::JSValue);
-
-class JSXMLHttpRequestPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSXMLHttpRequestPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSXMLHttpRequestPrototype* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestPrototype>(vm.heap)) JSXMLHttpRequestPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSXMLHttpRequestPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSXMLHttpRequestConstructor : public DOMConstructorObject {
-private:
-    JSXMLHttpRequestConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSXMLHttpRequestConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSXMLHttpRequestConstructor* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestConstructor>(vm.heap)) JSXMLHttpRequestConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSXMLHttpRequest(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionOpen(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionSetRequestHeader(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionSend(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionAbort(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionGetAllResponseHeaders(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionGetResponseHeader(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionOverrideMimeType(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLHttpRequestPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsXMLHttpRequestOnabort(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnabort(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestOnload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnload(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestOnloadend(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnloadend(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestOnloadstart(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnloadstart(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestOnprogress(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnprogress(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(XHR_TIMEOUT)
-JSC::JSValue jsXMLHttpRequestOntimeout(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOntimeout(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsXMLHttpRequestOnreadystatechange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestOnreadystatechange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(XHR_TIMEOUT)
-JSC::JSValue jsXMLHttpRequestTimeout(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestTimeout(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsXMLHttpRequestReadyState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestWithCredentials(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestWithCredentials(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestUpload(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestResponseText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestResponseXML(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestResponseType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSXMLHttpRequestResponseType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsXMLHttpRequestResponse(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestStatus(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestStatusText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsXMLHttpRequestUNSENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestOPENED(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestHEADERS_RECEIVED(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestLOADING(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestDONE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

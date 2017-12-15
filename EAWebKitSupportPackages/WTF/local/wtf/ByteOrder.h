@@ -32,11 +32,9 @@
 #ifndef WTF_ByteOrder_h
 #define WTF_ByteOrder_h
 
-#include <wtf/Platform.h>
-
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(CS_UNDEFINED_STRING)
+#if OS(UNIX) || defined(EA_PLATFORM_SONY)
 //-EAWebKitChange
 #include <arpa/inet.h>
 #endif

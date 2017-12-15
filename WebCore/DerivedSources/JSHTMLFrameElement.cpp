@@ -40,37 +40,101 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLFrameElementPrototypeFunctionGetSVGDocument(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsHTMLFrameElementFrameBorder(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementFrameBorder(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementLongDesc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementLongDesc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementMarginHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementMarginHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementMarginWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementMarginWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementNoResize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementNoResize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementScrolling(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementScrolling(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementContentDocument(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLFrameElementContentWindow(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLFrameElementLocation(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLFrameElementLocation(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLFrameElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLFrameElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLFrameElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLFrameElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLFrameElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLFrameElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameElementPrototype>(vm.heap)) JSHTMLFrameElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLFrameElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSHTMLFrameElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLFrameElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLFrameElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLFrameElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLFrameElementConstructor>(vm.heap)) JSHTMLFrameElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSHTMLFrameElementTableIndex[5] = {
+    { 0, 4 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSHTMLFrameElementTableValues[] =
 {
-    { "frameBorder", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementFrameBorder), (intptr_t)setJSHTMLFrameElementFrameBorder },
-    { "longDesc", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementLongDesc), (intptr_t)setJSHTMLFrameElementLongDesc },
-    { "marginHeight", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementMarginHeight), (intptr_t)setJSHTMLFrameElementMarginHeight },
-    { "marginWidth", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementMarginWidth), (intptr_t)setJSHTMLFrameElementMarginWidth },
-    { "name", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementName), (intptr_t)setJSHTMLFrameElementName },
-    { "noResize", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementNoResize), (intptr_t)setJSHTMLFrameElementNoResize },
-    { "scrolling", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementScrolling), (intptr_t)setJSHTMLFrameElementScrolling },
-    { "src", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementSrc), (intptr_t)setJSHTMLFrameElementSrc },
-    { "contentDocument", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementContentDocument), (intptr_t)0 },
-    { "contentWindow", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementContentWindow), (intptr_t)0 },
-    { "location", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementLocation), (intptr_t)setJSHTMLFrameElementLocation },
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementWidth), (intptr_t)0 },
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementHeight), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "contentDocument", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementContentDocument), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "location", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementLocation), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementLocation) },
 };
 
-static const HashTable JSHTMLFrameElementTable = { 36, 31, JSHTMLFrameElementTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSHTMLFrameElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSHTMLFrameElementConstructorTable = { 1, 0, JSHTMLFrameElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLFrameElementConstructor::s_info = { "HTMLFrameElementConstructor", &Base::s_info, &JSHTMLFrameElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLFrameElementConstructor) };
+static const HashTable JSHTMLFrameElementTable = { 2, 3, true, JSHTMLFrameElementTableValues, 0, JSHTMLFrameElementTableIndex };
+const ClassInfo JSHTMLFrameElementConstructor::s_info = { "HTMLFrameElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLFrameElementConstructor) };
 
 JSHTMLFrameElementConstructor::JSHTMLFrameElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -81,303 +145,449 @@ void JSHTMLFrameElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLFrameElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLFrameElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLFrameElementConstructor, JSDOMWrapper>(exec, JSHTMLFrameElementConstructorTable, jsCast<JSHTMLFrameElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLFrameElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLFrameElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLFrameElementPrototypeTableValues[] =
 {
-    { "getSVGDocument", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLFrameElementPrototypeFunctionGetSVGDocument), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "frameBorder", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementFrameBorder), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementFrameBorder) },
+    { "longDesc", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementLongDesc), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementLongDesc) },
+    { "marginHeight", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementMarginHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementMarginHeight) },
+    { "marginWidth", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementMarginWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementMarginWidth) },
+    { "name", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementName) },
+    { "noResize", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementNoResize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementNoResize) },
+    { "scrolling", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementScrolling), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementScrolling) },
+    { "src", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementSrc), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLFrameElementSrc) },
+    { "contentWindow", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementContentWindow), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLFrameElementHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "getSVGDocument", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLFrameElementPrototypeFunctionGetSVGDocument), (intptr_t) (0) },
 };
 
-static const HashTable JSHTMLFrameElementPrototypeTable = { 2, 1, JSHTMLFrameElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLFrameElementPrototype::s_info = { "HTMLFrameElementPrototype", &Base::s_info, &JSHTMLFrameElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLFrameElementPrototype) };
+const ClassInfo JSHTMLFrameElementPrototype::s_info = { "HTMLFrameElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLFrameElementPrototype) };
 
-JSObject* JSHTMLFrameElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLFrameElement>(vm, globalObject);
-}
-
-bool JSHTMLFrameElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSHTMLFrameElementPrototype* thisObject = jsCast<JSHTMLFrameElementPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSHTMLFrameElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSHTMLFrameElement::s_info = { "HTMLFrameElement", &Base::s_info, &JSHTMLFrameElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLFrameElement) };
-
-JSHTMLFrameElement::JSHTMLFrameElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLFrameElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLFrameElement::finishCreation(VM& vm)
+void JSHTMLFrameElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLFrameElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLFrameElement::s_info = { "HTMLFrameElement", &Base::s_info, &JSHTMLFrameElementTable, CREATE_METHOD_TABLE(JSHTMLFrameElement) };
+
+JSHTMLFrameElement::JSHTMLFrameElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLFrameElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLFrameElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLFrameElementPrototype::create(vm, globalObject, JSHTMLFrameElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLFrameElementPrototype::create(vm, globalObject, JSHTMLFrameElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSHTMLFrameElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSHTMLFrameElement>(vm, globalObject);
 }
 
 bool JSHTMLFrameElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSHTMLFrameElement* thisObject = jsCast<JSHTMLFrameElement*>(object);
+    auto* thisObject = jsCast<JSHTMLFrameElement*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSHTMLFrameElement, Base>(exec, JSHTMLFrameElementTable, thisObject, propertyName, slot);
 }
 
-JSValue jsHTMLFrameElementFrameBorder(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementFrameBorder(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "frameBorder");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "frameBorder");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::frameborderAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementLongDesc(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementLongDesc(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "longDesc");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "longDesc");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::longdescAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementMarginHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementMarginHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "marginHeight");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "marginHeight");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::marginheightAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementMarginWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementMarginWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "marginWidth");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "marginWidth");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::marginwidthAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "name");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "name");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getNameAttribute());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementNoResize(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementNoResize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "noResize");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "noResize");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::noresizeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementScrolling(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementScrolling(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "scrolling");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "scrolling");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::scrollingAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementSrc(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementSrc(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "src");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "src");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::srcAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementContentDocument(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementContentDocument(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
-    HTMLFrameElement& impl = castedThis->impl();
-    return shouldAllowAccessToNode(exec, impl.contentDocument()) ? toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.contentDocument())) : jsNull();
-}
-
-
-JSValue jsHTMLFrameElementContentWindow(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLFrameElement*>(slotBase);
+    auto& impl = castedThis->impl();
+    return JSValue::encode(shouldAllowAccessToNode(exec, impl.contentDocument()) ? toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.contentDocument())) : jsNull());
+}
+
+
+EncodedJSValue jsHTMLFrameElementContentWindow(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "contentWindow");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "contentWindow");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.contentWindow()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementLocation(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementLocation(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLFrameElement*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.location());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "width");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "width");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.width());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLFrameElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLFrameElement", "height");
+        return throwGetterTypeError(*exec, "HTMLFrameElement", "height");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.height());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLFrameElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLFrameElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLFrameElement* domObject = jsCast<JSHTMLFrameElement*>(asObject(slotBase));
-    return JSHTMLFrameElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLFrameElementPrototype* domObject = jsDynamicCast<JSHTMLFrameElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLFrameElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLFrameElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLFrameElementFrameBorder(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLFrameElement* thisObject = jsCast<JSHTMLFrameElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLFrameElement, Base>(exec, propertyName, value, JSHTMLFrameElementTable, thisObject, slot);
-}
-
-void setJSHTMLFrameElementFrameBorder(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "frameBorder");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "frameBorder");
         return;
-    impl.setAttribute(WebCore::HTMLNames::frameborderAttr, nativeValue);
-}
-
-
-void setJSHTMLFrameElementLongDesc(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
-    impl.setAttribute(WebCore::HTMLNames::longdescAttr, nativeValue);
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::frameborderAttr, nativeValue);
 }
 
 
-void setJSHTMLFrameElementMarginHeight(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLFrameElementLongDesc(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "longDesc");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "longDesc");
         return;
-    impl.setAttribute(WebCore::HTMLNames::marginheightAttr, nativeValue);
-}
-
-
-void setJSHTMLFrameElementMarginWidth(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
-    impl.setAttribute(WebCore::HTMLNames::marginwidthAttr, nativeValue);
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::longdescAttr, nativeValue);
 }
 
 
-void setJSHTMLFrameElementName(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLFrameElementMarginHeight(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "marginHeight");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "marginHeight");
         return;
-    impl.setAttribute(WebCore::HTMLNames::nameAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::marginheightAttr, nativeValue);
 }
 
 
-void setJSHTMLFrameElementNoResize(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLFrameElementMarginWidth(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "marginWidth");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "marginWidth");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::marginwidthAttr, nativeValue);
+}
+
+
+void setJSHTMLFrameElementName(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "name");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "name");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::nameAttr, nativeValue);
+}
+
+
+void setJSHTMLFrameElementNoResize(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "noResize");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "noResize");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::noresizeAttr, nativeValue);
 }
 
 
-void setJSHTMLFrameElementScrolling(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLFrameElementScrolling(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "scrolling");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "scrolling");
         return;
-    impl.setAttribute(WebCore::HTMLNames::scrollingAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::scrollingAttr, nativeValue);
 }
 
 
-void setJSHTMLFrameElementSrc(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLFrameElementSrc(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(thisObject);
-    HTMLFrameElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLFrameElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLFrameElement", "src");
+        else
+            throwSetterTypeError(*exec, "HTMLFrameElement", "src");
         return;
-    impl.setAttribute(WebCore::HTMLNames::srcAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::srcAttr, nativeValue);
 }
 
 
-void setJSHTMLFrameElementLocation(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLFrameElementLocation(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLFrameElement*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSHTMLFrameElement*>(thisObject)->setLocation(exec, value);
+    castedThis->setLocation(exec, value);
 }
 
 
@@ -388,17 +598,17 @@ JSValue JSHTMLFrameElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsHTMLFrameElementPrototypeFunctionGetSVGDocument(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLFrameElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLFrameElement* castedThis = jsCast<JSHTMLFrameElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLFrameElement* castedThis = jsDynamicCast<JSHTMLFrameElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLFrameElement", "getSVGDocument");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLFrameElement::info());
-    HTMLFrameElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     if (!shouldAllowAccessToNode(exec, impl.getSVGDocument(ec)))
         return JSValue::encode(jsNull());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getSVGDocument(ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getSVGDocument(ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }

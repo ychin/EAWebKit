@@ -11,7 +11,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -49,7 +49,9 @@ public:
     explicit ResourceLoadNotifier(Frame&);
 
     void didReceiveAuthenticationChallenge(ResourceLoader*, const AuthenticationChallenge&);
+    void didReceiveAuthenticationChallenge(unsigned long identifier, DocumentLoader*, const AuthenticationChallenge&);
     void didCancelAuthenticationChallenge(ResourceLoader*, const AuthenticationChallenge&);
+    void didCancelAuthenticationChallenge(unsigned long identifier, DocumentLoader*, const AuthenticationChallenge&);
 
     void willSendRequest(ResourceLoader*, ResourceRequest&, const ResourceResponse& redirectResponse);
     void didReceiveResponse(ResourceLoader*, const ResourceResponse&);

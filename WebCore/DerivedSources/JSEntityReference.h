@@ -22,29 +22,28 @@
 #define JSEntityReference_h
 
 #include "EntityReference.h"
-#include "JSDOMBinding.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSEntityReference : public JSNode {
 public:
     typedef JSNode Base;
-    static JSEntityReference* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EntityReference> impl)
+    static JSEntityReference* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<EntityReference>&& impl)
     {
-        JSEntityReference* ptr = new (NotNull, JSC::allocateCell<JSEntityReference>(globalObject->vm().heap)) JSEntityReference(structure, globalObject, impl);
+        JSEntityReference* ptr = new (NotNull, JSC::allocateCell<JSEntityReference>(globalObject->vm().heap)) JSEntityReference(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -53,62 +52,17 @@ public:
         return static_cast<EntityReference&>(Base::impl());
     }
 protected:
-    JSEntityReference(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<EntityReference>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSEntityReference(JSC::Structure*, JSDOMGlobalObject*, Ref<EntityReference>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSEntityReferencePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSEntityReferencePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSEntityReferencePrototype* ptr = new (NotNull, JSC::allocateCell<JSEntityReferencePrototype>(vm.heap)) JSEntityReferencePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSEntityReferencePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSEntityReferenceConstructor : public DOMConstructorObject {
-private:
-    JSEntityReferenceConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSEntityReferenceConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSEntityReferenceConstructor* ptr = new (NotNull, JSC::allocateCell<JSEntityReferenceConstructor>(vm.heap)) JSEntityReferenceConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsEntityReferenceConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

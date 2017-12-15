@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,7 +34,7 @@
 #include <signal.h>
 #endif
 
-#if OS(LINUX)
+#if OS(LINUX) || OS(DARWIN)
 #include <sys/time.h>
 #endif
 
@@ -48,7 +49,7 @@ WTF::MetaAllocatorTracker* CodeProfiling::s_tracker = 0;
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 #endif
 
-#if (PLATFORM(MAC) && CPU(X86_64)) || (OS(LINUX) && CPU(X86))
+#if (OS(DARWIN) && !PLATFORM(EFL) && !PLATFORM(GTK) && CPU(X86_64)) || (OS(LINUX) && CPU(X86))
 // Helper function to start & stop the timer.
 // Presently we're using the wall-clock timer, since this seems to give the best results.
 static void setProfileTimer(unsigned usec)
@@ -66,7 +67,7 @@ static void setProfileTimer(unsigned usec)
 #pragma clang diagnostic pop
 #endif
 
-#if PLATFORM(MAC) && CPU(X86_64)
+#if OS(DARWIN) && !PLATFORM(EFL) && !PLATFORM(GTK) && CPU(X86_64)
 static void profilingTimer(int, siginfo_t*, void* uap)
 {
     mcontext_t context = static_cast<ucontext_t*>(uap)->uc_mcontext;
@@ -92,7 +93,6 @@ void CodeProfiling::sample(void* pc, void** framePointer)
 
 void CodeProfiling::notifyAllocator(WTF::MetaAllocator* allocator)
 {
-#if !OS(WINCE)
     // Check for JSC_CODE_PROFILING.
     const char* codeProfilingMode = getenv("JSC_CODE_PROFILING");
     if (!codeProfilingMode)
@@ -119,7 +119,6 @@ void CodeProfiling::notifyAllocator(WTF::MetaAllocator* allocator)
     ASSERT(!s_tracker);
     s_tracker = new WTF::MetaAllocatorTracker();
     allocator->trackAllocations(s_tracker);
-#endif
 }
 
 void* CodeProfiling::getOwnerUIDForPC(void* address)
@@ -143,7 +142,10 @@ void CodeProfiling::begin(const SourceCode& source)
     if (alreadyProfiling)
         return;
 
-#if (PLATFORM(MAC) && CPU(X86_64)) || (OS(LINUX) && CPU(X86))
+//+EAWebKitChange
+//3/31/2015
+#if ((OS(DARWIN) && !PLATFORM(EFL) && !PLATFORM(GTK) && CPU(X86_64)) || (OS(LINUX) && CPU(X86))) && !PLATFORM(EA)
+//-EAWebKitChange
     // Regsiter a signal handler & itimer.
     struct sigaction action;
     action.sa_sigaction = reinterpret_cast<void (*)(int, siginfo_t *, void *)>(profilingTimer);
@@ -167,7 +169,7 @@ void CodeProfiling::end()
     if (s_profileStack)
         return;
 
-#if (PLATFORM(MAC) && CPU(X86_64)) || (OS(LINUX) && CPU(X86))
+#if (OS(DARWIN) && !PLATFORM(EFL) && !PLATFORM(GTK) && CPU(X86_64)) || (OS(LINUX) && CPU(X86))
     // Stop profiling
     setProfileTimer(0);
 #endif

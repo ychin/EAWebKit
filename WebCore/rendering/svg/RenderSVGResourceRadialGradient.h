@@ -21,7 +21,6 @@
 #ifndef RenderSVGResourceRadialGradient_h
 #define RenderSVGResourceRadialGradient_h
 
-#if ENABLE(SVG)
 #include "RadialGradientAttributes.h"
 #include "RenderSVGResourceGradient.h"
 #include "SVGRadialGradientElement.h"
@@ -30,19 +29,18 @@ namespace WebCore {
 
 class SVGRadialGradientElement;
 
-class RenderSVGResourceRadialGradient FINAL : public RenderSVGResourceGradient {
+class RenderSVGResourceRadialGradient final : public RenderSVGResourceGradient {
 public:
-    explicit RenderSVGResourceRadialGradient(SVGRadialGradientElement&);
+    RenderSVGResourceRadialGradient(SVGRadialGradientElement&, Ref<RenderStyle>&&);
     virtual ~RenderSVGResourceRadialGradient();
 
-    SVGRadialGradientElement& radialGradientElement() const { return toSVGRadialGradientElement(RenderSVGResourceGradient::gradientElement()); }
+    SVGRadialGradientElement& radialGradientElement() const { return downcast<SVGRadialGradientElement>(RenderSVGResourceGradient::gradientElement()); }
 
-    virtual RenderSVGResourceType resourceType() const { return s_resourceType; }
-    static RenderSVGResourceType s_resourceType;
+    virtual RenderSVGResourceType resourceType() const override { return RadialGradientResourceType; }
 
-    virtual SVGUnitTypes::SVGUnitType gradientUnits() const { return m_attributes.gradientUnits(); }
-    virtual void calculateGradientTransform(AffineTransform& transform) { transform = m_attributes.gradientTransform(); }
-    virtual void buildGradient(GradientData*) const;
+    virtual SVGUnitTypes::SVGUnitType gradientUnits() const override { return m_attributes.gradientUnits(); }
+    virtual void calculateGradientTransform(AffineTransform& transform) override { transform = m_attributes.gradientTransform(); }
+    virtual void buildGradient(GradientData*) const override;
 
     FloatPoint centerPoint(const RadialGradientAttributes&) const;
     FloatPoint focalPoint(const RadialGradientAttributes&) const;
@@ -50,15 +48,16 @@ public:
     float focalRadius(const RadialGradientAttributes&) const;
 
 private:
-    void gradientElement() const WTF_DELETED_FUNCTION;
+    void gradientElement() const = delete;
 
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGResourceRadialGradient"; }
-    virtual bool collectGradientAttributes() OVERRIDE;
+    virtual const char* renderName() const override { return "RenderSVGResourceRadialGradient"; }
+    virtual bool collectGradientAttributes() override;
 
     RadialGradientAttributes m_attributes;
 };
 
 }
 
-#endif
+SPECIALIZE_TYPE_TRAITS_RENDER_SVG_RESOURCE(RenderSVGResourceRadialGradient, RadialGradientResourceType)
+
 #endif

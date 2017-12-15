@@ -38,10 +38,8 @@
 #include <zlib.h>
 #endif
 
-#if (defined(WIN32) || defined(_WIN32)) && !defined(_XBOX)
+#if (defined(WIN32) || defined(_WIN32)) && !defined(CS_UNDEFINED_STRING)
     #include <windows.h>
-#elif defined(_XBOX)
-    #include <xtl.h>
 #endif
 
 #if defined(_WIN32_WCE)
@@ -232,11 +230,7 @@ __xmlIOWin32UTF8ToWChar(const char *u8String)
     wchar_t *wString = NULL;
 
     if (u8String) {
-        #if defined(_XBOX)
-            int wLen = MultiByteToWideChar(CP_UTF8,                    0, u8String, -1, NULL, 0);
-        #else
             int wLen = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, u8String, -1, NULL, 0);
-        #endif
 
         if (wLen) {
             wString = xmlMalloc(wLen * sizeof(wchar_t));
@@ -729,9 +723,7 @@ static xmlWrapGzOpenFunc xmlWrapGzOpen = gzopen;
 #endif
 
 
-#if defined(_XBOX)
-    #define LIBXML2_WINDOWS_DESKTOP 0
-#elif defined(WINAPI_FAMILY) 
+#if   defined(WINAPI_FAMILY) 
     #include <winapifamily.h>
 
     #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -26,6 +26,8 @@
 #include "config.h"
 #include "FontFeatureSettings.h"
 
+#include <wtf/text/AtomicStringHash.h>
+
 namespace WebCore {
 
 FontFeature::FontFeature(const AtomicString& tag, int value)
@@ -34,13 +36,43 @@ FontFeature::FontFeature(const AtomicString& tag, int value)
 {
 }
 
-bool FontFeature::operator==(const FontFeature& other)
+bool FontFeature::operator==(const FontFeature& other) const
 {
     return m_tag == other.m_tag && m_value == other.m_value;
 }
 
-FontFeatureSettings::FontFeatureSettings()
+bool FontFeature::operator<(const FontFeature& other) const
 {
+    return (m_tag.impl() < other.m_tag.impl()) || (m_tag.impl() == other.m_tag.impl() && m_value < other.m_value);
+}
+
+unsigned FontFeature::hash() const
+{
+    return WTF::PairHash<AtomicString, unsigned>::hash(std::make_pair(m_tag, m_value));
+}
+
+Ref<FontFeatureSettings> FontFeatureSettings::create()
+{
+    return adoptRef(*new FontFeatureSettings);
+}
+
+void FontFeatureSettings::insert(FontFeature&& feature)
+{
+    // This vector will almost always have 0 or 1 items in it. Don't bother with the overhead of a binary search or a hash set.
+    size_t i;
+    for (i = 0; i < m_list.size(); ++i) {
+        if (feature < m_list[i])
+            break;
+    }
+    m_list.insert(i, WTF::move(feature));
+}
+
+unsigned FontFeatureSettings::hash() const
+{
+    unsigned result = 0;
+    for (size_t i = 0; i < size(); ++i)
+        result = WTF::pairIntHash(result, at(i).hash());
+    return result;
 }
 
 }

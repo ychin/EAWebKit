@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2007, 2011 Apple Inc. All rights reserved.
+ * Copyright (C) 2015 Canon Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,7 +29,18 @@
 #include "FileSystem.h"
 
 #include <wtf/HexNumber.h>
+#include <wtf/text/CString.h>
 #include <wtf/text/StringBuilder.h>
+
+//+EAWebKitChange
+//9/23/2015 added && !PLATFORM(EA)
+#if !PLATFORM(WIN) && !PLATFORM(EA)
+//-EAWebKitChange
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 namespace WebCore {
 
@@ -95,7 +108,11 @@ String encodeForFileName(const String& inputString)
     return result.toString();
 }
 
-#if !PLATFORM(MAC) || PLATFORM(IOS)
+#if !PLATFORM(MAC)
+
+void setMetadataURL(String&, const String&, const String&)
+{
+}
 
 bool canExcludeFromBackup()
 {
@@ -108,5 +125,67 @@ bool excludeFromBackup(const String&)
 }
 
 #endif
+
+MappedFileData::~MappedFileData()
+{
+//+EAWebKitChange
+//9/23/2015 added && !PLATFORM(EA)
+#if !PLATFORM(WIN) && !PLATFORM(EA)
+//-EAWebKitChange
+    if (!m_fileData)
+        return;
+    munmap(m_fileData, m_fileSize);
+#endif
+}
+
+MappedFileData::MappedFileData(const String& filePath, bool& success)
+{
+//+EAWebKitChange
+//9/23/2015 added || PLATFORM(EA)
+#if PLATFORM(WIN) || PLATFORM(EA)
+//-EAWebKitChange
+    // FIXME: Implement mapping
+    success = false;
+#else
+    CString fsRep = fileSystemRepresentation(filePath);
+    int fd = !fsRep.isNull() ? open(fsRep.data(), O_RDONLY) : -1;
+    if (fd < 0) {
+        success = false;
+        return;
+    }
+
+    struct stat fileStat;
+    if (fstat(fd, &fileStat)) {
+        close(fd);
+        success = false;
+        return;
+    }
+
+    unsigned size;
+    if (!WTF::convertSafely(fileStat.st_size, size)) {
+        close(fd);
+        success = false;
+        return;
+    }
+
+    if (!size) {
+        close(fd);
+        success = true;
+        return;
+    }
+
+    void* data = mmap(0, size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
+    close(fd);
+
+    if (data == MAP_FAILED) {
+        success = false;
+        return;
+    }
+
+    success = true;
+    m_fileData = data;
+    m_fileSize = size;
+#endif
+}
 
 } // namespace WebCore

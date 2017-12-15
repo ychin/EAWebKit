@@ -18,26 +18,22 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG) && ENABLE(FILTERS)
 #include "SVGFilterBuilder.h"
 
 #include "FilterEffect.h"
 #include "SourceAlpha.h"
 #include "SourceGraphic.h"
-#include <wtf/PassRefPtr.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
-SVGFilterBuilder::SVGFilterBuilder(PassRefPtr<FilterEffect> sourceGraphic, PassRefPtr<FilterEffect> sourceAlpha)
+SVGFilterBuilder::SVGFilterBuilder(RefPtr<FilterEffect> sourceGraphic)
 {
     m_builtinEffects.add(SourceGraphic::effectName(), sourceGraphic);
-    m_builtinEffects.add(SourceAlpha::effectName(), sourceAlpha);
+    m_builtinEffects.add(SourceAlpha::effectName(), SourceAlpha::create(*sourceGraphic));
     addBuiltinEffects();
 }
 
-void SVGFilterBuilder::add(const AtomicString& id, PassRefPtr<FilterEffect> effect)
+void SVGFilterBuilder::add(const AtomicString& id, RefPtr<FilterEffect> effect)
 {
     if (id.isEmpty()) {
         m_lastEffect = effect;
@@ -66,10 +62,8 @@ FilterEffect* SVGFilterBuilder::getEffectById(const AtomicString& id) const
     return m_namedEffects.get(id);
 }
 
-void SVGFilterBuilder::appendEffectToEffectReferences(PassRefPtr<FilterEffect> prpEffect, RenderObject* object)
+void SVGFilterBuilder::appendEffectToEffectReferences(RefPtr<FilterEffect>&& effect, RenderObject* object)
 {
-    RefPtr<FilterEffect> effect = prpEffect;
-
     // The effect must be a newly created filter effect.
     ASSERT(!m_effectReferences.contains(effect));
     ASSERT(object && !m_effectRenderer.contains(object));
@@ -85,7 +79,7 @@ void SVGFilterBuilder::appendEffectToEffectReferences(PassRefPtr<FilterEffect> p
 
 void SVGFilterBuilder::clearEffects()
 {
-    m_lastEffect = 0;
+    m_lastEffect = nullptr;
     m_namedEffects.clear();
     m_effectReferences.clear();
     m_effectRenderer.clear();
@@ -99,12 +93,8 @@ void SVGFilterBuilder::clearResultsRecursive(FilterEffect* effect)
 
     effect->clearResult();
 
-    HashSet<FilterEffect*>& effectReferences = this->effectReferences(effect);
-    HashSet<FilterEffect*>::iterator end = effectReferences.end();
-    for (HashSet<FilterEffect*>::iterator it = effectReferences.begin(); it != end; ++it)
-         clearResultsRecursive(*it);
+    for (auto& reference : effectReferences(effect))
+        clearResultsRecursive(reference);
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG) && ENABLE(FILTERS)

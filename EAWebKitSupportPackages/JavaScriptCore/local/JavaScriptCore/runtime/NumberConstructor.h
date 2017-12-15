@@ -25,42 +25,35 @@
 
 namespace JSC {
 
-    class NumberPrototype;
+class NumberPrototype;
 
-    class NumberConstructor : public InternalFunction {
-    public:
-        typedef InternalFunction Base;
+class NumberConstructor : public InternalFunction {
+public:
+    typedef InternalFunction Base;
+    static const unsigned StructureFlags = Base::StructureFlags | OverridesGetOwnPropertySlot | ImplementsHasInstance;
 
-        static NumberConstructor* create(VM& vm, Structure* structure, NumberPrototype* numberPrototype)
-        {
-            NumberConstructor* constructor = new (NotNull, allocateCell<NumberConstructor>(vm.heap)) NumberConstructor(vm, structure);
-            constructor->finishCreation(vm, numberPrototype);
-            return constructor;
-        }
+    static NumberConstructor* create(VM& vm, Structure* structure, NumberPrototype* numberPrototype)
+    {
+        NumberConstructor* constructor = new (NotNull, allocateCell<NumberConstructor>(vm.heap)) NumberConstructor(vm, structure);
+        constructor->finishCreation(vm, numberPrototype);
+        return constructor;
+    }
 
-        static void put(JSCell*, ExecState*, PropertyName, JSValue, PutPropertySlot&);
+    DECLARE_INFO;
 
-        static bool getOwnPropertySlot(JSObject*, ExecState*, PropertyName, PropertySlot&);
-        JSValue getValueProperty(ExecState*, int token) const;
+    static Structure* createStructure(VM& vm, JSGlobalObject* globalObject, JSValue proto) 
+    { 
+        return Structure::create(vm, globalObject, proto, TypeInfo(ObjectType, StructureFlags), info()); 
+    }
 
-        DECLARE_INFO;
+protected:
+    void finishCreation(VM&, NumberPrototype*);
 
-        static Structure* createStructure(VM& vm, JSGlobalObject* globalObject, JSValue proto) 
-        { 
-            return Structure::create(vm, globalObject, proto, TypeInfo(ObjectType, StructureFlags), info()); 
-        }
-
-        enum { NaNValue, NegInfinity, PosInfinity, MaxValue, MinValue };
-
-    protected:
-        void finishCreation(VM&, NumberPrototype*);
-        static const unsigned StructureFlags = OverridesGetOwnPropertySlot | ImplementsHasInstance | InternalFunction::StructureFlags;
-
-    private:
-        NumberConstructor(VM&, Structure*);
-        static ConstructType getConstructData(JSCell*, ConstructData&);
-        static CallType getCallData(JSCell*, CallData&);
-    };
+private:
+    NumberConstructor(VM&, Structure*);
+    static ConstructType getConstructData(JSCell*, ConstructData&);
+    static CallType getCallData(JSCell*, CallData&);
+};
 
 } // namespace JSC
 

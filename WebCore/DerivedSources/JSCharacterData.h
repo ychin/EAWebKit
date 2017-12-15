@@ -22,106 +22,52 @@
 #define JSCharacterData_h
 
 #include "CharacterData.h"
-#include "JSDOMBinding.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCharacterData : public JSNode {
 public:
     typedef JSNode Base;
-    static JSCharacterData* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CharacterData> impl)
+    static JSCharacterData* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CharacterData>&& impl)
     {
-        JSCharacterData* ptr = new (NotNull, JSC::allocateCell<JSCharacterData>(globalObject->vm().heap)) JSCharacterData(structure, globalObject, impl);
+        JSCharacterData* ptr = new (NotNull, JSC::allocateCell<JSCharacterData>(globalObject->vm().heap)) JSCharacterData(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
+
+    // Custom functions
+    JSC::JSValue before(JSC::ExecState*);
+    JSC::JSValue after(JSC::ExecState*);
+    JSC::JSValue replaceWith(JSC::ExecState*);
     CharacterData& impl() const
     {
         return static_cast<CharacterData&>(Base::impl());
     }
 protected:
-    JSCharacterData(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CharacterData>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCharacterData(JSC::Structure*, JSDOMGlobalObject*, Ref<CharacterData>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCharacterDataPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCharacterDataPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCharacterDataPrototype* ptr = new (NotNull, JSC::allocateCell<JSCharacterDataPrototype>(vm.heap)) JSCharacterDataPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCharacterDataPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSCharacterDataConstructor : public DOMConstructorObject {
-private:
-    JSCharacterDataConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCharacterDataConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCharacterDataConstructor* ptr = new (NotNull, JSC::allocateCell<JSCharacterDataConstructor>(vm.heap)) JSCharacterDataConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionSubstringData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAppendData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionInsertData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionDeleteData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionRemove(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsCharacterDataData(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSCharacterDataData(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsCharacterDataLength(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCharacterDataConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

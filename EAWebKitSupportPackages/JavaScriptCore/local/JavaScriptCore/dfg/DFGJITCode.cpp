@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,11 +29,17 @@
 #if ENABLE(DFG_JIT)
 
 #include "CodeBlock.h"
+#include "JSCInlines.h"
+#include "TrackedReferences.h"
 
 namespace JSC { namespace DFG {
 
 JITCode::JITCode()
     : DirectJITCode(DFGJIT)
+#if ENABLE(FTL_JIT)
+    , osrEntryRetry(0)
+    , abandonOSREntry(false)
+#endif // ENABLE(FTL_JIT)
 {
 }
 
@@ -77,23 +83,8 @@ void JITCode::reconstruct(
     reconstruct(codeBlock, codeOrigin, streamIndex, recoveries);
     
     result = Operands<JSValue>(OperandsLike, recoveries);
-    for (size_t i = result.size(); i--;) {
-        int operand = result.operandForIndex(i);
-        
-        if (operandIsArgument(operand)
-            && !VirtualRegister(operand).toArgument()
-            && codeBlock->codeType() == FunctionCode
-            && codeBlock->specializationKind() == CodeForConstruct) {
-            // Ugh. If we're in a constructor, the 'this' argument may hold garbage. It will
-            // also never be used. It doesn't matter what we put into the value for this,
-            // but it has to be an actual value that can be grokked by subsequent DFG passes,
-            // so we sanitize it here by turning it into Undefined.
-            result[i] = jsUndefined();
-            continue;
-        }
-        
+    for (size_t i = result.size(); i--;)
         result[i] = recoveries[i].recover(exec);
-    }
 }
 
 #if ENABLE(FTL_JIT)
@@ -156,6 +147,7 @@ void JITCode::setOptimizationThresholdBasedOnCompilationResult(
     switch (result) {
     case CompilationSuccessful:
         optimizeNextInvocation(codeBlock);
+        codeBlock->baselineVersion()->m_hasBeenCompiledWithFTL = true;
         return;
     case CompilationFailed:
         dontOptimizeAnytimeSoon(codeBlock);
@@ -178,6 +170,18 @@ void JITCode::setOptimizationThresholdBasedOnCompilationResult(
     RELEASE_ASSERT_NOT_REACHED();
 }
 #endif // ENABLE(FTL_JIT)
+
+void JITCode::validateReferences(const TrackedReferences& trackedReferences)
+{
+    common.validateReferences(trackedReferences);
+    
+    for (OSREntryData& entry : osrEntry) {
+        for (unsigned i = entry.m_expectedValues.size(); i--;)
+            entry.m_expectedValues[i].validateReferences(trackedReferences);
+    }
+    
+    minifiedDFG.validateReferences(trackedReferences);
+}
 
 } } // namespace JSC::DFG
 

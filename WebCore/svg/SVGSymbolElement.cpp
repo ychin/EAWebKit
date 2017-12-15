@@ -19,12 +19,9 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGSymbolElement.h"
 
 #include "RenderSVGHiddenContainer.h"
-#include "SVGElementInstance.h"
 #include "SVGFitToViewBox.h"
 #include "SVGNames.h"
 
@@ -49,51 +46,27 @@ inline SVGSymbolElement::SVGSymbolElement(const QualifiedName& tagName, Document
     registerAnimatedPropertiesForSVGSymbolElement();
 }
 
-PassRefPtr<SVGSymbolElement> SVGSymbolElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGSymbolElement> SVGSymbolElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGSymbolElement(tagName, document));
-}
-
-bool SVGSymbolElement::isSupportedAttribute(const QualifiedName& attrName)
-{
-    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());
-    if (supportedAttributes.isEmpty()) {
-        SVGLangSpace::addSupportedAttributes(supportedAttributes);
-        SVGExternalResourcesRequired::addSupportedAttributes(supportedAttributes);
-        SVGFitToViewBox::addSupportedAttributes(supportedAttributes);
-    }
-    return supportedAttributes.contains<SVGAttributeHashTranslator>(attrName);
+    return adoptRef(*new SVGSymbolElement(tagName, document));
 }
 
 void SVGSymbolElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
-    if (!isSupportedAttribute(name)) {
-        SVGElement::parseAttribute(name, value);
-        return;
-    }
-
-    if (SVGLangSpace::parseAttribute(name, value))
-        return;
-    if (SVGExternalResourcesRequired::parseAttribute(name, value))
-        return;
-    if (SVGFitToViewBox::parseAttribute(this, name, value))
-        return;
-
-    ASSERT_NOT_REACHED();
+    SVGElement::parseAttribute(name, value);
+    SVGExternalResourcesRequired::parseAttribute(name, value);
+    SVGFitToViewBox::parseAttribute(this, name, value);
 }
 
 void SVGSymbolElement::svgAttributeChanged(const QualifiedName& attrName)
 {
-    if (!isSupportedAttribute(attrName)) {
-        SVGElement::svgAttributeChanged(attrName);
+    if (attrName == SVGNames::viewBoxAttr) {
+        InstanceInvalidationGuard guard(*this);
+        updateRelativeLengthsInformation();
         return;
     }
 
-    SVGElementInstance::InvalidationGuard invalidationGuard(this);
-
-    // Every other property change is ignored.
-    if (attrName == SVGNames::viewBoxAttr)
-        updateRelativeLengthsInformation();
+    SVGElement::svgAttributeChanged(attrName);
 }
 
 bool SVGSymbolElement::selfHasRelativeLengths() const
@@ -101,11 +74,9 @@ bool SVGSymbolElement::selfHasRelativeLengths() const
     return hasAttribute(SVGNames::viewBoxAttr);
 }
 
-RenderElement* SVGSymbolElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> SVGSymbolElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderSVGHiddenContainer(*this);
+    return createRenderer<RenderSVGHiddenContainer>(*this, WTF::move(style));
 }
 
 }
-
-#endif // ENABLE(SVG)

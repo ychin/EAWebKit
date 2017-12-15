@@ -23,28 +23,29 @@
 
 #if ENABLE(GEOLOCATION)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "PositionError.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSPositionError : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSPositionError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<PositionError> impl)
+    static JSPositionError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<PositionError>&& impl)
     {
-        JSPositionError* ptr = new (NotNull, JSC::allocateCell<JSPositionError>(globalObject->vm().heap)) JSPositionError(structure, globalObject, impl);
+        JSPositionError* ptr = new (NotNull, JSC::allocateCell<JSPositionError>(globalObject->vm().heap)) JSPositionError(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static PositionError* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSPositionError();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +54,21 @@ public:
     }
 
     PositionError& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     PositionError* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSPositionError(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<PositionError>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSPositionError(JSC::Structure*, JSDOMGlobalObject*, Ref<PositionError>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSPositionErrorOwner : public JSC::WeakHandleOwner {
@@ -79,51 +79,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, PositionError*)
 {
-    DEFINE_STATIC_LOCAL(JSPositionErrorOwner, jsPositionErrorOwner, ());
-    return &jsPositionErrorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, PositionError*)
-{
-    return &world;
+    static NeverDestroyed<JSPositionErrorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, PositionError*);
-PositionError* toPositionError(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, PositionError& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSPositionErrorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSPositionErrorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSPositionErrorPrototype* ptr = new (NotNull, JSC::allocateCell<JSPositionErrorPrototype>(vm.heap)) JSPositionErrorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSPositionErrorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsPositionErrorCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPositionErrorMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsPositionErrorPERMISSION_DENIED(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPositionErrorPOSITION_UNAVAILABLE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPositionErrorTIMEOUT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

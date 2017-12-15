@@ -23,28 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RTCIceCandidate.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRTCIceCandidate : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRTCIceCandidate* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCIceCandidate> impl)
+    static JSRTCIceCandidate* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCIceCandidate>&& impl)
     {
-        JSRTCIceCandidate* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidate>(globalObject->vm().heap)) JSRTCIceCandidate(structure, globalObject, impl);
+        JSRTCIceCandidate* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidate>(globalObject->vm().heap)) JSRTCIceCandidate(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RTCIceCandidate* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRTCIceCandidate();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     RTCIceCandidate& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RTCIceCandidate* m_impl;
 protected:
-    JSRTCIceCandidate(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCIceCandidate>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRTCIceCandidate(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCIceCandidate>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRTCIceCandidateOwner : public JSC::WeakHandleOwner {
@@ -80,73 +77,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RTCIceCandidate*)
 {
-    DEFINE_STATIC_LOCAL(JSRTCIceCandidateOwner, jsRTCIceCandidateOwner, ());
-    return &jsRTCIceCandidateOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RTCIceCandidate*)
-{
-    return &world;
+    static NeverDestroyed<JSRTCIceCandidateOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RTCIceCandidate*);
-RTCIceCandidate* toRTCIceCandidate(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCIceCandidate& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRTCIceCandidatePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCIceCandidatePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCIceCandidatePrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidatePrototype>(vm.heap)) JSRTCIceCandidatePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSRTCIceCandidate(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCIceCandidatePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSRTCIceCandidateConstructor : public DOMConstructorObject {
-private:
-    JSRTCIceCandidateConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSRTCIceCandidateConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSRTCIceCandidateConstructor* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidateConstructor>(vm.heap)) JSRTCIceCandidateConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSRTCIceCandidate(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Attributes
-
-JSC::JSValue jsRTCIceCandidateCandidate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCIceCandidateSdpMid(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCIceCandidateSdpMLineIndex(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCIceCandidateConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

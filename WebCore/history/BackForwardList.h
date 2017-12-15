@@ -12,10 +12,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -36,47 +36,52 @@ namespace WebCore {
 
 class Page;
 
-typedef Vector<RefPtr<HistoryItem> > HistoryItemVector;
-typedef HashSet<RefPtr<HistoryItem> > HistoryItemHashSet;
+typedef Vector<Ref<HistoryItem>> HistoryItemVector;
+typedef HashSet<RefPtr<HistoryItem>> HistoryItemHashSet;
 
 class BackForwardList : public BackForwardClient {
 public: 
-    static PassRefPtr<BackForwardList> create(Page* page) { return adoptRef(new BackForwardList(page)); }
+    static Ref<BackForwardList> create(Page* page) { return adoptRef(*new BackForwardList(page)); }
     virtual ~BackForwardList();
 
     Page* page() { return m_page; }
-    
-    virtual void addItem(PassRefPtr<HistoryItem>) OVERRIDE;
-    void goBack();
-    void goForward();
-    virtual void goToItem(HistoryItem*) OVERRIDE;
+
+    virtual void addItem(Ref<HistoryItem>&&) override;
+    WEBCORE_EXPORT void goBack();
+    WEBCORE_EXPORT void goForward();
+    virtual void goToItem(HistoryItem*) override;
         
-    HistoryItem* backItem();
-    HistoryItem* currentItem();
-    HistoryItem* forwardItem();
-    virtual HistoryItem* itemAtIndex(int) OVERRIDE;
+    WEBCORE_EXPORT HistoryItem* backItem();
+    WEBCORE_EXPORT HistoryItem* currentItem();
+    WEBCORE_EXPORT HistoryItem* forwardItem();
+    virtual HistoryItem* itemAtIndex(int) override;
 
-    void backListWithLimit(int, HistoryItemVector&);
-    void forwardListWithLimit(int, HistoryItemVector&);
+    WEBCORE_EXPORT void backListWithLimit(int, HistoryItemVector&);
+    WEBCORE_EXPORT void forwardListWithLimit(int, HistoryItemVector&);
 
-    int capacity();
-    void setCapacity(int);
-    bool enabled();
-    void setEnabled(bool);
-    virtual int backListCount() OVERRIDE;
-    virtual int forwardListCount() OVERRIDE;
-    bool containsItem(HistoryItem*);
+    WEBCORE_EXPORT int capacity();
+    WEBCORE_EXPORT void setCapacity(int);
+    WEBCORE_EXPORT bool enabled();
+    WEBCORE_EXPORT void setEnabled(bool);
+    virtual int backListCount() override;
+    virtual int forwardListCount() override;
+    WEBCORE_EXPORT bool containsItem(HistoryItem*);
 
-    virtual void close() OVERRIDE;
-    bool closed();
+    virtual void close() override;
+    WEBCORE_EXPORT bool closed();
 
-    void removeItem(HistoryItem*);
-    HistoryItemVector& entries();
+    WEBCORE_EXPORT void removeItem(HistoryItem*);
+    WEBCORE_EXPORT HistoryItemVector& entries();
+
+#if PLATFORM(IOS)
+    virtual unsigned current() override;
+    virtual void setCurrent(unsigned newCurrent) override;
+
+    virtual bool clearAllPageCaches() override;
+#endif
 
 private:
-    explicit BackForwardList(Page*);
-
-    virtual bool isActive() OVERRIDE { return enabled() && capacity(); }
+    WEBCORE_EXPORT explicit BackForwardList(Page*);
 
     Page* m_page;
     HistoryItemVector m_entries;

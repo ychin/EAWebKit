@@ -19,50 +19,76 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGScriptElement.h"
 
+#include "JSDOMBinding.h"
+#include "JSSVGAnimatedBoolean.h"
+#include "JSSVGAnimatedString.h"
+#include "SVGNames.h"
 #include "SVGScriptElement.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#include "JSSVGAnimatedString.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGScriptElementTableValues[] =
-{
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementType), (intptr_t)setJSSVGScriptElementType },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "href", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementHref), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGScriptElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGScriptElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGScriptElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGScriptElementHref(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGScriptElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGScriptElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGScriptElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGScriptElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGScriptElementPrototype>(vm.heap)) JSSVGScriptElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGScriptElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGScriptElementTable = { 9, 7, JSSVGScriptElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGScriptElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGScriptElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGScriptElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGScriptElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGScriptElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGScriptElementConstructor>(vm.heap)) JSSVGScriptElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGScriptElementConstructorTable = { 1, 0, JSSVGScriptElementConstructorTableValues, 0 };
-const ClassInfo JSSVGScriptElementConstructor::s_info = { "SVGScriptElementConstructor", &Base::s_info, &JSSVGScriptElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGScriptElementConstructor) };
+const ClassInfo JSSVGScriptElementConstructor::s_info = { "SVGScriptElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGScriptElementConstructor) };
 
 JSSVGScriptElementConstructor::JSSVGScriptElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -73,113 +99,124 @@ void JSSVGScriptElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGScriptElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGScriptElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGScriptElementConstructor, JSDOMWrapper>(exec, JSSVGScriptElementConstructorTable, jsCast<JSSVGScriptElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGScriptElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGScriptElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGScriptElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGScriptElementType) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "href", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGScriptElementHref), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGScriptElementPrototypeTable = { 1, 0, JSSVGScriptElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGScriptElementPrototype::s_info = { "SVGScriptElementPrototype", &Base::s_info, &JSSVGScriptElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGScriptElementPrototype) };
+const ClassInfo JSSVGScriptElementPrototype::s_info = { "SVGScriptElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGScriptElementPrototype) };
 
-JSObject* JSSVGScriptElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGScriptElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGScriptElement::s_info = { "SVGScriptElement", &Base::s_info, &JSSVGScriptElementTable, 0 , CREATE_METHOD_TABLE(JSSVGScriptElement) };
-
-JSSVGScriptElement::JSSVGScriptElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGScriptElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGScriptElement::finishCreation(VM& vm)
+void JSSVGScriptElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGScriptElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGScriptElement::s_info = { "SVGScriptElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGScriptElement) };
+
+JSSVGScriptElement::JSSVGScriptElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGScriptElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGScriptElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGScriptElementPrototype::create(vm, globalObject, JSSVGScriptElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGScriptElementPrototype::create(vm, globalObject, JSSVGScriptElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGScriptElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGScriptElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGScriptElement* thisObject = jsCast<JSSVGScriptElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGScriptElement, Base>(exec, JSSVGScriptElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGScriptElement>(vm, globalObject);
 }
 
-JSValue jsSVGScriptElementType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGScriptElementType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGScriptElement* castedThis = jsCast<JSSVGScriptElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGScriptElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGScriptElement* castedThis = jsDynamicCast<JSSVGScriptElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGScriptElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGScriptElement", "type");
+        return throwGetterTypeError(*exec, "SVGScriptElement", "type");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::SVGNames::typeAttr));
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGScriptElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGScriptElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGScriptElement* castedThis = jsCast<JSSVGScriptElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGScriptElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGScriptElement* castedThis = jsDynamicCast<JSSVGScriptElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGScriptElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGScriptElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGScriptElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGScriptElementHref(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGScriptElementHref(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGScriptElement* castedThis = jsCast<JSSVGScriptElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGScriptElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGScriptElement* castedThis = jsDynamicCast<JSSVGScriptElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGScriptElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGScriptElement", "href");
+        return throwGetterTypeError(*exec, "SVGScriptElement", "href");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedString> obj = impl.hrefAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGScriptElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGScriptElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGScriptElement* domObject = jsCast<JSSVGScriptElement*>(asObject(slotBase));
-    return JSSVGScriptElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGScriptElementPrototype* domObject = jsDynamicCast<JSSVGScriptElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGScriptElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGScriptElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGScriptElementType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGScriptElement* thisObject = jsCast<JSSVGScriptElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGScriptElement, Base>(exec, propertyName, value, JSSVGScriptElementTable, thisObject, slot);
-}
-
-void setJSSVGScriptElementType(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGScriptElement* castedThis = jsCast<JSSVGScriptElement*>(thisObject);
-    SVGScriptElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGScriptElement* castedThis = jsDynamicCast<JSSVGScriptElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGScriptElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGScriptElement", "type");
+        else
+            throwSetterTypeError(*exec, "SVGScriptElement", "type");
         return;
-    impl.setType(nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::SVGNames::typeAttr, nativeValue);
 }
 
 
@@ -190,5 +227,3 @@ JSValue JSSVGScriptElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 
 }
-
-#endif // ENABLE(SVG)

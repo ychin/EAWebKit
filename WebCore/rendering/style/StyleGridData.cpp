@@ -26,6 +26,8 @@
 #include "config.h"
 #include "StyleGridData.h"
 
+#if ENABLE(CSS_GRID_LAYOUT)
+
 #include "RenderStyle.h"
 
 namespace WebCore {
@@ -33,6 +35,10 @@ namespace WebCore {
 StyleGridData::StyleGridData()
     : m_gridColumns(RenderStyle::initialGridColumns())
     , m_gridRows(RenderStyle::initialGridRows())
+    , m_namedGridColumnLines(RenderStyle::initialNamedGridColumnLines())
+    , m_namedGridRowLines(RenderStyle::initialNamedGridRowLines())
+    , m_orderedNamedGridColumnLines(RenderStyle::initialOrderedNamedGridColumnLines())
+    , m_orderedNamedGridRowLines(RenderStyle::initialOrderedNamedGridRowLines())
     , m_gridAutoFlow(RenderStyle::initialGridAutoFlow())
     , m_gridAutoRows(RenderStyle::initialGridAutoRows())
     , m_gridAutoColumns(RenderStyle::initialGridAutoColumns())
@@ -42,12 +48,14 @@ StyleGridData::StyleGridData()
 {
 }
 
-StyleGridData::StyleGridData(const StyleGridData& o)
+inline StyleGridData::StyleGridData(const StyleGridData& o)
     : RefCounted<StyleGridData>()
     , m_gridColumns(o.m_gridColumns)
     , m_gridRows(o.m_gridRows)
     , m_namedGridColumnLines(o.m_namedGridColumnLines)
     , m_namedGridRowLines(o.m_namedGridRowLines)
+    , m_orderedNamedGridColumnLines(o.m_orderedNamedGridColumnLines)
+    , m_orderedNamedGridRowLines(o.m_orderedNamedGridRowLines)
     , m_gridAutoFlow(o.m_gridAutoFlow)
     , m_gridAutoRows(o.m_gridAutoRows)
     , m_gridAutoColumns(o.m_gridAutoColumns)
@@ -57,5 +65,11 @@ StyleGridData::StyleGridData(const StyleGridData& o)
 {
 }
 
+Ref<StyleGridData> StyleGridData::copy() const
+{
+    return adoptRef(*new StyleGridData(*this));
+}
+
 } // namespace WebCore
 
+#endif /* ENABLE(CSS_GRID_LAYOUT) */

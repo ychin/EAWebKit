@@ -27,33 +27,62 @@
 #if ENABLE(VIDEO) && USE(GSTREAMER)
 
 #include "ColorSpace.h"
-#include "FullscreenVideoControllerGStreamer.h"
-#include "GStreamerGWorld.h"
 #include "GStreamerUtilities.h"
-#include "GStreamerVersioning.h"
 #include "GraphicsContext.h"
 #include "GraphicsTypes.h"
 #include "ImageGStreamer.h"
 #include "ImageOrientation.h"
 #include "IntRect.h"
-#include "Logging.h"
 #include "MediaPlayer.h"
 #include "NotImplemented.h"
 #include "VideoSinkGStreamer.h"
 #include "WebKitWebSourceGStreamer.h"
 #include <gst/gst.h>
-#include <gst/video/video.h>
+#include <wtf/glib/GMutexLocker.h>
 #include <wtf/text/CString.h>
 
-#ifdef GST_API_VERSION_1
 #include <gst/audio/streamvolume.h>
-#else
-#include <gst/interfaces/streamvolume.h>
+#include <gst/video/gstvideometa.h>
+
+#if USE(GSTREAMER_GL)
+#define GST_USE_UNSTABLE_API
+#include <gst/gl/gstglmemory.h>
+#undef GST_USE_UNSTABLE_API
 #endif
 
-#if GST_CHECK_VERSION(1, 1, 0) && USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL)
+#if GST_CHECK_VERSION(1, 1, 0) && USE(TEXTURE_MAPPER_GL)
+#include "BitmapTextureGL.h"
+#include "BitmapTexturePool.h"
 #include "TextureMapperGL.h"
 #endif
+
+#if USE(GSTREAMER_GL)
+#include "GLContext.h"
+
+#define GST_USE_UNSTABLE_API
+#include <gst/gl/gl.h>
+#undef GST_USE_UNSTABLE_API
+
+#if USE(GLX)
+#include "GLContextGLX.h"
+#include <gst/gl/x11/gstgldisplay_x11.h>
+#elif USE(EGL)
+#include "GLContextEGL.h"
+#include <gst/gl/egl/gstgldisplay_egl.h>
+#endif
+
+#if PLATFORM(X11)
+#include "PlatformDisplayX11.h"
+#elif PLATFORM(WAYLAND)
+#include "PlatformDisplayWayland.h"
+#endif
+
+// gstglapi.h may include eglplatform.h and it includes X.h, which
+// defines None, breaking MediaPlayer::None enum
+#if PLATFORM(X11) && GST_GL_HAVE_PLATFORM_EGL
+#undef None
+#endif
+#endif // USE(GSTREAMER_GL)
 
 GST_DEBUG_CATEGORY(webkit_media_player_debug);
 #define GST_CAT_DEFAULT webkit_media_player_debug
@@ -80,29 +109,28 @@ static void mediaPlayerPrivateVolumeChangedCallback(GObject*, GParamSpec*, Media
     player->volumeChanged();
 }
 
-static gboolean mediaPlayerPrivateVolumeChangeTimeoutCallback(MediaPlayerPrivateGStreamerBase* player)
-{
-    // This is the callback of the timeout source created in ::volumeChanged.
-    player->notifyPlayerOfVolumeChange();
-    return FALSE;
-}
-
 static void mediaPlayerPrivateMuteChangedCallback(GObject*, GParamSpec*, MediaPlayerPrivateGStreamerBase* player)
 {
     // This is called when m_volumeElement receives the notify::mute signal.
     player->muteChanged();
 }
 
-static gboolean mediaPlayerPrivateMuteChangeTimeoutCallback(MediaPlayerPrivateGStreamerBase* player)
+static void mediaPlayerPrivateRepaintCallback(WebKitVideoSink*, GstSample* sample, MediaPlayerPrivateGStreamerBase* playerPrivate)
 {
-    // This is the callback of the timeout source created in ::muteChanged.
-    player->notifyPlayerOfMute();
-    return FALSE;
+    playerPrivate->triggerRepaint(sample);
 }
 
-static void mediaPlayerPrivateRepaintCallback(WebKitVideoSink*, GstBuffer *buffer, MediaPlayerPrivateGStreamerBase* playerPrivate)
+#if USE(GSTREAMER_GL)
+static gboolean mediaPlayerPrivateDrawCallback(GstElement*, GstContext*, GstSample* sample, MediaPlayerPrivateGStreamerBase* playerPrivate)
 {
-    playerPrivate->triggerRepaint(buffer);
+    playerPrivate->triggerRepaint(sample);
+    return TRUE;
+}
+#endif
+
+static void mediaPlayerPrivateNeedContextMessageCallback(GstBus*, GstMessage* message, MediaPlayerPrivateGStreamerBase* player)
+{
+    player->handleNeedContextMessage(message);
 }
 
 MediaPlayerPrivateGStreamerBase::MediaPlayerPrivateGStreamerBase(MediaPlayer* player)
@@ -110,43 +138,28 @@ MediaPlayerPrivateGStreamerBase::MediaPlayerPrivateGStreamerBase(MediaPlayer* pl
     , m_fpsSink(0)
     , m_readyState(MediaPlayer::HaveNothing)
     , m_networkState(MediaPlayer::Empty)
-    , m_buffer(0)
-    , m_volumeTimerHandler(0)
-    , m_muteTimerHandler(0)
     , m_repaintHandler(0)
     , m_volumeSignalHandler(0)
     , m_muteSignalHandler(0)
+    , m_usingFallbackVideoSink(false)
 {
-#if GLIB_CHECK_VERSION(2, 31, 0)
-    m_bufferMutex = new GMutex;
-    g_mutex_init(m_bufferMutex);
-#else
-    m_bufferMutex = g_mutex_new();
+    g_mutex_init(&m_sampleMutex);
+#if USE(GSTREAMER_GL)
+    g_cond_init(&m_drawCondition);
+    g_mutex_init(&m_drawMutex);
 #endif
 }
 
 MediaPlayerPrivateGStreamerBase::~MediaPlayerPrivateGStreamerBase()
 {
-    g_signal_handler_disconnect(m_webkitVideoSink.get(), m_repaintHandler);
+    if (m_repaintHandler) {
+        g_signal_handler_disconnect(m_videoSink.get(), m_repaintHandler);
+        m_repaintHandler = 0;
+    }
 
-#if GLIB_CHECK_VERSION(2, 31, 0)
-    g_mutex_clear(m_bufferMutex);
-    delete m_bufferMutex;
-#else
-    g_mutex_free(m_bufferMutex);
-#endif
-
-    if (m_buffer)
-        gst_buffer_unref(m_buffer);
-    m_buffer = 0;
+    g_mutex_clear(&m_sampleMutex);
 
     m_player = 0;
-
-    if (m_muteTimerHandler)
-        g_source_remove(m_muteTimerHandler);
-
-    if (m_volumeTimerHandler)
-        g_source_remove(m_volumeTimerHandler);
 
     if (m_volumeSignalHandler) {
         g_signal_handler_disconnect(m_volumeElement.get(), m_volumeSignalHandler);
@@ -158,30 +171,115 @@ MediaPlayerPrivateGStreamerBase::~MediaPlayerPrivateGStreamerBase()
         m_muteSignalHandler = 0;
     }
 
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    if (m_fullscreenVideoController)
-        exitFullscreen();
+#if USE(GSTREAMER_GL)
+    g_cond_clear(&m_drawCondition);
+    g_mutex_clear(&m_drawMutex);
+#endif
+
+    if (m_pipeline) {
+        GRefPtr<GstBus> bus = adoptGRef(gst_pipeline_get_bus(GST_PIPELINE(m_pipeline.get())));
+        ASSERT(bus);
+        g_signal_handlers_disconnect_by_func(bus.get(), reinterpret_cast<gpointer>(mediaPlayerPrivateNeedContextMessageCallback), this);
+        gst_bus_disable_sync_message_emission(bus.get());
+        m_pipeline.clear();
+    }
+
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+    if (client())
+        client()->platformLayerWillBeDestroyed();
 #endif
 }
 
+void MediaPlayerPrivateGStreamerBase::setPipeline(GstElement* pipeline)
+{
+    m_pipeline = pipeline;
+
+    GRefPtr<GstBus> bus = adoptGRef(gst_pipeline_get_bus(GST_PIPELINE(m_pipeline.get())));
+    gst_bus_enable_sync_message_emission(bus.get());
+    g_signal_connect(bus.get(), "sync-message::need-context", G_CALLBACK(mediaPlayerPrivateNeedContextMessageCallback), this);
+}
+
+void MediaPlayerPrivateGStreamerBase::handleNeedContextMessage(GstMessage* message)
+{
+#if USE(GSTREAMER_GL)
+    const gchar* contextType;
+    gst_message_parse_context_type(message, &contextType);
+
+    if (!ensureGstGLContext())
+        return;
+
+    if (!g_strcmp0(contextType, GST_GL_DISPLAY_CONTEXT_TYPE)) {
+        GstContext* displayContext = gst_context_new(GST_GL_DISPLAY_CONTEXT_TYPE, TRUE);
+        gst_context_set_gl_display(displayContext, m_glDisplay.get());
+        gst_element_set_context(GST_ELEMENT(message->src), displayContext);
+        return;
+    }
+
+    if (!g_strcmp0(contextType, "gst.gl.app_context")) {
+        GstContext* appContext = gst_context_new("gst.gl.app_context", TRUE);
+        GstStructure* structure = gst_context_writable_structure(appContext);
+        gst_structure_set(structure, "context", GST_GL_TYPE_CONTEXT, m_glContext.get(), nullptr);
+        gst_element_set_context(GST_ELEMENT(message->src), appContext);
+        return;
+    }
+#else
+    UNUSED_PARAM(message);
+#endif // USE(GSTREAMER_GL)
+}
+
+#if USE(GSTREAMER_GL)
+bool MediaPlayerPrivateGStreamerBase::ensureGstGLContext()
+{
+    if (m_glContext)
+        return true;
+
+    if (!m_glDisplay) {
+        const auto& sharedDisplay = PlatformDisplay::sharedDisplay();
+#if PLATFORM(X11)
+        m_glDisplay = GST_GL_DISPLAY(gst_gl_display_x11_new_with_display(downcast<PlatformDisplayX11>(sharedDisplay).native()));
+#elif PLATFORM(WAYLAND)
+        m_glDisplay = GST_GL_DISPLAY(gst_gl_display_egl_new_with_egl_display(downcast<PlatformDisplayWayland>(sharedDisplay).native()));
+#endif
+    }
+
+    GLContext* webkitContext = GLContext::sharingContext();
+    // EGL and GLX are mutually exclusive, no need for ifdefs here.
+    GstGLPlatform glPlatform = webkitContext->isEGLContext() ? GST_GL_PLATFORM_EGL : GST_GL_PLATFORM_GLX;
+
+#if USE(OPENGL_ES_2)
+    GstGLAPI glAPI = GST_GL_API_GLES2;
+#elif USE(OPENGL)
+    GstGLAPI glAPI = GST_GL_API_OPENGL;
+#else
+    ASSERT_NOT_REACHED();
+#endif
+
+    PlatformGraphicsContext3D contextHandle = webkitContext->platformContext();
+    if (!contextHandle)
+        return false;
+
+    m_glContext = gst_gl_context_new_wrapped(m_glDisplay.get(), reinterpret_cast<guintptr>(contextHandle), glPlatform, glAPI);
+
+    return true;
+}
+#endif // USE(GSTREAMER_GL)
+
 // Returns the size of the video
-IntSize MediaPlayerPrivateGStreamerBase::naturalSize() const
+FloatSize MediaPlayerPrivateGStreamerBase::naturalSize() const
 {
     if (!hasVideo())
-        return IntSize();
+        return FloatSize();
 
     if (!m_videoSize.isEmpty())
         return m_videoSize;
 
-#ifdef GST_API_VERSION_1
-    GRefPtr<GstCaps> caps = currentVideoSinkCaps();
-#else
-    g_mutex_lock(m_bufferMutex);
-    GRefPtr<GstCaps> caps = m_buffer ? GST_BUFFER_CAPS(m_buffer) : 0;
-    g_mutex_unlock(m_bufferMutex);
-#endif
+    WTF::GMutexLocker<GMutex> lock(m_sampleMutex);
+    if (!GST_IS_SAMPLE(m_sample.get()))
+        return FloatSize();
+
+    GstCaps* caps = gst_sample_get_caps(m_sample.get());
     if (!caps)
-        return IntSize();
+        return FloatSize();
 
 
     // TODO: handle possible clean aperture data. See
@@ -194,8 +292,8 @@ IntSize MediaPlayerPrivateGStreamerBase::naturalSize() const
     int pixelAspectRatioNumerator, pixelAspectRatioDenominator, stride;
     IntSize originalSize;
     GstVideoFormat format;
-    if (!getVideoSizeAndFormatFromCaps(caps.get(), originalSize, format, pixelAspectRatioNumerator, pixelAspectRatioDenominator, stride))
-        return IntSize();
+    if (!getVideoSizeAndFormatFromCaps(caps, originalSize, format, pixelAspectRatioNumerator, pixelAspectRatioDenominator, stride))
+        return FloatSize();
 
     LOG_MEDIA_MESSAGE("Original video size: %dx%d", originalSize.width(), originalSize.height());
     LOG_MEDIA_MESSAGE("Pixel aspect ratio: %d/%d", pixelAspectRatioNumerator, pixelAspectRatioDenominator);
@@ -226,7 +324,7 @@ IntSize MediaPlayerPrivateGStreamerBase::naturalSize() const
     }
 
     LOG_MEDIA_MESSAGE("Natural size: %" G_GUINT64_FORMAT "x%" G_GUINT64_FORMAT, width, height);
-    m_videoSize = IntSize(static_cast<int>(width), static_cast<int>(height));
+    m_videoSize = FloatSize(static_cast<int>(width), static_cast<int>(height));
     return m_videoSize;
 }
 
@@ -250,8 +348,6 @@ float MediaPlayerPrivateGStreamerBase::volume() const
 
 void MediaPlayerPrivateGStreamerBase::notifyPlayerOfVolumeChange()
 {
-    m_volumeTimerHandler = 0;
-
     if (!m_player || !m_volumeElement)
         return;
     double volume;
@@ -265,9 +361,7 @@ void MediaPlayerPrivateGStreamerBase::notifyPlayerOfVolumeChange()
 
 void MediaPlayerPrivateGStreamerBase::volumeChanged()
 {
-    if (m_volumeTimerHandler)
-        g_source_remove(m_volumeTimerHandler);
-    m_volumeTimerHandler = g_timeout_add(0, reinterpret_cast<GSourceFunc>(mediaPlayerPrivateVolumeChangeTimeoutCallback), this);
+    m_volumeTimerHandler.schedule("[WebKit] MediaPlayerPrivateGStreamerBase::volumeChanged", std::function<void()>(std::bind(&MediaPlayerPrivateGStreamerBase::notifyPlayerOfVolumeChange, this)));
 }
 
 MediaPlayer::NetworkState MediaPlayerPrivateGStreamerBase::networkState() const
@@ -305,8 +399,6 @@ bool MediaPlayerPrivateGStreamerBase::muted() const
 
 void MediaPlayerPrivateGStreamerBase::notifyPlayerOfMute()
 {
-    m_muteTimerHandler = 0;
-
     if (!m_player || !m_volumeElement)
         return;
 
@@ -317,86 +409,86 @@ void MediaPlayerPrivateGStreamerBase::notifyPlayerOfMute()
 
 void MediaPlayerPrivateGStreamerBase::muteChanged()
 {
-    if (m_muteTimerHandler)
-        g_source_remove(m_muteTimerHandler);
-    m_muteTimerHandler = g_timeout_add(0, reinterpret_cast<GSourceFunc>(mediaPlayerPrivateMuteChangeTimeoutCallback), this);
+    m_muteTimerHandler.schedule("[WebKit] MediaPlayerPrivateGStreamerBase::muteChanged", std::function<void()>(std::bind(&MediaPlayerPrivateGStreamerBase::notifyPlayerOfMute, this)));
 }
 
-
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
 PassRefPtr<BitmapTexture> MediaPlayerPrivateGStreamerBase::updateTexture(TextureMapper* textureMapper)
 {
-    g_mutex_lock(m_bufferMutex);
-    if (!m_buffer) {
-        g_mutex_unlock(m_bufferMutex);
-        return 0;
-    }
+    WTF::GMutexLocker<GMutex> lock(m_sampleMutex);
+    if (!GST_IS_SAMPLE(m_sample.get()))
+        return nullptr;
 
-    const void* srcData = 0;
-#ifdef GST_API_VERSION_1
-    GRefPtr<GstCaps> caps = currentVideoSinkCaps();
-#else
-    GRefPtr<GstCaps> caps = GST_BUFFER_CAPS(m_buffer);
-#endif
-    if (!caps) {
-        g_mutex_unlock(m_bufferMutex);
-        return 0;
-    }
+    GstCaps* caps = gst_sample_get_caps(m_sample.get());
+    if (!caps)
+        return nullptr;
 
-    IntSize size;
-    GstVideoFormat format;
-    int pixelAspectRatioNumerator, pixelAspectRatioDenominator, stride;
-    if (!getVideoSizeAndFormatFromCaps(caps.get(), size, format, pixelAspectRatioNumerator, pixelAspectRatioDenominator, stride)) {
-        g_mutex_unlock(m_bufferMutex);
-        return 0;
-    }
+    GstVideoInfo videoInfo;
+    gst_video_info_init(&videoInfo);
+    if (!gst_video_info_from_caps(&videoInfo, caps))
+        return nullptr;
 
-    RefPtr<BitmapTexture> texture = textureMapper->acquireTextureFromPool(size);
+    IntSize size = IntSize(GST_VIDEO_INFO_WIDTH(&videoInfo), GST_VIDEO_INFO_HEIGHT(&videoInfo));
+    RefPtr<BitmapTexture> texture = textureMapper->acquireTextureFromPool(size, GST_VIDEO_INFO_HAS_ALPHA(&videoInfo) ? BitmapTexture::SupportsAlpha : BitmapTexture::NoFlag);
+    GstBuffer* buffer = gst_sample_get_buffer(m_sample.get());
 
 #if GST_CHECK_VERSION(1, 1, 0)
     GstVideoGLTextureUploadMeta* meta;
-    if ((meta = gst_buffer_get_video_gl_texture_upload_meta(m_buffer))) {
+    if ((meta = gst_buffer_get_video_gl_texture_upload_meta(buffer))) {
         if (meta->n_textures == 1) { // BRGx & BGRA formats use only one texture.
             const BitmapTextureGL* textureGL = static_cast<const BitmapTextureGL*>(texture.get());
             guint ids[4] = { textureGL->id(), 0, 0, 0 };
 
-            if (gst_video_gl_texture_upload_meta_upload(meta, ids)) {
-                g_mutex_unlock(m_bufferMutex);
+            if (gst_video_gl_texture_upload_meta_upload(meta, ids))
                 return texture;
-            }
         }
     }
 #endif
 
-#ifdef GST_API_VERSION_1
-    GstMapInfo srcInfo;
-    gst_buffer_map(m_buffer, &srcInfo, GST_MAP_READ);
-    srcData = srcInfo.data;
-#else
-    srcData = GST_BUFFER_DATA(m_buffer);
-#endif
+    // Right now the TextureMapper only supports chromas with one plane
+    ASSERT(GST_VIDEO_INFO_N_PLANES(&videoInfo) == 1);
 
+    GstVideoFrame videoFrame;
+    if (!gst_video_frame_map(&videoFrame, &videoInfo, buffer, GST_MAP_READ))
+        return nullptr;
+
+    int stride = GST_VIDEO_FRAME_PLANE_STRIDE(&videoFrame, 0);
+    const void* srcData = GST_VIDEO_FRAME_PLANE_DATA(&videoFrame, 0);
     texture->updateContents(srcData, WebCore::IntRect(WebCore::IntPoint(0, 0), size), WebCore::IntPoint(0, 0), stride, BitmapTexture::UpdateCannotModifyOriginalImageData);
+    gst_video_frame_unmap(&videoFrame);
 
-#ifdef GST_API_VERSION_1
-    gst_buffer_unmap(m_buffer, &srcInfo);
-#endif
-
-    g_mutex_unlock(m_bufferMutex);
     return texture;
 }
 #endif
 
-void MediaPlayerPrivateGStreamerBase::triggerRepaint(GstBuffer* buffer)
+void MediaPlayerPrivateGStreamerBase::triggerRepaint(GstSample* sample)
 {
-    g_return_if_fail(GST_IS_BUFFER(buffer));
+    {
+        WTF::GMutexLocker<GMutex> lock(m_sampleMutex);
+        m_sample = sample;
+    }
 
-    g_mutex_lock(m_bufferMutex);
-    gst_buffer_replace(&m_buffer, buffer);
-    g_mutex_unlock(m_bufferMutex);
+#if USE(GSTREAMER_GL)
+    {
+        ASSERT(!isMainThread());
 
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
-    if (supportsAcceleratedRendering() && m_player->mediaPlayerClient()->mediaPlayerRenderingCanBeAccelerated(m_player) && client()) {
+        WTF::GMutexLocker<GMutex> lock(m_drawMutex);
+
+        m_drawTimerHandler.schedule("[WebKit] video render", [this] {
+            // Rendering should be done from the main thread
+            // because this is where the GL APIs were initialized.
+            WTF::GMutexLocker<GMutex> lock(m_drawMutex);
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+            if (supportsAcceleratedRendering() && m_player->client().mediaPlayerRenderingCanBeAccelerated(m_player) && client())
+                client()->setPlatformLayerNeedsDisplay();
+            g_cond_signal(&m_drawCondition);
+#endif
+        });
+        g_cond_wait(&m_drawCondition, &m_drawMutex);
+    }
+
+#elif USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+    if (supportsAcceleratedRendering() && m_player->client().mediaPlayerRenderingCanBeAccelerated(m_player) && client()) {
         client()->setPlatformLayerNeedsDisplay();
         return;
     }
@@ -410,9 +502,9 @@ void MediaPlayerPrivateGStreamerBase::setSize(const IntSize& size)
     m_size = size;
 }
 
-void MediaPlayerPrivateGStreamerBase::paint(GraphicsContext* context, const IntRect& rect)
+void MediaPlayerPrivateGStreamerBase::paint(GraphicsContext* context, const FloatRect& rect)
 {
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
     if (client())
         return;
 #endif
@@ -423,63 +515,58 @@ void MediaPlayerPrivateGStreamerBase::paint(GraphicsContext* context, const IntR
     if (!m_player->visible())
         return;
 
-    g_mutex_lock(m_bufferMutex);
-    if (!m_buffer) {
-        g_mutex_unlock(m_bufferMutex);
+    WTF::GMutexLocker<GMutex> lock(m_sampleMutex);
+    if (!GST_IS_SAMPLE(m_sample.get()))
         return;
-    }
 
-#ifdef GST_API_VERSION_1
-    GRefPtr<GstCaps> caps = currentVideoSinkCaps();
-#else
-    GRefPtr<GstCaps> caps = GST_BUFFER_CAPS(m_buffer);
-#endif
-    if (!caps) {
-        g_mutex_unlock(m_bufferMutex);
+    RefPtr<ImageGStreamer> gstImage = ImageGStreamer::createImage(m_sample.get());
+    if (!gstImage)
         return;
-    }
-
-    RefPtr<ImageGStreamer> gstImage = ImageGStreamer::createImage(m_buffer, caps.get());
-    if (!gstImage) {
-        g_mutex_unlock(m_bufferMutex);
-        return;
-    }
 
     context->drawImage(reinterpret_cast<Image*>(gstImage->image().get()), ColorSpaceSRGB,
-        rect, gstImage->rect(), CompositeCopy, ImageOrientationDescription(), false);
-    g_mutex_unlock(m_bufferMutex);
+        rect, gstImage->rect(), CompositeCopy);
 }
 
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
 void MediaPlayerPrivateGStreamerBase::paintToTextureMapper(TextureMapper* textureMapper, const FloatRect& targetRect, const TransformationMatrix& matrix, float opacity)
 {
-    if (textureMapper->accelerationMode() != TextureMapper::OpenGLMode)
-        return;
-
     if (!m_player->visible())
         return;
 
-    RefPtr<BitmapTexture> texture = updateTexture(textureMapper);
-    if (texture)
-        textureMapper->drawTexture(*texture.get(), targetRect, matrix, opacity);
-}
-#endif
-
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-void MediaPlayerPrivateGStreamerBase::enterFullscreen()
-{
-    ASSERT(!m_fullscreenVideoController);
-    m_fullscreenVideoController = FullscreenVideoControllerGStreamer::create(this);
-    if (m_fullscreenVideoController)
-        m_fullscreenVideoController->enterFullscreen();
-}
-
-void MediaPlayerPrivateGStreamerBase::exitFullscreen()
-{
-    if (!m_fullscreenVideoController)
+    if (m_usingFallbackVideoSink) {
+        if (RefPtr<BitmapTexture> texture = updateTexture(textureMapper))
+            textureMapper->drawTexture(*texture.get(), targetRect, matrix, opacity);
         return;
-    m_fullscreenVideoController->exitFullscreen();
-    m_fullscreenVideoController.release();
+    }
+
+#if USE(GSTREAMER_GL)
+    if (!GST_IS_SAMPLE(m_sample.get()))
+        return;
+
+    GstCaps* caps = gst_sample_get_caps(m_sample.get());
+    if (!caps)
+        return;
+
+    GstVideoInfo videoInfo;
+    gst_video_info_init(&videoInfo);
+    if (!gst_video_info_from_caps(&videoInfo, caps))
+        return;
+
+    GstBuffer* buffer = gst_sample_get_buffer(m_sample.get());
+    GstVideoFrame videoFrame;
+    if (!gst_video_frame_map(&videoFrame, &videoInfo, buffer, static_cast<GstMapFlags>(GST_MAP_READ | GST_MAP_GL)))
+        return;
+
+    unsigned textureID = *reinterpret_cast<unsigned*>(videoFrame.data[0]);
+    BitmapTexture::Flags flags = BitmapTexture::NoFlag;
+    if (GST_VIDEO_INFO_HAS_ALPHA(&videoInfo))
+        flags |= BitmapTexture::SupportsAlpha;
+
+    IntSize size = IntSize(GST_VIDEO_INFO_WIDTH(&videoInfo), GST_VIDEO_INFO_HEIGHT(&videoInfo));
+    TextureMapperGL* textureMapperGL = reinterpret_cast<TextureMapperGL*>(textureMapper);
+    textureMapperGL->drawTexture(textureID, flags, size, targetRect, matrix, opacity);
+    gst_video_frame_unmap(&videoFrame);
+#endif
 }
 #endif
 
@@ -490,14 +577,7 @@ bool MediaPlayerPrivateGStreamerBase::supportsFullscreen() const
 
 PlatformMedia MediaPlayerPrivateGStreamerBase::platformMedia() const
 {
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    PlatformMedia p;
-    p.type = PlatformMedia::GStreamerGWorldType;
-    p.media.gstreamerGWorld = m_gstGWorld.get();
-    return p;
-#else
     return NoPlatformMedia;
-#endif
 }
 
 MediaPlayer::MovieLoadType MediaPlayerPrivateGStreamerBase::movieLoadType() const
@@ -511,108 +591,50 @@ MediaPlayer::MovieLoadType MediaPlayerPrivateGStreamerBase::movieLoadType() cons
     return MediaPlayer::Download;
 }
 
-GRefPtr<GstCaps> MediaPlayerPrivateGStreamerBase::currentVideoSinkCaps() const
+GstElement* MediaPlayerPrivateGStreamerBase::createVideoSink()
 {
-    if (!m_webkitVideoSink)
-        return 0;
-
-    GstCaps* currentCaps = 0;
-    g_object_get(G_OBJECT(m_webkitVideoSink.get()), "current-caps", &currentCaps, NULL);
-    return adoptGRef(currentCaps);
-}
-
-// This function creates and initializes some internal variables, and returns a
-// pointer to the element that should receive the data flow first
-GstElement* MediaPlayerPrivateGStreamerBase::createVideoSink(GstElement* pipeline)
-{
-    if (!initializeGStreamer())
-        return 0;
-
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    m_gstGWorld = GStreamerGWorld::createGWorld(pipeline);
-    m_webkitVideoSink = webkitVideoSinkNew(m_gstGWorld.get());
-#else
-    UNUSED_PARAM(pipeline);
-    m_webkitVideoSink = webkitVideoSinkNew();
+    GstElement* videoSink = nullptr;
+#if USE(GSTREAMER_GL)
+    if (webkitGstCheckVersion(1, 5, 0)) {
+        m_videoSink = gst_element_factory_make("glimagesink", nullptr);
+        if (m_videoSink) {
+            m_repaintHandler = g_signal_connect(m_videoSink.get(), "client-draw", G_CALLBACK(mediaPlayerPrivateDrawCallback), this);
+            videoSink = m_videoSink.get();
+        }
+    }
 #endif
 
-    m_repaintHandler = g_signal_connect(m_webkitVideoSink.get(), "repaint-requested", G_CALLBACK(mediaPlayerPrivateRepaintCallback), this);
+    if (!m_videoSink) {
+        m_usingFallbackVideoSink = true;
+        m_videoSink = webkitVideoSinkNew();
+        m_repaintHandler = g_signal_connect(m_videoSink.get(), "repaint-requested", G_CALLBACK(mediaPlayerPrivateRepaintCallback), this);
+    }
 
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    // Build a new video sink consisting of a bin containing a tee
-    // (meant to distribute data to multiple video sinks) and our
-    // internal video sink. For fullscreen we create an autovideosink
-    // and initially block the data flow towards it and configure it
-
-    m_videoSinkBin = gst_bin_new("video-sink");
-
-    GstElement* videoTee = gst_element_factory_make("tee", "videoTee");
-    GstElement* queue = gst_element_factory_make("queue", 0);
-
-#ifdef GST_API_VERSION_1
-    GRefPtr<GstPad> sinkPad = adoptGRef(gst_element_get_static_pad(videoTee, "sink"));
-    GST_OBJECT_FLAG_SET(GST_OBJECT(sinkPad.get()), GST_PAD_FLAG_PROXY_ALLOCATION);
-#endif
-
-    gst_bin_add_many(GST_BIN(m_videoSinkBin.get()), videoTee, queue, NULL);
-
-    // Link a new src pad from tee to queue1.
-    gst_element_link_pads_full(videoTee, 0, queue, "sink", GST_PAD_LINK_CHECK_NOTHING);
-#endif
-
-    GstElement* actualVideoSink = 0;
     m_fpsSink = gst_element_factory_make("fpsdisplaysink", "sink");
     if (m_fpsSink) {
-        // The verbose property has been added in -bad 0.10.22. Making
-        // this whole code depend on it because we don't want
-        // fpsdiplaysink to spit data on stdout.
-        GstElementFactory* factory = GST_ELEMENT_FACTORY(GST_ELEMENT_GET_CLASS(m_fpsSink)->elementfactory);
-        if (gst_plugin_feature_check_version(GST_PLUGIN_FEATURE(factory), 0, 10, 22)) {
-            g_object_set(m_fpsSink, "silent", TRUE , NULL);
+        g_object_set(m_fpsSink.get(), "silent", TRUE , nullptr);
 
-            // Turn off text overlay unless logging is enabled.
+        // Turn off text overlay unless logging is enabled.
 #if LOG_DISABLED
-            g_object_set(m_fpsSink, "text-overlay", FALSE , NULL);
+        g_object_set(m_fpsSink.get(), "text-overlay", FALSE , nullptr);
 #else
-            WTFLogChannel* channel = logChannelByName("Media");
-            if (channel->state != WTFLogChannelOn)
-                g_object_set(m_fpsSink, "text-overlay", FALSE , NULL);
+        if (!isLogChannelEnabled("Media"))
+            g_object_set(m_fpsSink.get(), "text-overlay", FALSE , nullptr);
 #endif // LOG_DISABLED
 
-            if (g_object_class_find_property(G_OBJECT_GET_CLASS(m_fpsSink), "video-sink")) {
-                g_object_set(m_fpsSink, "video-sink", m_webkitVideoSink.get(), NULL);
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-                gst_bin_add(GST_BIN(m_videoSinkBin.get()), m_fpsSink);
-#endif
-                actualVideoSink = m_fpsSink;
-            } else
-                m_fpsSink = 0;
+        if (g_object_class_find_property(G_OBJECT_GET_CLASS(m_fpsSink.get()), "video-sink")) {
+            g_object_set(m_fpsSink.get(), "video-sink", m_videoSink.get(), nullptr);
+            videoSink = m_fpsSink.get();
         } else
-            m_fpsSink = 0;
+            m_fpsSink = nullptr;
     }
 
-    if (!m_fpsSink) {
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-        gst_bin_add(GST_BIN(m_videoSinkBin.get()), m_webkitVideoSink.get());
-#endif
-        actualVideoSink = m_webkitVideoSink.get();
-    }
+    if (!m_fpsSink)
+        videoSink = m_videoSink.get();
 
-    ASSERT(actualVideoSink);
+    ASSERT(videoSink);
 
-#if USE(NATIVE_FULLSCREEN_VIDEO)
-    // Faster elements linking.
-    gst_element_link_pads_full(queue, "src", actualVideoSink, "sink", GST_PAD_LINK_CHECK_NOTHING);
-
-    // Add a ghostpad to the bin so it can proxy to tee.
-    GRefPtr<GstPad> pad = adoptGRef(gst_element_get_static_pad(videoTee, "sink"));
-    gst_element_add_pad(m_videoSinkBin.get(), gst_ghost_pad_new("sink", pad.get()));
-
-    // Set the bin as video sink of playbin.
-    return m_videoSinkBin.get();
-#else
-    return actualVideoSink;
-#endif
+    return videoSink;
 }
 
 void MediaPlayerPrivateGStreamerBase::setStreamVolumeElement(GstStreamVolume* volume)
@@ -639,7 +661,7 @@ unsigned MediaPlayerPrivateGStreamerBase::decodedFrameCount() const
 {
     guint64 decodedFrames = 0;
     if (m_fpsSink)
-        g_object_get(m_fpsSink, "frames-rendered", &decodedFrames, NULL);
+        g_object_get(m_fpsSink.get(), "frames-rendered", &decodedFrames, NULL);
     return static_cast<unsigned>(decodedFrames);
 }
 
@@ -647,7 +669,7 @@ unsigned MediaPlayerPrivateGStreamerBase::droppedFrameCount() const
 {
     guint64 framesDropped = 0;
     if (m_fpsSink)
-        g_object_get(m_fpsSink, "frames-dropped", &framesDropped, NULL);
+        g_object_get(m_fpsSink.get(), "frames-dropped", &framesDropped, NULL);
     return static_cast<unsigned>(framesDropped);
 }
 
@@ -668,7 +690,7 @@ unsigned MediaPlayerPrivateGStreamerBase::videoDecodedByteCount() const
     GstQuery* query = gst_query_new_position(GST_FORMAT_BYTES);
     gint64 position = 0;
 
-    if (gst_element_query(m_webkitVideoSink.get(), query))
+    if (gst_element_query(m_videoSink.get(), query))
         gst_query_parse_position(query, 0, &position);
 
     gst_query_unref(query);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,7 +26,7 @@
 #ifndef DFGDesiredWeakReferences_h
 #define DFGDesiredWeakReferences_h
 
-#include <wtf/Vector.h>
+#include <wtf/HashSet.h>
 
 #if ENABLE(DFG_JIT)
 
@@ -34,6 +34,8 @@ namespace JSC {
 
 class CodeBlock;
 class JSCell;
+class JSValue;
+class SlotVisitor;
 class VM;
 
 namespace DFG {
@@ -42,15 +44,21 @@ class CommonData;
 
 class DesiredWeakReferences {
 public:
+    DesiredWeakReferences();
     DesiredWeakReferences(CodeBlock*);
     ~DesiredWeakReferences();
 
     void addLazily(JSCell*);
+    void addLazily(JSValue);
+    bool contains(JSCell*);
+    
     void reallyAdd(VM&, CommonData*);
+    
+    void visitChildren(SlotVisitor&);
 
 private:
     CodeBlock* m_codeBlock;
-    Vector<JSCell*> m_references;
+    HashSet<JSCell*> m_references;
 };
 
 } } // namespace JSC::DFG

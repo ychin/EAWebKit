@@ -28,7 +28,6 @@
 
 #include "Timer.h"
 #include <wtf/HashMap.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
@@ -40,9 +39,9 @@ class RenderBoxModelObject;
 class RenderView;
 
 class ImageQualityController {
-    WTF_MAKE_NONCOPYABLE(ImageQualityController)
+    WTF_MAKE_NONCOPYABLE(ImageQualityController); WTF_MAKE_FAST_ALLOCATED;
 public:
-    static PassOwnPtr<ImageQualityController> create(const RenderView& renderView) { return adoptPtr(new ImageQualityController(renderView)); }
+    explicit ImageQualityController(const RenderView&);
 
     bool shouldPaintAtLowQuality(GraphicsContext*, RenderBoxModelObject*, Image*, const void* layer, const LayoutSize&);
     void rendererWillBeDestroyed(RenderBoxModelObject& renderer) { removeObject(&renderer); }
@@ -51,17 +50,15 @@ private:
     typedef HashMap<const void*, LayoutSize> LayerSizeMap;
     typedef HashMap<RenderBoxModelObject*, LayerSizeMap> ObjectLayerSizeMap;
 
-    explicit ImageQualityController(const RenderView&);
-
     void removeLayer(RenderBoxModelObject*, LayerSizeMap* innerMap, const void* layer);
     void set(RenderBoxModelObject*, LayerSizeMap* innerMap, const void* layer, const LayoutSize&);
-    void highQualityRepaintTimerFired(Timer<ImageQualityController>*);
+    void highQualityRepaintTimerFired();
     void restartTimer();
     void removeObject(RenderBoxModelObject*);
 
     const RenderView& m_renderView;
     ObjectLayerSizeMap m_objectLayerSizeMap;
-    Timer<ImageQualityController> m_timer;
+    Timer m_timer;
     bool m_animatedResizeIsActive;
     bool m_liveResizeOptimizationIsActive;
 };

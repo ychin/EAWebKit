@@ -18,7 +18,6 @@
     <ProjectGuid>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>EABaseEAWebKit</ProjectName>
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -42,7 +41,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <Midl />
     <PreBuildEvent />
   </ItemDefinitionGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
@@ -61,7 +59,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <Midl />
     <PreBuildEvent />
   </ItemDefinitionGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
@@ -76,29 +73,30 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\eabase.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\eahave.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\earesult.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\eastdarg.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\nullptr.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\version.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eacompiler.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eacompilertraits.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eaplatform.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\eabase.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\eahave.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\earesult.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\eastdarg.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\nullptr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eacompiler.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eacompilertraits.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eaplatform.h" />
   </ItemGroup>
+  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " />
+  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="C:\packages\Framework\3.34.00\data\FrameworkMsbuild.tasks" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.05.00\config\data\options_vstomake.xml"></UserProperties>
+      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

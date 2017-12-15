@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2007 Staikos Computing Services Inc. <info@staikos.net>
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -58,6 +58,11 @@ ContextMenuItem::ContextMenuItem(ContextMenuItemType, ContextMenuAction, const S
 ContextMenuItem::ContextMenuItem(ContextMenuAction, const String&, bool, bool, Vector<ContextMenuItem>&)
 {
     // FIXME: Implement
+}
+
+ContextMenuItem::ContextMenuItem()
+	: m_platformDescription(nullptr)
+{
 }
 
 ContextMenuItem::~ContextMenuItem()
@@ -134,6 +139,11 @@ void ContextMenuItem::setEnabled(bool on)
 bool ContextMenuItem::enabled() const
 {
     return m_platformDescription.enabled;
+}
+
+ContextMenuItem ContextMenuItem::shareMenuItem(const URL&, const URL&, Image*, const String&)
+{
+	return ContextMenuItem();
 }
 
 }

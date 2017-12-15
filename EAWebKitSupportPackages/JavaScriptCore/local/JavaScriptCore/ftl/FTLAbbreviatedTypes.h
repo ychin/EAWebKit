@@ -26,14 +26,13 @@
 #ifndef FTLAbbreviatedTypes_h
 #define FTLAbbreviatedTypes_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(FTL_JIT)
 
 #include "LLVMAPI.h"
 
 namespace JSC { namespace FTL {
 
+typedef LLVMAtomicOrdering LAtomicOrdering;
 typedef LLVMBasicBlockRef LBasicBlock;
 typedef LLVMBuilderRef LBuilder;
 typedef LLVMCallConv LCallConv;
@@ -44,6 +43,7 @@ typedef LLVMModuleRef LModule;
 typedef LLVMRealPredicate LRealPredicate;
 typedef LLVMTypeRef LType;
 typedef LLVMValueRef LValue;
+typedef LLVMMemoryBufferRef LMemoryBuffer;
 
 } } // namespace JSC::FTL
 

@@ -21,28 +21,28 @@
 #ifndef JSValidityState_h
 #define JSValidityState_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "ValidityState.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSValidityState : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSValidityState* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ValidityState> impl)
+    static JSValidityState* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ValidityState>&& impl)
     {
-        JSValidityState* ptr = new (NotNull, JSC::allocateCell<JSValidityState>(globalObject->vm().heap)) JSValidityState(structure, globalObject, impl);
+        JSValidityState* ptr = new (NotNull, JSC::allocateCell<JSValidityState>(globalObject->vm().heap)) JSValidityState(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static ValidityState* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSValidityState();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -51,22 +51,19 @@ public:
     }
 
     ValidityState& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     ValidityState* m_impl;
 protected:
-    JSValidityState(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ValidityState>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSValidityState(JSC::Structure*, JSDOMGlobalObject*, Ref<ValidityState>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSValidityStateOwner : public JSC::WeakHandleOwner {
@@ -77,53 +74,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, ValidityState*)
 {
-    DEFINE_STATIC_LOCAL(JSValidityStateOwner, jsValidityStateOwner, ());
-    return &jsValidityStateOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, ValidityState*)
-{
-    return &world;
+    static NeverDestroyed<JSValidityStateOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ValidityState*);
-ValidityState* toValidityState(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ValidityState& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSValidityStatePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSValidityStatePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSValidityStatePrototype* ptr = new (NotNull, JSC::allocateCell<JSValidityStatePrototype>(vm.heap)) JSValidityStatePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSValidityStatePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsValidityStateValueMissing(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateTypeMismatch(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStatePatternMismatch(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateTooLong(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateRangeUnderflow(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateRangeOverflow(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateStepMismatch(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateBadInput(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateCustomError(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsValidityStateValid(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

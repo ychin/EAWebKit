@@ -20,7 +20,6 @@
 #ifndef RenderSVGResourceContainer_h
 #define RenderSVGResourceContainer_h
 
-#if ENABLE(SVG)
 #include "RenderSVGHiddenContainer.h"
 #include "RenderSVGResource.h"
 
@@ -33,13 +32,12 @@ class RenderSVGResourceContainer : public RenderSVGHiddenContainer,
 public:
     virtual ~RenderSVGResourceContainer();
 
-    virtual void layout() OVERRIDE;
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE FINAL;
+    virtual void layout() override;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override final;
 
-    virtual bool isSVGResourceContainer() const OVERRIDE FINAL { return true; }
-    virtual RenderSVGResourceContainer* toRenderSVGResourceContainer() OVERRIDE FINAL { return this; }
+    virtual bool isSVGResourceContainer() const override final { return true; }
 
-    static bool shouldTransformOnTextPainting(RenderObject*, AffineTransform&);
+    static bool shouldTransformOnTextPainting(const RenderElement&, AffineTransform&);
     static AffineTransform transformOnNonScalingStroke(RenderObject*, const AffineTransform& resourceTransform);
 
     void idChanged();
@@ -47,7 +45,7 @@ public:
     void removeClientRenderLayer(RenderLayer*);
 
 protected:
-    explicit RenderSVGResourceContainer(SVGElement&);
+    RenderSVGResourceContainer(SVGElement&, Ref<RenderStyle>&&);
 
     enum InvalidationMode {
         LayoutAndBoundariesInvalidation,
@@ -57,47 +55,53 @@ protected:
     };
 
     // Used from the invalidateClient/invalidateClients methods from classes, inheriting from us.
+    virtual bool selfNeedsClientInvalidation() const { return everHadLayout() && selfNeedsLayout(); }
+
     void markAllClientsForInvalidation(InvalidationMode);
     void markAllClientLayersForInvalidation();
-    void markClientForInvalidation(RenderObject*, InvalidationMode);
+    void markClientForInvalidation(RenderObject&, InvalidationMode);
 
 private:
     friend class SVGResourcesCache;
-    void addClient(RenderObject*);
-    void removeClient(RenderObject*);
+    void addClient(RenderElement&);
+    void removeClient(RenderElement&);
 
 private:
-    virtual void willBeDestroyed() OVERRIDE FINAL;
+    virtual void willBeDestroyed() override final;
     void registerResource();
 
     AtomicString m_id;
     bool m_registered : 1;
     bool m_isInvalidating : 1;
-    HashSet<RenderObject*> m_clients;
+    HashSet<RenderElement*> m_clients;
     HashSet<RenderLayer*> m_clientLayers;
 };
 
 inline RenderSVGResourceContainer* getRenderSVGResourceContainerById(Document& document, const AtomicString& id)
 {
     if (id.isEmpty())
-        return 0;
+        return nullptr;
 
-    if (RenderSVGResourceContainer* renderResource = document.accessSVGExtensions()->resourceById(id))
+    if (RenderSVGResourceContainer* renderResource = document.accessSVGExtensions().resourceById(id))
         return renderResource;
 
-    return 0;
+    return nullptr;
 }
 
 template<typename Renderer>
 Renderer* getRenderSVGResourceById(Document& document, const AtomicString& id)
 {
-    if (RenderSVGResourceContainer* container = getRenderSVGResourceContainerById(document, id))
-        return container->cast<Renderer>();
+    // Using the RenderSVGResource type here avoids ambiguous casts for types that
+    // descend from both RenderObject and RenderSVGResourceContainer.
+    RenderSVGResource* container = getRenderSVGResourceContainerById(document, id);
+    if (is<Renderer>(container))
+        return downcast<Renderer>(container);
 
-    return 0;
+    return nullptr;
 }
 
-}
+} // namespace WebCore
 
-#endif
-#endif
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSVGResourceContainer, isSVGResourceContainer())
+
+#endif // RenderSVGResourceContainer_h

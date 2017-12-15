@@ -35,7 +35,9 @@
 #include <algorithm>
 #include <wtf/MathExtras.h>
 
-using namespace std;
+#if PLATFORM(IOS)
+#include "ScriptController.h"
+#endif
 
 namespace WebCore {
 
@@ -93,7 +95,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
     }
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
-    quantumFrameOffset = min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
+    quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
     nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;
 
     if (!nonSilentFramesToProcess) {
@@ -135,14 +137,23 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
     return;
 }
 
+void AudioScheduledSourceNode::start(ExceptionCode& ec)
+{
+    start(0, ec);
+}
+
 void AudioScheduledSourceNode::start(double when, ExceptionCode& ec)
 {
     ASSERT(isMainThread());
 
-    if (ScriptController::processingUserGesture())
-        context()->removeBehaviorRestriction(AudioContext::RequireUserGestureForAudioStartRestriction);
+    context()->nodeWillBeginPlayback();
 
     if (m_playbackState != UNSCHEDULED_STATE) {
+        ec = INVALID_STATE_ERR;
+        return;
+    }
+
+    if (!std::isfinite(when) || (when < 0)) {
         ec = INVALID_STATE_ERR;
         return;
     }
@@ -151,15 +162,24 @@ void AudioScheduledSourceNode::start(double when, ExceptionCode& ec)
     m_playbackState = SCHEDULED_STATE;
 }
 
+void AudioScheduledSourceNode::stop(ExceptionCode& ec)
+{
+    stop(0, ec);
+}
+
 void AudioScheduledSourceNode::stop(double when, ExceptionCode& ec)
 {
     ASSERT(isMainThread());
-    if (!(m_playbackState == SCHEDULED_STATE || m_playbackState == PLAYING_STATE) || (m_endTime != UnknownTime)) {
+    if ((m_playbackState == UNSCHEDULED_STATE) || (m_endTime != UnknownTime)) {
         ec = INVALID_STATE_ERR;
         return;
     }
-    
-    when = max(0.0, when);
+
+    if (!std::isfinite(when) || (when < 0)) {
+        ec = INVALID_STATE_ERR;
+        return;
+    }
+
     m_endTime = when;
 }
 
@@ -175,12 +195,6 @@ void AudioScheduledSourceNode::noteOff(double when, ExceptionCode& ec)
 }
 #endif
 
-void AudioScheduledSourceNode::setOnended(PassRefPtr<EventListener> listener)
-{
-    m_hasEndedListener = listener;
-    setAttributeEventListener(eventNames().endedEvent, listener);
-}
-
 void AudioScheduledSourceNode::finish()
 {
     if (m_playbackState != FINISHED_STATE) {
@@ -190,24 +204,33 @@ void AudioScheduledSourceNode::finish()
         context()->decrementActiveSourceCount();
     }
 
-    if (m_hasEndedListener)
-        callOnMainThread(&AudioScheduledSourceNode::notifyEndedDispatch, this);
+    if (m_hasEndedListener) {
+        callOnMainThread([this] {
+            dispatchEvent(Event::create(eventNames().endedEvent, false, false));
+        });
+    }
 }
 
-void AudioScheduledSourceNode::notifyEndedDispatch(void* userData)
+bool AudioScheduledSourceNode::addEventListener(const AtomicString& eventType, RefPtr<EventListener>&& listener, bool useCapture)
 {
-    static_cast<AudioScheduledSourceNode*>(userData)->notifyEnded();
+    bool success = AudioNode::addEventListener(eventType, WTF::move(listener), useCapture);
+    if (success && eventType == eventNames().endedEvent)
+        m_hasEndedListener = hasEventListeners(eventNames().endedEvent);
+    return success;
 }
 
-void AudioScheduledSourceNode::notifyEnded()
+bool AudioScheduledSourceNode::removeEventListener(const AtomicString& eventType, EventListener* listener, bool useCapture)
 {
-    EventListener* listener = onended();
-    if (!listener)
-        return;
+    bool success = AudioNode::removeEventListener(eventType, listener, useCapture);
+    if (success && eventType == eventNames().endedEvent)
+        m_hasEndedListener = hasEventListeners(eventNames().endedEvent);
+    return success;
+}
 
-    RefPtr<Event> event = Event::create(eventNames().endedEvent, FALSE, FALSE);
-    event->setTarget(this);
-    listener->handleEvent(context()->scriptExecutionContext(), event.get());
+void AudioScheduledSourceNode::removeAllEventListeners()
+{
+    m_hasEndedListener = false;
+    AudioNode::removeAllEventListeners();
 }
 
 } // namespace WebCore

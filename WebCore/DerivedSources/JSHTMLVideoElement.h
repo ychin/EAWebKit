@@ -24,31 +24,31 @@
 #if ENABLE(VIDEO)
 
 #include "HTMLVideoElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLMediaElement.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSHTMLVideoElement : public JSHTMLMediaElement {
 public:
     typedef JSHTMLMediaElement Base;
-    static JSHTMLVideoElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLVideoElement> impl)
+    static JSHTMLVideoElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLVideoElement>&& impl)
     {
-        JSHTMLVideoElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLVideoElement>(globalObject->vm().heap)) JSHTMLVideoElement(structure, globalObject, impl);
+        JSHTMLVideoElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLVideoElement>(globalObject->vm().heap)) JSHTMLVideoElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static HTMLVideoElement* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -57,9 +57,14 @@ public:
         return static_cast<HTMLVideoElement&>(Base::impl());
     }
 protected:
-    JSHTMLVideoElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLVideoElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLVideoElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLVideoElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSHTMLVideoElementOwner : public JSNodeOwner {
@@ -70,90 +75,11 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, HTMLVideoElement*)
 {
-    DEFINE_STATIC_LOCAL(JSHTMLVideoElementOwner, jsHTMLVideoElementOwner, ());
-    return &jsHTMLVideoElementOwner;
+    static NeverDestroyed<JSHTMLVideoElementOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, HTMLVideoElement*)
-{
-    return &world;
-}
 
-HTMLVideoElement* toHTMLVideoElement(JSC::JSValue);
-
-class JSHTMLVideoElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLVideoElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLVideoElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLVideoElementPrototype>(vm.heap)) JSHTMLVideoElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLVideoElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSHTMLVideoElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLVideoElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLVideoElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLVideoElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLVideoElementConstructor>(vm.heap)) JSHTMLVideoElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLVideoElementPrototypeFunctionWebkitEnterFullscreen(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLVideoElementPrototypeFunctionWebkitExitFullscreen(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLVideoElementPrototypeFunctionWebkitEnterFullScreen(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsHTMLVideoElementPrototypeFunctionWebkitExitFullScreen(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsHTMLVideoElementWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLVideoElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLVideoElementHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLVideoElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLVideoElementVideoWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLVideoElementVideoHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLVideoElementPoster(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLVideoElementPoster(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLVideoElementWebkitSupportsFullscreen(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLVideoElementWebkitDisplayingFullscreen(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(MEDIA_STATISTICS)
-JSC::JSValue jsHTMLVideoElementWebkitDecodedFrameCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(MEDIA_STATISTICS)
-JSC::JSValue jsHTMLVideoElementWebkitDroppedFrameCount(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsHTMLVideoElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

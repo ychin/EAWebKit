@@ -25,11 +25,37 @@
 #include "JSIDBAny.h"
 
 #include "IDBAny.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
+
+class JSIDBAnyPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSIDBAnyPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSIDBAnyPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBAnyPrototype>(vm.heap)) JSIDBAnyPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSIDBAnyPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
 
 /* Hash table for prototype */
 
@@ -38,36 +64,30 @@ static const HashTableValue JSIDBAnyPrototypeTableValues[] =
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSIDBAnyPrototypeTable = { 1, 0, JSIDBAnyPrototypeTableValues, 0 };
-static const HashTable& getJSIDBAnyPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSIDBAnyPrototypeTable);
-}
+const ClassInfo JSIDBAnyPrototype::s_info = { "IDBAnyPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBAnyPrototype) };
 
-const ClassInfo JSIDBAnyPrototype::s_info = { "IDBAnyPrototype", &Base::s_info, 0, getJSIDBAnyPrototypeTable, CREATE_METHOD_TABLE(JSIDBAnyPrototype) };
-
-JSObject* JSIDBAnyPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSIDBAny>(vm, globalObject);
-}
-
-const ClassInfo JSIDBAny::s_info = { "IDBAny", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSIDBAny) };
-
-JSIDBAny::JSIDBAny(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBAny> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSIDBAny::finishCreation(VM& vm)
+void JSIDBAnyPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSIDBAnyPrototypeTableValues, *this);
+}
+
+const ClassInfo JSIDBAny::s_info = { "IDBAny", &Base::s_info, 0, CREATE_METHOD_TABLE(JSIDBAny) };
+
+JSIDBAny::JSIDBAny(Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBAny>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSIDBAny::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSIDBAnyPrototype::create(vm, globalObject, JSIDBAnyPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSIDBAny::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSIDBAny>(vm, globalObject);
 }
 
 void JSIDBAny::destroy(JSC::JSCell* cell)
@@ -78,36 +98,28 @@ void JSIDBAny::destroy(JSC::JSCell* cell)
 
 JSIDBAny::~JSIDBAny()
 {
-    releaseImplIfNotNull();
-}
-
-static inline bool isObservable(JSIDBAny* jsIDBAny)
-{
-    if (jsIDBAny->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSIDBAnyOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSIDBAny* jsIDBAny = jsCast<JSIDBAny*>(handle.get().asCell());
-    if (!isObservable(jsIDBAny))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSIDBAnyOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSIDBAny* jsIDBAny = jsCast<JSIDBAny*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsIDBAny = jsCast<JSIDBAny*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsIDBAny->impl(), jsIDBAny);
-    jsIDBAny->releaseImpl();
 }
 
-IDBAny* toIDBAny(JSC::JSValue value)
+IDBAny* JSIDBAny::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSIDBAny::info()) ? &jsCast<JSIDBAny*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSIDBAny*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

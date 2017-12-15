@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,7 @@
 #include "DFGBasicBlockInlines.h"
 #include "DFGGraph.h"
 #include "DFGPhase.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -44,17 +44,21 @@ public:
     
     bool run()
     {
-        for (BlockIndex blockIndex = 0; blockIndex < m_graph.numBlocks(); ++blockIndex) {
-            BasicBlock* block = m_graph.block(blockIndex);
-            if (!block)
-                continue;
+        m_changed = true;
+        while (m_changed) {
+            m_changed = false;
+            for (BlockIndex blockIndex = m_graph.numBlocks(); blockIndex--;) {
+                BasicBlock* block = m_graph.block(blockIndex);
+                if (!block)
+                    continue;
             
-            // Prevent a tower of overflowing additions from creating a value that is out of the
-            // safe 2^48 range.
-            m_allowNestedOverflowingAdditions = block->size() < (1 << 16);
+                // Prevent a tower of overflowing additions from creating a value that is out of the
+                // safe 2^48 range.
+                m_allowNestedOverflowingAdditions = block->size() < (1 << 16);
             
-            for (unsigned indexInBlock = block->size(); indexInBlock--;)
-                propagate(block->at(indexInBlock));
+                for (unsigned indexInBlock = block->size(); indexInBlock--;)
+                    propagate(block->at(indexInBlock));
+            }
         }
         
         return true;
@@ -63,17 +67,17 @@ public:
 private:
     bool isNotNegZero(Node* node)
     {
-        if (!m_graph.isNumberConstant(node))
+        if (!node->isNumberConstant())
             return false;
-        double value = m_graph.valueOfNumberConstant(node);
+        double value = node->asNumber();
         return (value || 1.0 / value > 0.0);
     }
     
     bool isNotPosZero(Node* node)
     {
-        if (!m_graph.isNumberConstant(node))
+        if (!node->isNumberConstant())
             return false;
-        double value = m_graph.valueOfNumberConstant(node);
+        double value = node->asNumber();
         return (value || 1.0 / value < 0.0);
     }
 
@@ -81,7 +85,7 @@ private:
     template<int power>
     bool isWithinPowerOfTwoForConstant(Node* node)
     {
-        JSValue immediateValue = node->valueOfJSConstant(codeBlock());
+        JSValue immediateValue = node->asJSValue();
         if (!immediateValue.isNumber())
             return false;
         double immediate = immediateValue.asNumber();
@@ -91,7 +95,7 @@ private:
     template<int power>
     bool isWithinPowerOfTwoNonRecursive(Node* node)
     {
-        if (node->op() != JSConstant)
+        if (!node->isNumberConstant())
             return false;
         return isWithinPowerOfTwoForConstant<power>(node);
     }
@@ -100,7 +104,9 @@ private:
     bool isWithinPowerOfTwo(Node* node)
     {
         switch (node->op()) {
-        case JSConstant: {
+        case DoubleConstant:
+        case JSConstant:
+        case Int52Constant: {
             return isWithinPowerOfTwoForConstant<power>(node);
         }
             
@@ -114,8 +120,7 @@ private:
             
         case BitOr:
         case BitXor:
-        case BitLShift:
-        case ValueToInt32: {
+        case BitLShift: {
             return power > 31;
         }
             
@@ -125,9 +130,9 @@ private:
                 return true;
             
             Node* shiftAmount = node->child2().node();
-            if (shiftAmount->op() != JSConstant)
+            if (!node->isNumberConstant())
                 return false;
-            JSValue immediateValue = shiftAmount->valueOfJSConstant(codeBlock());
+            JSValue immediateValue = shiftAmount->asJSValue();
             if (!immediateValue.isInt32())
                 return false;
             return immediateValue.asInt32() > 32 - power;
@@ -175,7 +180,8 @@ private:
         switch (node->op()) {
         case GetLocal: {
             VariableAccessData* variableAccessData = node->variableAccessData();
-            variableAccessData->mergeFlags(flags);
+            flags &= ~NodeBytecodeUsesAsInt; // We don't care about cross-block uses-as-int.
+            m_changed |= variableAccessData->mergeFlags(flags);
             break;
         }
             
@@ -183,9 +189,22 @@ private:
             VariableAccessData* variableAccessData = node->variableAccessData();
             if (!variableAccessData->isLoadedFrom())
                 break;
-            node->child1()->mergeFlags(NodeBytecodeUsesAsValue);
+            flags = variableAccessData->flags();
+            RELEASE_ASSERT(!(flags & ~NodeBytecodeBackPropMask));
+            flags |= NodeBytecodeUsesAsNumber; // Account for the fact that control flow may cause overflows that our modeling can't handle.
+            node->child1()->mergeFlags(flags);
             break;
         }
+            
+        case Flush: {
+            VariableAccessData* variableAccessData = node->variableAccessData();
+            m_changed |= variableAccessData->mergeFlags(NodeBytecodeUsesAsValue);
+            break;
+        }
+            
+        case MovHint:
+        case Check:
+            break;
             
         case BitAnd:
         case BitOr:
@@ -196,25 +215,18 @@ private:
         case ArithIMul: {
             flags |= NodeBytecodeUsesAsInt;
             flags &= ~(NodeBytecodeUsesAsNumber | NodeBytecodeNeedsNegZero | NodeBytecodeUsesAsOther);
+            flags &= ~NodeBytecodeUsesAsArrayIndex;
             node->child1()->mergeFlags(flags);
             node->child2()->mergeFlags(flags);
             break;
         }
             
-        case ValueToInt32: {
-            flags |= NodeBytecodeUsesAsInt;
-            flags &= ~(NodeBytecodeUsesAsNumber | NodeBytecodeNeedsNegZero | NodeBytecodeUsesAsOther);
-            node->child1()->mergeFlags(flags);
-            break;
-        }
-            
         case StringCharCodeAt: {
             node->child1()->mergeFlags(NodeBytecodeUsesAsValue);
-            node->child2()->mergeFlags(NodeBytecodeUsesAsValue | NodeBytecodeUsesAsInt);
+            node->child2()->mergeFlags(NodeBytecodeUsesAsValue | NodeBytecodeUsesAsInt | NodeBytecodeUsesAsArrayIndex);
             break;
         }
             
-        case Identity: 
         case UInt32ToNumber: {
             node->child1()->mergeFlags(flags);
             break;
@@ -247,7 +259,14 @@ private:
             node->child2()->mergeFlags(flags);
             break;
         }
-            
+
+        case ArithClz32: {
+            flags &= ~(NodeBytecodeUsesAsNumber | NodeBytecodeNeedsNegZero | NodeBytecodeUsesAsOther | ~NodeBytecodeUsesAsArrayIndex);
+            flags |= NodeBytecodeUsesAsInt;
+            node->child1()->mergeFlags(flags);
+            break;
+        }
+
         case ArithSub: {
             if (isNotNegZero(node->child1().node()) || isNotPosZero(node->child2().node()))
                 flags &= ~NodeBytecodeNeedsNegZero;
@@ -300,27 +319,22 @@ private:
         }
             
         case ArithMod: {
-            flags |= NodeBytecodeUsesAsNumber | NodeBytecodeNeedsNegZero;
+            flags |= NodeBytecodeUsesAsNumber;
             flags &= ~NodeBytecodeUsesAsOther;
 
             node->child1()->mergeFlags(flags);
-            node->child2()->mergeFlags(flags);
+            node->child2()->mergeFlags(flags & ~NodeBytecodeNeedsNegZero);
             break;
         }
             
         case GetByVal: {
             node->child1()->mergeFlags(NodeBytecodeUsesAsValue);
-            node->child2()->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther | NodeBytecodeUsesAsInt);
-            break;
-        }
-            
-        case GetMyArgumentByValSafe: {
-            node->child1()->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther | NodeBytecodeUsesAsInt);
+            node->child2()->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther | NodeBytecodeUsesAsInt | NodeBytecodeUsesAsArrayIndex);
             break;
         }
             
         case NewArrayWithSize: {
-            node->child1()->mergeFlags(NodeBytecodeUsesAsValue | NodeBytecodeUsesAsInt);
+            node->child1()->mergeFlags(NodeBytecodeUsesAsValue | NodeBytecodeUsesAsInt | NodeBytecodeUsesAsArrayIndex);
             break;
         }
             
@@ -328,17 +342,18 @@ private:
             // Negative zero is not observable. NaN versus undefined are only observable
             // in that you would get a different exception message. So, like, whatever: we
             // claim here that NaN v. undefined is observable.
-            node->child1()->mergeFlags(NodeBytecodeUsesAsInt | NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther);
+            node->child1()->mergeFlags(NodeBytecodeUsesAsInt | NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther | NodeBytecodeUsesAsArrayIndex);
             break;
         }
             
         case StringCharAt: {
             node->child1()->mergeFlags(NodeBytecodeUsesAsValue);
-            node->child2()->mergeFlags(NodeBytecodeUsesAsValue | NodeBytecodeUsesAsInt);
+            node->child2()->mergeFlags(NodeBytecodeUsesAsValue | NodeBytecodeUsesAsInt | NodeBytecodeUsesAsArrayIndex);
             break;
         }
             
-        case ToString: {
+        case ToString:
+        case CallStringConstructor: {
             node->child1()->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther);
             break;
         }
@@ -347,10 +362,11 @@ private:
             node->child1()->mergeFlags(flags);
             break;
         }
-            
+
+        case PutByValDirect:
         case PutByVal: {
             m_graph.varArgChild(node, 0)->mergeFlags(NodeBytecodeUsesAsValue);
-            m_graph.varArgChild(node, 1)->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther | NodeBytecodeUsesAsInt);
+            m_graph.varArgChild(node, 1)->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther | NodeBytecodeUsesAsInt | NodeBytecodeUsesAsArrayIndex);
             m_graph.varArgChild(node, 2)->mergeFlags(NodeBytecodeUsesAsValue);
             break;
         }
@@ -378,9 +394,25 @@ private:
                 // then -0 and 0 are treated the same.
                 node->child1()->mergeFlags(NodeBytecodeUsesAsNumber | NodeBytecodeUsesAsOther);
                 break;
+            case SwitchCell:
+                // There is currently no point to being clever here since this is used for switching
+                // on objects.
+                mergeDefaultFlags(node);
+                break;
             }
             break;
         }
+
+        case Identity: 
+            // This would be trivial to handle but we just assert that we cannot see these yet.
+            RELEASE_ASSERT_NOT_REACHED();
+            break;
+            
+        // Note: ArithSqrt, ArithSin, and ArithCos and other math intrinsics don't have special
+        // rules in here because they are always followed by Phantoms to signify that if the
+        // method call speculation fails, the bytecode may use the arguments in arbitrary ways.
+        // This corresponds to that possibility of someone doing something like:
+        // Math.sin = function(x) { doArbitraryThingsTo(x); }
             
         default:
             mergeDefaultFlags(node);
@@ -389,6 +421,7 @@ private:
     }
     
     bool m_allowNestedOverflowingAdditions;
+    bool m_changed;
 };
 
 bool performBackwardsPropagation(Graph& graph)

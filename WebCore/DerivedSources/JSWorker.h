@@ -21,28 +21,26 @@
 #ifndef JSWorker_h
 #define JSWorker_h
 
-#if ENABLE(WORKERS)
-
-#include "JSDOMBinding.h"
 #include "JSEventTarget.h"
 #include "Worker.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWorker : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSWorker* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Worker> impl)
+    static JSWorker* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Worker>&& impl)
     {
-        JSWorker* ptr = new (NotNull, JSC::allocateCell<JSWorker>(globalObject->vm().heap)) JSWorker(structure, globalObject, impl);
+        JSWorker* ptr = new (NotNull, JSC::allocateCell<JSWorker>(globalObject->vm().heap)) JSWorker(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Worker* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -59,9 +57,14 @@ public:
         return static_cast<Worker&>(Base::impl());
     }
 protected:
-    JSWorker(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Worker>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWorker(JSC::Structure*, JSDOMGlobalObject*, Ref<Worker>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWorkerOwner : public JSC::WeakHandleOwner {
@@ -72,84 +75,17 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Worker*)
 {
-    DEFINE_STATIC_LOCAL(JSWorkerOwner, jsWorkerOwner, ());
-    return &jsWorkerOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Worker*)
-{
-    return &world;
+    static NeverDestroyed<JSWorkerOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Worker*);
-Worker* toWorker(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Worker& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWorkerPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWorkerPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWorkerPrototype* ptr = new (NotNull, JSC::allocateCell<JSWorkerPrototype>(vm.heap)) JSWorkerPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSWorker(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWorkerPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSWorkerConstructor : public DOMConstructorObject {
-private:
-    JSWorkerConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWorkerConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWorkerConstructor* ptr = new (NotNull, JSC::allocateCell<JSWorkerConstructor>(vm.heap)) JSWorkerConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWorker(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerPrototypeFunctionPostMessage(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWorkerPrototypeFunctionTerminate(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsWorkerOnmessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerOnmessage(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(WORKERS)
-JSC::JSValue jsWorkerOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWorkerOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsWorkerConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)
 
 #endif

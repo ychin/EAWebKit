@@ -23,6 +23,7 @@
 
 #include "HTMLNames.h"
 #include "HTMLParamElement.h"
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
@@ -31,28 +32,65 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLParamElementTableValues[] =
-{
-    { "name", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementName), (intptr_t)setJSHTMLParamElementName },
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementType), (intptr_t)setJSHTMLParamElementType },
-    { "value", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementValue), (intptr_t)setJSHTMLParamElementValue },
-    { "valueType", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementValueType), (intptr_t)setJSHTMLParamElementValueType },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsHTMLParamElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLParamElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLParamElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLParamElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLParamElementValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLParamElementValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLParamElementValueType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLParamElementValueType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLParamElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLParamElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLParamElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLParamElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLParamElementPrototype>(vm.heap)) JSHTMLParamElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLParamElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLParamElementTable = { 18, 15, JSHTMLParamElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLParamElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLParamElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLParamElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLParamElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLParamElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLParamElementConstructor>(vm.heap)) JSHTMLParamElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLParamElementConstructorTable = { 1, 0, JSHTMLParamElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLParamElementConstructor::s_info = { "HTMLParamElementConstructor", &Base::s_info, &JSHTMLParamElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLParamElementConstructor) };
+const ClassInfo JSHTMLParamElementConstructor::s_info = { "HTMLParamElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLParamElementConstructor) };
 
 JSHTMLParamElementConstructor::JSHTMLParamElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -63,153 +101,200 @@ void JSHTMLParamElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLParamElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLParamElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLParamElementConstructor, JSDOMWrapper>(exec, JSHTMLParamElementConstructorTable, jsCast<JSHTMLParamElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLParamElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLParamElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLParamElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "name", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLParamElementName) },
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLParamElementType) },
+    { "value", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementValue), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLParamElementValue) },
+    { "valueType", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLParamElementValueType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLParamElementValueType) },
 };
 
-static const HashTable JSHTMLParamElementPrototypeTable = { 1, 0, JSHTMLParamElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLParamElementPrototype::s_info = { "HTMLParamElementPrototype", &Base::s_info, &JSHTMLParamElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLParamElementPrototype) };
+const ClassInfo JSHTMLParamElementPrototype::s_info = { "HTMLParamElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLParamElementPrototype) };
 
-JSObject* JSHTMLParamElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLParamElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLParamElement::s_info = { "HTMLParamElement", &Base::s_info, &JSHTMLParamElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLParamElement) };
-
-JSHTMLParamElement::JSHTMLParamElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLParamElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLParamElement::finishCreation(VM& vm)
+void JSHTMLParamElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLParamElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLParamElement::s_info = { "HTMLParamElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLParamElement) };
+
+JSHTMLParamElement::JSHTMLParamElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLParamElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLParamElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLParamElementPrototype::create(vm, globalObject, JSHTMLParamElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLParamElementPrototype::create(vm, globalObject, JSHTMLParamElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLParamElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLParamElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLParamElement* thisObject = jsCast<JSHTMLParamElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLParamElement, Base>(exec, JSHTMLParamElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLParamElement>(vm, globalObject);
 }
 
-JSValue jsHTMLParamElementName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLParamElementName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLParamElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLParamElement", "name");
+        return throwGetterTypeError(*exec, "HTMLParamElement", "name");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getNameAttribute());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLParamElementType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLParamElementType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLParamElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLParamElement", "type");
+        return throwGetterTypeError(*exec, "HTMLParamElement", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::typeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLParamElementValue(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLParamElementValue(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLParamElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLParamElement", "value");
+        return throwGetterTypeError(*exec, "HTMLParamElement", "value");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::valueAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLParamElementValueType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLParamElementValueType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLParamElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLParamElement", "valueType");
+        return throwGetterTypeError(*exec, "HTMLParamElement", "valueType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::valuetypeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLParamElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLParamElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLParamElement* domObject = jsCast<JSHTMLParamElement*>(asObject(slotBase));
-    return JSHTMLParamElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLParamElementPrototype* domObject = jsDynamicCast<JSHTMLParamElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLParamElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLParamElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLParamElementName(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLParamElement* thisObject = jsCast<JSHTMLParamElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLParamElement, Base>(exec, propertyName, value, JSHTMLParamElementTable, thisObject, slot);
-}
-
-void setJSHTMLParamElementName(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(thisObject);
-    HTMLParamElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLParamElement", "name");
+        else
+            throwSetterTypeError(*exec, "HTMLParamElement", "name");
         return;
-    impl.setAttribute(WebCore::HTMLNames::nameAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::nameAttr, nativeValue);
 }
 
 
-void setJSHTMLParamElementType(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLParamElementType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(thisObject);
-    HTMLParamElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLParamElement", "type");
+        else
+            throwSetterTypeError(*exec, "HTMLParamElement", "type");
         return;
-    impl.setAttribute(WebCore::HTMLNames::typeAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::typeAttr, nativeValue);
 }
 
 
-void setJSHTMLParamElementValue(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLParamElementValue(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(thisObject);
-    HTMLParamElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLParamElement", "value");
+        else
+            throwSetterTypeError(*exec, "HTMLParamElement", "value");
         return;
-    impl.setAttribute(WebCore::HTMLNames::valueAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::valueAttr, nativeValue);
 }
 
 
-void setJSHTMLParamElementValueType(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLParamElementValueType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLParamElement* castedThis = jsCast<JSHTMLParamElement*>(thisObject);
-    HTMLParamElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLParamElement* castedThis = jsDynamicCast<JSHTMLParamElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLParamElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLParamElement", "valueType");
+        else
+            throwSetterTypeError(*exec, "HTMLParamElement", "valueType");
         return;
-    impl.setAttribute(WebCore::HTMLNames::valuetypeAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::valuetypeAttr, nativeValue);
 }
 
 

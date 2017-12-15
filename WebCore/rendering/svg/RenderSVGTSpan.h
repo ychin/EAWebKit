@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Oliver Hunt <ojh16@student.canterbury.ac.nz>
- * Copyright (C) 2006 Apple Computer Inc.
+ * Copyright (C) 2006 Apple Inc.
  * Copyright (C) 2009 Google Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -22,25 +22,23 @@
 #ifndef RenderSVGTSpan_h
 #define RenderSVGTSpan_h
 
-#if ENABLE(SVG)
 #include "RenderSVGInline.h"
 #include "SVGTextPositioningElement.h"
 
 namespace WebCore {
-class RenderSVGTSpan FINAL : public RenderSVGInline {
+class RenderSVGTSpan final : public RenderSVGInline {
 public:
-    explicit RenderSVGTSpan(SVGTextPositioningElement& element)
-        : RenderSVGInline(element)
+    explicit RenderSVGTSpan(SVGTextPositioningElement& element, Ref<RenderStyle>&& style)
+        : RenderSVGInline(element, WTF::move(style))
     {
     }
 
     SVGTextPositioningElement& textPositioningElement() const { return static_cast<SVGTextPositioningElement&>(RenderSVGInline::graphicsElement()); }
 
 private:
-    void graphicsElement() const WTF_DELETED_FUNCTION;
-    virtual const char* renderName() const { return "RenderSVGTSpan"; }
+    void graphicsElement() const = delete;
+    virtual const char* renderName() const override { return "RenderSVGTSpan"; }
 };
 }
 
-#endif // ENABLE(SVG)
 #endif // !RenderSVGTSpan_h

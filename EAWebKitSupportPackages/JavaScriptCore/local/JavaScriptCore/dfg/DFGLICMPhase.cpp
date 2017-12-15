@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,7 +38,7 @@
 #include "DFGInsertionSet.h"
 #include "DFGPhase.h"
 #include "DFGSafeToExecute.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -62,13 +62,14 @@ class LICMPhase : public Phase {
 public:
     LICMPhase(Graph& graph)
         : Phase(graph, "LICM")
+        , m_state(graph)
         , m_interpreter(graph, m_state)
     {
     }
     
     bool run()
     {
-        ASSERT(m_graph.m_form == SSA);
+        DFG_ASSERT(m_graph, nullptr, m_graph.m_form == SSA);
         
         m_graph.m_dominators.computeIfNecessary(m_graph);
         m_graph.m_naturalLoops.computeIfNecessary(m_graph);
@@ -81,12 +82,28 @@ public:
             BasicBlock* block = m_graph.block(blockIndex);
             if (!block)
                 continue;
+            
+            // Skip blocks that are proved to not execute.
+            // FIXME: This shouldn't be needed.
+            // https://bugs.webkit.org/show_bug.cgi?id=128584
+            if (!block->cfaHasVisited)
+                continue;
+            
             const NaturalLoop* loop = m_graph.m_naturalLoops.innerMostLoopOf(block);
             if (!loop)
                 continue;
             LoopData& data = m_data[loop->index()];
-            for (unsigned nodeIndex = block->size(); nodeIndex--;)
-                addWrites(m_graph, block->at(nodeIndex), data.writes);
+            for (unsigned nodeIndex = 0; nodeIndex < block->size(); ++nodeIndex) {
+                Node* node = block->at(nodeIndex);
+                
+                // Don't look beyond parts of the code that definitely always exit.
+                // FIXME: This shouldn't be needed.
+                // https://bugs.webkit.org/show_bug.cgi?id=128584
+                if (node->op() == ForceOSRExit)
+                    break;
+
+                addWrites(m_graph, node, data.writes);
+            }
         }
         
         // For each loop:
@@ -107,11 +124,17 @@ public:
                 BasicBlock* predecessor = header->predecessors[i];
                 if (m_graph.m_dominators.dominates(header, predecessor))
                     continue;
-                RELEASE_ASSERT(!preHeader || preHeader == predecessor);
+                DFG_ASSERT(m_graph, nullptr, !preHeader || preHeader == predecessor);
                 preHeader = predecessor;
             }
             
-            RELEASE_ASSERT(preHeader->last()->op() == Jump);
+            DFG_ASSERT(m_graph, preHeader->terminal(), preHeader->terminal()->op() == Jump);
+            
+            // We should validate the pre-header. If we placed forExit origins on nodes only if
+            // at the top of that node it is legal to exit, then we would simply check if Jump
+            // had a forExit. We should disable hoisting to pre-headers that don't validate.
+            // Or, we could only allow hoisting of things that definitely don't exit.
+            // FIXME: https://bugs.webkit.org/show_bug.cgi?id=145204
             
             data.preHeader = preHeader;
         }
@@ -128,22 +151,14 @@ public:
         //   time and preserve some kind of sanity, if we hoist something that must exit.
         //
         // Also, we need to remember to:
-        // - Clear NodeExitsForward for any nodes we hoisted.
         // - Update the state-at-tail with the node we hoisted, so future hoist candidates
         //   know about any type checks we hoisted.
         //
         // For maximum profit, we walk blocks in DFS order to ensure that we generally
         // tend to hoist dominators before dominatees.
-        Vector<BasicBlock*> depthFirst;
-        m_graph.getBlocksInDepthFirstOrder(depthFirst);
         Vector<const NaturalLoop*> loopStack;
         bool changed = false;
-        for (
-            unsigned depthFirstIndex = 0;
-            depthFirstIndex < depthFirst.size();
-            ++depthFirstIndex) {
-            
-            BasicBlock* block = depthFirst[depthFirstIndex];
+        for (BasicBlock* block : m_graph.blocksInPreOrder()) {
             const NaturalLoop* loop = m_graph.m_naturalLoops.innerMostLoopOf(block);
             if (!loop)
                 continue;
@@ -204,6 +219,47 @@ private:
             return false;
         }
         
+        // FIXME: At this point if the hoisting of the full node fails but the node has type checks,
+        // we could still hoist just the checks.
+        // https://bugs.webkit.org/show_bug.cgi?id=144525
+        
+        // FIXME: If a node has a type check - even something like a CheckStructure - then we should
+        // only hoist the node if we know that it will execute on every loop iteration or if we know
+        // that the type check will always succeed at the loop pre-header through some other means
+        // (like looking at prediction propagation results). Otherwise, we might make a mistake like
+        // this:
+        //
+        // var o = ...; // sometimes null and sometimes an object with structure S1.
+        // for (...) {
+        //     if (o)
+        //         ... = o.f; // CheckStructure and GetByOffset, which we will currently hoist.
+        // }
+        //
+        // When we encounter such code, we'll hoist the CheckStructure and GetByOffset and then we
+        // will have a recompile. We'll then end up thinking that the get_by_id needs to be
+        // polymorphic, which is false.
+        //
+        // We can counter this by either having a control flow equivalence check, or by consulting
+        // prediction propagation to see if the check would always succeed. Prediction propagation
+        // would not be enough for things like:
+        //
+        // var p = ...; // some boolean predicate
+        // var o = {};
+        // if (p)
+        //     o.f = 42;
+        // for (...) {
+        //     if (p)
+        //         ... = o.f;
+        // }
+        //
+        // Prediction propagation can't tell us anything about the structure, and the CheckStructure
+        // will appear to be hoistable because the loop doesn't clobber structures. The cell check
+        // in the CheckStructure will be hoistable though, since prediction propagation can tell us
+        // that o is always SpecFinalObject. In cases like this, control flow equivalence is the
+        // only effective guard.
+        //
+        // https://bugs.webkit.org/show_bug.cgi?id=144527
+        
         if (readsOverlap(m_graph, node, data.writes)) {
             if (verbose) {
                 dataLog(
@@ -228,11 +284,12 @@ private:
                 "\n");
         }
         
-        data.preHeader->insertBeforeLast(node);
-        node->misc.owner = data.preHeader;
-        NodeFlags didExitForward = node->flags() & NodeExitsForward;
-        node->clearFlags(NodeExitsForward);
-        node->codeOriginForExitTarget = data.preHeader->last()->codeOriginForExitTarget;
+        data.preHeader->insertBeforeTerminal(node);
+        node->owner = data.preHeader;
+        NodeOrigin originalOrigin = node->origin;
+        node->origin.forExit = data.preHeader->terminal()->origin.forExit;
+        if (!node->origin.semantic.isSet())
+            node->origin.semantic = node->origin.forExit;
         
         // Modify the states at the end of the preHeader of the loop we hoisted to,
         // and all pre-headers inside the loop.
@@ -253,10 +310,9 @@ private:
         // It just so happens that all of the nodes we currently know how to hoist
         // don't have var-arg children. That may change and then we can fix this
         // code. But for now we just assert that's the case.
-        RELEASE_ASSERT(!(node->flags() & NodeHasVarArgs));
+        DFG_ASSERT(m_graph, node, !(node->flags() & NodeHasVarArgs));
         
-        nodeRef = m_graph.addNode(SpecNone, Phantom, node->codeOrigin, node->children);
-        nodeRef->mergeFlags(didExitForward);
+        nodeRef = m_graph.addNode(SpecNone, Check, originalOrigin, node->children);
         
         return true;
     }

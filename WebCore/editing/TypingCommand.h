@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -66,6 +66,9 @@ public:
     static void insertParagraphSeparator(Document&, Options);
     static void insertParagraphSeparatorInQuotedContent(Document&);
     static void closeTyping(Frame*);
+#if PLATFORM(IOS)
+    static void ensureLastEditCommandHasCurrentSelectionIfOpenForMoreTyping(Frame*, const VisibleSelection&);
+#endif
 
     void insertText(const String &text, bool selectInsertedText);
     void insertTextRunWithoutNewlines(const String &text, bool selectInsertedText);
@@ -77,15 +80,19 @@ public:
     void deleteSelection(bool smartDelete);
     void setCompositionType(TextCompositionType type) { m_compositionType = type; }
 
+#if PLATFORM(IOS)
+    void setEndingSelectionOnLastInsertCommand(const VisibleSelection& selection);
+#endif
+
 private:
-    static PassRefPtr<TypingCommand> create(Document& document, ETypingCommand command, const String& text = "", Options options = 0, TextGranularity granularity = CharacterGranularity)
+    static Ref<TypingCommand> create(Document& document, ETypingCommand command, const String& text = "", Options options = 0, TextGranularity granularity = CharacterGranularity)
     {
-        return adoptRef(new TypingCommand(document, command, text, options, granularity, TextCompositionNone));
+        return adoptRef(*new TypingCommand(document, command, text, options, granularity, TextCompositionNone));
     }
 
-    static PassRefPtr<TypingCommand> create(Document& document, ETypingCommand command, const String& text, Options options, TextCompositionType compositionType)
+    static Ref<TypingCommand> create(Document& document, ETypingCommand command, const String& text, Options options, TextCompositionType compositionType)
     {
-        return adoptRef(new TypingCommand(document, command, text, options, CharacterGranularity, compositionType));
+        return adoptRef(*new TypingCommand(document, command, text, options, CharacterGranularity, compositionType));
     }
 
     TypingCommand(Document&, ETypingCommand, const String& text, Options, TextGranularity, TextCompositionType);

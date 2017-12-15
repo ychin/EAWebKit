@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSNotificationPermissionCallback : public NotificationPermissionCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSNotificationPermissionCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSNotificationPermissionCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSNotificationPermissionCallback(callback, globalObject));
+        return adoptRef(*new JSNotificationPermissionCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

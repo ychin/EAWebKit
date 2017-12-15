@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2011 Apple Inc. All Rights Reserved.
  * Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,8 +26,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(INSPECTOR_SERVER)
 
 #include "WebSocketServerConnection.h"
 
@@ -129,8 +127,7 @@ void WebSocketServerConnection::sendRawData(const char* data, size_t length)
 void WebSocketServerConnection::didCloseSocketStream(SocketStreamHandle*)
 {
     // Destroy the SocketStreamHandle now to prevent closing an already closed socket later.
-    m_socket.clear();
-    m_socket = NULL;
+    m_socket = nullptr;
 
     // Web Socket Mode.
     if (m_mode == WebSocket)
@@ -182,7 +179,7 @@ void WebSocketServerConnection::readHTTPMessage()
 
     // If this is a WebSocket request, perform the WebSocket Handshake.
     const HTTPHeaderMap& headers = request->headerFields();
-    String upgradeHeaderValue = headers.get("Upgrade");
+    String upgradeHeaderValue = headers.get(HTTPHeaderName::Upgrade);
     if (upgradeHeaderValue == "websocket") {
         upgradeToWebSocketServerConnection(request);
         return;
@@ -211,11 +208,11 @@ void WebSocketServerConnection::upgradeToWebSocketServerConnection(PassRefPtr<HT
 
     // Build and send the WebSocket handshake response.
     const HTTPHeaderMap& requestHeaders = protectedRequest->headerFields();
-    String accept = WebSocketHandshake::getExpectedWebSocketAccept(requestHeaders.get("Sec-WebSocket-Key"));
+	String accept = WebSocketHandshake::getExpectedWebSocketAccept(requestHeaders.get(HTTPHeaderName::SecWebSocketKey));
     HTTPHeaderMap responseHeaders;
-    responseHeaders.add("Upgrade", requestHeaders.get("Upgrade"));
-    responseHeaders.add("Connection", requestHeaders.get("Connection"));
-    responseHeaders.add("Sec-WebSocket-Accept", accept);
+	responseHeaders.add(HTTPHeaderName::Upgrade, requestHeaders.get(HTTPHeaderName::Upgrade));
+	responseHeaders.add(HTTPHeaderName::Connection, requestHeaders.get(HTTPHeaderName::Connection));
+	responseHeaders.add(HTTPHeaderName::SecWebSocketAccept, accept);
 
     sendHTTPResponseHeader(101, "WebSocket Protocol Handshake", responseHeaders);
 
@@ -261,4 +258,4 @@ bool WebSocketServerConnection::readWebSocketFrame()
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+

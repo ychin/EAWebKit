@@ -28,9 +28,9 @@ namespace WebCore {
 
 class CSSInheritedValue : public CSSValue {
 public:
-    static PassRefPtr<CSSInheritedValue> create()
+    static Ref<CSSInheritedValue> create()
     {
-        return adoptRef(new CSSInheritedValue);
+        return adoptRef(*new CSSInheritedValue);
     }
 
     String customCSSText() const;
@@ -44,8 +44,8 @@ private:
     }
 };
 
-CSS_VALUE_TYPE_CASTS(InheritedValue)
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSInheritedValue, isInheritedValue())
 
 #endif // CSSInheritedValue_h

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,17 +26,19 @@
 #include "config.h"
 #include "DFGOperations.h"
 
-#include "Arguments.h"
 #include "ButterflyInlines.h"
+#include "ClonedArguments.h"
 #include "CodeBlock.h"
 #include "CommonSlowPaths.h"
 #include "CopiedSpaceInlines.h"
 #include "DFGDriver.h"
+#include "DFGJITCode.h"
 #include "DFGOSRExit.h"
 #include "DFGThunks.h"
 #include "DFGToFTLDeferredCompilationCallback.h"
 #include "DFGToFTLForOSREntryDeferredCompilationCallback.h"
 #include "DFGWorklist.h"
+#include "DirectArguments.h"
 #include "FTLForOSREntryJITCode.h"
 #include "FTLOSREntry.h"
 #include "HostCallReturnValue.h"
@@ -44,16 +46,16 @@
 #include "Interpreter.h"
 #include "JIT.h"
 #include "JITExceptions.h"
-#include "JITOperationWrappers.h"
-#include "JSActivation.h"
-#include "VM.h"
-#include "JSNameScope.h"
-#include "NameInstance.h"
+#include "JSCInlines.h"
+#include "JSLexicalEnvironment.h"
 #include "ObjectConstructor.h"
-#include "Operations.h"
 #include "Repatch.h"
+#include "ScopedArguments.h"
 #include "StringConstructor.h"
+#include "Symbol.h"
+#include "TypeProfilerLog.h"
 #include "TypedArrayInlines.h"
+#include "VM.h"
 #include <wtf/InlineASM.h>
 
 #if ENABLE(JIT)
@@ -61,12 +63,17 @@
 
 namespace JSC { namespace DFG {
 
-template<bool strict>
+template<bool strict, bool direct>
 static inline void putByVal(ExecState* exec, JSValue baseValue, uint32_t index, JSValue value)
 {
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
-    
+    ASSERT(isIndex(index));
+    if (direct) {
+        RELEASE_ASSERT(baseValue.isObject());
+        asObject(baseValue)->putDirectIndex(exec, index, value, 0, strict ? PutDirectIndexShouldThrow : PutDirectIndexShouldNotThrow);
+        return;
+    }
     if (baseValue.isObject()) {
         JSObject* object = asObject(baseValue);
         if (object->canSetIndexQuickly(index)) {
@@ -74,14 +81,14 @@ static inline void putByVal(ExecState* exec, JSValue baseValue, uint32_t index, 
             return;
         }
 
-        object->methodTable()->putByIndex(object, exec, index, value, strict);
+        object->methodTable(vm)->putByIndex(object, exec, index, value, strict);
         return;
     }
 
     baseValue.putByIndex(exec, index, value, strict);
 }
 
-template<bool strict>
+template<bool strict, bool direct>
 ALWAYS_INLINE static void JIT_OPERATION operationPutByValInternal(ExecState* exec, EncodedJSValue encodedBase, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
 {
     VM* vm = &exec->vm();
@@ -92,31 +99,35 @@ ALWAYS_INLINE static void JIT_OPERATION operationPutByValInternal(ExecState* exe
     JSValue value = JSValue::decode(encodedValue);
 
     if (LIKELY(property.isUInt32())) {
-        putByVal<strict>(exec, baseValue, property.asUInt32(), value);
+        // Despite its name, JSValue::isUInt32 will return true only for positive boxed int32_t; all those values are valid array indices.
+        ASSERT(isIndex(property.asUInt32()));
+        putByVal<strict, direct>(exec, baseValue, property.asUInt32(), value);
         return;
     }
 
     if (property.isDouble()) {
         double propertyAsDouble = property.asDouble();
         uint32_t propertyAsUInt32 = static_cast<uint32_t>(propertyAsDouble);
-        if (propertyAsDouble == propertyAsUInt32) {
-            putByVal<strict>(exec, baseValue, propertyAsUInt32, value);
+        if (propertyAsDouble == propertyAsUInt32 && isIndex(propertyAsUInt32)) {
+            putByVal<strict, direct>(exec, baseValue, propertyAsUInt32, value);
             return;
         }
     }
 
-    if (isName(property)) {
-        PutPropertySlot slot(strict);
-        baseValue.put(exec, jsCast<NameInstance*>(property.asCell())->privateName(), value, slot);
-        return;
-    }
-
     // Don't put to an object if toString throws an exception.
-    Identifier ident(exec, property.toString(exec)->value(exec));
-    if (!vm->exception()) {
-        PutPropertySlot slot(strict);
-        baseValue.put(exec, ident, value, slot);
-    }
+    auto propertyName = property.toPropertyKey(exec);
+    if (vm->exception())
+        return;
+
+    PutPropertySlot slot(baseValue, strict);
+    if (direct) {
+        RELEASE_ASSERT(baseValue.isObject());
+        if (Optional<uint32_t> index = parseIndex(propertyName))
+            asObject(baseValue)->putDirectIndex(exec, index.value(), value, 0, strict ? PutDirectIndexShouldThrow : PutDirectIndexShouldNotThrow);
+        else
+            asObject(baseValue)->putDirect(*vm, propertyName, value, slot);
+    } else
+        baseValue.put(exec, propertyName, value, slot);
 }
 
 template<typename ViewClass>
@@ -125,7 +136,7 @@ char* newTypedArrayWithSize(ExecState* exec, Structure* structure, int32_t size)
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
     if (size < 0) {
-        vm.throwException(exec, createRangeError(exec, "Requested length is negative"));
+        vm.throwException(exec, createRangeError(exec, ASCIILiteral("Requested length is negative")));
         return 0;
     }
     return bitwise_cast<char*>(ViewClass::create(exec, structure, size));
@@ -144,7 +155,7 @@ char* newTypedArrayWithOneArgument(
         RefPtr<ArrayBuffer> buffer = jsBuffer->impl();
         
         if (buffer->byteLength() % ViewClass::elementSize) {
-            vm.throwException(exec, createRangeError(exec, "ArrayBuffer length minus the byteOffset is not a multiple of the element size"));
+            vm.throwException(exec, createRangeError(exec, ASCIILiteral("ArrayBuffer length minus the byteOffset is not a multiple of the element size")));
             return 0;
         }
         return bitwise_cast<char*>(
@@ -171,18 +182,18 @@ char* newTypedArrayWithOneArgument(
     if (value.isInt32())
         length = value.asInt32();
     else if (!value.isNumber()) {
-        vm.throwException(exec, createTypeError(exec, "Invalid array length argument"));
+        vm.throwException(exec, createTypeError(exec, ASCIILiteral("Invalid array length argument")));
         return 0;
     } else {
         length = static_cast<int>(value.asNumber());
         if (length != value.asNumber()) {
-            vm.throwException(exec, createTypeError(exec, "Invalid array length argument (fractional lengths not allowed)"));
+            vm.throwException(exec, createTypeError(exec, ASCIILiteral("Invalid array length argument (fractional lengths not allowed)")));
             return 0;
         }
     }
     
     if (length < 0) {
-        vm.throwException(exec, createRangeError(exec, "Requested length is negative"));
+        vm.throwException(exec, createRangeError(exec, ASCIILiteral("Requested length is negative")));
         return 0;
     }
     
@@ -209,15 +220,15 @@ EncodedJSValue JIT_OPERATION operationToThisStrict(ExecState* exec, EncodedJSVal
 
 JSCell* JIT_OPERATION operationCreateThis(ExecState* exec, JSObject* constructor, int32_t inlineCapacity)
 {
-    VM* vm = &exec->vm();
-    NativeCallFrameTracer tracer(vm, exec);
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
 
 #if !ASSERT_DISABLED
     ConstructData constructData;
-    ASSERT(jsCast<JSFunction*>(constructor)->methodTable()->getConstructData(jsCast<JSFunction*>(constructor), constructData) == ConstructTypeJS);
+    ASSERT(jsCast<JSFunction*>(constructor)->methodTable(vm)->getConstructData(jsCast<JSFunction*>(constructor), constructData) == ConstructTypeJS);
 #endif
     
-    return constructEmptyObject(exec, jsCast<JSFunction*>(constructor)->allocationProfile(exec, inlineCapacity)->structure());
+    return constructEmptyObject(exec, jsCast<JSFunction*>(constructor)->rareData(exec, inlineCapacity)->allocationProfile()->structure());
 }
 
 EncodedJSValue JIT_OPERATION operationValueAdd(ExecState* exec, EncodedJSValue encodedOp1, EncodedJSValue encodedOp2)
@@ -247,7 +258,7 @@ EncodedJSValue JIT_OPERATION operationValueAddNotNumber(ExecState* exec, Encoded
     return JSValue::encode(jsAddSlowCase(exec, op1, op2));
 }
 
-static inline EncodedJSValue getByVal(ExecState* exec, JSCell* base, uint32_t index)
+static ALWAYS_INLINE EncodedJSValue getByVal(ExecState* exec, JSCell* base, uint32_t index)
 {
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
@@ -266,8 +277,8 @@ static inline EncodedJSValue getByVal(ExecState* exec, JSCell* base, uint32_t in
 
 EncodedJSValue JIT_OPERATION operationGetByVal(ExecState* exec, EncodedJSValue encodedBase, EncodedJSValue encodedProperty)
 {
-    VM* vm = &exec->vm();
-    NativeCallFrameTracer tracer(vm, exec);
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
     
     JSValue baseValue = JSValue::decode(encodedBase);
     JSValue property = JSValue::decode(encodedProperty);
@@ -280,25 +291,32 @@ EncodedJSValue JIT_OPERATION operationGetByVal(ExecState* exec, EncodedJSValue e
         } else if (property.isDouble()) {
             double propertyAsDouble = property.asDouble();
             uint32_t propertyAsUInt32 = static_cast<uint32_t>(propertyAsDouble);
-            if (propertyAsUInt32 == propertyAsDouble)
+            if (propertyAsUInt32 == propertyAsDouble && isIndex(propertyAsUInt32))
                 return getByVal(exec, base, propertyAsUInt32);
         } else if (property.isString()) {
-            if (JSValue result = base->fastGetOwnProperty(exec, asString(property)->value(exec)))
-                return JSValue::encode(result);
+            Structure& structure = *base->structure(vm);
+            if (JSCell::canUseFastGetOwnProperty(structure)) {
+                if (RefPtr<AtomicStringImpl> existingAtomicString = asString(property)->toExistingAtomicString(exec)) {
+                    if (JSValue result = base->fastGetOwnProperty(vm, structure, existingAtomicString.get()))
+                        return JSValue::encode(result);
+                }
+            }
         }
     }
 
-    if (isName(property))
-        return JSValue::encode(baseValue.get(exec, jsCast<NameInstance*>(property.asCell())->privateName()));
-
-    Identifier ident(exec, property.toString(exec)->value(exec));
-    return JSValue::encode(baseValue.get(exec, ident));
+    baseValue.requireObjectCoercible(exec);
+    if (exec->hadException())
+        return JSValue::encode(jsUndefined());
+    auto propertyName = property.toPropertyKey(exec);
+    if (exec->hadException())
+        return JSValue::encode(jsUndefined());
+    return JSValue::encode(baseValue.get(exec, propertyName));
 }
 
 EncodedJSValue JIT_OPERATION operationGetByValCell(ExecState* exec, JSCell* base, EncodedJSValue encodedProperty)
 {
-    VM* vm = &exec->vm();
-    NativeCallFrameTracer tracer(vm, exec);
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
     
     JSValue property = JSValue::decode(encodedProperty);
 
@@ -310,15 +328,19 @@ EncodedJSValue JIT_OPERATION operationGetByValCell(ExecState* exec, JSCell* base
         if (propertyAsUInt32 == propertyAsDouble)
             return getByVal(exec, base, propertyAsUInt32);
     } else if (property.isString()) {
-        if (JSValue result = base->fastGetOwnProperty(exec, asString(property)->value(exec)))
-            return JSValue::encode(result);
+        Structure& structure = *base->structure(vm);
+        if (JSCell::canUseFastGetOwnProperty(structure)) {
+            if (RefPtr<AtomicStringImpl> existingAtomicString = asString(property)->toExistingAtomicString(exec)) {
+                if (JSValue result = base->fastGetOwnProperty(vm, structure, existingAtomicString.get()))
+                    return JSValue::encode(result);
+            }
+        }
     }
 
-    if (isName(property))
-        return JSValue::encode(JSValue(base).get(exec, jsCast<NameInstance*>(property.asCell())->privateName()));
-
-    Identifier ident(exec, property.toString(exec)->value(exec));
-    return JSValue::encode(JSValue(base).get(exec, ident));
+    auto propertyName = property.toPropertyKey(exec);
+    if (exec->hadException())
+        return JSValue::encode(jsUndefined());
+    return JSValue::encode(JSValue(base).get(exec, propertyName));
 }
 
 ALWAYS_INLINE EncodedJSValue getByValCellInt(ExecState* exec, JSCell* base, int32_t index)
@@ -350,7 +372,7 @@ void JIT_OPERATION operationPutByValStrict(ExecState* exec, EncodedJSValue encod
     VM* vm = &exec->vm();
     NativeCallFrameTracer tracer(vm, exec);
     
-    operationPutByValInternal<true>(exec, encodedBase, encodedProperty, encodedValue);
+    operationPutByValInternal<true, false>(exec, encodedBase, encodedProperty, encodedValue);
 }
 
 void JIT_OPERATION operationPutByValNonStrict(ExecState* exec, EncodedJSValue encodedBase, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
@@ -358,7 +380,7 @@ void JIT_OPERATION operationPutByValNonStrict(ExecState* exec, EncodedJSValue en
     VM* vm = &exec->vm();
     NativeCallFrameTracer tracer(vm, exec);
     
-    operationPutByValInternal<false>(exec, encodedBase, encodedProperty, encodedValue);
+    operationPutByValInternal<false, false>(exec, encodedBase, encodedProperty, encodedValue);
 }
 
 void JIT_OPERATION operationPutByValCellStrict(ExecState* exec, JSCell* cell, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
@@ -366,7 +388,7 @@ void JIT_OPERATION operationPutByValCellStrict(ExecState* exec, JSCell* cell, En
     VM* vm = &exec->vm();
     NativeCallFrameTracer tracer(vm, exec);
     
-    operationPutByValInternal<true>(exec, JSValue::encode(cell), encodedProperty, encodedValue);
+    operationPutByValInternal<true, false>(exec, JSValue::encode(cell), encodedProperty, encodedValue);
 }
 
 void JIT_OPERATION operationPutByValCellNonStrict(ExecState* exec, JSCell* cell, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
@@ -374,20 +396,20 @@ void JIT_OPERATION operationPutByValCellNonStrict(ExecState* exec, JSCell* cell,
     VM* vm = &exec->vm();
     NativeCallFrameTracer tracer(vm, exec);
     
-    operationPutByValInternal<false>(exec, JSValue::encode(cell), encodedProperty, encodedValue);
+    operationPutByValInternal<false, false>(exec, JSValue::encode(cell), encodedProperty, encodedValue);
 }
 
 void JIT_OPERATION operationPutByValBeyondArrayBoundsStrict(ExecState* exec, JSObject* array, int32_t index, EncodedJSValue encodedValue)
 {
-    VM* vm = &exec->vm();
-    NativeCallFrameTracer tracer(vm, exec);
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
     
     if (index >= 0) {
         array->putByIndexInline(exec, index, JSValue::decode(encodedValue), true);
         return;
     }
     
-    PutPropertySlot slot(true);
+    PutPropertySlot slot(array, true);
     array->methodTable()->put(
         array, exec, Identifier::from(exec, index), JSValue::decode(encodedValue), slot);
 }
@@ -402,7 +424,7 @@ void JIT_OPERATION operationPutByValBeyondArrayBoundsNonStrict(ExecState* exec, 
         return;
     }
     
-    PutPropertySlot slot(false);
+    PutPropertySlot slot(array, false);
     array->methodTable()->put(
         array, exec, Identifier::from(exec, index), JSValue::decode(encodedValue), slot);
 }
@@ -419,7 +441,7 @@ void JIT_OPERATION operationPutDoubleByValBeyondArrayBoundsStrict(ExecState* exe
         return;
     }
     
-    PutPropertySlot slot(true);
+    PutPropertySlot slot(array, true);
     array->methodTable()->put(
         array, exec, Identifier::from(exec, index), jsValue, slot);
 }
@@ -436,9 +458,68 @@ void JIT_OPERATION operationPutDoubleByValBeyondArrayBoundsNonStrict(ExecState* 
         return;
     }
     
-    PutPropertySlot slot(false);
+    PutPropertySlot slot(array, false);
     array->methodTable()->put(
         array, exec, Identifier::from(exec, index), jsValue, slot);
+}
+
+void JIT_OPERATION operationPutByValDirectStrict(ExecState* exec, EncodedJSValue encodedBase, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    
+    operationPutByValInternal<true, true>(exec, encodedBase, encodedProperty, encodedValue);
+}
+
+void JIT_OPERATION operationPutByValDirectNonStrict(ExecState* exec, EncodedJSValue encodedBase, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    
+    operationPutByValInternal<false, true>(exec, encodedBase, encodedProperty, encodedValue);
+}
+
+void JIT_OPERATION operationPutByValDirectCellStrict(ExecState* exec, JSCell* cell, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    
+    operationPutByValInternal<true, true>(exec, JSValue::encode(cell), encodedProperty, encodedValue);
+}
+
+void JIT_OPERATION operationPutByValDirectCellNonStrict(ExecState* exec, JSCell* cell, EncodedJSValue encodedProperty, EncodedJSValue encodedValue)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    
+    operationPutByValInternal<false, true>(exec, JSValue::encode(cell), encodedProperty, encodedValue);
+}
+
+void JIT_OPERATION operationPutByValDirectBeyondArrayBoundsStrict(ExecState* exec, JSObject* array, int32_t index, EncodedJSValue encodedValue)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    if (index >= 0) {
+        array->putDirectIndex(exec, index, JSValue::decode(encodedValue), 0, PutDirectIndexShouldThrow);
+        return;
+    }
+    
+    PutPropertySlot slot(array, true);
+    array->putDirect(exec->vm(), Identifier::from(exec, index), JSValue::decode(encodedValue), slot);
+}
+
+void JIT_OPERATION operationPutByValDirectBeyondArrayBoundsNonStrict(ExecState* exec, JSObject* array, int32_t index, EncodedJSValue encodedValue)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    
+    if (index >= 0) {
+        array->putDirectIndex(exec, index, JSValue::decode(encodedValue));
+        return;
+    }
+    
+    PutPropertySlot slot(array, false);
+    array->putDirect(exec->vm(), Identifier::from(exec, index), JSValue::decode(encodedValue), slot);
 }
 
 EncodedJSValue JIT_OPERATION operationArrayPush(ExecState* exec, EncodedJSValue encodedValue, JSArray* array)
@@ -543,7 +624,7 @@ char* JIT_OPERATION operationNewArray(ExecState* exec, Structure* arrayStructure
     VM* vm = &exec->vm();
     NativeCallFrameTracer tracer(vm, exec);
     
-    return bitwise_cast<char*>(constructArrayNegativeIndexed(exec, arrayStructure, static_cast<JSValue*>(buffer), size));
+    return bitwise_cast<char*>(constructArray(exec, arrayStructure, static_cast<JSValue*>(buffer), size));
 }
 
 char* JIT_OPERATION operationNewEmptyArray(ExecState* exec, Structure* arrayStructure)
@@ -569,7 +650,7 @@ char* JIT_OPERATION operationNewArrayBuffer(ExecState* exec, Structure* arrayStr
 {
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
-    return bitwise_cast<char*>(constructArrayNegativeIndexed(exec, arrayStructure, exec->codeBlock()->constantBuffer(start), size));
+    return bitwise_cast<char*>(constructArray(exec, arrayStructure, exec->codeBlock()->constantBuffer(start), size));
 }
 
 char* JIT_OPERATION operationNewInt8ArrayWithSize(
@@ -680,101 +761,184 @@ char* JIT_OPERATION operationNewFloat64ArrayWithOneArgument(
     return newTypedArrayWithOneArgument<JSFloat64Array>(exec, structure, encodedValue);
 }
 
-JSCell* JIT_OPERATION operationCreateInlinedArguments(
-    ExecState* exec, InlineCallFrame* inlineCallFrame)
+JSCell* JIT_OPERATION operationCreateActivationDirect(ExecState* exec, Structure* structure, JSScope* scope, SymbolTable* table, EncodedJSValue initialValueEncoded)
 {
+    JSValue initialValue = JSValue::decode(initialValueEncoded);
+    ASSERT(initialValue == jsUndefined() || initialValue == jsTDZValue());
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
-    // NB: This needs to be exceedingly careful with top call frame tracking, since it
-    // may be called from OSR exit, while the state of the call stack is bizarre.
-    Arguments* result = Arguments::create(vm, exec, inlineCallFrame);
-    ASSERT(!vm.exception());
+    return JSLexicalEnvironment::create(vm, structure, scope, table, initialValue);
+}
+
+JSCell* JIT_OPERATION operationCreateDirectArguments(ExecState* exec, Structure* structure, int32_t length, int32_t minCapacity)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer target(&vm, exec);
+    DirectArguments* result = DirectArguments::create(
+        vm, structure, length, std::max(length, minCapacity));
+    // The caller will store to this object without barriers. Most likely, at this point, this is
+    // still a young object and so no barriers are needed. But it's good to be careful anyway,
+    // since the GC should be allowed to do crazy (like pretenuring, for example).
+    vm.heap.writeBarrier(result);
     return result;
 }
 
-void JIT_OPERATION operationTearOffArguments(ExecState* exec, JSCell* argumentsCell, JSCell* activationCell)
+JSCell* JIT_OPERATION operationCreateScopedArguments(ExecState* exec, Structure* structure, Register* argumentStart, int32_t length, JSFunction* callee, JSLexicalEnvironment* scope)
 {
-    ASSERT(exec->codeBlock()->usesArguments());
-    if (activationCell) {
-        jsCast<Arguments*>(argumentsCell)->didTearOffActivation(exec, jsCast<JSActivation*>(activationCell));
-        return;
+    VM& vm = exec->vm();
+    NativeCallFrameTracer target(&vm, exec);
+    
+    // We could pass the ScopedArgumentsTable* as an argument. We currently don't because I
+    // didn't feel like changing the max number of arguments for a slow path call from 6 to 7.
+    ScopedArgumentsTable* table = scope->symbolTable()->arguments();
+    
+    return ScopedArguments::createByCopyingFrom(
+        vm, structure, argumentStart, length, callee, table, scope);
+}
+
+JSCell* JIT_OPERATION operationCreateClonedArguments(ExecState* exec, Structure* structure, Register* argumentStart, int32_t length, JSFunction* callee)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer target(&vm, exec);
+    return ClonedArguments::createByCopyingFrom(
+        exec, structure, argumentStart, length, callee);
+}
+
+JSCell* JIT_OPERATION operationCreateDirectArgumentsDuringExit(ExecState* exec, InlineCallFrame* inlineCallFrame, JSFunction* callee, int32_t argumentCount)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer target(&vm, exec);
+    
+    DeferGCForAWhile deferGC(vm.heap);
+    
+    CodeBlock* codeBlock;
+    if (inlineCallFrame)
+        codeBlock = baselineCodeBlockForInlineCallFrame(inlineCallFrame);
+    else
+        codeBlock = exec->codeBlock();
+    
+    unsigned length = argumentCount - 1;
+    unsigned capacity = std::max(length, static_cast<unsigned>(codeBlock->numParameters() - 1));
+    DirectArguments* result = DirectArguments::create(
+        vm, codeBlock->globalObject()->directArgumentsStructure(), length, capacity);
+    
+    result->callee().set(vm, result, callee);
+    
+    Register* arguments =
+        exec->registers() + (inlineCallFrame ? inlineCallFrame->stackOffset : 0) +
+        CallFrame::argumentOffset(0);
+    for (unsigned i = length; i--;)
+        result->setIndexQuickly(vm, i, arguments[i].jsValue());
+    
+    return result;
+}
+
+JSCell* JIT_OPERATION operationCreateClonedArgumentsDuringExit(ExecState* exec, InlineCallFrame* inlineCallFrame, JSFunction* callee, int32_t argumentCount)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer target(&vm, exec);
+    
+    DeferGCForAWhile deferGC(vm.heap);
+    
+    CodeBlock* codeBlock;
+    if (inlineCallFrame)
+        codeBlock = baselineCodeBlockForInlineCallFrame(inlineCallFrame);
+    else
+        codeBlock = exec->codeBlock();
+    
+    unsigned length = argumentCount - 1;
+    ClonedArguments* result = ClonedArguments::createEmpty(
+        vm, codeBlock->globalObject()->outOfBandArgumentsStructure(), callee);
+    
+    Register* arguments =
+        exec->registers() + (inlineCallFrame ? inlineCallFrame->stackOffset : 0) +
+        CallFrame::argumentOffset(0);
+    for (unsigned i = length; i--;)
+        result->putDirectIndex(exec, i, arguments[i].jsValue());
+    
+    result->putDirect(vm, vm.propertyNames->length, jsNumber(length));
+    
+    return result;
+}
+
+size_t JIT_OPERATION operationObjectIsObject(ExecState* exec, JSGlobalObject* globalObject, JSCell* object)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+
+    ASSERT(jsDynamicCast<JSObject*>(object));
+    
+    if (object->structure(vm)->masqueradesAsUndefined(globalObject))
+        return false;
+    if (object->type() == JSFunctionType)
+        return false;
+    if (object->inlineTypeFlags() & TypeOfShouldCallGetCallData) {
+        CallData callData;
+        if (object->methodTable(vm)->getCallData(object, callData) != CallTypeNone)
+            return false;
     }
-    jsCast<Arguments*>(argumentsCell)->tearOff(exec);
+    
+    return true;
 }
 
-void JIT_OPERATION operationTearOffInlinedArguments(
-    ExecState* exec, JSCell* argumentsCell, JSCell* activationCell, InlineCallFrame* inlineCallFrame)
-{
-    ASSERT_UNUSED(activationCell, !activationCell); // Currently, we don't inline functions with activations.
-    jsCast<Arguments*>(argumentsCell)->tearOff(exec, inlineCallFrame);
-}
-
-EncodedJSValue JIT_OPERATION operationGetArgumentsLength(ExecState* exec, int32_t argumentsRegister)
-{
-    VM& vm = exec->vm();
-    NativeCallFrameTracer tracer(&vm, exec);
-    // Here we can assume that the argumernts were created. Because otherwise the JIT code would
-    // have not made this call.
-    Identifier ident(&vm, "length");
-    JSValue baseValue = exec->uncheckedR(argumentsRegister).jsValue();
-    PropertySlot slot(baseValue);
-    return JSValue::encode(baseValue.get(exec, ident, slot));
-}
-
-EncodedJSValue JIT_OPERATION operationGetArgumentByVal(ExecState* exec, int32_t argumentsRegister, int32_t index)
+size_t JIT_OPERATION operationObjectIsFunction(ExecState* exec, JSGlobalObject* globalObject, JSCell* object)
 {
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
 
-    JSValue argumentsValue = exec->uncheckedR(argumentsRegister).jsValue();
+    ASSERT(jsDynamicCast<JSObject*>(object));
     
-    // If there are no arguments, and we're accessing out of bounds, then we have to create the
-    // arguments in case someone has installed a getter on a numeric property.
-    if (!argumentsValue)
-        exec->uncheckedR(argumentsRegister) = argumentsValue = Arguments::create(exec->vm(), exec);
-    
-    return JSValue::encode(argumentsValue.get(exec, index));
-}
-
-EncodedJSValue JIT_OPERATION operationGetInlinedArgumentByVal(
-    ExecState* exec, int32_t argumentsRegister, InlineCallFrame* inlineCallFrame, int32_t index)
-{
-    VM& vm = exec->vm();
-    NativeCallFrameTracer tracer(&vm, exec);
-
-    JSValue argumentsValue = exec->uncheckedR(argumentsRegister).jsValue();
-    
-    // If there are no arguments, and we're accessing out of bounds, then we have to create the
-    // arguments in case someone has installed a getter on a numeric property.
-    if (!argumentsValue) {
-        exec->uncheckedR(argumentsRegister) = argumentsValue =
-            Arguments::create(exec->vm(), exec, inlineCallFrame);
+    if (object->structure(vm)->masqueradesAsUndefined(globalObject))
+        return false;
+    if (object->type() == JSFunctionType)
+        return true;
+    if (object->inlineTypeFlags() & TypeOfShouldCallGetCallData) {
+        CallData callData;
+        if (object->methodTable(vm)->getCallData(object, callData) != CallTypeNone)
+            return true;
     }
     
-    return JSValue::encode(argumentsValue.get(exec, index));
+    return false;
 }
 
-JSCell* JIT_OPERATION operationNewFunctionNoCheck(ExecState* exec, JSCell* functionExecutable)
+JSCell* JIT_OPERATION operationTypeOfObject(ExecState* exec, JSGlobalObject* globalObject, JSCell* object)
 {
-    ASSERT(functionExecutable->inherits(FunctionExecutable::info()));
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
-    return JSFunction::create(vm, static_cast<FunctionExecutable*>(functionExecutable), exec->scope());
+
+    ASSERT(jsDynamicCast<JSObject*>(object));
+    
+    if (object->structure(vm)->masqueradesAsUndefined(globalObject))
+        return vm.smallStrings.undefinedString();
+    if (object->type() == JSFunctionType)
+        return vm.smallStrings.functionString();
+    if (object->inlineTypeFlags() & TypeOfShouldCallGetCallData) {
+        CallData callData;
+        if (object->methodTable(vm)->getCallData(object, callData) != CallTypeNone)
+            return vm.smallStrings.functionString();
+    }
+    
+    return vm.smallStrings.objectString();
 }
 
-size_t JIT_OPERATION operationIsObject(ExecState* exec, EncodedJSValue value)
+int32_t JIT_OPERATION operationTypeOfObjectAsTypeofType(ExecState* exec, JSGlobalObject* globalObject, JSCell* object)
 {
-    return jsIsObjectType(exec, JSValue::decode(value));
-}
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
 
-size_t JIT_OPERATION operationIsFunction(EncodedJSValue value)
-{
-    return jsIsFunctionType(JSValue::decode(value));
-}
-
-JSCell* JIT_OPERATION operationTypeOf(ExecState* exec, JSCell* value)
-{
-    return jsTypeStringForValue(exec, JSValue(value)).asCell();
+    ASSERT(jsDynamicCast<JSObject*>(object));
+    
+    if (object->structure(vm)->masqueradesAsUndefined(globalObject))
+        return static_cast<int32_t>(TypeofType::Undefined);
+    if (object->type() == JSFunctionType)
+        return static_cast<int32_t>(TypeofType::Function);
+    if (object->inlineTypeFlags() & TypeOfShouldCallGetCallData) {
+        CallData callData;
+        if (object->methodTable(vm)->getCallData(object, callData) != CallTypeNone)
+            return static_cast<int32_t>(TypeofType::Function);
+    }
+    
+    return static_cast<int32_t>(TypeofType::Object);
 }
 
 char* JIT_OPERATION operationAllocatePropertyStorageWithInitialCapacity(ExecState* exec)
@@ -801,8 +965,9 @@ char* JIT_OPERATION operationReallocateButterflyToHavePropertyStorageWithInitial
     NativeCallFrameTracer tracer(&vm, exec);
 
     ASSERT(!object->structure()->outOfLineCapacity());
+    DeferGC deferGC(vm.heap);
     Butterfly* result = object->growOutOfLineStorage(vm, 0, initialOutOfLineCapacity);
-    object->setButterflyWithoutChangingStructure(result);
+    object->setButterflyWithoutChangingStructure(vm, result);
     return reinterpret_cast<char*>(result);
 }
 
@@ -811,8 +976,9 @@ char* JIT_OPERATION operationReallocateButterflyToGrowPropertyStorage(ExecState*
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
 
+    DeferGC deferGC(vm.heap);
     Butterfly* result = object->growOutOfLineStorage(vm, object->structure()->outOfLineCapacity(), newSize);
-    object->setButterflyWithoutChangingStructure(result);
+    object->setButterflyWithoutChangingStructure(vm, result);
     return reinterpret_cast<char*>(result);
 }
 
@@ -847,17 +1013,6 @@ char* JIT_OPERATION operationEnsureContiguous(ExecState* exec, JSCell* cell)
         return 0;
     
     return reinterpret_cast<char*>(asObject(cell)->ensureContiguous(vm).data());
-}
-
-char* JIT_OPERATION operationRageEnsureContiguous(ExecState* exec, JSCell* cell)
-{
-    VM& vm = exec->vm();
-    NativeCallFrameTracer tracer(&vm, exec);
-    
-    if (!cell->isObject())
-        return 0;
-    
-    return reinterpret_cast<char*>(asObject(cell)->rageEnsureContiguous(vm).data());
 }
 
 char* JIT_OPERATION operationEnsureArrayStorage(ExecState* exec, JSCell* cell)
@@ -911,10 +1066,31 @@ JSCell* JIT_OPERATION operationToString(ExecState* exec, EncodedJSValue value)
     return JSValue::decode(value).toString(exec);
 }
 
+JSCell* JIT_OPERATION operationCallStringConstructorOnCell(ExecState* exec, JSCell* cell)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+
+    return stringConstructor(exec, cell);
+}
+
+JSCell* JIT_OPERATION operationCallStringConstructor(ExecState* exec, EncodedJSValue value)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+
+    return stringConstructor(exec, JSValue::decode(value));
+}
+
 JSCell* JIT_OPERATION operationMakeRope2(ExecState* exec, JSString* left, JSString* right)
 {
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
+
+    if (sumOverflows<int32_t>(left->length(), right->length())) {
+        throwOutOfMemoryError(exec);
+        return nullptr;
+    }
 
     return JSRopeString::create(vm, left, right);
 }
@@ -923,6 +1099,11 @@ JSCell* JIT_OPERATION operationMakeRope3(ExecState* exec, JSString* a, JSString*
 {
     VM& vm = exec->vm();
     NativeCallFrameTracer tracer(&vm, exec);
+
+    if (sumOverflows<int32_t>(a->length(), b->length(), c->length())) {
+        throwOutOfMemoryError(exec);
+        return nullptr;
+    }
 
     return JSRopeString::create(vm, a, b, c);
 }
@@ -949,6 +1130,50 @@ char* JIT_OPERATION operationSwitchString(ExecState* exec, size_t tableIndex, JS
     return static_cast<char*>(exec->codeBlock()->stringSwitchJumpTable(tableIndex).ctiForValue(string->value(exec).impl()).executableAddress());
 }
 
+int32_t JIT_OPERATION operationSwitchStringAndGetBranchOffset(ExecState* exec, size_t tableIndex, JSString* string)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+
+    return exec->codeBlock()->stringSwitchJumpTable(tableIndex).offsetForValue(string->value(exec).impl(), std::numeric_limits<int32_t>::min());
+}
+
+void JIT_OPERATION operationNotifyWrite(ExecState* exec, WatchpointSet* set)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+
+    set->touch("Executed NotifyWrite");
+}
+
+void JIT_OPERATION operationThrowStackOverflowForVarargs(ExecState* exec)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+    throwStackOverflowError(exec);
+}
+
+int32_t JIT_OPERATION operationSizeOfVarargs(ExecState* exec, EncodedJSValue encodedArguments, int32_t firstVarArgOffset)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+    JSValue arguments = JSValue::decode(encodedArguments);
+    
+    return sizeOfVarargs(exec, arguments, firstVarArgOffset);
+}
+
+void JIT_OPERATION operationLoadVarargs(ExecState* exec, int32_t firstElementDest, EncodedJSValue encodedArguments, int32_t offset, int32_t length, int32_t mandatoryMinimum)
+{
+    VM& vm = exec->vm();
+    NativeCallFrameTracer tracer(&vm, exec);
+    JSValue arguments = JSValue::decode(encodedArguments);
+    
+    loadVarargs(exec, VirtualRegister(firstElementDest), arguments, offset, length);
+    
+    for (int32_t i = length; i < mandatoryMinimum; ++i)
+        exec->r(firstElementDest + i) = jsUndefined();
+}
+
 double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
 {
     return fmod(a, b);
@@ -959,6 +1184,24 @@ JSCell* JIT_OPERATION operationStringFromCharCode(ExecState* exec, int32_t op1)
     VM* vm = &exec->vm();
     NativeCallFrameTracer tracer(vm, exec);
     return JSC::stringFromCharCode(exec, op1);
+}
+
+int64_t JIT_OPERATION operationConvertBoxedDoubleToInt52(EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    if (!value.isDouble())
+        return JSValue::notInt52;
+    return tryConvertToInt52(value.asDouble());
+}
+
+int64_t JIT_OPERATION operationConvertDoubleToInt52(double value)
+{
+    return tryConvertToInt52(value);
+}
+
+void JIT_OPERATION operationProcessTypeProfilerLogDFG(ExecState* exec) 
+{
+    exec->vm().typeProfilerLog()->processLogEntries(ASCIILiteral("Log Full, called from inside DFG."));
 }
 
 size_t JIT_OPERATION dfgConvertJSValueToInt32(ExecState* exec, EncodedJSValue value)
@@ -978,8 +1221,8 @@ void JIT_OPERATION debugOperationPrintSpeculationFailure(ExecState* exec, void* 
     SpeculationFailureDebugInfo* debugInfo = static_cast<SpeculationFailureDebugInfo*>(debugInfoRaw);
     CodeBlock* codeBlock = debugInfo->codeBlock;
     CodeBlock* alternative = codeBlock->alternative();
-    dataLog(
-        "Speculation failure in ", *codeBlock, " with ");
+    dataLog("Speculation failure in ", *codeBlock);
+    dataLog(" @ exit #", vm->osrExitIndex, " (bc#", debugInfo->bytecodeOffset, ", ", exitKindToString(debugInfo->kind), ") with ");
     if (alternative) {
         dataLog(
             "executeCounter = ", alternative->jitExecuteCounter(),
@@ -1008,7 +1251,7 @@ void JIT_OPERATION debugOperationPrintSpeculationFailure(ExecState* exec, void* 
     dataLog("\n");
 }
 
-extern "C" void JIT_OPERATION triggerReoptimizationNow(CodeBlock* codeBlock)
+extern "C" void JIT_OPERATION triggerReoptimizationNow(CodeBlock* codeBlock, OSRExitBase* exit)
 {
     // It's sort of preferable that we don't GC while in here. Anyways, doing so wouldn't
     // really be profitable.
@@ -1032,13 +1275,21 @@ extern "C" void JIT_OPERATION triggerReoptimizationNow(CodeBlock* codeBlock)
     ASSERT(codeBlock->hasOptimizedReplacement());
     CodeBlock* optimizedCodeBlock = codeBlock->replacement();
     ASSERT(JITCode::isOptimizingJIT(optimizedCodeBlock->jitType()));
+    
+    bool didTryToEnterIntoInlinedLoops = false;
+    for (InlineCallFrame* inlineCallFrame = exit->m_codeOrigin.inlineCallFrame; inlineCallFrame; inlineCallFrame = inlineCallFrame->caller.inlineCallFrame) {
+        if (inlineCallFrame->executable->didTryToEnterInLoop()) {
+            didTryToEnterIntoInlinedLoops = true;
+            break;
+        }
+    }
 
     // In order to trigger reoptimization, one of two things must have happened:
     // 1) We exited more than some number of times.
     // 2) We exited and got stuck in a loop, and now we're exiting again.
     bool didExitABunch = optimizedCodeBlock->shouldReoptimizeNow();
     bool didGetStuckInLoop =
-        codeBlock->checkIfOptimizationThresholdReached()
+        (codeBlock->checkIfOptimizationThresholdReached() || didTryToEnterIntoInlinedLoops)
         && optimizedCodeBlock->shouldReoptimizeFromLoopNow();
     
     if (!didExitABunch && !didGetStuckInLoop) {
@@ -1048,25 +1299,12 @@ extern "C" void JIT_OPERATION triggerReoptimizationNow(CodeBlock* codeBlock)
         return;
     }
 
-    codeBlock->reoptimize();
+    optimizedCodeBlock->jettison(Profiler::JettisonDueToOSRExit, CountReoptimization);
 }
 
 #if ENABLE(FTL_JIT)
-void JIT_OPERATION triggerTierUpNow(ExecState* exec)
+static void triggerFTLReplacementCompile(VM* vm, CodeBlock* codeBlock, JITCode* jitCode)
 {
-    VM* vm = &exec->vm();
-    NativeCallFrameTracer tracer(vm, exec);
-    DeferGC deferGC(vm->heap);
-    CodeBlock* codeBlock = exec->codeBlock();
-    
-    JITCode* jitCode = codeBlock->jitCode()->dfg();
-    
-    if (Options::verboseOSR()) {
-        dataLog(
-            *codeBlock, ": Entered triggerTierUpNow with executeCounter = ",
-            jitCode->tierUpCounter, "\n");
-    }
-    
     if (codeBlock->baselineVersion()->m_didFailFTLCompilation) {
         if (Options::verboseOSR())
             dataLog("Deferring FTL-optimization of ", *codeBlock, " indefinitely because there was an FTL failure.\n");
@@ -1081,7 +1319,7 @@ void JIT_OPERATION triggerTierUpNow(ExecState* exec)
     }
     
     Worklist::State worklistState;
-    if (Worklist* worklist = vm->worklist.get()) {
+    if (Worklist* worklist = existingGlobalFTLWorklistOrNull()) {
         worklistState = worklist->completeAllReadyPlansForVM(
             *vm, CompilationKey(codeBlock->baselineVersion(), FTLMode));
     } else
@@ -1110,8 +1348,43 @@ void JIT_OPERATION triggerTierUpNow(ExecState* exec)
 
     // We need to compile the code.
     compile(
-        *vm, codeBlock->newReplacement().get(), FTLMode, UINT_MAX, Operands<JSValue>(),
-        ToFTLDeferredCompilationCallback::create(codeBlock), vm->ensureWorklist());
+        *vm, codeBlock->newReplacement().get(), codeBlock, FTLMode, UINT_MAX,
+        Operands<JSValue>(), ToFTLDeferredCompilationCallback::create(codeBlock));
+}
+
+static void triggerTierUpNowCommon(ExecState* exec, bool inLoop)
+{
+    VM* vm = &exec->vm();
+    NativeCallFrameTracer tracer(vm, exec);
+    DeferGC deferGC(vm->heap);
+    CodeBlock* codeBlock = exec->codeBlock();
+    
+    if (codeBlock->jitType() != JITCode::DFGJIT) {
+        dataLog("Unexpected code block in DFG->FTL tier-up: ", *codeBlock, "\n");
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    
+    JITCode* jitCode = codeBlock->jitCode()->dfg();
+    
+    if (Options::verboseOSR()) {
+        dataLog(
+            *codeBlock, ": Entered triggerTierUpNow with executeCounter = ",
+            jitCode->tierUpCounter, "\n");
+    }
+    if (inLoop)
+        jitCode->nestedTriggerIsSet = 1;
+
+    triggerFTLReplacementCompile(vm, codeBlock, jitCode);
+}
+
+void JIT_OPERATION triggerTierUpNow(ExecState* exec)
+{
+    triggerTierUpNowCommon(exec, false);
+}
+
+void JIT_OPERATION triggerTierUpNowInLoop(ExecState* exec)
+{
+    triggerTierUpNowCommon(exec, true);
 }
 
 char* JIT_OPERATION triggerOSREntryNow(
@@ -1122,63 +1395,61 @@ char* JIT_OPERATION triggerOSREntryNow(
     DeferGC deferGC(vm->heap);
     CodeBlock* codeBlock = exec->codeBlock();
     
+    if (codeBlock->jitType() != JITCode::DFGJIT) {
+        dataLog("Unexpected code block in DFG->FTL tier-up: ", *codeBlock, "\n");
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    
     JITCode* jitCode = codeBlock->jitCode()->dfg();
+    jitCode->nestedTriggerIsSet = 0;
     
     if (Options::verboseOSR()) {
         dataLog(
-            *codeBlock, ": Entered triggerTierUpNow with executeCounter = ",
+            *codeBlock, ": Entered triggerOSREntryNow with executeCounter = ",
             jitCode->tierUpCounter, "\n");
     }
     
-    if (codeBlock->baselineVersion()->m_didFailFTLCompilation) {
-        if (Options::verboseOSR())
-            dataLog("Deferring FTL-optimization of ", *codeBlock, " indefinitely because there was an FTL failure.\n");
-        jitCode->dontOptimizeAnytimeSoon(codeBlock);
+    // - If we don't have an FTL code block, then try to compile one.
+    // - If we do have an FTL code block, then try to enter for a while.
+    // - If we couldn't enter for a while, then trigger OSR entry.
+    
+    triggerFTLReplacementCompile(vm, codeBlock, jitCode);
+
+    if (!codeBlock->hasOptimizedReplacement())
+        return 0;
+    
+    if (jitCode->osrEntryRetry < Options::ftlOSREntryRetryThreshold()) {
+        jitCode->osrEntryRetry++;
         return 0;
     }
     
-    if (!jitCode->checkIfOptimizationThresholdReached(codeBlock)) {
-        if (Options::verboseOSR())
-            dataLog("Choosing not to FTL-optimize ", *codeBlock, " yet.\n");
-        return 0;
-    }
-    
+    // It's time to try to compile code for OSR entry.
     Worklist::State worklistState;
-    if (Worklist* worklist = vm->worklist.get()) {
+    if (Worklist* worklist = existingGlobalFTLWorklistOrNull()) {
         worklistState = worklist->completeAllReadyPlansForVM(
             *vm, CompilationKey(codeBlock->baselineVersion(), FTLForOSREntryMode));
     } else
         worklistState = Worklist::NotKnown;
     
-    if (worklistState == Worklist::Compiling) {
-        ASSERT(!jitCode->osrEntryBlock);
-        jitCode->setOptimizationThresholdBasedOnCompilationResult(
-            codeBlock, CompilationDeferred);
+    if (worklistState == Worklist::Compiling)
         return 0;
-    }
     
     if (CodeBlock* entryBlock = jitCode->osrEntryBlock.get()) {
         void* address = FTL::prepareOSREntry(
             exec, codeBlock, entryBlock, bytecodeIndex, streamIndex);
-        if (address) {
-            jitCode->optimizeSoon(codeBlock);
+        if (address)
             return static_cast<char*>(address);
-        }
         
         FTL::ForOSREntryJITCode* entryCode = entryBlock->jitCode()->ftlForOSREntry();
         entryCode->countEntryFailure();
         if (entryCode->entryFailureCount() <
-            Options::ftlOSREntryFailureCountForReoptimization()) {
-            
-            jitCode->optimizeSoon(codeBlock);
+            Options::ftlOSREntryFailureCountForReoptimization())
             return 0;
-        }
         
         // OSR entry failed. Oh no! This implies that we need to retry. We retry
         // without exponential backoff and we only do this for the entry code block.
-        jitCode->osrEntryBlock.clear();
-        
-        jitCode->optimizeAfterWarmUp(codeBlock);
+        jitCode->osrEntryBlock = nullptr;
+        jitCode->osrEntryRetry = 0;
         return 0;
     }
     
@@ -1189,86 +1460,27 @@ char* JIT_OPERATION triggerOSREntryNow(
         return 0;
     }
 
-    // The first order of business is to trigger a for-entry compile.
+    // We aren't compiling and haven't compiled anything for OSR entry. So, try to compile
+    // something.
     Operands<JSValue> mustHandleValues;
     jitCode->reconstruct(
         exec, codeBlock, CodeOrigin(bytecodeIndex), streamIndex, mustHandleValues);
-    CompilationResult forEntryResult = DFG::compile(
-        *vm, codeBlock->newReplacement().get(), FTLForOSREntryMode, bytecodeIndex,
-        mustHandleValues, ToFTLForOSREntryDeferredCompilationCallback::create(codeBlock),
-        vm->ensureWorklist());
+    RefPtr<CodeBlock> replacementCodeBlock = codeBlock->newReplacement();
+    CompilationResult forEntryResult = compile(
+        *vm, replacementCodeBlock.get(), codeBlock, FTLForOSREntryMode, bytecodeIndex,
+        mustHandleValues, ToFTLForOSREntryDeferredCompilationCallback::create(codeBlock));
     
-    // But we also want to trigger a replacement compile. Of course, we don't want to
-    // trigger it if we don't need to. Note that this is kind of weird because we might
-    // have just finished an FTL compile and that compile failed or was invalidated.
-    // But this seems uncommon enough that we sort of don't care. It's certainly sound
-    // to fire off another compile right now so long as we're not already compiling and
-    // we don't already have an optimized replacement. Note, we don't do this for
-    // obviously bad cases like global code, where we know that there is a slim chance
-    // of this code being invoked ever again.
-    CompilationKey keyForReplacement(codeBlock->baselineVersion(), FTLMode);
-    if (codeBlock->codeType() != GlobalCode
-        && !codeBlock->hasOptimizedReplacement()
-        && (!vm->worklist.get()
-            || vm->worklist->compilationState(keyForReplacement) == Worklist::NotKnown)) {
-        compile(
-            *vm, codeBlock->newReplacement().get(), FTLMode, UINT_MAX, Operands<JSValue>(),
-            ToFTLDeferredCompilationCallback::create(codeBlock), vm->ensureWorklist());
-    }
-    
-    if (forEntryResult != CompilationSuccessful)
+    if (forEntryResult != CompilationSuccessful) {
+        ASSERT(forEntryResult == CompilationDeferred || replacementCodeBlock->hasOneRef());
         return 0;
-    
+    }
+
     // It's possible that the for-entry compile already succeeded. In that case OSR
     // entry will succeed unless we ran out of stack. It's not clear what we should do.
     // We signal to try again after a while if that happens.
     void* address = FTL::prepareOSREntry(
         exec, codeBlock, jitCode->osrEntryBlock.get(), bytecodeIndex, streamIndex);
-    if (address)
-        jitCode->optimizeSoon(codeBlock);
-    else
-        jitCode->optimizeAfterWarmUp(codeBlock);
     return static_cast<char*>(address);
-}
-
-// FIXME: Make calls work well. Currently they're a pure regression.
-// https://bugs.webkit.org/show_bug.cgi?id=113621
-EncodedJSValue JIT_OPERATION operationFTLCall(ExecState* exec)
-{
-    ExecState* callerExec = exec->callerFrame();
-    
-    VM* vm = &callerExec->vm();
-    NativeCallFrameTracer tracer(vm, callerExec);
-    
-    JSValue callee = exec->calleeAsValue();
-    CallData callData;
-    CallType callType = getCallData(callee, callData);
-    if (callType == CallTypeNone) {
-        vm->throwException(callerExec, createNotAFunctionError(callerExec, callee));
-        return JSValue::encode(jsUndefined());
-    }
-    
-    return JSValue::encode(call(callerExec, callee, callType, callData, exec->thisValue(), exec));
-}
-
-// FIXME: Make calls work well. Currently they're a pure regression.
-// https://bugs.webkit.org/show_bug.cgi?id=113621
-EncodedJSValue JIT_OPERATION operationFTLConstruct(ExecState* exec)
-{
-    ExecState* callerExec = exec->callerFrame();
-    
-    VM* vm = &callerExec->vm();
-    NativeCallFrameTracer tracer(vm, callerExec);
-    
-    JSValue callee = exec->calleeAsValue();
-    ConstructData constructData;
-    ConstructType constructType = getConstructData(callee, constructData);
-    if (constructType == ConstructTypeNone) {
-        vm->throwException(callerExec, createNotAFunctionError(callerExec, callee));
-        return JSValue::encode(jsUndefined());
-    }
-    
-    return JSValue::encode(construct(callerExec, callee, constructType, constructData, exec));
 }
 #endif // ENABLE(FTL_JIT)
 

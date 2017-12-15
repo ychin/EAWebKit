@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 #include "ea_instance.h"
 
 #include "Error.h"
+#include "FunctionPrototype.h"
 #include "JSDOMBinding.h"
 #include "JSGlobalObject.h"
 #include "JSLock.h"
@@ -63,9 +64,9 @@ public:
         // FIXME: deprecatedGetDOMStructure uses the prototype off of the wrong global object
         // We need to pass in the right global object for "i".
         Structure* domStructure = WebCore::deprecatedGetDOMStructure<EARuntimeMethod>(exec);
-		EARuntimeMethod* runtimeMethod = new (NotNull, allocateCell<EARuntimeMethod>(*exec->heap())) EARuntimeMethod(globalObject, domStructure, method);
-		runtimeMethod->finishCreation(exec->vm(), name);
-		return runtimeMethod;
+        EARuntimeMethod* runtimeMethod = new (NotNull, allocateCell<EARuntimeMethod>(*exec->heap())) EARuntimeMethod(globalObject, domStructure, method);
+        runtimeMethod->finishCreation(exec->vm(), name);
+        return runtimeMethod;
     }
 
     static Structure* createStructure(VM& vm, JSGlobalObject* globalObject, JSValue prototype)
@@ -88,7 +89,7 @@ private:
     }
 };
 
-const ClassInfo EARuntimeMethod::s_info = { "EARuntimeMethod", &RuntimeMethod::s_info, 0, 0,CREATE_METHOD_TABLE(EARuntimeMethod) };
+const ClassInfo EARuntimeMethod::s_info = { "EARuntimeMethod", &RuntimeMethod::s_info, 0, CREATE_METHOD_TABLE(EARuntimeMethod) };
 
 JSValue EAInstance::getMethod(ExecState* exec, PropertyName propertyName)
 {
@@ -185,7 +186,7 @@ void EAInstance::getPropertyNames(ExecState* exec, PropertyNameArray& nameArray)
 	EA::WebKit::IJSBoundObject::PropertyIterator* iter = mBoundObject->First();
 	while(iter)
 	{
-		nameArray.add(Identifier(exec,iter->GetKey()));
+		nameArray.add(Identifier::fromString(exec,iter->GetKey()));
 		iter = mBoundObject->GetNext();
 	}
 }

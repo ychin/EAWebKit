@@ -21,8 +21,6 @@
 #ifndef JSDatabaseCallback_h
 #define JSDatabaseCallback_h
 
-#if ENABLE(SQL_DATABASE)
-
 #include "ActiveDOMCallback.h"
 #include "DatabaseCallback.h"
 #include "JSCallbackData.h"
@@ -32,9 +30,9 @@ namespace WebCore {
 
 class JSDatabaseCallback : public DatabaseCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSDatabaseCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSDatabaseCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSDatabaseCallback(callback, globalObject));
+        return adoptRef(*new JSDatabaseCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }
@@ -43,7 +41,6 @@ public:
 
     // Functions
     virtual bool handleEvent(Database* database);
-    virtual bool handleEvent(DatabaseSync* database);
 
 private:
     JSDatabaseCallback(JSC::JSObject* callback, JSDOMGlobalObject*);
@@ -52,7 +49,5 @@ private:
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif

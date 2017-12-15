@@ -18,144 +18,144 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\algorithm.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\algorithm.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\allocator.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\allocator.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\bitset.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\bitset.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\bitvector.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\bitvector.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\core_allocator_adapter.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_allocator.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_hash_map.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_hash_set.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_list.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_map.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_set.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_string.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_substring.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_vector.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\functional.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\hash_map.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\hash_set.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\heap.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\iterator.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\list.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\map.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\memory.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\set.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\sort.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\string.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\type_traits.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\utility.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\vector.h">
-      <Filter>include\EASTL</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\bonus\sort_extra.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\bonus\sort_extra.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\config.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\core_allocator_adapter.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_allocator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_hash_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_list.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_string.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_substring.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\fixed_vector.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\functional.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\hash_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\heap.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\config.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\eastl_rw.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\eastl_rw.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\fixed_pool.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\fixed_pool.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\generic_iterator.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\generic_iterator.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\hashtable.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\hashtable.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\red_black_tree.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\red_black_tree.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_compound.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_compound.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_fundamental.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_fundamental.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_pod.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_pod.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_properties.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_properties.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_transformations.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\internal\type_transformations.h">
       <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\iterator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\list.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\memory.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\sort.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\string.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\type_traits.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\utility.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include\EASTL\vector.h">
+      <Filter>include\EASTL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\allocator_eastl.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\allocator_eastl.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\assert.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\assert.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\fixed_pool.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\fixed_pool.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\hashtable.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\hashtable.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\red_black_tree.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\red_black_tree.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\string.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\source\string.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -38,11 +38,11 @@
 
 namespace WebCore {
 
-class HTMLDataListElement FINAL : public HTMLElement {
+class HTMLDataListElement final : public HTMLElement {
 public:
-    static PassRefPtr<HTMLDataListElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLDataListElement> create(const QualifiedName&, Document&);
 
-    PassRefPtr<HTMLCollection> options();
+    Ref<HTMLCollection> options();
 
     void optionElementChildrenChanged();
 

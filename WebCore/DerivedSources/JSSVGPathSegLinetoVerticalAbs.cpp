@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGPathSegLinetoVerticalAbs.h"
 
+#include "JSDOMBinding.h"
 #include "SVGPathSegLinetoVerticalAbs.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
@@ -32,25 +30,59 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGPathSegLinetoVerticalAbsTableValues[] =
-{
-    { "y", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegLinetoVerticalAbsY), (intptr_t)setJSSVGPathSegLinetoVerticalAbsY },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegLinetoVerticalAbsConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGPathSegLinetoVerticalAbsY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegLinetoVerticalAbsY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegLinetoVerticalAbsConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGPathSegLinetoVerticalAbsPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGPathSegLinetoVerticalAbsPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGPathSegLinetoVerticalAbsPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegLinetoVerticalAbsPrototype>(vm.heap)) JSSVGPathSegLinetoVerticalAbsPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGPathSegLinetoVerticalAbsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGPathSegLinetoVerticalAbsTable = { 4, 3, JSSVGPathSegLinetoVerticalAbsTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGPathSegLinetoVerticalAbsConstructor : public DOMConstructorObject {
+private:
+    JSSVGPathSegLinetoVerticalAbsConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGPathSegLinetoVerticalAbsConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGPathSegLinetoVerticalAbsConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGPathSegLinetoVerticalAbsConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegLinetoVerticalAbsConstructor>(vm.heap)) JSSVGPathSegLinetoVerticalAbsConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGPathSegLinetoVerticalAbsConstructorTable = { 1, 0, JSSVGPathSegLinetoVerticalAbsConstructorTableValues, 0 };
-const ClassInfo JSSVGPathSegLinetoVerticalAbsConstructor::s_info = { "SVGPathSegLinetoVerticalAbsConstructor", &Base::s_info, &JSSVGPathSegLinetoVerticalAbsConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegLinetoVerticalAbsConstructor) };
+const ClassInfo JSSVGPathSegLinetoVerticalAbsConstructor::s_info = { "SVGPathSegLinetoVerticalAbsConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegLinetoVerticalAbsConstructor) };
 
 JSSVGPathSegLinetoVerticalAbsConstructor::JSSVGPathSegLinetoVerticalAbsConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -61,85 +93,84 @@ void JSSVGPathSegLinetoVerticalAbsConstructor::finishCreation(VM& vm, JSDOMGloba
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegLinetoVerticalAbsPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGPathSegLinetoVerticalAbsConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGPathSegLinetoVerticalAbsConstructor, JSDOMWrapper>(exec, JSSVGPathSegLinetoVerticalAbsConstructorTable, jsCast<JSSVGPathSegLinetoVerticalAbsConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegLinetoVerticalAbs::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGPathSegLinetoVerticalAbs"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGPathSegLinetoVerticalAbsPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegLinetoVerticalAbsConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "y", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegLinetoVerticalAbsY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegLinetoVerticalAbsY) },
 };
 
-static const HashTable JSSVGPathSegLinetoVerticalAbsPrototypeTable = { 1, 0, JSSVGPathSegLinetoVerticalAbsPrototypeTableValues, 0 };
-const ClassInfo JSSVGPathSegLinetoVerticalAbsPrototype::s_info = { "SVGPathSegLinetoVerticalAbsPrototype", &Base::s_info, &JSSVGPathSegLinetoVerticalAbsPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegLinetoVerticalAbsPrototype) };
+const ClassInfo JSSVGPathSegLinetoVerticalAbsPrototype::s_info = { "SVGPathSegLinetoVerticalAbsPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegLinetoVerticalAbsPrototype) };
 
-JSObject* JSSVGPathSegLinetoVerticalAbsPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGPathSegLinetoVerticalAbs>(vm, globalObject);
-}
-
-const ClassInfo JSSVGPathSegLinetoVerticalAbs::s_info = { "SVGPathSegLinetoVerticalAbs", &Base::s_info, &JSSVGPathSegLinetoVerticalAbsTable, 0 , CREATE_METHOD_TABLE(JSSVGPathSegLinetoVerticalAbs) };
-
-JSSVGPathSegLinetoVerticalAbs::JSSVGPathSegLinetoVerticalAbs(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPathSegLinetoVerticalAbs> impl)
-    : JSSVGPathSeg(structure, globalObject, impl)
-{
-}
-
-void JSSVGPathSegLinetoVerticalAbs::finishCreation(VM& vm)
+void JSSVGPathSegLinetoVerticalAbsPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGPathSegLinetoVerticalAbsPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGPathSegLinetoVerticalAbs::s_info = { "SVGPathSegLinetoVerticalAbs", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegLinetoVerticalAbs) };
+
+JSSVGPathSegLinetoVerticalAbs::JSSVGPathSegLinetoVerticalAbs(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPathSegLinetoVerticalAbs>&& impl)
+    : JSSVGPathSeg(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGPathSegLinetoVerticalAbs::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGPathSegLinetoVerticalAbsPrototype::create(vm, globalObject, JSSVGPathSegLinetoVerticalAbsPrototype::createStructure(vm, globalObject, JSSVGPathSegPrototype::self(vm, globalObject)));
+    return JSSVGPathSegLinetoVerticalAbsPrototype::create(vm, globalObject, JSSVGPathSegLinetoVerticalAbsPrototype::createStructure(vm, globalObject, JSSVGPathSeg::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGPathSegLinetoVerticalAbs::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGPathSegLinetoVerticalAbs::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGPathSegLinetoVerticalAbs* thisObject = jsCast<JSSVGPathSegLinetoVerticalAbs*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGPathSegLinetoVerticalAbs, Base>(exec, JSSVGPathSegLinetoVerticalAbsTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGPathSegLinetoVerticalAbs>(vm, globalObject);
 }
 
-JSValue jsSVGPathSegLinetoVerticalAbsY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegLinetoVerticalAbsY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegLinetoVerticalAbs* castedThis = jsCast<JSSVGPathSegLinetoVerticalAbs*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegLinetoVerticalAbs& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegLinetoVerticalAbs* castedThis = jsDynamicCast<JSSVGPathSegLinetoVerticalAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegLinetoVerticalAbsPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegLinetoVerticalAbs", "y");
+        return throwGetterTypeError(*exec, "SVGPathSegLinetoVerticalAbs", "y");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegLinetoVerticalAbsConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegLinetoVerticalAbsConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGPathSegLinetoVerticalAbs* domObject = jsCast<JSSVGPathSegLinetoVerticalAbs*>(asObject(slotBase));
-    return JSSVGPathSegLinetoVerticalAbs::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGPathSegLinetoVerticalAbsPrototype* domObject = jsDynamicCast<JSSVGPathSegLinetoVerticalAbsPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGPathSegLinetoVerticalAbs::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGPathSegLinetoVerticalAbs::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGPathSegLinetoVerticalAbsY(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGPathSegLinetoVerticalAbs* thisObject = jsCast<JSSVGPathSegLinetoVerticalAbs*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGPathSegLinetoVerticalAbs, Base>(exec, propertyName, value, JSSVGPathSegLinetoVerticalAbsTable, thisObject, slot);
-}
-
-void setJSSVGPathSegLinetoVerticalAbsY(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGPathSegLinetoVerticalAbs* castedThis = jsCast<JSSVGPathSegLinetoVerticalAbs*>(thisObject);
-    SVGPathSegLinetoVerticalAbs& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegLinetoVerticalAbs* castedThis = jsDynamicCast<JSSVGPathSegLinetoVerticalAbs*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegLinetoVerticalAbsPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegLinetoVerticalAbs", "y");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegLinetoVerticalAbs", "y");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY(nativeValue);
 }
@@ -152,5 +183,3 @@ JSValue JSSVGPathSegLinetoVerticalAbs::getConstructor(VM& vm, JSGlobalObject* gl
 
 
 }
-
-#endif // ENABLE(SVG)

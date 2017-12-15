@@ -24,14 +24,18 @@
 
 #include "BidiContext.h"
 #include "BidiRunList.h"
-#include "TextDirection.h"
+#include "WritingMode.h"
+#include <wtf/HashMap.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/Vector.h>
 
 namespace WebCore {
 
-template <class Iterator> struct MidpointState {
+class RenderObject;
+
+template <class Iterator> class MidpointState {
+public:
     MidpointState()
     {
         reset();
@@ -39,18 +43,54 @@ template <class Iterator> struct MidpointState {
     
     void reset()
     {
-        numMidpoints = 0;
-        currentMidpoint = 0;
-        betweenMidpoints = false;
+        m_numMidpoints = 0;
+        m_currentMidpoint = 0;
     }
     
+    void startIgnoringSpaces(const Iterator& midpoint)
+    {
+        ASSERT(!(m_numMidpoints % 2));
+        addMidpoint(midpoint);
+    }
+
+    void stopIgnoringSpaces(const Iterator& midpoint)
+    {
+        ASSERT(m_numMidpoints % 2);
+        addMidpoint(midpoint);
+    }
+
+    // When ignoring spaces, this needs to be called for objects that need line boxes such as RenderInlines or
+    // hard line breaks to ensure that they're not ignored.
+    void ensureLineBoxInsideIgnoredSpaces(RenderObject* renderer)
+    {
+        Iterator midpoint(0, renderer, 0);
+        stopIgnoringSpaces(midpoint);
+        startIgnoringSpaces(midpoint);
+    }
+
+    Vector<Iterator>& midpoints() { return m_midpoints; }
+    unsigned numMidpoints() const { return m_numMidpoints; }
+    unsigned currentMidpoint() const { return m_currentMidpoint; }
+    void setCurrentMidpoint(unsigned currentMidpoint) { m_currentMidpoint = currentMidpoint; }
+    void incrementCurrentMidpoint() { ++m_currentMidpoint; }
+    void decrementNumMidpoints() { --m_numMidpoints; }
+    bool betweenMidpoints() const { return m_currentMidpoint % 2; }
+private:
     // The goal is to reuse the line state across multiple
     // lines so we just keep an array around for midpoints and never clear it across multiple
-    // lines.  We track the number of items and position using the two other variables.
-    Vector<Iterator> midpoints;
-    unsigned numMidpoints;
-    unsigned currentMidpoint;
-    bool betweenMidpoints;
+    // lines. We track the number of items and position using the two other variables.
+    Vector<Iterator> m_midpoints;
+    unsigned m_numMidpoints;
+    unsigned m_currentMidpoint;
+
+    void addMidpoint(const Iterator& midpoint)
+    {
+        if (m_midpoints.size() <= m_numMidpoints)
+            m_midpoints.grow(m_numMidpoints + 10);
+
+        Iterator* midpointsIterator = m_midpoints.data();
+        midpointsIterator[m_numMidpoints++] = midpoint;
+    }
 };
 
 // The BidiStatus at a given position (typically the end of a line) can
@@ -112,6 +152,8 @@ inline bool operator!=(const BidiStatus& status1, const BidiStatus& status2)
 }
 
 struct BidiCharacterRun {
+    WTF_MAKE_FAST_ALLOCATED;
+public:
     BidiCharacterRun(int start, int stop, BidiContext* context, UCharDirection direction)
         : m_override(context->override())
         , m_next(0)
@@ -135,8 +177,6 @@ struct BidiCharacterRun {
         }
     }
 
-    void destroy() { delete this; }
-
     int start() const { return m_start; }
     int stop() const { return m_stop; }
     unsigned char level() const { return m_level; }
@@ -149,9 +189,6 @@ struct BidiCharacterRun {
     // Do not add anything apart from bitfields until after m_next. See https://bugs.webkit.org/show_bug.cgi?id=100173
     bool m_override : 1;
     bool m_hasHyphen : 1; // Used by BidiRun subclass which is a layering violation but enables us to save 8 bytes per object on 64-bit.
-#if ENABLE(CSS_SHAPES)
-    bool m_startsSegment : 1; // Same comment as m_hasHyphen.
-#endif
     unsigned char m_level;
     BidiCharacterRun* m_next;
     int m_start;
@@ -225,6 +262,8 @@ public:
     void markCurrentRunEmpty() { m_emptyRun = true; }
 
     Vector<Run*>& isolatedRuns() { return m_isolatedRuns; }
+    void setMidpointForIsolatedRun(Run*, unsigned);
+    unsigned midpointForIsolatedRun(Run*);
 
 protected:
     // FIXME: Instead of InlineBidiResolvers subclassing this method, we should
@@ -252,6 +291,7 @@ protected:
 
     unsigned m_nestedIsolateCount;
     Vector<Run*> m_isolatedRuns;
+    HashMap<Run*, unsigned> m_midpointForIsolatedRun;
 
 private:
     void raiseExplicitEmbeddingLevel(UCharDirection from, UCharDirection to);
@@ -268,10 +308,8 @@ private:
 template <class Iterator, class Run>
 BidiResolver<Iterator, Run>::~BidiResolver()
 {
-    // The owner of this resolver should have handled the isolated runs
-    // or should never have called enterIsolate().
+    // The owner of this resolver should have handled the isolated runs.
     ASSERT(m_isolatedRuns.isEmpty());
-    ASSERT(!m_nestedIsolateCount);
 }
 #endif
 
@@ -475,7 +513,7 @@ inline void BidiResolver<Iterator, Run>::updateStatusLastFromCurrentDirection(UC
         // ignore these
         break;
     case U_EUROPEAN_NUMBER:
-        // fall through
+        FALLTHROUGH;
     default:
         m_status.last = dirCurrent;
     }
@@ -534,7 +572,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
         m_direction = override == VisualLeftToRightOverride ? U_LEFT_TO_RIGHT : U_RIGHT_TO_LEFT;
         appendRun();
         m_runs.setLogicallyLastRun(m_runs.lastRun());
-        if (override == VisualRightToLeftOverride)
+        if (override == VisualRightToLeftOverride && m_runs.runCount())
             m_runs.reverseRuns(0, m_runs.runCount() - 1);
         return;
     }
@@ -648,6 +686,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                         }
                         appendRun();
                     }
+                    break;
                 default:
                     break;
             }
@@ -663,6 +702,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                 case U_EUROPEAN_NUMBER:
                 case U_ARABIC_NUMBER:
                     appendRun();
+                    FALLTHROUGH;
                 case U_RIGHT_TO_LEFT:
                 case U_RIGHT_TO_LEFT_ARABIC:
                     break;
@@ -685,6 +725,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                             m_eor = m_last;
                         appendRun();
                     }
+                    break;
                 default:
                     break;
             }
@@ -714,6 +755,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                     case U_COMMON_NUMBER_SEPARATOR:
                         if (m_status.eor == U_EUROPEAN_NUMBER)
                             break;
+                        FALLTHROUGH;
                     case U_EUROPEAN_NUMBER_TERMINATOR:
                     case U_BOUNDARY_NEUTRAL:
                     case U_BLOCK_SEPARATOR:
@@ -751,6 +793,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                             // Begin a new EN run.
                             m_direction = U_EUROPEAN_NUMBER;
                         }
+                        break;
                     default:
                         break;
                 }
@@ -760,6 +803,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                     m_direction = U_LEFT_TO_RIGHT;
                 break;
             }
+            FALLTHROUGH;
         case U_ARABIC_NUMBER:
             dirCurrent = U_ARABIC_NUMBER;
             switch (m_status.last) {
@@ -778,6 +822,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                 case U_COMMON_NUMBER_SEPARATOR:
                     if (m_status.eor == U_ARABIC_NUMBER)
                         break;
+                    FALLTHROUGH;
                 case U_EUROPEAN_NUMBER_SEPARATOR:
                 case U_EUROPEAN_NUMBER_TERMINATOR:
                 case U_BOUNDARY_NEUTRAL:
@@ -796,6 +841,7 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
                         m_direction = m_status.lastStrong == U_LEFT_TO_RIGHT ? U_LEFT_TO_RIGHT : U_RIGHT_TO_LEFT;
                     m_eor = m_last;
                     appendRun();
+                    break;
                 default:
                     break;
             }
@@ -908,6 +954,19 @@ void BidiResolver<Iterator, Run>::createBidiRunsForLine(const Iterator& end, Vis
     m_runs.setLogicallyLastRun(m_runs.lastRun());
     reorderRunsFromLevels();
     endOfLine = Iterator();
+}
+
+template <class Iterator, class Run>
+void BidiResolver<Iterator, Run>::setMidpointForIsolatedRun(Run* run, unsigned midpoint)
+{
+    ASSERT(!m_midpointForIsolatedRun.contains(run));
+    m_midpointForIsolatedRun.add(run, midpoint);
+}
+
+template<class Iterator, class Run>
+unsigned BidiResolver<Iterator, Run>::midpointForIsolatedRun(Run* run)
+{
+    return m_midpointForIsolatedRun.take(run);
 }
 
 } // namespace WebCore

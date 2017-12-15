@@ -19,9 +19,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-[
-    OperationsNotDeletable
-] interface HTMLTextAreaElement : HTMLElement {
+interface HTMLTextAreaElement : HTMLElement {
     [Reflect] attribute boolean autofocus;
     attribute long cols;
     [Reflect] attribute DOMString dirName;
@@ -66,6 +64,9 @@
                            [Default=Undefined] optional long end,
                            optional DOMString direction);
 #endif
+
+    [Conditional=IOS_AUTOCORRECT_AND_AUTOCAPITALIZE] attribute boolean autocorrect;
+    [Conditional=IOS_AUTOCORRECT_AND_AUTOCAPITALIZE, TreatNullAs=NullString] attribute DOMString autocapitalize;
 
 #if defined(LANGUAGE_OBJECTIVE_C) && LANGUAGE_OBJECTIVE_C
     [Reflect] attribute DOMString accessKey;

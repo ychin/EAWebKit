@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009, 2010, 2011, 2012, 2013 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2009, 2010, 2011, 2012, 2013, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -127,7 +127,7 @@ namespace EA
 
 		void ConvertToString8(const WTF::String& s16, FixedString8_128& s8Out)
 		{
-			FixedString16_128 eaStr16(s16.characters(),s16.length());
+            FixedString16_128 eaStr16(StringView(s16).upconvertedCharacters(), s16.length());
 			EA::WebKit::ConvertToString8(eaStr16, s8Out);
 		}
 		

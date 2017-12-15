@@ -25,55 +25,77 @@
 #include "JSCapabilityRange.h"
 
 #include "CapabilityRange.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSCapabilityRangeTableValues[] =
-{
-    { "max", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCapabilityRangeMax), (intptr_t)0 },
-    { "min", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCapabilityRangeMin), (intptr_t)0 },
-    { "supported", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCapabilityRangeSupported), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsCapabilityRangeMax(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCapabilityRangeMin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCapabilityRangeSupported(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCapabilityRangePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCapabilityRangePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCapabilityRangePrototype* ptr = new (NotNull, JSC::allocateCell<JSCapabilityRangePrototype>(vm.heap)) JSCapabilityRangePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCapabilityRangePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCapabilityRangeTable = { 10, 7, JSCapabilityRangeTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSCapabilityRangePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "max", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCapabilityRangeMax), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "min", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCapabilityRangeMin), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "supported", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCapabilityRangeSupported), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCapabilityRangePrototypeTable = { 1, 0, JSCapabilityRangePrototypeTableValues, 0 };
-const ClassInfo JSCapabilityRangePrototype::s_info = { "CapabilityRangePrototype", &Base::s_info, &JSCapabilityRangePrototypeTable, 0, CREATE_METHOD_TABLE(JSCapabilityRangePrototype) };
+const ClassInfo JSCapabilityRangePrototype::s_info = { "CapabilityRangePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCapabilityRangePrototype) };
 
-JSObject* JSCapabilityRangePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCapabilityRange>(vm, globalObject);
-}
-
-const ClassInfo JSCapabilityRange::s_info = { "CapabilityRange", &Base::s_info, &JSCapabilityRangeTable, 0 , CREATE_METHOD_TABLE(JSCapabilityRange) };
-
-JSCapabilityRange::JSCapabilityRange(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CapabilityRange> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSCapabilityRange::finishCreation(VM& vm)
+void JSCapabilityRangePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCapabilityRangePrototypeTableValues, *this);
+}
+
+const ClassInfo JSCapabilityRange::s_info = { "CapabilityRange", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCapabilityRange) };
+
+JSCapabilityRange::JSCapabilityRange(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CapabilityRange>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSCapabilityRange::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSCapabilityRangePrototype::create(vm, globalObject, JSCapabilityRangePrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSCapabilityRange::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCapabilityRange>(vm, globalObject);
 }
 
 void JSCapabilityRange::destroy(JSC::JSCell* cell)
@@ -84,66 +106,72 @@ void JSCapabilityRange::destroy(JSC::JSCell* cell)
 
 JSCapabilityRange::~JSCapabilityRange()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSCapabilityRange::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsCapabilityRangeMax(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCapabilityRange* thisObject = jsCast<JSCapabilityRange*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCapabilityRange, Base>(exec, JSCapabilityRangeTable, thisObject, propertyName, slot);
-}
-
-JSValue jsCapabilityRangeMax(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSCapabilityRange* castedThis = jsCast<JSCapabilityRange*>(asObject(slotBase));
-    CapabilityRange& impl = castedThis->impl();
-    JSValue result = (impl.max(exec).hasNoValue() ? jsNull() : impl.max(exec).jsValue());
-    return result;
-}
-
-
-JSValue jsCapabilityRangeMin(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSCapabilityRange* castedThis = jsCast<JSCapabilityRange*>(asObject(slotBase));
-    CapabilityRange& impl = castedThis->impl();
-    JSValue result = (impl.min(exec).hasNoValue() ? jsNull() : impl.min(exec).jsValue());
-    return result;
-}
-
-
-JSValue jsCapabilityRangeSupported(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSCapabilityRange* castedThis = jsCast<JSCapabilityRange*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CapabilityRange& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.supported());
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCapabilityRange* castedThis = jsDynamicCast<JSCapabilityRange*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCapabilityRangePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CapabilityRange", "max");
+        return throwGetterTypeError(*exec, "CapabilityRange", "max");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = (impl.max(exec).hasNoValue() ? jsNull() : impl.max(exec).jsValue());
+    return JSValue::encode(result);
 }
 
 
-static inline bool isObservable(JSCapabilityRange* jsCapabilityRange)
+EncodedJSValue jsCapabilityRangeMin(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    if (jsCapabilityRange->hasCustomProperties())
-        return true;
-    return false;
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCapabilityRange* castedThis = jsDynamicCast<JSCapabilityRange*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCapabilityRangePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CapabilityRange", "min");
+        return throwGetterTypeError(*exec, "CapabilityRange", "min");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = (impl.min(exec).hasNoValue() ? jsNull() : impl.min(exec).jsValue());
+    return JSValue::encode(result);
 }
+
+
+EncodedJSValue jsCapabilityRangeSupported(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCapabilityRange* castedThis = jsDynamicCast<JSCapabilityRange*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCapabilityRangePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CapabilityRange", "supported");
+        return throwGetterTypeError(*exec, "CapabilityRange", "supported");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.supported());
+    return JSValue::encode(result);
+}
+
 
 bool JSCapabilityRangeOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSCapabilityRange* jsCapabilityRange = jsCast<JSCapabilityRange*>(handle.get().asCell());
-    if (!isObservable(jsCapabilityRange))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSCapabilityRangeOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSCapabilityRange* jsCapabilityRange = jsCast<JSCapabilityRange*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsCapabilityRange = jsCast<JSCapabilityRange*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsCapabilityRange->impl(), jsCapabilityRange);
-    jsCapabilityRange->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -154,11 +182,11 @@ extern "C" { extern void (*const __identifier("??_7CapabilityRange@WebCore@@6B@"
 extern "C" { extern void* _ZTVN7WebCore15CapabilityRangeE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, CapabilityRange* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, CapabilityRange* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSCapabilityRange>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSCapabilityRange>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -179,13 +207,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Capabil
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<CapabilityRange>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSCapabilityRange>(exec, globalObject, impl);
+    return createNewWrapper<JSCapabilityRange>(globalObject, impl);
 }
 
-CapabilityRange* toCapabilityRange(JSC::JSValue value)
+CapabilityRange* JSCapabilityRange::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSCapabilityRange::info()) ? &jsCast<JSCapabilityRange*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSCapabilityRange*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

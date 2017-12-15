@@ -23,10 +23,8 @@
 
 #if ENABLE(INDIE_UI)
 
-#include "JSDOMBinding.h"
 #include "JSUIEvent.h"
 #include "UIRequestEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -35,15 +33,16 @@ class JSDictionary;
 class JSUIRequestEvent : public JSUIEvent {
 public:
     typedef JSUIEvent Base;
-    static JSUIRequestEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<UIRequestEvent> impl)
+    static JSUIRequestEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<UIRequestEvent>&& impl)
     {
-        JSUIRequestEvent* ptr = new (NotNull, JSC::allocateCell<JSUIRequestEvent>(globalObject->vm().heap)) JSUIRequestEvent(structure, globalObject, impl);
+        JSUIRequestEvent* ptr = new (NotNull, JSC::allocateCell<JSUIRequestEvent>(globalObject->vm().heap)) JSUIRequestEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,67 +56,19 @@ public:
         return static_cast<UIRequestEvent&>(Base::impl());
     }
 protected:
-    JSUIRequestEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<UIRequestEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSUIRequestEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<UIRequestEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSUIRequestEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSUIRequestEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSUIRequestEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSUIRequestEventPrototype>(vm.heap)) JSUIRequestEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSUIRequestEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSUIRequestEventConstructor : public DOMConstructorObject {
-private:
-    JSUIRequestEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSUIRequestEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSUIRequestEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSUIRequestEventConstructor>(vm.heap)) JSUIRequestEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSUIRequestEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillUIRequestEventInit(UIRequestEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsUIRequestEventReceiver(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsUIRequestEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

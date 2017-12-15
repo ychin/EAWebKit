@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -93,6 +93,7 @@ public:
 	virtual ThreadId Begin(ThreadFunc,void* pThreadContext=NULL, void* pUserdata=NULL) = 0;
 	virtual void WaitForEnd(intptr_t* result) = 0;
 	virtual void SetName(const char* pName) = 0;
+	virtual void ChangePriority(int delta) = 0;
 };
 
 class IThreadSystem

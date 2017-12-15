@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -42,14 +42,6 @@ void reboxAccordingToFormat(
         break;
     }
     
-    case ValueFormatUInt32: {
-        jit.zeroExtend32ToPtr(value, value);
-        jit.moveDoubleTo64(FPRInfo::fpRegT0, scratch2);
-        jit.boxInt52(value, value, scratch1, FPRInfo::fpRegT0);
-        jit.move64ToDouble(scratch2, FPRInfo::fpRegT0);
-        break;
-    }
-    
     case ValueFormatInt52: {
         jit.rshift64(AssemblyHelpers::TrustedImm32(JSValue::int52ShiftAmount), value);
         jit.moveDoubleTo64(FPRInfo::fpRegT0, scratch2);
@@ -79,6 +71,7 @@ void reboxAccordingToFormat(
     case ValueFormatDouble: {
         jit.moveDoubleTo64(FPRInfo::fpRegT0, scratch1);
         jit.move64ToDouble(value, FPRInfo::fpRegT0);
+        jit.purifyNaN(FPRInfo::fpRegT0);
         jit.boxDouble(FPRInfo::fpRegT0, value);
         jit.move64ToDouble(scratch1, FPRInfo::fpRegT0);
         break;
@@ -104,9 +97,6 @@ void printInternal(PrintStream& out, ValueFormat format)
         return;
     case ValueFormatInt32:
         out.print("Int32");
-        return;
-    case ValueFormatUInt32:
-        out.print("UInt32");
         return;
     case ValueFormatInt52:
         out.print("Int52");

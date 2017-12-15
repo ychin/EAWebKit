@@ -24,12 +24,38 @@
 
 #include "JSMediaStreamCapabilities.h"
 
+#include "JSDOMBinding.h"
 #include "MediaStreamCapabilities.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
+
+class JSMediaStreamCapabilitiesPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaStreamCapabilitiesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaStreamCapabilitiesPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamCapabilitiesPrototype>(vm.heap)) JSMediaStreamCapabilitiesPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaStreamCapabilitiesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
 
 /* Hash table for prototype */
 
@@ -38,31 +64,30 @@ static const HashTableValue JSMediaStreamCapabilitiesPrototypeTableValues[] =
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSMediaStreamCapabilitiesPrototypeTable = { 1, 0, JSMediaStreamCapabilitiesPrototypeTableValues, 0 };
-const ClassInfo JSMediaStreamCapabilitiesPrototype::s_info = { "MediaStreamCapabilitiesPrototype", &Base::s_info, &JSMediaStreamCapabilitiesPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaStreamCapabilitiesPrototype) };
+const ClassInfo JSMediaStreamCapabilitiesPrototype::s_info = { "MediaStreamCapabilitiesPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaStreamCapabilitiesPrototype) };
 
-JSObject* JSMediaStreamCapabilitiesPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaStreamCapabilities>(vm, globalObject);
-}
-
-const ClassInfo JSMediaStreamCapabilities::s_info = { "MediaStreamCapabilities", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSMediaStreamCapabilities) };
-
-JSMediaStreamCapabilities::JSMediaStreamCapabilities(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaStreamCapabilities> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMediaStreamCapabilities::finishCreation(VM& vm)
+void JSMediaStreamCapabilitiesPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaStreamCapabilitiesPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaStreamCapabilities::s_info = { "MediaStreamCapabilities", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaStreamCapabilities) };
+
+JSMediaStreamCapabilities::JSMediaStreamCapabilities(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaStreamCapabilities>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMediaStreamCapabilities::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMediaStreamCapabilitiesPrototype::create(vm, globalObject, JSMediaStreamCapabilitiesPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMediaStreamCapabilities::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMediaStreamCapabilities>(vm, globalObject);
 }
 
 void JSMediaStreamCapabilities::destroy(JSC::JSCell* cell)
@@ -73,36 +98,28 @@ void JSMediaStreamCapabilities::destroy(JSC::JSCell* cell)
 
 JSMediaStreamCapabilities::~JSMediaStreamCapabilities()
 {
-    releaseImplIfNotNull();
-}
-
-static inline bool isObservable(JSMediaStreamCapabilities* jsMediaStreamCapabilities)
-{
-    if (jsMediaStreamCapabilities->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSMediaStreamCapabilitiesOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMediaStreamCapabilities* jsMediaStreamCapabilities = jsCast<JSMediaStreamCapabilities*>(handle.get().asCell());
-    if (!isObservable(jsMediaStreamCapabilities))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMediaStreamCapabilitiesOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMediaStreamCapabilities* jsMediaStreamCapabilities = jsCast<JSMediaStreamCapabilities*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMediaStreamCapabilities = jsCast<JSMediaStreamCapabilities*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMediaStreamCapabilities->impl(), jsMediaStreamCapabilities);
-    jsMediaStreamCapabilities->releaseImpl();
 }
 
-MediaStreamCapabilities* toMediaStreamCapabilities(JSC::JSValue value)
+MediaStreamCapabilities* JSMediaStreamCapabilities::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMediaStreamCapabilities::info()) ? &jsCast<JSMediaStreamCapabilities*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMediaStreamCapabilities*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

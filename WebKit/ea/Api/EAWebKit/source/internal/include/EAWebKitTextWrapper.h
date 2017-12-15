@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011-2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -49,6 +49,11 @@ namespace WebKit
     void ShutdownFontSystem(void);
 
 class TextSystem;
+template <class T> class TextBreakIteratorGeneric
+{
+public:
+	T* mBreakIterator;
+};
 // This class implements the font interface defined by EAWebKit.
 class FontImpl : public EA::WebKit::IFont
 {
@@ -121,7 +126,6 @@ public:
 	virtual void*	CharacterBreakIterator(EA::WebKit::Char* pText, int length);
 	virtual void*	CursorBreakIterator(EA::WebKit::Char* pText, int length);
 	virtual void*	WordBreakIterator(EA::WebKit::Char* pText, int length);
-	virtual void*	LineBreakIterator(EA::WebKit::Char* pText, int length);
 	virtual void*	SentenceBreakIterator(EA::WebKit::Char* pText, int length);
 	virtual int		TextBreakFirst(void* pIter);
 	virtual int		TextBreakLast(void* pIter);
@@ -183,7 +187,10 @@ public:
 
     EA::Text::GlyphCache* mpCurrentDrawGlyphCache; // The glyph cache to use for the current draw.
     eastl::map<EA::Text::LineBreakIterator*, EA::Text::TextRun*, eastl::less<EA::Text::LineBreakIterator*>, EASTLAllocator> mSavedTextRuns;
-
+	EA::WebKit::TextBreakIteratorGeneric<EA::Text::CharacterBreakIterator> mCharacterBreakIterator;
+	EA::WebKit::TextBreakIteratorGeneric<EA::Text::CharacterBreakIterator> mCursorBreakIterator;
+	EA::WebKit::TextBreakIteratorGeneric<EA::Text::WordBreakIterator> mWordBreakIterator;
+	EA::WebKit::TextBreakIteratorGeneric<EA::Text::SentenceBreakIterator> mSentenceBreakIterator;
     typedef eastl::fixed_vector<EA::WebKit::GlyphDrawInfo, 500, true, EASTLAllocator> GlyphDrawInfoVector;
     GlyphDrawInfoVector mCurrentGlyphDrawInfoVector;       // The current draw info for the text string (complex text).
 };

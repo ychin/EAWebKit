@@ -51,60 +51,54 @@ private:
     typedef HashMap<RefPtr<Widget>, FrameView*> WidgetToParentMap;
     static WidgetToParentMap& widgetNewParentMap();
 
-    void moveWidgets();
+    WEBCORE_EXPORT void moveWidgets();
 
-    static unsigned s_widgetHierarchyUpdateSuspendCount;
+    WEBCORE_EXPORT static unsigned s_widgetHierarchyUpdateSuspendCount;
 };
     
 class RenderWidget : public RenderReplaced, private OverlapTestRequestClient {
 public:
     virtual ~RenderWidget();
 
-    HTMLFrameOwnerElement& frameOwnerElement() const { return toHTMLFrameOwnerElement(nodeForNonAnonymous()); }
+    HTMLFrameOwnerElement& frameOwnerElement() const { return downcast<HTMLFrameOwnerElement>(nodeForNonAnonymous()); }
 
     Widget* widget() const { return m_widget.get(); }
-    void setWidget(PassRefPtr<Widget>);
+    WEBCORE_EXPORT void setWidget(PassRefPtr<Widget>);
 
     static RenderWidget* find(const Widget*);
 
-    enum class ChildWidgetState { ChildWidgetIsValid, ChildWidgetIsDestroyed };
-    ChildWidgetState updateWidgetPosition() WARN_UNUSED_RETURN;    
-    IntRect windowClipRect() const;
+    enum class ChildWidgetState { Valid, Destroyed };
+    ChildWidgetState updateWidgetPosition() WARN_UNUSED_RETURN;
+    WEBCORE_EXPORT IntRect windowClipRect() const;
 
-    void notifyWidget(WidgetNotification);
-
-#if USE(ACCELERATED_COMPOSITING)
     bool requiresAcceleratedCompositing() const;
-#endif
 
     WeakPtr<RenderWidget> createWeakPtr() { return m_weakPtrFactory.createWeakPtr(); }
 
-    virtual void viewCleared() { }
+    void ref() { ++m_refCount; }
+    void deref();
 
 protected:
-    explicit RenderWidget(HTMLFrameOwnerElement&);
+    RenderWidget(HTMLFrameOwnerElement&, Ref<RenderStyle>&&);
 
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE FINAL;
-    virtual void layout() OVERRIDE;
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
-    virtual CursorDirective getCursor(const LayoutPoint&, Cursor&) const OVERRIDE;
-    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestAction) OVERRIDE;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override final;
+    virtual void layout() override;
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
+    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestAction) override;
     virtual void paintContents(PaintInfo&, const LayoutPoint&);
-#if USE(ACCELERATED_COMPOSITING)
-    virtual bool requiresLayer() const OVERRIDE;
-#endif
+    virtual bool requiresLayer() const override;
 
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual bool isWidget() const OVERRIDE FINAL { return true; }
+    virtual bool isWidget() const override final { return true; }
 
-    virtual bool needsPreferredWidthsRecalculation() const OVERRIDE FINAL;
-    virtual RenderBox* embeddedContentBox() const OVERRIDE FINAL;
+    virtual bool needsPreferredWidthsRecalculation() const override final;
+    virtual RenderBox* embeddedContentBox() const override final;
 
-    virtual void willBeDestroyed() OVERRIDE FINAL;
-    virtual void setSelectionState(SelectionState) OVERRIDE FINAL;
-    virtual void setOverlapTestResult(bool) OVERRIDE FINAL;
+    virtual void willBeDestroyed() override final;
+    virtual void setSelectionState(SelectionState) override final;
+    virtual void setOverlapTestResult(bool) override final;
 
     bool setWidgetGeometry(const LayoutRect&);
     bool updateWidgetGeometry();
@@ -112,23 +106,18 @@ private:
     WeakPtrFactory<RenderWidget> m_weakPtrFactory;
     RefPtr<Widget> m_widget;
     IntRect m_clipRect; // The rectangle needs to remain correct after scrolling, so it is stored in content view coordinates, and not clipped to window.
+    unsigned m_refCount { 1 };
 };
 
-inline RenderWidget* toRenderWidget(RenderObject* object)
+inline void RenderWidget::deref()
 {
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isWidget());
-    return static_cast<RenderWidget*>(object);
+    ASSERT(m_refCount);
+    if (!--m_refCount)
+        delete this;
 }
-
-inline const RenderWidget* toRenderWidget(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isWidget());
-    return static_cast<const RenderWidget*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderWidget(const RenderWidget*);
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderWidget, isWidget())
 
 #endif // RenderWidget_h

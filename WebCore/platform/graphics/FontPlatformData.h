@@ -4,7 +4,7 @@
  * Copyright (C) 2007 Holger Hans Peter Freyther
  * Copyright (C) 2007 Pioneer Research Center USA, Inc.
  * Copyright (C) 2010, 2011 Brent Fulgham <bfulgham@webkit.org>
- * Copyright (C) 2014, 2016 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015, 2016 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,19 +24,14 @@
  */
 
 // FIXME: This is temporary until all ports switch to using this file.
-#if PLATFORM(BLACKBERRY)
-#include "harfbuzz/FontPlatformDataHarfBuzz.h"
-#elif USE(WINGDI)
-#include "wince/FontPlatformData.h"
-#elif PLATFORM(EFL) || PLATFORM(GTK) || PLATFORM(NIX)
+#if PLATFORM(EFL) || PLATFORM(GTK)
 #include "freetype/FontPlatformData.h"
 #else
 
 #ifndef FontPlatformData_h
 #define FontPlatformData_h
 
-#include "FontOrientation.h"
-#include "FontWidthVariant.h"
+#include "TextFlags.h"
 
 #if PLATFORM(WIN)
 #include "SharedGDIObject.h"
@@ -50,11 +45,20 @@
 #endif
 //-EAWebKitChange
 
-#if OS(DARWIN)
+#if PLATFORM(COCOA)
+#if PLATFORM(IOS)
+#import <CoreGraphics/CoreGraphics.h>
+#endif
+#if USE(APPKIT)
 OBJC_CLASS NSFont;
+#endif
 
-typedef struct CGFont* CGFontRef;
 typedef const struct __CTFont* CTFontRef;
+
+#endif
+
+#if USE(CG)
+typedef struct CGFont* CGFontRef;
 #endif
 
 #include <wtf/Forward.h>
@@ -66,16 +70,6 @@ typedef const struct __CTFont* CTFontRef;
 #if PLATFORM(WIN)
 #include <wtf/win/GDIObject.h>
 typedef struct HFONT__* HFONT;
-#endif
-
-#if USE(CG)
-typedef struct CGFont* CGFontRef;
-#if OS(DARWIN)
-typedef const struct __CTFont* CTFontRef;
-typedef UInt32 FMFont;
-typedef FMFont ATSUFontID;
-typedef UInt32 ATSFontRef;
-#endif
 #endif
 
 //+EAWebKitChange
@@ -135,11 +129,8 @@ namespace WebCore {
 class FontDescription;
 class SharedBuffer;
 
-#if OS(DARWIN)
-inline CTFontRef toCTFontRef(NSFont *nsFont) { return reinterpret_cast<CTFontRef>(nsFont); }
-#endif
-
 class FontPlatformData {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
     FontPlatformData(WTF::HashTableDeletedValueType);
     FontPlatformData();
@@ -147,15 +138,17 @@ public:
     FontPlatformData(const FontDescription&, const AtomicString& family);
     FontPlatformData(float size, bool syntheticBold, bool syntheticOblique, FontOrientation = Horizontal, FontWidthVariant = RegularWidth);
 
-#if OS(DARWIN)
-    FontPlatformData(NSFont*, float size, bool isPrinterFont = false, bool syntheticBold = false, bool syntheticOblique = false,
-                     FontOrientation = Horizontal, FontWidthVariant = RegularWidth);
+#if PLATFORM(COCOA)
+    WEBCORE_EXPORT FontPlatformData(CTFontRef, float size, bool syntheticBold = false, bool syntheticOblique = false, FontOrientation = Horizontal, FontWidthVariant = RegularWidth);
+#endif
+
 #if USE(CG)
     FontPlatformData(CGFontRef, float size, bool syntheticBold, bool syntheticOblique, FontOrientation, FontWidthVariant);
 #endif
-#endif
+
 #if PLATFORM(WIN)
     FontPlatformData(GDIObject<HFONT>, float size, bool syntheticBold, bool syntheticOblique, bool useGDI);
+
 #if USE(CG)
     FontPlatformData(GDIObject<HFONT>, CGFontRef, float size, bool syntheticBold, bool syntheticOblique, bool useGDI);
 #elif USE(CAIRO)
@@ -166,10 +159,11 @@ public:
 //1/15/2014
 #if PLATFORM(EA)
 	FontPlatformData(FontPlatformDataPrivate*, int size, bool bold, bool italic);
+	
 #endif
 //-EAWebKitChange
 
-    ~FontPlatformData();
+    WEBCORE_EXPORT ~FontPlatformData();
 
 	//+EAWebKitChange
 	//1/15/2014
@@ -179,21 +173,26 @@ public:
 #elif PLATFORM(WIN)
     HFONT hfont() const { return m_font ? m_font->get() : 0; }
     bool useGDI() const { return m_useGDI; }
-#elif OS(DARWIN)
-    NSFont* font() const { return m_font; }
-    void setFont(NSFont*);
+#elif PLATFORM(COCOA)
+    CTFontRef font() const { return m_font.get(); }
+    WEBCORE_EXPORT CTFontRef registeredFont() const; // Returns nullptr iff the font is not registered, such as web fonts (otherwise returns font()).
+    void setFont(CTFontRef);
+
+    CTFontRef ctFont() const;
+    static RetainPtr<CFTypeRef> objectForEqualityCheck(CTFontRef);
+    RetainPtr<CFTypeRef> objectForEqualityCheck() const;
+
+    bool allowsLigatures() const;
+
+#if USE(APPKIT)
+    // FIXME: Remove this when all NSFont usage is removed.
+    NSFont *nsFont() const { return (NSFont *)m_font.get(); }
+    void setNSFont(NSFont *font) { setFont(reinterpret_cast<CTFontRef>(font)); }
+#endif
 #endif
 
 #if USE(CG)
-#if OS(DARWIN)
     CGFontRef cgFont() const { return m_cgFont.get(); }
-    CTFontRef ctFont() const;
-
-    bool roundsGlyphAdvances() const;
-    bool allowsLigatures() const;
-#else
-    CGFontRef cgFont() const { return m_cgFont.get(); }
-#endif
 #endif
 
     bool isFixedPitch() const;
@@ -203,16 +202,12 @@ public:
     bool syntheticOblique() const { return m_syntheticOblique; }
     bool isColorBitmapFont() const { return m_isColorBitmapFont; }
     bool isCompositeFontReference() const { return m_isCompositeFontReference; }
-	//+EAWebKitChange
-	//1/21/2014
-#if OS(DARWIN) && !PLATFORM(EA)
-	bool isPrinterFont() const { return m_isPrinterFont; }
-#endif
-	//-EAWebKitChange
     FontOrientation orientation() const { return m_orientation; }
     FontWidthVariant widthVariant() const { return m_widthVariant; }
+    bool isForTextCombine() const { return widthVariant() != RegularWidth; } // Keep in sync with callers of FontDescription::setWidthVariant().
 
     void setOrientation(FontOrientation orientation) { m_orientation = orientation; }
+    void setSyntheticOblique(bool syntheticOblique) { m_syntheticOblique = syntheticOblique; }
 
 	//+EAWebKitChange
 	//1/21/2014
@@ -221,7 +216,7 @@ public:
 #endif
 	//-EAWebKitChange
 
-	unsigned hash() const
+    unsigned hash() const
     {
 		//+EAWebKitChange
 		//05/13/2016
@@ -241,10 +236,14 @@ public:
 #elif PLATFORM(WIN) && !USE(CAIRO)
         return m_font ? m_font->hash() : 0;
 #elif OS(DARWIN)
-#if USE(CG)
-        ASSERT(m_font || !m_cgFont);
+        ASSERT(m_font || !m_cgFont || isEmoji());
+        uintptr_t flags = static_cast<uintptr_t>(m_isHashTableDeletedValue << 4 | isEmoji() << 3 | m_orientation << 2 | m_syntheticBold << 1 | m_syntheticOblique);
+#if USE(APPKIT)
+        uintptr_t fontHash = (uintptr_t)m_font.get();
+#else
+        uintptr_t fontHash = reinterpret_cast<uintptr_t>(CFHash(m_font.get()));
 #endif
-        uintptr_t hashCodes[3] = { (uintptr_t)m_font, m_widthVariant, static_cast<uintptr_t>(m_isPrinterFont << 3 | m_orientation << 2 | m_syntheticBold << 1 | m_syntheticOblique) };
+        uintptr_t hashCodes[3] = { fontHash, m_widthVariant, flags };
         return StringHasher::hashMemory<sizeof(hashCodes)>(hashCodes);
 #elif USE(CAIRO)
         return PtrHash<cairo_scaled_font_t*>::hash(m_scaledFont);
@@ -256,17 +255,12 @@ public:
     bool operator==(const FontPlatformData& other) const
     {
         return platformIsEqual(other)
+            && m_isHashTableDeletedValue == other.m_isHashTableDeletedValue
             && m_size == other.m_size
             && m_syntheticBold == other.m_syntheticBold
             && m_syntheticOblique == other.m_syntheticOblique
             && m_isColorBitmapFont == other.m_isColorBitmapFont
             && m_isCompositeFontReference == other.m_isCompositeFontReference
-			//+EAWebKitChange
-			//1/22/2014
-#if OS(DARWIN) && !PLATFORM(EA)
-			&& m_isPrinterFont == other.m_isPrinterFont
-#endif
-			//-EAWebKitChange
             && m_orientation == other.m_orientation
             && m_widthVariant == other.m_widthVariant;
     }
@@ -278,16 +272,12 @@ public:
 #if PLATFORM(EA)
 		return m_privData == hashTableDeletedFontValue();
 		//-EAWebKitChange
-#elif PLATFORM(WIN) && !USE(CAIRO)
-        return m_font.isHashTableDeletedValue();
-#elif OS(DARWIN)
-        return m_font == hashTableDeletedFontValue();
-#elif USE(CAIRO)
-        return m_scaledFont == hashTableDeletedFontValue();
+#else
+        return m_isHashTableDeletedValue;
 #endif
     }
 
-#if PLATFORM(WIN) && (USE(CG) || USE(CAIRO))
+#if PLATFORM(COCOA) || PLATFORM(WIN)
     PassRefPtr<SharedBuffer> openTypeTable(uint32_t table) const;
 #endif
 
@@ -295,18 +285,22 @@ public:
     String description() const;
 #endif
 
+#if PLATFORM(IOS)
+    bool isEmoji() const { return m_isEmoji; }
+    void setIsEmoji(bool isEmoji) { m_isEmoji = isEmoji; }
+#elif PLATFORM(MAC)
+    bool isEmoji() const { return false; }
+    void setIsEmoji(bool) { }
+#endif
+
 private:
     bool platformIsEqual(const FontPlatformData&) const;
     void platformDataInit(const FontPlatformData&);
     const FontPlatformData& platformDataAssign(const FontPlatformData&);
-	//+EAWebKitChange
-	//1/21/2014
-#if OS(DARWIN) && !PLATFORM(EA)
-	//-EAWebKitChange
-    // Load various data about the font specified by |nsFont| with the size fontSize into the following output paramters:
-    void loadFont(NSFont*, float fontSize, NSFont*& outNSFont, CGFontRef&);
-    static NSFont* hashTableDeletedFontValue() { return reinterpret_cast<NSFont *>(-1); }
-#elif PLATFORM(WIN)
+#if PLATFORM(COCOA)
+    CGFloat ctFontSize() const;
+#endif
+#if PLATFORM(WIN)
     void platformDataInit(HFONT, float size, HDC, WCHAR* faceName);
 #endif
 
@@ -314,17 +308,15 @@ private:
 	//1/21/2014
 #if PLATFORM(EA)
 	static FontPlatformDataPrivate* hashTableDeletedFontValue() { return reinterpret_cast<FontPlatformDataPrivate*>(-1); }
-#elif USE(CAIRO)
-	static cairo_scaled_font_t* hashTableDeletedFontValue() { return reinterpret_cast<cairo_scaled_font_t*>(-1); }
 #endif
 	//-EAWebKitChange
 
 public:
-    bool m_syntheticBold;
-    bool m_syntheticOblique;
-    FontOrientation m_orientation;
-    float m_size;
-    FontWidthVariant m_widthVariant;
+    bool m_syntheticBold { false };
+    bool m_syntheticOblique { false };
+    FontOrientation m_orientation { Horizontal };
+    float m_size { 0 };
+    FontWidthVariant m_widthVariant { RegularWidth };
 
 private:
 	//+EAWebKitChange
@@ -332,41 +324,33 @@ private:
 #if PLATFORM(EA)
 	FontPlatformDataPrivate* m_privData;
 	//-EAWebKitChange
-#elif OS(DARWIN)
-    NSFont* m_font;
+#elif PLATFORM(COCOA)
+    // FIXME: Get rid of one of these. These two fonts are subtly different, and it is not obvious which one to use where.
+    RetainPtr<CTFontRef> m_font;
+    mutable RetainPtr<CTFontRef> m_ctFont;
 #elif PLATFORM(WIN)
     RefPtr<SharedGDIObject<HFONT>> m_font;
 #endif
 
 #if USE(CG)
-#if PLATFORM(WIN)
     RetainPtr<CGFontRef> m_cgFont;
-#else
-    RetainPtr<CGFontRef> m_cgFont;
-    mutable RetainPtr<CTFontRef> m_CTFont;
 #endif
-#endif
-
 	//+EAWebKitChange
 	//1/21/2014
 #if USE(CAIRO) && !PLATFORM(EA)
-	cairo_scaled_font_t* m_scaledFont;
+    //-EAWebKitChange
+    cairo_scaled_font_t* m_scaledFont { nullptr };
 #endif
-	//-EAWebKitChange
 
-
-
-    bool m_isColorBitmapFont;
-    bool m_isCompositeFontReference;
-	//+EAWebKitChange
-	//1/21/2014
-#if OS(DARWIN) && !PLATFORM(EA)
-	bool m_isPrinterFont;
+    bool m_isColorBitmapFont { false };
+    bool m_isCompositeFontReference { false };
+    bool m_isHashTableDeletedValue { false };
+#if PLATFORM(IOS)
+    bool m_isEmoji { false };
 #endif
-	//-EAWebKitChange
 
 #if PLATFORM(WIN)
-    bool m_useGDI;
+    bool m_useGDI { false };
 #endif
 };
 

@@ -43,14 +43,12 @@
 #include <wtf/MathExtras.h>
 #include <wtf/StackStats.h>
 
-using std::min;
-
 namespace WebCore {
 
 const int RenderSlider::defaultTrackLength = 129;
 
-RenderSlider::RenderSlider(HTMLInputElement& element)
-    : RenderFlexibleBox(element)
+RenderSlider::RenderSlider(HTMLInputElement& element, Ref<RenderStyle>&& style)
+    : RenderFlexibleBox(element, WTF::move(style))
 {
     // We assume RenderSlider works only with <input type=range>.
     ASSERT(element.isRangeControl());
@@ -62,12 +60,7 @@ RenderSlider::~RenderSlider()
 
 HTMLInputElement& RenderSlider::element() const
 {
-    return toHTMLInputElement(nodeForNonAnonymous());
-}
-
-bool RenderSlider::canBeReplacedWithInlineRunIn() const
-{
-    return false;
+    return downcast<HTMLInputElement>(nodeForNonAnonymous());
 }
 
 int RenderSlider::baselinePosition(FontBaseline, bool /*firstLine*/, LineDirectionMode, LinePositionMode) const
@@ -78,8 +71,8 @@ int RenderSlider::baselinePosition(FontBaseline, bool /*firstLine*/, LineDirecti
 
 void RenderSlider::computeIntrinsicLogicalWidths(LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const
 {
-    maxLogicalWidth = defaultTrackLength * style()->effectiveZoom();
-    if (!style()->width().isPercent())
+    maxLogicalWidth = defaultTrackLength * style().effectiveZoom();
+    if (!style().width().isPercentOrCalculated())
         minLogicalWidth = maxLogicalWidth;
 }
 
@@ -88,22 +81,22 @@ void RenderSlider::computePreferredLogicalWidths()
     m_minPreferredLogicalWidth = 0;
     m_maxPreferredLogicalWidth = 0;
 
-    if (style()->width().isFixed() && style()->width().value() > 0)
-        m_minPreferredLogicalWidth = m_maxPreferredLogicalWidth = adjustContentBoxLogicalWidthForBoxSizing(style()->width().value());
+    if (style().width().isFixed() && style().width().value() > 0)
+        m_minPreferredLogicalWidth = m_maxPreferredLogicalWidth = adjustContentBoxLogicalWidthForBoxSizing(style().width().value());
     else
         computeIntrinsicLogicalWidths(m_minPreferredLogicalWidth, m_maxPreferredLogicalWidth);
 
-    if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
-        m_maxPreferredLogicalWidth = max(m_maxPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style()->minWidth().value()));
-        m_minPreferredLogicalWidth = max(m_minPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style()->minWidth().value()));
+    if (style().minWidth().isFixed() && style().minWidth().value() > 0) {
+        m_maxPreferredLogicalWidth = std::max(m_maxPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style().minWidth().value()));
+        m_minPreferredLogicalWidth = std::max(m_minPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style().minWidth().value()));
     }
 
-    if (style()->maxWidth().isFixed()) {
-        m_maxPreferredLogicalWidth = min(m_maxPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style()->maxWidth().value()));
-        m_minPreferredLogicalWidth = min(m_minPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style()->maxWidth().value()));
+    if (style().maxWidth().isFixed()) {
+        m_maxPreferredLogicalWidth = std::min(m_maxPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style().maxWidth().value()));
+        m_minPreferredLogicalWidth = std::min(m_minPreferredLogicalWidth, adjustContentBoxLogicalWidthForBoxSizing(style().maxWidth().value()));
     }
 
-    LayoutUnit toAdd = borderAndPaddingWidth();
+    LayoutUnit toAdd = horizontalBorderAndPaddingExtent();
     m_minPreferredLogicalWidth += toAdd;
     m_maxPreferredLogicalWidth += toAdd;
 
@@ -117,7 +110,7 @@ void RenderSlider::layout()
     // FIXME: Find a way to cascade appearance. http://webkit.org/b/62535
     RenderBox* thumbBox = element().sliderThumbElement()->renderBox();
     if (thumbBox && thumbBox->isSliderThumb())
-        static_cast<RenderSliderThumb*>(thumbBox)->updateAppearance(style());
+        static_cast<RenderSliderThumb*>(thumbBox)->updateAppearance(&style());
 
     RenderFlexibleBox::layout();
 }

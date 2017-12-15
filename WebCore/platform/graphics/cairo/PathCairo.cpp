@@ -26,10 +26,11 @@
 #include "config.h"
 #include "Path.h"
 
+#if USE(CAIRO)
+
 #include "AffineTransform.h"
 #include "FloatRect.h"
 #include "GraphicsContext.h"
-#include "OwnPtrCairo.h"
 #include "PlatformPathCairo.h"
 #include "StrokeStyleApplier.h"
 #include <cairo.h>
@@ -57,8 +58,9 @@ Path::Path(const Path& other)
         return;
 
     cairo_t* cr = ensurePlatformPath()->context();
-    OwnPtr<cairo_path_t> pathCopy = adoptPtr(cairo_copy_path(other.platformPath()->context()));
-    cairo_append_path(cr, pathCopy.get());
+    auto pathCopy = cairo_copy_path(other.platformPath()->context());
+    cairo_append_path(cr, pathCopy);
+    cairo_path_destroy(pathCopy);
 }
 
 PlatformPathPtr Path::ensurePlatformPath()
@@ -81,8 +83,9 @@ Path& Path::operator=(const Path& other)
     } else {
         clear();
         cairo_t* cr = ensurePlatformPath()->context();
-        OwnPtr<cairo_path_t> pathCopy = adoptPtr(cairo_copy_path(other.platformPath()->context()));
-        cairo_append_path(cr, pathCopy.get());
+        auto pathCopy = cairo_copy_path(other.platformPath()->context());
+        cairo_append_path(cr, pathCopy);
+        cairo_path_destroy(pathCopy);
     }
 
     return *this;
@@ -281,6 +284,22 @@ void Path::addArcTo(const FloatPoint& p1, const FloatPoint& p2, float radius)
     addArc(p, radius, sa, ea, anticlockwise);
 }
 
+void Path::addEllipse(FloatPoint point, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool anticlockwise)
+{
+    cairo_t* cr = ensurePlatformPath()->context();
+    cairo_save(cr);
+    cairo_translate(cr, point.x(), point.y());
+    cairo_rotate(cr, rotation);
+    cairo_scale(cr, radiusX, radiusY);
+
+    if (anticlockwise)
+        cairo_arc_negative(cr, 0, 0, 1, startAngle, endAngle);
+    else
+        cairo_arc(cr, 0, 0, 1, startAngle, endAngle);
+
+    cairo_restore(cr);
+}
+
 void Path::addEllipse(const FloatRect& rect)
 {
     cairo_t* cr = ensurePlatformPath()->context();
@@ -291,6 +310,24 @@ void Path::addEllipse(const FloatRect& rect)
     cairo_scale(cr, xRadius, yRadius);
     cairo_arc(cr, 0., 0., 1., 0., 2 * piDouble);
     cairo_restore(cr);
+}
+
+void Path::addPath(const Path& path, const AffineTransform& transform)
+{
+    if (path.isNull())
+        return;
+
+    cairo_matrix_t matrix(transform);
+    if (cairo_matrix_invert(&matrix) != CAIRO_STATUS_SUCCESS)
+        return;
+
+    cairo_t* cr = path.platformPath()->context();
+    cairo_save(cr);
+    cairo_transform(cr, &matrix);
+    auto pathCopy = cairo_copy_path(cr);
+    cairo_restore(cr);
+    cairo_append_path(ensurePlatformPath()->context(), pathCopy);
+    cairo_path_destroy(pathCopy);
 }
 
 void Path::closeSubpath()
@@ -353,13 +390,13 @@ bool Path::strokeContains(StrokeStyleApplier* applier, const FloatPoint& point) 
     return cairo_in_stroke(cr, point.x(), point.y());
 }
 
-void Path::apply(void* info, PathApplierFunction function) const
+void Path::apply(const PathApplierFunction& function) const
 {
     if (isNull())
         return;
 
     cairo_t* cr = platformPath()->context();
-    OwnPtr<cairo_path_t> pathCopy = adoptPtr(cairo_copy_path(cr));
+    auto pathCopy = cairo_copy_path(cr);
     cairo_path_data_t* data;
     PathElement pelement;
     FloatPoint points[3];
@@ -371,26 +408,27 @@ void Path::apply(void* info, PathApplierFunction function) const
         case CAIRO_PATH_MOVE_TO:
             pelement.type = PathElementMoveToPoint;
             pelement.points[0] = FloatPoint(data[1].point.x,data[1].point.y);
-            function(info, &pelement);
+            function(pelement);
             break;
         case CAIRO_PATH_LINE_TO:
             pelement.type = PathElementAddLineToPoint;
             pelement.points[0] = FloatPoint(data[1].point.x,data[1].point.y);
-            function(info, &pelement);
+            function(pelement);
             break;
         case CAIRO_PATH_CURVE_TO:
             pelement.type = PathElementAddCurveToPoint;
             pelement.points[0] = FloatPoint(data[1].point.x,data[1].point.y);
             pelement.points[1] = FloatPoint(data[2].point.x,data[2].point.y);
             pelement.points[2] = FloatPoint(data[3].point.x,data[3].point.y);
-            function(info, &pelement);
+            function(pelement);
             break;
         case CAIRO_PATH_CLOSE_PATH:
             pelement.type = PathElementCloseSubpath;
-            function(info, &pelement);
+            function(pelement);
             break;
         }
     }
+    cairo_path_destroy(pathCopy);
 }
 
 void Path::transform(const AffineTransform& trans)
@@ -402,3 +440,5 @@ void Path::transform(const AffineTransform& trans)
 }
 
 } // namespace WebCore
+
+#endif // USE(CAIRO)

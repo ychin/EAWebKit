@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGPathSegCurvetoCubicRel.h"
 
+#include "JSDOMBinding.h"
 #include "SVGPathSegCurvetoCubicRel.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
@@ -32,30 +30,69 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGPathSegCurvetoCubicRelTableValues[] =
-{
-    { "x", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelX), (intptr_t)setJSSVGPathSegCurvetoCubicRelX },
-    { "y", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelY), (intptr_t)setJSSVGPathSegCurvetoCubicRelY },
-    { "x1", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelX1), (intptr_t)setJSSVGPathSegCurvetoCubicRelX1 },
-    { "y1", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelY1), (intptr_t)setJSSVGPathSegCurvetoCubicRelY1 },
-    { "x2", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelX2), (intptr_t)setJSSVGPathSegCurvetoCubicRelX2 },
-    { "y2", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelY2), (intptr_t)setJSSVGPathSegCurvetoCubicRelY2 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicRelX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicRelY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelX1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicRelX1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelY1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicRelY1(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelX2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicRelX2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelY2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPathSegCurvetoCubicRelY2(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPathSegCurvetoCubicRelConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGPathSegCurvetoCubicRelPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGPathSegCurvetoCubicRelPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGPathSegCurvetoCubicRelPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicRelPrototype>(vm.heap)) JSSVGPathSegCurvetoCubicRelPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGPathSegCurvetoCubicRelPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGPathSegCurvetoCubicRelTable = { 16, 15, JSSVGPathSegCurvetoCubicRelTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGPathSegCurvetoCubicRelConstructor : public DOMConstructorObject {
+private:
+    JSSVGPathSegCurvetoCubicRelConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGPathSegCurvetoCubicRelConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGPathSegCurvetoCubicRelConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGPathSegCurvetoCubicRelConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPathSegCurvetoCubicRelConstructor>(vm.heap)) JSSVGPathSegCurvetoCubicRelConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGPathSegCurvetoCubicRelConstructorTable = { 1, 0, JSSVGPathSegCurvetoCubicRelConstructorTableValues, 0 };
-const ClassInfo JSSVGPathSegCurvetoCubicRelConstructor::s_info = { "SVGPathSegCurvetoCubicRelConstructor", &Base::s_info, &JSSVGPathSegCurvetoCubicRelConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicRelConstructor) };
+const ClassInfo JSSVGPathSegCurvetoCubicRelConstructor::s_info = { "SVGPathSegCurvetoCubicRelConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicRelConstructor) };
 
 JSSVGPathSegCurvetoCubicRelConstructor::JSSVGPathSegCurvetoCubicRelConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,195 +103,274 @@ void JSSVGPathSegCurvetoCubicRelConstructor::finishCreation(VM& vm, JSDOMGlobalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegCurvetoCubicRelPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGPathSegCurvetoCubicRelConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGPathSegCurvetoCubicRelConstructor, JSDOMWrapper>(exec, JSSVGPathSegCurvetoCubicRelConstructorTable, jsCast<JSSVGPathSegCurvetoCubicRelConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGPathSegCurvetoCubicRel::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGPathSegCurvetoCubicRel"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGPathSegCurvetoCubicRelPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicRelX) },
+    { "y", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicRelY) },
+    { "x1", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelX1), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicRelX1) },
+    { "y1", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelY1), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicRelY1) },
+    { "x2", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelX2), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicRelX2) },
+    { "y2", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPathSegCurvetoCubicRelY2), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPathSegCurvetoCubicRelY2) },
 };
 
-static const HashTable JSSVGPathSegCurvetoCubicRelPrototypeTable = { 1, 0, JSSVGPathSegCurvetoCubicRelPrototypeTableValues, 0 };
-const ClassInfo JSSVGPathSegCurvetoCubicRelPrototype::s_info = { "SVGPathSegCurvetoCubicRelPrototype", &Base::s_info, &JSSVGPathSegCurvetoCubicRelPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicRelPrototype) };
+const ClassInfo JSSVGPathSegCurvetoCubicRelPrototype::s_info = { "SVGPathSegCurvetoCubicRelPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicRelPrototype) };
 
-JSObject* JSSVGPathSegCurvetoCubicRelPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGPathSegCurvetoCubicRel>(vm, globalObject);
-}
-
-const ClassInfo JSSVGPathSegCurvetoCubicRel::s_info = { "SVGPathSegCurvetoCubicRel", &Base::s_info, &JSSVGPathSegCurvetoCubicRelTable, 0 , CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicRel) };
-
-JSSVGPathSegCurvetoCubicRel::JSSVGPathSegCurvetoCubicRel(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPathSegCurvetoCubicRel> impl)
-    : JSSVGPathSeg(structure, globalObject, impl)
-{
-}
-
-void JSSVGPathSegCurvetoCubicRel::finishCreation(VM& vm)
+void JSSVGPathSegCurvetoCubicRelPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGPathSegCurvetoCubicRelPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGPathSegCurvetoCubicRel::s_info = { "SVGPathSegCurvetoCubicRel", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPathSegCurvetoCubicRel) };
+
+JSSVGPathSegCurvetoCubicRel::JSSVGPathSegCurvetoCubicRel(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPathSegCurvetoCubicRel>&& impl)
+    : JSSVGPathSeg(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGPathSegCurvetoCubicRel::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGPathSegCurvetoCubicRelPrototype::create(vm, globalObject, JSSVGPathSegCurvetoCubicRelPrototype::createStructure(vm, globalObject, JSSVGPathSegPrototype::self(vm, globalObject)));
+    return JSSVGPathSegCurvetoCubicRelPrototype::create(vm, globalObject, JSSVGPathSegCurvetoCubicRelPrototype::createStructure(vm, globalObject, JSSVGPathSeg::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGPathSegCurvetoCubicRel::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGPathSegCurvetoCubicRel::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGPathSegCurvetoCubicRel* thisObject = jsCast<JSSVGPathSegCurvetoCubicRel*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGPathSegCurvetoCubicRel, Base>(exec, JSSVGPathSegCurvetoCubicRelTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGPathSegCurvetoCubicRel>(vm, globalObject);
 }
 
-JSValue jsSVGPathSegCurvetoCubicRelX(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicRel", "x");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "x");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicRelY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicRel", "y");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "y");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicRelX1(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelX1(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicRel", "x1");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "x1");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x1());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicRelY1(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelY1(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicRel", "y1");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "y1");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y1());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicRelX2(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelX2(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicRel", "x2");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "x2");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x2());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicRelY2(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelY2(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPathSegCurvetoCubicRel", "y2");
+        return throwGetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "y2");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y2());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPathSegCurvetoCubicRelConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPathSegCurvetoCubicRelConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGPathSegCurvetoCubicRel* domObject = jsCast<JSSVGPathSegCurvetoCubicRel*>(asObject(slotBase));
-    return JSSVGPathSegCurvetoCubicRel::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGPathSegCurvetoCubicRelPrototype* domObject = jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGPathSegCurvetoCubicRel::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGPathSegCurvetoCubicRel::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGPathSegCurvetoCubicRelX(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGPathSegCurvetoCubicRel* thisObject = jsCast<JSSVGPathSegCurvetoCubicRel*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGPathSegCurvetoCubicRel, Base>(exec, propertyName, value, JSSVGPathSegCurvetoCubicRelTable, thisObject, slot);
-}
-
-void setJSSVGPathSegCurvetoCubicRelX(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(thisObject);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicRel", "x");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "x");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicRelY(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicRelY(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(thisObject);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicRel", "y");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "y");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicRelX1(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicRelX1(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(thisObject);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicRel", "x1");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "x1");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX1(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicRelY1(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicRelY1(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(thisObject);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicRel", "y1");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "y1");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY1(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicRelX2(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicRelX2(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(thisObject);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicRel", "x2");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "x2");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX2(nativeValue);
 }
 
 
-void setJSSVGPathSegCurvetoCubicRelY2(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPathSegCurvetoCubicRelY2(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPathSegCurvetoCubicRel* castedThis = jsCast<JSSVGPathSegCurvetoCubicRel*>(thisObject);
-    SVGPathSegCurvetoCubicRel& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPathSegCurvetoCubicRel* castedThis = jsDynamicCast<JSSVGPathSegCurvetoCubicRel*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPathSegCurvetoCubicRelPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPathSegCurvetoCubicRel", "y2");
+        else
+            throwSetterTypeError(*exec, "SVGPathSegCurvetoCubicRel", "y2");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY2(nativeValue);
 }
@@ -267,5 +383,3 @@ JSValue JSSVGPathSegCurvetoCubicRel::getConstructor(VM& vm, JSGlobalObject* glob
 
 
 }
-
-#endif // ENABLE(SVG)

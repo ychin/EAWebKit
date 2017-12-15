@@ -21,14 +21,12 @@
 #include "config.h"
 #include "JSHTMLInputElement.h"
 
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "FileList.h"
 #include "HTMLFormElement.h"
 #include "HTMLInputElement.h"
 #include "HTMLNames.h"
 #include "JSDOMBinding.h"
-#include "JSEventListener.h"
 #include "JSFileList.h"
 #include "JSHTMLFormElement.h"
 #include "JSNodeList.h"
@@ -50,87 +48,189 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepUp(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepDown(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionCheckValidity(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetCustomValidity(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSelect(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeText(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetSelectionRange(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsHTMLInputElementAccept(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAccept(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementAlt(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAlt(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementAutocomplete(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAutocomplete(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementAutofocus(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAutofocus(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementDefaultChecked(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementDefaultChecked(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementChecked(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementChecked(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementDirName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementDirName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementForm(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLInputElementFiles(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementFiles(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementFormAction(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementFormAction(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementFormEnctype(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementFormEnctype(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementFormMethod(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementFormMethod(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementFormNoValidate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementFormNoValidate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementFormTarget(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementFormTarget(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementIndeterminate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementIndeterminate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(DATALIST_ELEMENT)
+JSC::EncodedJSValue jsHTMLInputElementList(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+JSC::EncodedJSValue jsHTMLInputElementMax(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementMax(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementMaxLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementMaxLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementMin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementMin(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementMultiple(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementMultiple(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementPattern(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementPattern(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementPlaceholder(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementPlaceholder(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementReadOnly(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementReadOnly(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementSize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementSize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementStep(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementStep(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementDefaultValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementDefaultValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementValueAsDate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementValueAsDate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementValueAsNumber(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementValueAsNumber(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementWillValidate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLInputElementValidity(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLInputElementValidationMessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLInputElementLabels(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLInputElementSelectionStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementSelectionStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementSelectionEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementSelectionEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementSelectionDirection(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementSelectionDirection(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementAlign(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAlign(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementUseMap(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementUseMap(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLInputElementIncremental(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementIncremental(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+JSC::EncodedJSValue jsHTMLInputElementAutocorrect(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAutocorrect(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+JSC::EncodedJSValue jsHTMLInputElementAutocapitalize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementAutocapitalize(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(MEDIA_CAPTURE)
+JSC::EncodedJSValue jsHTMLInputElementCapture(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLInputElementCapture(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+JSC::EncodedJSValue jsHTMLInputElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLInputElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLInputElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLInputElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLInputElementPrototype>(vm.heap)) JSHTMLInputElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLInputElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSHTMLInputElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLInputElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLInputElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLInputElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLInputElementConstructor>(vm.heap)) JSHTMLInputElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSHTMLInputElementTableIndex[8] = {
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+    { 0, -1 },
+    { 2, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSHTMLInputElementTableValues[] =
 {
-    { "accept", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAccept), (intptr_t)setJSHTMLInputElementAccept },
-    { "alt", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAlt), (intptr_t)setJSHTMLInputElementAlt },
-    { "autocomplete", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAutocomplete), (intptr_t)setJSHTMLInputElementAutocomplete },
-    { "autofocus", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAutofocus), (intptr_t)setJSHTMLInputElementAutofocus },
-    { "defaultChecked", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDefaultChecked), (intptr_t)setJSHTMLInputElementDefaultChecked },
-    { "checked", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementChecked), (intptr_t)setJSHTMLInputElementChecked },
-    { "dirName", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDirName), (intptr_t)setJSHTMLInputElementDirName },
-    { "disabled", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDisabled), (intptr_t)setJSHTMLInputElementDisabled },
-    { "form", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementForm), (intptr_t)0 },
-    { "files", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFiles), (intptr_t)setJSHTMLInputElementFiles },
-    { "formAction", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormAction), (intptr_t)setJSHTMLInputElementFormAction },
-    { "formEnctype", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormEnctype), (intptr_t)setJSHTMLInputElementFormEnctype },
-    { "formMethod", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormMethod), (intptr_t)setJSHTMLInputElementFormMethod },
-    { "formNoValidate", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormNoValidate), (intptr_t)setJSHTMLInputElementFormNoValidate },
-    { "formTarget", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormTarget), (intptr_t)setJSHTMLInputElementFormTarget },
-    { "height", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementHeight), (intptr_t)setJSHTMLInputElementHeight },
-    { "indeterminate", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementIndeterminate), (intptr_t)setJSHTMLInputElementIndeterminate },
-#if ENABLE(DATALIST_ELEMENT)
-    { "list", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementList), (intptr_t)0 },
-#endif
-    { "max", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMax), (intptr_t)setJSHTMLInputElementMax },
-    { "maxLength", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMaxLength), (intptr_t)setJSHTMLInputElementMaxLength },
-    { "min", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMin), (intptr_t)setJSHTMLInputElementMin },
-    { "multiple", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMultiple), (intptr_t)setJSHTMLInputElementMultiple },
-    { "name", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementName), (intptr_t)setJSHTMLInputElementName },
-    { "pattern", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementPattern), (intptr_t)setJSHTMLInputElementPattern },
-    { "placeholder", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementPlaceholder), (intptr_t)setJSHTMLInputElementPlaceholder },
-    { "readOnly", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementReadOnly), (intptr_t)setJSHTMLInputElementReadOnly },
-    { "required", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementRequired), (intptr_t)setJSHTMLInputElementRequired },
-    { "size", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSize), (intptr_t)setJSHTMLInputElementSize },
-    { "src", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSrc), (intptr_t)setJSHTMLInputElementSrc },
-    { "step", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementStep), (intptr_t)setJSHTMLInputElementStep },
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementType), (intptr_t)setJSHTMLInputElementType },
-    { "defaultValue", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDefaultValue), (intptr_t)setJSHTMLInputElementDefaultValue },
-    { "value", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValue), (intptr_t)setJSHTMLInputElementValue },
-    { "valueAsDate", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValueAsDate), (intptr_t)setJSHTMLInputElementValueAsDate },
-    { "valueAsNumber", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValueAsNumber), (intptr_t)setJSHTMLInputElementValueAsNumber },
-    { "width", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWidth), (intptr_t)setJSHTMLInputElementWidth },
-    { "willValidate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWillValidate), (intptr_t)0 },
-    { "validity", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValidity), (intptr_t)0 },
-    { "validationMessage", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValidationMessage), (intptr_t)0 },
-    { "labels", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementLabels), (intptr_t)0 },
-    { "selectionStart", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSelectionStart), (intptr_t)setJSHTMLInputElementSelectionStart },
-    { "selectionEnd", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSelectionEnd), (intptr_t)setJSHTMLInputElementSelectionEnd },
-    { "selectionDirection", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSelectionDirection), (intptr_t)setJSHTMLInputElementSelectionDirection },
-    { "align", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAlign), (intptr_t)setJSHTMLInputElementAlign },
-#if ENABLE(DIRECTORY_UPLOAD)
-    { "webkitdirectory", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWebkitdirectory), (intptr_t)setJSHTMLInputElementWebkitdirectory },
-#endif
-    { "useMap", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementUseMap), (intptr_t)setJSHTMLInputElementUseMap },
-    { "incremental", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementIncremental), (intptr_t)setJSHTMLInputElementIncremental },
-#if ENABLE(INPUT_SPEECH)
-    { "webkitSpeech", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWebkitSpeech), (intptr_t)setJSHTMLInputElementWebkitSpeech },
-#endif
-#if ENABLE(INPUT_SPEECH)
-    { "webkitGrammar", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWebkitGrammar), (intptr_t)setJSHTMLInputElementWebkitGrammar },
-#endif
-#if ENABLE(INPUT_SPEECH)
-    { "onwebkitspeechchange", DontDelete | DontEnum, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementOnwebkitspeechchange), (intptr_t)setJSHTMLInputElementOnwebkitspeechchange },
-#endif
-#if ENABLE(MEDIA_CAPTURE)
-    { "capture", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementCapture), (intptr_t)setJSHTMLInputElementCapture },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "selectionStart", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSelectionStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementSelectionStart) },
+    { "selectionEnd", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSelectionEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementSelectionEnd) },
+    { "selectionDirection", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSelectionDirection), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementSelectionDirection) },
 };
 
-static const HashTable JSHTMLInputElementTable = { 138, 127, JSHTMLInputElementTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSHTMLInputElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSHTMLInputElementConstructorTable = { 1, 0, JSHTMLInputElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLInputElementConstructor::s_info = { "HTMLInputElementConstructor", &Base::s_info, &JSHTMLInputElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLInputElementConstructor) };
+static const HashTable JSHTMLInputElementTable = { 3, 7, true, JSHTMLInputElementTableValues, 0, JSHTMLInputElementTableIndex };
+const ClassInfo JSHTMLInputElementConstructor::s_info = { "HTMLInputElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLInputElementConstructor) };
 
 JSHTMLInputElementConstructor::JSHTMLInputElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -141,1138 +241,1795 @@ void JSHTMLInputElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLInputElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLInputElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLInputElementConstructor, JSDOMWrapper>(exec, JSHTMLInputElementConstructorTable, jsCast<JSHTMLInputElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLInputElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLInputElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLInputElementPrototypeTableValues[] =
 {
-    { "stepUp", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionStepUp), (intptr_t)0 },
-    { "stepDown", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionStepDown), (intptr_t)0 },
-    { "checkValidity", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionCheckValidity), (intptr_t)0 },
-    { "setCustomValidity", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSetCustomValidity), (intptr_t)1 },
-    { "select", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSelect), (intptr_t)0 },
-    { "setRangeText", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSetRangeText), (intptr_t)1 },
-    { "setSelectionRange", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSetSelectionRange), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "accept", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAccept), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAccept) },
+    { "alt", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAlt), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAlt) },
+    { "autocomplete", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAutocomplete), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAutocomplete) },
+    { "autofocus", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAutofocus), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAutofocus) },
+    { "defaultChecked", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDefaultChecked), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementDefaultChecked) },
+    { "checked", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementChecked), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementChecked) },
+    { "dirName", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDirName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementDirName) },
+    { "disabled", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDisabled), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementDisabled) },
+    { "form", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementForm), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "files", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFiles), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementFiles) },
+    { "formAction", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormAction), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementFormAction) },
+    { "formEnctype", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormEnctype), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementFormEnctype) },
+    { "formMethod", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormMethod), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementFormMethod) },
+    { "formNoValidate", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormNoValidate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementFormNoValidate) },
+    { "formTarget", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementFormTarget), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementFormTarget) },
+    { "height", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementHeight) },
+    { "indeterminate", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementIndeterminate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementIndeterminate) },
+#if ENABLE(DATALIST_ELEMENT)
+    { "list", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementList), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "max", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMax), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementMax) },
+    { "maxLength", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMaxLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementMaxLength) },
+    { "min", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMin), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementMin) },
+    { "multiple", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementMultiple), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementMultiple) },
+    { "name", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementName) },
+    { "pattern", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementPattern), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementPattern) },
+    { "placeholder", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementPlaceholder), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementPlaceholder) },
+    { "readOnly", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementReadOnly), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementReadOnly) },
+    { "required", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementRequired) },
+    { "size", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementSize) },
+    { "src", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementSrc), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementSrc) },
+    { "step", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementStep), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementStep) },
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementType) },
+    { "defaultValue", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementDefaultValue), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementDefaultValue) },
+    { "value", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValue), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementValue) },
+    { "valueAsDate", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValueAsDate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementValueAsDate) },
+    { "valueAsNumber", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValueAsNumber), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementValueAsNumber) },
+    { "width", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementWidth) },
+    { "willValidate", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementWillValidate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "validity", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValidity), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "validationMessage", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementValidationMessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "labels", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementLabels), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "align", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAlign), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAlign) },
+    { "useMap", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementUseMap), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementUseMap) },
+    { "incremental", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementIncremental), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementIncremental) },
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+    { "autocorrect", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAutocorrect), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAutocorrect) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+    { "autocapitalize", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementAutocapitalize), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementAutocapitalize) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_CAPTURE)
+    { "capture", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLInputElementCapture), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLInputElementCapture) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "stepUp", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionStepUp), (intptr_t) (0) },
+    { "stepDown", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionStepDown), (intptr_t) (0) },
+    { "checkValidity", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionCheckValidity), (intptr_t) (0) },
+    { "setCustomValidity", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSetCustomValidity), (intptr_t) (1) },
+    { "select", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSelect), (intptr_t) (0) },
+    { "setRangeText", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSetRangeText), (intptr_t) (1) },
+    { "setSelectionRange", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLInputElementPrototypeFunctionSetSelectionRange), (intptr_t) (0) },
 };
 
-static const HashTable JSHTMLInputElementPrototypeTable = { 17, 15, JSHTMLInputElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLInputElementPrototype::s_info = { "HTMLInputElementPrototype", &Base::s_info, &JSHTMLInputElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLInputElementPrototype) };
+const ClassInfo JSHTMLInputElementPrototype::s_info = { "HTMLInputElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLInputElementPrototype) };
 
-JSObject* JSHTMLInputElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLInputElement>(vm, globalObject);
-}
-
-bool JSHTMLInputElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSHTMLInputElementPrototype* thisObject = jsCast<JSHTMLInputElementPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSHTMLInputElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSHTMLInputElement::s_info = { "HTMLInputElement", &Base::s_info, &JSHTMLInputElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLInputElement) };
-
-JSHTMLInputElement::JSHTMLInputElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLInputElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLInputElement::finishCreation(VM& vm)
+void JSHTMLInputElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLInputElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLInputElement::s_info = { "HTMLInputElement", &Base::s_info, &JSHTMLInputElementTable, CREATE_METHOD_TABLE(JSHTMLInputElement) };
+
+JSHTMLInputElement::JSHTMLInputElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLInputElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLInputElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLInputElementPrototype::create(vm, globalObject, JSHTMLInputElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLInputElementPrototype::create(vm, globalObject, JSHTMLInputElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSHTMLInputElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSHTMLInputElement>(vm, globalObject);
 }
 
 bool JSHTMLInputElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSHTMLInputElement* thisObject = jsCast<JSHTMLInputElement*>(object);
+    auto* thisObject = jsCast<JSHTMLInputElement*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSHTMLInputElement, Base>(exec, JSHTMLInputElementTable, thisObject, propertyName, slot);
 }
 
-JSValue jsHTMLInputElementAccept(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementAccept(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "accept");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "accept");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::acceptAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementAlt(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementAlt(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "alt");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "alt");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::altAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementAutocomplete(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementAutocomplete(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "autocomplete");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "autocomplete");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::autocompleteAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementAutofocus(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementAutofocus(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "autofocus");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "autofocus");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::autofocusAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementDefaultChecked(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementDefaultChecked(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "defaultChecked");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "defaultChecked");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::checkedAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementChecked(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementChecked(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "checked");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "checked");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.checked());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementDirName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementDirName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "dirName");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "dirName");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::dirnameAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementDisabled(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementDisabled(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "disabled");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "disabled");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::disabledAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementForm(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementForm(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "form");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "form");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.form()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementFiles(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementFiles(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "files");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "files");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.files()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementFormAction(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementFormAction(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "formAction");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "formAction");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::formactionAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementFormEnctype(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementFormEnctype(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "formEnctype");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "formEnctype");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.formEnctype());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementFormMethod(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementFormMethod(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "formMethod");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "formMethod");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.formMethod());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementFormNoValidate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementFormNoValidate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "formNoValidate");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "formNoValidate");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::formnovalidateAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementFormTarget(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementFormTarget(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "formTarget");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "formTarget");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::formtargetAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "height");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "height");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.height());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLInputElementIndeterminate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementIndeterminate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "indeterminate");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "indeterminate");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.indeterminate());
-    return result;
+    return JSValue::encode(result);
 }
 
 
 #if ENABLE(DATALIST_ELEMENT)
-JSValue jsHTMLInputElementList(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementList(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.list()));
-    return result;
-}
-
-#endif
-
-JSValue jsHTMLInputElementMax(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::maxAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementMaxLength(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.maxLength());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementMin(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::minAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementMultiple(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::multipleAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementName(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.getNameAttribute());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementPattern(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::patternAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementPlaceholder(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::placeholderAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementReadOnly(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::readonlyAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementRequired(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::requiredAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementSize(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.size());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementSrc(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::srcAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementStep(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::stepAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementType(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementDefaultValue(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.defaultValue());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementValue(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.value());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementValueAsDate(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsDateOrNull(exec, impl.valueAsDate());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementValueAsNumber(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.valueAsNumber());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementWidth(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.width());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementWillValidate(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.willValidate());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementValidity(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.validity()));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementValidationMessage(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.validationMessage());
-    return result;
-}
-
-
-JSValue jsHTMLInputElementLabels(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.labels()));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementSelectionStart(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    return castedThis->selectionStart(exec);
-}
-
-
-JSValue jsHTMLInputElementSelectionEnd(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    return castedThis->selectionEnd(exec);
-}
-
-
-JSValue jsHTMLInputElementSelectionDirection(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    return castedThis->selectionDirection(exec);
-}
-
-
-JSValue jsHTMLInputElementAlign(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::alignAttr));
-    return result;
-}
-
-
-#if ENABLE(DIRECTORY_UPLOAD)
-JSValue jsHTMLInputElementWebkitdirectory(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::webkitdirectoryAttr));
-    return result;
-}
-
-#endif
-
-JSValue jsHTMLInputElementUseMap(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::usemapAttr));
-    return result;
-}
-
-
-JSValue jsHTMLInputElementIncremental(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::incrementalAttr));
-    return result;
-}
-
-
-#if ENABLE(INPUT_SPEECH)
-JSValue jsHTMLInputElementWebkitSpeech(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::webkitspeechAttr));
-    return result;
-}
-
-#endif
-
-#if ENABLE(INPUT_SPEECH)
-JSValue jsHTMLInputElementWebkitGrammar(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::webkitgrammarAttr));
-    return result;
-}
-
-#endif
-
-#if ENABLE(INPUT_SPEECH)
-JSValue jsHTMLInputElementOnwebkitspeechchange(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onwebkitspeechchange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "list");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "list");
     }
-    return jsNull();
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.list()));
+    return JSValue::encode(result);
+}
+
+#endif
+
+EncodedJSValue jsHTMLInputElementMax(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "max");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "max");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::maxAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementMaxLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "maxLength");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "maxLength");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.maxLength());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementMin(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "min");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "min");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::minAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementMultiple(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "multiple");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "multiple");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::multipleAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "name");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "name");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.getNameAttribute());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementPattern(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "pattern");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "pattern");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::patternAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementPlaceholder(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "placeholder");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "placeholder");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::placeholderAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementReadOnly(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "readOnly");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "readOnly");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::readonlyAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "required");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "required");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::requiredAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementSize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "size");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "size");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.size());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementSrc(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "src");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "src");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::srcAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementStep(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "step");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "step");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::stepAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "type");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "type");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.type());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementDefaultValue(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "defaultValue");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "defaultValue");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.defaultValue());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementValue(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "value");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "value");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.value());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementValueAsDate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "valueAsDate");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "valueAsDate");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsDateOrNull(exec, impl.valueAsDate());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementValueAsNumber(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "valueAsNumber");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "valueAsNumber");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.valueAsNumber());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "width");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "width");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.width());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementWillValidate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "willValidate");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "willValidate");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.willValidate());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementValidity(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "validity");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "validity");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.validity()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementValidationMessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "validationMessage");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "validationMessage");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.validationMessage());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementLabels(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "labels");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "labels");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.labels()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementSelectionStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLInputElement*>(slotBase);
+    return JSValue::encode(castedThis->selectionStart(exec));
+}
+
+
+EncodedJSValue jsHTMLInputElementSelectionEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLInputElement*>(slotBase);
+    return JSValue::encode(castedThis->selectionEnd(exec));
+}
+
+
+EncodedJSValue jsHTMLInputElementSelectionDirection(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLInputElement*>(slotBase);
+    return JSValue::encode(castedThis->selectionDirection(exec));
+}
+
+
+EncodedJSValue jsHTMLInputElementAlign(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "align");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "align");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::alignAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementUseMap(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "useMap");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "useMap");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::usemapAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLInputElementIncremental(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "incremental");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "incremental");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::incrementalAttr));
+    return JSValue::encode(result);
+}
+
+
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+EncodedJSValue jsHTMLInputElementAutocorrect(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "autocorrect");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "autocorrect");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.autocorrect());
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+EncodedJSValue jsHTMLInputElementAutocapitalize(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "autocapitalize");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "autocapitalize");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.autocapitalize());
+    return JSValue::encode(result);
 }
 
 #endif
 
 #if ENABLE(MEDIA_CAPTURE)
-JSValue jsHTMLInputElementCapture(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementCapture(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLInputElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.capture());
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLInputElement", "capture");
+        return throwGetterTypeError(*exec, "HTMLInputElement", "capture");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::captureAttr));
+    return JSValue::encode(result);
 }
 
 #endif
 
-JSValue jsHTMLInputElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLInputElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLInputElement* domObject = jsCast<JSHTMLInputElement*>(asObject(slotBase));
-    return JSHTMLInputElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLInputElementPrototype* domObject = jsDynamicCast<JSHTMLInputElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLInputElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLInputElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLInputElementAccept(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLInputElement* thisObject = jsCast<JSHTMLInputElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLInputElement, Base>(exec, propertyName, value, JSHTMLInputElementTable, thisObject, slot);
-}
-
-void setJSHTMLInputElementAccept(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "accept");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "accept");
         return;
-    impl.setAttribute(WebCore::HTMLNames::acceptAttr, nativeValue);
-}
-
-
-void setJSHTMLInputElementAlt(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
-    impl.setAttribute(WebCore::HTMLNames::altAttr, nativeValue);
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::acceptAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementAutocomplete(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementAlt(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "alt");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "alt");
         return;
-    impl.setAttribute(WebCore::HTMLNames::autocompleteAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::altAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementAutofocus(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementAutocomplete(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "autocomplete");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "autocomplete");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::autocompleteAttr, nativeValue);
+}
+
+
+void setJSHTMLInputElementAutofocus(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "autofocus");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "autofocus");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::autofocusAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementDefaultChecked(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementDefaultChecked(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "defaultChecked");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "defaultChecked");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::checkedAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementChecked(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementChecked(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "checked");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "checked");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setChecked(nativeValue);
 }
 
 
-void setJSHTMLInputElementDirName(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementDirName(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "dirName");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "dirName");
         return;
-    impl.setAttribute(WebCore::HTMLNames::dirnameAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::dirnameAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementDisabled(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementDisabled(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "disabled");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "disabled");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::disabledAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementFiles(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementFiles(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    FileList* nativeValue(toFileList(value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "files");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "files");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    FileList* nativeValue = JSFileList::toWrapped(value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setFiles(nativeValue);
 }
 
 
-void setJSHTMLInputElementFormAction(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementFormAction(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "formAction");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "formAction");
         return;
-    impl.setAttribute(WebCore::HTMLNames::formactionAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::formactionAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementFormEnctype(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementFormEnctype(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "formEnctype");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "formEnctype");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setFormEnctype(nativeValue);
 }
 
 
-void setJSHTMLInputElementFormMethod(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementFormMethod(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "formMethod");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "formMethod");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setFormMethod(nativeValue);
 }
 
 
-void setJSHTMLInputElementFormNoValidate(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementFormNoValidate(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "formNoValidate");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "formNoValidate");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::formnovalidateAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementFormTarget(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementFormTarget(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "formTarget");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "formTarget");
         return;
-    impl.setAttribute(WebCore::HTMLNames::formtargetAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::formtargetAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementHeight(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementHeight(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    unsigned nativeValue(toUInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "height");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "height");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    unsigned nativeValue = toUInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setHeight(nativeValue);
 }
 
 
-void setJSHTMLInputElementIndeterminate(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementIndeterminate(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "indeterminate");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "indeterminate");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setIndeterminate(nativeValue);
 }
 
 
-void setJSHTMLInputElementMax(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementMax(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "max");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "max");
         return;
-    impl.setAttribute(WebCore::HTMLNames::maxAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::maxAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementMaxLength(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementMaxLength(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "maxLength");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "maxLength");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    int nativeValue(toInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    int nativeValue = toInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setMaxLength(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLInputElementMin(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementMin(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "min");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "min");
         return;
-    impl.setAttribute(WebCore::HTMLNames::minAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::minAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementMultiple(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementMultiple(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "multiple");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "multiple");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::multipleAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementName(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementName(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "name");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "name");
         return;
-    impl.setAttribute(WebCore::HTMLNames::nameAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::nameAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementPattern(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementPattern(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "pattern");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "pattern");
         return;
-    impl.setAttribute(WebCore::HTMLNames::patternAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::patternAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementPlaceholder(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementPlaceholder(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "placeholder");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "placeholder");
         return;
-    impl.setAttribute(WebCore::HTMLNames::placeholderAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::placeholderAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementReadOnly(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementReadOnly(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "readOnly");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "readOnly");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::readonlyAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementRequired(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementRequired(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "required");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "required");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::requiredAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementSize(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementSize(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "size");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "size");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    unsigned nativeValue(toUInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    unsigned nativeValue = toUInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setSize(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLInputElementSrc(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementSrc(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "src");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "src");
         return;
-    impl.setAttribute(WebCore::HTMLNames::srcAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::srcAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementStep(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementStep(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "step");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "step");
         return;
-    impl.setAttribute(WebCore::HTMLNames::stepAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::stepAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementType(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "type");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "type");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setType(nativeValue);
 }
 
 
-void setJSHTMLInputElementDefaultValue(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementDefaultValue(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "defaultValue");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "defaultValue");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setDefaultValue(nativeValue);
 }
 
 
-void setJSHTMLInputElementValue(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementValue(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "value");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "value");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setValue(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLInputElementValueAsDate(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementValueAsDate(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "valueAsDate");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "valueAsDate");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    double nativeValue(valueToDate(exec, value));
-    if (exec->hadException())
+    double nativeValue = valueToDate(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setValueAsDate(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLInputElementValueAsNumber(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementValueAsNumber(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "valueAsNumber");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "valueAsNumber");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setValueAsNumber(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLInputElementWidth(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementWidth(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    unsigned nativeValue(toUInt32(exec, value, NormalConversion));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "width");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "width");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    unsigned nativeValue = toUInt32(exec, value, NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setWidth(nativeValue);
 }
 
 
-void setJSHTMLInputElementSelectionStart(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementSelectionStart(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLInputElement*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSHTMLInputElement*>(thisObject)->setSelectionStart(exec, value);
+    castedThis->setSelectionStart(exec, value);
 }
 
 
-void setJSHTMLInputElementSelectionEnd(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementSelectionEnd(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLInputElement*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSHTMLInputElement*>(thisObject)->setSelectionEnd(exec, value);
+    castedThis->setSelectionEnd(exec, value);
 }
 
 
-void setJSHTMLInputElementSelectionDirection(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementSelectionDirection(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLInputElement*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    jsCast<JSHTMLInputElement*>(thisObject)->setSelectionDirection(exec, value);
+    castedThis->setSelectionDirection(exec, value);
 }
 
 
-void setJSHTMLInputElementAlign(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementAlign(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "align");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "align");
         return;
-    impl.setAttribute(WebCore::HTMLNames::alignAttr, nativeValue);
-}
-
-
-#if ENABLE(DIRECTORY_UPLOAD)
-void setJSHTMLInputElementWebkitdirectory(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
         return;
-    impl.setBooleanAttribute(WebCore::HTMLNames::webkitdirectoryAttr, nativeValue);
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::alignAttr, nativeValue);
 }
 
-#endif
 
-void setJSHTMLInputElementUseMap(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementUseMap(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "useMap");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "useMap");
         return;
-    impl.setAttribute(WebCore::HTMLNames::usemapAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::usemapAttr, nativeValue);
 }
 
 
-void setJSHTMLInputElementIncremental(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementIncremental(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "incremental");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "incremental");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::incrementalAttr, nativeValue);
 }
 
 
-#if ENABLE(INPUT_SPEECH)
-void setJSHTMLInputElementWebkitSpeech(ExecState* exec, JSObject* thisObject, JSValue value)
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+void setJSHTMLInputElementAutocorrect(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "autocorrect");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "autocorrect");
         return;
-    impl.setBooleanAttribute(WebCore::HTMLNames::webkitspeechAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAutocorrect(nativeValue);
 }
 
 #endif
 
-#if ENABLE(INPUT_SPEECH)
-void setJSHTMLInputElementWebkitGrammar(ExecState* exec, JSObject* thisObject, JSValue value)
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+void setJSHTMLInputElementAutocapitalize(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "autocapitalize");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "autocapitalize");
         return;
-    impl.setBooleanAttribute(WebCore::HTMLNames::webkitgrammarAttr, nativeValue);
-}
-
-#endif
-
-#if ENABLE(INPUT_SPEECH)
-void setJSHTMLInputElementOnwebkitspeechchange(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    impl.setOnwebkitspeechchange(createJSAttributeEventListener(exec, value, thisObject));
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAutocapitalize(nativeValue);
 }
 
 #endif
 
 #if ENABLE(MEDIA_CAPTURE)
-void setJSHTMLInputElementCapture(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLInputElementCapture(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(thisObject);
-    HTMLInputElement& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLInputElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLInputElement", "capture");
+        else
+            throwSetterTypeError(*exec, "HTMLInputElement", "capture");
         return;
-    impl.setCapture(nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setBooleanAttribute(WebCore::HTMLNames::captureAttr, nativeValue);
 }
 
 #endif
@@ -1284,12 +2041,12 @@ JSValue JSHTMLInputElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepUp(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "stepUp");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
 
     size_t argsCount = exec->argumentCount();
@@ -1299,8 +2056,8 @@ EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepUp(ExecState
         return JSValue::encode(jsUndefined());
     }
 
-    int n(toInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    int n = toInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.stepUp(n, ec);
     setDOMException(exec, ec);
@@ -1309,12 +2066,12 @@ EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepUp(ExecState
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepDown(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "stepDown");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
 
     size_t argsCount = exec->argumentCount();
@@ -1324,8 +2081,8 @@ EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepDown(ExecSta
         return JSValue::encode(jsUndefined());
     }
 
-    int n(toInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    int n = toInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.stepDown(n, ec);
     setDOMException(exec, ec);
@@ -1334,29 +2091,28 @@ EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionStepDown(ExecSta
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionCheckValidity(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "checkValidity");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.checkValidity());
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.checkValidity());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetCustomValidity(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "setCustomValidity");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& error(valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0)));
-    if (exec->hadException())
+    String error = valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setCustomValidity(error);
     return JSValue::encode(jsUndefined());
@@ -1364,29 +2120,29 @@ EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetCustomValidit
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSelect(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "select");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.select();
     return JSValue::encode(jsUndefined());
 }
 
 static EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeText1(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "setRangeText");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& replacement(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String replacement = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setRangeText(replacement, ec);
     setDOMException(exec, ec);
@@ -1395,26 +2151,26 @@ static EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeT
 
 static EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeText2(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "setRangeText");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
-    HTMLInputElement& impl = castedThis->impl();
-    if (exec->argumentCount() < 3)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 3))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& replacement(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String replacement = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned start(toUInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    unsigned start = toUInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    unsigned end(toUInt32(exec, exec->argument(2), NormalConversion));
-    if (exec->hadException())
+    unsigned end = toUInt32(exec, exec->argument(2), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& selectionMode(argumentOrNull(exec, 3).isEmpty() ? String() : argumentOrNull(exec, 3).toString(exec)->value(exec));
-    if (exec->hadException())
+    String selectionMode = exec->argumentCount() <= 3 ? String() : exec->uncheckedArgument(3).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setRangeText(replacement, start, end, selectionMode, ec);
     setDOMException(exec, ec);
@@ -1423,7 +2179,7 @@ static EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeT
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeText(ExecState* exec)
 {
-    size_t argsCount = exec->argumentCount();
+    size_t argsCount = std::min<size_t>(4, exec->argumentCount());
     if (argsCount == 1)
         return jsHTMLInputElementPrototypeFunctionSetRangeText1(exec);
     if (argsCount == 3 || argsCount == 4)
@@ -1435,10 +2191,10 @@ EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetRangeText(Exe
 
 EncodedJSValue JSC_HOST_CALL jsHTMLInputElementPrototypeFunctionSetSelectionRange(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLInputElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLInputElement* castedThis = jsCast<JSHTMLInputElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLInputElement* castedThis = jsDynamicCast<JSHTMLInputElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLInputElement", "setSelectionRange");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLInputElement::info());
     return JSValue::encode(castedThis->setSelectionRange(exec));
 }

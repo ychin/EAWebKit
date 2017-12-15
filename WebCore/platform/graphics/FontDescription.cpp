@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2007 Nicholas Shanks <contact@nickshanks.com>
  * Copyright (C) 2008, 2013 Apple Inc. All rights reserved.
@@ -11,7 +12,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -29,43 +30,57 @@
 
 #include "config.h"
 #include "FontDescription.h"
+#include "LocaleToScriptMapping.h"
 
 namespace WebCore {
 
 struct SameSizeAsFontDescription {
-    Vector<AtomicString, 1> families;
-    RefPtr<FontFeatureSettings> m_featureSettings;
+    void* pointers[3];
     float sizes[2];
-    // FXIME: Make them fit into one word.
+    // FIXME: Make them fit into one word.
     uint32_t bitfields;
     uint32_t bitfields2 : 8;
 };
 
 COMPILE_ASSERT(sizeof(FontDescription) == sizeof(SameSizeAsFontDescription), FontDescription_should_stay_small);
 
+FontDescription::FontDescription()
+    : m_orientation(Horizontal)
+    , m_nonCJKGlyphOrientation(NonCJKGlyphOrientationVerticalRight)
+    , m_widthVariant(RegularWidth)
+    , m_italic(FontItalicOff)
+    , m_smallCaps(FontSmallCapsOff)
+    , m_isAbsoluteSize(false)
+    , m_weight(FontWeightNormal)
+    , m_renderingMode(NormalRenderingMode)
+    , m_kerning(AutoKerning)
+    , m_commonLigaturesState(NormalLigaturesState)
+    , m_discretionaryLigaturesState(NormalLigaturesState)
+    , m_historicalLigaturesState(NormalLigaturesState)
+    , m_keywordSize(0)
+    , m_fontSmoothing(AutoSmoothing)
+    , m_textRendering(AutoTextRendering)
+    , m_isSpecifiedFont(false)
+    , m_script(localeToScriptCodeForFontSelection(m_locale))
+    , m_fontSynthesis(initialFontSynthesis())
+{
+}
+
 FontWeight FontDescription::lighterWeight(void) const
 {
-    // FIXME: Should actually return the CSS weight corresponding to next lightest
-    // weight of the currently used font family.
     switch (m_weight) {
         case FontWeight100:
         case FontWeight200:
-            return FontWeight100;
-
         case FontWeight300:
-            return FontWeight200;
-
         case FontWeight400:
         case FontWeight500:
-            return FontWeight300;
+            return FontWeight100;
 
         case FontWeight600:
         case FontWeight700:
             return FontWeight400;
 
         case FontWeight800:
-            return FontWeight500;
-
         case FontWeight900:
             return FontWeight700;
     }
@@ -75,13 +90,9 @@ FontWeight FontDescription::lighterWeight(void) const
 
 FontWeight FontDescription::bolderWeight(void) const
 {
-    // FIXME: Should actually return the CSS weight corresponding to next heaviest
-    // weight of the currently used font family.
     switch (m_weight) {
         case FontWeight100:
         case FontWeight200:
-            return FontWeight300;
-
         case FontWeight300:
             return FontWeight400;
 
@@ -91,8 +102,6 @@ FontWeight FontDescription::bolderWeight(void) const
 
         case FontWeight600:
         case FontWeight700:
-            return FontWeight800;
-
         case FontWeight800:
         case FontWeight900:
             return FontWeight900;
@@ -109,11 +118,10 @@ FontTraitsMask FontDescription::traitsMask() const
     
 }
 
-FontDescription FontDescription::makeNormalFeatureSettings() const
+void FontDescription::setLocale(const AtomicString& locale)
 {
-    FontDescription normalDescription(*this);
-    normalDescription.setFeatureSettings(0);
-    return normalDescription;
+    m_locale = locale;
+    m_script = localeToScriptCodeForFontSelection(m_locale);
 }
 
 #if ENABLE(IOS_TEXT_AUTOSIZING)

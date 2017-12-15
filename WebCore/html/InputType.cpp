@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Apple Inc. All rights reserved.
  *           (C) 2006 Alexey Proskuryakov (ap@nypop.com)
  * Copyright (C) 2007 Samuel Weinig (sam@webkit.org)
  * Copyright (C) 2009, 2010, 2011, 2012 Google Inc. All rights reserved.
@@ -60,11 +60,11 @@
 #include "PasswordInputType.h"
 #include "RadioInputType.h"
 #include "RangeInputType.h"
-#include "RegularExpression.h"
 #include "RenderElement.h"
 #include "RenderTheme.h"
 #include "ResetInputType.h"
 #include "RuntimeEnabledFeatures.h"
+#include "ScopedEventQueue.h"
 #include "SearchInputType.h"
 #include "ShadowRoot.h"
 #include "SubmitInputType.h"
@@ -82,76 +82,87 @@
 namespace WebCore {
 
 using namespace HTMLNames;
-using namespace std;
 
-typedef OwnPtr<InputType> (*InputTypeFactoryFunction)(HTMLInputElement&);
+typedef bool (RuntimeEnabledFeatures::*InputTypeConditionalFunction)() const;
+typedef const AtomicString& (*InputTypeNameFunction)();
+typedef std::unique_ptr<InputType> (*InputTypeFactoryFunction)(HTMLInputElement&);
 typedef HashMap<AtomicString, InputTypeFactoryFunction, CaseFoldingHash> InputTypeFactoryMap;
 
-static OwnPtr<InputTypeFactoryMap> createInputTypeFactoryMap()
+template<class T>
+static std::unique_ptr<InputType> createInputType(HTMLInputElement& element)
 {
-    OwnPtr<InputTypeFactoryMap> map = adoptPtr(new InputTypeFactoryMap);
+    return std::make_unique<T>(element);
+}
 
-    // FIXME: Remove unnecessary '&'s from the following map.add operations
-    // once we switch to a non-broken Visual Studio compiler.  https://bugs.webkit.org/show_bug.cgi?id=121235
-    map->add(InputTypeNames::button(), &ButtonInputType::create);
-    map->add(InputTypeNames::checkbox(), &CheckboxInputType::create);
+static void populateInputTypeFactoryMap(InputTypeFactoryMap& map)
+{
+    static const struct InputTypes {
+        InputTypeConditionalFunction conditionalFunction;
+        InputTypeNameFunction nameFunction;
+        InputTypeFactoryFunction factoryFunction;
+    } inputTypes[] = {
+        { nullptr, &InputTypeNames::button, &createInputType<ButtonInputType> },
+        { nullptr, &InputTypeNames::checkbox, &createInputType<CheckboxInputType> },
 #if ENABLE(INPUT_TYPE_COLOR)
-    map->add(InputTypeNames::color(), &ColorInputType::create);
+        { nullptr, &InputTypeNames::color, &createInputType<ColorInputType> },
 #endif
 #if ENABLE(INPUT_TYPE_DATE)
-    if (RuntimeEnabledFeatures::sharedFeatures().inputTypeDateEnabled())
-        map->add(InputTypeNames::date(), &DateInputType::create);
+        { &RuntimeEnabledFeatures::inputTypeDateEnabled, &InputTypeNames::date, &createInputType<DateInputType> },
 #endif
 #if ENABLE(INPUT_TYPE_DATETIME_INCOMPLETE)
-    if (RuntimeEnabledFeatures::sharedFeatures().inputTypeDateTimeEnabled())
-        map->add(InputTypeNames::datetime(), &DateTimeInputType::create);
+        { &RuntimeEnabledFeatures::inputTypeDateTimeEnabled, &InputTypeNames::datetime, &createInputType<DateTimeInputType> },
 #endif
 #if ENABLE(INPUT_TYPE_DATETIMELOCAL)
-    if (RuntimeEnabledFeatures::sharedFeatures().inputTypeDateTimeLocalEnabled())
-        map->add(InputTypeNames::datetimelocal(), &DateTimeLocalInputType::create);
+        { &RuntimeEnabledFeatures::inputTypeDateTimeLocalEnabled, &InputTypeNames::datetimelocal, &createInputType<DateTimeLocalInputType> },
 #endif
-    map->add(InputTypeNames::email(), &EmailInputType::create);
-    map->add(InputTypeNames::file(), &FileInputType::create);
-    map->add(InputTypeNames::hidden(), &HiddenInputType::create);
-    map->add(InputTypeNames::image(), &ImageInputType::create);
+        { nullptr, &InputTypeNames::email, &createInputType<EmailInputType> },
+        { nullptr, &InputTypeNames::file, &createInputType<FileInputType> },
+        { nullptr, &InputTypeNames::hidden, &createInputType<HiddenInputType> },
+        { nullptr, &InputTypeNames::image, &createInputType<ImageInputType> },
 #if ENABLE(INPUT_TYPE_MONTH)
-    if (RuntimeEnabledFeatures::sharedFeatures().inputTypeMonthEnabled())
-        map->add(InputTypeNames::month(), &MonthInputType::create);
+        { &RuntimeEnabledFeatures::inputTypeMonthEnabled, &InputTypeNames::month, &createInputType<MonthInputType> },
 #endif
-    map->add(InputTypeNames::number(), &NumberInputType::create);
-    map->add(InputTypeNames::password(), &PasswordInputType::create);
-    map->add(InputTypeNames::radio(), &RadioInputType::create);
-    map->add(InputTypeNames::range(), &RangeInputType::create);
-    map->add(InputTypeNames::reset(), &ResetInputType::create);
-    map->add(InputTypeNames::search(), &SearchInputType::create);
-    map->add(InputTypeNames::submit(), &SubmitInputType::create);
-    map->add(InputTypeNames::telephone(), &TelephoneInputType::create);
+        { nullptr, &InputTypeNames::number, &createInputType<NumberInputType> },
+        { nullptr, &InputTypeNames::password, &createInputType<PasswordInputType> },
+        { nullptr, &InputTypeNames::radio, &createInputType<RadioInputType> },
+        { nullptr, &InputTypeNames::range, &createInputType<RangeInputType> },
+        { nullptr, &InputTypeNames::reset, &createInputType<ResetInputType> },
+        { nullptr, &InputTypeNames::search, &createInputType<SearchInputType> },
+        { nullptr, &InputTypeNames::submit, &createInputType<SubmitInputType> },
+        { nullptr, &InputTypeNames::telephone, &createInputType<TelephoneInputType> },
 #if ENABLE(INPUT_TYPE_TIME)
-    if (RuntimeEnabledFeatures::sharedFeatures().inputTypeTimeEnabled())
-        map->add(InputTypeNames::time(), &TimeInputType::create);
+        { &RuntimeEnabledFeatures::inputTypeTimeEnabled, &InputTypeNames::time, &createInputType<TimeInputType> },
 #endif
-    map->add(InputTypeNames::url(), &URLInputType::create);
+        { nullptr, &InputTypeNames::url, &createInputType<URLInputType> },
 #if ENABLE(INPUT_TYPE_WEEK)
-    if (RuntimeEnabledFeatures::sharedFeatures().inputTypeWeekEnabled())
-        map->add(InputTypeNames::week(), &WeekInputType::create);
+        { &RuntimeEnabledFeatures::inputTypeWeekEnabled, &InputTypeNames::week, &createInputType<WeekInputType> },
 #endif
-    // No need to register "text" because it is the default type.
+        // No need to register "text" because it is the default type.
+    };
 
-    return map;
+    for (unsigned i = 0; i < WTF_ARRAY_LENGTH(inputTypes); ++i) {
+        auto conditionalFunction = inputTypes[i].conditionalFunction;
+        if (!conditionalFunction || (RuntimeEnabledFeatures::sharedFeatures().*conditionalFunction)())
+            map.add(inputTypes[i].nameFunction(), inputTypes[i].factoryFunction);
+    }
 }
 
-OwnPtr<InputType> InputType::create(HTMLInputElement& element, const AtomicString& typeName)
+std::unique_ptr<InputType> InputType::create(HTMLInputElement& element, const AtomicString& typeName)
 {
-    static const InputTypeFactoryMap* factoryMap = createInputTypeFactoryMap().leakPtr();
-    OwnPtr<InputType> (*factory)(HTMLInputElement&) = typeName.isEmpty() ? 0 : factoryMap->get(typeName);
-    if (!factory)
-        factory = TextInputType::create;
-    return factory(element);
+    static NeverDestroyed<InputTypeFactoryMap> factoryMap;
+    if (factoryMap.get().isEmpty())
+        populateInputTypeFactoryMap(factoryMap);
+
+    if (!typeName.isEmpty()) {
+        if (auto factory = factoryMap.get().get(typeName))
+            return factory(element);
+    }
+    return std::make_unique<TextInputType>(element);
 }
 
-OwnPtr<InputType> InputType::createText(HTMLInputElement& element)
+std::unique_ptr<InputType> InputType::createText(HTMLInputElement& element)
 {
-    return TextInputType::create(element);
+    return std::make_unique<TextInputType>(element);
 }
 
 InputType::~InputType()
@@ -161,7 +172,7 @@ InputType::~InputType()
 bool InputType::themeSupportsDataListUI(InputType* type)
 {
     Document& document = type->element().document();
-    RefPtr<RenderTheme> theme = document.page() ? document.page()->theme() : RenderTheme::defaultTheme();
+    RefPtr<RenderTheme> theme = document.page() ? &document.page()->theme() : RenderTheme::defaultTheme();
     return theme->supportsDataListUI(type->formControlType());
 }
 
@@ -223,7 +234,7 @@ void InputType::setValueAsDate(double, ExceptionCode& ec) const
 
 double InputType::valueAsDouble() const
 {
-    return numeric_limits<double>::quiet_NaN();
+    return std::numeric_limits<double>::quiet_NaN();
 }
 
 void InputType::setValueAsDouble(double doubleValue, TextFieldEventBehavior eventBehavior, ExceptionCode& ec) const
@@ -460,7 +471,7 @@ void InputType::forwardEvent(Event*)
 
 bool InputType::shouldSubmitImplicitly(Event* event)
 {
-    return event->isKeyboardEvent() && event->type() == eventNames().keypressEvent && static_cast<KeyboardEvent*>(event)->charCode() == '\r';
+    return is<KeyboardEvent>(*event) && event->type() == eventNames().keypressEvent && downcast<KeyboardEvent>(*event).charCode() == '\r';
 }
 
 PassRefPtr<HTMLFormElement> InputType::formForSubmission() const
@@ -468,9 +479,9 @@ PassRefPtr<HTMLFormElement> InputType::formForSubmission() const
     return element().form();
 }
 
-RenderElement* InputType::createRenderer(RenderArena&, RenderStyle& style) const
+RenderPtr<RenderElement> InputType::createInputRenderer(Ref<RenderStyle>&& style)
 {
-    return RenderElement::createFor(element(), style);
+    return RenderPtr<RenderElement>(RenderElement::createFor(element(), WTF::move(style)));
 }
 
 void InputType::blur()
@@ -514,6 +525,13 @@ String InputType::serialize(const Decimal&) const
     return String();
 }
 
+#if PLATFORM(IOS)
+DateComponents::Type InputType::dateType() const
+{
+    return DateComponents::Invalid;
+}
+#endif
+
 void InputType::dispatchSimulatedClickIfActive(KeyboardEvent* event) const
 {
     if (element().active())
@@ -540,7 +558,7 @@ bool InputType::hasCustomFocusLogic() const
 
 bool InputType::isKeyboardFocusable(KeyboardEvent* event) const
 {
-    return element().isTextFormControlKeyboardFocusable(event);
+    return !element().isReadOnly() && element().isTextFormControlKeyboardFocusable(event);
 }
 
 bool InputType::isMouseFocusable() const
@@ -583,6 +601,10 @@ void InputType::altAttributeChanged()
 }
 
 void InputType::srcAttributeChanged()
+{
+}
+
+void InputType::maxResultsAttributeChanged()
 {
 }
 
@@ -643,11 +665,6 @@ String InputType::defaultValue() const
     return String();
 }
 
-bool InputType::canSetSuggestedValue()
-{
-    return false;
-}
-
 bool InputType::shouldSendChangeEventAfterCheckedChanged()
 {
     return true;
@@ -700,16 +717,23 @@ String InputType::visibleValue() const
     return element().value();
 }
 
+bool InputType::isEmptyValue() const
+{
+    return true;
+}
+
 String InputType::sanitizeValue(const String& proposedValue) const
 {
     return proposedValue;
 }
 
+#if ENABLE(DRAG_SUPPORT)
 bool InputType::receiveDroppedFiles(const DragData&)
 {
     ASSERT_NOT_REACHED();
     return false;
 }
+#endif
 
 Icon* InputType::icon() const
 {
@@ -717,17 +741,20 @@ Icon* InputType::icon() const
     return 0;
 }
 
+#if PLATFORM(IOS)
+String InputType::displayString() const
+{
+    ASSERT_NOT_REACHED();
+    return String();
+}
+#endif
+
 bool InputType::shouldResetOnDocumentActivation()
 {
     return false;
 }
 
 bool InputType::shouldRespectListAttribute()
-{
-    return false;
-}
-
-bool InputType::shouldRespectSpeechAttribute()
 {
     return false;
 }
@@ -897,7 +924,11 @@ void InputType::requiredAttributeChanged()
 {
 }
 
-void InputType::valueAttributeChanged()
+void InputType::capsLockStateMayHaveChanged()
+{
+}
+
+void InputType::updateAutoFillButton()
 {
 }
 
@@ -929,10 +960,6 @@ Decimal InputType::findClosestTickMarkValue(const Decimal&)
     return Decimal::nan();
 }
 #endif
-
-void InputType::updateClearButtonVisibility()
-{
-}
 
 bool InputType::supportsIndeterminateAppearance() const
 {
@@ -1071,6 +1098,7 @@ void InputType::stepUpFromRenderer(int n)
     if (!stepRange.hasStep())
       return;
 
+    EventQueueScope scope;
     const Decimal step = stepRange.step();
 
     int sign;
@@ -1090,7 +1118,7 @@ void InputType::stepUpFromRenderer(int n)
             current = stepRange.minimum() - nextDiff;
         if (current > stepRange.maximum() - nextDiff)
             current = stepRange.maximum() - nextDiff;
-        setValueAsDecimal(current, DispatchInputAndChangeEvent, IGNORE_EXCEPTION);
+        setValueAsDecimal(current, DispatchNoEvent, IGNORE_EXCEPTION);
     }
     if ((sign > 0 && current < stepRange.minimum()) || (sign < 0 && current > stepRange.maximum()))
         setValueAsDecimal(sign > 0 ? stepRange.minimum() : stepRange.maximum(), DispatchInputAndChangeEvent, IGNORE_EXCEPTION);
@@ -1118,14 +1146,6 @@ void InputType::stepUpFromRenderer(int n)
                 applyStep(n + 1, AnyIsDefaultStep, DispatchInputAndChangeEvent, IGNORE_EXCEPTION);
         } else
             applyStep(n, AnyIsDefaultStep, DispatchInputAndChangeEvent, IGNORE_EXCEPTION);
-    }
-}
-
-void InputType::observeFeatureIfVisible(FeatureObserver::Feature feature) const
-{
-    if (RenderStyle* style = element().renderStyle()) {
-        if (style->visibility() != HIDDEN)
-            FeatureObserver::observe(&element().document(), feature);
     }
 }
 

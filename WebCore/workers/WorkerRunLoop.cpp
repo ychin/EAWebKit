@@ -30,8 +30,6 @@
  
 #include "config.h"
 
-#if ENABLE(WORKERS)
-
 #include "ScriptExecutionContext.h"
 #include "SharedTimer.h"
 #include "ThreadGlobalData.h"
@@ -89,7 +87,7 @@ private:
 };
 
 WorkerRunLoop::WorkerRunLoop()
-    : m_sharedTimer(adoptPtr(new WorkerSharedTimer))
+    : m_sharedTimer(std::make_unique<WorkerSharedTimer>())
     , m_nestedCount(0)
     , m_uniqueId(0)
 {
@@ -148,12 +146,23 @@ MessageQueueWaitResult WorkerRunLoop::runInMode(WorkerGlobalScope* context, cons
 MessageQueueWaitResult WorkerRunLoop::runInMode(WorkerGlobalScope* context, const ModePredicate& predicate, WaitMode waitMode)
 {
     ASSERT(context);
-    ASSERT(context->thread());
-    ASSERT(context->thread()->threadID() == currentThread());
+    ASSERT(context->thread().threadID() == currentThread());
+
+    double deadline = MessageQueue<Task>::infiniteTime();
+
+#if USE(CF)
+    CFAbsoluteTime nextCFRunLoopTimerFireDate = CFRunLoopGetNextTimerFireDate(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    double timeUntilNextCFRunLoopTimerInSeconds = nextCFRunLoopTimerFireDate - CFAbsoluteTimeGetCurrent();
+    deadline = currentTime() + std::max(0.0, timeUntilNextCFRunLoopTimerInSeconds);
+#endif
 
     double absoluteTime = 0.0;
-    if (waitMode == WaitForMessage)
-        absoluteTime = (predicate.isDefaultMode() && m_sharedTimer->isActive()) ? m_sharedTimer->fireTime() : MessageQueue<Task>::infiniteTime();
+    if (waitMode == WaitForMessage) {
+        if (predicate.isDefaultMode() && m_sharedTimer->isActive())
+            absoluteTime = std::min(deadline, m_sharedTimer->fireTime());
+        else
+            absoluteTime = deadline;
+    }
     MessageQueueWaitResult result;
     auto task = m_messageQueue.waitForMessageFilteredWithTimeout(result, predicate, absoluteTime);
 
@@ -170,6 +179,10 @@ MessageQueueWaitResult WorkerRunLoop::runInMode(WorkerGlobalScope* context, cons
     case MessageQueueTimeout:
         if (!context->isClosing())
             m_sharedTimer->fire();
+#if USE(CF)
+        if (nextCFRunLoopTimerFireDate <= CFAbsoluteTimeGetCurrent())
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, /*returnAfterSourceHandled*/ false);
+#endif
         break;
     }
 
@@ -179,8 +192,7 @@ MessageQueueWaitResult WorkerRunLoop::runInMode(WorkerGlobalScope* context, cons
 void WorkerRunLoop::runCleanupTasks(WorkerGlobalScope* context)
 {
     ASSERT(context);
-    ASSERT(context->thread());
-    ASSERT(context->thread()->threadID() == currentThread());
+    ASSERT(context->thread().threadID() == currentThread());
     ASSERT(m_messageQueue.killed());
 
     while (true) {
@@ -196,39 +208,31 @@ void WorkerRunLoop::terminate()
     m_messageQueue.kill();
 }
 
-void WorkerRunLoop::postTask(PassOwnPtr<ScriptExecutionContext::Task> task)
+void WorkerRunLoop::postTask(ScriptExecutionContext::Task task)
 {
-    postTaskForMode(task, defaultMode());
+    postTaskForMode(WTF::move(task), defaultMode());
 }
 
-void WorkerRunLoop::postTaskAndTerminate(PassOwnPtr<ScriptExecutionContext::Task> task)
+void WorkerRunLoop::postTaskAndTerminate(ScriptExecutionContext::Task task)
 {
-    m_messageQueue.appendAndKill(Task::create(task, defaultMode().isolatedCopy()));
+    m_messageQueue.appendAndKill(std::make_unique<Task>(WTF::move(task), defaultMode()));
 }
 
-void WorkerRunLoop::postTaskForMode(PassOwnPtr<ScriptExecutionContext::Task> task, const String& mode)
+void WorkerRunLoop::postTaskForMode(ScriptExecutionContext::Task task, const String& mode)
 {
-    m_messageQueue.append(Task::create(task, mode.isolatedCopy()));
+    m_messageQueue.append(std::make_unique<Task>(WTF::move(task), mode));
 }
 
-std::unique_ptr<WorkerRunLoop::Task> WorkerRunLoop::Task::create(PassOwnPtr<ScriptExecutionContext::Task> task, const String& mode)
+void WorkerRunLoop::Task::performTask(const WorkerRunLoop& runLoop, WorkerGlobalScope* context)
 {
-    return std::unique_ptr<Task>(new Task(task, mode));
+    if ((!context->isClosing() && !runLoop.terminated()) || m_task.isCleanupTask())
+        m_task.performTask(*context);
 }
 
-void WorkerRunLoop::Task::performTask(const WorkerRunLoop& runLoop, ScriptExecutionContext* context)
-{
-    WorkerGlobalScope* workerGlobalScope = static_cast<WorkerGlobalScope*>(context);
-    if ((!workerGlobalScope->isClosing() && !runLoop.terminated()) || m_task->isCleanupTask())
-        m_task->performTask(context);
-}
-
-WorkerRunLoop::Task::Task(PassOwnPtr<ScriptExecutionContext::Task> task, const String& mode)
-    : m_task(task)
+WorkerRunLoop::Task::Task(ScriptExecutionContext::Task task, const String& mode)
+    : m_task(WTF::move(task))
     , m_mode(mode.isolatedCopy())
 {
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)

@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGTSpanElement.h"
 
+#include "JSDOMBinding.h"
 #include "SVGTSpanElement.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +29,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGTSpanElementTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTSpanElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGTSpanElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGTSpanElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGTSpanElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGTSpanElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGTSpanElementPrototype>(vm.heap)) JSSVGTSpanElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGTSpanElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGTSpanElementTable = { 2, 1, JSSVGTSpanElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGTSpanElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGTSpanElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGTSpanElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGTSpanElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGTSpanElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGTSpanElementConstructor>(vm.heap)) JSSVGTSpanElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGTSpanElementConstructorTable = { 1, 0, JSSVGTSpanElementConstructorTableValues, 0 };
-const ClassInfo JSSVGTSpanElementConstructor::s_info = { "SVGTSpanElementConstructor", &Base::s_info, &JSSVGTSpanElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGTSpanElementConstructor) };
+const ClassInfo JSSVGTSpanElementConstructor::s_info = { "SVGTSpanElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTSpanElementConstructor) };
 
 JSSVGTSpanElementConstructor::JSSVGTSpanElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,59 +90,49 @@ void JSSVGTSpanElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGTSpanElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGTSpanElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGTSpanElementConstructor, JSDOMWrapper>(exec, JSSVGTSpanElementConstructorTable, jsCast<JSSVGTSpanElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGTSpanElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGTSpanElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGTSpanElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTSpanElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGTSpanElementPrototypeTable = { 1, 0, JSSVGTSpanElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGTSpanElementPrototype::s_info = { "SVGTSpanElementPrototype", &Base::s_info, &JSSVGTSpanElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGTSpanElementPrototype) };
+const ClassInfo JSSVGTSpanElementPrototype::s_info = { "SVGTSpanElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTSpanElementPrototype) };
 
-JSObject* JSSVGTSpanElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGTSpanElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGTSpanElement::s_info = { "SVGTSpanElement", &Base::s_info, &JSSVGTSpanElementTable, 0 , CREATE_METHOD_TABLE(JSSVGTSpanElement) };
-
-JSSVGTSpanElement::JSSVGTSpanElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGTSpanElement> impl)
-    : JSSVGTextPositioningElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGTSpanElement::finishCreation(VM& vm)
+void JSSVGTSpanElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGTSpanElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGTSpanElement::s_info = { "SVGTSpanElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGTSpanElement) };
+
+JSSVGTSpanElement::JSSVGTSpanElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGTSpanElement>&& impl)
+    : JSSVGTextPositioningElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGTSpanElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGTSpanElementPrototype::create(vm, globalObject, JSSVGTSpanElementPrototype::createStructure(vm, globalObject, JSSVGTextPositioningElementPrototype::self(vm, globalObject)));
+    return JSSVGTSpanElementPrototype::create(vm, globalObject, JSSVGTSpanElementPrototype::createStructure(vm, globalObject, JSSVGTextPositioningElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGTSpanElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGTSpanElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGTSpanElement* thisObject = jsCast<JSSVGTSpanElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGTSpanElement, Base>(exec, JSSVGTSpanElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGTSpanElement>(vm, globalObject);
 }
 
-JSValue jsSVGTSpanElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGTSpanElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGTSpanElement* domObject = jsCast<JSSVGTSpanElement*>(asObject(slotBase));
-    return JSSVGTSpanElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGTSpanElementPrototype* domObject = jsDynamicCast<JSSVGTSpanElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGTSpanElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGTSpanElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -121,5 +142,3 @@ JSValue JSSVGTSpanElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 
 }
-
-#endif // ENABLE(SVG)

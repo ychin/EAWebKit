@@ -33,29 +33,95 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsRangeExceptionPrototypeFunctionToString(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsRangeExceptionCode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRangeExceptionName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRangeExceptionMessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRangeExceptionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSRangeExceptionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRangeExceptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRangeExceptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSRangeExceptionPrototype>(vm.heap)) JSRangeExceptionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRangeExceptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSRangeExceptionConstructor : public DOMConstructorObject {
+private:
+    JSRangeExceptionConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSRangeExceptionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSRangeExceptionConstructor* ptr = new (NotNull, JSC::allocateCell<JSRangeExceptionConstructor>(vm.heap)) JSRangeExceptionConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSRangeExceptionTableIndex[9] = {
+    { -1, -1 },
+    { 0, 8 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 2, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSRangeExceptionTableValues[] =
 {
-    { "code", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionCode), (intptr_t)0 },
-    { "name", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionName), (intptr_t)0 },
-    { "message", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionMessage), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "code", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionCode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "name", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "message", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionMessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSRangeExceptionTable = { 10, 7, JSRangeExceptionTableValues, 0 };
+static const HashTable JSRangeExceptionTable = { 3, 7, true, JSRangeExceptionTableValues, 0, JSRangeExceptionTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSRangeExceptionConstructorTableValues[] =
 {
-    { "BAD_BOUNDARYPOINTS_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionBAD_BOUNDARYPOINTS_ERR), (intptr_t)0 },
-    { "INVALID_NODE_TYPE_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionINVALID_NODE_TYPE_ERR), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "BAD_BOUNDARYPOINTS_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "INVALID_NODE_TYPE_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
 };
 
-static const HashTable JSRangeExceptionConstructorTable = { 4, 3, JSRangeExceptionConstructorTableValues, 0 };
-const ClassInfo JSRangeExceptionConstructor::s_info = { "RangeExceptionConstructor", &Base::s_info, &JSRangeExceptionConstructorTable, 0, CREATE_METHOD_TABLE(JSRangeExceptionConstructor) };
+const ClassInfo JSRangeExceptionConstructor::s_info = { "RangeExceptionConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRangeExceptionConstructor) };
 
 JSRangeExceptionConstructor::JSRangeExceptionConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,56 +132,46 @@ void JSRangeExceptionConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSRangeExceptionPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSRangeExceptionConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSRangeExceptionConstructor, JSDOMWrapper>(exec, JSRangeExceptionConstructorTable, jsCast<JSRangeExceptionConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSRangeException::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("RangeException"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSRangeExceptionConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSRangeExceptionPrototypeTableValues[] =
 {
-    { "BAD_BOUNDARYPOINTS_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionBAD_BOUNDARYPOINTS_ERR), (intptr_t)0 },
-    { "INVALID_NODE_TYPE_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionINVALID_NODE_TYPE_ERR), (intptr_t)0 },
-    { "toString", DontDelete | DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRangeExceptionPrototypeFunctionToString), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRangeExceptionConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "BAD_BOUNDARYPOINTS_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "INVALID_NODE_TYPE_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "toString", DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRangeExceptionPrototypeFunctionToString), (intptr_t) (0) },
 };
 
-static const HashTable JSRangeExceptionPrototypeTable = { 8, 7, JSRangeExceptionPrototypeTableValues, 0 };
-const ClassInfo JSRangeExceptionPrototype::s_info = { "RangeExceptionPrototype", &Base::s_info, &JSRangeExceptionPrototypeTable, 0, CREATE_METHOD_TABLE(JSRangeExceptionPrototype) };
+const ClassInfo JSRangeExceptionPrototype::s_info = { "RangeExceptionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRangeExceptionPrototype) };
 
-JSObject* JSRangeExceptionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRangeException>(vm, globalObject);
-}
-
-bool JSRangeExceptionPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSRangeExceptionPrototype* thisObject = jsCast<JSRangeExceptionPrototype*>(object);
-    return getStaticPropertySlot<JSRangeExceptionPrototype, JSObject>(exec, JSRangeExceptionPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSRangeException::s_info = { "RangeException", &Base::s_info, &JSRangeExceptionTable, 0 , CREATE_METHOD_TABLE(JSRangeException) };
-
-JSRangeException::JSRangeException(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RangeException> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSRangeException::finishCreation(VM& vm)
+void JSRangeExceptionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSRangeExceptionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSRangeException::s_info = { "RangeException", &Base::s_info, &JSRangeExceptionTable, CREATE_METHOD_TABLE(JSRangeException) };
+
+JSRangeException::JSRangeException(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RangeException>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSRangeException::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSRangeExceptionPrototype::create(vm, globalObject, JSRangeExceptionPrototype::createStructure(vm, globalObject, globalObject->errorPrototype()));
+}
+
+JSObject* JSRangeException::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSRangeException>(vm, globalObject);
 }
 
 void JSRangeException::destroy(JSC::JSCell* cell)
@@ -126,50 +182,58 @@ void JSRangeException::destroy(JSC::JSCell* cell)
 
 JSRangeException::~JSRangeException()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSRangeException::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSRangeException* thisObject = jsCast<JSRangeException*>(object);
+    auto* thisObject = jsCast<JSRangeException*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSRangeException, Base>(exec, JSRangeExceptionTable, thisObject, propertyName, slot);
 }
 
-JSValue jsRangeExceptionCode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRangeExceptionCode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRangeException* castedThis = jsCast<JSRangeException*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RangeException& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSRangeException*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.code());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRangeExceptionName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRangeExceptionName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRangeException* castedThis = jsCast<JSRangeException*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RangeException& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSRangeException*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.name());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRangeExceptionMessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRangeExceptionMessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRangeException* castedThis = jsCast<JSRangeException*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RangeException& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSRangeException*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.message());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsRangeExceptionConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRangeExceptionConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSRangeException* domObject = jsCast<JSRangeException*>(asObject(slotBase));
-    return JSRangeException::getConstructor(exec->vm(), domObject->globalObject());
+    JSRangeExceptionPrototype* domObject = jsDynamicCast<JSRangeExceptionPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSRangeException::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSRangeException::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -179,60 +243,35 @@ JSValue JSRangeException::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsRangeExceptionPrototypeFunctionToString(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRangeException::info()))
-        return throwVMTypeError(exec);
-    JSRangeException* castedThis = jsCast<JSRangeException*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRangeException* castedThis = jsDynamicCast<JSRangeException*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RangeException", "toString");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRangeException::info());
-    RangeException& impl = castedThis->impl();
-
-    JSC::JSValue result = jsStringWithCache(exec, impl.toString());
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.toString());
     return JSValue::encode(result);
-}
-
-// Constant getters
-
-JSValue jsRangeExceptionBAD_BOUNDARYPOINTS_ERR(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsRangeExceptionINVALID_NODE_TYPE_ERR(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-static inline bool isObservable(JSRangeException* jsRangeException)
-{
-    if (jsRangeException->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSRangeExceptionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSRangeException* jsRangeException = jsCast<JSRangeException*>(handle.get().asCell());
-    if (!isObservable(jsRangeException))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSRangeExceptionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSRangeException* jsRangeException = jsCast<JSRangeException*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsRangeException = jsCast<JSRangeException*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsRangeException->impl(), jsRangeException);
-    jsRangeException->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RangeException* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, RangeException* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSRangeException>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSRangeException>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -241,13 +280,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RangeEx
     // attribute to RangeException.
     COMPILE_ASSERT(!__is_polymorphic(RangeException), RangeException_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<RangeException>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSRangeException>(exec, globalObject, impl);
+    return createNewWrapper<JSRangeException>(globalObject, impl);
 }
 
-RangeException* toRangeException(JSC::JSValue value)
+RangeException* JSRangeException::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSRangeException::info()) ? &jsCast<JSRangeException*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSRangeException*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

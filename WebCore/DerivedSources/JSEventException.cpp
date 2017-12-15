@@ -33,34 +33,95 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsEventExceptionPrototypeFunctionToString(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsEventExceptionCode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsEventExceptionName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsEventExceptionMessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsEventExceptionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSEventExceptionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSEventExceptionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSEventExceptionPrototype* ptr = new (NotNull, JSC::allocateCell<JSEventExceptionPrototype>(vm.heap)) JSEventExceptionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSEventExceptionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSEventExceptionConstructor : public DOMConstructorObject {
+private:
+    JSEventExceptionConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSEventExceptionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSEventExceptionConstructor* ptr = new (NotNull, JSC::allocateCell<JSEventExceptionConstructor>(vm.heap)) JSEventExceptionConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSEventExceptionTableIndex[9] = {
+    { -1, -1 },
+    { 0, 8 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 2, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSEventExceptionTableValues[] =
 {
-    { "code", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionCode), (intptr_t)0 },
-    { "name", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionName), (intptr_t)0 },
-    { "message", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionMessage), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "code", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionCode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "name", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "message", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionMessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSEventExceptionTable = { 10, 7, JSEventExceptionTableValues, 0 };
+static const HashTable JSEventExceptionTable = { 3, 7, true, JSEventExceptionTableValues, 0, JSEventExceptionTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSEventExceptionConstructorTableValues[] =
 {
-    { "UNSPECIFIED_EVENT_TYPE_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionUNSPECIFIED_EVENT_TYPE_ERR), (intptr_t)0 },
-    { "DISPATCH_REQUEST_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionDISPATCH_REQUEST_ERR), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "UNSPECIFIED_EVENT_TYPE_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "DISPATCH_REQUEST_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
 };
 
-static const HashTable JSEventExceptionConstructorTable = { 4, 3, JSEventExceptionConstructorTableValues, 0 };
-static const HashTable& getJSEventExceptionConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSEventExceptionConstructorTable);
-}
-
-const ClassInfo JSEventExceptionConstructor::s_info = { "EventExceptionConstructor", &Base::s_info, 0, getJSEventExceptionConstructorTable, CREATE_METHOD_TABLE(JSEventExceptionConstructor) };
+const ClassInfo JSEventExceptionConstructor::s_info = { "EventExceptionConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEventExceptionConstructor) };
 
 JSEventExceptionConstructor::JSEventExceptionConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -71,66 +132,46 @@ void JSEventExceptionConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSEventExceptionPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSEventExceptionConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSEventExceptionConstructor, JSDOMWrapper>(exec, getJSEventExceptionConstructorTable(exec), jsCast<JSEventExceptionConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSEventException::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("EventException"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSEventExceptionConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSEventExceptionPrototypeTableValues[] =
 {
-    { "UNSPECIFIED_EVENT_TYPE_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionUNSPECIFIED_EVENT_TYPE_ERR), (intptr_t)0 },
-    { "DISPATCH_REQUEST_ERR", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionDISPATCH_REQUEST_ERR), (intptr_t)0 },
-    { "toString", DontDelete | DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsEventExceptionPrototypeFunctionToString), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEventExceptionConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "UNSPECIFIED_EVENT_TYPE_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "DISPATCH_REQUEST_ERR", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "toString", DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsEventExceptionPrototypeFunctionToString), (intptr_t) (0) },
 };
 
-static const HashTable JSEventExceptionPrototypeTable = { 8, 7, JSEventExceptionPrototypeTableValues, 0 };
-static const HashTable& getJSEventExceptionPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSEventExceptionPrototypeTable);
-}
+const ClassInfo JSEventExceptionPrototype::s_info = { "EventExceptionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEventExceptionPrototype) };
 
-const ClassInfo JSEventExceptionPrototype::s_info = { "EventExceptionPrototype", &Base::s_info, 0, getJSEventExceptionPrototypeTable, CREATE_METHOD_TABLE(JSEventExceptionPrototype) };
-
-JSObject* JSEventExceptionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSEventException>(vm, globalObject);
-}
-
-bool JSEventExceptionPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSEventExceptionPrototype* thisObject = jsCast<JSEventExceptionPrototype*>(object);
-    return getStaticPropertySlot<JSEventExceptionPrototype, JSObject>(exec, getJSEventExceptionPrototypeTable(exec), thisObject, propertyName, slot);
-}
-
-static const HashTable& getJSEventExceptionTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSEventExceptionTable);
-}
-
-const ClassInfo JSEventException::s_info = { "EventException", &Base::s_info, 0, getJSEventExceptionTable , CREATE_METHOD_TABLE(JSEventException) };
-
-JSEventException::JSEventException(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EventException> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSEventException::finishCreation(VM& vm)
+void JSEventExceptionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSEventExceptionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSEventException::s_info = { "EventException", &Base::s_info, &JSEventExceptionTable, CREATE_METHOD_TABLE(JSEventException) };
+
+JSEventException::JSEventException(Structure* structure, JSDOMGlobalObject* globalObject, Ref<EventException>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSEventException::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSEventExceptionPrototype::create(vm, globalObject, JSEventExceptionPrototype::createStructure(vm, globalObject, globalObject->errorPrototype()));
+}
+
+JSObject* JSEventException::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSEventException>(vm, globalObject);
 }
 
 void JSEventException::destroy(JSC::JSCell* cell)
@@ -141,50 +182,58 @@ void JSEventException::destroy(JSC::JSCell* cell)
 
 JSEventException::~JSEventException()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSEventException::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSEventException* thisObject = jsCast<JSEventException*>(object);
+    auto* thisObject = jsCast<JSEventException*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSEventException, Base>(exec, getJSEventExceptionTable(exec), thisObject, propertyName, slot);
+    return getStaticValueSlot<JSEventException, Base>(exec, JSEventExceptionTable, thisObject, propertyName, slot);
 }
 
-JSValue jsEventExceptionCode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEventExceptionCode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSEventException* castedThis = jsCast<JSEventException*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    EventException& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSEventException*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.code());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsEventExceptionName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEventExceptionName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSEventException* castedThis = jsCast<JSEventException*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    EventException& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSEventException*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.name());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsEventExceptionMessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEventExceptionMessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSEventException* castedThis = jsCast<JSEventException*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    EventException& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSEventException*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.message());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsEventExceptionConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEventExceptionConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSEventException* domObject = jsCast<JSEventException*>(asObject(slotBase));
-    return JSEventException::getConstructor(exec->vm(), domObject->globalObject());
+    JSEventExceptionPrototype* domObject = jsDynamicCast<JSEventExceptionPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSEventException::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSEventException::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -194,60 +243,35 @@ JSValue JSEventException::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsEventExceptionPrototypeFunctionToString(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSEventException::info()))
-        return throwVMTypeError(exec);
-    JSEventException* castedThis = jsCast<JSEventException*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSEventException* castedThis = jsDynamicCast<JSEventException*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "EventException", "toString");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSEventException::info());
-    EventException& impl = castedThis->impl();
-
-    JSC::JSValue result = jsStringWithCache(exec, impl.toString());
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.toString());
     return JSValue::encode(result);
-}
-
-// Constant getters
-
-JSValue jsEventExceptionUNSPECIFIED_EVENT_TYPE_ERR(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsEventExceptionDISPATCH_REQUEST_ERR(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-static inline bool isObservable(JSEventException* jsEventException)
-{
-    if (jsEventException->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSEventExceptionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSEventException* jsEventException = jsCast<JSEventException*>(handle.get().asCell());
-    if (!isObservable(jsEventException))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSEventExceptionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSEventException* jsEventException = jsCast<JSEventException*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsEventException = jsCast<JSEventException*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsEventException->impl(), jsEventException);
-    jsEventException->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EventException* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, EventException* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSEventException>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSEventException>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -256,13 +280,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, EventEx
     // attribute to EventException.
     COMPILE_ASSERT(!__is_polymorphic(EventException), EventException_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<EventException>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSEventException>(exec, globalObject, impl);
+    return createNewWrapper<JSEventException>(globalObject, impl);
 }
 
-EventException* toEventException(JSC::JSValue value)
+EventException* JSEventException::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSEventException::info()) ? &jsCast<JSEventException*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSEventException*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

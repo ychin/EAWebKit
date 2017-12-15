@@ -27,23 +27,24 @@ namespace WebCore {
 
 class HTMLDetailsElement;
 
-class HTMLSummaryElement FINAL : public HTMLElement {
+class HTMLSummaryElement final : public HTMLElement {
 public:
-    static PassRefPtr<HTMLSummaryElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLSummaryElement> create(const QualifiedName&, Document&);
+
     bool isMainSummary() const;
-    virtual bool willRespondToMouseClickEvents() OVERRIDE;
+    virtual bool willRespondToMouseClickEvents() override;
 
 private:
     HTMLSummaryElement(const QualifiedName&, Document&);
 
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&);
-    virtual bool childShouldCreateRenderer(const Node*) const OVERRIDE;
-    virtual void defaultEventHandler(Event*);
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual bool childShouldCreateRenderer(const Node&) const override;
+    virtual void defaultEventHandler(Event*) override;
 
-    virtual void didAddUserAgentShadowRoot(ShadowRoot*) OVERRIDE;
+    virtual void didAddUserAgentShadowRoot(ShadowRoot*) override;
     HTMLDetailsElement* detailsElement() const;
 
-    bool supportsFocus() const OVERRIDE;
+    virtual bool supportsFocus() const override;
 };
 
 }

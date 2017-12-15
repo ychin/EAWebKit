@@ -22,9 +22,7 @@
 #define JSFocusEvent_h
 
 #include "FocusEvent.h"
-#include "JSDOMBinding.h"
 #include "JSUIEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSFocusEvent : public JSUIEvent {
 public:
     typedef JSUIEvent Base;
-    static JSFocusEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<FocusEvent> impl)
+    static JSFocusEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<FocusEvent>&& impl)
     {
-        JSFocusEvent* ptr = new (NotNull, JSC::allocateCell<JSFocusEvent>(globalObject->vm().heap)) JSFocusEvent(structure, globalObject, impl);
+        JSFocusEvent* ptr = new (NotNull, JSC::allocateCell<JSFocusEvent>(globalObject->vm().heap)) JSFocusEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,69 +54,19 @@ public:
         return static_cast<FocusEvent&>(Base::impl());
     }
 protected:
-    JSFocusEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<FocusEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSFocusEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<FocusEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSFocusEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSFocusEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSFocusEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSFocusEventPrototype>(vm.heap)) JSFocusEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSFocusEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSFocusEventConstructor : public DOMConstructorObject {
-private:
-    JSFocusEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSFocusEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSFocusEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSFocusEventConstructor>(vm.heap)) JSFocusEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSFocusEvent(JSC::ExecState*);
-#if ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-#endif // ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-};
 
 bool fillFocusEventInit(FocusEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsFocusEventRelatedTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsFocusEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

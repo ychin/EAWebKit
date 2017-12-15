@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -60,6 +60,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dirtynet.h"
 #endif
 
+#include "HTTPHeaderNames.h"
+#include <wtf/text/StringView.h>
 #include "StreamDecompressorEA.h"
 
 #if (BUILDING_EAWEBKIT_DLL) // If building dll currently.
@@ -331,7 +333,7 @@ static bool SetHeaderMapWrapperFromText(const char* pHeaderMapText, uint32_t tex
 			else
 			{
 				//if(sKey.length() < kMaxKeySize)
-					sKey += (wchar_t)(c);
+					sKey += (char16_t)(c);
 			}
 			break;
 
@@ -626,18 +628,18 @@ namespace WebKit
 		// Make sure our header map has an Accept-Encoding entry.
 		// By default WebKit doesn't create this header, nor does DirtySDK, 
 		// yet some web servers are non-conforming and require it.
-		if(!pTInfo->mHeaderMapOut.GetValue(EA_CHAR16("Accept-Encoding")))
+		if (!pTInfo->mHeaderMapOut.GetValue(httpHeaderNameString(WebCore::HTTPHeaderName::AcceptEncoding).upconvertedCharacters()))
 		{
 	#if ENABLE_PAYLOAD_DECOMPRESSION
 			//Note by Arpit Baldeva: put deflate first as it has a lower overhead compared to gzip. Since we support both raw DEFLATE stream and zlib wrapped DEFLATE stream transparently,
 			//we end up with lower overhead.
-			pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("Accept-Encoding"), EA_CHAR16("deflate,gzip,identity"));
+            pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::AcceptEncoding).upconvertedCharacters(), EA_CHAR16("deflate,gzip,identity"));
 	#else
-			pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("Accept-Encoding"), EA_CHAR16("identity"));
+            pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::AcceptEncoding).upconvertedCharacters(), EA_CHAR16("identity"));
 	#endif
 		}
 		
-		if(!pTInfo->mHeaderMapOut.GetValue(EA_CHAR16("Accept-Language")))
+        if (!pTInfo->mHeaderMapOut.GetValue(httpHeaderNameString(WebCore::HTTPHeaderName::AcceptLanguage).upconvertedCharacters()))
 		{
 			const EA::WebKit::Parameters& params = GetParameters();
 			if(params.mpAcceptLanguageHttpHeaderValue && params.mpAcceptLanguageHttpHeaderValue[0])
@@ -646,7 +648,7 @@ namespace WebKit
 				EA::TransportHelper::TransportString16 acceptLanguage16;
 				EA::TransportHelper::ConvertToString16(acceptLanguage8, acceptLanguage16);
 
-				pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("Accept-Language"), acceptLanguage16.c_str());
+                pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::AcceptLanguage).upconvertedCharacters(), acceptLanguage16.c_str());
 			}
 		}
 		
@@ -767,7 +769,7 @@ namespace WebKit
 					*pDest = 0;
 
 
-					pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("Content-Length"), bufferLen16);
+                    pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::ContentLength).upconvertedCharacters(), bufferLen16);
 					//iResult = HttpManagerPost(pHttpManager, pDirtySDKInfo->mHttpHandle, pDirtySDKInfo->mURI.c_str(), pDirtySDKInfo->mPostData.c_str(), (int32_t) pDirtySDKInfo->mPostData.length(), PROTOHTTP_POST);
 					iResult = HttpManagerRequest(pHttpManager, pDirtySDKInfo->mHttpHandle, pDirtySDKInfo->mURI.c_str(), pDirtySDKInfo->mPostData.c_str(), (int32_t) pDirtySDKInfo->mPostData.length(), ((pTInfo->mHttpRequestType == EA::WebKit::kHttpRequestTypePOST) ? PROTOHTTP_REQUESTTYPE_POST : PROTOHTTP_REQUESTTYPE_PUT));
 
@@ -881,7 +883,7 @@ namespace WebKit
 
 			// Fix the Host header to remove :80 if it is present. Some web servers (e.g. Google's www.gstatic.com or www.twitter.com) 
 			// are broken and expect that :80 is never present, even though :80 is valid.
-			EA::TransportHelper::TransportHeaderMap::iterator itHost = headerMapDSDK.find_as(EA_CHAR16("host"), EA::TransportHelper::str_iless());
+            EA::TransportHelper::TransportHeaderMap::iterator itHost = headerMapDSDK.find_as(httpHeaderNameString(WebCore::HTTPHeaderName::Host).upconvertedCharacters(), EA::TransportHelper::str_iless());
 
 			if(itHost != headerMapDSDK.end())  // This should always be true.
 			{
@@ -912,18 +914,18 @@ namespace WebKit
 				}*/
 			}
 
-			EA::TransportHelper::CopyHeaderLine(EA_CHAR16("host"),              headerMapDSDK, pHeader, uHeaderCapacity);
-			EA::TransportHelper::CopyHeaderLine(EA_CHAR16("transfer-encoding"), headerMapDSDK, pHeader, uHeaderCapacity);
-			EA::TransportHelper::CopyHeaderLine(EA_CHAR16("connection"),        headerMapDSDK, pHeader, uHeaderCapacity);
+            EA::TransportHelper::CopyHeaderLine(httpHeaderNameString(WebCore::HTTPHeaderName::Host).upconvertedCharacters(), headerMapDSDK, pHeader, uHeaderCapacity);
+            EA::TransportHelper::CopyHeaderLine(httpHeaderNameString(WebCore::HTTPHeaderName::TransferEncoding).upconvertedCharacters(), headerMapDSDK, pHeader, uHeaderCapacity);
+            EA::TransportHelper::CopyHeaderLine(httpHeaderNameString(WebCore::HTTPHeaderName::Connection).upconvertedCharacters(), headerMapDSDK, pHeader, uHeaderCapacity);
 	  
 			//TODO: DirtySDK user-agent detection. Make this a simple static operation. Do it once at the transport handler init.
 
 			// We append the DirtySDK user-agent string to our user-agent string.
-			EA::TransportHelper::TransportHeaderMap::const_iterator itDSDK = headerMapDSDK.find_as(EA_CHAR16("user-agent"), EA::TransportHelper::str_iless());
+            EA::TransportHelper::TransportHeaderMap::const_iterator itDSDK = headerMapDSDK.find_as(httpHeaderNameString(WebCore::HTTPHeaderName::UserAgent).upconvertedCharacters(), EA::TransportHelper::str_iless());
 			if(itDSDK != headerMapDSDK.end())  // This happens to always be true.
 			{
 				const EA::TransportHelper::TransportHeaderMap::mapped_type& sValueDSDK = itDSDK->second;
-				EA::TransportHelper::TransportString16 userAgentWebKit(pTInfo->mHeaderMapOut.GetValue(EA_CHAR16("user-agent")));
+                EA::TransportHelper::TransportString16 userAgentWebKit(pTInfo->mHeaderMapOut.GetValue(httpHeaderNameString(WebCore::HTTPHeaderName::UserAgent).upconvertedCharacters()));
 				if(!userAgentWebKit.empty())
 				{
 					if(pDirtySDKInfo->mSendIndex == 1) // Only do it the first time (i.e. not on redirects), lest we repeat appending each time through.
@@ -932,22 +934,22 @@ namespace WebKit
 						userAgentWebKit += sValueDSDK;
 						//Note by Arpit Baldeva:Comment out the line below and modify its content to set up a user-agent string for debug purpose.
 						//userAgentWebKit = L"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.19) Gecko/2010031422 Firefox/3.0.19 (.NET CLR 3.5.30729)";
-						pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("user-agent"),userAgentWebKit.c_str());
+                        pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::UserAgent).upconvertedCharacters(), userAgentWebKit.c_str());
 					}
 				}
 				else
 				{
-					pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("user-agent"),sValueDSDK.c_str());
+                    pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::UserAgent).upconvertedCharacters(), sValueDSDK.c_str());
 				}
 			}
 			
 			*pHeader = 0; // In case there are no header lines in mHeaderMapOut which we write next.
 
 			if((pTInfo->mHttpRequestType == EA::WebKit::kHttpRequestTypePOST || pTInfo->mHttpRequestType == EA::WebKit::kHttpRequestTypePUT) 
-				&& !(pTInfo->mHeaderMapOut.GetValue(EA_CHAR16("Content-Type"))) //If content type does not exist already....
+                && !(pTInfo->mHeaderMapOut.GetValue(httpHeaderNameString(WebCore::HTTPHeaderName::ContentType).upconvertedCharacters())) //If content type does not exist already....
 				)
 			{
-				pTInfo->mHeaderMapOut.SetValue(EA_CHAR16("Content-Type"), EA_CHAR16("application/x-www-form-urlencoded"));
+                pTInfo->mHeaderMapOut.SetValue(httpHeaderNameString(WebCore::HTTPHeaderName::ContentType).upconvertedCharacters(), EA_CHAR16("application/x-www-form-urlencoded"));
 			}
 
 
@@ -957,8 +959,8 @@ namespace WebKit
 			// whereby we no longer have to provide the body content and thus its associated headers.
 			if(sCommandLine.find(EA_CHAR16("GET")) == 0)
 			{
-				pTInfo->mHeaderMapOut.EraseValue(EA_CHAR16("Content-Length"));
-				pTInfo->mHeaderMapOut.EraseValue(EA_CHAR16("Content-Type"));
+                pTInfo->mHeaderMapOut.EraseValue(httpHeaderNameString(WebCore::HTTPHeaderName::ContentLength).upconvertedCharacters());
+                pTInfo->mHeaderMapOut.EraseValue(httpHeaderNameString(WebCore::HTTPHeaderName::ContentType).upconvertedCharacters());
 			}
 
 			int32_t textSizeRequired = SetTextFromHeaderMapWrapper(pTInfo->mHeaderMapOut, pHeader, uHeaderCapacity);
@@ -1027,7 +1029,7 @@ namespace WebKit
 #if ENABLE_PAYLOAD_DECOMPRESSION
 		DirtySDKInfo* pDirtySDKInfo = (DirtySDKInfo*)pTInfo->mTransportHandlerData;
 		
-		const char16_t* pContentEncodingType(pTInfo->mHeaderMapIn.GetValue(EA_CHAR16("Content-Encoding")));
+        const char16_t* pContentEncodingType(pTInfo->mHeaderMapIn.GetValue(httpHeaderNameString(WebCore::HTTPHeaderName::ContentEncoding).upconvertedCharacters()));
 		if(pContentEncodingType)
 		{
 			EA::WebKit::Allocator* pAllocator = GetAllocator();

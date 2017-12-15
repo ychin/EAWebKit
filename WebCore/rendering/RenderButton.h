@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 Apple Computer
+ * Copyright (C) 2005 Apple Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 
 #include "RenderFlexibleBox.h"
 #include "Timer.h"
-#include <wtf/OwnPtr.h>
+#include <memory>
 
 namespace WebCore {
 
@@ -33,67 +33,58 @@ class RenderTextFragment;
 // RenderButtons are just like normal flexboxes except that they will generate an anonymous block child.
 // For inputs, they will also generate an anonymous RenderText and keep its style and content up
 // to date as the button changes.
-class RenderButton FINAL : public RenderFlexibleBox {
+class RenderButton final : public RenderFlexibleBox {
 public:
-    explicit RenderButton(HTMLFormControlElement&);
+    RenderButton(HTMLFormControlElement&, Ref<RenderStyle>&&);
     virtual ~RenderButton();
 
     HTMLFormControlElement& formControlElement() const;
 
-    virtual bool canBeSelectionLeaf() const OVERRIDE;
+    virtual bool canBeSelectionLeaf() const override;
 
-    virtual void addChild(RenderObject* newChild, RenderObject *beforeChild = 0) OVERRIDE;
-    virtual void removeChild(RenderObject*) OVERRIDE;
-    virtual void removeLeftoverAnonymousBlock(RenderBlock*) OVERRIDE { }
-    virtual bool createsAnonymousWrapper() const OVERRIDE { return true; }
+    virtual void addChild(RenderObject* newChild, RenderObject *beforeChild = 0) override;
+    virtual void removeChild(RenderObject&) override;
+    virtual void removeLeftoverAnonymousBlock(RenderBlock*) override { }
+    virtual bool createsAnonymousWrapper() const override { return true; }
 
     void setupInnerStyle(RenderStyle*);
-    virtual void updateFromElement() OVERRIDE;
+    virtual void updateFromElement() override;
 
-    virtual bool canHaveGeneratedChildren() const OVERRIDE;
-    virtual bool hasControlClip() const OVERRIDE { return true; }
-    virtual LayoutRect controlClipRect(const LayoutPoint&) const OVERRIDE;
+    virtual bool canHaveGeneratedChildren() const override;
+    virtual bool hasControlClip() const override { return true; }
+    virtual LayoutRect controlClipRect(const LayoutPoint&) const override;
 
     void setText(const String&);
     String text() const;
 
+#if PLATFORM(IOS)
+    virtual void layout() override;
+#endif
+
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual const char* renderName() const OVERRIDE { return "RenderButton"; }
-    virtual bool isRenderButton() const OVERRIDE { return true; }
+    virtual const char* renderName() const override { return "RenderButton"; }
+    virtual bool isRenderButton() const override { return true; }
 
-    virtual void styleWillChange(StyleDifference, const RenderStyle* newStyle) OVERRIDE;
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
+    virtual void styleWillChange(StyleDifference, const RenderStyle& newStyle) override;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
 
-    virtual bool hasLineIfEmpty() const OVERRIDE;
+    virtual bool hasLineIfEmpty() const override;
 
-    virtual bool requiresForcedStyleRecalcPropagation() const OVERRIDE { return true; }
+    virtual bool requiresForcedStyleRecalcPropagation() const override { return true; }
 
-    void timerFired(Timer<RenderButton>*);
+    void timerFired();
 
     RenderTextFragment* m_buttonText;
     RenderBlock* m_inner;
 
-    OwnPtr<Timer<RenderButton> > m_timer;
+    std::unique_ptr<Timer> m_timer;
     bool m_default;
 };
 
-inline RenderButton* toRenderButton(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isRenderButton());
-    return static_cast<RenderButton*>(object);
-}
-
-inline const RenderButton* toRenderButton(const RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isRenderButton());
-    return static_cast<const RenderButton*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderButton(const RenderButton*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderButton, isRenderButton())
 
 #endif // RenderButton_h

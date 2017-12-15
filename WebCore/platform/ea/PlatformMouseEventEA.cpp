@@ -3,7 +3,7 @@
  *
  * All rights reserved.
  *
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -122,6 +122,17 @@ PlatformMouseEvent::PlatformMouseEvent(const EA::WebKit::MouseMoveEvent* moveEve
 	// This information is later passed to the ChromeClient which is port specific. So this can be ignored unless the port makes some use of it. 
 	m_modifierFlags = moveEvent->mModifiers;
 }
+
+bool operator==(unsigned short a, MouseButton b)
+{
+    return a == static_cast<unsigned short>(b);
+}
+
+bool operator!=(unsigned short a, MouseButton b)
+{
+    return a != static_cast<unsigned short>(b);
+}
+
 }
 
 // vim: ts=4 sw=4 et

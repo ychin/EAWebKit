@@ -21,25 +21,25 @@
 #ifndef JSXMLHttpRequestProgressEvent_h
 #define JSXMLHttpRequestProgressEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSProgressEvent.h"
 #include "XMLHttpRequestProgressEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSXMLHttpRequestProgressEvent : public JSProgressEvent {
 public:
     typedef JSProgressEvent Base;
-    static JSXMLHttpRequestProgressEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XMLHttpRequestProgressEvent> impl)
+    static JSXMLHttpRequestProgressEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<XMLHttpRequestProgressEvent>&& impl)
     {
-        JSXMLHttpRequestProgressEvent* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestProgressEvent>(globalObject->vm().heap)) JSXMLHttpRequestProgressEvent(structure, globalObject, impl);
+        JSXMLHttpRequestProgressEvent* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestProgressEvent>(globalObject->vm().heap)) JSXMLHttpRequestProgressEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,65 +52,20 @@ public:
     {
         return static_cast<XMLHttpRequestProgressEvent&>(Base::impl());
     }
-protected:
-    JSXMLHttpRequestProgressEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<XMLHttpRequestProgressEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSXMLHttpRequestProgressEventPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSXMLHttpRequestProgressEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSXMLHttpRequestProgressEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestProgressEventPrototype>(vm.heap)) JSXMLHttpRequestProgressEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSXMLHttpRequestProgressEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSXMLHttpRequestProgressEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<XMLHttpRequestProgressEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-class JSXMLHttpRequestProgressEventConstructor : public DOMConstructorObject {
-private:
-    JSXMLHttpRequestProgressEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-public:
-    typedef DOMConstructorObject Base;
-    static JSXMLHttpRequestProgressEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSXMLHttpRequestProgressEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSXMLHttpRequestProgressEventConstructor>(vm.heap)) JSXMLHttpRequestProgressEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsXMLHttpRequestProgressEventPosition(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestProgressEventTotalSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsXMLHttpRequestProgressEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

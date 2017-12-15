@@ -18,7 +18,6 @@
     <ProjectGuid>{70A7E147-26B6-CFEF-F3E0-8DD9725246EA}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>dirtysockEAWebKit</ProjectName>
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -42,26 +41,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <Midl />
-    <Masm />
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\kettle";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip"</AdditionalIncludeDirectories>
-      <AdditionalOptions> -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/host_tools/lib/clang/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC</AdditionalOptions>
-      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\kettle";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-isystem $(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
+      <CompileAs>CompileAsC</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_DEBUG;DS_PLATFORM;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1</NantUnescapedPreprocessorDefinitions>
+      <NantUnescapedPreprocessorDefinitions>_DEBUG;DS_PLATFORM;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1</NantUnescapedPreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_DEBUG;DS_PLATFORM;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DS_PLATFORM;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
       <SDLCheck>FALSE</SDLCheck>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\work\15.4.2.0.0\Build\PS4\DirtySDKEAWebKit\local\kettle-clang-dev-debug\lib\libdirtysockEAWebKit.a</OutputFile>
+      <OutputFile>kettle-clang-dev-debug\lib\libdirtysockEAWebKit.a</OutputFile>
     </Lib>
     <PreBuildEvent>
       <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
@@ -85,27 +84,27 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <Midl />
-    <Masm />
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\kettle";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip"</AdditionalIncludeDirectories>
-      <AdditionalOptions> -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/host_tools/lib/clang/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include -isystem C:/Program -isystem Files -isystem (x86)/SCE/ORBIS -isystem SDKs/3.500/target/include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC</AdditionalOptions>
-      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\kettle";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-isystem $(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include -isystem $(SCE_ORBIS_SDK_DIR)\target\include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
+      <CompileAs>CompileAsC</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <GenerateDebugInformation>TRUE</GenerateDebugInformation>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>DS_PLATFORM;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;NDEBUG</NantUnescapedPreprocessorDefinitions>
+      <NantUnescapedPreprocessorDefinitions>DS_PLATFORM;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;NDEBUG</NantUnescapedPreprocessorDefinitions>
       <OptimizationLevel>Level3</OptimizationLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>DS_PLATFORM;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DS_PLATFORM;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
       <SDLCheck>FALSE</SDLCheck>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\work\15.4.2.0.0\Build\PS4\DirtySDKEAWebKit\local\kettle-clang-dev-opt\lib\libdirtysockEAWebKit.a</OutputFile>
+      <OutputFile>kettle-clang-dev-opt\lib\libdirtysockEAWebKit.a</OutputFile>
     </Lib>
     <PreBuildEvent>
       <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
@@ -125,88 +124,87 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptarc4.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptarc4.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\crypt\cryptarc4.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\crypt\cryptarc4.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd2.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd2.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\crypt\cryptmd2.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\crypt\cryptmd2.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd5.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd5.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\crypt\cryptmd5.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\crypt\cryptmd5.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptrsa.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptrsa.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\crypt\cryptrsa.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\crypt\cryptrsa.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptsha1.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptsha1.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\crypt\cryptsha1.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\crypt\cryptsha1.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtylib.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtylib.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\dirtysock\dirtylib.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\dirtysock\dirtylib.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtymem.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtymem.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\dirtysock\dirtymem.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\dirtysock\dirtymem.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtynet.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtynet.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\dirtysock\dirtynet.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\dirtysock\dirtynet.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\platformsocketapi.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\platformsocketapi.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\dirtysock\platformsocketapi.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\dirtysock\platformsocketapi.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtylibkettle.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtylibkettle.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\dirtysock\kettle\dirtylibkettle.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\dirtysock\kettle\dirtylibkettle.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtynetkettle.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtynetkettle.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\dirtysock\kettle\dirtynetkettle.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\dirtysock\kettle\dirtynetkettle.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttp.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttp.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\proto\protohttp.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\proto\protohttp.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttpmanager.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttpmanager.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\proto\protohttpmanager.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\proto\protohttpmanager.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protossl.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protossl.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\proto\protossl.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\proto\protossl.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\util\lobbybase64.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\util\lobbybase64.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\core\source\util\lobbybase64.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\core\source\util\lobbybase64.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-str.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-str.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\platform\plat-str.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\platform\plat-str.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-time.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-time.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysockEAWebKit\platform\plat-time.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysockEAWebKit\platform\plat-time.c.obj</ObjectFileName>
     </ClCompile>
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
-    <SCE_ORBIS_SDK_DIR>C:\Program Files (x86)\SCE\ORBIS SDKs\3.500</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="C:\packages\Framework\3.34.00\data\FrameworkMsbuild.tasks" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-clang.exe" clang-asm="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-as.exe" clang-librarian="C:\Program Files (x86)\SCE\ORBIS SDKs\3.500\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.05.00\config\data\options_vstomake.xml"></UserProperties>
+      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang.exe" clang-librarian="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -21,10 +21,8 @@
 #ifndef JSPageTransitionEvent_h
 #define JSPageTransitionEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "PageTransitionEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSPageTransitionEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSPageTransitionEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<PageTransitionEvent> impl)
+    static JSPageTransitionEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<PageTransitionEvent>&& impl)
     {
-        JSPageTransitionEvent* ptr = new (NotNull, JSC::allocateCell<JSPageTransitionEvent>(globalObject->vm().heap)) JSPageTransitionEvent(structure, globalObject, impl);
+        JSPageTransitionEvent* ptr = new (NotNull, JSC::allocateCell<JSPageTransitionEvent>(globalObject->vm().heap)) JSPageTransitionEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,67 +54,19 @@ public:
         return static_cast<PageTransitionEvent&>(Base::impl());
     }
 protected:
-    JSPageTransitionEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<PageTransitionEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSPageTransitionEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<PageTransitionEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSPageTransitionEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSPageTransitionEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSPageTransitionEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSPageTransitionEventPrototype>(vm.heap)) JSPageTransitionEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSPageTransitionEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSPageTransitionEventConstructor : public DOMConstructorObject {
-private:
-    JSPageTransitionEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSPageTransitionEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSPageTransitionEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSPageTransitionEventConstructor>(vm.heap)) JSPageTransitionEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSPageTransitionEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillPageTransitionEventInit(PageTransitionEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsPageTransitionEventPersisted(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPageTransitionEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

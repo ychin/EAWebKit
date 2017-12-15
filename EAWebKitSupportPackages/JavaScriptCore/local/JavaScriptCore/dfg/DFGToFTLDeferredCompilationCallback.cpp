@@ -31,6 +31,7 @@
 #include "CodeBlock.h"
 #include "DFGJITCode.h"
 #include "Executable.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -42,10 +43,9 @@ ToFTLDeferredCompilationCallback::ToFTLDeferredCompilationCallback(
 
 ToFTLDeferredCompilationCallback::~ToFTLDeferredCompilationCallback() { }
 
-PassRefPtr<ToFTLDeferredCompilationCallback> ToFTLDeferredCompilationCallback::create(
-    PassRefPtr<CodeBlock> dfgCodeBlock)
+Ref<ToFTLDeferredCompilationCallback> ToFTLDeferredCompilationCallback::create(PassRefPtr<CodeBlock> dfgCodeBlock)
 {
-    return adoptRef(new ToFTLDeferredCompilationCallback(dfgCodeBlock));
+    return adoptRef(*new ToFTLDeferredCompilationCallback(dfgCodeBlock));
 }
 
 void ToFTLDeferredCompilationCallback::compilationDidBecomeReadyAsynchronously(
@@ -84,6 +84,8 @@ void ToFTLDeferredCompilationCallback::compilationDidComplete(
     
     m_dfgCodeBlock->jitCode()->dfg()->setOptimizationThresholdBasedOnCompilationResult(
         m_dfgCodeBlock.get(), result);
+
+    DeferredCompilationCallback::compilationDidComplete(codeBlock, result);
 }
 
 } } // JSC::DFG

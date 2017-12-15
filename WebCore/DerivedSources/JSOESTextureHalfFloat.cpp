@@ -24,6 +24,7 @@
 
 #include "JSOESTextureHalfFloat.h"
 
+#include "JSDOMBinding.h"
 #include "OESTextureHalfFloat.h"
 #include <wtf/GetPtr.h>
 
@@ -31,38 +32,62 @@ using namespace JSC;
 
 namespace WebCore {
 
+class JSOESTextureHalfFloatPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSOESTextureHalfFloatPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSOESTextureHalfFloatPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESTextureHalfFloatPrototype>(vm.heap)) JSOESTextureHalfFloatPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSOESTextureHalfFloatPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSOESTextureHalfFloatPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "HALF_FLOAT_OES", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x8D61), (intptr_t) (0) },
 };
 
-static const HashTable JSOESTextureHalfFloatPrototypeTable = { 1, 0, JSOESTextureHalfFloatPrototypeTableValues, 0 };
-const ClassInfo JSOESTextureHalfFloatPrototype::s_info = { "OESTextureHalfFloatPrototype", &Base::s_info, &JSOESTextureHalfFloatPrototypeTable, 0, CREATE_METHOD_TABLE(JSOESTextureHalfFloatPrototype) };
+const ClassInfo JSOESTextureHalfFloatPrototype::s_info = { "OESTextureHalfFloatPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOESTextureHalfFloatPrototype) };
 
-JSObject* JSOESTextureHalfFloatPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSOESTextureHalfFloat>(vm, globalObject);
-}
-
-const ClassInfo JSOESTextureHalfFloat::s_info = { "OESTextureHalfFloat", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSOESTextureHalfFloat) };
-
-JSOESTextureHalfFloat::JSOESTextureHalfFloat(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESTextureHalfFloat> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSOESTextureHalfFloat::finishCreation(VM& vm)
+void JSOESTextureHalfFloatPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSOESTextureHalfFloatPrototypeTableValues, *this);
+}
+
+const ClassInfo JSOESTextureHalfFloat::s_info = { "OESTextureHalfFloat", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOESTextureHalfFloat) };
+
+JSOESTextureHalfFloat::JSOESTextureHalfFloat(Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESTextureHalfFloat>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSOESTextureHalfFloat::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSOESTextureHalfFloatPrototype::create(vm, globalObject, JSOESTextureHalfFloatPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSOESTextureHalfFloat::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSOESTextureHalfFloat>(vm, globalObject);
 }
 
 void JSOESTextureHalfFloat::destroy(JSC::JSCell* cell)
@@ -73,31 +98,21 @@ void JSOESTextureHalfFloat::destroy(JSC::JSCell* cell)
 
 JSOESTextureHalfFloat::~JSOESTextureHalfFloat()
 {
-    releaseImplIfNotNull();
-}
-
-static inline bool isObservable(JSOESTextureHalfFloat* jsOESTextureHalfFloat)
-{
-    if (jsOESTextureHalfFloat->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSOESTextureHalfFloatOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSOESTextureHalfFloat* jsOESTextureHalfFloat = jsCast<JSOESTextureHalfFloat*>(handle.get().asCell());
-    if (!isObservable(jsOESTextureHalfFloat))
-        return false;
-    WebGLRenderingContext* root = jsOESTextureHalfFloat->impl().context();
+    auto* jsOESTextureHalfFloat = jsCast<JSOESTextureHalfFloat*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsOESTextureHalfFloat->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSOESTextureHalfFloatOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSOESTextureHalfFloat* jsOESTextureHalfFloat = jsCast<JSOESTextureHalfFloat*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsOESTextureHalfFloat = jsCast<JSOESTextureHalfFloat*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsOESTextureHalfFloat->impl(), jsOESTextureHalfFloat);
-    jsOESTextureHalfFloat->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -108,11 +123,11 @@ extern "C" { extern void (*const __identifier("??_7OESTextureHalfFloat@WebCore@@
 extern "C" { extern void* _ZTVN7WebCore19OESTextureHalfFloatE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESTextureHalfFloat* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, OESTextureHalfFloat* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSOESTextureHalfFloat>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSOESTextureHalfFloat>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -133,13 +148,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESText
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<OESTextureHalfFloat>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSOESTextureHalfFloat>(exec, globalObject, impl);
+    return createNewWrapper<JSOESTextureHalfFloat>(globalObject, impl);
 }
 
-OESTextureHalfFloat* toOESTextureHalfFloat(JSC::JSValue value)
+OESTextureHalfFloat* JSOESTextureHalfFloat::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSOESTextureHalfFloat::info()) ? &jsCast<JSOESTextureHalfFloat*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSOESTextureHalfFloat*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

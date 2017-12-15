@@ -26,7 +26,6 @@
 
 #include "Element.h"
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSEvent.h"
@@ -36,40 +35,128 @@
 #include "JSTextTrackCueList.h"
 #include "TextTrack.h"
 #include "TextTrackCueList.h"
+#include "TextTrackMediaSource.h"
 #include "URL.h"
 #include <runtime/Error.h>
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
 
+#if ENABLE(MEDIA_SOURCE) && ENABLE(VIDEO_TRACK)
+#include "JSSourceBuffer.h"
+#include "SourceBuffer.h"
+#endif
+
+#if ENABLE(WEBVTT_REGIONS)
+#include "JSVTTRegion.h"
+#include "JSVTTRegionList.h"
+#include "VTTRegionList.h"
+#endif
+
 using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddCue(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveCue(JSC::ExecState*);
+#if ENABLE(WEBVTT_REGIONS)
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddRegion(JSC::ExecState*);
+#endif
+#if ENABLE(WEBVTT_REGIONS)
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveRegion(JSC::ExecState*);
+#endif
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsTextTrackId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextTrackKind(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTextTrackKind(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTextTrackLabel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextTrackLanguage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTextTrackLanguage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTextTrackInBandMetadataTrackDispatchType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextTrackMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTextTrackMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsTextTrackCues(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextTrackActiveCues(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTextTrackOncuechange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSTextTrackOncuechange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(WEBVTT_REGIONS)
+JSC::EncodedJSValue jsTextTrackRegions(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(MEDIA_SOURCE) && ENABLE(VIDEO_TRACK)
+JSC::EncodedJSValue jsTextTrackSourceBuffer(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+JSC::EncodedJSValue jsTextTrackConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSTextTrackPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSTextTrackPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSTextTrackPrototype* ptr = new (NotNull, JSC::allocateCell<JSTextTrackPrototype>(vm.heap)) JSTextTrackPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSTextTrackPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSTextTrackConstructor : public DOMConstructorObject {
+private:
+    JSTextTrackConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSTextTrackConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSTextTrackConstructor* ptr = new (NotNull, JSC::allocateCell<JSTextTrackConstructor>(vm.heap)) JSTextTrackConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSTextTrackTableIndex[4] = {
+    { 0, -1 },
+    { 1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSTextTrackTableValues[] =
 {
-    { "kind", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackKind), (intptr_t)0 },
-    { "label", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackLabel), (intptr_t)0 },
-    { "language", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackLanguage), (intptr_t)0 },
-    { "mode", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackMode), (intptr_t)setJSTextTrackMode },
-    { "cues", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackCues), (intptr_t)0 },
-    { "activeCues", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackActiveCues), (intptr_t)0 },
-    { "oncuechange", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackOncuechange), (intptr_t)setJSTextTrackOncuechange },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "kind", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackKind), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTextTrackKind) },
+    { "language", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackLanguage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTextTrackLanguage) },
 };
 
-static const HashTable JSTextTrackTable = { 18, 15, JSTextTrackTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSTextTrackConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSTextTrackConstructorTable = { 1, 0, JSTextTrackConstructorTableValues, 0 };
-const ClassInfo JSTextTrackConstructor::s_info = { "TextTrackConstructor", &Base::s_info, &JSTextTrackConstructorTable, 0, CREATE_METHOD_TABLE(JSTextTrackConstructor) };
+static const HashTable JSTextTrackTable = { 2, 3, true, JSTextTrackTableValues, 0, JSTextTrackTableIndex };
+const ClassInfo JSTextTrackConstructor::s_info = { "TextTrackConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextTrackConstructor) };
 
 JSTextTrackConstructor::JSTextTrackConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -80,58 +167,74 @@ void JSTextTrackConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObj
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSTextTrackPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSTextTrackConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSTextTrackConstructor, JSDOMWrapper>(exec, JSTextTrackConstructorTable, jsCast<JSTextTrackConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSTextTrack::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("TextTrack"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSTextTrackPrototypeTableValues[] =
 {
-    { "addCue", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionAddCue), (intptr_t)1 },
-    { "removeCue", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionRemoveCue), (intptr_t)1 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "id", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "label", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackLabel), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "inBandMetadataTrackDispatchType", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackInBandMetadataTrackDispatchType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "mode", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackMode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTextTrackMode) },
+    { "cues", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackCues), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "activeCues", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackActiveCues), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "oncuechange", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackOncuechange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSTextTrackOncuechange) },
+#if ENABLE(WEBVTT_REGIONS)
+    { "regions", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackRegions), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_SOURCE) && ENABLE(VIDEO_TRACK)
+    { "sourceBuffer", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTextTrackSourceBuffer), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "addCue", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionAddCue), (intptr_t) (1) },
+    { "removeCue", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionRemoveCue), (intptr_t) (1) },
+#if ENABLE(WEBVTT_REGIONS)
+    { "addRegion", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionAddRegion), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(WEBVTT_REGIONS)
+    { "removeRegion", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionRemoveRegion), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsTextTrackPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSTextTrackPrototypeTable = { 16, 15, JSTextTrackPrototypeTableValues, 0 };
-const ClassInfo JSTextTrackPrototype::s_info = { "TextTrackPrototype", &Base::s_info, &JSTextTrackPrototypeTable, 0, CREATE_METHOD_TABLE(JSTextTrackPrototype) };
+const ClassInfo JSTextTrackPrototype::s_info = { "TextTrackPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTextTrackPrototype) };
 
-JSObject* JSTextTrackPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSTextTrack>(vm, globalObject);
-}
-
-bool JSTextTrackPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSTextTrackPrototype* thisObject = jsCast<JSTextTrackPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSTextTrackPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSTextTrack::s_info = { "TextTrack", &Base::s_info, &JSTextTrackTable, 0 , CREATE_METHOD_TABLE(JSTextTrack) };
-
-JSTextTrack::JSTextTrack(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TextTrack> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSTextTrack::finishCreation(VM& vm)
+void JSTextTrackPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSTextTrackPrototypeTableValues, *this);
+}
+
+const ClassInfo JSTextTrack::s_info = { "TextTrack", &Base::s_info, &JSTextTrackTable, CREATE_METHOD_TABLE(JSTextTrack) };
+
+JSTextTrack::JSTextTrack(Structure* structure, JSDOMGlobalObject* globalObject, Ref<TextTrack>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSTextTrack::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSTextTrackPrototype::create(vm, globalObject, JSTextTrackPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSTextTrack::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSTextTrack>(vm, globalObject);
 }
 
 void JSTextTrack::destroy(JSC::JSCell* cell)
@@ -142,123 +245,263 @@ void JSTextTrack::destroy(JSC::JSCell* cell)
 
 JSTextTrack::~JSTextTrack()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSTextTrack::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSTextTrack* thisObject = jsCast<JSTextTrack*>(object);
+    auto* thisObject = jsCast<JSTextTrack*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSTextTrack, Base>(exec, JSTextTrackTable, thisObject, propertyName, slot);
 }
 
-JSValue jsTextTrackKind(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTextTrackId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.kind());
-    return result;
-}
-
-
-JSValue jsTextTrackLabel(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.label());
-    return result;
-}
-
-
-JSValue jsTextTrackLanguage(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.language());
-    return result;
-}
-
-
-JSValue jsTextTrackMode(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.mode());
-    return result;
-}
-
-
-JSValue jsTextTrackCues(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.cues()));
-    return result;
-}
-
-
-JSValue jsTextTrackActiveCues(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.activeCues()));
-    return result;
-}
-
-
-JSValue jsTextTrackOncuechange(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    TextTrack& impl = castedThis->impl();
-    if (EventListener* listener = impl.oncuechange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "id");
+        return throwGetterTypeError(*exec, "TextTrack", "id");
     }
-    return jsNull();
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.id());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTextTrackConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSTextTrack* domObject = jsCast<JSTextTrack*>(asObject(slotBase));
-    return JSTextTrack::getConstructor(exec->vm(), domObject->globalObject());
-}
-
-void JSTextTrack::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSTextTrack* thisObject = jsCast<JSTextTrack*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSTextTrack, Base>(exec, propertyName, value, JSTextTrackTable, thisObject, slot);
-}
-
-void setJSTextTrackMode(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsTextTrackKind(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(thisObject);
-    TextTrack& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSTextTrack*>(slotBase);
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.kind());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackLabel(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "label");
+        return throwGetterTypeError(*exec, "TextTrack", "label");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.label());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackLanguage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSTextTrack*>(slotBase);
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.language());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackInBandMetadataTrackDispatchType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "inBandMetadataTrackDispatchType");
+        return throwGetterTypeError(*exec, "TextTrack", "inBandMetadataTrackDispatchType");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.inBandMetadataTrackDispatchType());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackMode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "mode");
+        return throwGetterTypeError(*exec, "TextTrack", "mode");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.mode());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackCues(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "cues");
+        return throwGetterTypeError(*exec, "TextTrack", "cues");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.cues()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackActiveCues(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "activeCues");
+        return throwGetterTypeError(*exec, "TextTrack", "activeCues");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.activeCues()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsTextTrackOncuechange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "oncuechange");
+        return throwGetterTypeError(*exec, "TextTrack", "oncuechange");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().cuechangeEvent));
+}
+
+
+#if ENABLE(WEBVTT_REGIONS)
+EncodedJSValue jsTextTrackRegions(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "regions");
+        return throwGetterTypeError(*exec, "TextTrack", "regions");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.regions()));
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(MEDIA_SOURCE) && ENABLE(VIDEO_TRACK)
+EncodedJSValue jsTextTrackSourceBuffer(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TextTrack", "sourceBuffer");
+        return throwGetterTypeError(*exec, "TextTrack", "sourceBuffer");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(TextTrackMediaSource::sourceBuffer(&impl)));
+    return JSValue::encode(result);
+}
+
+#endif
+
+EncodedJSValue jsTextTrackConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
+{
+    JSTextTrackPrototype* domObject = jsDynamicCast<JSTextTrackPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSTextTrack::getConstructor(exec->vm(), domObject->globalObject()));
+}
+
+void setJSTextTrackKind(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSTextTrack*>(baseObject);
+    UNUSED_PARAM(thisValue);
+    UNUSED_PARAM(exec);
+    castedThis->setKind(exec, value);
+}
+
+
+void setJSTextTrackLanguage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSTextTrack*>(baseObject);
+    UNUSED_PARAM(thisValue);
+    UNUSED_PARAM(exec);
+    castedThis->setLanguage(exec, value);
+}
+
+
+void setJSTextTrackMode(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TextTrack", "mode");
+        else
+            throwSetterTypeError(*exec, "TextTrack", "mode");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    if (nativeValue != "disabled" && nativeValue != "hidden" && nativeValue != "showing")
         return;
     impl.setMode(nativeValue);
 }
 
 
-void setJSTextTrackOncuechange(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSTextTrackOncuechange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(thisObject);
-    TextTrack& impl = castedThis->impl();
-    impl.setOncuechange(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTextTrackPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "TextTrack", "oncuechange");
+        else
+            throwSetterTypeError(*exec, "TextTrack", "oncuechange");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().cuechangeEvent, value);
 }
 
 
@@ -269,107 +512,149 @@ JSValue JSTextTrack::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddCue(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrack::info()))
-        return throwVMTypeError(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "addCue");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
-    TextTrack& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    TextTrackCue* cue(toTextTrackCue(exec->argument(0)));
-    if (exec->hadException())
+    ExceptionCode ec = 0;
+    TextTrackCue* cue = JSTextTrackCue::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    impl.addCue(cue);
+    impl.addCue(cue, ec);
+    setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveCue(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrack::info()))
-        return throwVMTypeError(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "removeCue");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
-    TextTrack& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    TextTrackCue* cue(toTextTrackCue(exec->argument(0)));
-    if (exec->hadException())
+    TextTrackCue* cue = JSTextTrackCue::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.removeCue(cue, ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }
 
+#if ENABLE(WEBVTT_REGIONS)
+EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddRegion(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "addRegion");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    VTTRegion* region = JSVTTRegion::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.addRegion(region);
+    return JSValue::encode(jsUndefined());
+}
+
+#endif
+
+#if ENABLE(WEBVTT_REGIONS)
+EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveRegion(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "removeRegion");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    ExceptionCode ec = 0;
+    VTTRegion* region = JSVTTRegion::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.removeRegion(region, ec);
+    setDOMException(exec, ec);
+    return JSValue::encode(jsUndefined());
+}
+
+#endif
+
 EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrack::info()))
-        return throwVMTypeError(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
-    TextTrack& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrack::info()))
-        return throwVMTypeError(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
-    TextTrack& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsTextTrackPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSTextTrack::info()))
-        return throwVMTypeError(exec);
-    JSTextTrack* castedThis = jsCast<JSTextTrack*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSTextTrack* castedThis = jsDynamicCast<JSTextTrack*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "TextTrack", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSTextTrack::info());
-    TextTrack& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* evt(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(evt, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-static inline bool isObservable(JSTextTrack* jsTextTrack)
+void JSTextTrack::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    if (jsTextTrack->hasCustomProperties())
-        return true;
-    if (jsTextTrack->impl().hasEventListeners())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSTextTrack*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->impl().visitJSEventListeners(visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSTextTrackOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSTextTrack* jsTextTrack = jsCast<JSTextTrack*>(handle.get().asCell());
+    auto* jsTextTrack = jsCast<JSTextTrack*>(handle.slot()->asCell());
     if (jsTextTrack->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsTextTrack))
-        return false;
-    Element* element = jsTextTrack->impl().element();
+    Element* element = WTF::getPtr(jsTextTrack->impl().element());
     if (!element)
         return false;
     void* root = WebCore::root(element);
@@ -378,25 +663,25 @@ bool JSTextTrackOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> hand
 
 void JSTextTrackOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSTextTrack* jsTextTrack = jsCast<JSTextTrack*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsTextTrack = jsCast<JSTextTrack*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsTextTrack->impl(), jsTextTrack);
-    jsTextTrack->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, TextTrack* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, TextTrack* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSTextTrack>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSTextTrack>(globalObject, impl))
         return result;
-    ReportMemoryCost<TextTrack>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSTextTrack>(exec, globalObject, impl);
+    return createNewWrapper<JSTextTrack>(globalObject, impl);
 }
 
-TextTrack* toTextTrack(JSC::JSValue value)
+TextTrack* JSTextTrack::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSTextTrack::info()) ? &jsCast<JSTextTrack*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSTextTrack*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

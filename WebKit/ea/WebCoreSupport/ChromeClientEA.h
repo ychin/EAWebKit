@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  * 
  * All rights reserved.
  *
@@ -33,7 +33,6 @@
 #include "ChromeClient.h"
 #include "FloatRect.h"
 #include "URL.h"
-#include <wtf/PassOwnPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
@@ -61,127 +60,119 @@ class ChromeClientEA : public ChromeClient
 public:
 	ChromeClientEA(EA::WebKit::WebPage* webPage);
     virtual ~ChromeClientEA();
-    virtual void chromeDestroyed() OVERRIDE;
+    virtual void chromeDestroyed() override;
 
-    virtual void setWindowRect(const FloatRect&) OVERRIDE;
-    virtual FloatRect windowRect() OVERRIDE;
+    virtual void setWindowRect(const FloatRect&) override;
+    virtual FloatRect windowRect() override;
 
-    virtual FloatRect pageRect() OVERRIDE;
+    virtual FloatRect pageRect() override;
 
-    virtual void focus() OVERRIDE;
-    virtual void unfocus() OVERRIDE;
+    virtual void focus() override;
+    virtual void unfocus() override;
 
-    virtual bool canTakeFocus(FocusDirection) OVERRIDE;
-    virtual void takeFocus(FocusDirection) OVERRIDE;
+    virtual bool canTakeFocus(FocusDirection) override;
+    virtual void takeFocus(FocusDirection) override;
 
-    virtual void focusedElementChanged(Element*) OVERRIDE;
-    virtual void focusedFrameChanged(Frame*) OVERRIDE;
+    virtual void focusedElementChanged(Element*) override;
+    virtual void focusedFrameChanged(Frame*) override;
 
-    virtual Page* createWindow(Frame*, const FrameLoadRequest&, const WindowFeatures&, const NavigationAction&) OVERRIDE;
-    virtual void show() OVERRIDE;
+    virtual Page* createWindow(Frame*, const FrameLoadRequest&, const WindowFeatures&, const NavigationAction&) override;
+    virtual void show() override;
 
-    virtual bool canRunModal() OVERRIDE;
-    virtual void runModal() OVERRIDE;
+    virtual bool canRunModal() override;
+    virtual void runModal() override;
 
-    virtual void setToolbarsVisible(bool) OVERRIDE;
-    virtual bool toolbarsVisible() OVERRIDE;
+    virtual void setToolbarsVisible(bool) override;
+    virtual bool toolbarsVisible() override;
 
-    virtual void setStatusbarVisible(bool) OVERRIDE;
-    virtual bool statusbarVisible() OVERRIDE;
+    virtual void setStatusbarVisible(bool) override;
+    virtual bool statusbarVisible() override;
 
-    virtual void setScrollbarsVisible(bool) OVERRIDE;
-    virtual bool scrollbarsVisible() OVERRIDE;
+    virtual void setScrollbarsVisible(bool) override;
+    virtual bool scrollbarsVisible() override;
 
-    virtual void setMenubarVisible(bool) OVERRIDE;
-    virtual bool menubarVisible() OVERRIDE;
+    virtual void setMenubarVisible(bool) override;
+    virtual bool menubarVisible() override;
 
-    virtual void setResizable(bool) OVERRIDE;
+    virtual void setResizable(bool) override;
 
-    virtual void addMessageToConsole(MessageSource, MessageLevel, const String& message, unsigned lineNumber, unsigned columnNumber, const String& sourceID) OVERRIDE;
+    virtual void addMessageToConsole(MessageSource, MessageLevel, const String& message, unsigned lineNumber, unsigned columnNumber, const String& sourceID) override;
 
-    virtual bool canRunBeforeUnloadConfirmPanel() OVERRIDE;
-    virtual bool runBeforeUnloadConfirmPanel(const String& message, Frame*) OVERRIDE;
+    virtual bool canRunBeforeUnloadConfirmPanel() override;
+    virtual bool runBeforeUnloadConfirmPanel(const String& message, Frame*) override;
 
-    virtual void closeWindowSoon() OVERRIDE;
+    virtual void closeWindowSoon() override;
 
-    virtual void runJavaScriptAlert(Frame*, const String&) OVERRIDE;
-    virtual bool runJavaScriptConfirm(Frame*, const String&) OVERRIDE;
-    virtual bool runJavaScriptPrompt(Frame*, const String& message, const String& defaultValue, String& result) OVERRIDE;
-    virtual bool shouldInterruptJavaScript() OVERRIDE;
+    virtual void runJavaScriptAlert(Frame*, const String&) override;
+    virtual bool runJavaScriptConfirm(Frame*, const String&) override;
+    virtual bool runJavaScriptPrompt(Frame*, const String& message, const String& defaultValue, String& result) override;
 
-    virtual void setStatusbarText(const String&) OVERRIDE;
+    virtual void setStatusbarText(const String&) override;
 
-    virtual KeyboardUIMode keyboardUIMode() OVERRIDE;
-    virtual IntRect windowResizerRect() const OVERRIDE;
+    virtual KeyboardUIMode keyboardUIMode() override;
 
-    virtual void invalidateRootView(const IntRect&, bool) OVERRIDE;
-	virtual void invalidateContentsAndRootView(const IntRect&, bool) OVERRIDE;
-    virtual void invalidateContentsForSlowScroll(const IntRect&, bool) OVERRIDE;
-    virtual void scroll(const IntSize& scrollDelta, const IntRect& rectToScroll, const IntRect& clipRect) OVERRIDE;
-#if USE(TILED_BACKING_STORE)
-    virtual void delegatedScrollRequested(const IntPoint& scrollPoint) OVERRIDE;
-#endif
+    virtual void invalidateRootView(const IntRect&) override;
+	virtual void invalidateContentsAndRootView(const IntRect&) override;
+    virtual void invalidateContentsForSlowScroll(const IntRect&) override;
+    virtual void scroll(const IntSize& scrollDelta, const IntRect& rectToScroll, const IntRect& clipRect) override;
+	virtual IntPoint screenToRootView(const IntPoint&) const override;
+	virtual IntRect rootViewToScreen(const IntRect&) const override;
+	virtual PlatformPageClient platformPageClient() const override;
+	virtual void contentsSizeChanged(Frame*, const IntSize&) const override;
 
-	virtual IntPoint screenToRootView(const IntPoint&) const OVERRIDE;
-	virtual IntRect rootViewToScreen(const IntRect&) const OVERRIDE;
-	virtual PlatformPageClient platformPageClient() const OVERRIDE;
-	virtual void contentsSizeChanged(Frame*, const IntSize&) const OVERRIDE;
+    virtual void scrollbarsModeDidChange() const override{ }
+    virtual void mouseDidMoveOverElement(const HitTestResult&, unsigned modifierFlags) override;
 
-    virtual void scrollbarsModeDidChange() const OVERRIDE{ }
-    virtual void mouseDidMoveOverElement(const HitTestResult&, unsigned modifierFlags) OVERRIDE;
-
-    virtual void setToolTip(const String&, TextDirection) OVERRIDE;
+    virtual void setToolTip(const String&, TextDirection) override;
 
 	virtual void print(Frame*);
 #if ENABLE(SQL_DATABASE)
-	virtual void exceededDatabaseQuota(Frame*, const String&, DatabaseDetails) OVERRIDE;
+	virtual void exceededDatabaseQuota(Frame*, const String&, DatabaseDetails) override;
 #endif
-    virtual void reachedMaxAppCacheSize(int64_t spaceNeeded) OVERRIDE;
-    virtual void reachedApplicationCacheOriginQuota(SecurityOrigin*, int64_t totalSpaceNeeded) OVERRIDE;
+    virtual void reachedMaxAppCacheSize(int64_t spaceNeeded) override;
+    virtual void reachedApplicationCacheOriginQuota(SecurityOrigin*, int64_t totalSpaceNeeded) override;
 
 #if USE(ACCELERATED_COMPOSITING)
 	// This is a hook for WebCore to tell us what we need to do with the GraphicsLayers.
-	virtual void attachRootGraphicsLayer(Frame*, GraphicsLayer*) OVERRIDE;
-	virtual void setNeedsOneShotDrawingSynchronization() OVERRIDE;
-	virtual void scheduleCompositingLayerFlush() OVERRIDE;
-	virtual CompositingTriggerFlags allowedCompositingTriggers() const OVERRIDE;
-	virtual bool allowsAcceleratedCompositing() const OVERRIDE;
+	virtual void attachRootGraphicsLayer(Frame*, GraphicsLayer*) override;
+	virtual void attachViewOverlayGraphicsLayer(Frame*, GraphicsLayer*) override {}
+	virtual void setNeedsOneShotDrawingSynchronization() override;
+	virtual void scheduleCompositingLayerFlush() override;
+	virtual CompositingTriggerFlags allowedCompositingTriggers() const override;
+	virtual bool allowsAcceleratedCompositing() const override;
 #endif
 
-#if USE(TILED_BACKING_STORE)
-    virtual IntRect visibleRectForTiledBackingStore() const OVERRIDE;
+#if USE(COORDINATED_GRAPHICS)
+    virtual IntRect visibleRectForTiledBackingStore() const override;
 #endif
 
 #if ENABLE(TOUCH_EVENTS)
-    virtual void needTouchEvents(bool) OVERRIDE { }
+    virtual void needTouchEvents(bool) override { }
 #endif
 
 
 
-    virtual void runOpenPanel(Frame*, PassRefPtr<FileChooser>) OVERRIDE;
-    virtual void loadIconForFiles(const Vector<String>&, FileIconLoader*) OVERRIDE;
+    virtual void runOpenPanel(Frame*, PassRefPtr<FileChooser>) override;
+    virtual void loadIconForFiles(const Vector<String>&, FileIconLoader*) override;
 
-    virtual void formStateDidChange(const Node*)  OVERRIDE{ }
-
-    virtual void setCursor(const Cursor&) OVERRIDE;
-    virtual void setCursorHiddenUntilMouseMoves(bool)  OVERRIDE{ }
+    virtual void setCursor(const Cursor&) override;
+    virtual void setCursorHiddenUntilMouseMoves(bool)  override{ }
 
 #if ENABLE(REQUEST_ANIMATION_FRAME) && !USE(REQUEST_ANIMATION_FRAME_TIMER)
-    virtual void scheduleAnimation() OVERRIDE;
+    virtual void scheduleAnimation() override;
 #endif
 
-    virtual void scrollRectIntoView(const IntRect&) const  OVERRIDE{ }
+    virtual void scrollRectIntoView(const IntRect&) const  override{ }
 
-    virtual bool selectItemWritingDirectionIsNatural() OVERRIDE;
-    virtual bool selectItemAlignmentFollowsMenuWritingDirection() OVERRIDE;
-	virtual bool hasOpenedPopup() const  OVERRIDE;
-    virtual PassRefPtr<PopupMenu> createPopupMenu(PopupMenuClient*)  const  OVERRIDE;
-    virtual PassRefPtr<SearchPopupMenu> createSearchPopupMenu(PopupMenuClient*)  const  OVERRIDE;
-    virtual void populateVisitedLinks()  OVERRIDE;
+    virtual bool selectItemWritingDirectionIsNatural() override;
+    virtual bool selectItemAlignmentFollowsMenuWritingDirection() override;
+	virtual bool hasOpenedPopup() const  override;
+    virtual RefPtr<PopupMenu> createPopupMenu(PopupMenuClient*)  const  override;
+    virtual RefPtr<SearchPopupMenu> createSearchPopupMenu(PopupMenuClient*)  const  override;
 
-	virtual void dispatchViewportPropertiesDidChange(const ViewportArguments&) const OVERRIDE;
+	virtual void dispatchViewportPropertiesDidChange(const ViewportArguments&) const override;
 
-	virtual void numWheelEventHandlersChanged(unsigned)  OVERRIDE{ }
+	virtual void wheelEventHandlersChanged(bool)  override{ }
     
 
 	EA::WebKit::WebPage* m_webPage;
@@ -195,7 +186,7 @@ public:
 
     static bool dumpVisitedLinksCallbacks;
 #if USE(ACCELERATED_COMPOSITING)
-     OwnPtr<TextureMapperLayerClientEA> m_textureMapperLayerClient;
+	std::unique_ptr<TextureMapperLayerClientEA> m_textureMapperLayerClient;
 #endif
 };
 }

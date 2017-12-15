@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -286,6 +286,7 @@ public:
 		EA_ALIGN(EA_PLATFORM_PTR_SIZE) char mNames[kPropertyNameArraySize];          
         void* mIterator;
         class JavascriptValue *mObject;
+		mutable EASTLFixedString16Wrapper* mPropString16Wrapper;
     };
 
     virtual PropertyIterator* First(void);
@@ -325,6 +326,7 @@ private:
     EA_ALIGN(8) char mJSValue[kJSValueSize];
     JSC::ExecState* mExecState;
     PropertyIterator* mIterator;
+	mutable EASTLFixedString16Wrapper* mString16Wrapper;
 };
 }}
 

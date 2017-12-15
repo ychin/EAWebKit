@@ -28,8 +28,6 @@
 #ifndef WebSocketServerConnection_h
 #define WebSocketServerConnection_h
 
-#if ENABLE(INSPECTOR_SERVER)
-
 #include <SocketStreamHandleClient.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
@@ -93,6 +91,6 @@ protected:
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+
 
 #endif // WebSocketServerConnection_h

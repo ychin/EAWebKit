@@ -25,7 +25,6 @@
 #include "JSRTCDTMFSender.h"
 
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSEvent.h"
@@ -42,62 +41,88 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSRTCDTMFSenderTableValues[] =
-{
-    { "canInsertDTMF", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderCanInsertDTMF), (intptr_t)0 },
-    { "track", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderTrack), (intptr_t)0 },
-    { "toneBuffer", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderToneBuffer), (intptr_t)0 },
-    { "duration", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderDuration), (intptr_t)0 },
-    { "interToneGap", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderInterToneGap), (intptr_t)0 },
-    { "ontonechange", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderOntonechange), (intptr_t)setJSRTCDTMFSenderOntonechange },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionInsertDTMF(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsRTCDTMFSenderCanInsertDTMF(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDTMFSenderTrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDTMFSenderToneBuffer(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDTMFSenderDuration(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDTMFSenderInterToneGap(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsRTCDTMFSenderOntonechange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSRTCDTMFSenderOntonechange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSRTCDTMFSenderPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRTCDTMFSenderPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRTCDTMFSenderPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFSenderPrototype>(vm.heap)) JSRTCDTMFSenderPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRTCDTMFSenderPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSRTCDTMFSenderTable = { 17, 15, JSRTCDTMFSenderTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSRTCDTMFSenderPrototypeTableValues[] =
 {
-    { "insertDTMF", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionInsertDTMF), (intptr_t)1 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "canInsertDTMF", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderCanInsertDTMF), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "track", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderTrack), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "toneBuffer", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderToneBuffer), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "duration", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderDuration), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "interToneGap", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderInterToneGap), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "ontonechange", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFSenderOntonechange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSRTCDTMFSenderOntonechange) },
+    { "insertDTMF", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionInsertDTMF), (intptr_t) (1) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsRTCDTMFSenderPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSRTCDTMFSenderPrototypeTable = { 8, 7, JSRTCDTMFSenderPrototypeTableValues, 0 };
-const ClassInfo JSRTCDTMFSenderPrototype::s_info = { "RTCDTMFSenderPrototype", &Base::s_info, &JSRTCDTMFSenderPrototypeTable, 0, CREATE_METHOD_TABLE(JSRTCDTMFSenderPrototype) };
+const ClassInfo JSRTCDTMFSenderPrototype::s_info = { "RTCDTMFSenderPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDTMFSenderPrototype) };
 
-JSObject* JSRTCDTMFSenderPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRTCDTMFSender>(vm, globalObject);
-}
-
-bool JSRTCDTMFSenderPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSRTCDTMFSenderPrototype* thisObject = jsCast<JSRTCDTMFSenderPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSRTCDTMFSenderPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSRTCDTMFSender::s_info = { "RTCDTMFSender", &Base::s_info, &JSRTCDTMFSenderTable, 0 , CREATE_METHOD_TABLE(JSRTCDTMFSender) };
-
-JSRTCDTMFSender::JSRTCDTMFSender(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDTMFSender> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSRTCDTMFSender::finishCreation(VM& vm)
+void JSRTCDTMFSenderPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSRTCDTMFSenderPrototypeTableValues, *this);
+}
+
+const ClassInfo JSRTCDTMFSender::s_info = { "RTCDTMFSender", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDTMFSender) };
+
+JSRTCDTMFSender::JSRTCDTMFSender(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDTMFSender>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSRTCDTMFSender::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSRTCDTMFSenderPrototype::create(vm, globalObject, JSRTCDTMFSenderPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSRTCDTMFSender::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSRTCDTMFSender>(vm, globalObject);
 }
 
 void JSRTCDTMFSender::destroy(JSC::JSCell* cell)
@@ -108,111 +133,139 @@ void JSRTCDTMFSender::destroy(JSC::JSCell* cell)
 
 JSRTCDTMFSender::~JSRTCDTMFSender()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSRTCDTMFSender::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsRTCDTMFSenderCanInsertDTMF(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDTMFSender* thisObject = jsCast<JSRTCDTMFSender*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSRTCDTMFSender, Base>(exec, JSRTCDTMFSenderTable, thisObject, propertyName, slot);
-}
-
-JSValue jsRTCDTMFSenderCanInsertDTMF(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDTMFSender& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.canInsertDTMF());
-    return result;
-}
-
-
-JSValue jsRTCDTMFSenderTrack(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    RTCDTMFSender& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.track()));
-    return result;
-}
-
-
-JSValue jsRTCDTMFSenderToneBuffer(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    RTCDTMFSender& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.toneBuffer());
-    return result;
-}
-
-
-JSValue jsRTCDTMFSenderDuration(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    RTCDTMFSender& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.duration());
-    return result;
-}
-
-
-JSValue jsRTCDTMFSenderInterToneGap(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    RTCDTMFSender& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.interToneGap());
-    return result;
-}
-
-
-JSValue jsRTCDTMFSenderOntonechange(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    RTCDTMFSender& impl = castedThis->impl();
-    if (EventListener* listener = impl.ontonechange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFSender", "canInsertDTMF");
+        return throwGetterTypeError(*exec, "RTCDTMFSender", "canInsertDTMF");
     }
-    return jsNull();
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.canInsertDTMF());
+    return JSValue::encode(result);
 }
 
 
-void JSRTCDTMFSender::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+EncodedJSValue jsRTCDTMFSenderTrack(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDTMFSender* thisObject = jsCast<JSRTCDTMFSender*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSRTCDTMFSender, Base>(exec, propertyName, value, JSRTCDTMFSenderTable, thisObject, slot);
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFSender", "track");
+        return throwGetterTypeError(*exec, "RTCDTMFSender", "track");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.track()));
+    return JSValue::encode(result);
 }
 
-void setJSRTCDTMFSenderOntonechange(ExecState* exec, JSObject* thisObject, JSValue value)
+
+EncodedJSValue jsRTCDTMFSenderToneBuffer(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFSender", "toneBuffer");
+        return throwGetterTypeError(*exec, "RTCDTMFSender", "toneBuffer");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.toneBuffer());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsRTCDTMFSenderDuration(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
     UNUSED_PARAM(exec);
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(thisObject);
-    RTCDTMFSender& impl = castedThis->impl();
-    impl.setOntonechange(createJSAttributeEventListener(exec, value, thisObject));
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFSender", "duration");
+        return throwGetterTypeError(*exec, "RTCDTMFSender", "duration");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.duration());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsRTCDTMFSenderInterToneGap(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFSender", "interToneGap");
+        return throwGetterTypeError(*exec, "RTCDTMFSender", "interToneGap");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.interToneGap());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsRTCDTMFSenderOntonechange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFSender", "ontonechange");
+        return throwGetterTypeError(*exec, "RTCDTMFSender", "ontonechange");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().tonechangeEvent));
+}
+
+
+void setJSRTCDTMFSenderOntonechange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFSenderPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "RTCDTMFSender", "ontonechange");
+        else
+            throwSetterTypeError(*exec, "RTCDTMFSender", "ontonechange");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().tonechangeEvent, value);
 }
 
 
 EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionInsertDTMF(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDTMFSender::info()))
-        return throwVMTypeError(exec);
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDTMFSender", "insertDTMF");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDTMFSender::info());
-    RTCDTMFSender& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& tones(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String tones = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     size_t argsCount = exec->argumentCount();
@@ -222,8 +275,8 @@ EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionInsertDTMF(ExecStat
         return JSValue::encode(jsUndefined());
     }
 
-    int duration(toInt32(exec, exec->argument(1), NormalConversion));
-    if (exec->hadException())
+    int duration = toInt32(exec, exec->argument(1), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     if (argsCount <= 2) {
         impl.insertDTMF(tones, duration, ec);
@@ -231,8 +284,8 @@ EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionInsertDTMF(ExecStat
         return JSValue::encode(jsUndefined());
     }
 
-    int interToneGap(toInt32(exec, exec->argument(2), NormalConversion));
-    if (exec->hadException())
+    int interToneGap = toInt32(exec, exec->argument(2), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.insertDTMF(tones, duration, interToneGap, ec);
     setDOMException(exec, ec);
@@ -241,92 +294,78 @@ EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionInsertDTMF(ExecStat
 
 EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDTMFSender::info()))
-        return throwVMTypeError(exec);
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDTMFSender", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDTMFSender::info());
-    RTCDTMFSender& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDTMFSender::info()))
-        return throwVMTypeError(exec);
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDTMFSender", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDTMFSender::info());
-    RTCDTMFSender& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSRTCDTMFSender::info()))
-        return throwVMTypeError(exec);
-    JSRTCDTMFSender* castedThis = jsCast<JSRTCDTMFSender*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSRTCDTMFSender* castedThis = jsDynamicCast<JSRTCDTMFSender*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "RTCDTMFSender", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSRTCDTMFSender::info());
-    RTCDTMFSender& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* event(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 void JSRTCDTMFSender::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSRTCDTMFSender* thisObject = jsCast<JSRTCDTMFSender*>(cell);
+    auto* thisObject = jsCast<JSRTCDTMFSender*>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
     Base::visitChildren(thisObject, visitor);
     thisObject->impl().visitJSEventListeners(visitor);
 }
 
-static inline bool isObservable(JSRTCDTMFSender* jsRTCDTMFSender)
-{
-    if (jsRTCDTMFSender->hasCustomProperties())
-        return true;
-    if (jsRTCDTMFSender->impl().hasEventListeners())
-        return true;
-    return false;
-}
-
 bool JSRTCDTMFSenderOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSRTCDTMFSender* jsRTCDTMFSender = jsCast<JSRTCDTMFSender*>(handle.get().asCell());
+    auto* jsRTCDTMFSender = jsCast<JSRTCDTMFSender*>(handle.slot()->asCell());
     if (jsRTCDTMFSender->impl().hasPendingActivity())
         return true;
     if (jsRTCDTMFSender->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsRTCDTMFSender))
-        return false;
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSRTCDTMFSenderOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSRTCDTMFSender* jsRTCDTMFSender = jsCast<JSRTCDTMFSender*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsRTCDTMFSender = jsCast<JSRTCDTMFSender*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsRTCDTMFSender->impl(), jsRTCDTMFSender);
-    jsRTCDTMFSender->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -337,11 +376,11 @@ extern "C" { extern void (*const __identifier("??_7RTCDTMFSender@WebCore@@6B@")[
 extern "C" { extern void* _ZTVN7WebCore13RTCDTMFSenderE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCDTMFSender* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, RTCDTMFSender* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSRTCDTMFSender>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSRTCDTMFSender>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -362,13 +401,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCDTMF
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<RTCDTMFSender>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSRTCDTMFSender>(exec, globalObject, impl);
+    return createNewWrapper<JSRTCDTMFSender>(globalObject, impl);
 }
 
-RTCDTMFSender* toRTCDTMFSender(JSC::JSValue value)
+RTCDTMFSender* JSRTCDTMFSender::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSRTCDTMFSender::info()) ? &jsCast<JSRTCDTMFSender*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSRTCDTMFSender*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

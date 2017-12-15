@@ -42,14 +42,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DIRTYCODE_UNDEF         1   
 #endif
 
-#if   defined (_WIN32) || defined(_Win64)
+#if   defined (EA_PLATFORM_CAPILANO)
+//Nothing to be done here
+#elif defined (_WIN32) || defined(_Win64)
 #undef EA_PLATFORM_WINDOWS
 #define EA_PLATFORM_WINDOWS 1
+#elif defined (EA_PLATFORM_KETTLE)
+//Nothing to do here
 #endif
 
 #include <stdarg.h>
 
-#if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
+#if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_CAPILANO)
     #ifndef __int8_t_defined
         typedef signed char             int8_t;
         typedef signed short            int16_t;

@@ -36,49 +36,73 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionCreateVertexArrayOES(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionDeleteVertexArrayOES(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionIsVertexArrayOES(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionBindVertexArrayOES(JSC::ExecState*);
+
+class JSOESVertexArrayObjectPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSOESVertexArrayObjectPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSOESVertexArrayObjectPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESVertexArrayObjectPrototype>(vm.heap)) JSOESVertexArrayObjectPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSOESVertexArrayObjectPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSOESVertexArrayObjectPrototypeTableValues[] =
 {
-    { "VERTEX_ARRAY_BINDING_OES", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOESVertexArrayObjectVERTEX_ARRAY_BINDING_OES), (intptr_t)0 },
-    { "createVertexArrayOES", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionCreateVertexArrayOES), (intptr_t)0 },
-    { "deleteVertexArrayOES", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionDeleteVertexArrayOES), (intptr_t)0 },
-    { "isVertexArrayOES", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionIsVertexArrayOES), (intptr_t)0 },
-    { "bindVertexArrayOES", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionBindVertexArrayOES), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "VERTEX_ARRAY_BINDING_OES", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x85B5), (intptr_t) (0) },
+    { "createVertexArrayOES", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionCreateVertexArrayOES), (intptr_t) (0) },
+    { "deleteVertexArrayOES", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionDeleteVertexArrayOES), (intptr_t) (0) },
+    { "isVertexArrayOES", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionIsVertexArrayOES), (intptr_t) (0) },
+    { "bindVertexArrayOES", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOESVertexArrayObjectPrototypeFunctionBindVertexArrayOES), (intptr_t) (0) },
 };
 
-static const HashTable JSOESVertexArrayObjectPrototypeTable = { 16, 15, JSOESVertexArrayObjectPrototypeTableValues, 0 };
-const ClassInfo JSOESVertexArrayObjectPrototype::s_info = { "OESVertexArrayObjectPrototype", &Base::s_info, &JSOESVertexArrayObjectPrototypeTable, 0, CREATE_METHOD_TABLE(JSOESVertexArrayObjectPrototype) };
+const ClassInfo JSOESVertexArrayObjectPrototype::s_info = { "OESVertexArrayObjectPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOESVertexArrayObjectPrototype) };
 
-JSObject* JSOESVertexArrayObjectPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSOESVertexArrayObject>(vm, globalObject);
-}
-
-bool JSOESVertexArrayObjectPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSOESVertexArrayObjectPrototype* thisObject = jsCast<JSOESVertexArrayObjectPrototype*>(object);
-    return getStaticPropertySlot<JSOESVertexArrayObjectPrototype, JSObject>(exec, JSOESVertexArrayObjectPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSOESVertexArrayObject::s_info = { "OESVertexArrayObject", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSOESVertexArrayObject) };
-
-JSOESVertexArrayObject::JSOESVertexArrayObject(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESVertexArrayObject> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSOESVertexArrayObject::finishCreation(VM& vm)
+void JSOESVertexArrayObjectPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSOESVertexArrayObjectPrototypeTableValues, *this);
+}
+
+const ClassInfo JSOESVertexArrayObject::s_info = { "OESVertexArrayObject", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOESVertexArrayObject) };
+
+JSOESVertexArrayObject::JSOESVertexArrayObject(Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESVertexArrayObject>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSOESVertexArrayObject::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSOESVertexArrayObjectPrototype::create(vm, globalObject, JSOESVertexArrayObjectPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSOESVertexArrayObject::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSOESVertexArrayObject>(vm, globalObject);
 }
 
 void JSOESVertexArrayObject::destroy(JSC::JSCell* cell)
@@ -89,34 +113,33 @@ void JSOESVertexArrayObject::destroy(JSC::JSCell* cell)
 
 JSOESVertexArrayObject::~JSOESVertexArrayObject()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionCreateVertexArrayOES(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOESVertexArrayObject::info()))
-        return throwVMTypeError(exec);
-    JSOESVertexArrayObject* castedThis = jsCast<JSOESVertexArrayObject*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOESVertexArrayObject* castedThis = jsDynamicCast<JSOESVertexArrayObject*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OESVertexArrayObject", "createVertexArrayOES");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOESVertexArrayObject::info());
-    OESVertexArrayObject& impl = castedThis->impl();
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.createVertexArrayOES()));
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.createVertexArrayOES()));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionDeleteVertexArrayOES(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOESVertexArrayObject::info()))
-        return throwVMTypeError(exec);
-    JSOESVertexArrayObject* castedThis = jsCast<JSOESVertexArrayObject*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOESVertexArrayObject* castedThis = jsDynamicCast<JSOESVertexArrayObject*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OESVertexArrayObject", "deleteVertexArrayOES");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOESVertexArrayObject::info());
-    OESVertexArrayObject& impl = castedThis->impl();
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSWebGLVertexArrayObjectOES::info()))
-        return throwVMTypeError(exec);
-    WebGLVertexArrayObjectOES* arrayObject(toWebGLVertexArrayObjectOES(exec->argument(0)));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSWebGLVertexArrayObjectOES::info()))
+        return throwArgumentTypeError(*exec, 0, "arrayObject", "OESVertexArrayObject", "deleteVertexArrayOES", "WebGLVertexArrayObjectOES");
+    WebGLVertexArrayObjectOES* arrayObject = JSWebGLVertexArrayObjectOES::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.deleteVertexArrayOES(arrayObject);
     return JSValue::encode(jsUndefined());
@@ -124,71 +147,52 @@ EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionDeleteVertex
 
 EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionIsVertexArrayOES(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOESVertexArrayObject::info()))
-        return throwVMTypeError(exec);
-    JSOESVertexArrayObject* castedThis = jsCast<JSOESVertexArrayObject*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOESVertexArrayObject* castedThis = jsDynamicCast<JSOESVertexArrayObject*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OESVertexArrayObject", "isVertexArrayOES");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOESVertexArrayObject::info());
-    OESVertexArrayObject& impl = castedThis->impl();
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSWebGLVertexArrayObjectOES::info()))
-        return throwVMTypeError(exec);
-    WebGLVertexArrayObjectOES* arrayObject(toWebGLVertexArrayObjectOES(exec->argument(0)));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSWebGLVertexArrayObjectOES::info()))
+        return throwArgumentTypeError(*exec, 0, "arrayObject", "OESVertexArrayObject", "isVertexArrayOES", "WebGLVertexArrayObjectOES");
+    WebGLVertexArrayObjectOES* arrayObject = JSWebGLVertexArrayObjectOES::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.isVertexArrayOES(arrayObject));
+    JSValue result = jsBoolean(impl.isVertexArrayOES(arrayObject));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsOESVertexArrayObjectPrototypeFunctionBindVertexArrayOES(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOESVertexArrayObject::info()))
-        return throwVMTypeError(exec);
-    JSOESVertexArrayObject* castedThis = jsCast<JSOESVertexArrayObject*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOESVertexArrayObject* castedThis = jsDynamicCast<JSOESVertexArrayObject*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OESVertexArrayObject", "bindVertexArrayOES");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOESVertexArrayObject::info());
-    OESVertexArrayObject& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSWebGLVertexArrayObjectOES::info()))
-        return throwVMTypeError(exec);
-    WebGLVertexArrayObjectOES* arrayObject(toWebGLVertexArrayObjectOES(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSWebGLVertexArrayObjectOES::info()))
+        return throwArgumentTypeError(*exec, 0, "arrayObject", "OESVertexArrayObject", "bindVertexArrayOES", "WebGLVertexArrayObjectOES");
+    WebGLVertexArrayObjectOES* arrayObject = JSWebGLVertexArrayObjectOES::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.bindVertexArrayOES(arrayObject, ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }
 
-// Constant getters
-
-JSValue jsOESVertexArrayObjectVERTEX_ARRAY_BINDING_OES(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x85B5));
-}
-
-static inline bool isObservable(JSOESVertexArrayObject* jsOESVertexArrayObject)
-{
-    if (jsOESVertexArrayObject->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSOESVertexArrayObjectOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSOESVertexArrayObject* jsOESVertexArrayObject = jsCast<JSOESVertexArrayObject*>(handle.get().asCell());
-    if (!isObservable(jsOESVertexArrayObject))
-        return false;
-    WebGLRenderingContext* root = jsOESVertexArrayObject->impl().context();
+    auto* jsOESVertexArrayObject = jsCast<JSOESVertexArrayObject*>(handle.slot()->asCell());
+    WebGLRenderingContextBase* root = WTF::getPtr(jsOESVertexArrayObject->impl().context());
     return visitor.containsOpaqueRoot(root);
 }
 
 void JSOESVertexArrayObjectOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSOESVertexArrayObject* jsOESVertexArrayObject = jsCast<JSOESVertexArrayObject*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsOESVertexArrayObject = jsCast<JSOESVertexArrayObject*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsOESVertexArrayObject->impl(), jsOESVertexArrayObject);
-    jsOESVertexArrayObject->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -199,11 +203,11 @@ extern "C" { extern void (*const __identifier("??_7OESVertexArrayObject@WebCore@
 extern "C" { extern void* _ZTVN7WebCore20OESVertexArrayObjectE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESVertexArrayObject* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, OESVertexArrayObject* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSOESVertexArrayObject>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSOESVertexArrayObject>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -224,13 +228,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESVert
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<OESVertexArrayObject>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSOESVertexArrayObject>(exec, globalObject, impl);
+    return createNewWrapper<JSOESVertexArrayObject>(globalObject, impl);
 }
 
-OESVertexArrayObject* toOESVertexArrayObject(JSC::JSValue value)
+OESVertexArrayObject* JSOESVertexArrayObject::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSOESVertexArrayObject::info()) ? &jsCast<JSOESVertexArrayObject*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSOESVertexArrayObject*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

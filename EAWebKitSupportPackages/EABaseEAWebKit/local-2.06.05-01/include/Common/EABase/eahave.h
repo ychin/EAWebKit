@@ -187,12 +187,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // #include <io.h> (and not sys/io.h or asm/io.h)
 #if !defined(EA_HAVE_IO_H) && !defined(EA_NO_HAVE_IO_H)
 	// Unix doesn't have Microsoft's <io.h> but has the same functionality in <fcntl.h> and <sys/stat.h>.
+	#if defined(EA_PLATFORM_MICROSOFT)
 		#define EA_HAVE_IO_H 1
+	#else
+		#define EA_NO_HAVE_IO_H 1
+	#endif
 #endif
 
 // #include <inttypes.h>
 #if !defined(EA_HAVE_INTTYPES_H) && !defined(EA_NO_HAVE_INTTYPES_H)
+	#if !defined(EA_PLATFORM_MICROSOFT) 
+		#define EA_HAVE_INTTYPES_H 1
+	#else
 		#define EA_NO_HAVE_INTTYPES_H 1
+	#endif
 #endif
 
 // #include <unistd.h>
@@ -202,7 +210,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // #include <sys/time.h>
 #if !defined(EA_HAVE_SYS_TIME_H) && !defined(EA_NO_HAVE_SYS_TIME_H)
+	#if !defined(EA_PLATFORM_MICROSOFT) && !defined(CS_UNDEFINED_STRING) && !defined(_YVALS) /* Yvals indicates Dinkumware. */
+		#define EA_HAVE_SYS_TIME_H 1 /* defines struct timeval */
+	#else
 		#define EA_NO_HAVE_SYS_TIME_H 1
+	#endif
 #endif
 
 // #include <ptrace.h>
@@ -222,7 +234,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // #include <signal.h>
 #if !defined(EA_HAVE_SIGNAL_H) && !defined(EA_NO_HAVE_SIGNAL_H)
-	#if !defined(EA_PLATFORM_BSD) && !defined(CS_UNDEFINED_STRING)
+	#if !defined(EA_PLATFORM_BSD) && !defined(EA_PLATFORM_SONY)
 		#define EA_HAVE_SIGNAL_H 1
 	#else
 		#define EA_NO_HAVE_SIGNAL_H 1
@@ -231,7 +243,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // #include <sys/signal.h>
 #if !defined(EA_HAVE_SYS_SIGNAL_H) && !defined(EA_NO_HAVE_SYS_SIGNAL_H)
-	#if defined(EA_PLATFORM_BSD) || defined(CS_UNDEFINED_STRING)
+	#if defined(EA_PLATFORM_BSD) || defined(EA_PLATFORM_KETTLE)
 		#define EA_HAVE_SYS_SIGNAL_H 1
 	#else
 		#define EA_NO_HAVE_SYS_SIGNAL_H 1
@@ -263,7 +275,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // #include <alloca.h>
 #if !defined(EA_HAVE_ALLOCA_H) && !defined(EA_NO_HAVE_ALLOCA_H)
-	#if !defined(EA_HAVE_MALLOC_H) && !defined(CS_UNDEFINED_STRING)
+	#if !defined(EA_HAVE_MALLOC_H) && !defined(EA_PLATFORM_KETTLE)
 		#define EA_HAVE_ALLOCA_H 1
 	#else
 		#define EA_NO_HAVE_ALLOCA_H 1
@@ -522,8 +534,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_strcasecmp_DECL) && !defined(EA_NO_HAVE_strcasecmp_DECL)
+	#if !defined(EA_PLATFORM_MICROSOFT) && !defined(CS_UNDEFINED_STRING)
+		#define EA_HAVE_strcasecmp_DECL  1     /* This is found as stricmp when not found as strcasecmp */
+		#define EA_HAVE_strncasecmp_DECL 1
+	#else
 		#define EA_HAVE_stricmp_DECL  1
 		#define EA_HAVE_strnicmp_DECL 1
+	#endif
 #endif
 
 #if !defined(EA_HAVE_mmap_DECL) && !defined(EA_NO_HAVE_mmap_DECL)
@@ -539,8 +556,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_ISNAN) && !defined(EA_NO_HAVE_ISNAN)
+	#if defined(EA_PLATFORM_MICROSOFT)
 		#define EA_HAVE_ISNAN(x)  _isnan(x)          /* declared in <math.h> */
 		#define EA_HAVE_ISINF(x)  !_finite(x)
+	#elif defined(EA_PLATFORM_APPLE)
+		#define EA_HAVE_ISNAN(x)  std::isnan(x)      /* declared in <cmath> */
+		#define EA_HAVE_ISINF(x)  std::isinf(x)
+	#elif defined(__GNUC__) && defined(__CYGWIN__)
+		#define EA_HAVE_ISNAN(x)  __isnand(x)        /* declared nowhere, it seems. */
+		#define EA_HAVE_ISINF(x)  __isinfd(x)
+	#else /* Most GCC, EDG, and Dinkumware. */
+		#define EA_HAVE_ISNAN(x)  isnan(x)           /* declared in <math.h> */
+		#define EA_HAVE_ISINF(x)  isinf(x)
+	#endif
 #endif
 
 #if !defined(EA_HAVE_itoa_DECL) && !defined(EA_NO_HAVE_itoa_DECL)
@@ -552,7 +580,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_nanosleep_DECL) && !defined(EA_NO_HAVE_nanosleep_DECL)
-	#if (defined(CS_UNDEFINED_STRING) && !defined(CS_UNDEFINED_STRING)) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
+	#if (defined(CS_UNDEFINED_STRING) && !defined(EA_PLATFORM_SONY)) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_KETTLE)
 		#define EA_HAVE_nanosleep_DECL 1
 	#else
 		#define EA_NO_HAVE_nanosleep_DECL 1
@@ -560,7 +588,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_utime_DECL) && !defined(EA_NO_HAVE_utime_DECL)
+	#if defined(EA_PLATFORM_MICROSOFT)
 		#define EA_HAVE_utime_DECL _utime
+	#else
+		#define EA_NO_HAVE_utime_DECL 1
+	#endif
 #endif
 
 #if !defined(EA_HAVE_ftruncate_DECL) && !defined(EA_NO_HAVE_ftruncate_DECL)
@@ -627,7 +659,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // <arpa/inet.h> inet_ntop()
 #if !defined(EA_HAVE_inet_ntop_IMPL) && !defined(EA_NO_HAVE_inet_ntop_IMPL)
-	#if (defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_POSIX)) && !defined(CS_UNDEFINED_STRING) // Sony uses sceNetInetNtop instead.
+	#if (defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_POSIX)) && !defined(EA_PLATFORM_SONY) // Sony uses sceNetInetNtop instead.
 		#define EA_HAVE_inet_ntop_IMPL 1  /* This doesn't identify if the platform SDK has some alternative function that does the same thing; */
 		#define EA_HAVE_inet_pton_IMPL 1  /* it identifies strictly the <arpa/inet.h> inet_ntop and inet_pton functions. For example, Microsoft has InetNtop in <Ws2tcpip.h> */
 	#else

@@ -24,27 +24,27 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBFactory.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBFactory : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSIDBFactory* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBFactory> impl)
+    static JSIDBFactory* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBFactory>&& impl)
     {
-        JSIDBFactory* ptr = new (NotNull, JSC::allocateCell<JSIDBFactory>(globalObject->vm().heap)) JSIDBFactory(structure, globalObject, impl);
+        JSIDBFactory* ptr = new (NotNull, JSC::allocateCell<JSIDBFactory>(globalObject->vm().heap)) JSIDBFactory(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBFactory* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSIDBFactory();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     IDBFactory& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     IDBFactory* m_impl;
 protected:
-    JSIDBFactory(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBFactory>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSIDBFactory(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBFactory>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBFactoryOwner : public JSC::WeakHandleOwner {
@@ -80,74 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBFactory*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBFactoryOwner, jsIDBFactoryOwner, ());
-    return &jsIDBFactoryOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBFactory*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBFactoryOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBFactory*);
-IDBFactory* toIDBFactory(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBFactory& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBFactoryPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBFactoryPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBFactoryPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBFactoryPrototype>(vm.heap)) JSIDBFactoryPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBFactoryPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSIDBFactoryConstructor : public DOMConstructorObject {
-private:
-    JSIDBFactoryConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBFactoryConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBFactoryConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBFactoryConstructor>(vm.heap)) JSIDBFactoryConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBFactoryPrototypeFunctionOpen(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBFactoryPrototypeFunctionDeleteDatabase(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsIDBFactoryPrototypeFunctionCmp(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsIDBFactoryConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -54,12 +54,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ResourceHandleManagerEA.h"
 #include "NetworkStateNotifier.h"
 #include "MemoryCache.h"
+#include "StyledElement.h"
 #include "ea_class.h"
 #include "RenderThemeEA.h"
 #include "ScrollbarThemeEA.h"
 #include "InspectorClientEA.h"
 #include "SecurityOrigin.h"
+#include "Page.h"
 #include "PageGroup.h"
+#include "webpage_p.h"
+#include "UserStyleSheet.h"
+#include "UserStyleSheetTypes.h"
+#include "UserContentController.h"
+#include "UserContentTypes.h"
 #include "DOMWrapperWorld.h"
 #include "InitWebCoreEA.h"
 #include "SchemeRegistry.h"
@@ -81,13 +88,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cairo.h>
 #include <PageCache.h>
 #include <FontCache.h>
+#include <FontCascade.h>
 #include <CrossOriginPreflightResultCache.h>
 #include <CachedResource.h>
 #include <GCController.h>
+#include <HTMLMediaElement.h>
 #include "OriginLock.h"
 #include "WorkerThread.h"
 #include "JSDOMWindow.h"
 #include "CSSValuePool.h"
+#include "WebStorageNamespaceProvider.h"
 
 //-
 #if ENABLE(EATEXT_IN_DLL)
@@ -144,7 +154,6 @@ EAWebKitGetCookiesCallback			gpGetCookiesCallback = NULL;
 EAWebKitSetCookieCallback			gpSetCookieCallback = NULL;
 
 // Remote Web Inspector helper functions
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
 static void StartupRemoteWebInspector()
 {
     if ((GetParameters().mRemoteWebInspectorPort != 0) && (::WebKit::WebInspectorServer::shared().serverState() != ::WebKit::WebInspectorServer::Listening))
@@ -176,7 +185,7 @@ static void ShutdownRemoteWebInspector()
         // EAWebKitTODO ::WebKit::WebInspectorServer::shared(). close all opened client connections too 
     }
 }
-#endif 
+
 // We need to add appropriate asserts to each of these functions based on WebKit state.
 // Consider WebKit assert system as the user installed EAWebKit assert system may not be present or go away too soon.
 bool EAWebKitLib::Init(AppCallbacks* appCallbacks /* = NULL */, AppSystems* appSystems /* = NULL */)
@@ -272,9 +281,8 @@ void  EAWebKitLib::AddSocketTransportHandler(SocketTransportHandler* pSTH)
 			pSTH->Init();
 
             //we start remote web inspector listener here because its after the Socket Transport Handler has been setup 
-            #if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
-                StartupRemoteWebInspector();
-            #endif
+            StartupRemoteWebInspector();
+
 		}
 		else
 		{
@@ -291,9 +299,8 @@ void  EAWebKitLib::RemoveSocketTransportHandler(SocketTransportHandler* pSTH)
     EAWWBKIT_INIT_CHECK(); 
 
     //before removing the Socket Transport Handler, remove the inspector listener if its running
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
     ShutdownRemoteWebInspector();
-#endif
+
 
 	if(spSocketTransportHandler == pSTH)
 	{
@@ -440,7 +447,7 @@ void EAWebKitLib::NetworkStateChanged(bool isOnline)
 	EA::WebKit::NetworkStateChanged(isOnline);
 }
 
-void EAWebKitLib::AddUserStyleSheet(const char8_t* userStyleSheet)
+void EAWebKitLib::AddUserStyleSheet(const EA::WebKit::View* pView, const char8_t* userStyleSheet)
 {
 	SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);
     EAWEBKIT_THREAD_CHECK();
@@ -448,10 +455,9 @@ void EAWebKitLib::AddUserStyleSheet(const char8_t* userStyleSheet)
 	if(!userStyleSheet || userStyleSheet[0] == '\0')
 		return;
 
-	if(WebCore::PageGroup* pageGroup = WebCore::PageGroup::pageGroup(kDefaultPageGroupName))
-		pageGroup->addUserStyleSheetToWorld(WebCore::mainThreadNormalWorld(), userStyleSheet, WebCore::URL(), WTF::Vector<WTF::String>(), WTF::Vector<WTF::String>(), WebCore::InjectInAllFrames);
-	else
-		EAW_ASSERT_MSG(false,"Unable to create page group. User style sheets won't work");
+    // add user style sheets for the page associated with the view
+    auto userStyleSheetObj = std::make_unique<WebCore::UserStyleSheet>(userStyleSheet, WebCore::blankURL(), Vector<String>(), Vector<String>(), WebCore::InjectInAllFrames, WebCore::UserStyleUserLevel);
+    WebPagePrivate::core(pView->Page())->userContentController()->addUserStyleSheet(WebCore::mainThreadNormalWorld(), WTF::move(userStyleSheetObj), WebCore::UserStyleInjectionTime::InjectInExistingDocuments);
 }
 
 bool EAWebKitLib::AddCookie(const char8_t* pHeaderValue)
@@ -688,6 +694,8 @@ bool Init(AppCallbacks* appCallbacks, AppSystems* appSystems)
 	{
 		if(appCallbacks->timer)
 			SetHighResolutionTimer(appCallbacks->timer);
+        if (appCallbacks->monotonicTimer)
+            SetMonotonicTimer(appCallbacks->monotonicTimer);
 		if(appCallbacks->stackBase)
 			SetStackBaseCallback(appCallbacks->stackBase);
 		if(appCallbacks->cryptRandomValue)
@@ -707,7 +715,7 @@ bool Init(AppCallbacks* appCallbacks, AppSystems* appSystems)
 #endif
 
 #if USE(ACCELERATED_COMPOSITING)
-    WebCore::pageCache()->setShouldClearBackingStores(true);
+    WebCore::PageCache::singleton().setShouldClearBackingStores(true);
 #endif
 
 #if ENABLE(SQL_DATABASE)
@@ -724,18 +732,14 @@ void Shutdown()
 	SET_AUTO_COLLECTOR_STACK_BASE();   // 9/4/09 - CSidhall - Added to get approximate stack base
 	
 	SetWebKitStatus(kWebKitStatusShuttingDown);
-	WebCore::pageCache()->setCapacity(0);
-#if ENABLE(INSPECTOR)
+	WebCore::PageCache::singleton().setMaxSize(0);
 	WebCore::InspectorSettingsEA::finalize(); // This saves inspector settings
-#endif
 	
 	// We get rid of the spawned threads below. This is required to unload the dll and be able to load it back.
 	// We used to have a common waitforallthreadscompletion callback here but we got rid of it due to circular dependency between common VM and block free thread. If you wait for the thread completion before destroying
 	// common VM, it would never finish due to block free thread. And if you move it above the wait* call, you may end up firing timers that rely on common VM.
 
-	WebCore::PageGroup::closeLocalStorage(); //Gets rid of local storage threads.
-	if(WebCore::PageGroup* pageGroup = WebCore::PageGroup::pageGroup(kDefaultPageGroupName))
-		pageGroup->removeUserStyleSheetsFromWorld(WebCore::mainThreadNormalWorld());
+    WebStorageNamespaceProvider::closeLocalStorage(); //Gets rid of local storage threads.
 
 	//Get rid of worker threads
 	while(WebCore::WorkerThread::workerThreadCount())
@@ -743,10 +747,6 @@ void Shutdown()
 		EA::WebKit::ThreadCleanupTick();
 		EA::WebKit::GetThreadSystem()->SleepThread(1);
 	}
-
-	//Get rid of common VM to get rid of its block free thread.
-	JSC::VM* commonVM = WebCore::JSDOMWindow::commonVM();
-	delete commonVM;
 
 	// This is so that the local sqlite3_os_end is called on exit.
 	sqlite3_shutdown();
@@ -811,7 +811,7 @@ void Tick()
 	RAMCacheUsageInfo currentUsage;
 	GetRAMCacheUsage(currentUsage);
 	if(currentUsage.mImagesBytes+currentUsage.mScriptsBytes+currentUsage.mFontsBytes+currentUsage.mCssStyleSheetsBytes > ramCacheUserPref.mTotalBytes)
-		WebCore::memoryCache()->prune();
+		WebCore::MemoryCache::singleton().prune();
 	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypePruneMemCache, EA::WebKit::kVProcessStatusEnded, 0);
 
 	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeLibTick, EA::WebKit::kVProcessStatusEnded, 0);
@@ -984,13 +984,13 @@ void SetCookieUsage(const EA::WebKit::CookieInfo& cookieInfo)
 void SetRAMCacheUsage(const RAMCacheInfo& ramCacheInfo)
 {
     ramCacheUserPref = ramCacheInfo;
-	WebCore::memoryCache()->setCapacities(0, ramCacheInfo.mMaxDeadBytes, ramCacheInfo.mTotalBytes);
-	WebCore::memoryCache()->setDeadDecodedDataDeletionInterval(ramCacheInfo.mDeadDecodedDataDeletionInterval);
+	WebCore::MemoryCache::singleton().setCapacities(0, ramCacheInfo.mMaxDeadBytes, ramCacheInfo.mTotalBytes);
+	WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds::duration((long) ramCacheInfo.mDeadDecodedDataDeletionInterval * 1000)); //Our API takes the value in seconds
 }
 
 void GetRAMCacheUsage(RAMCacheUsageInfo& ramCacheUsageInfo)
 {
-	WebCore::MemoryCache::Statistics stats = WebCore::memoryCache()->getStatistics();
+	WebCore::MemoryCache::Statistics stats = WebCore::MemoryCache::singleton().getStatistics();
 	ramCacheUsageInfo.mImagesBytes = stats.images.size;
 	ramCacheUsageInfo.mCssStyleSheetsBytes = stats.cssStyleSheets.size;
 	ramCacheUsageInfo.mScriptsBytes = stats.scripts.size;
@@ -1057,35 +1057,94 @@ void DestroyJavascriptValueArray(JavascriptValue *array)
 
 void ClearMemoryCache(MemoryCacheClearFlags flags)
 {
-	// + We always clear these caches. We can expose the flags in the future if desired.
-    WebCore::fontCache()->purgeInactiveFontData(); //https://lists.macosforge.org/pipermail/webkit-dev/2008-October/005395.html 
-	WebCore::CrossOriginPreflightResultCache::shared().empty();
+	//trying to keep this function in the order it is in, so it can easily be compared to MemoryPressureHandler
 
-	WebCore::cssValuePool().drain();
-    // -
+	//from MemoryPressureHandler::releaseCriticalMemory(Synchronous synchronous)
+	{
+		//Empty the PageCache
+		//skip this as we arent using page cache
+		//WebCore::PageCache::singleton().pruneToSizeNow(0, WebCore::PruningReason::MemoryPressure);
+		int pageCapacity = WebCore::PageCache::singleton().maxSize();
+		(void)pageCapacity;
+		EAW_ASSERT_MSG(pageCapacity == 0, "We should not use page cache");
 
-    if (flags & EA::WebKit::MemoryCacheClearScriptBit)
-    {
-        WebCore::gcController().discardAllCompiledCode();
-        WebCore::JSDOMWindow::commonVM()->releaseExecutableMemory();
-        WebCore::gcController().garbageCollectSoon();
-    }
+		//Prune MemoryCache live resources
+		//we handle MemoryCache ourselves in our own block below
+		//WebCore::MemoryCache::singleton().pruneLiveResourcesToSize(0);
+        
+		//Drain CSSValuePool
+		WebCore::cssValuePool().drain();
+        
+		//Discard StyleResolvers
+        Vector<RefPtr<WebCore::Document>> documents; 
+        copyToVector(WebCore::Document::allDocuments(), documents);
+        for (auto& document : documents)
+			document->clearStyleResolver();
+            
+		//Discard all JIT-compiled code
+		if (flags & EA::WebKit::MemoryCacheClearScriptBit)
+			WebCore::GCController::singleton().deleteAllCode();
+        
+		//Invalidate font cache
+		WebCore::FontCache::singleton().invalidate();
 
-	// abaldeva - We set the WebCore::MemoryCache capacity to be 0 here so that it prunes any decoded data for live images as well. This 
-	// claims back the as much memory as possible. We save the user preference before doing that and then restore it.
+		//Dropping buffered data from paused media elements
+		if (flags & EA::WebKit::MemoryCacheClearResourcesBit)
+		{
+			for (auto* mediaElement : WebCore::HTMLMediaElement::allMediaElements()) {
+				if (mediaElement->paused())
+					mediaElement->purgeBufferedDataIfPossible();
+			}
+		}
+		
+		if (flags & EA::WebKit::MemoryCacheClearScriptBit)
+			WebCore::GCController::singleton().garbageCollectNowIfNotDoneRecently();
+			//WebCore::GCController::singleton().garbageCollectNow();//for testing purposes we could make it sync 
+	}
 
-    if (flags & EA::WebKit::MemoryCacheClearResourcesBit)
-    {
-        EA::WebKit::RAMCacheInfo clearRamCache,restoreUserPref;
-        clearRamCache.mTotalBytes = clearRamCache.mMaxDeadBytes = 0;
-        restoreUserPref = ramCacheUserPref; 
-        SetRAMCacheUsage(clearRamCache); 
-        SetRAMCacheUsage(restoreUserPref);
-	
-	    int pageCapacity = WebCore::pageCache()->capacity();
-	    (void)pageCapacity;
-	    EAW_ASSERT_MSG(pageCapacity == 0, "We should not use page cache");
-    }
+	// from MemoryPressureHandler::releaseNoncriticalMemory()
+	{
+		//Purge inactive FontData
+		WebCore::FontCache::singleton().purgeInactiveFontData(); //https://lists.macosforge.org/pipermail/webkit-dev/2008-October/005395.html 
+		
+		//Clear WidthCaches (font)
+        WebCore::clearWidthCaches();
+        
+		//Discard Selector Query Cache
+		for (auto* document : WebCore::Document::allDocuments())
+			document->clearSelectorQueryCache();
+        
+		//Clearing JS string cache
+		WebCore::JSDOMWindow::commonVM().stringCache.clear();
+        
+		//Prune MemoryCache dead resources
+		//we handle MemoryCache ourselves in our own block below
+		//WebCore::MemoryCache::singleton().pruneDeadResourcesToSize(0);
+        
+		//Prune presentation attribute cache
+		if (flags & EA::WebKit::MemoryCacheClearResourcesBit)
+			WebCore::StyledElement::clearPresentationAttributeCache();
+	}
+
+	// our own handling, not from MemoryPressureHandler
+	{
+		WebCore::CrossOriginPreflightResultCache::singleton().empty();
+
+		if (flags & EA::WebKit::MemoryCacheClearResourcesBit)
+		{
+			// abaldeva - We set the WebCore::MemoryCache capacity to be 0 here so that it prunes any decoded data for live images as well. This 
+			// claims back the as much memory as possible. We save the user preference before doing that and then restore it.
+			EA::WebKit::RAMCacheInfo clearRamCache, restoreUserPref;
+			clearRamCache.mTotalBytes = clearRamCache.mMaxDeadBytes = 0;
+			restoreUserPref = ramCacheUserPref;
+			SetRAMCacheUsage(clearRamCache);
+			SetRAMCacheUsage(restoreUserPref);
+
+			//we will also do what webkit normally does to clear the MemoryCache
+			WebCore::MemoryCache::singleton().pruneLiveResourcesToSize(0);
+			WebCore::MemoryCache::singleton().pruneDeadResourcesToSize(0);
+		}
+	}
 }
 
 void RegisterURLSchemeAsCORSEnabled(const char16_t* pScheme)
@@ -1234,7 +1293,7 @@ Parameters::Parameters()
     , mPasswordMaskCharacter(0x2022) // Bullet
     , mRemoteWebInspectorPort(0)
 	, mpRemoteWebInspectorIp(NULL)
-	, mJavaScriptStackSize(128 * 1024)  // 128 K
+	, mJavaScriptStackSize(256 * 1024)  // 256 K
 	, mJavaScriptHeapWatermark (1 * 1024 * 1024) // 1 MB
 	, mSmoothFontSize(18)
 	, mFontFilterColorIntensity(255)
@@ -1301,11 +1360,6 @@ const char8_t* GetLocale()
 	return GetParameters().mpLocale;
 }
 
-size_t GetJSStackSize()
-{
-	return (size_t) GetParameters().mJavaScriptStackSize;
-}
-
 bool CanDoJSCallstack()
 {
     EA::WebKit::EAWebKitClient *pClient = EA::WebKit::GetEAWebKitClient();
@@ -1367,6 +1421,7 @@ void SetParameters(const Parameters& parameters)
 	WebCore::ResourceHandleManager::sharedInstance()->SetParams(parameters);
 
 	WebCore::initializeVMTimeout();
+    JSC::Options::maxPerThreadStackUsage() = EA::WebKit::GetParameters().mJavaScriptStackSize;
 };
 
 ThemeParameters::ThemeParameters()
@@ -1506,7 +1561,7 @@ void ClearSurfaceToColor(ISurface *surface, WebCore::Color color)
 } // WebKit
 } // EA
 
-#if !defined(EA_PLATFORM_WINDOWS)
+#if !defined(EA_PLATFORM_MICROSOFT)
 extern "C" char* getenv(const char* param)
 {
     (void)param;

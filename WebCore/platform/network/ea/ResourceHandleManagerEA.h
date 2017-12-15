@@ -2,7 +2,7 @@
 * Copyright (C) 2006 Apple Computer, Inc.  All rights reserved.
 * Copyright (C) 2006 Michael Emmel mike.emmel@gmail.com
 * All rights reserved.
-* Copyright (C) 2011, 2012, 2013 Electronic Arts, Inc. All rights reserved.
+* Copyright (C) 2011, 2012, 2013, 2015 Electronic Arts, Inc. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
@@ -173,7 +173,7 @@ private:
 	ResourceHandleManager();
 	virtual ~ResourceHandleManager();
 
-	void		downloadTimerCallback(Timer<ResourceHandleManager>*);
+	void		downloadTimerCallback();
 
 	bool		startPendingJobs();
 	void		startPendingJob(ResourceHandle* pRH);
@@ -208,7 +208,7 @@ private:
 	EA::WebKit::TransportHandlerDirtySDK	m_THDirtySDK;
 #endif
 
-	Timer<ResourceHandleManager>        m_downloadTimer;                    // 
+	Timer						        m_downloadTimer;                    // 
 	
 	ResourceHandleList					m_pendingResourceHandleList;        // This is a list of jobs that haven't been started yet.
     int                                 m_runningJobs;                      // This is a count of jobs that have been started and are running.

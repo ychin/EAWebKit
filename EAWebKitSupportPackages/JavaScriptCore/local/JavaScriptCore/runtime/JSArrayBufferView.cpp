@@ -27,13 +27,13 @@
 #include "JSArrayBufferView.h"
 
 #include "JSArrayBuffer.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include "Reject.h"
 
 namespace JSC {
 
 const ClassInfo JSArrayBufferView::s_info = {
-    "ArrayBufferView", &Base::s_info, 0, 0, CREATE_METHOD_TABLE(JSArrayBufferView)
+    "ArrayBufferView", &Base::s_info, 0, CREATE_METHOD_TABLE(JSArrayBufferView)
 };
 
 JSArrayBufferView::ConstructionContext::ConstructionContext(
@@ -45,9 +45,10 @@ JSArrayBufferView::ConstructionContext::ConstructionContext(
 {
     if (length <= fastSizeLimit) {
         // Attempt GC allocation.
-        void* temp;
+        void* temp = 0;
         size_t size = sizeOf(length, elementSize);
-        if (!vm.heap.tryAllocateStorage(0, size, &temp))
+        // CopiedSpace only allows non-zero size allocations.
+        if (size && !vm.heap.tryAllocateStorage(0, size, &temp))
             return;
 
         m_structure = structure;
@@ -77,7 +78,7 @@ JSArrayBufferView::ConstructionContext::ConstructionContext(
             return;
     }
     
-    vm.heap.reportExtraMemoryCost(static_cast<size_t>(length) * elementSize);
+    vm.heap.reportExtraMemoryAllocated(static_cast<size_t>(length) * elementSize);
     
     m_structure = structure;
     m_mode = OversizeTypedArray;
@@ -200,7 +201,7 @@ void JSArrayBufferView::getOwnNonIndexPropertyNames(
     JSArrayBufferView* thisObject = jsCast<JSArrayBufferView*>(object);
     
     // length/byteOffset/byteLength are DontEnum, at least in Firefox.
-    if (mode == IncludeDontEnumProperties) {
+    if (mode.includeDontEnumProperties()) {
         array.add(exec->propertyNames().byteOffset);
         array.add(exec->propertyNames().byteLength);
         array.add(exec->propertyNames().buffer);

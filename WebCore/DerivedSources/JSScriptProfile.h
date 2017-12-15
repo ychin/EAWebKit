@@ -21,30 +21,28 @@
 #ifndef JSScriptProfile_h
 #define JSScriptProfile_h
 
-#if ENABLE(JAVASCRIPT_DEBUGGER)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "ScriptProfile.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-class JSScriptProfile : public JSDOMWrapper {
+class WEBCORE_EXPORT JSScriptProfile : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSScriptProfile* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<ScriptProfile> impl)
+    static JSScriptProfile* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<ScriptProfile>&& impl)
     {
-        JSScriptProfile* ptr = new (NotNull, JSC::allocateCell<JSScriptProfile>(globalObject->vm().heap)) JSScriptProfile(structure, globalObject, impl);
+        JSScriptProfile* ptr = new (NotNull, JSC::allocateCell<JSScriptProfile>(globalObject->vm().heap)) JSScriptProfile(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static ScriptProfile* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSScriptProfile();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +51,19 @@ public:
     }
 
     ScriptProfile& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     ScriptProfile* m_impl;
 protected:
-    JSScriptProfile(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<ScriptProfile>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSScriptProfile(JSC::Structure*, JSDOMGlobalObject*, Ref<ScriptProfile>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSScriptProfileOwner : public JSC::WeakHandleOwner {
@@ -79,50 +74,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, ScriptProfile*)
 {
-    DEFINE_STATIC_LOCAL(JSScriptProfileOwner, jsScriptProfileOwner, ());
-    return &jsScriptProfileOwner;
+    static NeverDestroyed<JSScriptProfileOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, ScriptProfile*)
-{
-    return &world;
-}
+WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ScriptProfile*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, ScriptProfile& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, ScriptProfile*);
-ScriptProfile* toScriptProfile(JSC::JSValue);
-
-class JSScriptProfilePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSScriptProfilePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSScriptProfilePrototype* ptr = new (NotNull, JSC::allocateCell<JSScriptProfilePrototype>(vm.heap)) JSScriptProfilePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSScriptProfilePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsScriptProfileTitle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileUid(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileHead(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsScriptProfileIdleTime(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(JAVASCRIPT_DEBUGGER)
 
 #endif

@@ -21,31 +21,29 @@
 #ifndef JSSVGAnimatedPreserveAspectRatio_h
 #define JSSVGAnimatedPreserveAspectRatio_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAnimatedPreserveAspectRatio.h"
 #include "SVGElement.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGAnimatedPreserveAspectRatio : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGAnimatedPreserveAspectRatio* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGAnimatedPreserveAspectRatio> impl)
+    static JSSVGAnimatedPreserveAspectRatio* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGAnimatedPreserveAspectRatio>&& impl)
     {
-        JSSVGAnimatedPreserveAspectRatio* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedPreserveAspectRatio>(globalObject->vm().heap)) JSSVGAnimatedPreserveAspectRatio(structure, globalObject, impl);
+        JSSVGAnimatedPreserveAspectRatio* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedPreserveAspectRatio>(globalObject->vm().heap)) JSSVGAnimatedPreserveAspectRatio(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGAnimatedPreserveAspectRatio* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGAnimatedPreserveAspectRatio();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +53,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     SVGAnimatedPreserveAspectRatio& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SVGAnimatedPreserveAspectRatio* m_impl;
 protected:
-    JSSVGAnimatedPreserveAspectRatio(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGAnimatedPreserveAspectRatio>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGAnimatedPreserveAspectRatio(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGAnimatedPreserveAspectRatio>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGAnimatedPreserveAspectRatioOwner : public JSC::WeakHandleOwner {
@@ -81,73 +76,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGAnimatedPreserveAspectRatio*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGAnimatedPreserveAspectRatioOwner, jsSVGAnimatedPreserveAspectRatioOwner, ());
-    return &jsSVGAnimatedPreserveAspectRatioOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SVGAnimatedPreserveAspectRatio*)
-{
-    return &world;
+    static NeverDestroyed<JSSVGAnimatedPreserveAspectRatioOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGAnimatedPreserveAspectRatio*);
-SVGAnimatedPreserveAspectRatio* toSVGAnimatedPreserveAspectRatio(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGAnimatedPreserveAspectRatio& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSVGAnimatedPreserveAspectRatioPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGAnimatedPreserveAspectRatioPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGAnimatedPreserveAspectRatioPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedPreserveAspectRatioPrototype>(vm.heap)) JSSVGAnimatedPreserveAspectRatioPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGAnimatedPreserveAspectRatioPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGAnimatedPreserveAspectRatioConstructor : public DOMConstructorObject {
-private:
-    JSSVGAnimatedPreserveAspectRatioConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGAnimatedPreserveAspectRatioConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGAnimatedPreserveAspectRatioConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGAnimatedPreserveAspectRatioConstructor>(vm.heap)) JSSVGAnimatedPreserveAspectRatioConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGAnimatedPreserveAspectRatioBaseVal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAnimatedPreserveAspectRatioAnimVal(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGAnimatedPreserveAspectRatioConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

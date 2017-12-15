@@ -26,7 +26,7 @@
 #ifndef InbandMetadataTextTrackPrivateGStreamer_h
 #define InbandMetadataTextTrackPrivateGStreamer_h
 
-#if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK) && defined(GST_API_VERSION_1)
+#if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
 
 #include "GRefPtrGStreamer.h"
 #include "InbandTextTrackPrivate.h"
@@ -35,28 +35,46 @@ namespace WebCore {
 
 class InbandMetadataTextTrackPrivateGStreamer : public InbandTextTrackPrivate {
 public:
-    static PassRefPtr<InbandMetadataTextTrackPrivateGStreamer> create(Kind kind)
+    static PassRefPtr<InbandMetadataTextTrackPrivateGStreamer> create(Kind kind, CueFormat cueFormat, const AtomicString& id = emptyAtom)
     {
-        return adoptRef(new InbandMetadataTextTrackPrivateGStreamer(kind));
+        return adoptRef(new InbandMetadataTextTrackPrivateGStreamer(kind, cueFormat, id));
     }
 
     ~InbandMetadataTextTrackPrivateGStreamer() { }
 
-    virtual Kind kind() const OVERRIDE { return m_kind; }
+    virtual Kind kind() const override { return m_kind; }
+    virtual AtomicString id() const override { return m_id; }
+    virtual AtomicString inBandMetadataTrackDispatchType() const override { return m_inBandMetadataTrackDispatchType; }
+    void setInBandMetadataTrackDispatchType(const AtomicString& value) { m_inBandMetadataTrackDispatchType = value; }
+
+    void addDataCue(const MediaTime& start, const MediaTime& end, const void* data, unsigned length)
+    {
+        ASSERT(cueFormat() == Data);
+        client()->addDataCue(this, start, end, data, length);
+    }
+
+    void addGenericCue(PassRefPtr<GenericCueData> data)
+    {
+        ASSERT(cueFormat() == Generic);
+        client()->addGenericCue(this, data);
+    }
 
 private:
-    InbandMetadataTextTrackPrivateGStreamer(Kind kind)
-        : InbandTextTrackPrivate(Generic)
+    InbandMetadataTextTrackPrivateGStreamer(Kind kind, CueFormat cueFormat, const AtomicString& id)
+        : InbandTextTrackPrivate(cueFormat)
         , m_kind(kind)
+        , m_id(id)
     {
 
     }
 
     Kind m_kind;
+    AtomicString m_id;
+    AtomicString m_inBandMetadataTrackDispatchType;
 };
 
 } // namespace WebCore
 
-#endif // ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK) && defined(GST_API_VERSION_1)
+#endif // ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
 
 #endif // InbandMetadataTextTrackPrivateGStreamer_h

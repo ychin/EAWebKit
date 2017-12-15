@@ -23,32 +23,31 @@
 
 #if ENABLE(VIDEO)
 
-#include "DOMConstructorWithDocument.h"
 #include "HTMLAudioElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLMediaElement.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSHTMLAudioElement : public JSHTMLMediaElement {
 public:
     typedef JSHTMLMediaElement Base;
-    static JSHTMLAudioElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLAudioElement> impl)
+    static JSHTMLAudioElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLAudioElement>&& impl)
     {
-        JSHTMLAudioElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLAudioElement>(globalObject->vm().heap)) JSHTMLAudioElement(structure, globalObject, impl);
+        JSHTMLAudioElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLAudioElement>(globalObject->vm().heap)) JSHTMLAudioElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -58,9 +57,14 @@ public:
         return static_cast<HTMLAudioElement&>(Base::impl());
     }
 protected:
-    JSHTMLAudioElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLAudioElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHTMLAudioElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLAudioElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSHTMLAudioElementOwner : public JSNodeOwner {
@@ -71,91 +75,11 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, HTMLAudioElement*)
 {
-    DEFINE_STATIC_LOCAL(JSHTMLAudioElementOwner, jsHTMLAudioElementOwner, ());
-    return &jsHTMLAudioElementOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, HTMLAudioElement*)
-{
-    return &world;
+    static NeverDestroyed<JSHTMLAudioElementOwner> owner;
+    return &owner.get();
 }
 
 
-class JSHTMLAudioElementPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLAudioElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLAudioElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLAudioElementPrototype>(vm.heap)) JSHTMLAudioElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLAudioElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSHTMLAudioElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLAudioElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLAudioElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLAudioElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLAudioElementConstructor>(vm.heap)) JSHTMLAudioElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-class JSHTMLAudioElementNamedConstructor : public DOMConstructorWithDocument {
-public:
-    typedef DOMConstructorWithDocument Base;
-
-    static JSHTMLAudioElementNamedConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLAudioElementNamedConstructor* constructor = new (NotNull, JSC::allocateCell<JSHTMLAudioElementNamedConstructor>(vm.heap)) JSHTMLAudioElementNamedConstructor(structure, globalObject);
-        constructor->finishCreation(vm, globalObject);
-        return constructor;
-    }
-
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-    DECLARE_INFO;
-
-private:
-    JSHTMLAudioElementNamedConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSHTMLAudioElement(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLAudioElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

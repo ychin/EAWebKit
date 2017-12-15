@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009, 2010, 2011, 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2009, 2010, 2011, 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -58,6 +58,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <float.h>
 #include "Frame.h"
+#include "RenderElement.h"
 
 namespace EA
 {
@@ -254,71 +255,71 @@ namespace EA
 		{
 			// Note by Arpit Baldeva - Changed the recursive algorithm to an iterative algorithm. This results in 25% to 40% increase in efficiency.
 			
-			while (rootNode) 
+			while (rootNode)
 			{
 				IsNodeNavigableDelegate nodeNavigableDelegate(mView);
 				// As it turns out, getRect on HTMLElement is pretty expensive. So we don't do it inside the delegate as we require getRect here too. We do that check here.
 				// It is at least ~15% more efficient and can be up to ~25% more efficient (depends on the page layout and current node you are at).
-				nodeNavigableDelegate(rootNode,false);
+				nodeNavigableDelegate(rootNode, false);
 
 				if (nodeNavigableDelegate.FoundNode())
 				{
 					WebCore::HTMLElement* htmlElement = (WebCore::HTMLElement*) rootNode;
-					WebCore::LayoutRect rectAbsolute = htmlElement->boundingBox();		
+					WebCore::LayoutRect rectAbsolute = htmlElement->renderer()->absoluteBoundingBoxRect();
 					// Adjust the rectangle position based on the frame offset so that we have absolute geometrical position.
 					WebCore::FrameView* pFrameView = htmlElement->document().view(); //Can be NULL
-					if(pFrameView)
+					if (pFrameView)
 					{
 						rectAbsolute.setX(rectAbsolute.x() + pFrameView->x());
 						rectAbsolute.setY(rectAbsolute.y() + pFrameView->y());
 					}
 
-					 /* printf("Looking at ELEMENT_NODE : nodeName=%S (%d,%d)->(%d,%d) ThetaRange(%f,%f)\n\n%S\n-----------------------------------\n", 
+					/* printf("Looking at ELEMENT_NODE : nodeName=%S (%d,%d)->(%d,%d) ThetaRange(%f,%f)\n\n%S\n-----------------------------------\n",
 											htmlElement->tagName().charactersWithNullTermination(),
 											rect.topLeft().x(),rect.topLeft().y(),
 											rect.bottomRight().x(), rect.bottomRight().y(),
 											mMinThetaRange,mMaxThetaRange,
 											htmlElement->innerHTML().charactersWithNullTermination()
 											);
-										*/
+											*/
 
-					if (!WouldBeTrappedInElement(rectAbsolute,mStartingPosition,mDirection))
+					if (!WouldBeTrappedInElement(rectAbsolute, mStartingPosition, mDirection))
 					{
-						if (!TryingToDoPerpendicularJump(rectAbsolute,mPreviousNodeRect,mDirection))
+						if (!TryingToDoPerpendicularJump(rectAbsolute, mPreviousNodeRect, mDirection))
 						{
-							if(rectAbsolute.width()>=1 && rectAbsolute.height() >= 1) //Avoid 0 size elements
+							if (rectAbsolute.width() >= 1 && rectAbsolute.height() >= 1) //Avoid 0 size elements
 							{
 								if (doAxisCheck(rectAbsolute))
 								{
 									PolarRegion pr(rectAbsolute, mStartingPosition);
 
-									if (pr.minR < mMinR )
+									if (pr.minR < mMinR)
 									{
-										if (areAnglesInRange(pr.minTheta,pr.maxTheta))
+										if (areAnglesInRange(pr.minTheta, pr.maxTheta))
 										{
 											mMinR = pr.minR;
 
-											EAW_ASSERT( *(uint32_t*)rootNode > 10000000u );
+											EAW_ASSERT(*(uint32_t*)rootNode > 10000000u);
 
 											//mBestNode = rootNode; //We don't assign it here since we do the Z-layer testing later on.
-											FoundNodeInfo foundNodeInfo = {rootNode, mMinR};
+											FoundNodeInfo foundNodeInfo = { rootNode, mMinR };
 											mNodeListContainer->mFoundNodes.push_back(foundNodeInfo);
-											/*printf("Found ELEMENT_NODE : nodeName=%s (%d,%d)->(%d,%d) polar: R(%f,%f) Theta(%f,%f) ThetaRange(%f,%f)  \n", 
+											/*printf("Found ELEMENT_NODE : nodeName=%s (%d,%d)->(%d,%d) polar: R(%f,%f) Theta(%f,%f) ThetaRange(%f,%f)  \n",
 											(char*)htmlElement->nodeName().characters(),
 											rect.topLeft().x(),rect.topLeft().y(),
 											rect.bottomRight().x(), rect.bottomRight().y(),
 											pr.minR,pr.maxR,pr.minTheta,pr.maxTheta,
 											mMinThetaRange,mMaxThetaRange
 											);*/
-											
-										} 
+
+										}
 										else
 										{
-											
+
 #if EAWEBKIT_ENABLE_JUMP_NAVIGATION_DEBUGGING
 											mNodeListContainer->mRejectedByAngleNodes.push_back(rootNode);
 #endif
-											/*printf("RejectedA ELEMENT_NODE : nodeName=%s (%d,%d)->(%d,%d) polar: R(%f,%f) Theta(%f,%f) ThetaRange(%f,%f)  \n", 
+											/*printf("RejectedA ELEMENT_NODE : nodeName=%s (%d,%d)->(%d,%d) polar: R(%f,%f) Theta(%f,%f) ThetaRange(%f,%f)  \n",
 											(char*)htmlElement->nodeName().characters(),
 											rect.topLeft().x(),rect.topLeft().y(),
 											rect.bottomRight().x(), rect.bottomRight().y(),
@@ -326,13 +327,13 @@ namespace EA
 											mMinThetaRange,mMaxThetaRange
 											);*/
 										}
-									} 
+									}
 									else
 									{
 #if EAWEBKIT_ENABLE_JUMP_NAVIGATION_DEBUGGING
 										mNodeListContainer->mRejectedByRadiusNodes.push_back(rootNode);
 #endif
-										/*printf("RejectedR ELEMENT_NODE : nodeName=%s (%d,%d)->(%d,%d) polar: R(%f,%f) Theta(%f,%f) ThetaRange(%f,%f)  \n", 
+										/*printf("RejectedR ELEMENT_NODE : nodeName=%s (%d,%d)->(%d,%d) polar: R(%f,%f) Theta(%f,%f) ThetaRange(%f,%f)  \n",
 										(char*)htmlElement->nodeName().characters(),
 										rect.topLeft().x(),rect.topLeft().y(),
 										rect.bottomRight().x(), rect.bottomRight().y(),
@@ -351,10 +352,10 @@ namespace EA
 								//printf(" - too small\n");
 							}
 						}
-						else 
+						else
 						{
 							//printf(" - perpendicular\n");
-						}							
+						}
 					}
 					else
 					{
@@ -363,8 +364,8 @@ namespace EA
 #endif
 					}
 				}
-				
-				rootNode = WebCore::NodeTraversal::next(rootNode);
+
+				rootNode = WebCore::NodeTraversal::next(*rootNode);
 			}
 
 			// Make sure that this element can be jumped to by passing z-check. This makes sure that we jump only on the element
@@ -385,7 +386,7 @@ namespace EA
 				WebCore::Frame*		frame = element->document().frame();
 				WebCore::FrameView* pFrameView = element->document().view(); 
 
-				WebCore::LayoutRect rect = element->boundingBox(); //This list is decently small so we don't worry about caching the rect size.
+				WebCore::LayoutRect rect = element->renderer()->absoluteBoundingBoxRect();  //This list is decently small so we don't worry about caching the rect size.
 				// ElementFromPoint expects the point in its own coordinate system so we don't need to adjust the rectangle to its absolute position
 				// on screen
 				// elementFromPoint API changed compared to 1.x. The simplest thing to do at the moment is to adjust our input.
@@ -451,11 +452,10 @@ namespace EA
 
 		bool DocumentNavigator::doAxisCheck(WebCore::LayoutRect rect)
 		{
-			
-			int left = rect.x();
-			int right = rect.x() + rect.width();
-			int top = rect.y();
-			int bottom = rect.y() + rect.height();
+			WebCore::LayoutUnit left = rect.x();
+			WebCore::LayoutUnit right = rect.x() + rect.width();
+			WebCore::LayoutUnit top = rect.y();
+			WebCore::LayoutUnit bottom = rect.y() + rect.height();
 
 			//abaldeva: Feel like only one check is enough?
 			//Fixes the navigation to the yahoo.com sports section link

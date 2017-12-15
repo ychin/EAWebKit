@@ -23,27 +23,28 @@
 
 #if ENABLE(QUOTA)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "StorageInfo.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSStorageInfo : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSStorageInfo* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<StorageInfo> impl)
+    static JSStorageInfo* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<StorageInfo>&& impl)
     {
-        JSStorageInfo* ptr = new (NotNull, JSC::allocateCell<JSStorageInfo>(globalObject->vm().heap)) JSStorageInfo(structure, globalObject, impl);
+        JSStorageInfo* ptr = new (NotNull, JSC::allocateCell<JSStorageInfo>(globalObject->vm().heap)) JSStorageInfo(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static StorageInfo* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSStorageInfo();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     StorageInfo& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     StorageInfo* m_impl;
 protected:
-    JSStorageInfo(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<StorageInfo>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSStorageInfo(JSC::Structure*, JSDOMGlobalObject*, Ref<StorageInfo>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSStorageInfoOwner : public JSC::WeakHandleOwner {
@@ -78,50 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, StorageInfo*)
 {
-    DEFINE_STATIC_LOCAL(JSStorageInfoOwner, jsStorageInfoOwner, ());
-    return &jsStorageInfoOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, StorageInfo*)
-{
-    return &world;
+    static NeverDestroyed<JSStorageInfoOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, StorageInfo*);
-StorageInfo* toStorageInfo(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, StorageInfo& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSStorageInfoPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSStorageInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSStorageInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSStorageInfoPrototype>(vm.heap)) JSStorageInfoPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSStorageInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionQueryUsageAndQuota(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsStorageInfoPrototypeFunctionRequestQuota(JSC::ExecState*);
-// Constants
-
-JSC::JSValue jsStorageInfoTEMPORARY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStorageInfoPERSISTENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

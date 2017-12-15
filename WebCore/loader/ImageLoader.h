@@ -38,8 +38,8 @@ template<typename T> class EventSender;
 typedef EventSender<ImageLoader> ImageEventSender;
 
 class ImageLoader : public CachedImageClient {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
-    explicit ImageLoader(Element*);
     virtual ~ImageLoader();
 
     // This function should be called when the element is attached to a document; starts
@@ -52,11 +52,13 @@ public:
 
     void elementDidMoveToNewDocument();
 
-    Element* element() const { return m_element; }
+    Element& element() { return m_element; }
+    const Element& element() const { return m_element; }
+
     bool imageComplete() const { return m_imageComplete; }
 
     CachedImage* image() const { return m_image.get(); }
-    void setImage(CachedImage*); // Cancels pending beforeload and load events, and doesn't dispatch new ones.
+    void clearImage(); // Cancels pending beforeload and load events, and doesn't dispatch new ones.
 
     void setLoadManually(bool loadManually) { m_loadManually = loadManually; }
 
@@ -70,7 +72,8 @@ public:
     static void dispatchPendingErrorEvents();
 
 protected:
-    virtual void notifyFinished(CachedResource*) OVERRIDE;
+    explicit ImageLoader(Element&);
+    virtual void notifyFinished(CachedResource*) override;
 
 private:
     virtual void dispatchLoadEvent() = 0;
@@ -85,14 +88,15 @@ private:
     RenderImageResource* renderImageResource();
     void updateRenderer();
 
-    void setImageWithoutConsideringPendingLoadEvent(CachedImage*);
+    void clearImageWithoutConsideringPendingLoadEvent();
     void clearFailedLoadURL();
 
-    void timerFired(Timer<ImageLoader>*);
+    void timerFired();
 
-    Element* m_element;
+    Element& m_element;
     CachedResourceHandle<CachedImage> m_image;
-    Timer<ImageLoader> m_derefElementTimer;
+    Timer m_derefElementTimer;
+    RefPtr<Element> m_protectedElement;
     AtomicString m_failedLoadURL;
     bool m_hasPendingBeforeLoadEvent : 1;
     bool m_hasPendingLoadEvent : 1;

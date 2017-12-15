@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies)
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,6 +38,12 @@
 
 using namespace WebCore;
 
+// Helper function to convert GraphicsLayer to TextureMapperLayer
+static TextureMapperLayer* toTextureMapperLayer(GraphicsLayer* layer)
+{
+	return layer ? &downcast<GraphicsLayerTextureMapper>(layer)->layer() : 0;
+}
+
 TextureMapperLayerClientEA::TextureMapperLayerClientEA(EA::WebKit::WebFrame* frame)
     : m_frame(frame)
     , m_rootTextureMapperLayer(0)
@@ -52,7 +58,7 @@ TextureMapperLayerClientEA::~TextureMapperLayerClientEA()
 
 void TextureMapperLayerClientEA::syncRootLayer()
 {
-    m_rootGraphicsLayer->flushCompositingStateForThisLayerOnly();
+    m_rootGraphicsLayer->flushCompositingStateForThisLayerOnly(/*viewportIsStable*/ true);	//viewportIsStable is always true
 }
 
 void TextureMapperLayerClientEA::markForSync(bool)
@@ -68,8 +74,8 @@ TextureMapperLayer* TextureMapperLayerClientEA::rootLayer()
 void TextureMapperLayerClientEA::setRootGraphicsLayer(GraphicsLayer* layer)
 {
     if (layer) {
-        m_rootGraphicsLayer = GraphicsLayer::create(0, 0);
-        m_rootTextureMapperLayer = toTextureMapperLayer(m_rootGraphicsLayer.get());
+		m_rootGraphicsLayer = GraphicsLayer::create(0, layer->client());
+		m_rootTextureMapperLayer = toTextureMapperLayer(m_rootGraphicsLayer.get());
         m_rootGraphicsLayer->addChild(layer);
         m_rootGraphicsLayer->setDrawsContent(false);
         m_rootGraphicsLayer->setMasksToBounds(false);
@@ -78,7 +84,7 @@ void TextureMapperLayerClientEA::setRootGraphicsLayer(GraphicsLayer* layer)
         if (m_frame->page()->view()->HardwareAccelerated())
 			m_textureMapper = TextureMapperEA::create(m_frame->page()->view());
 		else
-			m_textureMapper = TextureMapper::create(TextureMapper::SoftwareMode);
+			m_textureMapper = TextureMapper::create();
 
         m_rootTextureMapperLayer->setTextureMapper(m_textureMapper.get());
         syncRootLayer();
@@ -126,7 +132,7 @@ void TextureMapperLayerClientEA::renderCompositedLayers(GraphicsContext* context
     //if (m_rootGraphicsLayer->opacity() != painter->opacity() || m_rootGraphicsLayer->transform() != matrix) {
         m_rootGraphicsLayer->setOpacity(platformContext->globalAlpha());
         m_rootGraphicsLayer->setTransform(matrix);
-        m_rootGraphicsLayer->flushCompositingStateForThisLayerOnly();
+        downcast<GraphicsLayerTextureMapper>(*m_rootGraphicsLayer).updateBackingStoreIncludingSubLayers();
     //}
     m_textureMapper->beginPainting();
     if(m_frame->page()->view()->GetHardwareRenderer()->UseCustomClip())

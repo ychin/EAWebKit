@@ -23,28 +23,28 @@
 
 #if ENABLE(MEDIA_CONTROLS_SCRIPT)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MediaControlsHost.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaControlsHost : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMediaControlsHost* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaControlsHost> impl)
+    static JSMediaControlsHost* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaControlsHost>&& impl)
     {
-        JSMediaControlsHost* ptr = new (NotNull, JSC::allocateCell<JSMediaControlsHost>(globalObject->vm().heap)) JSMediaControlsHost(structure, globalObject, impl);
+        JSMediaControlsHost* ptr = new (NotNull, JSC::allocateCell<JSMediaControlsHost>(globalObject->vm().heap)) JSMediaControlsHost(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaControlsHost* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMediaControlsHost();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,19 @@ public:
     }
 
     MediaControlsHost& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MediaControlsHost* m_impl;
 protected:
-    JSMediaControlsHost(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaControlsHost>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMediaControlsHost(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaControlsHost>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaControlsHostOwner : public JSC::WeakHandleOwner {
@@ -79,54 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaControlsHost*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaControlsHostOwner, jsMediaControlsHostOwner, ());
-    return &jsMediaControlsHostOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MediaControlsHost*)
-{
-    return &world;
+    static NeverDestroyed<JSMediaControlsHostOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaControlsHost*);
-MediaControlsHost* toMediaControlsHost(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaControlsHost& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMediaControlsHostPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaControlsHostPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaControlsHostPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaControlsHostPrototype>(vm.heap)) JSMediaControlsHostPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaControlsHostPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControlsHostPrototypeFunctionSortedTrackListForMenu(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControlsHostPrototypeFunctionDisplayNameForTrack(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControlsHostPrototypeFunctionSetSelectedTextTrack(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsMediaControlsHostPrototypeFunctionUpdateTextTrackContainer(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsMediaControlsHostCaptionMenuOffItem(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControlsHostCaptionMenuAutomaticItem(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControlsHostCaptionDisplayMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaControlsHostTextTrackContainer(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

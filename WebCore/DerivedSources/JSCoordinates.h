@@ -24,27 +24,27 @@
 #if ENABLE(GEOLOCATION)
 
 #include "Coordinates.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSCoordinates : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSCoordinates* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Coordinates> impl)
+    static JSCoordinates* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Coordinates>&& impl)
     {
-        JSCoordinates* ptr = new (NotNull, JSC::allocateCell<JSCoordinates>(globalObject->vm().heap)) JSCoordinates(structure, globalObject, impl);
+        JSCoordinates* ptr = new (NotNull, JSC::allocateCell<JSCoordinates>(globalObject->vm().heap)) JSCoordinates(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Coordinates* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSCoordinates();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,19 @@ public:
     }
 
     Coordinates& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Coordinates* m_impl;
 protected:
-    JSCoordinates(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Coordinates>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCoordinates(JSC::Structure*, JSDOMGlobalObject*, Ref<Coordinates>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSCoordinatesOwner : public JSC::WeakHandleOwner {
@@ -79,50 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Coordinates*)
 {
-    DEFINE_STATIC_LOCAL(JSCoordinatesOwner, jsCoordinatesOwner, ());
-    return &jsCoordinatesOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Coordinates*)
-{
-    return &world;
+    static NeverDestroyed<JSCoordinatesOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Coordinates*);
-Coordinates* toCoordinates(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Coordinates& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSCoordinatesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCoordinatesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCoordinatesPrototype* ptr = new (NotNull, JSC::allocateCell<JSCoordinatesPrototype>(vm.heap)) JSCoordinatesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCoordinatesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCoordinatesLatitude(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCoordinatesLongitude(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCoordinatesAltitude(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCoordinatesAccuracy(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCoordinatesAltitudeAccuracy(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCoordinatesHeading(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCoordinatesSpeed(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -29,13 +29,13 @@
 #include "CopyVisitorInlines.h"
 #include "GenericTypedArrayViewInlines.h"
 #include "JSGenericTypedArrayViewInlines.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 
 #define MAKE_S_INFO(type) \
     template<> const ClassInfo JS##type##Array::s_info = { \
-        #type "Array", &JS##type##Array::Base::s_info, 0, 0, \
+        #type "Array", &JS##type##Array::Base::s_info, 0, \
         CREATE_METHOD_TABLE(JS##type##Array) \
     }; \
     const ClassInfo* get##type##ArrayClassInfo() { return &JS##type##Array::s_info; }

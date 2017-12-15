@@ -21,28 +21,28 @@
 #ifndef JSXMLSerializer_h
 #define JSXMLSerializer_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "XMLSerializer.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSXMLSerializer : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSXMLSerializer* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XMLSerializer> impl)
+    static JSXMLSerializer* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<XMLSerializer>&& impl)
     {
-        JSXMLSerializer* ptr = new (NotNull, JSC::allocateCell<JSXMLSerializer>(globalObject->vm().heap)) JSXMLSerializer(structure, globalObject, impl);
+        JSXMLSerializer* ptr = new (NotNull, JSC::allocateCell<JSXMLSerializer>(globalObject->vm().heap)) JSXMLSerializer(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static XMLSerializer* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSXMLSerializer();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     XMLSerializer& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     XMLSerializer* m_impl;
 protected:
-    JSXMLSerializer(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<XMLSerializer>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSXMLSerializer(JSC::Structure*, JSDOMGlobalObject*, Ref<XMLSerializer>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSXMLSerializerOwner : public JSC::WeakHandleOwner {
@@ -78,74 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, XMLSerializer*)
 {
-    DEFINE_STATIC_LOCAL(JSXMLSerializerOwner, jsXMLSerializerOwner, ());
-    return &jsXMLSerializerOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, XMLSerializer*)
-{
-    return &world;
+    static NeverDestroyed<JSXMLSerializerOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, XMLSerializer*);
-XMLSerializer* toXMLSerializer(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, XMLSerializer& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSXMLSerializerPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSXMLSerializerPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSXMLSerializerPrototype* ptr = new (NotNull, JSC::allocateCell<JSXMLSerializerPrototype>(vm.heap)) JSXMLSerializerPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSXMLSerializerPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSXMLSerializerConstructor : public DOMConstructorObject {
-private:
-    JSXMLSerializerConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSXMLSerializerConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSXMLSerializerConstructor* ptr = new (NotNull, JSC::allocateCell<JSXMLSerializerConstructor>(vm.heap)) JSXMLSerializerConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSXMLSerializer(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsXMLSerializerPrototypeFunctionSerializeToString(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsXMLSerializerConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

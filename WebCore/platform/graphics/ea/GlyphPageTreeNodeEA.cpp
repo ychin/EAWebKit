@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2008 Holger Hans Peter Freyther
-    Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+    Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,8 +20,7 @@
 
 */
 #include "config.h"
-#include "GlyphPageTreeNode.h"
-#include "SimpleFontData.h"
+#include "Font.h"
 #include <wtf/Assertions.h>
 #include <EAWebKit/EAWebKitTextInterface.h>
 
@@ -33,7 +32,7 @@ namespace WebCore {
 // being cached here for faster render later.
 
 // Seems like most implementations return true even if a single glyph could be found. We do the same here.
-bool GlyphPage::fill(unsigned offset, unsigned length, UChar* buffer, unsigned bufferLength, const SimpleFontData* pSimpleFontData)
+bool GlyphPage::fill(unsigned offset, unsigned length, UChar* buffer, unsigned bufferLength, const Font* pSimpleFontData)
 {
     bool haveGlyphs = false;
 

@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSAudioBufferCallback : public AudioBufferCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSAudioBufferCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSAudioBufferCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSAudioBufferCallback(callback, globalObject));
+        return adoptRef(*new JSAudioBufferCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

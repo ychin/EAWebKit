@@ -21,7 +21,6 @@
 #ifndef SVGTextContentElement_h
 #define SVGTextContentElement_h
 
-#if ENABLE(SVG)
 #include "SVGAnimatedBoolean.h"
 #include "SVGAnimatedEnumeration.h"
 #include "SVGAnimatedLength.h"
@@ -89,43 +88,43 @@ public:
     // textLength is not declared using the standard DECLARE_ANIMATED_LENGTH macro
     // as its getter needs special handling (return getComputedTextLength(), instead of m_textLength).
     SVGLength& specifiedTextLength() { return m_specifiedTextLength; }
-    PassRefPtr<SVGAnimatedLength> textLengthAnimated();
+    Ref<SVGAnimatedLength> textLengthAnimated();
     static const SVGPropertyInfo* textLengthPropertyInfo();
 
 protected:
     SVGTextContentElement(const QualifiedName&, Document&);
 
-    virtual bool isValid() const { return SVGTests::isValid(); }
+    virtual bool isValid() const override { return SVGTests::isValid(); }
 
-    bool isSupportedAttribute(const QualifiedName&);
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
-    virtual bool isPresentationAttribute(const QualifiedName&) const OVERRIDE;
-    virtual void collectStyleForPresentationAttribute(const QualifiedName&, const AtomicString&, MutableStylePropertySet*) OVERRIDE;
-    virtual void svgAttributeChanged(const QualifiedName&);
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
+    virtual bool isPresentationAttribute(const QualifiedName&) const override;
+    virtual void collectStyleForPresentationAttribute(const QualifiedName&, const AtomicString&, MutableStyleProperties&) override;
+    virtual void svgAttributeChanged(const QualifiedName&) override;
 
-    virtual bool selfHasRelativeLengths() const;
+    virtual bool selfHasRelativeLengths() const override;
 
 private:
-    virtual bool isTextContent() const OVERRIDE FINAL { return true; }
+    virtual bool isTextContent() const override final { return true; }
+
+    static bool isSupportedAttribute(const QualifiedName&);
 
     // Custom 'textLength' property
     static void synchronizeTextLength(SVGElement* contextElement);
-    static PassRefPtr<SVGAnimatedProperty> lookupOrCreateTextLengthWrapper(SVGElement* contextElement);
+    static Ref<SVGAnimatedProperty> lookupOrCreateTextLengthWrapper(SVGElement* contextElement);
     mutable SVGSynchronizableAnimatedProperty<SVGLength> m_textLength;
     SVGLength m_specifiedTextLength;
   
     BEGIN_DECLARE_ANIMATED_PROPERTIES(SVGTextContentElement)
         DECLARE_ANIMATED_ENUMERATION(LengthAdjust, lengthAdjust, SVGLengthAdjustType)
-        DECLARE_ANIMATED_BOOLEAN(ExternalResourcesRequired, externalResourcesRequired) 
+        DECLARE_ANIMATED_BOOLEAN_OVERRIDE(ExternalResourcesRequired, externalResourcesRequired) 
     END_DECLARE_ANIMATED_PROPERTIES
 };
 
-void isSVGTextContentElement(const SVGTextContentElement&); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGTextContentElement(const SVGElement& element) { return element.isTextContent(); }
-inline bool isSVGTextContentElement(const Node& node) { return node.isSVGElement() && toSVGElement(node).isTextContent(); }
-NODE_TYPE_CASTS(SVGTextContentElement)
-
 } // namespace WebCore
 
-#endif // ENABLE(SVG)
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::SVGTextContentElement)
+    static bool isType(const WebCore::SVGElement& element) { return element.isTextContent(); }
+    static bool isType(const WebCore::Node& node) { return is<WebCore::SVGElement>(node) && isType(downcast<WebCore::SVGElement>(node)); }
+SPECIALIZE_TYPE_TRAITS_END()
+
 #endif

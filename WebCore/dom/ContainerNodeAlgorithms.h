@@ -23,7 +23,7 @@
 #define ContainerNodeAlgorithms_h
 
 #include "Document.h"
-#include "ElementTraversal.h"
+#include "ElementIterator.h"
 #include "Frame.h"
 #include "HTMLFrameOwnerElement.h"
 #include "InspectorInstrumentation.h"
@@ -54,8 +54,8 @@ private:
 
 class ChildNodeRemovalNotifier {
 public:
-    explicit ChildNodeRemovalNotifier(ContainerNode& insertionPoint)
-        : m_insertionPoint(insertionPoint)
+    explicit ChildNodeRemovalNotifier(ContainerNode& removalPoint)
+        : m_removalPoint(removalPoint)
     {
     }
 
@@ -67,7 +67,7 @@ private:
     void notifyNodeRemovedFromDocument(Node&);
     void notifyNodeRemovedFromTree(ContainerNode&);
 
-    ContainerNode& m_insertionPoint;
+    ContainerNode& m_removalPoint;
 };
 
 namespace Private {
@@ -77,8 +77,7 @@ namespace Private {
 
 }
 
-// Helper functions for TreeShared-derived classes, which have a 'Node' style interface
-// This applies to 'ContainerNode' and 'SVGElementInstance'
+// This no longer needs to be generic. It's only used for Node and ContainerNode now.
 template<class GenericNode, class GenericNodeContainer>
 inline void removeDetachedChildrenInContainer(GenericNodeContainer& container)
 {
@@ -196,11 +195,10 @@ namespace Private {
 inline void ChildNodeInsertionNotifier::notifyNodeInsertedIntoDocument(Node& node, NodeVector& postInsertionNotificationTargets)
 {
     ASSERT(m_insertionPoint.inDocument());
-    Ref<Node> protect(node);
-    if (Node::InsertionShouldCallDidNotifySubtreeInsertions == node.insertedInto(m_insertionPoint))
+    if (Node::InsertionShouldCallFinishedInsertingSubtree == node.insertedInto(m_insertionPoint))
         postInsertionNotificationTargets.append(node);
-    if (node.isContainerNode())
-        notifyDescendantInsertedIntoDocument(toContainerNode(node), postInsertionNotificationTargets);
+    if (is<ContainerNode>(node))
+        notifyDescendantInsertedIntoDocument(downcast<ContainerNode>(node), postInsertionNotificationTargets);
 }
 
 inline void ChildNodeInsertionNotifier::notifyNodeInsertedIntoTree(ContainerNode& node, NodeVector& postInsertionNotificationTargets)
@@ -208,44 +206,42 @@ inline void ChildNodeInsertionNotifier::notifyNodeInsertedIntoTree(ContainerNode
     NoEventDispatchAssertion assertNoEventDispatch;
     ASSERT(!m_insertionPoint.inDocument());
 
-    if (Node::InsertionShouldCallDidNotifySubtreeInsertions == node.insertedInto(m_insertionPoint))
+    if (Node::InsertionShouldCallFinishedInsertingSubtree == node.insertedInto(m_insertionPoint))
         postInsertionNotificationTargets.append(node);
     notifyDescendantInsertedIntoTree(node, postInsertionNotificationTargets);
 }
 
 inline void ChildNodeInsertionNotifier::notify(Node& node, NodeVector& postInsertionNotificationTargets)
 {
-    ASSERT(!NoEventDispatchAssertion::isEventDispatchForbidden());
+    ASSERT_WITH_SECURITY_IMPLICATION(!NoEventDispatchAssertion::isEventDispatchForbidden());
 
-#if ENABLE(INSPECTOR)
-    InspectorInstrumentation::didInsertDOMNode(&node.document(), &node);
-#endif
+    InspectorInstrumentation::didInsertDOMNode(node.document(), node);
 
     Ref<Document> protectDocument(node.document());
     Ref<Node> protectNode(node);
 
     if (m_insertionPoint.inDocument())
         notifyNodeInsertedIntoDocument(node, postInsertionNotificationTargets);
-    else if (node.isContainerNode())
-        notifyNodeInsertedIntoTree(toContainerNode(node), postInsertionNotificationTargets);
+    else if (is<ContainerNode>(node))
+        notifyNodeInsertedIntoTree(downcast<ContainerNode>(node), postInsertionNotificationTargets);
 }
 
 
 inline void ChildNodeRemovalNotifier::notifyNodeRemovedFromDocument(Node& node)
 {
-    ASSERT(m_insertionPoint.inDocument());
-    node.removedFrom(m_insertionPoint);
+    ASSERT(m_removalPoint.inDocument());
+    node.removedFrom(m_removalPoint);
 
-    if (node.isContainerNode())
-        notifyDescendantRemovedFromDocument(toContainerNode(node));
+    if (is<ContainerNode>(node))
+        notifyDescendantRemovedFromDocument(downcast<ContainerNode>(node));
 }
 
 inline void ChildNodeRemovalNotifier::notifyNodeRemovedFromTree(ContainerNode& node)
 {
     NoEventDispatchAssertion assertNoEventDispatch;
-    ASSERT(!m_insertionPoint.inDocument());
+    ASSERT(!m_removalPoint.inDocument());
 
-    node.removedFrom(m_insertionPoint);
+    node.removedFrom(m_removalPoint);
     notifyDescendantRemovedFromTree(node);
 }
 
@@ -254,84 +250,21 @@ inline void ChildNodeRemovalNotifier::notify(Node& node)
     if (node.inDocument()) {
         notifyNodeRemovedFromDocument(node);
         node.document().notifyRemovePendingSheetIfNeeded();
-    } else if (node.isContainerNode())
-        notifyNodeRemovedFromTree(toContainerNode(node));
+    } else if (is<ContainerNode>(node))
+        notifyNodeRemovedFromTree(downcast<ContainerNode>(node));
 }
 
-class ChildFrameDisconnector {
-public:
-    enum DisconnectPolicy {
-        RootAndDescendants,
-        DescendantsOnly
-    };
-
-    explicit ChildFrameDisconnector(ContainerNode& root)
-        : m_root(root)
-    {
-    }
-
-    void disconnect(DisconnectPolicy = RootAndDescendants);
-
-private:
-    void collectFrameOwners(ContainerNode& root);
-    void disconnectCollectedFrameOwners();
-
-    Vector<Ref<HTMLFrameOwnerElement>, 10> m_frameOwners;
-    ContainerNode& m_root;
+enum SubframeDisconnectPolicy {
+    RootAndDescendants,
+    DescendantsOnly
 };
+void disconnectSubframes(ContainerNode& root, SubframeDisconnectPolicy);
 
-#ifndef NDEBUG
-unsigned assertConnectedSubrameCountIsConsistent(Node&);
-#endif
-
-inline void ChildFrameDisconnector::collectFrameOwners(ContainerNode& root)
+inline void disconnectSubframesIfNeeded(ContainerNode& root, SubframeDisconnectPolicy policy)
 {
     if (!root.connectedSubframeCount())
         return;
-
-    if (root.isHTMLElement() && root.isFrameOwnerElement())
-        m_frameOwners.append(toHTMLFrameOwnerElement(root));
-
-    for (Element* child = ElementTraversal::firstChild(&root); child; child = ElementTraversal::nextSibling(child))
-        collectFrameOwners(*child);
-
-    ShadowRoot* shadow = root.isElementNode() ? toElement(root).shadowRoot() : 0;
-    if (shadow)
-        collectFrameOwners(*shadow);
-}
-
-inline void ChildFrameDisconnector::disconnectCollectedFrameOwners()
-{
-    // Must disable frame loading in the subtree so an unload handler cannot
-    // insert more frames and create loaded frames in detached subtrees.
-    SubframeLoadingDisabler disabler(m_root);
-
-    for (unsigned i = 0; i < m_frameOwners.size(); ++i) {
-        HTMLFrameOwnerElement& owner = m_frameOwners[i].get();
-        // Don't need to traverse up the tree for the first owner since no
-        // script could have moved it.
-        if (!i || m_root.containsIncludingShadowDOM(&owner))
-            owner.disconnectContentFrame();
-    }
-}
-
-inline void ChildFrameDisconnector::disconnect(DisconnectPolicy policy)
-{
-#ifndef NDEBUG
-    assertConnectedSubrameCountIsConsistent(m_root);
-#endif
-
-    if (!m_root.connectedSubframeCount())
-        return;
-
-    if (policy == RootAndDescendants)
-        collectFrameOwners(m_root);
-    else {
-        for (Element* child = ElementTraversal::firstChild(&m_root); child; child = ElementTraversal::nextSibling(child))
-            collectFrameOwners(*child);
-    }
-
-    disconnectCollectedFrameOwners();
+    disconnectSubframes(root, policy);
 }
 
 } // namespace WebCore

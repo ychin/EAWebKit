@@ -22,6 +22,7 @@
 #include "JSCloseEvent.h"
 
 #include "CloseEvent.h"
+#include "JSDOMBinding.h"
 #include "JSDictionary.h"
 #include "URL.h"
 #include <runtime/Error.h>
@@ -32,36 +33,72 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSCloseEventTableValues[] =
-{
-    { "wasClean", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventWasClean), (intptr_t)0 },
-    { "code", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventCode), (intptr_t)0 },
-    { "reason", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventReason), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsCloseEventWasClean(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCloseEventCode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCloseEventReason(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCloseEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCloseEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCloseEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCloseEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSCloseEventPrototype>(vm.heap)) JSCloseEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCloseEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCloseEventTable = { 9, 7, JSCloseEventTableValues, 0 };
-/* Hash table for constructor */
+class JSCloseEventConstructor : public DOMConstructorObject {
+private:
+    JSCloseEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSCloseEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSCloseEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCloseEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSCloseEventConstructor>(vm.heap)) JSCloseEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSCloseEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSCloseEventConstructorTable = { 1, 0, JSCloseEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSCloseEventConstructor::constructJSCloseEvent(ExecState* exec)
 {
-    JSCloseEventConstructor* jsConstructor = jsCast<JSCloseEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSCloseEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     CloseEventInit eventInit;
@@ -97,12 +134,7 @@ bool fillCloseEventInit(CloseEventInit& eventInit, JSDictionary& dictionary)
     return true;
 }
 
-static const HashTable& getJSCloseEventConstructorTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSCloseEventConstructorTable);
-}
-
-const ClassInfo JSCloseEventConstructor::s_info = { "CloseEventConstructor", &Base::s_info, 0, getJSCloseEventConstructorTable, CREATE_METHOD_TABLE(JSCloseEventConstructor) };
+const ClassInfo JSCloseEventConstructor::s_info = { "CloseEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCloseEventConstructor) };
 
 JSCloseEventConstructor::JSCloseEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -113,13 +145,9 @@ void JSCloseEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCloseEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSCloseEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSCloseEventConstructor, JSDOMWrapper>(exec, getJSCloseEventConstructorTable(exec), jsCast<JSCloseEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSCloseEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("CloseEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSCloseEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -132,86 +160,94 @@ ConstructType JSCloseEventConstructor::getConstructData(JSCell*, ConstructData& 
 
 static const HashTableValue JSCloseEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "wasClean", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventWasClean), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "code", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventCode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "reason", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCloseEventReason), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCloseEventPrototypeTable = { 1, 0, JSCloseEventPrototypeTableValues, 0 };
-static const HashTable& getJSCloseEventPrototypeTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSCloseEventPrototypeTable);
-}
+const ClassInfo JSCloseEventPrototype::s_info = { "CloseEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCloseEventPrototype) };
 
-const ClassInfo JSCloseEventPrototype::s_info = { "CloseEventPrototype", &Base::s_info, 0, getJSCloseEventPrototypeTable, CREATE_METHOD_TABLE(JSCloseEventPrototype) };
-
-JSObject* JSCloseEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCloseEvent>(vm, globalObject);
-}
-
-static const HashTable& getJSCloseEventTable(ExecState* exec)
-{
-    return getHashTableForGlobalData(exec->vm(), JSCloseEventTable);
-}
-
-const ClassInfo JSCloseEvent::s_info = { "CloseEvent", &Base::s_info, 0, getJSCloseEventTable , CREATE_METHOD_TABLE(JSCloseEvent) };
-
-JSCloseEvent::JSCloseEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CloseEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSCloseEvent::finishCreation(VM& vm)
+void JSCloseEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCloseEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCloseEvent::s_info = { "CloseEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCloseEvent) };
+
+JSCloseEvent::JSCloseEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CloseEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSCloseEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCloseEventPrototype::create(vm, globalObject, JSCloseEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSCloseEventPrototype::create(vm, globalObject, JSCloseEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSCloseEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSCloseEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSCloseEvent* thisObject = jsCast<JSCloseEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCloseEvent, Base>(exec, getJSCloseEventTable(exec), thisObject, propertyName, slot);
+    return getDOMPrototype<JSCloseEvent>(vm, globalObject);
 }
 
-JSValue jsCloseEventWasClean(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCloseEventWasClean(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCloseEvent* castedThis = jsCast<JSCloseEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CloseEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCloseEvent* castedThis = jsDynamicCast<JSCloseEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCloseEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CloseEvent", "wasClean");
+        return throwGetterTypeError(*exec, "CloseEvent", "wasClean");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.wasClean());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCloseEventCode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCloseEventCode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCloseEvent* castedThis = jsCast<JSCloseEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CloseEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCloseEvent* castedThis = jsDynamicCast<JSCloseEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCloseEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CloseEvent", "code");
+        return throwGetterTypeError(*exec, "CloseEvent", "code");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.code());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCloseEventReason(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCloseEventReason(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCloseEvent* castedThis = jsCast<JSCloseEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CloseEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCloseEvent* castedThis = jsDynamicCast<JSCloseEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCloseEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "CloseEvent", "reason");
+        return throwGetterTypeError(*exec, "CloseEvent", "reason");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.reason());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCloseEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCloseEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSCloseEvent* domObject = jsCast<JSCloseEvent*>(asObject(slotBase));
-    return JSCloseEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSCloseEventPrototype* domObject = jsDynamicCast<JSCloseEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSCloseEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSCloseEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-dev-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
+      <Configuration>pc-vc-dev-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
+      <Configuration>pc-vc-dev-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{95087B53-A8A4-43EA-FA54-1B64A1E188F2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>EAIOEAWebKit</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <UCRTContentRoot>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</UCRTContentRoot>
+    <UniversalCRTSdkDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</UniversalCRTSdkDir>
+    <WindowsSdkDir_10>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</WindowsSdkDir_10>
+    <NETFXKitsDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6</NETFXKitsDir>
+    <NETFXSDKDir>$(WindowsSDKDir)</NETFXSDKDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include";"..\..\..\..\EAWebKitSupportPackages\coreallocatorEAWebKit\local-1.03.10-01\include";"..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
+      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4548; 4619; 4530; 4217; 4917; 4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc-vc-dev-debug\lib\EAIOEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc-vc-dev-debug\lib\EAIOEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-debug\build\EAIOEAWebKit" mkdir "pc-vc-dev-debug\build\EAIOEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <OutDir>pc-vc-dev-debug\lib\</OutDir>
+    <IntDir>pc-vc-dev-debug\build\EAIOEAWebKit\vstmp\</IntDir>
+    <TargetName>EAIOEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include";"..\..\..\..\EAWebKitSupportPackages\coreallocatorEAWebKit\local-1.03.10-01\include";"..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EASTLEAWebKit\local-1.15.03-01\include";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
+      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4548; 4619; 4530; 4217; 4917; 4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;NDEBUG;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;NDEBUG;UTF_USE_EAASSERT=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc-vc-dev-opt\lib\EAIOEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc-vc-dev-opt\lib\EAIOEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-opt\build\EAIOEAWebKit" mkdir "pc-vc-dev-opt\build\EAIOEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <OutDir>pc-vc-dev-opt\lib\</OutDir>
+    <IntDir>pc-vc-dev-opt\build\EAIOEAWebKit\vstmp\</IntDir>
+    <TargetName>EAIOEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\Allocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAFileBase.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAFileDirectory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAFileNotification.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAFileStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAFileUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAIniFile.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamAdapter.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamBuffer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamChild.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamCpp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamFixedMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\EAStreamNull.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\FnEncode.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\FnMatch.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\PathString.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\internal\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\internal\EAIOEARefCount.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\internal\EAIOEASTLCoreAllocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\internal\EAIOZoneObject.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\StdC\EAFileStreamStdC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\Unix\EAFileStreamUnix.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\include\EAIO\Win32\EAFileStreamWin32.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\Allocator.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAFileDirectory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAFileNotification.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAFileStream.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAFileUtil.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAIniFile.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamAdapter.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamChild.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamCpp.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamFixedMemory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamMemory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\EAStreamNull.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\FnEncode.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\FnMatch.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\PathString.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\internal\EAIOCoreAllocator.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIOEAWebKit\local-01\source\internal\EAIOZoneObject.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_pc-vc-dev-debug_Win32="vc" vc-compiler="$(VSInstallDir)\VC\BIN\cl.exe" vc-compiler_clang="" vc-librarian="$(VSInstallDir)\VC\BIN\lib.exe" platform_pc-vc-dev-opt_Win32="vc" build.env.PATH="$(VSInstallDir)\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

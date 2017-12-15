@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSMutationRecord.h"
 
+#include "JSDOMBinding.h"
 #include "JSNode.h"
 #include "JSNodeList.h"
 #include "MutationRecord.h"
@@ -35,33 +36,66 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSMutationRecordTableValues[] =
-{
-    { "type", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordType), (intptr_t)0 },
-    { "target", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordTarget), (intptr_t)0 },
-    { "addedNodes", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordAddedNodes), (intptr_t)0 },
-    { "removedNodes", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordRemovedNodes), (intptr_t)0 },
-    { "previousSibling", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordPreviousSibling), (intptr_t)0 },
-    { "nextSibling", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordNextSibling), (intptr_t)0 },
-    { "attributeName", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordAttributeName), (intptr_t)0 },
-    { "attributeNamespace", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordAttributeNamespace), (intptr_t)0 },
-    { "oldValue", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordOldValue), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsMutationRecordType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordTarget(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordAddedNodes(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordRemovedNodes(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordPreviousSibling(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordNextSibling(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordAttributeName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordAttributeNamespace(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordOldValue(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMutationRecordConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMutationRecordPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMutationRecordPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMutationRecordPrototype* ptr = new (NotNull, JSC::allocateCell<JSMutationRecordPrototype>(vm.heap)) JSMutationRecordPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMutationRecordPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMutationRecordTable = { 33, 31, JSMutationRecordTableValues, 0 };
-/* Hash table for constructor */
+class JSMutationRecordConstructor : public DOMConstructorObject {
+private:
+    JSMutationRecordConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMutationRecordConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMutationRecordConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMutationRecordConstructor* ptr = new (NotNull, JSC::allocateCell<JSMutationRecordConstructor>(vm.heap)) JSMutationRecordConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSMutationRecordConstructorTable = { 1, 0, JSMutationRecordConstructorTableValues, 0 };
-const ClassInfo JSMutationRecordConstructor::s_info = { "MutationRecordConstructor", &Base::s_info, &JSMutationRecordConstructorTable, 0, CREATE_METHOD_TABLE(JSMutationRecordConstructor) };
+const ClassInfo JSMutationRecordConstructor::s_info = { "MutationRecordConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMutationRecordConstructor) };
 
 JSMutationRecordConstructor::JSMutationRecordConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -72,47 +106,51 @@ void JSMutationRecordConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMutationRecordPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMutationRecordConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMutationRecordConstructor, JSDOMWrapper>(exec, JSMutationRecordConstructorTable, jsCast<JSMutationRecordConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMutationRecord::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("MutationRecord"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSMutationRecordPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "type", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "target", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordTarget), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "addedNodes", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordAddedNodes), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "removedNodes", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordRemovedNodes), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "previousSibling", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordPreviousSibling), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "nextSibling", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordNextSibling), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "attributeName", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordAttributeName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "attributeNamespace", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordAttributeNamespace), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "oldValue", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMutationRecordOldValue), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMutationRecordPrototypeTable = { 1, 0, JSMutationRecordPrototypeTableValues, 0 };
-const ClassInfo JSMutationRecordPrototype::s_info = { "MutationRecordPrototype", &Base::s_info, &JSMutationRecordPrototypeTable, 0, CREATE_METHOD_TABLE(JSMutationRecordPrototype) };
+const ClassInfo JSMutationRecordPrototype::s_info = { "MutationRecordPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMutationRecordPrototype) };
 
-JSObject* JSMutationRecordPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMutationRecord>(vm, globalObject);
-}
-
-const ClassInfo JSMutationRecord::s_info = { "MutationRecord", &Base::s_info, &JSMutationRecordTable, 0 , CREATE_METHOD_TABLE(JSMutationRecord) };
-
-JSMutationRecord::JSMutationRecord(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MutationRecord> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMutationRecord::finishCreation(VM& vm)
+void JSMutationRecordPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMutationRecordPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMutationRecord::s_info = { "MutationRecord", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMutationRecord) };
+
+JSMutationRecord::JSMutationRecord(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MutationRecord>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMutationRecord::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMutationRecordPrototype::create(vm, globalObject, JSMutationRecordPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMutationRecord::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMutationRecord>(vm, globalObject);
 }
 
 void JSMutationRecord::destroy(JSC::JSCell* cell)
@@ -123,110 +161,168 @@ void JSMutationRecord::destroy(JSC::JSCell* cell)
 
 JSMutationRecord::~JSMutationRecord()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSMutationRecord::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsMutationRecordType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* thisObject = jsCast<JSMutationRecord*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMutationRecord, Base>(exec, JSMutationRecordTable, thisObject, propertyName, slot);
-}
-
-JSValue jsMutationRecordType(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "type");
+        return throwGetterTypeError(*exec, "MutationRecord", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordTarget(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordTarget(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "target");
+        return throwGetterTypeError(*exec, "MutationRecord", "target");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.target()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordAddedNodes(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordAddedNodes(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "addedNodes");
+        return throwGetterTypeError(*exec, "MutationRecord", "addedNodes");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.addedNodes()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordRemovedNodes(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordRemovedNodes(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "removedNodes");
+        return throwGetterTypeError(*exec, "MutationRecord", "removedNodes");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.removedNodes()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordPreviousSibling(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordPreviousSibling(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "previousSibling");
+        return throwGetterTypeError(*exec, "MutationRecord", "previousSibling");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.previousSibling()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordNextSibling(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordNextSibling(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "nextSibling");
+        return throwGetterTypeError(*exec, "MutationRecord", "nextSibling");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.nextSibling()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordAttributeName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordAttributeName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "attributeName");
+        return throwGetterTypeError(*exec, "MutationRecord", "attributeName");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.attributeName());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordAttributeNamespace(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordAttributeNamespace(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "attributeNamespace");
+        return throwGetterTypeError(*exec, "MutationRecord", "attributeNamespace");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.attributeNamespace());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordOldValue(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordOldValue(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMutationRecord* castedThis = jsCast<JSMutationRecord*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MutationRecord& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMutationRecord* castedThis = jsDynamicCast<JSMutationRecord*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMutationRecordPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MutationRecord", "oldValue");
+        return throwGetterTypeError(*exec, "MutationRecord", "oldValue");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringOrNull(exec, impl.oldValue());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMutationRecordConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMutationRecordConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMutationRecord* domObject = jsCast<JSMutationRecord*>(asObject(slotBase));
-    return JSMutationRecord::getConstructor(exec->vm(), domObject->globalObject());
+    JSMutationRecordPrototype* domObject = jsDynamicCast<JSMutationRecordPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMutationRecord::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSMutationRecord::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -234,43 +330,34 @@ JSValue JSMutationRecord::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSMutationRecordConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSMutationRecord* jsMutationRecord)
-{
-    if (jsMutationRecord->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSMutationRecordOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMutationRecord* jsMutationRecord = jsCast<JSMutationRecord*>(handle.get().asCell());
-    if (!isObservable(jsMutationRecord))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMutationRecordOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMutationRecord* jsMutationRecord = jsCast<JSMutationRecord*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMutationRecord = jsCast<JSMutationRecord*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMutationRecord->impl(), jsMutationRecord);
-    jsMutationRecord->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MutationRecord* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MutationRecord* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMutationRecord>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMutationRecord>(globalObject, impl))
         return result;
-    ReportMemoryCost<MutationRecord>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMutationRecord>(exec, globalObject, impl);
+    return createNewWrapper<JSMutationRecord>(globalObject, impl);
 }
 
-MutationRecord* toMutationRecord(JSC::JSValue value)
+MutationRecord* JSMutationRecord::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMutationRecord::info()) ? &jsCast<JSMutationRecord*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMutationRecord*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -27,9 +27,6 @@
 #ifndef RenderSVGResourceFilterPrimitive_h
 #define RenderSVGResourceFilterPrimitive_h
 
-#if ENABLE(SVG) && ENABLE(FILTERS)
-
-#include "RenderSVGHiddenContainer.h"
 #include "RenderSVGResourceFilter.h"
 
 namespace WebCore {
@@ -37,18 +34,17 @@ namespace WebCore {
 class FilterEffect;
 class SVGFilterPrimitiveStandardAttributes;
 
-class RenderSVGResourceFilterPrimitive FINAL : public RenderSVGHiddenContainer {
+class RenderSVGResourceFilterPrimitive final : public RenderSVGHiddenContainer {
 public:
-    explicit RenderSVGResourceFilterPrimitive(SVGFilterPrimitiveStandardAttributes&);
+    RenderSVGResourceFilterPrimitive(SVGFilterPrimitiveStandardAttributes&, Ref<RenderStyle>&&);
     SVGFilterPrimitiveStandardAttributes& filterPrimitiveElement() const;
 
-    virtual void styleDidChange(StyleDifference, const RenderStyle*);
+    virtual void styleDidChange(StyleDifference, const RenderStyle*) override;
 
-    virtual const char* renderName() const { return "RenderSVGResourceFilterPrimitive"; }
-    virtual bool isSVGResourceFilterPrimitive() const { return true; }
+    virtual const char* renderName() const override { return "RenderSVGResourceFilterPrimitive"; }
 
     // They depend on the RenderObject argument of RenderSVGResourceFilter::applyResource.
-    static FloatRect determineFilterPrimitiveSubregion(FilterEffect*);
+    static FloatRect determineFilterPrimitiveSubregion(FilterEffect&);
 
     inline void primitiveAttributeChanged(const QualifiedName& attribute)
     {
@@ -58,11 +54,10 @@ public:
         static_cast<RenderSVGResourceFilter*>(filter)->primitiveAttributeChanged(this, attribute);
     }
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    virtual bool isSVGResourceFilterPrimitive() const override { return true; }
+    void element() const = delete;
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG) && ENABLE(FILTERS)
 
 #endif // RenderSVGResourceFilterPrimitive_h

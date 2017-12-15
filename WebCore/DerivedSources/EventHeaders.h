@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY GOOGLE, INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,9 +28,15 @@
 #ifndef EventHeaders_h
 #define EventHeaders_h
 
+#include "AnimationEvent.h"
+#include "JSAnimationEvent.h"
 #if ENABLE(WEB_AUDIO)
 #include "AudioProcessingEvent.h"
 #include "JSAudioProcessingEvent.h"
+#endif
+#if ENABLE(REQUEST_AUTOCOMPLETE)
+#include "AutocompleteErrorEvent.h"
+#include "JSAutocompleteErrorEvent.h"
 #endif
 #include "BeforeLoadEvent.h"
 #include "JSBeforeLoadEvent.h"
@@ -64,6 +70,14 @@
 #include "JSEvent.h"
 #include "FocusEvent.h"
 #include "JSFocusEvent.h"
+#if ENABLE(GAMEPAD)
+#include "GamepadEvent.h"
+#include "JSGamepadEvent.h"
+#endif
+#if ENABLE(IOS_GESTURE_EVENTS)
+#include "GestureEvent.h"
+#include "JSGestureEvent.h"
+#endif
 #include "HashChangeEvent.h"
 #include "JSHashChangeEvent.h"
 #if ENABLE(INDEXED_DATABASE)
@@ -122,25 +136,11 @@
 #include "RTCIceCandidateEvent.h"
 #include "JSRTCIceCandidateEvent.h"
 #endif
-#if ENABLE(SVG)
 #include "SVGZoomEvent.h"
 #include "JSSVGZoomEvent.h"
-#endif
 #if ENABLE(CSP_NEXT)
 #include "SecurityPolicyViolationEvent.h"
 #include "JSSecurityPolicyViolationEvent.h"
-#endif
-#if ENABLE(INPUT_SPEECH)
-#include "SpeechInputEvent.h"
-#include "JSSpeechInputEvent.h"
-#endif
-#if ENABLE(SCRIPTED_SPEECH)
-#include "SpeechRecognitionError.h"
-#include "JSSpeechRecognitionError.h"
-#endif
-#if ENABLE(SCRIPTED_SPEECH)
-#include "SpeechRecognitionEvent.h"
-#include "JSSpeechRecognitionEvent.h"
 #endif
 #if ENABLE(SPEECH_SYNTHESIS)
 #include "SpeechSynthesisEvent.h"
@@ -172,6 +172,10 @@
 #endif
 #include "WebKitAnimationEvent.h"
 #include "JSWebKitAnimationEvent.h"
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+#include "WebKitPlaybackTargetAvailabilityEvent.h"
+#include "JSWebKitPlaybackTargetAvailabilityEvent.h"
+#endif
 #include "WebKitTransitionEvent.h"
 #include "JSWebKitTransitionEvent.h"
 #include "WheelEvent.h"

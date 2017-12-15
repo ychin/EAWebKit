@@ -12,7 +12,7 @@
  *    copyright notice, this list of conditions and the following
  *    disclaimer in the documentation and/or other materials
  *    provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -39,61 +39,71 @@
 namespace WebCore {
 
 class RasterShapeIntervals {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
-    RasterShapeIntervals(unsigned size)
+    RasterShapeIntervals(unsigned size, int offset = 0)
+        : m_offset(offset)
     {
-        m_intervalLists.resize(size);
+        m_intervals.resize(clampTo<int>(size));
     }
 
+    void initializeBounds();
     const IntRect& bounds() const { return m_bounds; }
     bool isEmpty() const { return m_bounds.isEmpty(); }
-    void appendInterval(int y, int x1, int x2);
 
-    void getIncludedIntervals(int y1, int y2, IntShapeIntervals& result) const;
-    void getExcludedIntervals(int y1, int y2, IntShapeIntervals& result) const;
-    bool firstIncludedIntervalY(int minY, const IntSize& minSize, LayoutUnit& result) const;
-    PassOwnPtr<RasterShapeIntervals> computeShapeMarginIntervals(unsigned margin) const;
+    IntShapeInterval& intervalAt(int y)
+    {
+        ASSERT(y + m_offset >= 0 && static_cast<unsigned>(y + m_offset) < m_intervals.size());
+        return m_intervals[y + m_offset];
+    }
+
+    const IntShapeInterval& intervalAt(int y) const
+    {
+        ASSERT(y + m_offset >= 0 && static_cast<unsigned>(y + m_offset) < m_intervals.size());
+        return m_intervals[y + m_offset];
+    }
+
+    std::unique_ptr<RasterShapeIntervals> computeShapeMarginIntervals(int shapeMargin) const;
+    void buildBoundsPath(Path&) const;
 
 private:
-    int size() const { return m_intervalLists.size(); }
+    int size() const { return m_intervals.size(); }
+    int offset() const { return m_offset; }
+    int minY() const { return -m_offset; }
+    int maxY() const { return -m_offset + m_intervals.size(); }
 
-    const IntShapeIntervals& getIntervals(int y) const
-    {
-        ASSERT(y >= 0 && y < size());
-        return m_intervalLists[y];
-    }
-
-    bool contains(const IntRect&) const;
-    bool getIntervalX1Values(int minY, int maxY, int minIntervalWidth, Vector<int>& result) const;
-    void uniteMarginInterval(int y, const IntShapeInterval&);
     IntRect m_bounds;
-    Vector<IntShapeIntervals> m_intervalLists;
+    Vector<IntShapeInterval> m_intervals;
+    int m_offset;
 };
 
-class RasterShape : public Shape {
+class RasterShape final : public Shape {
     WTF_MAKE_NONCOPYABLE(RasterShape);
 public:
-    RasterShape(PassOwnPtr<RasterShapeIntervals> intervals, const IntSize& imageSize)
-        : Shape()
-        , m_intervals(intervals)
-        , m_imageSize(imageSize)
+    RasterShape(std::unique_ptr<RasterShapeIntervals> intervals, const IntSize& marginRectSize)
+        : m_intervals(WTF::move(intervals))
+        , m_marginRectSize(marginRectSize)
     {
+        m_intervals->initializeBounds();
     }
 
-    virtual LayoutRect shapeMarginLogicalBoundingBox() const OVERRIDE { return static_cast<LayoutRect>(marginIntervals().bounds()); }
-    virtual LayoutRect shapePaddingLogicalBoundingBox() const OVERRIDE { return static_cast<LayoutRect>(paddingIntervals().bounds()); }
-    virtual bool isEmpty() const OVERRIDE { return m_intervals->isEmpty(); }
-    virtual void getExcludedIntervals(LayoutUnit logicalTop, LayoutUnit logicalHeight, SegmentList&) const OVERRIDE;
-    virtual void getIncludedIntervals(LayoutUnit logicalTop, LayoutUnit logicalHeight, SegmentList&) const OVERRIDE;
-    virtual bool firstIncludedIntervalLogicalTop(LayoutUnit minLogicalIntervalTop, const LayoutSize& minLogicalIntervalSize, LayoutUnit&) const OVERRIDE;
+    virtual LayoutRect shapeMarginLogicalBoundingBox() const override { return static_cast<LayoutRect>(marginIntervals().bounds()); }
+    virtual bool isEmpty() const override { return m_intervals->isEmpty(); }
+    virtual LineSegment getExcludedInterval(LayoutUnit logicalTop, LayoutUnit logicalHeight) const override;
+
+    virtual void buildDisplayPaths(DisplayPaths& paths) const override
+    {
+        m_intervals->buildBoundsPath(paths.shape);
+        if (shapeMargin())
+            marginIntervals().buildBoundsPath(paths.marginShape);
+    }
 
 private:
     const RasterShapeIntervals& marginIntervals() const;
-    const RasterShapeIntervals& paddingIntervals() const;
 
-    OwnPtr<RasterShapeIntervals> m_intervals;
-    mutable OwnPtr<RasterShapeIntervals> m_marginIntervals;
-    IntSize m_imageSize;
+    std::unique_ptr<RasterShapeIntervals> m_intervals;
+    mutable std::unique_ptr<RasterShapeIntervals> m_marginIntervals;
+    IntSize m_marginRectSize;
 };
 
 } // namespace WebCore

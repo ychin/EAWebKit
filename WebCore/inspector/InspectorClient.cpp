@@ -29,16 +29,15 @@
  */
 
 #include "config.h"
-
-#if ENABLE(INSPECTOR)
-
 #include "InspectorClient.h"
 
 #include "MainFrame.h"
 #include "Page.h"
 #include "ScriptController.h"
 #include "ScriptSourceCode.h"
-#include "ScriptValue.h"
+#include <bindings/ScriptValue.h>
+
+using namespace Inspector;
 
 namespace WebCore {
 
@@ -55,5 +54,3 @@ bool InspectorClient::doDispatchMessageOnFrontendPage(Page* frontendPage, const 
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(INSPECTOR)

@@ -22,103 +22,51 @@
 #define JSAttr_h
 
 #include "Attr.h"
-#include "JSDOMBinding.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSAttr : public JSNode {
 public:
     typedef JSNode Base;
-    static JSAttr* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Attr> impl)
+    static JSAttr* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Attr>&& impl)
     {
-        JSAttr* ptr = new (NotNull, JSC::allocateCell<JSAttr>(globalObject->vm().heap)) JSAttr(structure, globalObject, impl);
+        JSAttr* ptr = new (NotNull, JSC::allocateCell<JSAttr>(globalObject->vm().heap)) JSAttr(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Attr* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
     Attr& impl() const
     {
         return static_cast<Attr&>(Base::impl());
     }
 protected:
-    JSAttr(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Attr>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSAttr(JSC::Structure*, JSDOMGlobalObject*, Ref<Attr>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-Attr* toAttr(JSC::JSValue);
 
-class JSAttrPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAttrPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAttrPrototype* ptr = new (NotNull, JSC::allocateCell<JSAttrPrototype>(vm.heap)) JSAttrPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAttrPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSAttrConstructor : public DOMConstructorObject {
-private:
-    JSAttrConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSAttrConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSAttrConstructor* ptr = new (NotNull, JSC::allocateCell<JSAttrConstructor>(vm.heap)) JSAttrConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsAttrName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAttrSpecified(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAttrValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAttrValue(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAttrOwnerElement(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAttrIsId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAttrConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

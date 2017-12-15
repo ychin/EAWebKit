@@ -31,6 +31,9 @@
 #include "CodeBlockWithJITType.h"
 #include "DFGGraph.h"
 #include "DFGJITCode.h"
+#include "JSCInlines.h"
+#include "LinkBuffer.h"
+#include "ProfilerDatabase.h"
 #include <wtf/StdLibExtras.h>
 
 namespace JSC { namespace DFG {
@@ -38,6 +41,7 @@ namespace JSC { namespace DFG {
 Disassembler::Disassembler(Graph& graph)
     : m_graph(graph)
 {
+    m_dumpContext.graph = &m_graph;
     m_labelForBlockIndex.resize(graph.numBlocks());
 }
 
@@ -71,7 +75,7 @@ void Disassembler::dumpHeader(PrintStream& out, LinkBuffer& linkBuffer)
 {
     out.print("Generated DFG JIT code for ", CodeBlockWithJITType(m_graph.m_codeBlock, JITCode::DFGJIT), ", instruction count = ", m_graph.m_codeBlock->instructionCount(), ":\n");
     out.print("    Optimized with execution counter = ", m_graph.m_profiledBlock->jitExecuteCounter(), "\n");
-    out.print("    Code at [", RawPointer(linkBuffer.debugAddress()), ", ", RawPointer(static_cast<char*>(linkBuffer.debugAddress()) + linkBuffer.debugSize()), "):\n");
+    out.print("    Code at [", RawPointer(linkBuffer.debugAddress()), ", ", RawPointer(static_cast<char*>(linkBuffer.debugAddress()) + linkBuffer.size()), "):\n");
 }
 
 void Disassembler::append(Vector<Disassembler::DumpedOp>& result, StringPrintStream& out, CodeOrigin& previousOrigin)
@@ -108,8 +112,6 @@ Vector<Disassembler::DumpedOp> Disassembler::createDumpList(LinkBuffer& linkBuff
         append(result, out, previousOrigin);
         Node* lastNodeForDisassembly = block->at(0);
         for (size_t i = 0; i < block->size(); ++i) {
-            if (!block->at(i)->willHaveCodeGenOrOSR() && !Options::showAllDFGNodes())
-                continue;
             MacroAssembler::Label currentLabel;
             HashMap<Node*, MacroAssembler::Label>::iterator iter = m_labelForNode.find(block->at(i));
             if (iter != m_labelForNode.end())
@@ -126,10 +128,10 @@ Vector<Disassembler::DumpedOp> Disassembler::createDumpList(LinkBuffer& linkBuff
             }
             dumpDisassembly(out, disassemblyPrefix, linkBuffer, previousLabel, currentLabel, lastNodeForDisassembly);
             append(result, out, previousOrigin);
-            previousOrigin = block->at(i)->codeOrigin;
+            previousOrigin = block->at(i)->origin.semantic;
             if (m_graph.dumpCodeOrigin(out, prefix, lastNode, block->at(i), &m_dumpContext)) {
                 append(result, out, previousOrigin);
-                previousOrigin = block->at(i)->codeOrigin;
+                previousOrigin = block->at(i)->origin.semantic;
             }
             m_graph.dump(out, prefix, block->at(i), &m_dumpContext);
             lastNode = block->at(i);

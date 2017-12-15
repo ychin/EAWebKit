@@ -21,6 +21,8 @@
 #include "config.h"
 #include "PlatformPathCairo.h"
 
+#if USE(CAIRO)
+
 #include <cairo.h>
 
 namespace WebCore {
@@ -29,7 +31,7 @@ namespace WebCore {
 //10/14/2011 - This is an important change to avoid allocation before Init call.
 cairo_surface_t* CairoPath::pathSurfaceInst = NULL;
 
-cairo_surface_t* CairoPath::pathSurface()
+cairo_surface_t* CairoPath::getPathSurface()
 {
 	if(!CairoPath::pathSurfaceInst)
 		CairoPath::pathSurfaceInst = cairo_image_surface_create(CAIRO_FORMAT_A8, 1, 1);
@@ -47,9 +49,11 @@ void CairoPath::finalize()
 }
 
 CairoPath::CairoPath()
-: m_cr(adoptRef(cairo_create(CairoPath::pathSurface())))
+: m_cr(adoptRef(cairo_create(CairoPath::getPathSurface())))
 {
 }
 //-EAWebKitChange
 
-}
+} // namespace WebCore
+
+#endif // USE(CAIRO)

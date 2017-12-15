@@ -1,6 +1,6 @@
 /*
  * Copyright 2011 Hewlett-Packard Development Company, L.P. All rights reserved.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -48,6 +48,7 @@
 #include <wtf/MainThread.h>
 #include <runtime/Options.h>
 #include <EAWebKit/EAWebKitClient.h>
+#include <internal/include/EAWebKit_p.h>
 
 namespace WebCore {
 
@@ -86,23 +87,22 @@ void initializeWebCoreEA()
 
     PlatformStrategiesEA::initialize();
 
-    if (!WebCore::memoryCache()->disabled())
-        WebCore::memoryCache()->setDeadDecodedDataDeletionInterval(60);
+    if (!WebCore::MemoryCache::singleton().disabled())
+        WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds::duration(60 * 1000));
 
 #if !ENABLE(JIT)
 	JSC::Options::useJIT() = false;
 	JSC::Options::useRegExpJIT() = false;
 #endif
-//	WebCore::Image::setPlatformResource(name, 0);
 	
     initialized = true;
 }
 
 void initializeVMTimeout()
 {
-	JSDOMWindow::commonVM()->watchdog.setTimeLimit(*JSDOMWindow::commonVM(),10.0,shouldTerminateCallback);
+	//JSDOMWindow::commonVM().watchdog->setTimeLimit(JSDOMWindow::commonVM(),std::chrono::microseconds::duration(10 * 1000 * 1000),shouldTerminateCallback);  EAWebKitTODO
 	//Use the line below to get rid of the watchdog timer and see better benchmark performances
-	//JSDOMWindow::commonVM()->watchdog.setTimeLimit(*JSDOMWindow::commonVM(),std::numeric_limits<double>::infinity(),shouldTerminateCallback);
+    //JSDOMWindow::commonVM().watchdog->setTimeLimit(JSDOMWindow::commonVM(), std::chrono::microseconds::max(), shouldTerminateCallback);
 }
 
 }

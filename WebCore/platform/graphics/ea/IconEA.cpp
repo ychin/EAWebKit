@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Nikolas Zimmermann <zimmermann@kde.org>
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,7 +41,7 @@ PassRefPtr<Icon> Icon::createIconForFiles(const Vector<String>& filenames)
     return 0;
 }
 
-void Icon::paint(GraphicsContext* ctx, const IntRect& rect)
+void Icon::paint(GraphicsContext& ctx, const FloatRect& rect)
 {
     
 }

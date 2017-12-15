@@ -27,6 +27,10 @@
 package CodeGeneratorObjC;
 
 use constant FileNamePrefix => "DOM";
+use File::Basename;
+use FindBin;
+
+sub ConditionalIsEnabled(\%$);
 
 # Global Variables
 my $writeDependencies = 0;
@@ -48,16 +52,48 @@ my %privateHeaderForwardDeclarationsForProtocols = ();
 
 my @internalHeaderContent = ();
 
+my @implConditionalIncludes = ();
 my @implContentHeader = ();
 my @implContent = ();
 my %implIncludes = ();
 my @depsContent = ();
 
+my $beginAppleCopyrightForHeaderFiles = <<END;
+// ------- Begin Apple Copyright -------
+/*
+ * Copyright (C) 2008, Apple Inc. All rights reserved.
+ *
+ * Permission is granted by Apple to use this file to the extent
+ * necessary to relink with LGPL WebKit files.
+ *
+ * No license or rights are granted by Apple expressly or by
+ * implication, estoppel, or otherwise, to Apple patents and
+ * trademarks. For the sake of clarity, no license or rights are
+ * granted by Apple expressly or by implication, estoppel, or otherwise,
+ * under any Apple patents, copyrights and trademarks to underlying
+ * implementations of any application programming interfaces (APIs)
+ * or to any functionality that is invoked by calling any API.
+ */
+
+END
+my $beginAppleCopyrightForSourceFiles = <<END;
+// ------- Begin Apple Copyright -------
+/*
+ * Copyright (C) 2008, Apple Inc. All rights reserved.
+ *
+ * No license or rights are granted by Apple expressly or by implication,
+ * estoppel, or otherwise, to Apple copyrights, patents, trademarks, trade
+ * secrets or other rights.
+ */
+
+END
+my $endAppleCopyright   = <<END;
+// ------- End Apple Copyright   -------
+
+END
+
 # Hashes
-my %protocolTypeHash = ("XPathNSResolver" => 1, "EventListener" => 1, "EventTarget" => 1, "NodeFilter" => 1,
-                        "SVGFilterPrimitiveStandardAttributes" => 1, 
-                        "SVGTests" => 1, "SVGLangSpace" => 1, "SVGExternalResourcesRequired" => 1, "SVGURIReference" => 1,
-                        "SVGZoomAndPan" => 1, "SVGFitToViewBox" => 1, "SVGAnimatedPathData" => 1);
+my %protocolTypeHash = ("XPathNSResolver" => 1, "EventListener" => 1, "EventTarget" => 1, "NodeFilter" => 1);
 my %nativeObjCTypeHash = ("URL" => 1, "Color" => 1);
 
 # FIXME: this should be replaced with a function that recurses up the tree
@@ -65,22 +101,15 @@ my %nativeObjCTypeHash = ("URL" => 1, "Color" => 1);
 my %baseTypeHash = ("Object" => 1, "Node" => 1, "NodeList" => 1, "NamedNodeMap" => 1, "DOMImplementation" => 1,
                     "Event" => 1, "CSSRule" => 1, "CSSValue" => 1, "StyleSheet" => 1, "MediaList" => 1,
                     "Counter" => 1, "Rect" => 1, "RGBColor" => 1, "XPathExpression" => 1, "XPathResult" => 1,
-                    "NodeIterator" => 1, "TreeWalker" => 1, "AbstractView" => 1, "Blob" => 1,
-                    "SVGAngle" => 1, "SVGAnimatedAngle" => 1, "SVGAnimatedBoolean" => 1, "SVGAnimatedEnumeration" => 1,
-                    "SVGAnimatedInteger" => 1, "SVGAnimatedLength" => 1, "SVGAnimatedLengthList" => 1,
-                    "SVGAnimatedNumber" => 1, "SVGAnimatedNumberList" => 1,
-                    "SVGAnimatedPreserveAspectRatio" => 1, "SVGAnimatedRect" => 1, "SVGAnimatedString" => 1,
-                    "SVGAnimatedTransformList" => 1, "SVGLength" => 1, "SVGLengthList" => 1, "SVGMatrix" => 1,
-                    "SVGNumber" => 1, "SVGNumberList" => 1, "SVGPathSeg" => 1, "SVGPathSegList" => 1, "SVGPoint" => 1,
-                    "SVGPointList" => 1, "SVGPreserveAspectRatio" => 1, "SVGRect" => 1, "SVGRenderingIntent" => 1,
-                    "SVGStringList" => 1, "SVGTransform" => 1, "SVGTransformList" => 1, "SVGUnitTypes" => 1);
+                    "NodeIterator" => 1, "TreeWalker" => 1, "AbstractView" => 1, "Blob" => 1);
 
 # Constants
+my $shouldUseCGColor = defined $ENV{PLATFORM_NAME} && $ENV{PLATFORM_NAME} ne "macosx";
 my $nullableInit = "bool isNull = false;";
 my $exceptionInit = "WebCore::ExceptionCode ec = 0;";
 my $jsContextSetter = "WebCore::JSMainThreadNullState state;";
 my $exceptionRaiseOnError = "WebCore::raiseOnDOMError(ec);";
-my $assertMainThread = "{ DOM_ASSERT_MAIN_THREAD(); WebCoreThreadViolationCheckRoundOne(); }";
+my $threadViolationCheck = "WebCoreThreadViolationCheckRoundOne();";
 
 my %conflictMethod = (
     # FIXME: Add C language keywords?
@@ -146,10 +175,10 @@ my $headerLicenseTemplate = << "EOF";
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -174,10 +203,10 @@ my $implementationLicenseTemplate = << "EOF";
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -188,6 +217,8 @@ my $implementationLicenseTemplate = << "EOF";
  */
 EOF
 
+my $TBDAvailabilityVersion = "9876_5";
+
 # Default constructor
 sub new
 {
@@ -195,8 +226,6 @@ sub new
     my $reference = { };
 
     $codeGenerator = shift;
-    shift; # $useLayerOnTop
-    shift; # $preprocessor
     $writeDependencies = shift;
 
     bless($reference, $object);
@@ -214,7 +243,13 @@ sub ReadPublicInterfaces
     my $actualSuperClass;
     %publicInterfaces = ();
 
-    my $fileName = "WebCore/bindings/objc/PublicDOMInterfaces.h";
+    my @args = qw(-E -P -x objective-c);
+
+    push(@args, "-I" . $ENV{BUILT_PRODUCTS_DIR} . "/usr/local/include") if $ENV{BUILT_PRODUCTS_DIR};
+    push(@args, "-isysroot", $ENV{SDKROOT}) if $ENV{SDKROOT};
+
+    my $bindingsDir = dirname($FindBin::Bin);
+    my $fileName = "$bindingsDir/objc/PublicDOMInterfaces.h";
     my $gccLocation = "";
     if ($ENV{CC}) {
         $gccLocation = $ENV{CC};
@@ -225,7 +260,8 @@ sub ReadPublicInterfaces
     } else {
         $gccLocation = "/usr/bin/gcc";
     }
-    open FILE, "-|", $gccLocation, "-E", "-P", "-x", "objective-c",
+
+    open FILE, "-|", $gccLocation, @args,
         (map { "-D$_" } split(/ +/, $defines)), "-DOBJC_CODE_GENERATION", $fileName or die "Could not open $fileName";
     my @documentContent = <FILE>;
     close FILE;
@@ -240,7 +276,7 @@ sub ReadPublicInterfaces
             $interfaceAvailabilityVersion = $2 if defined $2;
             $found = 1;
             next;
-        } elsif ($isProtocol && $line =~ /^\s*\@protocol $class\s*<[^>]+>\s*([A-Z0-9_]*)/) {
+        } elsif ($isProtocol && $line =~ /^\s*\@protocol $class\s*<[^>]+>\s*([A-Z0-9_()]*)/) {
             $interfaceAvailabilityVersion = $1 if defined $1;
             $found = 1;
             next;
@@ -254,7 +290,7 @@ sub ReadPublicInterfaces
             $line =~ s/\s+$//;
 
             my $availabilityMacro = "";
-            $line =~ s/\s([A-Z0-9_]+)\s*;$/;/;
+            $line =~ s/\s([A-Z0-9_(), ]+)\s*;$/;/;
             $availabilityMacro = $1 if defined $1;
 
             $publicInterfaces{$line} = $availabilityMacro if length $line;
@@ -263,7 +299,7 @@ sub ReadPublicInterfaces
 
     # If this class was not found in PublicDOMInterfaces.h then it should be considered as an entirely new public class.
     $newPublicClass = !$found;
-    $interfaceAvailabilityVersion = "WEBKIT_VERSION_LATEST" if $newPublicClass;
+    $interfaceAvailabilityVersion = $TBDAvailabilityVersion if $newPublicClass;
 }
 
 sub AddMethodsConstantsAndAttributesFromParentInterfaces
@@ -334,7 +370,7 @@ sub GenerateInterface
     ReadPublicInterfaces($className, $parentClassName, $defines, $isProtocol);
 
     # Start actual generation..
-    $object->GenerateHeader($interface);
+    $object->GenerateHeader($interface, $defines);
     $object->GenerateImplementation($interface) unless $noImpl;
 
     # Check for missing public API
@@ -344,7 +380,10 @@ sub GenerateInterface
         $fatalError = 1;
     }
 
-    die if $fatalError;
+    # FIXME: This should not need to be an exception.
+    # ObjCCustomImplementation doesn't work with CMake right now.
+    # https://bugs.webkit.org/show_bug.cgi?id=135860
+    die if $fatalError && $className ne "DOMAbstractView";
 }
 
 sub GetClassName
@@ -353,6 +392,7 @@ sub GetClassName
 
     # special cases
     return "NSString" if $codeGenerator->IsStringType($name) or $name eq "SerializedScriptValue";
+    return "CGColorRef" if $name eq "Color" and $shouldUseCGColor;
     return "NS$name" if IsNativeObjCType($name);
     return "BOOL" if $name eq "boolean";
     return "unsigned char" if $name eq "octet";
@@ -380,7 +420,6 @@ sub GetImplClassName
 {
     my $name = shift;
 
-    return "DOMImplementationFront" if $name eq "DOMImplementation";
     return "DOMWindow" if $name eq "AbstractView";
     return $name;
 }
@@ -455,7 +494,7 @@ sub GetBaseClass
 
     return $parent if $parent eq "Object" or IsBaseType($parent);
     return "Event" if $parent eq "UIEvent" or $parent eq "MouseEvent";
-    return "CSSValue" if $parent eq "SVGColor" or $parent eq "CSSValueList";
+    return "CSSValue" if $parent eq "CSSValueList";
     return "Node";
 }
 
@@ -483,12 +522,23 @@ sub IsNativeObjCType
     return 0;
 }
 
+sub IsCoreFoundationType
+{
+    my $type = shift;
+
+    return 1 if $type =~ /^(CF|CG)[A-Za-z]+Ref$/;
+    return 0;
+}
+
 sub SkipFunction
 {
     my $function = shift;
 
     return 1 if $codeGenerator->GetSequenceType($function->signature->type);
     return 1 if $codeGenerator->GetArrayType($function->signature->type);
+
+    return 1 if $function->signature->type eq "Promise";
+    return 1 if $function->signature->extendedAttributes->{"CustomBinding"};
 
     foreach my $param (@{$function->parameters}) {
         return 1 if $codeGenerator->GetSequenceType($param->type);
@@ -508,25 +558,27 @@ sub SkipAttribute
     return 1 if $codeGenerator->GetArrayType($type);
     return 1 if $codeGenerator->IsTypedArrayType($type);
     return 1 if $codeGenerator->IsEnumType($type);
+    return 1 if $type eq "EventHandler";
     return 1 if $attribute->isStatic;
 
-    # This is for DynamicsCompressorNode.idl
-    if ($attribute->signature->name eq "release") {
-        return 1;
-    }
+    # This is for DynamicsCompressorNode.idl.
+    # FIXME: Normally we would rename rather than just skipping for a case like this.
+    return 1 if $attribute->signature->name eq "release";
 
     return 0;
 }
-
 
 sub GetObjCType
 {
     my $type = shift;
     my $name = GetClassName($type);
 
+    return "double" if $type eq "unrestricted double";
+    return "float" if $type eq "unrestricted float";
     return "id <$name>" if IsProtocolType($type);
     return $name if $codeGenerator->IsPrimitiveType($type) or $type eq "DOMTimeStamp";
     return "unsigned short" if $type eq "CompareHow";
+    return $name if IsCoreFoundationType($name);
     return "$name *";
 }
 
@@ -542,14 +594,12 @@ sub GetPropertyAttributes
     # FIXME: <rdar://problem/5049934> Consider using 'nonatomic' on the DOM @property declarations.
     if ($codeGenerator->IsStringType($type) || IsNativeObjCType($type)) {
         push(@attributes, "copy");
-    } elsif ($codeGenerator->IsSVGAnimatedType($type)) {
-        push(@attributes, "retain");
     } elsif (!$codeGenerator->IsStringType($type) && !$codeGenerator->IsPrimitiveType($type) && $type ne "DOMTimeStamp" && $type ne "CompareHow") {
-        push(@attributes, "retain");
+        push(@attributes, "strong");
     }
 
     return "" unless @attributes > 0;
-    return "(" . join(", ", @attributes) . ")";
+    return " (" . join(", ", @attributes) . ")";
 }
 
 sub ConversionNeeded
@@ -612,7 +662,11 @@ sub AddIncludesForType
 
     if (IsNativeObjCType($type)) {
         if ($type eq "Color") {
-            $implIncludes{"ColorMac.h"} = 1;
+            if ($shouldUseCGColor) {
+                $implIncludes{"ColorSpace.h"} = 1;
+            } else {
+                $implIncludes{"ColorMac.h"} = 1;
+            }
         }
         return;
     }
@@ -628,21 +682,9 @@ sub AddIncludesForType
         return;
     }
 
-    if ($type eq "DOMImplementation") {
-        $implIncludes{"DOMDOMImplementationInternal.h"} = 1;
-        $implIncludes{"DOMImplementationFront.h"} = 1;
-        return;
-    }
-
     if ($type eq "EventTarget") {
         $implIncludes{"Node.h"} = 1;
         $implIncludes{"DOMEventTarget.h"} = 1;
-        return;
-    }
-
-    if ($codeGenerator->IsSVGAnimatedType($type)) {
-        $implIncludes{"${type}.h"} = 1;
-        $implIncludes{"DOM${type}Internal.h"} = 1;
         return;
     }
 
@@ -677,7 +719,7 @@ sub AddIncludesForType
 
     # FIXME: won't compile without these
     $implIncludes{"CSSImportRule.h"} = 1 if $type eq "CSSRule";
-    $implIncludes{"StylePropertySet.h"} = 1 if $type eq "CSSStyleDeclaration";
+    $implIncludes{"StyleProperties.h"} = 1 if $type eq "CSSStyleDeclaration";
     $implIncludes{"NameNodeList.h"} = 1 if $type eq "NodeList";
 
     # Default, include the same named file (the implementation) and the same name prefixed with "DOM". 
@@ -685,60 +727,35 @@ sub AddIncludesForType
     $implIncludes{"DOM${type}Internal.h"} = 1;
 }
 
-sub GetSVGTypeWithNamespace
+sub ConditionalIsEnabled(\%$)
 {
-    my $type = shift;
-    my $typeWithNamespace = "WebCore::" . $codeGenerator->GetSVGTypeNeedingTearOff($type);
+    my $defines = shift;
+    my $conditional = shift;
 
-    # Special case for DOMSVGNumber
-    $typeWithNamespace =~ s/</\<WebCore::/ unless $type eq "SVGNumber";
-    return $typeWithNamespace;
-}
+    return 1 if !$conditional;
 
-sub GetSVGPropertyTypes
-{
-    my $implType = shift;
-
-    my $svgPropertyType;
-    my $svgListPropertyType;
-    my $svgNativeType;
-
-    return ($svgPropertyType, $svgListPropertyType, $svgNativeType) if not $implType =~ /SVG/;
-
-    $svgNativeType = $codeGenerator->GetSVGTypeNeedingTearOff($implType);
-    return ($svgPropertyType, $svgListPropertyType, $svgNativeType) if not $svgNativeType;
-
-    # Append space to avoid compilation errors when using  PassRefPtr<$svgNativeType>
-    $svgNativeType = "WebCore::$svgNativeType ";
-    $svgNativeType =~ s/</\<WebCore::/ if not $svgNativeType =~ /float/;
-
-    my $svgWrappedNativeType = $codeGenerator->GetSVGWrappedTypeNeedingTearOff($implType);
-    if ($svgNativeType =~ /SVGPropertyTearOff/) {
-        if ($svgWrappedNativeType eq "float") {
-            # Special case for DOMSVGNumber
-            $svgPropertyType = $svgWrappedNativeType;
-        } else {
-            $svgPropertyType = "WebCore::$svgWrappedNativeType";
-            $svgPropertyType =~ s/</\<WebCore::/;
-        }
-    } elsif ($svgNativeType =~ /SVGListPropertyTearOff/ or $svgNativeType =~ /SVGStaticListPropertyTearOff/) {
-        $svgListPropertyType = "WebCore::$svgWrappedNativeType";
-        $svgListPropertyType =~ s/</\<WebCore::/;
-    } elsif ($svgNativeType =~ /SVGTransformListPropertyTearOff/) {
-        $svgListPropertyType = "WebCore::$svgWrappedNativeType";
-        $svgListPropertyType =~ s/</\<WebCore::/;
-    } elsif ($svgNativeType =~ /SVGPathSegListPropertyTearOff/) {
-        $svgListPropertyType = "WebCore::$svgWrappedNativeType";
-        $svgListPropertyType =~ s/</\<WebCore::/;
+    my $operator = ($conditional =~ /&/ ? '&' : ($conditional =~ /\|/ ? '|' : ''));
+    if (!$operator) {
+        return exists($defines->{"ENABLE_" . $conditional});
     }
 
-    return ($svgPropertyType, $svgListPropertyType, $svgNativeType);
+    my @conditions = split(/\Q$operator\E/, $conditional);
+    foreach (@conditions) {
+        my $enable = "ENABLE_" . $_;
+        return 0 if ($operator eq '&') and !exists($defines->{$enable});
+        return 1 if ($operator eq '|') and exists($defines->{$enable});
+    }
+
+    return $operator eq '&';
 }
 
 sub GenerateHeader
 {
     my $object = shift;
     my $interface = shift;
+    my $defines = shift;
+
+    my %definesRef = map { $_ => 1 } split(/\s+/, $defines);
 
     my $interfaceName = $interface->name;
     my $className = GetClassName($interfaceName);
@@ -752,7 +769,11 @@ sub GenerateHeader
     my $numFunctions = @{$interface->functions};
 
     # - Add default header template
-    @headerContentHeader = split("\r", $headerLicenseTemplate);
+    if ($interface->extendedAttributes->{"AppleCopyright"}) {
+        @headerContentHeader = split("\r", $beginAppleCopyrightForHeaderFiles);
+    } else {
+        @headerContentHeader = split("\r", $headerLicenseTemplate);
+    }
     push(@headerContentHeader, "\n");
 
     # - INCLUDES -
@@ -778,12 +799,9 @@ sub GenerateHeader
         $includedWebKitAvailabilityHeader = 1;
     }
 
-    push(@headerContentHeader, "#import <JavaScriptCore/WebKitAvailability.h>\n") unless $includedWebKitAvailabilityHeader;
-
-    my $interfaceAvailabilityVersionCheck = "#if WEBKIT_VERSION_MAX_ALLOWED >= $interfaceAvailabilityVersion\n\n";
+    push(@headerContentHeader, "#import <WebCore/WebKitAvailability.h>\n") unless $includedWebKitAvailabilityHeader;
 
     push(@headerContentHeader, "\n");
-    push(@headerContentHeader, $interfaceAvailabilityVersionCheck) if length $interfaceAvailabilityVersion;
 
     # - Add constants.
     if ($numConstants > 0) {
@@ -795,19 +813,14 @@ sub GenerateHeader
         foreach my $constant (@constants) {
             my $constantName = $constant->name;
             my $constantValue = $constant->value;
-            my $conditional = $constant->extendedAttributes->{"Conditional"};
             my $notLast = $constant ne $constants[-1];
-
-            if ($conditional) {
-                my $conditionalString = $codeGenerator->GenerateConditionalStringFromAttributeValue($conditional);
-                $combinedConstants .= "#if ${conditionalString}\n";
-            }
-            $combinedConstants .= "    DOM_$constantName = $constantValue";
-            $combinedConstants .= "," if $notLast;
-            if ($conditional) {
-                $combinedConstants .= "\n#endif\n";
-            } elsif ($notLast) {
-                $combinedConstants .= "\n";
+            
+            if (ConditionalIsEnabled(%definesRef, $constant->extendedAttributes->{"Conditional"})) {
+                $combinedConstants .= "    DOM_$constantName = $constantValue";
+                $combinedConstants .= "," if $notLast;
+                if ($notLast) {
+                    $combinedConstants .= "\n";
+                }
             }
         }
 
@@ -815,14 +828,17 @@ sub GenerateHeader
         # FIXME: enums are unconditionally placed in the public header.
         push(@headerContent, "enum {\n");
         push(@headerContent, $combinedConstants);
-        push(@headerContent, "\n};\n\n");        
+        push(@headerContent, "\n}");
+        push(@headerContent, " WEBKIT_ENUM_AVAILABLE_MAC($interfaceAvailabilityVersion)") if length $interfaceAvailabilityVersion;
+        push(@headerContent, ";\n\n");
     }
 
     # - Begin @interface or @protocol
-    my $interfaceDeclaration = ($isProtocol ? "\@protocol $className" : "\@interface $className : $parentName");
+    my $interfaceDeclaration = ($isProtocol ? "\@protocol $className" : "WEBCORE_EXPORT \@interface $className : $parentName");
     $interfaceDeclaration .= " <" . join(", ", @protocolsToImplement) . ">" if @protocolsToImplement > 0;
     $interfaceDeclaration .= "\n";
 
+    push(@headerContent, "WEBKIT_CLASS_AVAILABLE_MAC($interfaceAvailabilityVersion)\n") if length $interfaceAvailabilityVersion;
     push(@headerContent, $interfaceDeclaration);
 
     my @headerAttributes = ();
@@ -844,9 +860,15 @@ sub GenerateHeader
 
             my $attributeType = GetObjCType($attribute->signature->type);
             my $property = "\@property" . GetPropertyAttributes($attribute->signature->type, $attribute->isReadOnly);
+
             $property .= " " . $attributeType . ($attributeType =~ /\*$/ ? "" : " ") . $attributeName;
 
             my $publicInterfaceKey = $property . ";";
+
+            # FIXME: This only works for the getter, but not the setter.  Need to refactor this code.
+            if (IsCoreFoundationType($attributeType)) {
+                $publicInterfaceKey = "- (" . $attributeType . ")" . $attributeName . ";";
+            }
 
             my $availabilityMacro = "";
             if (defined $publicInterfaces{$publicInterfaceKey} and length $publicInterfaces{$publicInterfaceKey}) {
@@ -875,9 +897,33 @@ sub GenerateHeader
                 $fatalError = 1;
             }
 
-            $property .= $declarationSuffix;
-            push(@headerAttributes, $property) if $public;
-            push(@privateHeaderAttributes, $property) unless $public;
+            if (!IsCoreFoundationType($attributeType)) {
+                # FIXME: We should probably also check that the property type is an Objective-C type.
+                my $needsReturnsRetainedAnnotation = $attributeName =~ /new([A-Z].*)?/;
+
+                $property .= $declarationSuffix;
+                push(@headerAttributes, $property) if $public;
+                push(@privateHeaderAttributes, $property) unless $public;
+                if ($needsReturnsRetainedAnnotation) {
+                    # - GETTER
+                    my $getter = "- (" . $attributeType . ")" . $attributeName . " NS_RETURNS_NOT_RETAINED" . $declarationSuffix;
+                    push(@headerAttributes, $getter) if $public;
+                    push(@privateHeaderAttributes, $getter) unless $public;
+                }
+
+            } elsif (ConditionalIsEnabled(%definesRef, $attribute->signature->extendedAttributes->{"Conditional"})) {
+                # - GETTER
+                my $getter = "- (" . $attributeType . ")" . $attributeName . $declarationSuffix;
+                push(@headerAttributes, $getter) if $public;
+                push(@privateHeaderAttributes, $getter) unless $public;
+ 
+                # - SETTER
+                if (!$attribute->isReadOnly) {
+                    my $setter = "- (void)$setterName(" . $attributeType . ")new" . ucfirst($attributeName) . $declarationSuffix;
+                    push(@headerAttributes, $setter) if $public;
+                    push(@privateHeaderAttributes, $setter) unless $public;
+                }
+            }
         }
 
         push(@headerContent, @headerAttributes) if @headerAttributes > 0;
@@ -889,6 +935,7 @@ sub GenerateHeader
 
     # - Add functions.
     if ($numFunctions > 0) {
+        my %inAppleCopyright = (public => 0, private => 0);
         foreach my $function (@{$interface->functions}) {
             next if SkipFunction($function);
             next if ($function->signature->name eq "set" and $interface->extendedAttributes->{"TypedArray"});
@@ -896,6 +943,7 @@ sub GenerateHeader
 
             my $returnType = GetObjCType($function->signature->type);
             my $needsDeprecatedVersion = (@{$function->parameters} > 1 and $function->signature->extendedAttributes->{"ObjCLegacyUnnamedParameters"});
+            my $needsAppleCopyright = $function->signature->extendedAttributes->{"AppleCopyright"};
             my $numberOfParameters = @{$function->parameters};
             my %typesToForwardDeclare = ($function->signature->type => 1);
 
@@ -950,46 +998,50 @@ sub GenerateHeader
                 AddForwardDeclarationsForType($type, $public) unless $public and $needsDeprecatedVersion;
             }
 
-            my $functionConditionalString = $codeGenerator->GenerateConditionalString($function->signature);
-            if ($functionConditionalString) {
-                push(@headerFunctions, "#if ${functionConditionalString}\n") if $public;
-                push(@privateHeaderFunctions, "#if ${functionConditionalString}\n") unless $public;
-                push(@deprecatedHeaderFunctions, "#if ${functionConditionalString}\n") if $needsDeprecatedVersion;
-            }
-
-            push(@headerFunctions, $functionDeclaration) if $public;
-            push(@privateHeaderFunctions, $functionDeclaration) unless $public;
-
-            # generate the old style method names with un-named parameters, these methods are deprecated
-            if ($needsDeprecatedVersion) {
-                my $deprecatedFunctionSig = $functionSig;
-                $deprecatedFunctionSig =~ s/\s\w+:/ :/g; # remove parameter names
-
-                $publicInterfaceKey = $deprecatedFunctionSig . ";";
-
-                my $availabilityMacro = "AVAILABLE_WEBKIT_VERSION_1_3_AND_LATER_BUT_DEPRECATED_IN_WEBKIT_VERSION_3_0";
-                if (defined $publicInterfaces{$publicInterfaceKey} and length $publicInterfaces{$publicInterfaceKey}) {
-                    $availabilityMacro = $publicInterfaces{$publicInterfaceKey};
+            if ($needsAppleCopyright) {
+                if (!$inAppleCopyright{$public ? "public" : "private"}) {
+                    push(@headerFunctions, $beginAppleCopyrightForHeaderFiles) if $public;
+                    push(@privateHeaderFunctions, $beginAppleCopyrightForHeaderFiles) unless $public;
+                    $inAppleCopyright{$public ? "public" : "private"} = 1;
                 }
-
-                $functionDeclaration = "$deprecatedFunctionSig $availabilityMacro;\n";
-
-                push(@deprecatedHeaderFunctions, $functionDeclaration);
-
-                unless (defined $publicInterfaces{$publicInterfaceKey}) {
-                    warn "Deprecated method $publicInterfaceKey is not in PublicDOMInterfaces.h. All deprecated methods need to be public, or should have the ObjCLegacyUnnamedParameters IDL attribute removed";
-                    $fatalError = 1;
-                }
-
-                delete $publicInterfaces{$publicInterfaceKey};
+            } elsif ($inAppleCopyright{$public ? "public" : "private"}) {
+                push(@headerFunctions, $endAppleCopyright) if $public;
+                push(@privateHeaderFunctions, $endAppleCopyright) unless $public;
+                $inAppleCopyright{$public ? "public" : "private"} = 0;
             }
+            
+            if (ConditionalIsEnabled(%definesRef, $function->signature->extendedAttributes->{"Conditional"})) {
+                push(@headerFunctions, $functionDeclaration) if $public;
+                push(@privateHeaderFunctions, $functionDeclaration) unless $public;
 
-            if ($functionConditionalString) {
-                push(@headerFunctions, "#endif\n") if $public;
-                push(@privateHeaderFunctions, "#endif\n") unless $public;
-                push(@deprecatedHeaderFunctions, "#endif\n") if $needsDeprecatedVersion;
+                # generate the old style method names with un-named parameters, these methods are deprecated
+                if ($needsDeprecatedVersion) {
+                    my $deprecatedFunctionSig = $functionSig;
+                    $deprecatedFunctionSig =~ s/\s\w+:/ :/g; # remove parameter names
+
+                    $publicInterfaceKey = $deprecatedFunctionSig . ";";
+
+                    my $availabilityMacro = "WEBKIT_DEPRECATED_MAC(10_4, 10_5)";
+                    if (defined $publicInterfaces{$publicInterfaceKey} and length $publicInterfaces{$publicInterfaceKey}) {
+                        $availabilityMacro = $publicInterfaces{$publicInterfaceKey};
+                    }
+
+                    $functionDeclaration = "$deprecatedFunctionSig $availabilityMacro;\n";
+
+                    push(@deprecatedHeaderFunctions, $functionDeclaration);
+
+                    unless (defined $publicInterfaces{$publicInterfaceKey}) {
+                        warn "Deprecated method $publicInterfaceKey is not in PublicDOMInterfaces.h. All deprecated methods need to be public, or should have the ObjCLegacyUnnamedParameters IDL attribute removed";
+                        $fatalError = 1;
+                    }
+
+                    delete $publicInterfaces{$publicInterfaceKey};
+                }
             }
         }
+
+        push(@headerFunctions, $endAppleCopyright) if $inAppleCopyright{"public"};
+        push(@privateHeaderFunctions, $endAppleCopyright) if $inAppleCopyright{"private"};
 
         if (@headerFunctions > 0) {
             push(@headerContent, "\n") if @headerAttributes > 0;
@@ -1011,18 +1063,23 @@ sub GenerateHeader
         push(@headerContent, "\@end\n");
     }
 
-    push(@headerContent, "\n#endif\n") if length $interfaceAvailabilityVersion;
+    if ($interface->extendedAttributes->{"AppleCopyright"}) {
+        push(@headerContent, split("\r", $endAppleCopyright));
+    }
 
-    my %alwaysGenerateForNoSVGBuild = map { $_ => 1 } qw(DOMHTMLEmbedElement DOMHTMLObjectElement);
+    my %alwaysGenerate = map { $_ => 1 } qw(DOMHTMLEmbedElement DOMHTMLObjectElement);
 
-    if (@privateHeaderAttributes > 0 or @privateHeaderFunctions > 0 or exists $alwaysGenerateForNoSVGBuild{$className}) {
+    if (@privateHeaderAttributes > 0 or @privateHeaderFunctions > 0 or exists $alwaysGenerate{$className}) {
         # - Private category @interface
-        @privateHeaderContentHeader = split("\r", $headerLicenseTemplate);
+        if ($interface->extendedAttributes->{"AppleCopyright"}) {
+            @privateHeaderContentHeader = split("\r", $beginAppleCopyrightForHeaderFiles);
+        } else {
+            @privateHeaderContentHeader = split("\r", $headerLicenseTemplate);
+        }
         push(@privateHeaderContentHeader, "\n");
 
         my $classHeaderName = GetClassHeaderName($className);
         push(@privateHeaderContentHeader, "#import <WebCore/$classHeaderName.h>\n\n");
-        push(@privateHeaderContentHeader, $interfaceAvailabilityVersionCheck) if length $interfaceAvailabilityVersion;
 
         @privateHeaderContent = ();
         push(@privateHeaderContent, "\@interface $className (" . $className . "Private)\n");
@@ -1031,7 +1088,9 @@ sub GenerateHeader
         push(@privateHeaderContent, @privateHeaderFunctions) if @privateHeaderFunctions > 0;
         push(@privateHeaderContent, "\@end\n");
 
-        push(@privateHeaderContent, "\n#endif\n") if length $interfaceAvailabilityVersion;
+        if ($interface->extendedAttributes->{"AppleCopyright"}) {
+            push(@privateHeaderContent, split("\r", $endAppleCopyright));
+        }
     }
 
     unless ($isProtocol) {
@@ -1040,20 +1099,16 @@ sub GenerateHeader
         my $implClassNameWithNamespace = "WebCore::" . $implClassName;
 
         my $implType = $implClassNameWithNamespace;
-        my ($svgPropertyType, $svgListPropertyType, $svgNativeType) = GetSVGPropertyTypes($implClassName);
-        $implType = $svgNativeType if $svgNativeType;
 
         # Generate interface definitions. 
-        @internalHeaderContent = split("\r", $implementationLicenseTemplate);
-
-        push(@internalHeaderContent, "\n#import <WebCore/$className.h>\n\n");
-        push(@internalHeaderContent, "#import <WebCore/SVGAnimatedPropertyTearOff.h>\n\n") if $svgPropertyType;
-        if ($svgListPropertyType) {
-            push(@internalHeaderContent, "#import <WebCore/SVGAnimatedListPropertyTearOff.h>\n\n");
-            push(@internalHeaderContent, "#import <WebCore/SVGTransformListPropertyTearOff.h>\n\n") if $svgListPropertyType =~ /SVGTransformList/;
-            push(@internalHeaderContent, "#import <WebCore/SVGPathSegListPropertyTearOff.h>\n\n") if $svgListPropertyType =~ /SVGPathSegList/;
+        if ($interface->extendedAttributes->{"AppleCopyright"}) {
+            @internalHeaderContent = split("\r", $beginAppleCopyrightForHeaderFiles);
+        } else {
+            @internalHeaderContent = split("\r", $implementationLicenseTemplate);
         }
-        push(@internalHeaderContent, $interfaceAvailabilityVersionCheck) if length $interfaceAvailabilityVersion;
+
+        my $classHeaderName = GetClassHeaderName($className);
+        push(@internalHeaderContent, "\n#import <WebCore/$classHeaderName.h>\n\n");
 
         if ($interfaceName eq "Node") {
             push(@internalHeaderContent, "\@protocol DOMEventTarget;\n\n");
@@ -1061,21 +1116,17 @@ sub GenerateHeader
 
         my $startedNamespace = 0;
 
-        if ($codeGenerator->IsSVGAnimatedType($interfaceName)) {
-            push(@internalHeaderContent, "#import <WebCore/$implClassName.h>\n\n");
+        push(@internalHeaderContent, "namespace WebCore {\n");
+        $startedNamespace = 1;
+        if ($interfaceName eq "Node") {
+            push(@internalHeaderContent, "class EventTarget;\n    class Node;\n");
         } else {
-            push(@internalHeaderContent, "namespace WebCore {\n");
-            $startedNamespace = 1;
-            if ($interfaceName eq "Node") {
-                push(@internalHeaderContent, "class EventTarget;\n    class Node;\n");
-            } else {
-                push(@internalHeaderContent, "class $implClassName;\n");
-            }
-            push(@internalHeaderContent, "}\n\n");
+            push(@internalHeaderContent, "class $implClassName;\n");
         }
+        push(@internalHeaderContent, "}\n\n");
 
-        push(@internalHeaderContent, "$implType* core($className *);\n");
-        push(@internalHeaderContent, "$className *kit($implType*);\n");
+        push(@internalHeaderContent, "WEBCORE_EXPORT $implType* core($className *);\n");
+        push(@internalHeaderContent, "WEBCORE_EXPORT $className *kit($implType*);\n");
 
         if ($interface->extendedAttributes->{"ObjCPolymorphic"}) {
             push(@internalHeaderContent, "Class kitClass($implType*);\n");
@@ -1084,8 +1135,6 @@ sub GenerateHeader
         if ($interfaceName eq "Node") {
             push(@internalHeaderContent, "id <DOMEventTarget> kit(WebCore::EventTarget*);\n");
         }
-
-        push(@internalHeaderContent, "\n#endif\n") if length $interfaceAvailabilityVersion;
     }
 }
 
@@ -1112,11 +1161,12 @@ sub GenerateImplementation
     my $numFunctions = @{$interface->functions};
     my $implType = $implClassNameWithNamespace;
 
-    my ($svgPropertyType, $svgListPropertyType, $svgNativeType) = GetSVGPropertyTypes($implClassName);
-    $implType = $svgNativeType if $svgNativeType;
-
     # - Add default header template.
-    @implContentHeader = split("\r", $implementationLicenseTemplate);
+    if ($interface->extendedAttributes->{"AppleCopyright"}) {
+        @implContentHeader = split("\r", $beginAppleCopyrightForSourceFiles);
+    } else {
+        @implContentHeader = split("\r", $implementationLicenseTemplate);
+    }
 
     # - INCLUDES -
     push(@implContentHeader, "\n#import \"config.h\"\n");
@@ -1139,16 +1189,12 @@ sub GenerateImplementation
     $implIncludes{"DOMCSSValueInternal.h"} = 1 if $interfaceName =~ /.*CSS.*Value/;
     $implIncludes{"DOMEventInternal.h"} = 1 if $interfaceName =~ /.*Event/;
     $implIncludes{"DOMStyleSheetInternal.h"} = 1 if $interfaceName eq "CSSStyleSheet";
-    $implIncludes{"DOMSVGPathSegInternal.h"} = 1 if $interfaceName =~ /^SVGPathSeg.+/;
 
     if ($interfaceName =~ /(\w+)(Abs|Rel)$/) {
         $implIncludes{"$1.h"} = 1;
     } else {
         if (!$codeGenerator->SkipIncludeHeader($implClassName)) {
             $implIncludes{"$implClassName.h"} = 1 ;
-        } elsif ($codeGenerator->IsSVGTypeNeedingTearOff($implClassName)) {
-            my $includeType = $codeGenerator->GetSVGWrappedTypeNeedingTearOff($implClassName);
-            $implIncludes{"${includeType}.h"} = 1;
         }
     } 
 
@@ -1256,15 +1302,6 @@ sub GenerateImplementation
 
             my $getterContentTail = ")";
 
-            if ($svgPropertyType) {
-                $getterContentHead = "$getterExpressionPrefix";
-
-                # TODO: Handle special case for DOMSVGLength. We do need Custom code support for this.
-                if ($svgPropertyType eq "WebCore::SVGLength" and $attributeName eq "value") {
-                    $getterContentHead = "value(WebCore::SVGLengthContext(IMPL->contextElement()), ";
-                }
-            }
-
             my $attributeTypeSansPtr = $attributeType;
             $attributeTypeSansPtr =~ s/ \*$//; # Remove trailing " *" from pointer types.
 
@@ -1273,11 +1310,7 @@ sub GenerateImplementation
 
             # Special cases
             my @customGetterContent = (); 
-            if ($attributeTypeSansPtr eq "DOMImplementation") {
-                # FIXME: We have to special case DOMImplementation until DOMImplementationFront is removed
-                $getterContentHead = "kit(implementationFront(IMPL";
-                $getterContentTail .= ")";
-            } elsif ($attributeName =~ /(\w+)DisplayString$/) {
+            if ($attributeName =~ /(\w+)DisplayString$/) {
                 my $attributeToDisplay = $1;
                 $getterContentHead = "WebCore::displayString(IMPL->$attributeToDisplay(), core(self)";
                 $implIncludes{"HitTestResult.h"} = 1;
@@ -1305,78 +1338,23 @@ sub GenerateImplementation
             } elsif ($idlType eq "Date") {
                 $getterContentHead = "kit($getterContentHead";
                 $getterContentTail .= ")";
-            } elsif ($svgPropertyType) {
-                # Special case for DOMSVGNumber
-                if ($svgPropertyType eq "float") {
-                    # Intentional leave out closing brace, it's already contained in getterContentTail
-                    $getterContentHead = "IMPL->propertyReference(";
-                } else {    
-                    $getterContentHead = "IMPL->propertyReference().$getterContentHead";
-                }
-
-                if ($codeGenerator->IsSVGTypeWithWritablePropertiesNeedingTearOff($idlType) and not defined $attribute->signature->extendedAttributes->{"Immutable"}) {
-                    my $getter = $getterContentHead;
-                    $getter =~ s/\(\)//;
-                    
-                    my $tearOffType = GetSVGTypeWithNamespace($idlType);
-                    my $selfIsTearOffType = $codeGenerator->IsSVGTypeNeedingTearOff($implClassName);
-                    if ($selfIsTearOffType) {
-                        $implIncludes{"SVGStaticPropertyWithParentTearOff.h"} = 1;
-                        $tearOffType =~ s/SVGPropertyTearOff</SVGStaticPropertyWithParentTearOff<$implClassNameWithNamespace, /;
-
-                        my $getter = $getterExpressionPrefix;
-                        $getter =~ s/IMPL->//;
-                        $getter =~ s/\(//;
-                        my $updateMethod = "&${implClassNameWithNamespace}::update" . $codeGenerator->WK_ucfirst($getter);
-
-                        $getterContentHead = "${tearOffType}::create(IMPL, $getterContentHead$getterContentTail, $updateMethod)";
-
-                        $getterContentHead = "kit(WTF::getPtr($getterContentHead";
-                        $getterContentTail = "))";
-                    }
-                }
-            } elsif (($codeGenerator->IsSVGAnimatedType($implClassName) or $implClassName eq "SVGViewSpec") and $codeGenerator->IsSVGTypeNeedingTearOff($idlType)) {
-                my $idlTypeWithNamespace = GetSVGTypeWithNamespace($idlType);
-                $getterContentHead = "kit(static_cast<$idlTypeWithNamespace*>($getterContentHead)";
-                $getterContentTail .= ")";
             } elsif (IsProtocolType($idlType) and $idlType ne "EventTarget") {
                 $getterContentHead = "kit($getterContentHead";
                 $getterContentTail .= ")";
             } elsif ($idlType eq "Color") {
-                $getterContentHead = "WebCore::nsColor($getterContentHead";
-                $getterContentTail .= ")";
+                if ($shouldUseCGColor) {
+                    $getterContentHead = "WebCore::cachedCGColor($getterContentHead";
+                    $getterContentTail .= ", WebCore::ColorSpaceDeviceRGB)";
+                } else {
+                    $getterContentHead = "WebCore::nsColor($getterContentHead";
+                    $getterContentTail .= ")";
+                }
             } elsif ($attribute->signature->type eq "SerializedScriptValue") {
                 $getterContentHead = "$getterContentHead";
                 $getterContentTail .= "->toString()";                
             } elsif (ConversionNeeded($attribute->signature->type)) {
-                my $type = $attribute->signature->type;
-                if ($codeGenerator->IsSVGTypeNeedingTearOff($type) and not $implClassName =~ /List$/) {
-                    my $idlTypeWithNamespace = GetSVGTypeWithNamespace($type);
-                    $implIncludes{"$type.h"} = 1 if not $codeGenerator->SkipIncludeHeader($type);
-                    if ($codeGenerator->IsSVGTypeWithWritablePropertiesNeedingTearOff($type) and not defined $attribute->signature->extendedAttributes->{"Immutable"}) {
-                        $idlTypeWithNamespace =~ s/SVGPropertyTearOff</SVGStaticPropertyTearOff<$implClassNameWithNamespace, /;
-                        $implIncludes{"SVGStaticPropertyTearOff.h"} = 1;
-
-                        my $getter = $getterContentHead;
-                        $getter =~ s/IMPL->//;
-                        $getter =~ s/\(//;
-                        my $updateMethod = "&${implClassNameWithNamespace}::update" . $codeGenerator->WK_ucfirst($getter);
-                        $getterContentHead = "kit(WTF::getPtr(${idlTypeWithNamespace}::create(IMPL, $getterContentHead$getterContentTail, $updateMethod";
-                        $getterContentTail .= "))";
-                    } elsif ($idlTypeWithNamespace =~ /SVG(Point|PathSeg)List/) {
-                        $getterContentHead = "kit(WTF::getPtr($getterContentHead";
-                        $getterContentTail .= "))";
-                    } elsif ($idlTypeWithNamespace =~ /SVGStaticListPropertyTearOff/) {
-                        $getterContentHead = "kit(WTF::getPtr(${idlTypeWithNamespace}::create(IMPL, $getterContentHead";
-                        $getterContentTail .= ")))";
-                    } else {
-                        $getterContentHead = "kit(WTF::getPtr(${idlTypeWithNamespace}::create($getterContentHead";
-                        $getterContentTail .= ")))";
-                    }
-                } else {
-                    $getterContentHead = "kit(WTF::getPtr($getterContentHead";
-                    $getterContentTail .= "))";
-                }
+                $getterContentHead = "kit(WTF::getPtr($getterContentHead";
+                $getterContentTail .= "))";
             }
 
             my $getterContent;
@@ -1455,55 +1433,20 @@ sub GenerateImplementation
                     $arg = "core(" . $arg . ")";
                 }
 
-                if ($svgPropertyType) {
-                    $implIncludes{"ExceptionCode.h"} = 1;
-                    $getterContentHead = "$getterExpressionPrefix";
-                    push(@implContent, "    if (IMPL->isReadOnly()) {\n");
-                    push(@implContent, "        WebCore::raiseOnDOMError(WebCore::NO_MODIFICATION_ALLOWED_ERR);\n");
-                    push(@implContent, "        return;\n");
-                    push(@implContent, "    }\n");
-                    push(@implContent, "    $svgPropertyType& podImpl = IMPL->propertyReference();\n");
-                    my $ec = $hasSetterException ? ", ec" : "";
-                    push(@implContent, "    $exceptionInit\n") if $hasSetterException;
-
-                    # Special case for DOMSVGNumber
-                    if ($svgPropertyType eq "float") {
-                        push(@implContent, "    podImpl = $arg;\n");
-                    } else {
-                        # FIXME: Special case for DOMSVGLength. We do need Custom code support for this.
-                        if ($svgPropertyType eq "WebCore::SVGLength" and $attributeName eq "value") {
-                            push(@implContent, "    podImpl.$coreSetterName($arg, WebCore::SVGLengthContext(IMPL->contextElement())$ec);\n");
-                        } else {
-                            push(@implContent, "    podImpl.$coreSetterName($arg$ec);\n");
-                        }
-                    }
-
-                    if ($hasSetterException) {
-                        push(@implContent, "    if (!ec)\n");
-                        push(@implContent, "        IMPL->commitChange();\n");
-                        push(@implContent, "    $exceptionRaiseOnError\n");
-                    } else {
-                        push(@implContent, "    IMPL->commitChange();\n");
-                    }
-                } elsif ($svgListPropertyType) {
-                    $getterContentHead = "$getterExpressionPrefix";
-                    push(@implContent, "    IMPL->$coreSetterName($arg);\n");
+                my ($functionName, @arguments) = $codeGenerator->SetterExpression(\%implIncludes, $interfaceName, $attribute);
+                push(@arguments, $arg);
+                push(@arguments, "ec") if $hasSetterException;
+                push(@implContent, "    $exceptionInit\n") if $hasSetterException;
+                if ($attribute->signature->extendedAttributes->{"ImplementedBy"}) {
+                    my $implementedBy = $attribute->signature->extendedAttributes->{"ImplementedBy"};
+                    $implIncludes{"${implementedBy}.h"} = 1;
+                    unshift(@arguments, "IMPL");
+                    $functionName = "${implementedBy}::${functionName}";
                 } else {
-                    my ($functionName, @arguments) = $codeGenerator->SetterExpression(\%implIncludes, $interfaceName, $attribute);
-                    push(@arguments, $arg);
-                    push(@arguments, "ec") if $hasSetterException;
-                    push(@implContent, "    $exceptionInit\n") if $hasSetterException;
-                    if ($attribute->signature->extendedAttributes->{"ImplementedBy"}) {
-                        my $implementedBy = $attribute->signature->extendedAttributes->{"ImplementedBy"};
-                        $implIncludes{"${implementedBy}.h"} = 1;
-                        unshift(@arguments, "IMPL");
-                        $functionName = "${implementedBy}::${functionName}";
-                    } else {
-                        $functionName = "IMPL->${functionName}";
-                    }
-                    push(@implContent, "    ${functionName}(" . join(", ", @arguments) . ");\n");
-                    push(@implContent, "    $exceptionRaiseOnError\n") if $hasSetterException;
+                    $functionName = "IMPL->${functionName}";
                 }
+                push(@implContent, "    ${functionName}(" . join(", ", @arguments) . ");\n");
+                push(@implContent, "    $exceptionRaiseOnError\n") if $hasSetterException;
 
                 push(@implContent, "}\n");
             }
@@ -1515,6 +1458,7 @@ sub GenerateImplementation
 
     # - Functions
     if ($numFunctions > 0) {
+        my $inAppleCopyright = 0;
         foreach my $function (@{$interface->functions}) {
             next if SkipFunction($function);
             next if ($function->signature->name eq "set" and $interface->extendedAttributes->{"TypedArray"});
@@ -1522,6 +1466,7 @@ sub GenerateImplementation
 
             my $functionName = $function->signature->name;
             my $returnType = GetObjCType($function->signature->type);
+            my $needsAppleCopyright = $function->signature->extendedAttributes->{"AppleCopyright"};
             my $hasParameters = @{$function->parameters};
             my $raisesExceptions = $function->signature->extendedAttributes->{"RaisesException"};
 
@@ -1541,7 +1486,12 @@ sub GenerateImplementation
                 AddIncludesForType($param->type);
 
                 my $idlType = $param->type;
-                my $implGetter = GetObjCTypeGetter($paramName, $idlType);
+                my $implGetter;
+                if ($param->extendedAttributes->{"ObjCExplicitAtomicString"}) {
+                    $implGetter = "AtomicString($paramName)"
+                } else {
+                    $implGetter = GetObjCTypeGetter($paramName, $idlType);
+                }
 
                 push(@parameterNames, $implGetter);
                 $needsCustom{"XPathNSResolver"} = $paramName if $idlType eq "XPathNSResolver";
@@ -1612,44 +1562,7 @@ sub GenerateImplementation
                 push(@functionContent, "        nativeNodeFilter = WebCore::NodeFilter::create(WebCore::ObjCNodeFilterCondition::create($paramName));\n");
             }
 
-            # FIXME! We need [Custom] support for ObjC, to move these hacks into DOMSVGLength/MatrixCustom.mm
-            my $svgLengthConvertToSpecifiedUnits = ($svgPropertyType and $svgPropertyType eq "WebCore::SVGLength" and $functionName eq "convertToSpecifiedUnits");
-
-            push(@parameterNames, "WebCore::SVGLengthContext(IMPL->contextElement())") if $svgLengthConvertToSpecifiedUnits; 
             push(@parameterNames, "ec") if $raisesExceptions;
-
-            # Handle arguments that are 'SVGProperty' based (SVGAngle/SVGLength). We need to convert from SVGPropertyTearOff<Type>* to Type,
-            # to be able to call the desired WebCore function. If the conversion fails, we can't extract Type and need to raise an exception.
-            my $currentParameter = -1;
-            foreach my $param (@{$function->parameters}) {
-                $currentParameter++;
-
-                my $paramName = $param->name;
-
-                # make a new parameter name if the original conflicts with a property name
-                $paramName = "in" . ucfirst($paramName) if $attributeNames{$paramName};
-
-                my $idlType = $param->type;
-                next if not $codeGenerator->IsSVGTypeNeedingTearOff($idlType) or $implClassName =~ /List$/;
-
-                my $implGetter = GetObjCTypeGetter($paramName, $idlType);
-                my $idlTypeWithNamespace = GetSVGTypeWithNamespace($idlType);
-
-                $implIncludes{"ExceptionCode.h"} = 1;
-                push(@functionContent, "    $idlTypeWithNamespace* ${paramName}Core = $implGetter;\n");
-                push(@functionContent, "    if (!${paramName}Core) {\n");
-                push(@functionContent, "        WebCore::ExceptionCode ec = WebCore::TYPE_MISMATCH_ERR;\n");
-                push(@functionContent, "        $exceptionRaiseOnError\n");
-                if ($returnType eq "void") { 
-                    push(@functionContent, "        return;\n");
-                } else {
-                    push(@functionContent, "        return nil;\n");
-                }
-                push(@functionContent, "    }\n");
-
-                # Replace the paramter core() getter, by the cached variable.
-                splice(@parameterNames, $currentParameter, 1, "${paramName}Core->propertyReference()");
-            }
 
             my $content;
             if ($function->signature->extendedAttributes->{"ImplementedBy"}) {
@@ -1657,20 +1570,9 @@ sub GenerateImplementation
                 $implIncludes{"${implementedBy}.h"} = 1;
                 unshift(@parameterNames, $caller);
                 $content = "${implementedBy}::" . $codeGenerator->WK_lcfirst($functionName) . "(" . join(", ", @parameterNames) . ")";
-            } elsif ($svgPropertyType) {
-                $implIncludes{"ExceptionCode.h"} = 1;
-                push(@functionContent, "    if (IMPL->isReadOnly()) {\n");
-                push(@functionContent, "        WebCore::raiseOnDOMError(WebCore::NO_MODIFICATION_ALLOWED_ERR);\n");
-                if ($returnType eq "void") {
-                    push(@functionContent, "        return;\n");
-                } else {
-                    push(@functionContent, "        return nil;\n");
-                }
-                push(@functionContent, "    }\n");
-                push(@functionContent, "    $svgPropertyType& podImpl = IMPL->propertyReference();\n");
-                $content = "podImpl." . $codeGenerator->WK_lcfirst($functionName) . "(" . join(", ", @parameterNames) . ")";
             } else {
-                $content = "$caller->" . $codeGenerator->WK_lcfirst($functionName) . "(" . join(", ", @parameterNames) . ")";
+                my $functionImplementationName = $function->signature->extendedAttributes->{"ImplementedAs"} || $codeGenerator->WK_lcfirst($functionName);
+                $content = "$caller->" . $functionImplementationName . "(" . join(", ", @parameterNames) . ")";
             }
 
             if ($returnType eq "void") {
@@ -1678,14 +1580,9 @@ sub GenerateImplementation
                 if ($raisesExceptions) {
                     push(@functionContent, "    $exceptionInit\n");
                     push(@functionContent, "    $content;\n");
-                    if ($svgPropertyType) {
-                        push(@functionContent, "    if (!ec)\n");
-                        push(@functionContent, "        IMPL->commitChange();\n");
-                    }
                     push(@functionContent, "    $exceptionRaiseOnError\n");
                 } else {
                     push(@functionContent, "    $content;\n");
-                    push(@functionContent, "    IMPL->commitChange();\n") if $svgPropertyType;
                 }
             } elsif (defined $needsCustom{"NodeToReturn"}) {
                 # Special case the insertBefore, replaceChild, removeChild 
@@ -1706,12 +1603,7 @@ sub GenerateImplementation
                 $content = "foo";
             } else {
                 if (ConversionNeeded($function->signature->type)) {
-                    if ($codeGenerator->IsSVGTypeNeedingTearOff($function->signature->type) and not $implClassName =~ /List$/) {
-                        my $idlTypeWithNamespace = GetSVGTypeWithNamespace($function->signature->type);
-                        $content = "kit(WTF::getPtr(${idlTypeWithNamespace}::create($content)))";
-                    } else {
-                        $content = "kit(WTF::getPtr($content))";
-                    }
+                    $content = "kit(WTF::getPtr($content))";
                 }
 
                 if ($raisesExceptions) {
@@ -1730,6 +1622,16 @@ sub GenerateImplementation
                 } else {
                     push(@functionContent, "    return $content;\n");
                 }
+            }
+
+            if ($needsAppleCopyright) {
+                if (!$inAppleCopyright) {
+                    push(@implContent, $beginAppleCopyrightForSourceFiles);
+                    $inAppleCopyright = 1;
+                }
+            } elsif ($inAppleCopyright) {
+                push(@implContent, $endAppleCopyright);
+                $inAppleCopyright = 0;
             }
 
             my $conditionalString = $codeGenerator->GenerateConditionalString($function->signature);
@@ -1758,10 +1660,15 @@ sub GenerateImplementation
             # Clear the hash
             %needsCustom = ();
         }
+        push(@implContent, $endAppleCopyright) if $inAppleCopyright;
     }
 
     # END implementation
     push(@implContent, "\@end\n");
+
+    if ($interface->extendedAttributes->{"AppleCopyright"}) {
+        push(@implContent, split("\r", $endAppleCopyright));
+    }
 
     # Generate internal interfaces
     push(@implContent, "\n$implType* core($className *wrapper)\n");
@@ -1772,7 +1679,7 @@ sub GenerateImplementation
     if ($parentImplClassName eq "Object") {        
         push(@implContent, "$className *kit($implType* value)\n");
         push(@implContent, "{\n");
-        push(@implContent, "    $assertMainThread;\n");
+        push(@implContent, "    $threadViolationCheck\n");
         push(@implContent, "    if (!value)\n");
         push(@implContent, "        return nil;\n");
         push(@implContent, "    if ($className *wrapper = getDOMWrapper(value))\n");
@@ -1792,13 +1699,17 @@ sub GenerateImplementation
     } else {
         push(@implContent, "$className *kit($implType* value)\n");
         push(@implContent, "{\n");
-        push(@implContent, "    $assertMainThread;\n");
+        push(@implContent, "    $threadViolationCheck\n");
         push(@implContent, "    return static_cast<$className*>(kit(static_cast<WebCore::$baseClass*>(value)));\n");
         push(@implContent, "}\n");
     }
 
     # - End the ifdef conditional if necessary
     push(@implContent, "\n#endif // ${conditionalString}\n") if $conditionalString;
+
+    if ($interface->extendedAttributes->{"AppleCopyright"}) {
+        push(@implContent, split("\r", $endAppleCopyright));
+    }
 
     # - Generate dependencies.
     if ($writeDependencies && @ancestorInterfaceNames) {
@@ -1811,11 +1722,11 @@ sub GenerateImplementation
 sub WriteData
 {
     my $object = shift;
-    my $dataNode = shift;
+    my $interface = shift;
     my $outputDir = shift;
 
     # Open files for writing...
-    my $name = $dataNode->name;
+    my $name = $interface->name;
     my $prefix = FileNamePrefix;
     my $headerFileName = "$outputDir/$prefix$name.h";
     my $privateHeaderFileName = "$outputDir/$prefix${name}Private.h";
@@ -1825,7 +1736,7 @@ sub WriteData
 
     # Write public header.
     my $contents = join "", @headerContentHeader;
-    map { $contents .= "\@class $_;\n" } sort keys(%headerForwardDeclarations);
+    map { $contents .= (IsCoreFoundationType($_) ? "typedef struct " . substr($_, 0, -3) . "* $_;\n" : "\@class $_;\n") } sort keys(%headerForwardDeclarations);
     map { $contents .= "\@protocol $_;\n" } sort keys(%headerForwardDeclarationsForProtocols);
 
     my $hasForwardDeclarations = keys(%headerForwardDeclarations) + keys(%headerForwardDeclarationsForProtocols);

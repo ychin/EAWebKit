@@ -23,7 +23,6 @@
 #ifndef RenderSVGRoot_h
 #define RenderSVGRoot_h
 
-#if ENABLE(SVG)
 #include "FloatRect.h"
 #include "RenderReplaced.h"
 
@@ -32,11 +31,12 @@
 namespace WebCore {
 
 class AffineTransform;
+class RenderSVGResourceContainer;
 class SVGSVGElement;
 
-class RenderSVGRoot FINAL : public RenderReplaced {
+class RenderSVGRoot final : public RenderReplaced {
 public:
-    explicit RenderSVGRoot(SVGSVGElement&);
+    RenderSVGRoot(SVGSVGElement&, Ref<RenderStyle>&&);
     virtual ~RenderSVGRoot();
 
     SVGSVGElement& svgSVGElement() const;
@@ -44,19 +44,17 @@ public:
     bool isEmbeddedThroughSVGImage() const;
     bool isEmbeddedThroughFrameContainingSVGDocument() const;
 
-    virtual void computeIntrinsicRatioInformation(FloatSize& intrinsicSize, double& intrinsicRatio, bool& isPercentageIntrinsicSize) const OVERRIDE;
+    virtual void computeIntrinsicRatioInformation(FloatSize& intrinsicSize, double& intrinsicRatio) const override;
 
     bool isLayoutSizeChanged() const { return m_isLayoutSizeChanged; }
-    virtual void setNeedsBoundariesUpdate() OVERRIDE { m_needsBoundariesOrTransformUpdate = true; }
-    virtual bool needsBoundariesUpdate() OVERRIDE { return m_needsBoundariesOrTransformUpdate; }
-    virtual void setNeedsTransformUpdate() OVERRIDE { m_needsBoundariesOrTransformUpdate = true; }
+    virtual void setNeedsBoundariesUpdate() override { m_needsBoundariesOrTransformUpdate = true; }
+    virtual bool needsBoundariesUpdate() override { return m_needsBoundariesOrTransformUpdate; }
+    virtual void setNeedsTransformUpdate() override { m_needsBoundariesOrTransformUpdate = true; }
 
     IntSize containerSize() const { return m_containerSize; }
     void setContainerSize(const IntSize& containerSize) { m_containerSize = containerSize; }
 
-    virtual bool hasRelativeDimensions() const OVERRIDE;
-    virtual bool hasRelativeIntrinsicLogicalWidth() const OVERRIDE;
-    virtual bool hasRelativeLogicalHeight() const OVERRIDE;
+    virtual bool hasRelativeDimensions() const override;
 
     // localToBorderBoxTransform maps local SVG viewport coordinates to local CSS box coordinates.  
     const AffineTransform& localToBorderBoxTransform() const { return m_localToBorderBoxTransform; }
@@ -69,43 +67,43 @@ public:
     void setHasSVGShadow(bool hasShadow) { m_hasSVGShadow = hasShadow; }
 
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual bool isSVGRoot() const OVERRIDE { return true; }
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGRoot"; }
+    virtual bool isSVGRoot() const override { return true; }
+    virtual const char* renderName() const override { return "RenderSVGRoot"; }
 
-    virtual LayoutUnit computeReplacedLogicalWidth(ShouldComputePreferred  = ComputeActual) const OVERRIDE;
-    virtual LayoutUnit computeReplacedLogicalHeight() const OVERRIDE;
-    virtual void layout() OVERRIDE;
-    virtual void paintReplaced(PaintInfo&, const LayoutPoint&) OVERRIDE;
+    virtual LayoutUnit computeReplacedLogicalWidth(ShouldComputePreferred  = ComputeActual) const override;
+    virtual LayoutUnit computeReplacedLogicalHeight() const override;
+    virtual void layout() override;
+    virtual void paintReplaced(PaintInfo&, const LayoutPoint&) override;
 
-    virtual void willBeDestroyed() OVERRIDE;
-    virtual void styleWillChange(StyleDifference, const RenderStyle* newStyle) OVERRIDE;
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE;
-    virtual void removeChild(RenderObject*) OVERRIDE;
+    virtual void willBeDestroyed() override;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) override;
+    virtual void removeChild(RenderObject&) override;
 
-    virtual const AffineTransform& localToParentTransform() const OVERRIDE;
+    virtual const AffineTransform& localToParentTransform() const override;
 
     bool fillContains(const FloatPoint&) const;
     bool strokeContains(const FloatPoint&) const;
 
-    virtual FloatRect objectBoundingBox() const OVERRIDE { return m_objectBoundingBox; }
-    virtual FloatRect strokeBoundingBox() const OVERRIDE { return m_strokeBoundingBox; }
-    virtual FloatRect repaintRectInLocalCoordinates() const OVERRIDE { return m_repaintBoundingBox; }
-    virtual FloatRect repaintRectInLocalCoordinatesExcludingSVGShadow() const { return m_repaintBoundingBoxExcludingShadow; }
+    virtual FloatRect objectBoundingBox() const override { return m_objectBoundingBox; }
+    virtual FloatRect strokeBoundingBox() const override { return m_strokeBoundingBox; }
+    virtual FloatRect repaintRectInLocalCoordinates() const override { return m_repaintBoundingBox; }
+    FloatRect repaintRectInLocalCoordinatesExcludingSVGShadow() const { return m_repaintBoundingBoxExcludingShadow; }
 
-    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestAction) OVERRIDE;
+    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestAction) override;
 
-    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const OVERRIDE;
-    virtual void computeFloatRectForRepaint(const RenderLayerModelObject* repaintContainer, FloatRect& repaintRect, bool fixed) const OVERRIDE;
+    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const override;
+    virtual void computeFloatRectForRepaint(const RenderLayerModelObject* repaintContainer, FloatRect& repaintRect, bool fixed) const override;
 
-    virtual void mapLocalToContainer(const RenderLayerModelObject* repaintContainer, TransformState&, MapCoordinatesFlags = ApplyContainerFlip, bool* wasFixed = 0) const OVERRIDE;
-    virtual const RenderObject* pushMappingToContainer(const RenderLayerModelObject* ancestorToStopAt, RenderGeometryMap&) const OVERRIDE;
+    virtual void mapLocalToContainer(const RenderLayerModelObject* repaintContainer, TransformState&, MapCoordinatesFlags, bool* wasFixed) const override;
+    virtual const RenderObject* pushMappingToContainer(const RenderLayerModelObject* ancestorToStopAt, RenderGeometryMap&) const override;
 
-    virtual bool canBeSelectionLeaf() const OVERRIDE { return false; }
-    virtual bool canHaveChildren() const OVERRIDE { return true; }
+    virtual bool canBeSelectionLeaf() const override { return false; }
+    virtual bool canHaveChildren() const override { return true; }
 
+    bool shouldApplyViewportClip() const;
     void updateCachedBoundaries();
     void buildLocalToBorderBoxTransform();
 
@@ -121,24 +119,11 @@ private:
     bool m_isLayoutSizeChanged : 1;
     bool m_needsBoundariesOrTransformUpdate : 1;
     bool m_hasSVGShadow : 1;
+    bool m_hasBoxDecorations : 1;
 };
-
-inline RenderSVGRoot* toRenderSVGRoot(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGRoot());
-    return static_cast<RenderSVGRoot*>(object);
-}
-
-inline const RenderSVGRoot* toRenderSVGRoot(const RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGRoot());
-    return static_cast<const RenderSVGRoot*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderSVGRoot(const RenderSVGRoot*);
 
 } // namespace WebCore
 
-#endif // ENABLE(SVG)
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSVGRoot, isSVGRoot())
+
 #endif // RenderSVGRoot_h

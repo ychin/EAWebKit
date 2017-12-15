@@ -32,7 +32,7 @@
 #include "Event.h"
 #include "EventTarget.h"
 #include "IDBDatabaseCallbacks.h"
-#include "IDBMetadata.h"
+#include "IDBDatabaseMetadata.h"
 #include "IDBObjectStore.h"
 #include "IDBTransaction.h"
 #include "IndexedDB.h"
@@ -49,9 +49,9 @@ class ScriptExecutionContext;
 
 typedef int ExceptionCode;
 
-class IDBDatabase FINAL : public RefCounted<IDBDatabase>, public ScriptWrappable, public EventTargetWithInlineData, public ActiveDOMObject {
+class IDBDatabase final : public RefCounted<IDBDatabase>, public ScriptWrappable, public EventTargetWithInlineData, public ActiveDOMObject {
 public:
-    static PassRefPtr<IDBDatabase> create(ScriptExecutionContext*, PassRefPtr<IDBDatabaseBackendInterface>, PassRefPtr<IDBDatabaseCallbacks>);
+    static Ref<IDBDatabase> create(ScriptExecutionContext*, PassRefPtr<IDBDatabaseBackend>, PassRefPtr<IDBDatabaseCallbacks>);
     ~IDBDatabase();
 
     void setMetadata(const IDBDatabaseMetadata& metadata) { m_metadata = metadata; }
@@ -71,21 +71,14 @@ public:
     void deleteObjectStore(const String& name, ExceptionCode&);
     void close();
 
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(abort);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(versionchange);
-
     // IDBDatabaseCallbacks
-    virtual void onVersionChange(uint64_t oldVersion, uint64_t newVersion, IndexedDB::VersionNullness newVersionNullness);
+    virtual void onVersionChange(uint64_t oldVersion, uint64_t newVersion);
     virtual void onAbort(int64_t, PassRefPtr<IDBDatabaseError>);
     virtual void onComplete(int64_t);
 
-    // ActiveDOMObject
-    virtual bool hasPendingActivity() const OVERRIDE;
-
     // EventTarget
-    virtual EventTargetInterface eventTargetInterface() const OVERRIDE FINAL { return IDBDatabaseEventTargetInterfaceType; }
-    virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE FINAL { return ActiveDOMObject::scriptExecutionContext(); }
+    virtual EventTargetInterface eventTargetInterface() const override final { return IDBDatabaseEventTargetInterfaceType; }
+    virtual ScriptExecutionContext* scriptExecutionContext() const override final { return ActiveDOMObject::scriptExecutionContext(); }
 
     bool isClosePending() const { return m_closePending; }
     void forceClose();
@@ -93,7 +86,7 @@ public:
     void enqueueEvent(PassRefPtr<Event>);
 
     using EventTarget::dispatchEvent;
-    virtual bool dispatchEvent(PassRefPtr<Event>) OVERRIDE;
+    virtual bool dispatchEvent(PassRefPtr<Event>) override;
 
     int64_t findObjectStoreId(const String& name) const;
     bool containsObjectStore(const String& name) const
@@ -101,37 +94,43 @@ public:
         return findObjectStoreId(name) != IDBObjectStoreMetadata::InvalidId;
     }
 
-    IDBDatabaseBackendInterface* backend() const { return m_backend.get(); }
+    IDBDatabaseBackend* backend() const { return m_backend.get(); }
 
     static int64_t nextTransactionId();
 
     using RefCounted<IDBDatabase>::ref;
     using RefCounted<IDBDatabase>::deref;
 
-private:
-    IDBDatabase(ScriptExecutionContext*, PassRefPtr<IDBDatabaseBackendInterface>, PassRefPtr<IDBDatabaseCallbacks>);
+    // ActiveDOMObject API.
+    bool hasPendingActivity() const override;
 
-    // ActiveDOMObject
-    virtual void stop() OVERRIDE;
+private:
+    IDBDatabase(ScriptExecutionContext*, PassRefPtr<IDBDatabaseBackend>, PassRefPtr<IDBDatabaseCallbacks>);
+
+    // ActiveDOMObject API.
+    void stop() override;
+    const char* activeDOMObjectName() const override;
+    bool canSuspendForPageCache() const override;
 
     // EventTarget
-    virtual void refEventTarget() OVERRIDE FINAL { ref(); }
-    virtual void derefEventTarget() OVERRIDE FINAL { deref(); }
+    virtual void refEventTarget() override final { ref(); }
+    virtual void derefEventTarget() override final { deref(); }
 
     void closeConnection();
 
     IDBDatabaseMetadata m_metadata;
-    RefPtr<IDBDatabaseBackendInterface> m_backend;
+    RefPtr<IDBDatabaseBackend> m_backend;
     RefPtr<IDBTransaction> m_versionChangeTransaction;
     typedef HashMap<int64_t, IDBTransaction*> TransactionMap;
     TransactionMap m_transactions;
 
     bool m_closePending;
+    bool m_isClosed;
     bool m_contextStopped;
 
     // Keep track of the versionchange events waiting to be fired on this
     // database so that we can cancel them if the database closes.
-    Vector<RefPtr<Event> > m_enqueuedEvents;
+    Vector<RefPtr<Event>> m_enqueuedEvents;
 
     RefPtr<IDBDatabaseCallbacks> m_databaseCallbacks;
 };

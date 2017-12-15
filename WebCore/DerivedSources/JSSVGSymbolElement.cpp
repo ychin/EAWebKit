@@ -19,51 +19,73 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGSymbolElement.h"
 
-#include "SVGSymbolElement.h"
-#include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
+#include "JSDOMBinding.h"
 #include "JSSVGAnimatedBoolean.h"
 #include "JSSVGAnimatedPreserveAspectRatio.h"
 #include "JSSVGAnimatedRect.h"
-#endif
+#include "SVGSymbolElement.h"
+#include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGSymbolElementTableValues[] =
-{
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "viewBox", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementViewBox), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "preserveAspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementPreserveAspectRatio), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGSymbolElementExternalResourcesRequired(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGSymbolElementViewBox(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGSymbolElementPreserveAspectRatio(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGSymbolElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGSymbolElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGSymbolElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGSymbolElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGSymbolElementPrototype>(vm.heap)) JSSVGSymbolElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGSymbolElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGSymbolElementTable = { 10, 7, JSSVGSymbolElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGSymbolElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGSymbolElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGSymbolElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGSymbolElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGSymbolElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGSymbolElementConstructor>(vm.heap)) JSSVGSymbolElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGSymbolElementConstructorTable = { 1, 0, JSSVGSymbolElementConstructorTableValues, 0 };
-const ClassInfo JSSVGSymbolElementConstructor::s_info = { "SVGSymbolElementConstructor", &Base::s_info, &JSSVGSymbolElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGSymbolElementConstructor) };
+const ClassInfo JSSVGSymbolElementConstructor::s_info = { "SVGSymbolElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGSymbolElementConstructor) };
 
 JSSVGSymbolElementConstructor::JSSVGSymbolElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -74,98 +96,106 @@ void JSSVGSymbolElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGSymbolElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGSymbolElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGSymbolElementConstructor, JSDOMWrapper>(exec, JSSVGSymbolElementConstructorTable, jsCast<JSSVGSymbolElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGSymbolElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGSymbolElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGSymbolElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "externalResourcesRequired", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementExternalResourcesRequired), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "viewBox", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementViewBox), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "preserveAspectRatio", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSymbolElementPreserveAspectRatio), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGSymbolElementPrototypeTable = { 1, 0, JSSVGSymbolElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGSymbolElementPrototype::s_info = { "SVGSymbolElementPrototype", &Base::s_info, &JSSVGSymbolElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGSymbolElementPrototype) };
+const ClassInfo JSSVGSymbolElementPrototype::s_info = { "SVGSymbolElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGSymbolElementPrototype) };
 
-JSObject* JSSVGSymbolElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGSymbolElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGSymbolElement::s_info = { "SVGSymbolElement", &Base::s_info, &JSSVGSymbolElementTable, 0 , CREATE_METHOD_TABLE(JSSVGSymbolElement) };
-
-JSSVGSymbolElement::JSSVGSymbolElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGSymbolElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGSymbolElement::finishCreation(VM& vm)
+void JSSVGSymbolElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGSymbolElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGSymbolElement::s_info = { "SVGSymbolElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGSymbolElement) };
+
+JSSVGSymbolElement::JSSVGSymbolElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGSymbolElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGSymbolElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGSymbolElementPrototype::create(vm, globalObject, JSSVGSymbolElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGSymbolElementPrototype::create(vm, globalObject, JSSVGSymbolElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGSymbolElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGSymbolElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGSymbolElement* thisObject = jsCast<JSSVGSymbolElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGSymbolElement, Base>(exec, JSSVGSymbolElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGSymbolElement>(vm, globalObject);
 }
 
-#if ENABLE(SVG)
-JSValue jsSVGSymbolElementExternalResourcesRequired(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGSymbolElementExternalResourcesRequired(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGSymbolElement* castedThis = jsCast<JSSVGSymbolElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGSymbolElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGSymbolElement* castedThis = jsDynamicCast<JSSVGSymbolElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGSymbolElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGSymbolElement", "externalResourcesRequired");
+        return throwGetterTypeError(*exec, "SVGSymbolElement", "externalResourcesRequired");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGSymbolElementViewBox(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGSymbolElementViewBox(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGSymbolElement* castedThis = jsCast<JSSVGSymbolElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGSymbolElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGSymbolElement* castedThis = jsDynamicCast<JSSVGSymbolElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGSymbolElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGSymbolElement", "viewBox");
+        return throwGetterTypeError(*exec, "SVGSymbolElement", "viewBox");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedRect> obj = impl.viewBoxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGSymbolElementPreserveAspectRatio(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGSymbolElementPreserveAspectRatio(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGSymbolElement* castedThis = jsCast<JSSVGSymbolElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGSymbolElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGSymbolElement* castedThis = jsDynamicCast<JSSVGSymbolElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGSymbolElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGSymbolElement", "preserveAspectRatio");
+        return throwGetterTypeError(*exec, "SVGSymbolElement", "preserveAspectRatio");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedPreserveAspectRatio> obj = impl.preserveAspectRatioAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGSymbolElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGSymbolElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGSymbolElement* domObject = jsCast<JSSVGSymbolElement*>(asObject(slotBase));
-    return JSSVGSymbolElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGSymbolElementPrototype* domObject = jsDynamicCast<JSSVGSymbolElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGSymbolElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGSymbolElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -175,5 +205,3 @@ JSValue JSSVGSymbolElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 
 }
-
-#endif // ENABLE(SVG)

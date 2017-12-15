@@ -2,7 +2,7 @@
  * Copyright (C) 2007, 2008 Apple Inc. All Rights Reserved.
  * Copyright (C) 2007 Staikos Computing Services Inc. <info@staikos.net>
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -164,7 +164,7 @@ struct ScrollPaintInfo
         ,mHovered(hovered),mPressed(pressed) {}
 };
 
-static void paintButton(ScrollPaintInfo& info, ScrollButtonType type, GraphicsContext* context, const IntRect& r)
+static void paintButton(ScrollPaintInfo& info, ScrollButtonType type, GraphicsContext& context, const IntRect& r)
 {
     if( r.isEmpty() || !info.mEnabled )
         return;
@@ -178,10 +178,10 @@ static void paintButton(ScrollPaintInfo& info, ScrollButtonType type, GraphicsCo
     else
         fillColor = ThemeEA::kScrollButtonNormalColor;
 
-    context->setFillColor(fillColor, ColorSpaceDeviceRGB);
-    context->setStrokeColor(ThemeEA::kScrollBorderColor, ColorSpaceDeviceRGB);
-    context->setStrokeStyle(SolidStroke);
-    context->drawRect(r);
+    context.setFillColor(fillColor, ColorSpaceDeviceRGB);
+    context.setStrokeColor(ThemeEA::kScrollBorderColor, ColorSpaceDeviceRGB);
+    context.setStrokeStyle(SolidStroke);
+    context.drawRect(r);
 
     // Fill in the arrow
     const int kArrowSizeRatio = 5;    // 5 is just to get it small enough. 
@@ -209,28 +209,28 @@ static void paintButton(ScrollPaintInfo& info, ScrollButtonType type, GraphicsCo
          pts[1].set((c.x() - wOffset), (c.y() + hOffset));         
          pts[2].set((c.x() - wOffset), (c.y() - hOffset));         
     }
-    context->setFillColor(ThemeEA::kScrollButtonArrowColor, ColorSpaceDeviceRGB);
-    context->drawConvexPolygon(3, pts, true);
+    context.setFillColor(ThemeEA::kScrollButtonArrowColor, ColorSpaceDeviceRGB);
+    context.drawConvexPolygon(3, pts, true);
 
     // Highlight edges
-    RenderThemeEA::paintEdgeHighligths(context,r);   
+    RenderThemeEA::paintEdgeHighlights(&context,r);   
 
 }
 
-static void paintTrack(ScrollPaintInfo& info, GraphicsContext* context, const IntRect& r)
+static void paintTrack(ScrollPaintInfo& info, GraphicsContext& context, const IntRect& r)
 {
     if(r.isEmpty())
         return;
 
     Color fillColor = ThemeEA::kScrollTrackColor;
-    context->setFillColor(fillColor, ColorSpaceDeviceRGB);   
-    context->setStrokeColor(ThemeEA::kScrollBorderColor, ColorSpaceDeviceRGB);
-    context->setStrokeStyle(SolidStroke);
-    context->setStrokeThickness(ThemeEA::kScrollThemeBorderThickness);        // The Cairo draw rect hardcodes the stroke thickness to 1.0 but we set it here anyway for better compatibility
-    context->drawRect(r);                                        
+    context.setFillColor(fillColor, ColorSpaceDeviceRGB);   
+    context.setStrokeColor(ThemeEA::kScrollBorderColor, ColorSpaceDeviceRGB);
+    context.setStrokeStyle(SolidStroke);
+    context.setStrokeThickness(ThemeEA::kScrollThemeBorderThickness);        // The Cairo draw rect hardcodes the stroke thickness to 1.0 but we set it here anyway for better compatibility
+    context.drawRect(r);                                        
 }
 
-static void paintThumb(ScrollPaintInfo& info, GraphicsContext* context, const IntRect& r) 
+static void paintThumb(ScrollPaintInfo& info, GraphicsContext& context, const IntRect& r) 
 {
     if(r.isEmpty() || !info.mEnabled) 
         return;
@@ -244,12 +244,12 @@ static void paintThumb(ScrollPaintInfo& info, GraphicsContext* context, const In
     else
         fillColor = ThemeEA::kScrollThumbNormalColor;
     
-    context->setFillColor(fillColor, ColorSpaceDeviceRGB);  
-    context->setStrokeStyle(NoStroke);
-    context->drawRect(r);
+    context.setFillColor(fillColor, ColorSpaceDeviceRGB);  
+    context.setStrokeStyle(NoStroke);
+    context.drawRect(r);
 
      // Highlight edges
-    RenderThemeEA::paintEdgeHighligths(context,r);   
+    RenderThemeEA::paintEdgeHighlights(&context,r);   
 
     // Draw Grip
     IntPoint a,b; 
@@ -274,16 +274,16 @@ static void paintThumb(ScrollPaintInfo& info, GraphicsContext* context, const In
         dx =1;    
     }
     
-    context->setStrokeStyle(SolidStroke);
-    context->setStrokeThickness(1.0f);  // The grip is needs to be 1.0.  Large lines just don't work well.
+    context.setStrokeStyle(SolidStroke);
+    context.setStrokeThickness(1.0f);  // The grip is needs to be 1.0.  Large lines just don't work well.
     for(int i = 0; i < kGripCount; i++)
     {
-        context->setStrokeColor(Color::white, ColorSpaceDeviceRGB);
-        context->drawLine(a, b);
+        context.setStrokeColor(Color::white, ColorSpaceDeviceRGB);
+        context.drawLine(a, b);
         a.move(dx,dy);
         b.move(dx,dy);
-        context->setStrokeColor(ThemeEA::kScrollBorderColor, ColorSpaceDeviceRGB);
-        context->drawLine(a, b);
+        context.setStrokeColor(ThemeEA::kScrollBorderColor, ColorSpaceDeviceRGB);
+        context.drawLine(a, b);
         a.move(dx,dy);
         b.move(dx,dy);    
     }
@@ -313,26 +313,26 @@ ScrollbarThemeEA::~ScrollbarThemeEA()
 {
 }
 
-bool ScrollbarThemeEA::paint(ScrollbarThemeClient* scrollbar, GraphicsContext* context, const IntRect& damageRect)
+bool ScrollbarThemeEA::paint(Scrollbar& scrollbar, GraphicsContext& context, const IntRect& damageRect)
 {
-    if (context->updatingControlTints())
+    if (context.updatingControlTints())
     {
-       scrollbar->invalidateRect(damageRect);
+       scrollbar.invalidateRect(damageRect);
        return false;
     }
 
-    const IntRect r = scrollbar->frameRect();
+    const IntRect r = scrollbar.frameRect();
     if(!damageRect.intersects(r))
         return false;
 
-    const ScrollbarOrientation  orientation = scrollbar->orientation();  
-    const ScrollbarPart pressedPart = scrollbar->pressedPart();
-    const ScrollbarPart hoveredPart = scrollbar->hoveredPart();
+    const ScrollbarOrientation  orientation = scrollbar.orientation();  
+    const ScrollbarPart pressedPart = scrollbar.pressedPart();
+    const ScrollbarPart hoveredPart = scrollbar.hoveredPart();
 
-    ScrollPaintInfo paintInfo(scrollbar->enabled(), orientation == VerticalScrollbar);
+    ScrollPaintInfo paintInfo(scrollbar.enabled(), orientation == VerticalScrollbar);
 
     // Draw the parts. For now we redraw the full scroll bar to avoid some of the update bugs that we saw in 1.x but it might be possible to fine tune this.
-    context->save();
+    context.save();
 
     // Draw the track. 
     paintTrack(paintInfo, context, r);    // We draw the full scroll as track to fill in under the buttons and avoid a line with the buttons
@@ -359,28 +359,28 @@ bool ScrollbarThemeEA::paint(ScrollbarThemeClient* scrollbar, GraphicsContext* c
     IntRect trackRect;
     IntRect thumbRect;
     GetTrackRect(orientation, r,trackRect);       
-    GetThumbRect(orientation,length, offset, trackRect,thumbRect);    
+    GetThumbRect(orientation,length, offset, trackRect,thumbRect);   
     paintThumb(paintInfo, context, thumbRect);    
 
-    context->restore();
+    context.restore();
 
     return true;
 }
 
-ScrollbarPart ScrollbarThemeEA::hitTest(ScrollbarThemeClient* scrollbar, const IntPoint& p)
+ScrollbarPart ScrollbarThemeEA::hitTest(Scrollbar& scrollbar, const IntPoint& p)
 {
-    if(!scrollbar->enabled())
+    if(!scrollbar.enabled())
          return NoPart;
 
-    IntRect r = scrollbar->frameRect();
-    IntPoint pos = scrollbar->convertFromContainingWindow(p);
+    IntRect r = scrollbar.frameRect();
+    IntPoint pos = scrollbar.convertFromContainingWindow(p);
     pos.move(r.x(),r.y());
 
     // Check the buttons
     IntRect backRect;
     IntRect forwardRect;
    
-    ScrollbarOrientation  orientation = scrollbar->orientation();  
+    ScrollbarOrientation  orientation = scrollbar.orientation();  
     GetScrollButtonRect(kScrollButtonBack, orientation, r, backRect);
     GetScrollButtonRect(kScrollButtonForward, orientation, r, forwardRect);
    
@@ -423,7 +423,7 @@ ScrollbarPart ScrollbarThemeEA::hitTest(ScrollbarThemeClient* scrollbar, const I
     return NoPart;
 }
 
-bool ScrollbarThemeEA::shouldCenterOnThumb(ScrollbarThemeClient*, const PlatformMouseEvent& evt)
+bool ScrollbarThemeEA::shouldCenterOnThumb(Scrollbar&, const PlatformMouseEvent& evt)
 {
     // Middle click centers slider thumb (if supported)
 //    return style()->styleHint(QStyle::SH_ScrollBar_MiddleClickAbsolutePosition) && evt.button() == MiddleButton;
@@ -431,10 +431,10 @@ bool ScrollbarThemeEA::shouldCenterOnThumb(ScrollbarThemeClient*, const Platform
     return false;
 }
 
-void ScrollbarThemeEA::invalidatePart(ScrollbarThemeClient* scrollbar, ScrollbarPart)
+void ScrollbarThemeEA::invalidatePart(Scrollbar& scrollbar, ScrollbarPart)
 {
     // FIXME: Do more precise invalidation.
-    scrollbar->invalidate();
+    scrollbar.invalidate();
 }
 
 int ScrollbarThemeEA::scrollbarThickness(ScrollbarControlSize controlSize)
@@ -442,22 +442,22 @@ int ScrollbarThemeEA::scrollbarThickness(ScrollbarControlSize controlSize)
     return ThemeEA::kScrollThickness;
 }
 
-int ScrollbarThemeEA::thumbPosition(ScrollbarThemeClient* scrollbar)
+int ScrollbarThemeEA::thumbPosition(Scrollbar& scrollbar)
 {
-    if (!scrollbar->enabled())
+    if (!scrollbar.enabled())
         return 0;
     
-    int offset = (int)((float)scrollbar->currentPos() * (trackLength(scrollbar) - thumbLength(scrollbar)) / scrollbar->maximum());
+    int offset = (int)((float)scrollbar.currentPos() * (trackLength(scrollbar) - thumbLength(scrollbar)) / scrollbar.maximum());
     return offset;
 }
 
-int ScrollbarThemeEA::thumbLength(ScrollbarThemeClient* scrollbar)
+int ScrollbarThemeEA::thumbLength(Scrollbar& scrollbar)
 {
-     if(!scrollbar->enabled())
+     if(!scrollbar.enabled())
         return 0;   
 
     const float length = (float) trackLength(scrollbar);
-    const float ratio = (float) scrollbar->visibleSize() / (float) scrollbar->totalSize();
+    const float ratio = (float) scrollbar.visibleSize() / (float) scrollbar.totalSize();
     int thumbLength = (int) (length * ratio);
     if(thumbLength < ThemeEA::kScrollThumbMinLength)
     {
@@ -469,19 +469,19 @@ int ScrollbarThemeEA::thumbLength(ScrollbarThemeClient* scrollbar)
     return thumbLength;    
 }
 
-int ScrollbarThemeEA::trackPosition(ScrollbarThemeClient* scrollbar)
+int ScrollbarThemeEA::trackPosition(Scrollbar& scrollbar)
 {
-    IntRect r = scrollbar->frameRect();
-    ScrollbarOrientation  orientation = scrollbar->orientation();      
+    IntRect r = scrollbar.frameRect();
+    ScrollbarOrientation  orientation = scrollbar.orientation();      
     IntRect trackRect;
     GetTrackRect(orientation, r, trackRect);
     return (orientation == HorizontalScrollbar ? trackRect.x() - r.x() : trackRect.y() - r.y());
 }
 
-int ScrollbarThemeEA::trackLength(ScrollbarThemeClient* scrollbar)
+int ScrollbarThemeEA::trackLength(Scrollbar& scrollbar)
 {
-    IntRect r = scrollbar->frameRect();
-    ScrollbarOrientation  orientation = scrollbar->orientation();      
+    IntRect r = scrollbar.frameRect();
+    ScrollbarOrientation  orientation = scrollbar.orientation();      
     IntRect trackRect;
     int length = GetTrackRect(orientation, r, trackRect);
     return length;

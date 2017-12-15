@@ -30,9 +30,9 @@ namespace WebCore {
 
 class JSVoidCallback : public VoidCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSVoidCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSVoidCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSVoidCallback(callback, globalObject));
+        return adoptRef(*new JSVoidCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

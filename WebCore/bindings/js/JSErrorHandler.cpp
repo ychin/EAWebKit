@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Google Inc. All rights reserved.
+ * Copyright (C) 2013 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -39,6 +40,7 @@
 #include "JSEvent.h"
 #include "JSMainThreadExecState.h"
 #include <runtime/JSLock.h>
+#include <runtime/VMEntryScope.h>
 #include <wtf/Ref.h>
 
 using namespace JSC;
@@ -57,14 +59,14 @@ JSErrorHandler::~JSErrorHandler()
 void JSErrorHandler::handleEvent(ScriptExecutionContext* scriptExecutionContext, Event* event)
 {
 
-    if (event->eventInterface() != ErrorEventInterfaceType)
+    if (!is<ErrorEvent>(*event))
         return JSEventListener::handleEvent(scriptExecutionContext, event);
 
     ASSERT(scriptExecutionContext);
     if (!scriptExecutionContext)
         return;
 
-    ErrorEvent* errorEvent = static_cast<ErrorEvent*>(event);
+    ErrorEvent& errorEvent = downcast<ErrorEvent>(*event);
 
     JSLockHolder lock(scriptExecutionContext->vm());
 
@@ -88,22 +90,23 @@ void JSErrorHandler::handleEvent(ScriptExecutionContext* scriptExecutionContext,
         globalObject->setCurrentEvent(event);
 
         MarkedArgumentBuffer args;
-        args.append(jsStringWithCache(exec, errorEvent->message()));
-        args.append(jsStringWithCache(exec, errorEvent->filename()));
-        args.append(jsNumber(errorEvent->lineno()));
-        args.append(jsNumber(errorEvent->colno()));
+        args.append(jsStringWithCache(exec, errorEvent.message()));
+        args.append(jsStringWithCache(exec, errorEvent.filename()));
+        args.append(jsNumber(errorEvent.lineno()));
+        args.append(jsNumber(errorEvent.colno()));
 
         VM& vm = globalObject->vm();
-        DynamicGlobalObjectScope globalObjectScope(vm, vm.dynamicGlobalObject ? vm.dynamicGlobalObject : globalObject);
+        VMEntryScope entryScope(vm, vm.entryScope ? vm.entryScope->globalObject() : globalObject);
 
+        NakedPtr<Exception> exception;
         JSValue returnValue = scriptExecutionContext->isDocument()
-            ? JSMainThreadExecState::call(exec, jsFunction, callType, callData, globalObject, args)
-            : JSC::call(exec, jsFunction, callType, callData, globalObject, args);
+            ? JSMainThreadExecState::call(exec, jsFunction, callType, callData, globalObject, args, exception)
+            : JSC::call(exec, jsFunction, callType, callData, globalObject, args, exception);
 
         globalObject->setCurrentEvent(savedEvent);
 
-        if (exec->hadException())
-            reportCurrentException(exec);
+        if (exception)
+            reportException(exec, exception);
         else {
             if (returnValue.isTrue())
                 event->preventDefault();

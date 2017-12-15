@@ -32,14 +32,14 @@ namespace WebCore {
 class HTMLDataListElement;
 class HTMLSelectElement;
 
-class HTMLOptionElement FINAL : public HTMLElement {
+class HTMLOptionElement final : public HTMLElement {
 public:
-    static PassRefPtr<HTMLOptionElement> create(Document&);
-    static PassRefPtr<HTMLOptionElement> create(const QualifiedName&, Document&);
-    static PassRefPtr<HTMLOptionElement> createForJSConstructor(Document&, const String& data, const String& value,
+    static Ref<HTMLOptionElement> create(Document&);
+    static Ref<HTMLOptionElement> create(const QualifiedName&, Document&);
+    static RefPtr<HTMLOptionElement> createForJSConstructor(Document&, const String& data, const String& value,
        bool defaultSelected, bool selected, ExceptionCode&);
 
-    virtual String text() const;
+    WEBCORE_EXPORT String text() const;
     void setText(const String&, ExceptionCode&);
 
     int index() const;
@@ -47,7 +47,7 @@ public:
     String value() const;
     void setValue(const String&);
 
-    bool selected();
+    WEBCORE_EXPORT bool selected();
     void setSelected(bool);
 
 #if ENABLE(DATALIST_ELEMENT)
@@ -60,7 +60,7 @@ public:
 
     bool ownElementDisabled() const { return m_disabled; }
 
-    virtual bool isDisabledFormControl() const OVERRIDE;
+    virtual bool isDisabledFormControl() const override;
 
     String textIndentedToRespectGroupLabel() const;
 
@@ -69,33 +69,23 @@ public:
 private:
     HTMLOptionElement(const QualifiedName&, Document&);
 
-    virtual bool isFocusable() const OVERRIDE;
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE { return false; }
-    virtual void didAttachRenderers() OVERRIDE;
-    virtual void willDetachRenderers() OVERRIDE;
+    virtual bool isFocusable() const override;
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
 
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
-    virtual void accessKeyAction(bool) OVERRIDE;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
+    virtual void accessKeyAction(bool) override;
 
-    virtual void childrenChanged(const ChildChange&) OVERRIDE;
+    virtual void childrenChanged(const ChildChange&) override;
 
-    // <option> never has a renderer so we manually manage a cached style.
-    void updateNonRenderStyle();
-    virtual RenderStyle* nonRendererStyle() const OVERRIDE;
-    virtual PassRefPtr<RenderStyle> customStyleForRenderer() OVERRIDE;
-
-    virtual void didRecalcStyle(Style::Change) OVERRIDE;
+    virtual void willResetComputedStyle() override;
 
     String collectOptionInnerText() const;
 
     bool m_disabled;
     bool m_isSelected;
-    RefPtr<RenderStyle> m_style;
 };
-
-NODE_TYPE_CASTS(HTMLOptionElement)
 
 } // namespace
 

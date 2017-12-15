@@ -31,29 +31,31 @@ namespace WebCore {
 
 class DocumentFragment : public ContainerNode {
 public:
-    static PassRefPtr<DocumentFragment> create(Document&);
+    static Ref<DocumentFragment> create(Document&);
 
     void parseHTML(const String&, Element* contextElement, ParserContentPolicy = AllowScriptingContent);
     bool parseXML(const String&, Element* contextElement, ParserContentPolicy = AllowScriptingContent);
     
-    virtual bool canContainRangeEndPoint() const OVERRIDE { return true; }
+    virtual bool canContainRangeEndPoint() const override final { return true; }
     virtual bool isTemplateContent() const { return false; }
 
+    // From the NonElementParentNode interface - https://dom.spec.whatwg.org/#interface-nonelementparentnode
+    Element* getElementById(const AtomicString&) const;
+
 protected:
-    DocumentFragment(Document*, ConstructionType = CreateContainer);
-    virtual String nodeName() const OVERRIDE;
+    DocumentFragment(Document&, ConstructionType = CreateContainer);
+    virtual String nodeName() const override final;
 
 private:
-    virtual NodeType nodeType() const OVERRIDE;
-    virtual PassRefPtr<Node> cloneNode(bool deep) OVERRIDE;
-    virtual bool childTypeAllowed(NodeType) const OVERRIDE;
+    virtual NodeType nodeType() const override final;
+    virtual RefPtr<Node> cloneNodeInternal(Document&, CloningOperation) override;
+    virtual bool childTypeAllowed(NodeType) const override;
 };
 
-inline bool isDocumentFragment(const Node& node) { return node.isDocumentFragment(); }
-void isDocumentFragment(const DocumentFragment&); // Catch unnecessary runtime check of type known at compile time.
+} // namespace WebCore
 
-NODE_TYPE_CASTS(DocumentFragment)
-
-} //namespace
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::DocumentFragment)
+    static bool isType(const WebCore::Node& node) { return node.isDocumentFragment(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif

@@ -44,12 +44,10 @@
 #include <limits>
 #include <wtf/ASCIICType.h>
 #include <wtf/MathExtras.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
 using namespace HTMLNames;
-using namespace std;
 
 static const int numberDefaultStep = 1;
 static const int numberDefaultStepBase = 0;
@@ -94,17 +92,6 @@ static RealNumberRenderSize calculateRenderSize(const Decimal& value)
     return RealNumberRenderSize(sizeOfSign + sizeOfZero , numberOfZeroAfterDecimalPoint + sizeOfDigits);
 }
 
-OwnPtr<InputType> NumberInputType::create(HTMLInputElement& element)
-{
-    return adoptPtr(new NumberInputType(element));
-}
-
-void NumberInputType::attach()
-{
-    TextFieldInputType::attach();
-    observeFeatureIfVisible(FeatureObserver::InputTypeNumber);
-}
-
 const AtomicString& NumberInputType::formControlType() const
 {
     return InputTypeNames::number();
@@ -125,7 +112,7 @@ double NumberInputType::valueAsDouble() const
 void NumberInputType::setValueAsDouble(double newValue, TextFieldEventBehavior eventBehavior, ExceptionCode& ec) const
 {
     // FIXME: We should use numeric_limits<double>::max for number input type.
-    const double floatMax = numeric_limits<float>::max();
+    const double floatMax = std::numeric_limits<float>::max();
     if (newValue < -floatMax) {
         ec = INVALID_STATE_ERR;
         return;
@@ -140,7 +127,7 @@ void NumberInputType::setValueAsDouble(double newValue, TextFieldEventBehavior e
 void NumberInputType::setValueAsDecimal(const Decimal& newValue, TextFieldEventBehavior eventBehavior, ExceptionCode& ec) const
 {
     // FIXME: We should use numeric_limits<double>::max for number input type.
-    const Decimal floatMax = Decimal::fromDouble(numeric_limits<float>::max());
+    const Decimal floatMax = Decimal::fromDouble(std::numeric_limits<float>::max());
     if (newValue < -floatMax) {
         ec = INVALID_STATE_ERR;
         return;
@@ -165,10 +152,10 @@ bool NumberInputType::typeMismatch() const
 
 StepRange NumberInputType::createStepRange(AnyStepHandling anyStepHandling) const
 {
-    DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (numberDefaultStep, numberDefaultStepBase, numberStepScaleFactor));
+    DEPRECATED_DEFINE_STATIC_LOCAL(const StepRange::StepDescription, stepDescription, (numberDefaultStep, numberDefaultStepBase, numberStepScaleFactor));
     const Decimal stepBase = parseToDecimalForNumberType(element().fastGetAttribute(minAttr), numberDefaultStepBase);
     // FIXME: We should use numeric_limits<double>::max for number input type.
-    const Decimal floatMax = Decimal::fromDouble(numeric_limits<float>::max());
+    const Decimal floatMax = Decimal::fromDouble(std::numeric_limits<float>::max());
     const Decimal minimum = parseToNumber(element().fastGetAttribute(minAttr), -floatMax);
     const Decimal maximum = parseToNumber(element().fastGetAttribute(maxAttr), floatMax);
     const Decimal step = StepRange::parseStep(anyStepHandling, stepDescription, element().fastGetAttribute(stepAttr));
@@ -284,11 +271,6 @@ bool NumberInputType::hasBadInput() const
 String NumberInputType::badInputText() const
 {
     return validationMessageBadInputForNumberText();
-}
-
-bool NumberInputType::shouldRespectSpeechAttribute()
-{
-    return true;
 }
 
 bool NumberInputType::supportsPlaceholder() const

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,8 +26,6 @@
 #ifndef DFGFlushFormat_h
 #define DFGFlushFormat_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "DFGNodeFlags.h"
@@ -45,7 +43,8 @@ enum FlushFormat {
     FlushedDouble,
     FlushedCell,
     FlushedBoolean,
-    FlushedJSValue
+    FlushedJSValue,
+    ConflictingFlush
 };
 
 inline NodeFlags resultFor(FlushFormat format)
@@ -54,13 +53,14 @@ inline NodeFlags resultFor(FlushFormat format)
     case DeadFlush:
     case FlushedJSValue:
     case FlushedCell:
+    case ConflictingFlush:
         return NodeResultJS;
     case FlushedInt32:
         return NodeResultInt32;
     case FlushedInt52:
         return NodeResultInt52;
     case FlushedDouble:
-        return NodeResultNumber;
+        return NodeResultDouble;
     case FlushedBoolean:
         return NodeResultBoolean;
     }
@@ -73,15 +73,16 @@ inline UseKind useKindFor(FlushFormat format)
     switch (format) {
     case DeadFlush:
     case FlushedJSValue:
+    case ConflictingFlush:
         return UntypedUse;
     case FlushedCell:
         return CellUse;
     case FlushedInt32:
         return Int32Use;
     case FlushedInt52:
-        return MachineIntUse;
+        return Int52RepUse;
     case FlushedDouble:
-        return NumberUse;
+        return DoubleRepUse;
     case FlushedBoolean:
         return BooleanUse;
     }
@@ -89,10 +90,16 @@ inline UseKind useKindFor(FlushFormat format)
     return UntypedUse;
 }
 
+inline SpeculatedType typeFilterFor(FlushFormat format)
+{
+    return typeFilterFor(useKindFor(format));
+}
+
 inline DataFormat dataFormatFor(FlushFormat format)
 {
     switch (format) {
     case DeadFlush:
+    case ConflictingFlush:
         return DataFormatDead;
     case FlushedJSValue:
         return DataFormatJS;
@@ -109,6 +116,22 @@ inline DataFormat dataFormatFor(FlushFormat format)
     }
     RELEASE_ASSERT_NOT_REACHED();
     return DataFormatDead;
+}
+
+inline FlushFormat merge(FlushFormat a, FlushFormat b)
+{
+    if (a == DeadFlush)
+        return b;
+    if (b == DeadFlush)
+        return a;
+    if (a == b)
+        return a;
+    return ConflictingFlush;
+}
+
+inline bool isConcrete(FlushFormat format)
+{
+    return format != DeadFlush && format != ConflictingFlush;
 }
 
 } } // namespace JSC::DFG

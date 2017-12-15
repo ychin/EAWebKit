@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLDepthTexture.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLDepthTexture : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLDepthTexture* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLDepthTexture> impl)
+    static JSWebGLDepthTexture* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLDepthTexture>&& impl)
     {
-        JSWebGLDepthTexture* ptr = new (NotNull, JSC::allocateCell<JSWebGLDepthTexture>(globalObject->vm().heap)) JSWebGLDepthTexture(structure, globalObject, impl);
+        JSWebGLDepthTexture* ptr = new (NotNull, JSC::allocateCell<JSWebGLDepthTexture>(globalObject->vm().heap)) JSWebGLDepthTexture(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLDepthTexture* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLDepthTexture();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     WebGLDepthTexture& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLDepthTexture* m_impl;
 protected:
-    JSWebGLDepthTexture(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLDepthTexture>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSWebGLDepthTexture(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLDepthTexture>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLDepthTextureOwner : public JSC::WeakHandleOwner {
@@ -78,45 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLDepthTexture*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLDepthTextureOwner, jsWebGLDepthTextureOwner, ());
-    return &jsWebGLDepthTextureOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLDepthTexture*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLDepthTextureOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLDepthTexture*);
-WebGLDepthTexture* toWebGLDepthTexture(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLDepthTexture& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebGLDepthTexturePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLDepthTexturePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLDepthTexturePrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLDepthTexturePrototype>(vm.heap)) JSWebGLDepthTexturePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLDepthTexturePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Constants
-
-JSC::JSValue jsWebGLDepthTextureUNSIGNED_INT_24_8_WEBGL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

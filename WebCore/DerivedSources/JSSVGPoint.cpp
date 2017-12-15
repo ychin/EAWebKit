@@ -19,9 +19,6 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGPoint.h"
 
 #include "ExceptionCode.h"
@@ -36,26 +33,65 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSSVGPointTableValues[] =
-{
-    { "x", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPointX), (intptr_t)setJSSVGPointX },
-    { "y", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPointY), (intptr_t)setJSSVGPointY },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPointConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGPointPrototypeFunctionMatrixTransform(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsSVGPointX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPointX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPointY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSSVGPointY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsSVGPointConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGPointPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGPointPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGPointPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGPointPrototype>(vm.heap)) JSSVGPointPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGPointPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGPointTable = { 9, 7, JSSVGPointTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGPointConstructor : public DOMConstructorObject {
+private:
+    JSSVGPointConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGPointConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGPointConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGPointConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGPointConstructor>(vm.heap)) JSSVGPointConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGPointConstructorTable = { 1, 0, JSSVGPointConstructorTableValues, 0 };
-const ClassInfo JSSVGPointConstructor::s_info = { "SVGPointConstructor", &Base::s_info, &JSSVGPointConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGPointConstructor) };
+const ClassInfo JSSVGPointConstructor::s_info = { "SVGPointConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPointConstructor) };
 
 JSSVGPointConstructor::JSSVGPointConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -66,54 +102,45 @@ void JSSVGPointConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObje
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGPointPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGPointConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGPointConstructor, JSDOMWrapper>(exec, JSSVGPointConstructorTable, jsCast<JSSVGPointConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGPoint::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGPoint"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGPointPrototypeTableValues[] =
 {
-    { "matrixTransform", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGPointPrototypeFunctionMatrixTransform), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPointConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPointX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPointX) },
+    { "y", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPointY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSSVGPointY) },
+    { "matrixTransform", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGPointPrototypeFunctionMatrixTransform), (intptr_t) (1) },
 };
 
-static const HashTable JSSVGPointPrototypeTable = { 2, 1, JSSVGPointPrototypeTableValues, 0 };
-const ClassInfo JSSVGPointPrototype::s_info = { "SVGPointPrototype", &Base::s_info, &JSSVGPointPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPointPrototype) };
+const ClassInfo JSSVGPointPrototype::s_info = { "SVGPointPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPointPrototype) };
 
-JSObject* JSSVGPointPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGPoint>(vm, globalObject);
-}
-
-bool JSSVGPointPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGPointPrototype* thisObject = jsCast<JSSVGPointPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSSVGPointPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGPoint::s_info = { "SVGPoint", &Base::s_info, &JSSVGPointTable, 0 , CREATE_METHOD_TABLE(JSSVGPoint) };
-
-JSSVGPoint::JSSVGPoint(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPropertyTearOff<SVGPoint> > impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSVGPoint::finishCreation(VM& vm)
+void JSSVGPointPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGPointPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGPoint::s_info = { "SVGPoint", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGPoint) };
+
+JSSVGPoint::JSSVGPoint(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPropertyTearOff<SVGPoint>>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSVGPoint::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSVGPointPrototype::create(vm, globalObject, JSSVGPointPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSVGPoint::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSVGPoint>(vm, globalObject);
 }
 
 void JSSVGPoint::destroy(JSC::JSCell* cell)
@@ -124,56 +151,66 @@ void JSSVGPoint::destroy(JSC::JSCell* cell)
 
 JSSVGPoint::~JSSVGPoint()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSSVGPoint::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsSVGPointX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPoint* thisObject = jsCast<JSSVGPoint*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGPoint, Base>(exec, JSSVGPointTable, thisObject, propertyName, slot);
-}
-
-JSValue jsSVGPointX(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSSVGPoint* castedThis = jsCast<JSSVGPoint*>(asObject(slotBase));
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPoint* castedThis = jsDynamicCast<JSSVGPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPointPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPoint", "x");
+        return throwGetterTypeError(*exec, "SVGPoint", "x");
+    }
     SVGPoint& impl = castedThis->impl().propertyReference();
     JSValue result = jsNumber(impl.x());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPointY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPointY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGPoint* castedThis = jsCast<JSSVGPoint*>(asObject(slotBase));
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGPoint* castedThis = jsDynamicCast<JSSVGPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPointPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGPoint", "y");
+        return throwGetterTypeError(*exec, "SVGPoint", "y");
+    }
     SVGPoint& impl = castedThis->impl().propertyReference();
     JSValue result = jsNumber(impl.y());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGPointConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGPointConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGPoint* domObject = jsCast<JSSVGPoint*>(asObject(slotBase));
-    return JSSVGPoint::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGPointPrototype* domObject = jsDynamicCast<JSSVGPointPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGPoint::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSSVGPoint::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSSVGPointX(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSSVGPoint* thisObject = jsCast<JSSVGPoint*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSSVGPoint, Base>(exec, propertyName, value, JSSVGPointTable, thisObject, slot);
-}
-
-void setJSSVGPointX(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSSVGPoint* castedThis = jsCast<JSSVGPoint*>(thisObject);
-    SVGPropertyTearOff<SVGPoint> & impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPoint* castedThis = jsDynamicCast<JSSVGPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPointPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPoint", "x");
+        else
+            throwSetterTypeError(*exec, "SVGPoint", "x");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     if (impl.isReadOnly()) {
         setDOMException(exec, NO_MODIFICATION_ALLOWED_ERR);
@@ -185,13 +222,21 @@ void setJSSVGPointX(ExecState* exec, JSObject* thisObject, JSValue value)
 }
 
 
-void setJSSVGPointY(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSSVGPointY(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSSVGPoint* castedThis = jsCast<JSSVGPoint*>(thisObject);
-    SVGPropertyTearOff<SVGPoint> & impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSSVGPoint* castedThis = jsDynamicCast<JSSVGPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGPointPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "SVGPoint", "y");
+        else
+            throwSetterTypeError(*exec, "SVGPoint", "y");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     if (impl.isReadOnly()) {
         setDOMException(exec, NO_MODIFICATION_ALLOWED_ERR);
@@ -210,72 +255,60 @@ JSValue JSSVGPoint::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsSVGPointPrototypeFunctionMatrixTransform(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGPoint::info()))
-        return throwVMTypeError(exec);
-    JSSVGPoint* castedThis = jsCast<JSSVGPoint*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGPoint* castedThis = jsDynamicCast<JSSVGPoint*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGPoint", "matrixTransform");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGPoint::info());
-    SVGPropertyTearOff<SVGPoint> & impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     if (impl.isReadOnly()) {
         setDOMException(exec, NO_MODIFICATION_ALLOWED_ERR);
         return JSValue::encode(jsUndefined());
     }
     SVGPoint& podImpl = impl.propertyReference();
-    if (exec->argumentCount() < 1)
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    if (exec->argumentCount() > 0 && !exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGMatrix::info()))
-        return throwVMTypeError(exec);
-    SVGPropertyTearOff<SVGMatrix>* matrix(toSVGMatrix(exec->argument(0)));
-    if (exec->hadException())
+    if (!exec->argument(0).isUndefinedOrNull() && !exec->argument(0).inherits(JSSVGMatrix::info()))
+        return throwArgumentTypeError(*exec, 0, "matrix", "SVGPoint", "matrixTransform", "SVGMatrix");
+    SVGPropertyTearOff<SVGMatrix>* matrix = JSSVGMatrix::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     if (!matrix) {
         setDOMException(exec, TYPE_MISMATCH_ERR);
         return JSValue::encode(jsUndefined());
     }
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGPoint>::create(podImpl.matrixTransform(matrix->propertyReference()))));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGPoint>::create(podImpl.matrixTransform(matrix->propertyReference()))));
     return JSValue::encode(result);
-}
-
-static inline bool isObservable(JSSVGPoint* jsSVGPoint)
-{
-    if (jsSVGPoint->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSSVGPointOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSVGPoint* jsSVGPoint = jsCast<JSSVGPoint*>(handle.get().asCell());
-    if (!isObservable(jsSVGPoint))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSVGPointOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSVGPoint* jsSVGPoint = jsCast<JSSVGPoint*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSVGPoint = jsCast<JSSVGPoint*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSVGPoint->impl(), jsSVGPoint);
-    jsSVGPoint->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGPropertyTearOff<SVGPoint> * impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SVGPropertyTearOff<SVGPoint>* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSVGPoint, SVGPropertyTearOff<SVGPoint> >(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSVGPoint, SVGPropertyTearOff<SVGPoint>>(globalObject, impl))
         return result;
-    ReportMemoryCost<SVGPropertyTearOff<SVGPoint> >::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSVGPoint, SVGPropertyTearOff<SVGPoint> >(exec, globalObject, impl);
+    return createNewWrapper<JSSVGPoint, SVGPropertyTearOff<SVGPoint>>(globalObject, impl);
 }
 
-SVGPropertyTearOff<SVGPoint> * toSVGPoint(JSC::JSValue value)
+SVGPropertyTearOff<SVGPoint>* JSSVGPoint::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSVGPoint::info()) ? &jsCast<JSSVGPoint*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSVGPoint*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(SVG)

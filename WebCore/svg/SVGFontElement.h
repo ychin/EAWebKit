@@ -53,8 +53,8 @@ struct SVGKerningPair : public SVGKerning {
 typedef Vector<SVGKerning> SVGKerningVector;
 
 struct SVGKerningMap {
-    HashMap<String, OwnPtr<SVGKerningVector> > unicodeMap;
-    HashMap<String, OwnPtr<SVGKerningVector> > glyphMap;
+    HashMap<String, std::unique_ptr<SVGKerningVector>> unicodeMap;
+    HashMap<String, std::unique_ptr<SVGKerningVector>> glyphMap;
     Vector<SVGKerningPair> kerningUnicodeRangeMap;
 
     bool isEmpty() const { return unicodeMap.isEmpty() && glyphMap.isEmpty() && kerningUnicodeRangeMap.isEmpty(); }
@@ -62,12 +62,12 @@ struct SVGKerningMap {
     void insert(const SVGKerningPair&);
 };
 
-class SVGMissingGlyphElement;    
+class SVGMissingGlyphElement;
 
-class SVGFontElement FINAL : public SVGElement
+class SVGFontElement final : public SVGElement
                            , public SVGExternalResourcesRequired {
 public:
-    static PassRefPtr<SVGFontElement> create(const QualifiedName&, Document&);
+    static Ref<SVGFontElement> create(const QualifiedName&, Document&);
 
     void invalidateGlyphCache();
     void collectGlyphsForString(const String&, Vector<SVGGlyph>&);
@@ -76,22 +76,23 @@ public:
     float horizontalKerningForPairOfStringsAndGlyphs(const String& u1, const String& g1, const String& u2, const String& g2) const;
     float verticalKerningForPairOfStringsAndGlyphs(const String& u1, const String& g1, const String& u2, const String& g2) const;
 
-    // Used by SimpleFontData/WidthIterator.
+    // Used by Font/WidthIterator.
     SVGGlyph svgGlyphForGlyph(Glyph);
     Glyph missingGlyph();
 
     const SVGMissingGlyphElement* firstMissingGlyphElement() const;
+    bool horizontalKerningMapIsEmpty() const { return m_horizontalKerningMap.isEmpty(); }
 
 private:
     SVGFontElement(const QualifiedName&, Document&);
 
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE { return false; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 
     void ensureGlyphCache();
     void registerLigaturesInGlyphCache(Vector<String>&);
 
     BEGIN_DECLARE_ANIMATED_PROPERTIES(SVGFontElement)
-        DECLARE_ANIMATED_BOOLEAN(ExternalResourcesRequired, externalResourcesRequired)
+        DECLARE_ANIMATED_BOOLEAN_OVERRIDE(ExternalResourcesRequired, externalResourcesRequired)
     END_DECLARE_ANIMATED_PROPERTIES
 
     SVGKerningMap m_horizontalKerningMap;
@@ -100,8 +101,6 @@ private:
     Glyph m_missingGlyph;
     bool m_isGlyphCacheValid;
 };
-
-NODE_TYPE_CASTS(SVGFontElement)
 
 } // namespace WebCore
 

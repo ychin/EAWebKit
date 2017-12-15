@@ -31,9 +31,9 @@ class HTMLInputElement;
 // sufficient space to draw a file icon and filename. The RenderButton has a shadow node
 // associated with it to receive click/hover events.
 
-class RenderFileUploadControl FINAL : public RenderBlockFlow {
+class RenderFileUploadControl final : public RenderBlockFlow {
 public:
-    explicit RenderFileUploadControl(HTMLInputElement&);
+    RenderFileUploadControl(HTMLInputElement&, Ref<RenderStyle>&&);
     virtual ~RenderFileUploadControl();
 
     String buttonValue();
@@ -42,44 +42,30 @@ public:
     HTMLInputElement& inputElement() const;
     
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual bool isFileUploadControl() const OVERRIDE { return true; }
+    virtual bool isFileUploadControl() const override { return true; }
 
-    virtual const char* renderName() const OVERRIDE { return "RenderFileUploadControl"; }
+    virtual const char* renderName() const override { return "RenderFileUploadControl"; }
 
-    virtual bool canBeReplacedWithInlineRunIn() const OVERRIDE;
-    virtual void updateFromElement() OVERRIDE;
-    virtual void computeIntrinsicLogicalWidths(LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const OVERRIDE;
-    virtual void computePreferredLogicalWidths() OVERRIDE;
-    virtual void paintObject(PaintInfo&, const LayoutPoint&) OVERRIDE;
+    virtual void updateFromElement() override;
+    virtual void computeIntrinsicLogicalWidths(LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const override;
+    virtual void computePreferredLogicalWidths() override;
+    virtual void paintObject(PaintInfo&, const LayoutPoint&) override;
 
-    virtual bool requiresForcedStyleRecalcPropagation() const OVERRIDE { return true; }
+    virtual bool requiresForcedStyleRecalcPropagation() const override { return true; }
 
     int maxFilenameWidth() const;
     
-    virtual VisiblePosition positionForPoint(const LayoutPoint&) OVERRIDE;
+    virtual VisiblePosition positionForPoint(const LayoutPoint&, const RenderRegion*) override;
 
     HTMLInputElement* uploadButton() const;
 
     bool m_canReceiveDroppedFiles;
 };
 
-inline RenderFileUploadControl* toRenderFileUploadControl(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isFileUploadControl());
-    return static_cast<RenderFileUploadControl*>(object);
-}
-
-inline const RenderFileUploadControl* toRenderFileUploadControl(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isFileUploadControl());
-    return static_cast<const RenderFileUploadControl*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderFileUploadControl(const RenderFileUploadControl*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderFileUploadControl, isFileUploadControl())
 
 #endif // RenderFileUploadControl_h

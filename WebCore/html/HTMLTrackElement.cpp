@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -33,8 +33,7 @@
 #include "HTMLNames.h"
 #include "Logging.h"
 #include "RuntimeEnabledFeatures.h"
-
-using namespace std;
+#include <wtf/text/CString.h>
 
 namespace WebCore {
 
@@ -53,7 +52,7 @@ static String urlForLoggingTrack(const URL& url)
     
 inline HTMLTrackElement::HTMLTrackElement(const QualifiedName& tagName, Document& document)
     : HTMLElement(tagName, document)
-    , m_loadTimer(this, &HTMLTrackElement::loadTimerFired)
+    , m_loadTimer(*this, &HTMLTrackElement::loadTimerFired)
 {
     LOG(Media, "HTMLTrackElement::HTMLTrackElement - %p", this);
     ASSERT(hasTagName(trackTag));
@@ -65,9 +64,9 @@ HTMLTrackElement::~HTMLTrackElement()
         m_track->clearClient();
 }
 
-PassRefPtr<HTMLTrackElement> HTMLTrackElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLTrackElement> HTMLTrackElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLTrackElement(tagName, document));
+    return adoptRef(*new HTMLTrackElement(tagName, document));
 }
 
 Node::InsertionNotificationRequest HTMLTrackElement::insertedInto(ContainerNode& insertionPoint)
@@ -86,8 +85,8 @@ Node::InsertionNotificationRequest HTMLTrackElement::insertedInto(ContainerNode&
 
 void HTMLTrackElement::removedFrom(ContainerNode& insertionPoint)
 {
-    if (!parentNode() && isHTMLMediaElement(insertionPoint))
-        toHTMLMediaElement(insertionPoint).didRemoveTextTrack(this);
+    if (!parentNode() && is<HTMLMediaElement>(insertionPoint))
+        downcast<HTMLMediaElement>(insertionPoint).didRemoveTextTrack(this);
     HTMLElement::removedFrom(insertionPoint);
 }
 
@@ -113,16 +112,6 @@ void HTMLTrackElement::parseAttribute(const QualifiedName& name, const AtomicStr
     }
 
     HTMLElement::parseAttribute(name, value);
-}
-
-URL HTMLTrackElement::src() const
-{
-    return document().completeURL(getAttribute(srcAttr));
-}
-
-void HTMLTrackElement::setSrc(const String& url)
-{
-    setAttribute(srcAttr, url);
 }
 
 String HTMLTrackElement::kind()
@@ -211,7 +200,7 @@ void HTMLTrackElement::scheduleLoad()
     m_loadTimer.startOneShot(0);
 }
 
-void HTMLTrackElement::loadTimerFired(Timer<HTMLTrackElement>*)
+void HTMLTrackElement::loadTimerFired()
 {
     if (!fastHasAttribute(srcAttr))
         return;
@@ -224,15 +213,15 @@ void HTMLTrackElement::loadTimerFired(Timer<HTMLTrackElement>*)
 
     // 8. If the track element's parent is a media element then let CORS mode be the state of the parent media
     // element's crossorigin content attribute. Otherwise, let CORS mode be No CORS.
-    if (!canLoadUrl(url)) {
-        didCompleteLoad(&ensureTrack(), HTMLTrackElement::Failure);
+    if (!canLoadURL(url)) {
+        didCompleteLoad(HTMLTrackElement::Failure);
         return;
     }
 
     ensureTrack().scheduleLoad(url);
 }
 
-bool HTMLTrackElement::canLoadUrl(const URL& url)
+bool HTMLTrackElement::canLoadURL(const URL& url)
 {
     if (!RuntimeEnabledFeatures::sharedFeatures().webkitVideoTrackEnabled())
         return false;
@@ -249,15 +238,15 @@ bool HTMLTrackElement::canLoadUrl(const URL& url)
     if (url.isEmpty())
         return false;
 
-    if (!document().contentSecurityPolicy()->allowMediaFromSource(url)) {
-        LOG(Media, "HTMLTrackElement::canLoadUrl(%s) -> rejected by Content Security Policy", urlForLoggingTrack(url).utf8().data());
+    if (!document().contentSecurityPolicy()->allowMediaFromSource(url, isInUserAgentShadowTree())) {
+        LOG(Media, "HTMLTrackElement::canLoadURL(%s) -> rejected by Content Security Policy", urlForLoggingTrack(url).utf8().data());
         return false;
     }
     
     return dispatchBeforeLoadEvent(url.string());
 }
 
-void HTMLTrackElement::didCompleteLoad(LoadableTextTrack*, LoadStatus status)
+void HTMLTrackElement::didCompleteLoad(LoadStatus status)
 {
     // 4.8.10.12.3 Sourcing out-of-band text tracks (continued)
     
@@ -354,10 +343,10 @@ void HTMLTrackElement::textTrackRemoveCue(TextTrack* track, PassRefPtr<TextTrack
 HTMLMediaElement* HTMLTrackElement::mediaElement() const
 {
     Element* parent = parentElement();
-    if (parent && parent->isMediaElement())
-        return toHTMLMediaElement(parentNode());
+    if (is<HTMLMediaElement>(parent))
+        return downcast<HTMLMediaElement>(parentNode());
 
-    return 0;
+    return nullptr;
 }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,43 +26,75 @@
 #ifndef DFGDesiredWatchpoints_h
 #define DFGDesiredWatchpoints_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
+#include "CodeOrigin.h"
+#include "DFGCommonData.h"
+#include "InferredValue.h"
+#include "JSArrayBufferView.h"
+#include "ObjectPropertyCondition.h"
 #include "Watchpoint.h"
-#include <wtf/HashMap.h>
-#include <wtf/Noncopyable.h>
-#include <wtf/Vector.h>
+#include <wtf/CommaPrinter.h>
+#include <wtf/HashSet.h>
 
 namespace JSC { namespace DFG {
 
-template<typename WatchpointSetType>
-struct WatchpointForGenericWatchpointSet {
-    WatchpointForGenericWatchpointSet()
-        : m_watchpoint(0)
-        , m_set(0)
+class Graph;
+
+template<typename T>
+struct SetPointerAdaptor {
+    static void add(CodeBlock* codeBlock, T set, CommonData& common)
     {
+        return set->add(common.watchpoints.add(codeBlock));
     }
-    
-    WatchpointForGenericWatchpointSet(Watchpoint* watchpoint, WatchpointSetType* set)
-        : m_watchpoint(watchpoint)
-        , m_set(set)
+    static bool hasBeenInvalidated(T set) { return set->hasBeenInvalidated(); }
+    static void dumpInContext(PrintStream& out, T set, DumpContext*)
     {
+        out.print(RawPointer(set));
     }
-    
-    Watchpoint* m_watchpoint;
-    WatchpointSetType* m_set;
 };
 
-typedef WatchpointForGenericWatchpointSet<WatchpointSet> WatchpointForWatchpointSet;
-typedef WatchpointForGenericWatchpointSet<InlineWatchpointSet> WatchpointForInlineWatchpointSet;
+struct InferredValueAdaptor {
+    static void add(CodeBlock*, InferredValue*, CommonData&);
+    static bool hasBeenInvalidated(InferredValue* inferredValue)
+    {
+        return inferredValue->hasBeenInvalidated();
+    }
+    static void dumpInContext(PrintStream& out, InferredValue* inferredValue, DumpContext*)
+    {
+        out.print(RawPointer(inferredValue));
+    }
+};
 
-template<typename WatchpointSetType>
+struct ArrayBufferViewWatchpointAdaptor {
+    static void add(CodeBlock*, JSArrayBufferView*, CommonData&);
+    static bool hasBeenInvalidated(JSArrayBufferView* view)
+    {
+        return !view->length();
+    }
+    static void dumpInContext(PrintStream& out, JSArrayBufferView* view, DumpContext* context)
+    {
+        out.print(inContext(JSValue(view), context));
+    }
+};
+
+struct AdaptiveStructureWatchpointAdaptor {
+    static void add(CodeBlock*, const ObjectPropertyCondition&, CommonData&);
+    static bool hasBeenInvalidated(const ObjectPropertyCondition& key)
+    {
+        return !key.isWatchable();
+    }
+    static void dumpInContext(
+        PrintStream& out, const ObjectPropertyCondition& key, DumpContext* context)
+    {
+        out.print(inContext(key, context));
+    }
+};
+
+template<typename WatchpointSetType, typename Adaptor = SetPointerAdaptor<WatchpointSetType>>
 class GenericDesiredWatchpoints {
-    WTF_MAKE_NONCOPYABLE(GenericDesiredWatchpoints);
 #if !ASSERT_DISABLED
-    typedef HashMap<WatchpointSetType*, bool> StateMap;
+    typedef HashMap<WatchpointSetType, bool> StateMap;
 #endif
 public:
     GenericDesiredWatchpoints()
@@ -70,66 +102,47 @@ public:
     {
     }
     
-    void addLazily(const WatchpointForGenericWatchpointSet<WatchpointSetType>& watchpoint)
+    void addLazily(const WatchpointSetType& set)
     {
-        m_watchpoints.append(watchpoint);
+        m_sets.add(set);
     }
     
-    void reallyAdd()
+    void reallyAdd(CodeBlock* codeBlock, CommonData& common)
     {
         RELEASE_ASSERT(!m_reallyAdded);
-        for (unsigned i = m_watchpoints.size(); i--;)
-            m_watchpoints[i].m_set->add(m_watchpoints[i].m_watchpoint);
+        
+        for (auto& set : m_sets)
+            Adaptor::add(codeBlock, set, common);
+        
         m_reallyAdded = true;
     }
     
     bool areStillValid() const
     {
-        for (unsigned i = m_watchpoints.size(); i--;) {
-            if (m_watchpoints[i].m_set->hasBeenInvalidated())
+        for (auto& set : m_sets) {
+            if (Adaptor::hasBeenInvalidated(set))
                 return false;
         }
-        return true;
-    }
-    
-#if ASSERT_DISABLED
-    bool isStillValid(WatchpointSetType* set)
-    {
-        return set->isStillValid();
-    }
-    
-    bool shouldAssumeMixedState(WatchpointSetType*)
-    {
-        return true;
-    }
-#else
-    bool isStillValid(WatchpointSetType* set)
-    {
-        bool result = set->isStillValid();
-        m_firstKnownState.add(set, result);
-        return result;
-    }
-    
-    bool shouldAssumeMixedState(WatchpointSetType* set)
-    {
-        typename StateMap::iterator iter = m_firstKnownState.find(set);
-        if (iter == m_firstKnownState.end())
-            return false;
         
-        return iter->value != set->isStillValid();
+        return true;
     }
-#endif
     
-    bool isValidOrMixed(WatchpointSetType* set)
+    bool isWatched(const WatchpointSetType& set) const
     {
-        return isStillValid(set) || shouldAssumeMixedState(set);
+        return m_sets.contains(set);
+    }
+
+    void dumpInContext(PrintStream& out, DumpContext* context) const
+    {
+        CommaPrinter comma;
+        for (const WatchpointSetType& entry : m_sets) {
+            out.print(comma);
+            Adaptor::dumpInContext(out, entry, context);
+        }
     }
 
 private:
-    Vector<WatchpointForGenericWatchpointSet<WatchpointSetType> > m_watchpoints;
-#if !ASSERT_DISABLED
-    StateMap m_firstKnownState;
-#endif
+    HashSet<WatchpointSetType> m_sets;
     bool m_reallyAdded;
 };
 
@@ -138,41 +151,51 @@ public:
     DesiredWatchpoints();
     ~DesiredWatchpoints();
     
-    void addLazily(Watchpoint*, WatchpointSet*);
-    void addLazily(Watchpoint*, InlineWatchpointSet&);
+    void addLazily(WatchpointSet*);
+    void addLazily(InlineWatchpointSet&);
+    void addLazily(InferredValue*);
+    void addLazily(JSArrayBufferView*);
     
-    void reallyAdd();
+    // It's recommended that you don't call this directly. Use Graph::watchCondition(), which does
+    // the required GC magic as well as some other bookkeeping.
+    void addLazily(const ObjectPropertyCondition&);
+    
+    bool consider(Structure*);
+    
+    void reallyAdd(CodeBlock*, CommonData&);
     
     bool areStillValid() const;
     
-    bool isStillValid(WatchpointSet* set)
+    bool isWatched(WatchpointSet* set)
     {
-        return m_sets.isStillValid(set);
+        return m_sets.isWatched(set);
     }
-    bool isStillValid(InlineWatchpointSet& set)
+    bool isWatched(InlineWatchpointSet& set)
     {
-        return m_inlineSets.isStillValid(&set);
+        return m_inlineSets.isWatched(&set);
     }
-    bool shouldAssumeMixedState(WatchpointSet* set)
+    bool isWatched(InferredValue* inferredValue)
     {
-        return m_sets.shouldAssumeMixedState(set);
+        return m_inferredValues.isWatched(inferredValue);
     }
-    bool shouldAssumeMixedState(InlineWatchpointSet& set)
+    bool isWatched(JSArrayBufferView* view)
     {
-        return m_inlineSets.shouldAssumeMixedState(&set);
+        return m_bufferViews.isWatched(view);
     }
-    bool isValidOrMixed(WatchpointSet* set)
+    bool isWatched(const ObjectPropertyCondition& key)
     {
-        return m_sets.isValidOrMixed(set);
+        return m_adaptiveStructureSets.isWatched(key);
     }
-    bool isValidOrMixed(InlineWatchpointSet& set)
-    {
-        return m_inlineSets.isValidOrMixed(&set);
-    }
+
+    void dumpInContext(PrintStream&, DumpContext*) const;
+    void dump(PrintStream&) const;
     
 private:
-    GenericDesiredWatchpoints<WatchpointSet> m_sets;
-    GenericDesiredWatchpoints<InlineWatchpointSet> m_inlineSets;
+    GenericDesiredWatchpoints<WatchpointSet*> m_sets;
+    GenericDesiredWatchpoints<InlineWatchpointSet*> m_inlineSets;
+    GenericDesiredWatchpoints<InferredValue*, InferredValueAdaptor> m_inferredValues;
+    GenericDesiredWatchpoints<JSArrayBufferView*, ArrayBufferViewWatchpointAdaptor> m_bufferViews;
+    GenericDesiredWatchpoints<ObjectPropertyCondition, AdaptiveStructureWatchpointAdaptor> m_adaptiveStructureSets;
 };
 
 } } // namespace JSC::DFG

@@ -24,6 +24,7 @@
 
 #include "JSPerformanceTiming.h"
 
+#include "JSDOMBinding.h"
 #include "PerformanceTiming.h"
 #include <wtf/GetPtr.h>
 
@@ -31,45 +32,78 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSPerformanceTimingTableValues[] =
-{
-    { "navigationStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingNavigationStart), (intptr_t)0 },
-    { "unloadEventStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingUnloadEventStart), (intptr_t)0 },
-    { "unloadEventEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingUnloadEventEnd), (intptr_t)0 },
-    { "redirectStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingRedirectStart), (intptr_t)0 },
-    { "redirectEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingRedirectEnd), (intptr_t)0 },
-    { "fetchStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingFetchStart), (intptr_t)0 },
-    { "domainLookupStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomainLookupStart), (intptr_t)0 },
-    { "domainLookupEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomainLookupEnd), (intptr_t)0 },
-    { "connectStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingConnectStart), (intptr_t)0 },
-    { "connectEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingConnectEnd), (intptr_t)0 },
-    { "secureConnectionStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingSecureConnectionStart), (intptr_t)0 },
-    { "requestStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingRequestStart), (intptr_t)0 },
-    { "responseStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingResponseStart), (intptr_t)0 },
-    { "responseEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingResponseEnd), (intptr_t)0 },
-    { "domLoading", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomLoading), (intptr_t)0 },
-    { "domInteractive", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomInteractive), (intptr_t)0 },
-    { "domContentLoadedEventStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomContentLoadedEventStart), (intptr_t)0 },
-    { "domContentLoadedEventEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomContentLoadedEventEnd), (intptr_t)0 },
-    { "domComplete", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomComplete), (intptr_t)0 },
-    { "loadEventStart", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingLoadEventStart), (intptr_t)0 },
-    { "loadEventEnd", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingLoadEventEnd), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsPerformanceTimingNavigationStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingUnloadEventStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingUnloadEventEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingRedirectStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingRedirectEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingFetchStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomainLookupStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomainLookupEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingConnectStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingConnectEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingSecureConnectionStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingRequestStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingResponseStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingResponseEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomLoading(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomInteractive(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomContentLoadedEventStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomContentLoadedEventEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingDomComplete(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingLoadEventStart(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingLoadEventEnd(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsPerformanceTimingConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSPerformanceTimingPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSPerformanceTimingPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSPerformanceTimingPrototype* ptr = new (NotNull, JSC::allocateCell<JSPerformanceTimingPrototype>(vm.heap)) JSPerformanceTimingPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSPerformanceTimingPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSPerformanceTimingTable = { 67, 63, JSPerformanceTimingTableValues, 0 };
-/* Hash table for constructor */
+class JSPerformanceTimingConstructor : public DOMConstructorObject {
+private:
+    JSPerformanceTimingConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSPerformanceTimingConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSPerformanceTimingConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSPerformanceTimingConstructor* ptr = new (NotNull, JSC::allocateCell<JSPerformanceTimingConstructor>(vm.heap)) JSPerformanceTimingConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSPerformanceTimingConstructorTable = { 1, 0, JSPerformanceTimingConstructorTableValues, 0 };
-const ClassInfo JSPerformanceTimingConstructor::s_info = { "PerformanceTimingConstructor", &Base::s_info, &JSPerformanceTimingConstructorTable, 0, CREATE_METHOD_TABLE(JSPerformanceTimingConstructor) };
+const ClassInfo JSPerformanceTimingConstructor::s_info = { "PerformanceTimingConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSPerformanceTimingConstructor) };
 
 JSPerformanceTimingConstructor::JSPerformanceTimingConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -80,47 +114,63 @@ void JSPerformanceTimingConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSPerformanceTimingPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSPerformanceTimingConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSPerformanceTimingConstructor, JSDOMWrapper>(exec, JSPerformanceTimingConstructorTable, jsCast<JSPerformanceTimingConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSPerformanceTiming::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("PerformanceTiming"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSPerformanceTimingPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "navigationStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingNavigationStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "unloadEventStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingUnloadEventStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "unloadEventEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingUnloadEventEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "redirectStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingRedirectStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "redirectEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingRedirectEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "fetchStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingFetchStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domainLookupStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomainLookupStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domainLookupEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomainLookupEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "connectStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingConnectStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "connectEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingConnectEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "secureConnectionStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingSecureConnectionStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "requestStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingRequestStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "responseStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingResponseStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "responseEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingResponseEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domLoading", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomLoading), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domInteractive", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomInteractive), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domContentLoadedEventStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomContentLoadedEventStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domContentLoadedEventEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomContentLoadedEventEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "domComplete", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingDomComplete), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "loadEventStart", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingLoadEventStart), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "loadEventEnd", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsPerformanceTimingLoadEventEnd), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSPerformanceTimingPrototypeTable = { 1, 0, JSPerformanceTimingPrototypeTableValues, 0 };
-const ClassInfo JSPerformanceTimingPrototype::s_info = { "PerformanceTimingPrototype", &Base::s_info, &JSPerformanceTimingPrototypeTable, 0, CREATE_METHOD_TABLE(JSPerformanceTimingPrototype) };
+const ClassInfo JSPerformanceTimingPrototype::s_info = { "PerformanceTimingPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSPerformanceTimingPrototype) };
 
-JSObject* JSPerformanceTimingPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSPerformanceTiming>(vm, globalObject);
-}
-
-const ClassInfo JSPerformanceTiming::s_info = { "PerformanceTiming", &Base::s_info, &JSPerformanceTimingTable, 0 , CREATE_METHOD_TABLE(JSPerformanceTiming) };
-
-JSPerformanceTiming::JSPerformanceTiming(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<PerformanceTiming> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSPerformanceTiming::finishCreation(VM& vm)
+void JSPerformanceTimingPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSPerformanceTimingPrototypeTableValues, *this);
+}
+
+const ClassInfo JSPerformanceTiming::s_info = { "PerformanceTiming", &Base::s_info, 0, CREATE_METHOD_TABLE(JSPerformanceTiming) };
+
+JSPerformanceTiming::JSPerformanceTiming(Structure* structure, JSDOMGlobalObject* globalObject, Ref<PerformanceTiming>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSPerformanceTiming::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSPerformanceTimingPrototype::create(vm, globalObject, JSPerformanceTimingPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSPerformanceTiming::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSPerformanceTiming>(vm, globalObject);
 }
 
 void JSPerformanceTiming::destroy(JSC::JSCell* cell)
@@ -131,230 +181,372 @@ void JSPerformanceTiming::destroy(JSC::JSCell* cell)
 
 JSPerformanceTiming::~JSPerformanceTiming()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSPerformanceTiming::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsPerformanceTimingNavigationStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* thisObject = jsCast<JSPerformanceTiming*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSPerformanceTiming, Base>(exec, JSPerformanceTimingTable, thisObject, propertyName, slot);
-}
-
-JSValue jsPerformanceTimingNavigationStart(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "navigationStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "navigationStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.navigationStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingUnloadEventStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingUnloadEventStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "unloadEventStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "unloadEventStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.unloadEventStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingUnloadEventEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingUnloadEventEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "unloadEventEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "unloadEventEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.unloadEventEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingRedirectStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingRedirectStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "redirectStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "redirectStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.redirectStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingRedirectEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingRedirectEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "redirectEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "redirectEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.redirectEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingFetchStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingFetchStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "fetchStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "fetchStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.fetchStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomainLookupStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomainLookupStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domainLookupStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domainLookupStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domainLookupStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomainLookupEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomainLookupEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domainLookupEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domainLookupEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domainLookupEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingConnectStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingConnectStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "connectStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "connectStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.connectStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingConnectEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingConnectEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "connectEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "connectEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.connectEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingSecureConnectionStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingSecureConnectionStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "secureConnectionStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "secureConnectionStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.secureConnectionStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingRequestStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingRequestStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "requestStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "requestStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.requestStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingResponseStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingResponseStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "responseStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "responseStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.responseStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingResponseEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingResponseEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "responseEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "responseEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.responseEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomLoading(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomLoading(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domLoading");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domLoading");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domLoading());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomInteractive(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomInteractive(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domInteractive");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domInteractive");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domInteractive());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomContentLoadedEventStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomContentLoadedEventStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domContentLoadedEventStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domContentLoadedEventStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domContentLoadedEventStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomContentLoadedEventEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomContentLoadedEventEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domContentLoadedEventEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domContentLoadedEventEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domContentLoadedEventEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingDomComplete(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingDomComplete(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "domComplete");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "domComplete");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.domComplete());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingLoadEventStart(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingLoadEventStart(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "loadEventStart");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "loadEventStart");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.loadEventStart());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingLoadEventEnd(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingLoadEventEnd(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSPerformanceTiming* castedThis = jsCast<JSPerformanceTiming*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    PerformanceTiming& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSPerformanceTiming* castedThis = jsDynamicCast<JSPerformanceTiming*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSPerformanceTimingPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "PerformanceTiming", "loadEventEnd");
+        return throwGetterTypeError(*exec, "PerformanceTiming", "loadEventEnd");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.loadEventEnd());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsPerformanceTimingConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsPerformanceTimingConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSPerformanceTiming* domObject = jsCast<JSPerformanceTiming*>(asObject(slotBase));
-    return JSPerformanceTiming::getConstructor(exec->vm(), domObject->globalObject());
+    JSPerformanceTimingPrototype* domObject = jsDynamicCast<JSPerformanceTimingPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSPerformanceTiming::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSPerformanceTiming::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -362,28 +554,18 @@ JSValue JSPerformanceTiming::getConstructor(VM& vm, JSGlobalObject* globalObject
     return getDOMConstructor<JSPerformanceTimingConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSPerformanceTiming* jsPerformanceTiming)
-{
-    if (jsPerformanceTiming->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSPerformanceTimingOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSPerformanceTiming* jsPerformanceTiming = jsCast<JSPerformanceTiming*>(handle.get().asCell());
-    if (!isObservable(jsPerformanceTiming))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSPerformanceTimingOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSPerformanceTiming* jsPerformanceTiming = jsCast<JSPerformanceTiming*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsPerformanceTiming = jsCast<JSPerformanceTiming*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsPerformanceTiming->impl(), jsPerformanceTiming);
-    jsPerformanceTiming->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -394,11 +576,11 @@ extern "C" { extern void (*const __identifier("??_7PerformanceTiming@WebCore@@6B
 extern "C" { extern void* _ZTVN7WebCore17PerformanceTimingE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, PerformanceTiming* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, PerformanceTiming* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSPerformanceTiming>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSPerformanceTiming>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -419,13 +601,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Perform
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<PerformanceTiming>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSPerformanceTiming>(exec, globalObject, impl);
+    return createNewWrapper<JSPerformanceTiming>(globalObject, impl);
 }
 
-PerformanceTiming* toPerformanceTiming(JSC::JSValue value)
+PerformanceTiming* JSPerformanceTiming::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSPerformanceTiming::info()) ? &jsCast<JSPerformanceTiming*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSPerformanceTiming*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

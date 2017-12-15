@@ -20,19 +20,19 @@
 #ifndef SVGGlyphRefElement_h
 #define SVGGlyphRefElement_h
 
-#if ENABLE(SVG) && ENABLE(SVG_FONTS)
+#if ENABLE(SVG_FONTS)
 #include "SVGElement.h"
 #include "SVGURIReference.h"
 
 namespace WebCore {
 
-class SVGGlyphRefElement FINAL : public SVGElement,
+class SVGGlyphRefElement final : public SVGElement,
                                  public SVGURIReference {
 public:
-    static PassRefPtr<SVGGlyphRefElement> create(const QualifiedName&, Document&);
+    static Ref<SVGGlyphRefElement> create(const QualifiedName&, Document&);
 
     bool hasValidGlyphElement(String& glyphName) const;
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
 
     // DOM interface
     const AtomicString& glyphRef() const;
@@ -49,10 +49,10 @@ public:
 private:
     SVGGlyphRefElement(const QualifiedName&, Document&);
 
-    virtual bool rendererIsNeeded(const RenderStyle&) { return false; }
+    virtual bool rendererIsNeeded(const RenderStyle&) override { return false; }
 
     BEGIN_DECLARE_ANIMATED_PROPERTIES(SVGGlyphRefElement)
-        DECLARE_ANIMATED_STRING(Href, href)
+        DECLARE_ANIMATED_STRING_OVERRIDE(Href, href)
     END_DECLARE_ANIMATED_PROPERTIES
 
     float m_x;
@@ -60,8 +60,6 @@ private:
     float m_dx;
     float m_dy;
 };
-
-NODE_TYPE_CASTS(SVGGlyphRefElement)
 
 }
 

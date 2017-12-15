@@ -24,6 +24,7 @@
 
 #include "JSWebGLContextAttributes.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLContextAttributes.h"
 #include <wtf/GetPtr.h>
 
@@ -31,52 +32,82 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSWebGLContextAttributesTableValues[] =
-{
-    { "alpha", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesAlpha), (intptr_t)setJSWebGLContextAttributesAlpha },
-    { "depth", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesDepth), (intptr_t)setJSWebGLContextAttributesDepth },
-    { "stencil", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesStencil), (intptr_t)setJSWebGLContextAttributesStencil },
-    { "antialias", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesAntialias), (intptr_t)setJSWebGLContextAttributesAntialias },
-    { "premultipliedAlpha", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesPremultipliedAlpha), (intptr_t)setJSWebGLContextAttributesPremultipliedAlpha },
-    { "preserveDrawingBuffer", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesPreserveDrawingBuffer), (intptr_t)setJSWebGLContextAttributesPreserveDrawingBuffer },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsWebGLContextAttributesAlpha(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebGLContextAttributesAlpha(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebGLContextAttributesDepth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebGLContextAttributesDepth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebGLContextAttributesStencil(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebGLContextAttributesStencil(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebGLContextAttributesAntialias(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebGLContextAttributesAntialias(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebGLContextAttributesPremultipliedAlpha(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebGLContextAttributesPremultipliedAlpha(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebGLContextAttributesPreserveDrawingBuffer(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebGLContextAttributesPreserveDrawingBuffer(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSWebGLContextAttributesPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLContextAttributesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLContextAttributesPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextAttributesPrototype>(vm.heap)) JSWebGLContextAttributesPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLContextAttributesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebGLContextAttributesTable = { 16, 15, JSWebGLContextAttributesTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSWebGLContextAttributesPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "alpha", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesAlpha), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebGLContextAttributesAlpha) },
+    { "depth", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesDepth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebGLContextAttributesDepth) },
+    { "stencil", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesStencil), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebGLContextAttributesStencil) },
+    { "antialias", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesAntialias), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebGLContextAttributesAntialias) },
+    { "premultipliedAlpha", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesPremultipliedAlpha), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebGLContextAttributesPremultipliedAlpha) },
+    { "preserveDrawingBuffer", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebGLContextAttributesPreserveDrawingBuffer), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebGLContextAttributesPreserveDrawingBuffer) },
 };
 
-static const HashTable JSWebGLContextAttributesPrototypeTable = { 1, 0, JSWebGLContextAttributesPrototypeTableValues, 0 };
-const ClassInfo JSWebGLContextAttributesPrototype::s_info = { "WebGLContextAttributesPrototype", &Base::s_info, &JSWebGLContextAttributesPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLContextAttributesPrototype) };
+const ClassInfo JSWebGLContextAttributesPrototype::s_info = { "WebGLContextAttributesPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLContextAttributesPrototype) };
 
-JSObject* JSWebGLContextAttributesPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLContextAttributes>(vm, globalObject);
-}
-
-const ClassInfo JSWebGLContextAttributes::s_info = { "WebGLContextAttributes", &Base::s_info, &JSWebGLContextAttributesTable, 0 , CREATE_METHOD_TABLE(JSWebGLContextAttributes) };
-
-JSWebGLContextAttributes::JSWebGLContextAttributes(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLContextAttributes> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLContextAttributes::finishCreation(VM& vm)
+void JSWebGLContextAttributesPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLContextAttributesPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLContextAttributes::s_info = { "WebGLContextAttributes", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLContextAttributes) };
+
+JSWebGLContextAttributes::JSWebGLContextAttributes(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLContextAttributes>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLContextAttributes::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLContextAttributesPrototype::create(vm, globalObject, JSWebGLContextAttributesPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLContextAttributes::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLContextAttributes>(vm, globalObject);
 }
 
 void JSWebGLContextAttributes::destroy(JSC::JSCell* cell)
@@ -87,177 +118,243 @@ void JSWebGLContextAttributes::destroy(JSC::JSCell* cell)
 
 JSWebGLContextAttributes::~JSWebGLContextAttributes()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSWebGLContextAttributes::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsWebGLContextAttributesAlpha(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextAttributes* thisObject = jsCast<JSWebGLContextAttributes*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebGLContextAttributes, Base>(exec, JSWebGLContextAttributesTable, thisObject, propertyName, slot);
-}
-
-JSValue jsWebGLContextAttributesAlpha(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextAttributes& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextAttributes", "alpha");
+        return throwGetterTypeError(*exec, "WebGLContextAttributes", "alpha");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.alpha());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLContextAttributesDepth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextAttributesDepth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextAttributes& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextAttributes", "depth");
+        return throwGetterTypeError(*exec, "WebGLContextAttributes", "depth");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.depth());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLContextAttributesStencil(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextAttributesStencil(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextAttributes& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextAttributes", "stencil");
+        return throwGetterTypeError(*exec, "WebGLContextAttributes", "stencil");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.stencil());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLContextAttributesAntialias(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextAttributesAntialias(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextAttributes& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextAttributes", "antialias");
+        return throwGetterTypeError(*exec, "WebGLContextAttributes", "antialias");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.antialias());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLContextAttributesPremultipliedAlpha(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextAttributesPremultipliedAlpha(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextAttributes& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextAttributes", "premultipliedAlpha");
+        return throwGetterTypeError(*exec, "WebGLContextAttributes", "premultipliedAlpha");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.premultipliedAlpha());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebGLContextAttributesPreserveDrawingBuffer(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebGLContextAttributesPreserveDrawingBuffer(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebGLContextAttributes& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebGLContextAttributes", "preserveDrawingBuffer");
+        return throwGetterTypeError(*exec, "WebGLContextAttributes", "preserveDrawingBuffer");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.preserveDrawingBuffer());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-void JSWebGLContextAttributes::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSWebGLContextAttributesAlpha(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSWebGLContextAttributes* thisObject = jsCast<JSWebGLContextAttributes*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSWebGLContextAttributes, Base>(exec, propertyName, value, JSWebGLContextAttributesTable, thisObject, slot);
-}
-
-void setJSWebGLContextAttributesAlpha(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(thisObject);
-    WebGLContextAttributes& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebGLContextAttributes", "alpha");
+        else
+            throwSetterTypeError(*exec, "WebGLContextAttributes", "alpha");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setAlpha(nativeValue);
 }
 
 
-void setJSWebGLContextAttributesDepth(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebGLContextAttributesDepth(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(thisObject);
-    WebGLContextAttributes& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebGLContextAttributes", "depth");
+        else
+            throwSetterTypeError(*exec, "WebGLContextAttributes", "depth");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setDepth(nativeValue);
 }
 
 
-void setJSWebGLContextAttributesStencil(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebGLContextAttributesStencil(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(thisObject);
-    WebGLContextAttributes& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebGLContextAttributes", "stencil");
+        else
+            throwSetterTypeError(*exec, "WebGLContextAttributes", "stencil");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setStencil(nativeValue);
 }
 
 
-void setJSWebGLContextAttributesAntialias(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebGLContextAttributesAntialias(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(thisObject);
-    WebGLContextAttributes& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebGLContextAttributes", "antialias");
+        else
+            throwSetterTypeError(*exec, "WebGLContextAttributes", "antialias");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setAntialias(nativeValue);
 }
 
 
-void setJSWebGLContextAttributesPremultipliedAlpha(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebGLContextAttributesPremultipliedAlpha(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(thisObject);
-    WebGLContextAttributes& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebGLContextAttributes", "premultipliedAlpha");
+        else
+            throwSetterTypeError(*exec, "WebGLContextAttributes", "premultipliedAlpha");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setPremultipliedAlpha(nativeValue);
 }
 
 
-void setJSWebGLContextAttributesPreserveDrawingBuffer(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebGLContextAttributesPreserveDrawingBuffer(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebGLContextAttributes* castedThis = jsCast<JSWebGLContextAttributes*>(thisObject);
-    WebGLContextAttributes& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebGLContextAttributes* castedThis = jsDynamicCast<JSWebGLContextAttributes*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebGLContextAttributesPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebGLContextAttributes", "preserveDrawingBuffer");
+        else
+            throwSetterTypeError(*exec, "WebGLContextAttributes", "preserveDrawingBuffer");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setPreserveDrawingBuffer(nativeValue);
 }
 
 
-static inline bool isObservable(JSWebGLContextAttributes* jsWebGLContextAttributes)
-{
-    if (jsWebGLContextAttributes->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSWebGLContextAttributesOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLContextAttributes* jsWebGLContextAttributes = jsCast<JSWebGLContextAttributes*>(handle.get().asCell());
-    if (!isObservable(jsWebGLContextAttributes))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebGLContextAttributesOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLContextAttributes* jsWebGLContextAttributes = jsCast<JSWebGLContextAttributes*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLContextAttributes = jsCast<JSWebGLContextAttributes*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLContextAttributes->impl(), jsWebGLContextAttributes);
-    jsWebGLContextAttributes->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -268,11 +365,11 @@ extern "C" { extern void (*const __identifier("??_7WebGLContextAttributes@WebCor
 extern "C" { extern void* _ZTVN7WebCore22WebGLContextAttributesE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLContextAttributes* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLContextAttributes* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLContextAttributes>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLContextAttributes>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -293,13 +390,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLCo
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebGLContextAttributes>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLContextAttributes>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLContextAttributes>(globalObject, impl);
 }
 
-WebGLContextAttributes* toWebGLContextAttributes(JSC::JSValue value)
+WebGLContextAttributes* JSWebGLContextAttributes::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLContextAttributes::info()) ? &jsCast<JSWebGLContextAttributes*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLContextAttributes*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

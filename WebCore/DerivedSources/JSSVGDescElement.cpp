@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGDescElement.h"
 
+#include "JSDOMBinding.h"
 #include "SVGDescElement.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +29,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGDescElementTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGDescElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGDescElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGDescElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGDescElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGDescElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGDescElementPrototype>(vm.heap)) JSSVGDescElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGDescElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGDescElementTable = { 2, 1, JSSVGDescElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGDescElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGDescElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGDescElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGDescElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGDescElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGDescElementConstructor>(vm.heap)) JSSVGDescElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGDescElementConstructorTable = { 1, 0, JSSVGDescElementConstructorTableValues, 0 };
-const ClassInfo JSSVGDescElementConstructor::s_info = { "SVGDescElementConstructor", &Base::s_info, &JSSVGDescElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGDescElementConstructor) };
+const ClassInfo JSSVGDescElementConstructor::s_info = { "SVGDescElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGDescElementConstructor) };
 
 JSSVGDescElementConstructor::JSSVGDescElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,59 +90,49 @@ void JSSVGDescElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGDescElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGDescElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGDescElementConstructor, JSDOMWrapper>(exec, JSSVGDescElementConstructorTable, jsCast<JSSVGDescElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGDescElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGDescElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGDescElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGDescElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGDescElementPrototypeTable = { 1, 0, JSSVGDescElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGDescElementPrototype::s_info = { "SVGDescElementPrototype", &Base::s_info, &JSSVGDescElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGDescElementPrototype) };
+const ClassInfo JSSVGDescElementPrototype::s_info = { "SVGDescElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGDescElementPrototype) };
 
-JSObject* JSSVGDescElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGDescElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGDescElement::s_info = { "SVGDescElement", &Base::s_info, &JSSVGDescElementTable, 0 , CREATE_METHOD_TABLE(JSSVGDescElement) };
-
-JSSVGDescElement::JSSVGDescElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGDescElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGDescElement::finishCreation(VM& vm)
+void JSSVGDescElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGDescElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGDescElement::s_info = { "SVGDescElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGDescElement) };
+
+JSSVGDescElement::JSSVGDescElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGDescElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGDescElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGDescElementPrototype::create(vm, globalObject, JSSVGDescElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGDescElementPrototype::create(vm, globalObject, JSSVGDescElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGDescElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGDescElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGDescElement* thisObject = jsCast<JSSVGDescElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGDescElement, Base>(exec, JSSVGDescElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGDescElement>(vm, globalObject);
 }
 
-JSValue jsSVGDescElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGDescElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGDescElement* domObject = jsCast<JSSVGDescElement*>(asObject(slotBase));
-    return JSSVGDescElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGDescElementPrototype* domObject = jsDynamicCast<JSSVGDescElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGDescElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGDescElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -121,5 +142,3 @@ JSValue JSSVGDescElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 
 }
-
-#endif // ENABLE(SVG)

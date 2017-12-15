@@ -25,14 +25,12 @@
 #include "Attribute.h"
 #include "Document.h"
 #include "ElementIterator.h"
+#include "GenericCachedHTMLCollection.h"
 #include "HTMLAreaElement.h"
-#include "HTMLCollection.h"
 #include "HTMLImageElement.h"
-#include "HTMLNames.h"
 #include "HitTestResult.h"
 #include "IntSize.h"
-
-using namespace std;
+#include "NodeRareData.h"
 
 namespace WebCore {
 
@@ -44,14 +42,14 @@ HTMLMapElement::HTMLMapElement(const QualifiedName& tagName, Document& document)
     ASSERT(hasTagName(mapTag));
 }
 
-PassRefPtr<HTMLMapElement> HTMLMapElement::create(Document& document)
+Ref<HTMLMapElement> HTMLMapElement::create(Document& document)
 {
-    return adoptRef(new HTMLMapElement(mapTag, document));
+    return adoptRef(*new HTMLMapElement(mapTag, document));
 }
 
-PassRefPtr<HTMLMapElement> HTMLMapElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLMapElement> HTMLMapElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLMapElement(tagName, document));
+    return adoptRef(*new HTMLMapElement(tagName, document));
 }
 
 HTMLMapElement::~HTMLMapElement()
@@ -62,11 +60,11 @@ bool HTMLMapElement::mapMouseEvent(LayoutPoint location, const LayoutSize& size,
 {
     HTMLAreaElement* defaultArea = 0;
 
-    for (auto area = descendantsOfType<HTMLAreaElement>(this).begin(), end = descendantsOfType<HTMLAreaElement>(this).end(); area != end; ++area) {
-        if (area->isDefault()) {
+    for (auto& area : descendantsOfType<HTMLAreaElement>(*this)) {
+        if (area.isDefault()) {
             if (!defaultArea)
-                defaultArea = &*area;
-        } else if (area->mapMouseEvent(location, size, result))
+                defaultArea = &area;
+        } else if (area.mapMouseEvent(location, size, result))
             return true;
     }
     
@@ -91,8 +89,8 @@ void HTMLMapElement::parseAttribute(const QualifiedName& name, const AtomicStrin
     // FIXME: This logic seems wrong for XML documents.
     // Either the id or name will be used depending on the order the attributes are parsed.
 
-    if (isIdAttributeName(name) || name == nameAttr) {
-        if (isIdAttributeName(name)) {
+    if (name == HTMLNames::idAttr || name == HTMLNames::nameAttr) {
+        if (name == HTMLNames::idAttr) {
             // Call base class so that hasID bit gets set.
             HTMLElement::parseAttribute(name, value);
             if (document().isHTMLDocument())
@@ -113,16 +111,17 @@ void HTMLMapElement::parseAttribute(const QualifiedName& name, const AtomicStrin
     HTMLElement::parseAttribute(name, value);
 }
 
-PassRefPtr<HTMLCollection> HTMLMapElement::areas()
+Ref<HTMLCollection> HTMLMapElement::areas()
 {
-    return ensureCachedHTMLCollection(MapAreas);
+    return ensureRareData().ensureNodeLists().addCachedCollection<GenericCachedHTMLCollection<CollectionTypeTraits<MapAreas>::traversalType>>(*this, MapAreas);
 }
 
 Node::InsertionNotificationRequest HTMLMapElement::insertedInto(ContainerNode& insertionPoint)
 {
+    Node::InsertionNotificationRequest request = HTMLElement::insertedInto(insertionPoint);
     if (insertionPoint.inDocument())
         treeScope().addImageMap(*this);
-    return HTMLElement::insertedInto(insertionPoint);
+    return request;
 }
 
 void HTMLMapElement::removedFrom(ContainerNode& insertionPoint)

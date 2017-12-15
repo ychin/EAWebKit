@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,7 +28,7 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "MediaStreamSourceCapabilities.h"
+#include "RealtimeMediaSourceCapabilities.h"
 #include "ScriptWrappable.h"
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
@@ -37,26 +37,23 @@ namespace WebCore {
 
 class MediaSourceStates : public RefCounted<MediaSourceStates>, public ScriptWrappable {
 public:
-    static RefPtr<MediaSourceStates> create(const MediaStreamSourceStates&);
+    static Ref<MediaSourceStates> create(const RealtimeMediaSourceStates&);
 
-    static const AtomicString& sourceType(MediaStreamSourceStates::SourceType);
-    static const AtomicString& facingMode(MediaStreamSourceStates::VideoFacingMode);
-    
     const AtomicString& sourceType() const;
-    const AtomicString& sourceId() const { return m_SourceStates.sourceId; }
-    unsigned long width() const { return m_SourceStates.width; }
-    unsigned long height() const { return m_SourceStates.height; }
-    float frameRate() const { return m_SourceStates.frameRate; }
-    float aspectRatio() const { return m_SourceStates.aspectRatio; }
+    const AtomicString& sourceId() const { return m_sourceStates.sourceId(); }
+    unsigned long width() const { return m_sourceStates.width(); }
+    unsigned long height() const { return m_sourceStates.height(); }
+    float frameRate() const { return m_sourceStates.frameRate(); }
+    float aspectRatio() const { return m_sourceStates.aspectRatio(); }
     const AtomicString& facingMode() const;
-    unsigned long volume() const { return m_SourceStates.volume; }
+    unsigned long volume() const { return m_sourceStates.volume(); }
     
-    bool hasVideoSource() const { return m_SourceStates.sourceType == MediaStreamSourceStates::Camera; }
+    bool hasVideoSource() const { return m_sourceStates.sourceType() == RealtimeMediaSourceStates::Camera; }
 
 private:
-    explicit MediaSourceStates(const MediaStreamSourceStates&);
+    explicit MediaSourceStates(const RealtimeMediaSourceStates&);
 
-    MediaStreamSourceStates m_SourceStates;
+    RealtimeMediaSourceStates m_sourceStates;
 };
 
 } // namespace WebCore

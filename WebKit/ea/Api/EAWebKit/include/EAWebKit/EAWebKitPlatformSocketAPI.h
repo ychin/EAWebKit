@@ -38,7 +38,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EABase/eabase.h>
 #include <stddef.h> //for size_t
 
-#if   defined(EA_PLATFORM_MICROSOFT)
+#if defined(EA_PLATFORM_SONY)
+	#include <sys/socket.h> //for socklen_t
+	typedef size_t platform_ssize_t;
+#elif defined(EA_PLATFORM_MICROSOFT)
 	//http://msdn.microsoft.com/en-us/library/ms741394(VS.85).aspx 
 	typedef int socklen_t;
 	typedef int platform_ssize_t;

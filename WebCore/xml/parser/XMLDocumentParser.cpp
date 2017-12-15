@@ -44,23 +44,16 @@
 #include "ResourceError.h"
 #include "ResourceRequest.h"
 #include "ResourceResponse.h"
+#include "SVGNames.h"
+#include "SVGStyleElement.h"
 #include "ScriptElement.h"
 #include "ScriptSourceCode.h"
-#include "ScriptValue.h"
 #include "TextResourceDecoder.h"
 #include "TreeDepthLimit.h"
-#include "XMLErrors.h"
 #include <wtf/Ref.h>
 #include <wtf/StringExtras.h>
 #include <wtf/Threading.h>
 #include <wtf/Vector.h>
-
-#if ENABLE(SVG)
-#include "SVGNames.h"
-#include "SVGStyleElement.h"
-#endif
-
-using namespace std;
 
 namespace WebCore {
 
@@ -95,8 +88,8 @@ void XMLDocumentParser::clearCurrentNodeStack()
 {
     if (m_currentNode && m_currentNode != document())
         m_currentNode->deref();
-    m_currentNode = 0;
-    m_leafTextNode = 0;
+    m_currentNode = nullptr;
+    m_leafTextNode = nullptr;
 
     if (m_currentNodeStack.size()) { // Aborted parsing.
         for (size_t i = m_currentNodeStack.size() - 1; i != 0; --i)
@@ -128,14 +121,14 @@ void XMLDocumentParser::append(PassRefPtr<StringImpl> inputSource)
 
     doWrite(source.toString());
 
-    // After parsing, go ahead and dispatch image beforeload events.
+    // After parsing, dispatch image beforeload events.
     ImageLoader::dispatchPendingBeforeLoadEvents();
 }
 
 void XMLDocumentParser::handleError(XMLErrors::ErrorType type, const char* m, TextPosition position)
 {
     if (!m_xmlErrors)
-        m_xmlErrors = adoptPtr(new XMLErrors(document()));
+        m_xmlErrors = std::make_unique<XMLErrors>(document());
     m_xmlErrors->handleError(type, m, position);
     if (type != XMLErrors::warning)
         m_sawError = true;
@@ -169,10 +162,7 @@ void XMLDocumentParser::exitText()
     Vector<xmlChar> empty;
     m_bufferedText.swap(empty);
 
-    if (m_view && m_leafTextNode->parentNode() && m_leafTextNode->parentNode()->attached() && !m_leafTextNode->attached())
-        Style::attachTextRenderer(*m_leafTextNode);
-
-    m_leafTextNode = 0;
+    m_leafTextNode = nullptr;
 }
 
 void XMLDocumentParser::detach()
@@ -240,10 +230,10 @@ void XMLDocumentParser::notifyFinished(CachedResource* unusedResource)
     bool wasCanceled = m_pendingScript->wasCanceled();
 
     m_pendingScript->removeClient(this);
-    m_pendingScript = 0;
+    m_pendingScript = nullptr;
 
     RefPtr<Element> e = m_scriptElement;
-    m_scriptElement = 0;
+    m_scriptElement = nullptr;
 
     ScriptElement* scriptElement = toScriptElementIfPossible(e.get());
     ASSERT(scriptElement);
@@ -258,7 +248,7 @@ void XMLDocumentParser::notifyFinished(CachedResource* unusedResource)
         scriptElement->dispatchLoadEvent();
     }
 
-    m_scriptElement = 0;
+    m_scriptElement = nullptr;
 
     if (!isDetached() && !m_requestingScript)
         resumeParsing();
@@ -271,6 +261,8 @@ bool XMLDocumentParser::isWaitingForScripts() const
 
 void XMLDocumentParser::pauseParsing()
 {
+    ASSERT(!m_parserPaused);
+
     if (m_parsingFragment)
         return;
 
@@ -285,17 +277,16 @@ bool XMLDocumentParser::parseDocumentFragment(const String& chunk, DocumentFragm
     // FIXME: We need to implement the HTML5 XML Fragment parsing algorithm:
     // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-xhtml-syntax.html#xml-fragment-parsing-algorithm
     // For now we have a hack for script/style innerHTML support:
-    if (contextElement && (contextElement->hasLocalName(HTMLNames::scriptTag) || contextElement->hasLocalName(HTMLNames::styleTag))) {
+    if (contextElement && (contextElement->hasLocalName(HTMLNames::scriptTag.localName()) || contextElement->hasLocalName(HTMLNames::styleTag.localName()))) {
         fragment.parserAppendChild(fragment.document().createTextNode(chunk));
         return true;
     }
 
     RefPtr<XMLDocumentParser> parser = XMLDocumentParser::create(fragment, contextElement, parserContentPolicy);
     bool wellFormed = parser->appendFragmentSource(chunk);
-    // Do not call finish().  Current finish() and doEnd() implementations touch the main Document/loader
-    // and can cause crashes in the fragment case.
+    // Do not call finish(). The finish() and doEnd() implementations touch the main document and loader and can cause crashes in the fragment case.
     parser->detach(); // Allows ~DocumentParser to assert it was detached before destruction.
-    return wellFormed; // appendFragmentSource()'s wellFormed is more permissive than wellFormed().
+    return wellFormed; // appendFragmentSource()'s wellFormed is more permissive than Document::wellFormed().
 }
 
 } // namespace WebCore

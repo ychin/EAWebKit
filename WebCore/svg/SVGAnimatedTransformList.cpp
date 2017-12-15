@@ -22,8 +22,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGAnimatedTransformList.h"
 
 #include "SVGAnimateTransformElement.h"
@@ -35,21 +33,21 @@ namespace WebCore {
 
 SVGAnimatedTransformListAnimator::SVGAnimatedTransformListAnimator(SVGAnimationElement* animationElement, SVGElement* contextElement)
     : SVGAnimatedTypeAnimator(AnimatedTransformList, animationElement, contextElement)
-    , m_transformTypeString(SVGTransform::transformTypePrefixForParsing(toSVGAnimateTransformElement(animationElement)->transformType()))
+    , m_transformTypeString(SVGTransform::transformTypePrefixForParsing(downcast<SVGAnimateTransformElement>(animationElement)->transformType()))
 {
     // Only <animateTransform> uses this animator, as <animate> doesn't allow to animate transform lists directly.
     ASSERT(animationElement->hasTagName(SVGNames::animateTransformTag));
 }
 
-PassOwnPtr<SVGAnimatedType> SVGAnimatedTransformListAnimator::constructFromString(const String& string)
+std::unique_ptr<SVGAnimatedType> SVGAnimatedTransformListAnimator::constructFromString(const String& string)
 {
-    OwnPtr<SVGAnimatedType> animatedType = SVGAnimatedType::createTransformList(new SVGTransformList);
+    auto animatedType = SVGAnimatedType::createTransformList(std::make_unique<SVGTransformList>());
     animatedType->transformList().parse(m_transformTypeString + string + ')');
     ASSERT(animatedType->transformList().size() <= 1);
-    return animatedType.release();
+    return animatedType;
 }
 
-PassOwnPtr<SVGAnimatedType> SVGAnimatedTransformListAnimator::startAnimValAnimation(const SVGElementAnimatedPropertyList& animatedTypes)
+std::unique_ptr<SVGAnimatedType> SVGAnimatedTransformListAnimator::startAnimValAnimation(const SVGElementAnimatedPropertyList& animatedTypes)
 {
     return SVGAnimatedType::createTransformList(constructFromBaseValue<SVGAnimatedTransformList>(animatedTypes));
 }
@@ -130,8 +128,8 @@ float SVGAnimatedTransformListAnimator::calculateDistance(const String& fromStri
 
     // FIXME: This is not correct in all cases. The spec demands that each component (translate x and y for example)
     // is paced separately. To implement this we need to treat each component as individual animation everywhere.
-    OwnPtr<SVGAnimatedType> from = constructFromString(fromString);
-    OwnPtr<SVGAnimatedType> to = constructFromString(toString);
+    std::unique_ptr<SVGAnimatedType> from = constructFromString(fromString);
+    std::unique_ptr<SVGAnimatedType> to = constructFromString(toString);
 
     SVGTransformList& fromTransformList = from->transformList();
     SVGTransformList& toTransformList = to->transformList();
@@ -150,5 +148,3 @@ float SVGAnimatedTransformListAnimator::calculateDistance(const String& fromStri
 }
 
 }
-
-#endif // ENABLE(SVG)

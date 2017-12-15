@@ -27,7 +27,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "config.h"
-#if ENABLE(INSPECTOR_SERVER)
 
 #include "WebInspectorServer.h" 
 #include "WebPage.h"
@@ -104,5 +103,3 @@ void WebInspectorServer::buildPageList(Vector<char>& data, String& contentType)
 
 
 } //namespace WebKit
-
-#endif //ENABLE(INSPECTOR_SERVER)

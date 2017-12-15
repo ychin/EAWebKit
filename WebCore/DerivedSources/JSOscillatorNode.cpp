@@ -25,7 +25,6 @@
 #include "JSOscillatorNode.h"
 
 #include "AudioParam.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSAudioParam.h"
 #include "JSDOMBinding.h"
@@ -41,37 +40,104 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionStart(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionStop(JSC::ExecState*);
+#if ENABLE(LEGACY_WEB_AUDIO)
+JSC::EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionNoteOn(JSC::ExecState*);
+#endif
+#if ENABLE(LEGACY_WEB_AUDIO)
+JSC::EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionNoteOff(JSC::ExecState*);
+#endif
+JSC::EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionSetPeriodicWave(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsOscillatorNodeType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSOscillatorNodeType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsOscillatorNodePlaybackState(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsOscillatorNodeFrequency(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsOscillatorNodeDetune(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsOscillatorNodeOnended(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSOscillatorNodeOnended(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsOscillatorNodeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSOscillatorNodePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSOscillatorNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSOscillatorNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSOscillatorNodePrototype>(vm.heap)) JSOscillatorNodePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSOscillatorNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSOscillatorNodeConstructor : public DOMConstructorObject {
+private:
+    JSOscillatorNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSOscillatorNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSOscillatorNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSOscillatorNodeConstructor>(vm.heap)) JSOscillatorNodeConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSOscillatorNodeTableIndex[2] = {
+    { -1, -1 },
+    { 0, -1 },
+};
+
 
 static const HashTableValue JSOscillatorNodeTableValues[] =
 {
-    { "type", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeType), (intptr_t)setJSOscillatorNodeType },
-    { "playbackState", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodePlaybackState), (intptr_t)0 },
-    { "frequency", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeFrequency), (intptr_t)0 },
-    { "detune", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeDetune), (intptr_t)0 },
-    { "onended", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeOnended), (intptr_t)setJSOscillatorNodeOnended },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "type", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSOscillatorNodeType) },
 };
 
-static const HashTable JSOscillatorNodeTable = { 16, 15, JSOscillatorNodeTableValues, 0 };
+static const HashTable JSOscillatorNodeTable = { 1, 1, true, JSOscillatorNodeTableValues, 0, JSOscillatorNodeTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSOscillatorNodeConstructorTableValues[] =
 {
-    { "SINE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSINE), (intptr_t)0 },
-    { "SQUARE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSQUARE), (intptr_t)0 },
-    { "SAWTOOTH", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSAWTOOTH), (intptr_t)0 },
-    { "TRIANGLE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeTRIANGLE), (intptr_t)0 },
-    { "CUSTOM", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeCUSTOM), (intptr_t)0 },
-    { "UNSCHEDULED_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeUNSCHEDULED_STATE), (intptr_t)0 },
-    { "SCHEDULED_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSCHEDULED_STATE), (intptr_t)0 },
-    { "PLAYING_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodePLAYING_STATE), (intptr_t)0 },
-    { "FINISHED_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeFINISHED_STATE), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "SINE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SQUARE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SAWTOOTH", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "TRIANGLE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "CUSTOM", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "UNSCHEDULED_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SCHEDULED_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "PLAYING_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "FINISHED_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
 };
 
-static const HashTable JSOscillatorNodeConstructorTable = { 33, 31, JSOscillatorNodeConstructorTableValues, 0 };
 
 COMPILE_ASSERT(0 == OscillatorNode::SINE, OscillatorNodeEnumSINEIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(1 == OscillatorNode::SQUARE, OscillatorNodeEnumSQUAREIsWrongUseDoNotCheckConstants);
@@ -83,7 +149,7 @@ COMPILE_ASSERT(1 == OscillatorNode::SCHEDULED_STATE, OscillatorNodeEnumSCHEDULED
 COMPILE_ASSERT(2 == OscillatorNode::PLAYING_STATE, OscillatorNodeEnumPLAYING_STATEIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(3 == OscillatorNode::FINISHED_STATE, OscillatorNodeEnumFINISHED_STATEIsWrongUseDoNotCheckConstants);
 
-const ClassInfo JSOscillatorNodeConstructor::s_info = { "OscillatorNodeConstructor", &Base::s_info, &JSOscillatorNodeConstructorTable, 0, CREATE_METHOD_TABLE(JSOscillatorNodeConstructor) };
+const ClassInfo JSOscillatorNodeConstructor::s_info = { "OscillatorNodeConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOscillatorNodeConstructor) };
 
 JSOscillatorNodeConstructor::JSOscillatorNodeConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -94,161 +160,189 @@ void JSOscillatorNodeConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glob
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSOscillatorNodePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSOscillatorNodeConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSOscillatorNodeConstructor, JSDOMWrapper>(exec, JSOscillatorNodeConstructorTable, jsCast<JSOscillatorNodeConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSOscillatorNode::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("OscillatorNode"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSOscillatorNodeConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSOscillatorNodePrototypeTableValues[] =
 {
-    { "SINE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSINE), (intptr_t)0 },
-    { "SQUARE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSQUARE), (intptr_t)0 },
-    { "SAWTOOTH", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSAWTOOTH), (intptr_t)0 },
-    { "TRIANGLE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeTRIANGLE), (intptr_t)0 },
-    { "CUSTOM", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeCUSTOM), (intptr_t)0 },
-    { "UNSCHEDULED_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeUNSCHEDULED_STATE), (intptr_t)0 },
-    { "SCHEDULED_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeSCHEDULED_STATE), (intptr_t)0 },
-    { "PLAYING_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodePLAYING_STATE), (intptr_t)0 },
-    { "FINISHED_STATE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeFINISHED_STATE), (intptr_t)0 },
-    { "start", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionStart), (intptr_t)1 },
-    { "stop", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionStop), (intptr_t)1 },
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "playbackState", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodePlaybackState), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "frequency", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeFrequency), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "detune", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeDetune), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onended", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsOscillatorNodeOnended), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSOscillatorNodeOnended) },
+    { "SINE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SQUARE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "SAWTOOTH", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "TRIANGLE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "CUSTOM", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "UNSCHEDULED_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "SCHEDULED_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "PLAYING_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "FINISHED_STATE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "start", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionStart), (intptr_t) (0) },
+    { "stop", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionStop), (intptr_t) (0) },
 #if ENABLE(LEGACY_WEB_AUDIO)
-    { "noteOn", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionNoteOn), (intptr_t)1 },
+    { "noteOn", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionNoteOn), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
 #endif
 #if ENABLE(LEGACY_WEB_AUDIO)
-    { "noteOff", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionNoteOff), (intptr_t)1 },
+    { "noteOff", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionNoteOff), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
 #endif
-    { "setPeriodicWave", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionSetPeriodicWave), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "setPeriodicWave", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsOscillatorNodePrototypeFunctionSetPeriodicWave), (intptr_t) (1) },
 };
 
-static const HashTable JSOscillatorNodePrototypeTable = { 35, 31, JSOscillatorNodePrototypeTableValues, 0 };
-const ClassInfo JSOscillatorNodePrototype::s_info = { "OscillatorNodePrototype", &Base::s_info, &JSOscillatorNodePrototypeTable, 0, CREATE_METHOD_TABLE(JSOscillatorNodePrototype) };
+const ClassInfo JSOscillatorNodePrototype::s_info = { "OscillatorNodePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSOscillatorNodePrototype) };
 
-JSObject* JSOscillatorNodePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSOscillatorNode>(vm, globalObject);
-}
-
-bool JSOscillatorNodePrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSOscillatorNodePrototype* thisObject = jsCast<JSOscillatorNodePrototype*>(object);
-    return getStaticPropertySlot<JSOscillatorNodePrototype, JSObject>(exec, JSOscillatorNodePrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSOscillatorNode::s_info = { "OscillatorNode", &Base::s_info, &JSOscillatorNodeTable, 0 , CREATE_METHOD_TABLE(JSOscillatorNode) };
-
-JSOscillatorNode::JSOscillatorNode(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OscillatorNode> impl)
-    : JSAudioNode(structure, globalObject, impl)
-{
-}
-
-void JSOscillatorNode::finishCreation(VM& vm)
+void JSOscillatorNodePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSOscillatorNodePrototypeTableValues, *this);
+}
+
+const ClassInfo JSOscillatorNode::s_info = { "OscillatorNode", &Base::s_info, &JSOscillatorNodeTable, CREATE_METHOD_TABLE(JSOscillatorNode) };
+
+JSOscillatorNode::JSOscillatorNode(Structure* structure, JSDOMGlobalObject* globalObject, Ref<OscillatorNode>&& impl)
+    : JSAudioNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSOscillatorNode::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSOscillatorNodePrototype::create(vm, globalObject, JSOscillatorNodePrototype::createStructure(vm, globalObject, JSAudioNodePrototype::self(vm, globalObject)));
+    return JSOscillatorNodePrototype::create(vm, globalObject, JSOscillatorNodePrototype::createStructure(vm, globalObject, JSAudioNode::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSOscillatorNode::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSOscillatorNode>(vm, globalObject);
 }
 
 bool JSOscillatorNode::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSOscillatorNode* thisObject = jsCast<JSOscillatorNode*>(object);
+    auto* thisObject = jsCast<JSOscillatorNode*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSOscillatorNode, Base>(exec, JSOscillatorNodeTable, thisObject, propertyName, slot);
 }
 
-JSValue jsOscillatorNodeType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsOscillatorNodeType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    OscillatorNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSOscillatorNode*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsOscillatorNodePlaybackState(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsOscillatorNodePlaybackState(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    OscillatorNode& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.playbackState());
-    return result;
-}
-
-
-JSValue jsOscillatorNodeFrequency(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    OscillatorNode& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.frequency()));
-    return result;
-}
-
-
-JSValue jsOscillatorNodeDetune(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    OscillatorNode& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.detune()));
-    return result;
-}
-
-
-JSValue jsOscillatorNodeOnended(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    OscillatorNode& impl = castedThis->impl();
-    if (EventListener* listener = impl.onended()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSOscillatorNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "OscillatorNode", "playbackState");
+        return throwGetterTypeError(*exec, "OscillatorNode", "playbackState");
     }
-    return jsNull();
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.playbackState());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsOscillatorNodeConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSOscillatorNode* domObject = jsCast<JSOscillatorNode*>(asObject(slotBase));
-    return JSOscillatorNode::getConstructor(exec->vm(), domObject->globalObject());
-}
-
-void JSOscillatorNode::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSOscillatorNode* thisObject = jsCast<JSOscillatorNode*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSOscillatorNode, Base>(exec, propertyName, value, JSOscillatorNodeTable, thisObject, slot);
-}
-
-void setJSOscillatorNodeType(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsOscillatorNodeFrequency(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
-    jsCast<JSOscillatorNode*>(thisObject)->setType(exec, value);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSOscillatorNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "OscillatorNode", "frequency");
+        return throwGetterTypeError(*exec, "OscillatorNode", "frequency");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.frequency()));
+    return JSValue::encode(result);
 }
 
 
-void setJSOscillatorNodeOnended(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsOscillatorNodeDetune(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSOscillatorNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "OscillatorNode", "detune");
+        return throwGetterTypeError(*exec, "OscillatorNode", "detune");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.detune()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsOscillatorNodeOnended(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
     UNUSED_PARAM(exec);
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(thisObject);
-    OscillatorNode& impl = castedThis->impl();
-    impl.setOnended(createJSAttributeEventListener(exec, value, thisObject));
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSOscillatorNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "OscillatorNode", "onended");
+        return throwGetterTypeError(*exec, "OscillatorNode", "onended");
+    }
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().endedEvent));
+}
+
+
+EncodedJSValue jsOscillatorNodeConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
+{
+    JSOscillatorNodePrototype* domObject = jsDynamicCast<JSOscillatorNodePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSOscillatorNode::getConstructor(exec->vm(), domObject->globalObject()));
+}
+
+void setJSOscillatorNodeType(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSOscillatorNode*>(baseObject);
+    UNUSED_PARAM(thisValue);
+    UNUSED_PARAM(exec);
+    castedThis->setType(exec, value);
+}
+
+
+void setJSOscillatorNodeOnended(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSOscillatorNodePrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "OscillatorNode", "onended");
+        else
+            throwSetterTypeError(*exec, "OscillatorNode", "onended");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().endedEvent, value);
 }
 
 
@@ -259,17 +353,23 @@ JSValue JSOscillatorNode::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionStart(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOscillatorNode::info()))
-        return throwVMTypeError(exec);
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OscillatorNode", "start");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOscillatorNode::info());
-    OscillatorNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
-        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    double when(exec->argument(0).toNumber(exec));
-    if (exec->hadException())
+
+    size_t argsCount = exec->argumentCount();
+    if (argsCount <= 0) {
+        impl.start(ec);
+        setDOMException(exec, ec);
+        return JSValue::encode(jsUndefined());
+    }
+
+    double when = exec->argument(0).toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.start(when, ec);
     setDOMException(exec, ec);
@@ -278,17 +378,23 @@ EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionStart(ExecState* e
 
 EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionStop(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOscillatorNode::info()))
-        return throwVMTypeError(exec);
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OscillatorNode", "stop");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOscillatorNode::info());
-    OscillatorNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
-        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    double when(exec->argument(0).toNumber(exec));
-    if (exec->hadException())
+
+    size_t argsCount = exec->argumentCount();
+    if (argsCount <= 0) {
+        impl.stop(ec);
+        setDOMException(exec, ec);
+        return JSValue::encode(jsUndefined());
+    }
+
+    double when = exec->argument(0).toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.stop(when, ec);
     setDOMException(exec, ec);
@@ -298,17 +404,17 @@ EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionStop(ExecState* ex
 #if ENABLE(LEGACY_WEB_AUDIO)
 EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionNoteOn(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOscillatorNode::info()))
-        return throwVMTypeError(exec);
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OscillatorNode", "noteOn");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOscillatorNode::info());
-    OscillatorNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    double when(exec->argument(0).toNumber(exec));
-    if (exec->hadException())
+    double when = exec->argument(0).toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.noteOn(when, ec);
     setDOMException(exec, ec);
@@ -320,17 +426,17 @@ EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionNoteOn(ExecState* 
 #if ENABLE(LEGACY_WEB_AUDIO)
 EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionNoteOff(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOscillatorNode::info()))
-        return throwVMTypeError(exec);
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OscillatorNode", "noteOff");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOscillatorNode::info());
-    OscillatorNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    double when(exec->argument(0).toNumber(exec));
-    if (exec->hadException())
+    double when = exec->argument(0).toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.noteOff(when, ec);
     setDOMException(exec, ec);
@@ -341,75 +447,19 @@ EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionNoteOff(ExecState*
 
 EncodedJSValue JSC_HOST_CALL jsOscillatorNodePrototypeFunctionSetPeriodicWave(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSOscillatorNode::info()))
-        return throwVMTypeError(exec);
-    JSOscillatorNode* castedThis = jsCast<JSOscillatorNode*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSOscillatorNode* castedThis = jsDynamicCast<JSOscillatorNode*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "OscillatorNode", "setPeriodicWave");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSOscillatorNode::info());
-    OscillatorNode& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    PeriodicWave* wave(toPeriodicWave(exec->argument(0)));
-    if (exec->hadException())
+    PeriodicWave* wave = JSPeriodicWave::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setPeriodicWave(wave);
     return JSValue::encode(jsUndefined());
-}
-
-// Constant getters
-
-JSValue jsOscillatorNodeSINE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsOscillatorNodeSQUARE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsOscillatorNodeSAWTOOTH(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsOscillatorNodeTRIANGLE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
-JSValue jsOscillatorNodeCUSTOM(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(4));
-}
-
-JSValue jsOscillatorNodeUNSCHEDULED_STATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
-}
-
-JSValue jsOscillatorNodeSCHEDULED_STATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsOscillatorNodePLAYING_STATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsOscillatorNodeFINISHED_STATE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -420,11 +470,11 @@ extern "C" { extern void (*const __identifier("??_7OscillatorNode@WebCore@@6B@")
 extern "C" { extern void* _ZTVN7WebCore14OscillatorNodeE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OscillatorNode* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, OscillatorNode* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSOscillatorNode>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSOscillatorNode>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -445,8 +495,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Oscilla
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<OscillatorNode>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSOscillatorNode>(exec, globalObject, impl);
+    return createNewWrapper<JSOscillatorNode>(globalObject, impl);
 }
 
 

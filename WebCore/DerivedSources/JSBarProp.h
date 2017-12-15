@@ -22,27 +22,27 @@
 #define JSBarProp_h
 
 #include "BarProp.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSBarProp : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSBarProp* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<BarProp> impl)
+    static JSBarProp* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<BarProp>&& impl)
     {
-        JSBarProp* ptr = new (NotNull, JSC::allocateCell<JSBarProp>(globalObject->vm().heap)) JSBarProp(structure, globalObject, impl);
+        JSBarProp* ptr = new (NotNull, JSC::allocateCell<JSBarProp>(globalObject->vm().heap)) JSBarProp(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static BarProp* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSBarProp();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     BarProp& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     BarProp* m_impl;
 protected:
-    JSBarProp(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<BarProp>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSBarProp(JSC::Structure*, JSDOMGlobalObject*, Ref<BarProp>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSBarPropOwner : public JSC::WeakHandleOwner {
@@ -78,69 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, BarProp*)
 {
-    DEFINE_STATIC_LOCAL(JSBarPropOwner, jsBarPropOwner, ());
-    return &jsBarPropOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, BarProp*)
-{
-    return &world;
+    static NeverDestroyed<JSBarPropOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, BarProp*);
-BarProp* toBarProp(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, BarProp& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSBarPropPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSBarPropPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSBarPropPrototype* ptr = new (NotNull, JSC::allocateCell<JSBarPropPrototype>(vm.heap)) JSBarPropPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSBarPropPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSBarPropConstructor : public DOMConstructorObject {
-private:
-    JSBarPropConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSBarPropConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSBarPropConstructor* ptr = new (NotNull, JSC::allocateCell<JSBarPropConstructor>(vm.heap)) JSBarPropConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsBarPropVisible(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBarPropConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

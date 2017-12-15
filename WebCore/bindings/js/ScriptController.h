@@ -30,13 +30,17 @@
 #include <wtf/RefPtr.h>
 #include <wtf/text/TextPosition.h>
 
-#if PLATFORM(MAC)
+#if PLATFORM(COCOA)
 #include <wtf/RetainPtr.h>
-OBJC_CLASS WebScriptObject;
 OBJC_CLASS JSContext;
+OBJC_CLASS WebScriptObject;
 #endif
 
 struct NPObject;
+
+namespace Deprecated {
+class ScriptValue;
+}
 
 namespace JSC {
     class JSGlobalObject;
@@ -50,14 +54,14 @@ namespace JSC {
 
 namespace WebCore {
 
-class HTMLPlugInElement;
 class Frame;
+class HTMLDocument;
+class HTMLPlugInElement;
 class ScriptSourceCode;
-class ScriptValue;
 class SecurityOrigin;
 class Widget;
 
-typedef HashMap<void*, RefPtr<JSC::Bindings::RootObject> > RootObjectMap;
+typedef HashMap<void*, RefPtr<JSC::Bindings::RootObject>> RootObjectMap;
 
 enum ReasonForCallingCanExecuteScripts {
     AboutToExecuteScript,
@@ -65,17 +69,20 @@ enum ReasonForCallingCanExecuteScripts {
 };
 
 class ScriptController {
-    friend class ScriptCachedFrameData;
+    WTF_MAKE_FAST_ALLOCATED;
+
     typedef HashMap<RefPtr<DOMWrapperWorld>, JSC::Strong<JSDOMWindowShell>> ShellMap;
 
 public:
     explicit ScriptController(Frame&);
     ~ScriptController();
 
-    static PassRefPtr<DOMWrapperWorld> createWorld();
+    WEBCORE_EXPORT static Ref<DOMWrapperWorld> createWorld();
 
     JSDOMWindowShell* createWindowShell(DOMWrapperWorld&);
     void destroyWindowShell(DOMWrapperWorld&);
+
+    Vector<JSC::Strong<JSDOMWindowShell>> windowShells();
 
     JSDOMWindowShell* windowShell(DOMWrapperWorld& world)
     {
@@ -94,9 +101,9 @@ public:
 
     static void getAllWorlds(Vector<Ref<DOMWrapperWorld>>&);
 
-    ScriptValue executeScript(const ScriptSourceCode&);
-    ScriptValue executeScript(const String& script, bool forceUserGesture = false);
-    ScriptValue executeScriptInWorld(DOMWrapperWorld&, const String& script, bool forceUserGesture = false);
+    Deprecated::ScriptValue executeScript(const ScriptSourceCode&);
+    WEBCORE_EXPORT Deprecated::ScriptValue executeScript(const String& script, bool forceUserGesture = false);
+    WEBCORE_EXPORT Deprecated::ScriptValue executeScriptInWorld(DOMWrapperWorld&, const String& script, bool forceUserGesture = false);
 
     // Returns true if argument is a JavaScript URL.
     bool executeIfJavaScriptURL(const URL&, ShouldReplaceDocumentIfJavaScriptURL shouldReplaceDocumentIfJavaScriptURL = ReplaceDocumentIfJavaScriptURL);
@@ -105,18 +112,19 @@ public:
     // Darwin is an exception to this rule: it is OK to call this function from any thread, even reentrantly.
     static void initializeThreading();
 
-    ScriptValue evaluate(const ScriptSourceCode&);
-    ScriptValue evaluateInWorld(const ScriptSourceCode&, DOMWrapperWorld&);
+    Deprecated::ScriptValue evaluate(const ScriptSourceCode&);
+    Deprecated::ScriptValue evaluateInWorld(const ScriptSourceCode&, DOMWrapperWorld&);
 
     WTF::TextPosition eventHandlerPosition() const;
 
     void enableEval();
     void disableEval(const String& errorMessage);
 
-    static bool processingUserGesture();
+    WEBCORE_EXPORT static bool processingUserGesture();
+    WEBCORE_EXPORT static bool processingUserGestureForMedia();
 
     static bool canAccessFromCurrentOrigin(Frame*);
-    bool canExecuteScripts(ReasonForCallingCanExecuteScripts);
+    WEBCORE_EXPORT bool canExecuteScripts(ReasonForCallingCanExecuteScripts);
 
     // Debugger can be 0 to detach any existing Debugger.
     void attachDebugger(JSC::Debugger*); // Attaches/detaches in all worlds/window shells.
@@ -134,37 +142,34 @@ public:
     void namedItemRemoved(HTMLDocument*, const AtomicString&) { }
 
     void clearScriptObjects();
-    void cleanupScriptObjectsForPlugin(void*);
+    WEBCORE_EXPORT void cleanupScriptObjectsForPlugin(void*);
 
     void updatePlatformScriptObjects();
 
-    PassRefPtr<JSC::Bindings::Instance>  createScriptInstanceForWidget(Widget*);
+    RefPtr<JSC::Bindings::Instance>  createScriptInstanceForWidget(Widget*);
     JSC::Bindings::RootObject* bindingRootObject();
     JSC::Bindings::RootObject* cacheableBindingRootObject();
 
-    PassRefPtr<JSC::Bindings::RootObject> createRootObject(void* nativeHandle);
+    WEBCORE_EXPORT RefPtr<JSC::Bindings::RootObject> createRootObject(void* nativeHandle);
 
-#if ENABLE(INSPECTOR)
-    static void setCaptureCallStackForUncaughtExceptions(bool);
-    void collectIsolatedContexts(Vector<std::pair<JSC::ExecState*, SecurityOrigin*> >&);
+    void collectIsolatedContexts(Vector<std::pair<JSC::ExecState*, SecurityOrigin*>>&);
+
+#if PLATFORM(COCOA)
+    WEBCORE_EXPORT WebScriptObject* windowScriptObject();
+    WEBCORE_EXPORT JSContext *javaScriptContext();
 #endif
 
-#if PLATFORM(MAC)
-    WebScriptObject* windowScriptObject();
-    JSContext *javaScriptContext();
-#endif
-
-    JSC::JSObject* jsObjectForPluginElement(HTMLPlugInElement*);
+    WEBCORE_EXPORT JSC::JSObject* jsObjectForPluginElement(HTMLPlugInElement*);
     
 #if ENABLE(NETSCAPE_PLUGIN_API)
     NPObject* createScriptObjectForPluginElement(HTMLPlugInElement*);
-    NPObject* windowScriptNPObject();
+    WEBCORE_EXPORT NPObject* windowScriptNPObject();
 #endif
 
     bool shouldBypassMainWorldContentSecurityPolicy();
 
 private:
-    JSDOMWindowShell* initScript(DOMWrapperWorld&);
+    WEBCORE_EXPORT JSDOMWindowShell* initScript(DOMWrapperWorld&);
 
     void disconnectPlatformScriptObjects();
 
@@ -185,7 +190,7 @@ private:
 #if ENABLE(NETSCAPE_PLUGIN_API)
     NPObject* m_windowScriptNPObject;
 #endif
-#if PLATFORM(MAC)
+#if PLATFORM(COCOA)
     RetainPtr<WebScriptObject> m_windowScriptObject;
 #endif
 };

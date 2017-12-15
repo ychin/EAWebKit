@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSStorageQuotaCallback : public StorageQuotaCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSStorageQuotaCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSStorageQuotaCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSStorageQuotaCallback(callback, globalObject));
+        return adoptRef(*new JSStorageQuotaCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

@@ -28,31 +28,36 @@
 #ifndef DOMPath_h
 #define DOMPath_h
 
-#if ENABLE(CANVAS_PATH)
-
 #include "CanvasPathMethods.h"
-#include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
-
-#if ENABLE(SVG)
+#include "SVGMatrix.h"
 #include "SVGPathUtilities.h"
-#endif
+#include <wtf/RefCounted.h>
 
 namespace WebCore {
 
-class DOMPath : public RefCounted<DOMPath>, public CanvasPathMethods {
+class WEBCORE_EXPORT DOMPath final : public RefCounted<DOMPath>, public CanvasPathMethods {
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    static PassRefPtr<DOMPath> create() { return adoptRef(new DOMPath); }
-    static PassRefPtr<DOMPath> create(const Path& path) { return adoptRef(new DOMPath(path)); }
-    static PassRefPtr<DOMPath> create(const DOMPath* path) { return create(path->path()); }
+    virtual ~DOMPath();
 
-#if ENABLE(SVG)
-    static PassRefPtr<DOMPath> create(const String& pathData)
+    static Ref<DOMPath> create() { return adoptRef(*new DOMPath); }
+    static Ref<DOMPath> create(const Path& path) { return adoptRef(*new DOMPath(path)); }
+    static Ref<DOMPath> create(const DOMPath* path) { return create(path->path()); }
+
+    static Ref<DOMPath> create(const String& pathData)
     {
         Path path;
         buildPathFromString(pathData, path);
         return create(path);
+    }
+
+#if ENABLE(CANVAS_PATH)
+    void addPath(const DOMPath* path) { addPath(path, AffineTransform()); }
+    void addPath(const DOMPath* path, const AffineTransform& transform)
+    {
+        if (!path || !transform.isInvertible())
+            return;
+        m_path.addPath(path->path(), transform);
     }
 #endif
 
@@ -64,7 +69,4 @@ private:
 };
 
 }
-
-#endif
-
 #endif

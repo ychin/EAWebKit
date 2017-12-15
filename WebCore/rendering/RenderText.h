@@ -25,29 +25,36 @@
 
 #include "RenderElement.h"
 #include "RenderTextLineBoxes.h"
+#include "SimpleLineLayout.h"
 #include "Text.h"
+#include "TextBreakIterator.h"
 #include <wtf/Forward.h>
 
 namespace WebCore {
 
 class InlineTextBox;
+struct GlyphOverflow;
 
 class RenderText : public RenderObject {
 public:
     RenderText(Text&, const String&);
     RenderText(Document&, const String&);
-#ifndef NDEBUG
-    virtual ~RenderText();
-#endif
 
-    virtual const char* renderName() const OVERRIDE;
+    virtual ~RenderText();
+
+    virtual const char* renderName() const override;
 
     Text* textNode() const;
 
     virtual bool isTextFragment() const;
 
-    RenderStyle* style() const;
-    RenderStyle* firstLineStyle() const;
+    RenderStyle& style() const;
+    RenderStyle& firstLineStyle() const;
+    RenderStyle* getCachedPseudoStyle(PseudoId, RenderStyle* parentStyle = nullptr) const;
+
+    Color selectionBackgroundColor() const;
+    Color selectionForegroundColor() const;
+    Color selectionEmphasisMarkColor() const;
 
     virtual String originalText() const;
 
@@ -61,27 +68,30 @@ public:
     InlineTextBox* createInlineTextBox() { return m_lineBoxes.createAndAppendLineBox(*this); }
     void dirtyLineBoxes(bool fullLayout);
 
-    virtual void absoluteRects(Vector<IntRect>&, const LayoutPoint& accumulatedOffset) const OVERRIDE FINAL;
+    virtual void absoluteRects(Vector<IntRect>&, const LayoutPoint& accumulatedOffset) const override final;
     Vector<IntRect> absoluteRectsForRange(unsigned startOffset = 0, unsigned endOffset = UINT_MAX, bool useSelectionHeight = false, bool* wasFixed = nullptr) const;
+#if PLATFORM(IOS)
+    virtual void collectSelectionRects(Vector<SelectionRect>&, unsigned startOffset = 0, unsigned endOffset = std::numeric_limits<unsigned>::max()) override;
+#endif
 
-    virtual void absoluteQuads(Vector<FloatQuad>&, bool* wasFixed) const OVERRIDE FINAL;
+    virtual void absoluteQuads(Vector<FloatQuad>&, bool* wasFixed) const override final;
     Vector<FloatQuad> absoluteQuadsForRange(unsigned startOffset = 0, unsigned endOffset = UINT_MAX, bool useSelectionHeight = false, bool* wasFixed = nullptr) const;
 
     Vector<FloatQuad> absoluteQuadsClippedToEllipsis() const;
 
-    virtual VisiblePosition positionForPoint(const LayoutPoint&) OVERRIDE;
+    virtual VisiblePosition positionForPoint(const LayoutPoint&, const RenderRegion*) override;
 
-    bool is8Bit() const { return m_text.is8Bit(); }
+    bool is8Bit() const { return m_text.impl()->is8Bit(); }
     const LChar* characters8() const { return m_text.impl()->characters8(); }
     const UChar* characters16() const { return m_text.impl()->characters16(); }
-    const UChar* characters() const { return m_text.characters(); }
-    UChar characterAt(unsigned i) const { return is8Bit() ? characters8()[i] : characters16()[i]; }
-    UChar operator[](unsigned i) const { return characterAt(i); }
-    unsigned textLength() const { return m_text.length(); } // non virtual implementation of length()
-    void positionLineBox(InlineBox*);
+    UChar characterAt(unsigned) const;
+    UChar uncheckedCharacterAt(unsigned) const;
+    UChar operator[](unsigned i) const { return uncheckedCharacterAt(i); }
+    unsigned textLength() const { return m_text.impl()->length(); } // non virtual implementation of length()
+    void positionLineBox(InlineTextBox&);
 
-    virtual float width(unsigned from, unsigned len, const Font&, float xPos, HashSet<const SimpleFontData*>* fallbackFonts = 0, GlyphOverflow* = 0) const;
-    virtual float width(unsigned from, unsigned len, float xPos, bool firstLine = false, HashSet<const SimpleFontData*>* fallbackFonts = 0, GlyphOverflow* = 0) const;
+    virtual float width(unsigned from, unsigned len, const FontCascade&, float xPos, HashSet<const Font*>* fallbackFonts = 0, GlyphOverflow* = 0) const;
+    virtual float width(unsigned from, unsigned len, float xPos, bool firstLine = false, HashSet<const Font*>* fallbackFonts = 0, GlyphOverflow* = 0) const;
 
     float minLogicalWidth() const;
     float maxLogicalWidth() const;
@@ -93,108 +103,120 @@ public:
                            float& beginMaxW, float& endMaxW,
                            float& minW, float& maxW, bool& stripFrontSpaces);
 
-    virtual IntRect linesBoundingBox() const;
+    WEBCORE_EXPORT virtual IntRect linesBoundingBox() const;
     LayoutRect linesVisualOverflowBoundingBox() const;
 
-    FloatPoint firstRunOrigin() const;
-    float firstRunX() const;
-    float firstRunY() const;
+    WEBCORE_EXPORT IntPoint firstRunLocation() const;
 
     virtual void setText(const String&, bool force = false);
     void setTextWithOffset(const String&, unsigned offset, unsigned len, bool force = false);
 
-    virtual void transformText();
+    virtual bool canBeSelectionLeaf() const override { return true; }
+    virtual void setSelectionState(SelectionState) override final;
+    virtual LayoutRect selectionRectForRepaint(const RenderLayerModelObject* repaintContainer, bool clipToVisibleContent = true) override;
+    virtual LayoutRect localCaretRect(InlineBox*, int caretOffset, LayoutUnit* extraWidthToEndOfLine = 0) override;
 
-    virtual bool canBeSelectionLeaf() const OVERRIDE { return true; }
-    virtual void setSelectionState(SelectionState s) OVERRIDE FINAL;
-    virtual LayoutRect selectionRectForRepaint(const RenderLayerModelObject* repaintContainer, bool clipToVisibleContent = true) OVERRIDE;
-    virtual LayoutRect localCaretRect(InlineBox*, int caretOffset, LayoutUnit* extraWidthToEndOfLine = 0) OVERRIDE;
+    LayoutRect collectSelectionRectsForLineBoxes(const RenderLayerModelObject* repaintContainer, bool clipToVisibleContent, Vector<LayoutRect>& rects);
 
-    LayoutUnit marginLeft() const { return minimumValueForLength(style()->marginLeft(), 0); }
-    LayoutUnit marginRight() const { return minimumValueForLength(style()->marginRight(), 0); }
+    LayoutUnit marginLeft() const { return minimumValueForLength(style().marginLeft(), 0); }
+    LayoutUnit marginRight() const { return minimumValueForLength(style().marginRight(), 0); }
 
-    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const OVERRIDE FINAL;
+    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const override final;
 
     InlineTextBox* firstTextBox() const { return m_lineBoxes.first(); }
     InlineTextBox* lastTextBox() const { return m_lineBoxes.last(); }
 
-    virtual int caretMinOffset() const OVERRIDE;
-    virtual int caretMaxOffset() const OVERRIDE;
+    virtual int caretMinOffset() const override;
+    virtual int caretMaxOffset() const override;
+    unsigned countRenderedCharacterOffsetsUntil(unsigned) const;
+    bool containsRenderedCharacterOffset(unsigned) const;
+    bool containsCaretOffset(unsigned) const;
     bool hasRenderedText() const;
 
-    virtual int previousOffset(int current) const OVERRIDE FINAL;
-    virtual int previousOffsetForBackwardDeletion(int current) const OVERRIDE FINAL;
-    virtual int nextOffset(int current) const OVERRIDE FINAL;
+    virtual int previousOffset(int current) const override final;
+    virtual int previousOffsetForBackwardDeletion(int current) const override final;
+    virtual int nextOffset(int current) const override final;
 
     bool containsReversedText() const { return m_containsReversedText; }
 
-    bool isSecure() const { return style()->textSecurity() != TSNONE; }
-    void momentarilyRevealLastTypedCharacter(unsigned lastTypedCharacterOffset);
+    void momentarilyRevealLastTypedCharacter(unsigned offsetAfterLastTypedCharacter);
 
     InlineTextBox* findNextInlineTextBox(int offset, int& pos) const { return m_lineBoxes.findNext(offset, pos); }
 
     bool isAllCollapsibleWhitespace() const;
 
     bool canUseSimpleFontCodePath() const { return m_canUseSimpleFontCodePath; }
-    bool knownToHaveNoOverflowAndNoFallbackFonts() const { return m_knownToHaveNoOverflowAndNoFallbackFonts; }
 
     void removeAndDestroyTextBoxes();
 
     virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle);
 
-    virtual InlineTextBox* createTextBox(); // Subclassed by RenderSVGInlineText.
+    virtual std::unique_ptr<InlineTextBox> createTextBox(); // Subclassed by RenderSVGInlineText.
 
 #if ENABLE(IOS_TEXT_AUTOSIZING)
     float candidateComputedTextSize() const { return m_candidateComputedTextSize; }
     void setCandidateComputedTextSize(float s) { m_candidateComputedTextSize = s; }
 #endif
 
+    void ensureLineBoxes();
+    void deleteLineBoxesBeforeSimpleLineLayout();
+    const SimpleLineLayout::Layout* simpleLineLayout() const;
+
+    StringView stringView(int start = 0, int stop = -1) const;
+
+    LayoutUnit topOfFirstText() const;
+
 protected:
     virtual void computePreferredLogicalWidths(float leadWidth);
-    virtual void willBeDestroyed() OVERRIDE;
+    virtual void willBeDestroyed() override;
 
-    virtual void setTextInternal(const String&);
+    virtual void setRenderedText(const String&);
     virtual UChar previousCharacter() const;
 
 private:
-    virtual bool canHaveChildren() const OVERRIDE FINAL { return false; }
+    RenderText(Node&, const String&);
 
-    void computePreferredLogicalWidths(float leadWidth, HashSet<const SimpleFontData*>& fallbackFonts, GlyphOverflow&);
+    virtual bool canHaveChildren() const override final { return false; }
+
+    void computePreferredLogicalWidths(float leadWidth, HashSet<const Font*>& fallbackFonts, GlyphOverflow&);
 
     bool computeCanUseSimpleFontCodePath() const;
     
     // Make length() private so that callers that have a RenderText*
     // will use the more efficient textLength() instead, while
     // callers with a RenderObject* can continue to use length().
-    virtual unsigned length() const OVERRIDE FINAL { return textLength(); }
+    virtual unsigned length() const override final { return textLength(); }
 
-    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation&, const LayoutPoint&, HitTestAction) OVERRIDE FINAL { ASSERT_NOT_REACHED(); return false; }
+    virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, const HitTestLocation&, const LayoutPoint&, HitTestAction) override final { ASSERT_NOT_REACHED(); return false; }
 
     bool containsOnlyWhitespace(unsigned from, unsigned len) const;
-    float widthFromCache(const Font&, int start, int len, float xPos, HashSet<const SimpleFontData*>* fallbackFonts, GlyphOverflow*) const;
+    float widthFromCache(const FontCascade&, int start, int len, float xPos, HashSet<const Font*>* fallbackFonts, GlyphOverflow*, const RenderStyle&) const;
     bool isAllASCII() const { return m_isAllASCII; }
     bool computeUseBackslashAsYenSymbol() const;
 
     void secureText(UChar mask);
 
-    void node() const WTF_DELETED_FUNCTION;
+    LayoutRect collectSelectionRectsForLineBoxes(const RenderLayerModelObject* repaintContainer, bool clipToVisibleContent, Vector<LayoutRect>*);
+
+    void node() const = delete;
 
     // We put the bitfield first to minimize padding on 64-bit.
-    bool m_hasBreakableChar : 1; // Whether or not we can be broken into multiple lines.
-    bool m_hasBreak : 1; // Whether or not we have a hard break (e.g., <pre> with '\n').
-    bool m_hasTab : 1; // Whether or not we have a variable width tab character (e.g., <pre> with '\t').
-    bool m_hasBeginWS : 1; // Whether or not we begin with WS (only true if we aren't pre)
-    bool m_hasEndWS : 1; // Whether or not we end with WS (only true if we aren't pre)
-    bool m_linesDirty : 1; // This bit indicates that the text run has already dirtied specific
+    unsigned m_hasBreakableChar : 1; // Whether or not we can be broken into multiple lines.
+    unsigned m_hasBreak : 1; // Whether or not we have a hard break (e.g., <pre> with '\n').
+    unsigned m_hasTab : 1; // Whether or not we have a variable width tab character (e.g., <pre> with '\t').
+    unsigned m_hasBeginWS : 1; // Whether or not we begin with WS (only true if we aren't pre)
+    unsigned m_hasEndWS : 1; // Whether or not we end with WS (only true if we aren't pre)
+    unsigned m_linesDirty : 1; // This bit indicates that the text run has already dirtied specific
                            // line boxes, and this hint will enable layoutInlineChildren to avoid
                            // just dirtying everything when character data is modified (e.g., appended/inserted
                            // or removed).
-    bool m_containsReversedText : 1;
-    bool m_isAllASCII : 1;
-    bool m_canUseSimpleFontCodePath : 1;
-    mutable bool m_knownToHaveNoOverflowAndNoFallbackFonts : 1;
-    bool m_useBackslashAsYenSymbol : 1;
-    
+    unsigned m_containsReversedText : 1;
+    unsigned m_isAllASCII : 1;
+    unsigned m_canUseSimpleFontCodePath : 1;
+    mutable unsigned m_knownToHaveNoOverflowAndNoFallbackFonts : 1;
+    unsigned m_useBackslashAsYenSymbol : 1;
+    unsigned m_originalTextDiffersFromRendered : 1;
+
 #if ENABLE(IOS_TEXT_AUTOSIZING)
     // FIXME: This should probably be part of the text sizing structures in Document instead. That would save some memory.
     float m_candidateComputedTextSize;
@@ -209,51 +231,61 @@ private:
     RenderTextLineBoxes m_lineBoxes;
 };
 
-inline RenderText& toRenderText(RenderObject& object)
+inline UChar RenderText::uncheckedCharacterAt(unsigned i) const
 {
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isText());
-    return static_cast<RenderText&>(object);
+    ASSERT_WITH_SECURITY_IMPLICATION(i < textLength());
+    return is8Bit() ? characters8()[i] : characters16()[i];
 }
 
-inline const RenderText& toRenderText(const RenderObject& object)
+inline UChar RenderText::characterAt(unsigned i) const
 {
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isText());
-    return static_cast<const RenderText&>(object);
+    if (i >= textLength())
+        return 0;
+
+    return uncheckedCharacterAt(i);
 }
 
-inline RenderText* toRenderText(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isText());
-    return static_cast<RenderText*>(object);
-}
-
-inline const RenderText* toRenderText(const RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isText());
-    return static_cast<const RenderText*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderText(const RenderText*);
-void toRenderText(const RenderText&);
-
-inline RenderStyle* RenderText::style() const
+inline RenderStyle& RenderText::style() const
 {
     return parent()->style();
 }
 
-inline RenderStyle* RenderText::firstLineStyle() const
+inline RenderStyle& RenderText::firstLineStyle() const
 {
     return parent()->firstLineStyle();
 }
 
-void applyTextTransform(const RenderStyle*, String&, UChar);
+inline RenderStyle* RenderText::getCachedPseudoStyle(PseudoId pseudoId, RenderStyle* parentStyle) const
+{
+    return parent()->getCachedPseudoStyle(pseudoId, parentStyle);
+}
 
+inline Color RenderText::selectionBackgroundColor() const
+{
+    return parent()->selectionBackgroundColor();
+}
+
+inline Color RenderText::selectionForegroundColor() const
+{
+    return parent()->selectionForegroundColor();
+}
+
+inline Color RenderText::selectionEmphasisMarkColor() const
+{
+    return parent()->selectionEmphasisMarkColor();
+}
+
+void applyTextTransform(const RenderStyle&, String&, UChar);
+void makeCapitalized(String*, UChar previous);
+LineBreakIteratorMode mapLineBreakToIteratorMode(LineBreak);
+    
 inline RenderText* Text::renderer() const
 {
-    return toRenderText(Node::renderer());
+    return downcast<RenderText>(Node::renderer());
 }
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderText, isText())
 
 #endif // RenderText_h

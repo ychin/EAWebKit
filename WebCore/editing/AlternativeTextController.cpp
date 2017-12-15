@@ -11,10 +11,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -27,12 +27,9 @@
 #include "config.h"
 #include "AlternativeTextController.h"
 
-#include "DictationAlternative.h"
 #include "Document.h"
 #include "DocumentMarkerController.h"
-#include "EditCommand.h"
 #include "Editor.h"
-#include "EditorClient.h"
 #include "Element.h"
 #include "Event.h"
 #include "ExceptionCodePlaceholder.h"
@@ -40,26 +37,24 @@
 #include "Frame.h"
 #include "FrameView.h"
 #include "Page.h"
+#include "RenderedDocumentMarker.h"
 #include "SpellingCorrectionCommand.h"
 #include "TextCheckerClient.h"
 #include "TextCheckingHelper.h"
 #include "TextEvent.h"
 #include "TextIterator.h"
-#include "VisibleSelection.h"
 #include "VisibleUnits.h"
 #include "htmlediting.h"
 #include "markup.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
-using namespace std;
-using namespace WTF;
-
 class AutocorrectionAlternativeDetails : public AlternativeTextDetails {
 public:
-    static PassRefPtr<AutocorrectionAlternativeDetails> create(const String& replacementString)
+    static Ref<AutocorrectionAlternativeDetails> create(const String& replacementString)
     {
-        return adoptRef(new AutocorrectionAlternativeDetails(replacementString));
+        return adoptRef(*new AutocorrectionAlternativeDetails(replacementString));
     }
     
     const String& replacementString() const { return m_replacementString; }
@@ -73,9 +68,9 @@ private:
 
 class DictationAlternativeDetails : public AlternativeTextDetails {
 public:
-    static PassRefPtr<DictationAlternativeDetails> create(uint64_t dictationContext)
+    static Ref<DictationAlternativeDetails> create(uint64_t dictationContext)
     {
-        return adoptRef(new DictationAlternativeDetails(dictationContext));
+        return adoptRef(*new DictationAlternativeDetails(dictationContext));
     }
 
     uint64_t dictationContext() const { return m_dictationContext; }
@@ -92,35 +87,35 @@ private:
 
 static const Vector<DocumentMarker::MarkerType>& markerTypesForAutocorrection()
 {
-    DEFINE_STATIC_LOCAL(Vector<DocumentMarker::MarkerType>, markerTypesForAutoCorrection, ());
-    if (markerTypesForAutoCorrection.isEmpty()) {
-        markerTypesForAutoCorrection.append(DocumentMarker::Replacement);
-        markerTypesForAutoCorrection.append(DocumentMarker::CorrectionIndicator);
-        markerTypesForAutoCorrection.append(DocumentMarker::SpellCheckingExemption);
-        markerTypesForAutoCorrection.append(DocumentMarker::Autocorrected);
+    static NeverDestroyed<Vector<DocumentMarker::MarkerType>> markerTypesForAutoCorrection;
+    if (markerTypesForAutoCorrection.get().isEmpty()) {
+        markerTypesForAutoCorrection.get().append(DocumentMarker::Replacement);
+        markerTypesForAutoCorrection.get().append(DocumentMarker::CorrectionIndicator);
+        markerTypesForAutoCorrection.get().append(DocumentMarker::SpellCheckingExemption);
+        markerTypesForAutoCorrection.get().append(DocumentMarker::Autocorrected);
     }
     return markerTypesForAutoCorrection;
 }
 
 static const Vector<DocumentMarker::MarkerType>& markerTypesForReplacement()
 {
-    DEFINE_STATIC_LOCAL(Vector<DocumentMarker::MarkerType>, markerTypesForReplacement, ());
-    if (markerTypesForReplacement.isEmpty()) {
-        markerTypesForReplacement.append(DocumentMarker::Replacement);
-        markerTypesForReplacement.append(DocumentMarker::SpellCheckingExemption);
+    static NeverDestroyed<Vector<DocumentMarker::MarkerType>> markerTypesForReplacement;
+    if (markerTypesForReplacement.get().isEmpty()) {
+        markerTypesForReplacement.get().append(DocumentMarker::Replacement);
+        markerTypesForReplacement.get().append(DocumentMarker::SpellCheckingExemption);
     }
     return markerTypesForReplacement;
 }
 
 static const Vector<DocumentMarker::MarkerType>& markerTypesForAppliedDictationAlternative()
 {
-    DEFINE_STATIC_LOCAL(Vector<DocumentMarker::MarkerType>, markerTypesForAppliedDictationAlternative, ());
-    if (markerTypesForAppliedDictationAlternative.isEmpty())
-        markerTypesForAppliedDictationAlternative.append(DocumentMarker::SpellCheckingExemption);
+    static NeverDestroyed<Vector<DocumentMarker::MarkerType>> markerTypesForAppliedDictationAlternative;
+    if (markerTypesForAppliedDictationAlternative.get().isEmpty())
+        markerTypesForAppliedDictationAlternative.get().append(DocumentMarker::SpellCheckingExemption);
     return markerTypesForAppliedDictationAlternative;
 }
 
-static bool markersHaveIdenticalDescription(const Vector<DocumentMarker*>& markers)
+static bool markersHaveIdenticalDescription(const Vector<RenderedDocumentMarker*>& markers)
 {
     if (markers.isEmpty())
         return true;
@@ -134,7 +129,7 @@ static bool markersHaveIdenticalDescription(const Vector<DocumentMarker*>& marke
 }
 
 AlternativeTextController::AlternativeTextController(Frame& frame)
-    : m_timer(this, &AlternativeTextController::timerFired)
+    : m_timer(*this, &AlternativeTextController::timerFired)
     , m_frame(frame)
 {
 }
@@ -152,7 +147,7 @@ void AlternativeTextController::startAlternativeTextUITimer(AlternativeTextType 
 
     // If type is PanelTypeReversion, then the new range has been set. So we shouldn't clear it.
     if (type == AlternativeTextTypeCorrection)
-        m_alternativeTextInfo.rangeWithAlternative.clear();
+        m_alternativeTextInfo.rangeWithAlternative = nullptr;
     m_alternativeTextInfo.type = type;
     m_timer.startOneShot(correctionPanelTimerInterval);
 }
@@ -160,7 +155,7 @@ void AlternativeTextController::startAlternativeTextUITimer(AlternativeTextType 
 void AlternativeTextController::stopAlternativeTextUITimer()
 {
     m_timer.stop();
-    m_alternativeTextInfo.rangeWithAlternative.clear();
+    m_alternativeTextInfo.rangeWithAlternative = nullptr;
 }
 
 void AlternativeTextController::stopPendingCorrection(const VisibleSelection& oldSelection)
@@ -188,7 +183,7 @@ void AlternativeTextController::applyPendingCorrection(const VisibleSelection& s
     if (doApplyCorrection)
         handleAlternativeTextUIResult(dismissSoon(ReasonForDismissingAlternativeTextAccepted)); 
     else
-        m_alternativeTextInfo.rangeWithAlternative.clear();
+        m_alternativeTextInfo.rangeWithAlternative = nullptr;
 }
 
 bool AlternativeTextController::hasPendingCorrection() const
@@ -266,8 +261,8 @@ void AlternativeTextController::applyAlternativeTextToRange(const Range* range, 
     if (ec)
         return;
 
-    Position startPositionOfrangeWithAlternative = range->startPosition();
-    correctionStartOffsetInParagraphAsRange->setEnd(startPositionOfrangeWithAlternative.containerNode(), startPositionOfrangeWithAlternative.computeOffsetInContainerNode(), ec);
+    Position startPositionOfRangeWithAlternative = range->startPosition();
+    correctionStartOffsetInParagraphAsRange->setEnd(startPositionOfRangeWithAlternative.containerNode(), startPositionOfRangeWithAlternative.computeOffsetInContainerNode(), ec);
     if (ec)
         return;
 
@@ -276,11 +271,12 @@ void AlternativeTextController::applyAlternativeTextToRange(const Range* range, 
 
     // Clone the range, since the caller of this method may want to keep the original range around.
     RefPtr<Range> rangeWithAlternative = range->cloneRange(ec);
-    
-    int paragraphStartIndex = TextIterator::rangeLength(Range::create(*m_frame.document(), m_frame.document(), 0, paragraphRangeContainingCorrection.get()->startContainer(), paragraphRangeContainingCorrection.get()->startOffset()).get());
+
+    ContainerNode& rootNode = paragraphRangeContainingCorrection.get()->startContainer()->treeScope().rootNode();
+    int paragraphStartIndex = TextIterator::rangeLength(Range::create(rootNode.document(), &rootNode, 0, paragraphRangeContainingCorrection->startContainer(), paragraphRangeContainingCorrection->startOffset()).ptr());
     applyCommand(SpellingCorrectionCommand::create(rangeWithAlternative, alternative));
     // Recalculate pragraphRangeContainingCorrection, since SpellingCorrectionCommand modified the DOM, such that the original paragraphRangeContainingCorrection is no longer valid. Radar: 10305315 Bugzilla: 89526
-    paragraphRangeContainingCorrection = TextIterator::rangeFromLocationAndLength(m_frame.document(), paragraphStartIndex, correctionStartOffsetInParagraph + alternative.length());
+    paragraphRangeContainingCorrection = TextIterator::rangeFromLocationAndLength(&rootNode, paragraphStartIndex, correctionStartOffsetInParagraph + alternative.length());
     
     setEnd(paragraphRangeContainingCorrection.get(), m_frame.selection().selection().start());
     RefPtr<Range> replacementRange = TextIterator::subrange(paragraphRangeContainingCorrection.get(), correctionStartOffsetInParagraph, alternative.length());
@@ -322,7 +318,7 @@ void AlternativeTextController::respondToUnappliedSpellCorrection(const VisibleS
     if (AlternativeTextClient* client = alternativeTextClient())
         client->recordAutocorrectionResponse(AutocorrectionReverted, corrected, correction);
     m_frame.document()->updateLayout();
-    m_frame.selection().setSelection(selectionOfCorrected, FrameSelection::CloseTyping | FrameSelection::ClearTypingStyle | FrameSelection::SpellCorrectionTriggered);
+    m_frame.selection().setSelection(selectionOfCorrected, FrameSelection::defaultSetSelectionOptions() | FrameSelection::SpellCorrectionTriggered);
     RefPtr<Range> range = Range::create(*m_frame.document(), m_frame.selection().selection().start(), m_frame.selection().selection().end());
 
     DocumentMarkerController& markers = m_frame.document()->markers();
@@ -331,7 +327,7 @@ void AlternativeTextController::respondToUnappliedSpellCorrection(const VisibleS
     markers.addMarker(range.get(), DocumentMarker::SpellCheckingExemption);
 }
 
-void AlternativeTextController::timerFired(Timer<AlternativeTextController>*)
+void AlternativeTextController::timerFired()
 {
     m_isDismissedByEditing = false;
     switch (m_alternativeTextInfo.type) {
@@ -363,7 +359,7 @@ void AlternativeTextController::timerFired(Timer<AlternativeTextController>*)
         Vector<String> suggestions;
         textChecker()->getGuessesForWord(m_alternativeTextInfo.originalText, paragraphText, suggestions);
         if (suggestions.isEmpty()) {
-            m_alternativeTextInfo.rangeWithAlternative.clear();
+            m_alternativeTextInfo.rangeWithAlternative = nullptr;
             break;
         }
         String topSuggestion = suggestions.first();
@@ -426,7 +422,7 @@ void AlternativeTextController::handleAlternativeTextUIResult(const String& resu
         break;
     }
 
-    m_alternativeTextInfo.rangeWithAlternative.clear();
+    m_alternativeTextInfo.rangeWithAlternative = nullptr;
 }
 
 bool AlternativeTextController::isAutomaticSpellingCorrectionEnabled()
@@ -440,7 +436,7 @@ FloatRect AlternativeTextController::rootViewRectForRange(const Range* range) co
     if (!view)
         return FloatRect();
     Vector<FloatQuad> textQuads;
-    range->textQuads(textQuads);
+    range->absoluteTextQuads(textQuads);
     FloatRect boundingRect;
     size_t size = textQuads.size();
     for (size_t i = 0; i < size; ++i)
@@ -448,7 +444,7 @@ FloatRect AlternativeTextController::rootViewRectForRange(const Range* range) co
     return view->contentsToRootView(IntRect(boundingRect));
 }        
 
-void AlternativeTextController::respondToChangedSelection(const VisibleSelection& oldSelection, FrameSelection::SetSelectionOptions options)
+void AlternativeTextController::respondToChangedSelection(const VisibleSelection& oldSelection)
 {
     VisibleSelection currentSelection(m_frame.selection().selection());
     // When user moves caret to the end of autocorrected word and pauses, we show the panel
@@ -474,14 +470,9 @@ void AlternativeTextController::respondToChangedSelection(const VisibleSelection
         return;
 
     Node* node = position.containerNode();
-    Vector<DocumentMarker*> markers = node->document().markers().markersFor(node);
-    size_t markerCount = markers.size();
-    for (size_t i = 0; i < markerCount; ++i) {
-        const DocumentMarker* marker = markers[i];
-        if (!marker)
-            continue;
-
-        if (respondToMarkerAtEndOfWord(*marker, position, options))
+    for (auto* marker : node->document().markers().markersFor(node)) {
+        ASSERT(marker);
+        if (respondToMarkerAtEndOfWord(*marker, position))
             break;
     }
 }
@@ -493,6 +484,8 @@ void AlternativeTextController::respondToAppliedEditing(CompositeEditCommand* co
 
     markPrecedingWhitespaceForDeletedAutocorrectionAfterCommand(command);
     m_originalStringForLastDeletedAutocorrection = String();
+
+    dismiss(ReasonForDismissingAlternativeTextIgnored);
 }
 
 void AlternativeTextController::respondToUnappliedEditing(EditCommandComposition* command)
@@ -514,14 +507,14 @@ AlternativeTextClient* AlternativeTextController::alternativeTextClient()
 
 EditorClient* AlternativeTextController::editorClient()
 {
-    return m_frame.page() ? m_frame.page()->editorClient() : 0;
+    return m_frame.page() ? &m_frame.page()->editorClient() : nullptr;
 }
 
 TextCheckerClient* AlternativeTextController::textChecker()
 {
     if (EditorClient* owner = editorClient())
         return owner->textChecker();
-    return 0;
+    return nullptr;
 }
 
 void AlternativeTextController::recordAutocorrectionResponseReversed(const String& replacedString, const String& replacementString)
@@ -559,7 +552,7 @@ void AlternativeTextController::recordSpellcheckerResponseForModifiedCorrection(
     if (!rangeOfCorrection)
         return;
     DocumentMarkerController& markers = rangeOfCorrection->startContainer()->document().markers();
-    Vector<DocumentMarker*> correctedOnceMarkers = markers.markersInRange(rangeOfCorrection, DocumentMarker::Autocorrected);
+    Vector<RenderedDocumentMarker*> correctedOnceMarkers = markers.markersInRange(rangeOfCorrection, DocumentMarker::Autocorrected);
     if (correctedOnceMarkers.isEmpty())
         return;
 
@@ -618,10 +611,9 @@ bool AlternativeTextController::processMarkersOnTextToBeReplacedByResult(const T
     Position precedingCharacterPosition = beginningOfRange.previous();
     RefPtr<Range> precedingCharacterRange = Range::create(*m_frame.document(), precedingCharacterPosition, beginningOfRange);
 
-    Vector<DocumentMarker*> markers = markerController.markersInRange(precedingCharacterRange.get(), DocumentMarker::DeletedAutocorrection);
-
-    for (size_t i = 0; i < markers.size(); ++i) {
-        if (markers[i]->description() == stringToBeReplaced)
+    Vector<RenderedDocumentMarker*> markers = markerController.markersInRange(precedingCharacterRange.get(), DocumentMarker::DeletedAutocorrection);
+    for (const auto* marker : markers) {
+        if (marker->description() == stringToBeReplaced)
             return false;
     }
 
@@ -633,10 +625,8 @@ bool AlternativeTextController::shouldStartTimerFor(const WebCore::DocumentMarke
     return (((marker.type() == DocumentMarker::Replacement && !marker.description().isNull()) || marker.type() == DocumentMarker::Spelling || marker.type() == DocumentMarker::DictationAlternatives) && static_cast<int>(marker.endOffset()) == endOffset);
 }
 
-bool AlternativeTextController::respondToMarkerAtEndOfWord(const DocumentMarker& marker, const Position& endOfWordPosition, FrameSelection::SetSelectionOptions options)
+bool AlternativeTextController::respondToMarkerAtEndOfWord(const DocumentMarker& marker, const Position& endOfWordPosition)
 {
-    if (options & FrameSelection::DictationTriggered)
-        return false;
     if (!shouldStartTimerFor(marker, endOfWordPosition.offsetInContainerNode()))
         return false;
     Node* node = endOfWordPosition.containerNode();
@@ -697,7 +687,7 @@ bool AlternativeTextController::insertDictatedText(const String& text, const Vec
         return false;
 
     if (FrameView* view = m_frame.view())
-        view->resetDeferredRepaintDelay();
+        view->disableLayerFlushThrottlingTemporarilyForInteraction();
 
     RefPtr<TextEvent> event = TextEvent::createForDictation(m_frame.document()->domWindow(), text, dictationAlternatives);
     event->setUnderlyingEvent(triggeringEvent);
@@ -709,9 +699,11 @@ bool AlternativeTextController::insertDictatedText(const String& text, const Vec
 void AlternativeTextController::removeDictationAlternativesForMarker(const DocumentMarker* marker)
 {
 #if USE(DICTATION_ALTERNATIVES)
-    DictationMarkerDetails* details = static_cast<DictationMarkerDetails*>(marker->details());
-    if (AlternativeTextClient* client = alternativeTextClient())
-        client->removeDictationAlternatives(details->dictationContext());
+    ASSERT(marker->details());
+    if (DictationMarkerDetails* details = static_cast<DictationMarkerDetails*>(marker->details())) {
+        if (AlternativeTextClient* client = alternativeTextClient())
+            client->removeDictationAlternatives(details->dictationContext());
+    }
 #else
     UNUSED_PARAM(marker);
 #endif
@@ -740,9 +732,9 @@ void AlternativeTextController::applyDictationAlternative(const String& alternat
     if (!selection || !editor.shouldInsertText(alternativeString, selection.get(), EditorInsertActionPasted))
         return;
     DocumentMarkerController& markers = selection->startContainer()->document().markers();
-    Vector<DocumentMarker*> dictationAlternativesMarkers = markers.markersInRange(selection.get(), DocumentMarker::DictationAlternatives);
-    for (size_t i = 0; i < dictationAlternativesMarkers.size(); ++i)
-        removeDictationAlternativesForMarker(dictationAlternativesMarkers[i]);
+    Vector<RenderedDocumentMarker*> dictationAlternativesMarkers = markers.markersInRange(selection.get(), DocumentMarker::DictationAlternatives);
+    for (auto* marker : dictationAlternativesMarkers)
+        removeDictationAlternativesForMarker(marker);
 
     applyAlternativeTextToRange(selection.get(), alternativeString, AlternativeTextTypeDictationAlternatives, markerTypesForAppliedDictationAlternative());
 #else

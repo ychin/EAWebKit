@@ -27,19 +27,19 @@
 
 namespace WebCore {
 
-class HTMLMetaElement FINAL : public HTMLElement {
+class HTMLMetaElement final : public HTMLElement {
 public:
-    static PassRefPtr<HTMLMetaElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLMetaElement> create(const QualifiedName&, Document&);
 
-    String content() const;
-    String httpEquiv() const;
-    String name() const;
+    const AtomicString& content() const;
+    const AtomicString& httpEquiv() const;
+    const AtomicString& name() const;
 
 private:
     HTMLMetaElement(const QualifiedName&, Document&);
 
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
 
     void process();
 };

@@ -33,35 +33,37 @@ namespace WebCore {
 class AccessibilityMenuListPopup;
 class HTMLElement;
 
-class AccessibilityMenuListOption : public AccessibilityMockObject {
+class AccessibilityMenuListOption final : public AccessibilityMockObject {
 public:
-    static PassRefPtr<AccessibilityMenuListOption> create() { return adoptRef(new AccessibilityMenuListOption); }
+    static Ref<AccessibilityMenuListOption> create() { return adoptRef(*new AccessibilityMenuListOption); }
 
     void setElement(HTMLElement*);
 
 private:
     AccessibilityMenuListOption();
 
-    virtual bool isMenuListOption() const OVERRIDE { return true; }
+    virtual bool isMenuListOption() const override { return true; }
 
-    virtual AccessibilityRole roleValue() const OVERRIDE { return MenuListOptionRole; }
-    virtual bool canHaveChildren() const OVERRIDE { return false; }
+    virtual AccessibilityRole roleValue() const override { return MenuListOptionRole; }
+    virtual bool canHaveChildren() const override { return false; }
 
-    virtual Element* actionElement() const OVERRIDE;
-    virtual bool isEnabled() const OVERRIDE;
-    virtual bool isVisible() const OVERRIDE;
-    virtual bool isOffScreen() const OVERRIDE;
-    virtual bool isSelected() const OVERRIDE;
-    virtual String nameForMSAA() const OVERRIDE;
-    virtual void setSelected(bool) OVERRIDE;
-    virtual bool canSetSelectedAttribute() const OVERRIDE;
-    virtual LayoutRect elementRect() const OVERRIDE;
-    virtual String stringValue() const OVERRIDE;
-    virtual bool computeAccessibilityIsIgnored() const OVERRIDE;
+    virtual Element* actionElement() const override;
+    virtual bool isEnabled() const override;
+    virtual bool isVisible() const override;
+    virtual bool isOffScreen() const override;
+    virtual bool isSelected() const override;
+    virtual String nameForMSAA() const override;
+    virtual void setSelected(bool) override;
+    virtual bool canSetSelectedAttribute() const override;
+    virtual LayoutRect elementRect() const override;
+    virtual String stringValue() const override;
+    virtual bool computeAccessibilityIsIgnored() const override;
 
     RefPtr<HTMLElement> m_element;
 };
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_ACCESSIBILITY(AccessibilityMenuListOption, isMenuListOption())
 
 #endif // AccessibilityMenuListOption_h

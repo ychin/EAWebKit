@@ -26,6 +26,10 @@
 #include "config.h"
 #include "DFGCompilationMode.h"
 
+#if ENABLE(DFG_JIT)
+
+#include "JSCInlines.h"
+
 namespace WTF {
 
 using namespace JSC::DFG;
@@ -51,4 +55,4 @@ void printInternal(PrintStream& out, CompilationMode mode)
 
 } // namespace WTF
 
-
+#endif

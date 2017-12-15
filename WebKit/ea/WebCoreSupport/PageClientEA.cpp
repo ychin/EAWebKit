@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,7 +28,7 @@
 #include "texmap/TextureMapperPlatformLayer.h"
 #endif
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 #include "TiledBackingStore.h"
 #endif
 
@@ -45,22 +45,24 @@
 
 namespace WebCore {
 
-#if USE(TILED_BACKING_STORE)
-void PageClientWebView::removeNonVisibleTiles(WebCore::Timer<PageClientWebView>*)
+#if USE(COORDINATED_GRAPHICS)
+void PageClientWebView::removeNonVisibleTiles()
 {
-	view->Page()->handle()->page->mainFrame().tiledBackingStore()->removeAllNonVisibleTiles();
+	//EAWEBKITBUILDFIX - MainFrame no longer has .tiledBackingStore method
+	//view->Page()->handle()->page->mainFrame().tiledBackingStore()->removeAllNonVisibleTiles();
 }
 #endif
 void PageClientWebView::scroll(int dx, int dy, const WebCore::IntRect& rectToScroll)
 {
     view->AddDirtyRegion(rectToScroll);
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 	if(view->IsUsingTiledBackingStore()) // We need to invalidate below to deal with the fixed elements on the page. For example, facebook chat panel. // EAWebKitTODO: May be we do this only when there are fixed elements on the page
 	{
 		IntPoint currentPosition = page->mainFrame()->scrollPosition();
 		IntRect r(currentPosition.x() + rectToScroll.x(), currentPosition.y() + rectToScroll.y(), rectToScroll.width(), rectToScroll.height());
-		view->Page()->handle()->page->mainFrame().tiledBackingStore()->invalidate(r);
+		//EAWEBKITBUILDFIX
+		//view->Page()->handle()->page->mainFrame().tiledBackingStore()->invalidate(r);
 	}
 	//EAWebKitTODO - May be resurrect path for removing non-visible tiles 
 #endif

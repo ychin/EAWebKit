@@ -21,29 +21,28 @@
 #ifndef JSDOMWindowCSS_h
 #define JSDOMWindowCSS_h
 
-#if ENABLE(CSS3_CONDITIONAL_RULES)
-
 #include "DOMWindowCSS.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDOMWindowCSS : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMWindowCSS* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMWindowCSS> impl)
+    static JSDOMWindowCSS* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMWindowCSS>&& impl)
     {
-        JSDOMWindowCSS* ptr = new (NotNull, JSC::allocateCell<JSDOMWindowCSS>(globalObject->vm().heap)) JSDOMWindowCSS(structure, globalObject, impl);
+        JSDOMWindowCSS* ptr = new (NotNull, JSC::allocateCell<JSDOMWindowCSS>(globalObject->vm().heap)) JSDOMWindowCSS(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMWindowCSS* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDOMWindowCSS();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +51,19 @@ public:
     }
 
     DOMWindowCSS& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMWindowCSS* m_impl;
 protected:
-    JSDOMWindowCSS(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMWindowCSS>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSDOMWindowCSS(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMWindowCSS>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMWindowCSSOwner : public JSC::WeakHandleOwner {
@@ -78,48 +74,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMWindowCSS*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMWindowCSSOwner, jsDOMWindowCSSOwner, ());
-    return &jsDOMWindowCSSOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, DOMWindowCSS*)
-{
-    return &world;
+    static NeverDestroyed<JSDOMWindowCSSOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMWindowCSS*);
-DOMWindowCSS* toDOMWindowCSS(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMWindowCSS& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMWindowCSSPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMWindowCSSPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMWindowCSSPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMWindowCSSPrototype>(vm.heap)) JSDOMWindowCSSPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMWindowCSSPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDOMWindowCSSPrototypeFunctionSupports(JSC::ExecState*);
 
 } // namespace WebCore
-
-#endif // ENABLE(CSS3_CONDITIONAL_RULES)
 
 #endif

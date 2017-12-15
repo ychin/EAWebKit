@@ -24,27 +24,27 @@
 #if ENABLE(MEDIA_STREAM)
 
 #include "CapabilityRange.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSCapabilityRange : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSCapabilityRange* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CapabilityRange> impl)
+    static JSCapabilityRange* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CapabilityRange>&& impl)
     {
-        JSCapabilityRange* ptr = new (NotNull, JSC::allocateCell<JSCapabilityRange>(globalObject->vm().heap)) JSCapabilityRange(structure, globalObject, impl);
+        JSCapabilityRange* ptr = new (NotNull, JSC::allocateCell<JSCapabilityRange>(globalObject->vm().heap)) JSCapabilityRange(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static CapabilityRange* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSCapabilityRange();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +53,19 @@ public:
     }
 
     CapabilityRange& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     CapabilityRange* m_impl;
 protected:
-    JSCapabilityRange(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CapabilityRange>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCapabilityRange(JSC::Structure*, JSDOMGlobalObject*, Ref<CapabilityRange>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSCapabilityRangeOwner : public JSC::WeakHandleOwner {
@@ -79,46 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, CapabilityRange*)
 {
-    DEFINE_STATIC_LOCAL(JSCapabilityRangeOwner, jsCapabilityRangeOwner, ());
-    return &jsCapabilityRangeOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, CapabilityRange*)
-{
-    return &world;
+    static NeverDestroyed<JSCapabilityRangeOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, CapabilityRange*);
-CapabilityRange* toCapabilityRange(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, CapabilityRange& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSCapabilityRangePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCapabilityRangePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCapabilityRangePrototype* ptr = new (NotNull, JSC::allocateCell<JSCapabilityRangePrototype>(vm.heap)) JSCapabilityRangePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCapabilityRangePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCapabilityRangeMax(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCapabilityRangeMin(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCapabilityRangeSupported(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -21,31 +21,29 @@
 #ifndef JSSVGUnitTypes_h
 #define JSSVGUnitTypes_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGElement.h"
 #include "SVGUnitTypes.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGUnitTypes : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGUnitTypes* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGUnitTypes> impl)
+    static JSSVGUnitTypes* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGUnitTypes>&& impl)
     {
-        JSSVGUnitTypes* ptr = new (NotNull, JSC::allocateCell<JSSVGUnitTypes>(globalObject->vm().heap)) JSSVGUnitTypes(structure, globalObject, impl);
+        JSSVGUnitTypes* ptr = new (NotNull, JSC::allocateCell<JSSVGUnitTypes>(globalObject->vm().heap)) JSSVGUnitTypes(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGUnitTypes* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGUnitTypes();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +53,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     SVGUnitTypes& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SVGUnitTypes* m_impl;
 protected:
-    JSSVGUnitTypes(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGUnitTypes>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGUnitTypes(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGUnitTypes>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGUnitTypesOwner : public JSC::WeakHandleOwner {
@@ -81,76 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGUnitTypes*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGUnitTypesOwner, jsSVGUnitTypesOwner, ());
-    return &jsSVGUnitTypesOwner;
+    static NeverDestroyed<JSSVGUnitTypesOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SVGUnitTypes*)
-{
-    return &world;
-}
 
-SVGUnitTypes* toSVGUnitTypes(JSC::JSValue);
-
-class JSSVGUnitTypesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGUnitTypesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGUnitTypesPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGUnitTypesPrototype>(vm.heap)) JSSVGUnitTypesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGUnitTypesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGUnitTypesConstructor : public DOMConstructorObject {
-private:
-    JSSVGUnitTypesConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGUnitTypesConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGUnitTypesConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGUnitTypesConstructor>(vm.heap)) JSSVGUnitTypesConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGUnitTypesConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGUnitTypesSVG_UNIT_TYPE_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGUnitTypesSVG_UNIT_TYPE_USERSPACEONUSE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGUnitTypesSVG_UNIT_TYPE_OBJECTBOUNDINGBOX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

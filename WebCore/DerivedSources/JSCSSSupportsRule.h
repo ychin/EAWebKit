@@ -21,26 +21,24 @@
 #ifndef JSCSSSupportsRule_h
 #define JSCSSSupportsRule_h
 
-#if ENABLE(CSS3_CONDITIONAL_RULES)
-
 #include "CSSSupportsRule.h"
 #include "JSCSSRule.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSSupportsRule : public JSCSSRule {
 public:
     typedef JSCSSRule Base;
-    static JSCSSSupportsRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSSupportsRule> impl)
+    static JSCSSSupportsRule* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSSupportsRule>&& impl)
     {
-        JSCSSSupportsRule* ptr = new (NotNull, JSC::allocateCell<JSCSSSupportsRule>(globalObject->vm().heap)) JSCSSSupportsRule(structure, globalObject, impl);
+        JSCSSSupportsRule* ptr = new (NotNull, JSC::allocateCell<JSCSSSupportsRule>(globalObject->vm().heap)) JSCSSSupportsRule(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,47 +51,18 @@ public:
         return static_cast<CSSSupportsRule&>(Base::impl());
     }
 protected:
-    JSCSSSupportsRule(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSSupportsRule>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSSupportsRule(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSSupportsRule>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSSupportsRulePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSSupportsRulePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSSupportsRulePrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSSupportsRulePrototype>(vm.heap)) JSCSSSupportsRulePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSSupportsRulePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSSupportsRulePrototypeFunctionInsertRule(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSSupportsRulePrototypeFunctionDeleteRule(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsCSSSupportsRuleCssRules(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSSupportsRuleConditionText(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(CSS3_CONDITIONAL_RULES)
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -41,12 +41,12 @@ public:
 
     virtual ~EAClass(void);
 
-	virtual Method* methodNamed(PropertyName, Instance*) const OVERRIDE;
-	virtual Field* fieldNamed(PropertyName, Instance*) const OVERRIDE;
+	virtual Method* methodNamed(PropertyName, Instance*) const override;
+	virtual Field* fieldNamed(PropertyName, Instance*) const override;
 
 private:
-	mutable HashMap<RefPtr<StringImpl>, OwnPtr<Method>> mMethods;
-	mutable HashMap<RefPtr<StringImpl>, OwnPtr<Field>> mFields;
+    mutable HashMap<RefPtr<StringImpl>, std::unique_ptr<Method>> mMethods;
+    mutable HashMap<RefPtr<StringImpl>, std::unique_ptr<Field>> mFields;
 };
 
 }}

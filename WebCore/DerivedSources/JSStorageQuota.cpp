@@ -37,46 +37,68 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsStorageQuotaPrototypeFunctionQueryUsageAndQuota(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsStorageQuotaPrototypeFunctionRequestQuota(JSC::ExecState*);
+
+class JSStorageQuotaPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSStorageQuotaPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSStorageQuotaPrototype* ptr = new (NotNull, JSC::allocateCell<JSStorageQuotaPrototype>(vm.heap)) JSStorageQuotaPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSStorageQuotaPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSStorageQuotaPrototypeTableValues[] =
 {
-    { "queryUsageAndQuota", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageQuotaPrototypeFunctionQueryUsageAndQuota), (intptr_t)1 },
-    { "requestQuota", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageQuotaPrototypeFunctionRequestQuota), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "queryUsageAndQuota", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageQuotaPrototypeFunctionQueryUsageAndQuota), (intptr_t) (1) },
+    { "requestQuota", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsStorageQuotaPrototypeFunctionRequestQuota), (intptr_t) (1) },
 };
 
-static const HashTable JSStorageQuotaPrototypeTable = { 5, 3, JSStorageQuotaPrototypeTableValues, 0 };
-const ClassInfo JSStorageQuotaPrototype::s_info = { "StorageQuotaPrototype", &Base::s_info, &JSStorageQuotaPrototypeTable, 0, CREATE_METHOD_TABLE(JSStorageQuotaPrototype) };
+const ClassInfo JSStorageQuotaPrototype::s_info = { "StorageQuotaPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStorageQuotaPrototype) };
 
-JSObject* JSStorageQuotaPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSStorageQuota>(vm, globalObject);
-}
-
-bool JSStorageQuotaPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSStorageQuotaPrototype* thisObject = jsCast<JSStorageQuotaPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSStorageQuotaPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSStorageQuota::s_info = { "StorageQuota", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSStorageQuota) };
-
-JSStorageQuota::JSStorageQuota(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<StorageQuota> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSStorageQuota::finishCreation(VM& vm)
+void JSStorageQuotaPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSStorageQuotaPrototypeTableValues, *this);
+}
+
+const ClassInfo JSStorageQuota::s_info = { "StorageQuota", &Base::s_info, 0, CREATE_METHOD_TABLE(JSStorageQuota) };
+
+JSStorageQuota::JSStorageQuota(Structure* structure, JSDOMGlobalObject* globalObject, Ref<StorageQuota>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSStorageQuota::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSStorageQuotaPrototype::create(vm, globalObject, JSStorageQuotaPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSStorageQuota::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSStorageQuota>(vm, globalObject);
 }
 
 void JSStorageQuota::destroy(JSC::JSCell* cell)
@@ -87,29 +109,29 @@ void JSStorageQuota::destroy(JSC::JSCell* cell)
 
 JSStorageQuota::~JSStorageQuota()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 EncodedJSValue JSC_HOST_CALL jsStorageQuotaPrototypeFunctionQueryUsageAndQuota(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSStorageQuota::info()))
-        return throwVMTypeError(exec);
-    JSStorageQuota* castedThis = jsCast<JSStorageQuota*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSStorageQuota* castedThis = jsDynamicCast<JSStorageQuota*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "StorageQuota", "queryUsageAndQuota");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSStorageQuota::info());
-    StorageQuota& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    ScriptExecutionContext* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
+    auto* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
     if (!scriptContext)
         return JSValue::encode(jsUndefined());
     if (!exec->argument(0).isFunction())
-        return throwVMTypeError(exec);
+        return throwArgumentMustBeFunctionError(*exec, 0, "usageCallback", "StorageQuota", "queryUsageAndQuota");
     RefPtr<StorageUsageCallback> usageCallback = JSStorageUsageCallback::create(asObject(exec->uncheckedArgument(0)), castedThis->globalObject());
     RefPtr<StorageErrorCallback> errorCallback;
     if (!exec->argument(1).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(1).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 1, "errorCallback", "StorageQuota", "queryUsageAndQuota");
         errorCallback = JSStorageErrorCallback::create(asObject(exec->uncheckedArgument(1)), castedThis->globalObject());
     }
     impl.queryUsageAndQuota(scriptContext, usageCallback, errorCallback);
@@ -118,65 +140,55 @@ EncodedJSValue JSC_HOST_CALL jsStorageQuotaPrototypeFunctionQueryUsageAndQuota(E
 
 EncodedJSValue JSC_HOST_CALL jsStorageQuotaPrototypeFunctionRequestQuota(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSStorageQuota::info()))
-        return throwVMTypeError(exec);
-    JSStorageQuota* castedThis = jsCast<JSStorageQuota*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSStorageQuota* castedThis = jsDynamicCast<JSStorageQuota*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "StorageQuota", "requestQuota");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSStorageQuota::info());
-    StorageQuota& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    ScriptExecutionContext* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
+    auto* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
     if (!scriptContext)
         return JSValue::encode(jsUndefined());
-    unsigned long long newQuotaInBytes(toUInt64(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned long long newQuotaInBytes = toUInt64(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     RefPtr<StorageQuotaCallback> quotaCallback;
     if (!exec->argument(1).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(1).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 1, "quotaCallback", "StorageQuota", "requestQuota");
         quotaCallback = JSStorageQuotaCallback::create(asObject(exec->uncheckedArgument(1)), castedThis->globalObject());
     }
     RefPtr<StorageErrorCallback> errorCallback;
     if (!exec->argument(2).isUndefinedOrNull()) {
         if (!exec->uncheckedArgument(2).isFunction())
-            return throwVMTypeError(exec);
+            return throwArgumentMustBeFunctionError(*exec, 2, "errorCallback", "StorageQuota", "requestQuota");
         errorCallback = JSStorageErrorCallback::create(asObject(exec->uncheckedArgument(2)), castedThis->globalObject());
     }
     impl.requestQuota(scriptContext, newQuotaInBytes, quotaCallback, errorCallback);
     return JSValue::encode(jsUndefined());
 }
 
-static inline bool isObservable(JSStorageQuota* jsStorageQuota)
-{
-    if (jsStorageQuota->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSStorageQuotaOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSStorageQuota* jsStorageQuota = jsCast<JSStorageQuota*>(handle.get().asCell());
-    if (!isObservable(jsStorageQuota))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSStorageQuotaOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSStorageQuota* jsStorageQuota = jsCast<JSStorageQuota*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsStorageQuota = jsCast<JSStorageQuota*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsStorageQuota->impl(), jsStorageQuota);
-    jsStorageQuota->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, StorageQuota* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, StorageQuota* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSStorageQuota>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSStorageQuota>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -185,13 +197,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Storage
     // attribute to StorageQuota.
     COMPILE_ASSERT(!__is_polymorphic(StorageQuota), StorageQuota_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<StorageQuota>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSStorageQuota>(exec, globalObject, impl);
+    return createNewWrapper<JSStorageQuota>(globalObject, impl);
 }
 
-StorageQuota* toStorageQuota(JSC::JSValue value)
+StorageQuota* JSStorageQuota::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSStorageQuota::info()) ? &jsCast<JSStorageQuota*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSStorageQuota*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

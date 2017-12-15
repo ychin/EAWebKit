@@ -45,19 +45,19 @@ struct ErrorEventInit : public EventInit {
     unsigned colno;
 };
 
-class ErrorEvent : public Event {
+class ErrorEvent final : public Event {
 public:
-    static PassRefPtr<ErrorEvent> create()
+    static Ref<ErrorEvent> create()
     {
-        return adoptRef(new ErrorEvent);
+        return adoptRef(*new ErrorEvent);
     }
-    static PassRefPtr<ErrorEvent> create(const String& message, const String& fileName, unsigned lineNumber, unsigned columnNumber)
+    static Ref<ErrorEvent> create(const String& message, const String& fileName, unsigned lineNumber, unsigned columnNumber)
     {
-        return adoptRef(new ErrorEvent(message, fileName, lineNumber, columnNumber));
+        return adoptRef(*new ErrorEvent(message, fileName, lineNumber, columnNumber));
     }
-    static PassRefPtr<ErrorEvent> create(const AtomicString& type, const ErrorEventInit& initializer)
+    static Ref<ErrorEvent> create(const AtomicString& type, const ErrorEventInit& initializer)
     {
-        return adoptRef(new ErrorEvent(type, initializer));
+        return adoptRef(*new ErrorEvent(type, initializer));
     }
     virtual ~ErrorEvent();
 
@@ -66,12 +66,14 @@ public:
     unsigned lineno() const { return m_lineNumber; }
     unsigned colno() const { return m_columnNumber; }
 
-    virtual EventInterface eventInterface() const OVERRIDE;
+    virtual EventInterface eventInterface() const override;
 
 private:
     ErrorEvent();
     ErrorEvent(const String& message, const String& fileName, unsigned lineNumber, unsigned columnNumber);
     ErrorEvent(const AtomicString&, const ErrorEventInit&);
+
+    virtual bool isErrorEvent() const override;
 
     String m_message;
     String m_fileName;
@@ -80,5 +82,7 @@ private:
 };
 
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_EVENT(ErrorEvent)
 
 #endif // ErrorEvent_h

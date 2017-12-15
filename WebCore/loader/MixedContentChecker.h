@@ -44,9 +44,14 @@ class SecurityOrigin;
 class MixedContentChecker {
     WTF_MAKE_NONCOPYABLE(MixedContentChecker);
 public:
-    MixedContentChecker(Frame*);
+    enum class ContentType {
+        Active,
+        ActiveCanWarn,
+    };
 
-    bool canDisplayInsecureContent(SecurityOrigin*, const URL&) const;
+    MixedContentChecker(Frame&);
+
+    bool canDisplayInsecureContent(SecurityOrigin*, ContentType, const URL&) const;
     bool canRunInsecureContent(SecurityOrigin*, const URL&) const;
     static bool isMixedContent(SecurityOrigin*, const URL&);
 
@@ -56,7 +61,7 @@ private:
 
     void logWarning(bool allowed, const String& action, const URL&) const;
 
-    Frame* m_frame;
+    Frame& m_frame;
 };
 
 } // namespace WebCore

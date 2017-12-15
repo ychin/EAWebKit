@@ -56,8 +56,8 @@ static void SetUpClientUpdate(MediaUpdateInfo& info, MediaUpdateInfo::UpdateType
     info.mReturnTime = 0.f;
     info.mReturnBool = false;
     info.mReturnBytes = 0;
-    info.mReturnNaturalSize.mWidth = 0;
-    info.mReturnNaturalSize.mHeight = 0;
+    info.mReturnNaturalSize.mWidth = 0.0f;
+    info.mReturnNaturalSize.mHeight = 0.0f;
     info.mReturnMediaState = MediaUpdateInfo::kIdle;
     info.mReturnData = NULL;
 }
@@ -74,7 +74,8 @@ static EA::WebKit::View* GetEAWebKitMediaView(MediaPlayer* pPlayer)
 
     if (pPlayer)
     {
-        FrameView* pFV = pPlayer->frameView();
+		const HTMLMediaElement* element = (const HTMLMediaElement*)(&(pPlayer->client()));
+		const FrameView* pFV = element ? element->document().view() : 0;
         if (pFV)
         {    
             const Frame& pFrame = pFV->frame(); 
@@ -84,23 +85,8 @@ static EA::WebKit::View* GetEAWebKitMediaView(MediaPlayer* pPlayer)
                 pView = pWebFrame->page()->view();
             }
         }
-    
-        // If we fail to get the view from the player (might not be set yet by WebKit), we can try to get it from the document directly.
-        if (!pView)
-        {
-            MediaPlayerClient* pMPClient = pPlayer->mediaPlayerClient();
-            if ( (pMPClient) && (pMPClient->mediaPlayerOwningDocument()) )
-            {
-                Document* pDoc = pMPClient->mediaPlayerOwningDocument();
-                const Frame* pFrame = pDoc->frame();
-                const EA::WebKit::WebFrame* pWebFrame = EA::WebKit::WebFramePrivate::kit(pFrame);
-                if (pWebFrame)
-                {
-                    pView = pWebFrame->page()->view();
-                }
-            }
-        }
     }
+
     return pView;
 }
 
@@ -121,15 +107,18 @@ MediaPlayerPrivateEA::MediaPlayerPrivateEA(MediaPlayer* player)
     , mReadyState(MediaPlayer::HaveNothing)
     , mNetworkState(MediaPlayer::Empty)
     , mMediaState(EA::WebKit::MediaUpdateInfo::kIdle)
-    , mUpdateTimer(this, &MediaPlayerPrivateEA::UpdateTimerFired)
+    , mUpdateTimer(*this, &MediaPlayerPrivateEA::UpdateTimerFired)
     , mBytesLoadedAtLastDidLoadingProgress(0)
 {
     sRefCount++;    // The refcount is used to auto finalize.
     EAW_ASSERT(player);
 
     // Find out if this media is video.
-    const HTMLMediaElement* element = static_cast<HTMLMediaElement*>(player->mediaPlayerClient());
-    mIsVideo = element->isVideo();
+	const HTMLMediaElement* element = (const HTMLMediaElement*)(&mpWebCorePlayer->client());
+	if (element)
+	{
+		mIsVideo = element->isVideo();
+	}
 }
 
 MediaPlayerPrivateEA::~MediaPlayerPrivateEA()
@@ -189,12 +178,8 @@ bool MediaPlayerPrivateEA::ClientUpdateAndReturnBool(MediaUpdateInfo::UpdateType
 
 void MediaPlayerPrivateEA::registerMediaEngine(MediaEngineRegistrar registrar)
 {
-    registrar(create, getSupportedTypes, supportsType, 0, 0, 0);
-}
-
-PassOwnPtr<MediaPlayerPrivateInterface> MediaPlayerPrivateEA::create(MediaPlayer* player)
-{
-    return adoptPtr(new MediaPlayerPrivateEA(player));
+	registrar([](MediaPlayer* player) { return std::make_unique<MediaPlayerPrivateEA>(player); },
+		getSupportedTypes, supportsType, 0, 0, 0, 0);
 }
 
 void MediaPlayerPrivateEA::getSupportedTypes(HashSet<String> &supported)
@@ -202,15 +187,15 @@ void MediaPlayerPrivateEA::getSupportedTypes(HashSet<String> &supported)
     // Ignore for now as does not seem to be needed to be set. Could tie in with supported EA mime types.
 }
 
-MediaPlayer::SupportsType MediaPlayerPrivateEA::supportsType(const String& mime, const String& codec, const URL& url)
+MediaPlayer::SupportsType MediaPlayerPrivateEA::supportsType(const MediaEngineSupportParameters& parameters)
 {
     MediaUpdateInfo& info = GetMediaUpdateInfo();
     
     // We don't have access to the tag info here but can look at the mime type to eval if we have a video.
-    bool isVideo = mime.contains("video");
+    bool isVideo = parameters.type.contains("video");
     SetUpClientUpdate(info, MediaUpdateInfo::kGetIfMimeSupported, 0, 0, isVideo);  
-    GetFixedString(info.mMime)->assign(mime.characters(), mime.length());
-    GetFixedString(info.mCodec)->assign(codec.characters(), codec.length());
+    GetFixedString(info.mMime)->assign(StringView(parameters.type).upconvertedCharacters(), parameters.type.length());
+    GetFixedString(info.mCodec)->assign(StringView(parameters.codecs).upconvertedCharacters(), parameters.codecs.length());
     CallClientUpdate(info);
     if (info.mReturnBool)
     {
@@ -228,15 +213,18 @@ void MediaPlayerPrivateEA::load(const String& url)
         mpEAWebKitView = GetEAWebKitMediaView(mpWebCorePlayer);
 
     // Note: We get the autoplay and loop flags from the element directly.
-    HTMLMediaElement* element = static_cast<HTMLMediaElement*>(mpWebCorePlayer->mediaPlayerClient());
-    mIsLooping = element->loop();
+	const HTMLMediaElement* element = (const HTMLMediaElement*)(&mpWebCorePlayer->client());
+	if (element)
+	{
+		mIsLooping = element->loop();
+	}
    
     MediaUpdateInfo& info = GetMediaUpdateInfo();  
     info.mIsLooping = mIsLooping; 
 	WebCore::URL kurl(WebCore::URL(), url);
 	String escapedUrl = kurl.protocolIsInHTTPFamily() ? url : decodeURLEscapeSequences(url);
 
-    GetFixedString(info.mURI)->assign(escapedUrl.characters(), escapedUrl.length());
+    GetFixedString(info.mURI)->assign(StringView(escapedUrl).upconvertedCharacters(), escapedUrl.length());
     ClientUpdate(MediaUpdateInfo::kLoad);
     
 	if (!info.mReturnBool && info.mReturnMediaState == MediaUpdateInfo::kError) {
@@ -259,9 +247,12 @@ void MediaPlayerPrivateEA::load(const String& url)
        mpWebCorePlayer->readyStateChanged(); 
     }
     
-    bool autoPlay = element->autoplay();
-    if(autoPlay)
-        mpWebCorePlayer->play();            // This just calls our play.
+	if (element)
+	{
+		bool autoPlay = element->autoplay();
+		if (autoPlay)
+			mpWebCorePlayer->play();            // This just calls our play.
+	}
 
     ClientUpdateStates();                   // This will update the pause/play state right away.
 
@@ -303,7 +294,7 @@ bool MediaPlayerPrivateEA::supportsFullscreen() const
     return ClientUpdateAndReturnBool(MediaUpdateInfo::kGetSupportsFullScreen); 
 }
 
-IntSize MediaPlayerPrivateEA::naturalSize() const
+FloatSize MediaPlayerPrivateEA::naturalSize() const
 {
      return mNaturalSize;
 }
@@ -333,12 +324,11 @@ void MediaPlayerPrivateEA::setVisible(bool visible)
     ClientUpdate(MediaUpdateInfo::kVisible);  
 }
 
-PassRefPtr<TimeRanges> MediaPlayerPrivateEA::buffered() const
+std::unique_ptr<PlatformTimeRanges> MediaPlayerPrivateEA::buffered() const
 {
     float min = ClientUpdateAndReturnTime(MediaUpdateInfo::kGetMinBufferedTime);   
     float max = ClientUpdateAndReturnTime(MediaUpdateInfo::kGetMaxBufferedTime);   
-    RefPtr<TimeRanges> buffered = TimeRanges::create(min,max);
-    return buffered.release();
+	return std::make_unique<PlatformTimeRanges>(MediaTime::createWithFloat(min), MediaTime::createWithFloat(max));
 }
 
 float MediaPlayerPrivateEA::duration()const
@@ -365,16 +355,6 @@ void MediaPlayerPrivateEA::seek(float time)
 bool MediaPlayerPrivateEA::seeking() const
 {
     return ClientUpdateAndReturnBool(MediaUpdateInfo::kGetIsSeeking);       
-}
-
-float MediaPlayerPrivateEA::startTime() const
-{ 
-    return ClientUpdateAndReturnTime(MediaUpdateInfo::kGetStartTime);       
-}
-
-double MediaPlayerPrivateEA::initialTime() const
-{ 
-    return (double) ClientUpdateAndReturnTime(MediaUpdateInfo::kGetInitialTime);           
 }
 
 void MediaPlayerPrivateEA::setRate(float rate)
@@ -428,7 +408,7 @@ void MediaPlayerPrivateEA::setSize(const IntSize& size)
     mSize = size;
 }
 
-void MediaPlayerPrivateEA::paint(GraphicsContext* context, const IntRect& r)
+void MediaPlayerPrivateEA::paint(GraphicsContext* context, const FloatRect& r)
 {
     if (!context)
         return;
@@ -444,14 +424,15 @@ void MediaPlayerPrivateEA::paint(GraphicsContext* context, const IntRect& r)
         return;
 
     MediaUpdateInfo& info = GetMediaUpdateInfo();
-    const FrameView* pFV = mpWebCorePlayer->frameView();
+	const HTMLMediaElement* element = ((const HTMLMediaElement*)(&mpWebCorePlayer->client()));
+	const FrameView* pFV = element ? element->document().view() : 0;
     if (!pFV)
         return;
 
-    double x = (double) r.x();
-    double y = (double) r.y();
-    double w = (double) r.width();
-    double h = (double) r.height();
+    float x = r.x();
+    float y = r.y();
+    float w = r.width();
+    float h = r.height();
 	
 	// following is overly complex. It needs to be understood why movie API needs these odd calculations. I arrived at them by mostly creating sample pages to render movie in iframes and scroll extensively. 
 	// The graphics context can easily draw the passed in rect (r) without much of these calculations. 
@@ -469,30 +450,29 @@ void MediaPlayerPrivateEA::paint(GraphicsContext* context, const IntRect& r)
 	const IntRect rect((int)x + totalOffset.x(), (int) y + totalOffset.y(), (int) w, (int) h);
 
     // The intersection of frameView contents and the movie is used as clip rect for we just want to know what part of the movie is visible.
-    IntRect clip = pFV->windowClipRect(true);
+    IntRect clip = pFV->windowClipRect();
 	clip.intersect(rect);
     
-    // Find controls intersection
-    HTMLMediaElement* element = static_cast<HTMLMediaElement*>(mpWebCorePlayer->mediaPlayerClient());
-    if(element && element->controls())
+     // Find controls intersection
+	if (element && element->controls() && element->mediaControls())
     {
         MediaControls* pControls = element->mediaControls();    
-        bool hideControls = pControls->shouldHideControls(); 
-        if (!hideControls)
-        {
-            const int kControlHeight = 16;  // EAWebKitTODO: Consider finding a way to extract this info directly from the controls or pass as a theme param.
-            
-            LayoutRect boundingRect = pControls->boundingBox();
-            x = (double) boundingRect.x();
-            y = (double) boundingRect.y();
-            w = (double) boundingRect.width();
-            h = (double) (boundingRect.height() - kControlHeight);
-            
+		bool hideControls = pControls->shouldHideControls(); 
+
+		if (!hideControls && pControls->renderer())
+		{
+			const int kControlHeight = 16;  // EAWebKitTODO: Consider finding a way to extract this info directly from the controls or pass as a theme param.
+
+			LayoutRect boundingRect = pControls->renderer()->absoluteBoundingBoxRect();
+			x = (float) boundingRect.x();
+			y = (float) boundingRect.y();
+			w = (float) boundingRect.width();
+			h = (float) (boundingRect.height() - kControlHeight);
+
 			const IntRect ctrlRect((int) x + totalOffset.x(), (int) y + totalOffset.y(), (int) w, (int) h);
 
-            clip.intersect(ctrlRect);
-
-        }
+			clip.intersect(ctrlRect);
+		}
     }
 
     if ((rect != mMovieRect) || (clip != mWindowRect))
@@ -560,8 +540,9 @@ void MediaPlayerPrivateEA::ClientUpdateStates(void)
              // Do nothing
              break;
 
-        case MediaUpdateInfo::kFinished:
         case MediaUpdateInfo::kPlaying:
+			mIsPlaying = true; // If the mediaState is being updated to MediaUpdateInfo::kPlaying from the client, set the mIsPlaying flag too.
+		case MediaUpdateInfo::kFinished:
             nState = MediaPlayer::Loading;
             rState = MediaPlayer::HaveEnoughData;        
             break;
@@ -591,20 +572,12 @@ void MediaPlayerPrivateEA::ClientUpdateStates(void)
     }
 }
 
-void MediaPlayerPrivateEA::UpdateTimerFired(Timer<MediaPlayerPrivateEA>*)
+void MediaPlayerPrivateEA::UpdateTimerFired()
 {
     // We can use this to control the movie playback and make sure the media player is getting all the info it needs.
     // Currently we just feed it repaint and a pause. This seems to work good enough for basic playback control but
     // we might have to revise this if further synchronization is needed between a movie player and the internal media player system.
     ClientUpdateStates();   
-
-    // Get the natural size here so that we control when it changes (so it does not occur in the paint).
-    ClientUpdate(MediaUpdateInfo::kGetNaturalSize);  
-    if (mNaturalSize != GetMediaUpdateInfo().mReturnNaturalSize)
-    {
-        mNaturalSize = GetMediaUpdateInfo().mReturnNaturalSize;  
-        mpWebCorePlayer->sizeChanged(); 
-    }
 
     if (mMediaState == MediaUpdateInfo::kFinished)
     {
@@ -614,8 +587,11 @@ void MediaPlayerPrivateEA::UpdateTimerFired(Timer<MediaPlayerPrivateEA>*)
             mIsPlaying = false;     // This will trigger a play request when calling the play button.
 
             // Pause if done playing so that the play arrow button shows up for possible replay.
-            HTMLMediaElement* element = static_cast<HTMLMediaElement*>(mpWebCorePlayer->mediaPlayerClient());
-            element->pause();
+			HTMLMediaElement* element = (HTMLMediaElement*)(&(mpWebCorePlayer->client()));
+			if (element)
+			{
+				element->pause();
+			}
         }
     }
 

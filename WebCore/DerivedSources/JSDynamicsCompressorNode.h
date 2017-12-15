@@ -25,23 +25,22 @@
 
 #include "DynamicsCompressorNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDynamicsCompressorNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSDynamicsCompressorNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DynamicsCompressorNode> impl)
+    static JSDynamicsCompressorNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DynamicsCompressorNode>&& impl)
     {
-        JSDynamicsCompressorNode* ptr = new (NotNull, JSC::allocateCell<JSDynamicsCompressorNode>(globalObject->vm().heap)) JSDynamicsCompressorNode(structure, globalObject, impl);
+        JSDynamicsCompressorNode* ptr = new (NotNull, JSC::allocateCell<JSDynamicsCompressorNode>(globalObject->vm().heap)) JSDynamicsCompressorNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,69 +54,19 @@ public:
         return static_cast<DynamicsCompressorNode&>(Base::impl());
     }
 protected:
-    JSDynamicsCompressorNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DynamicsCompressorNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDynamicsCompressorNode(JSC::Structure*, JSDOMGlobalObject*, Ref<DynamicsCompressorNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DynamicsCompressorNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DynamicsCompressorNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDynamicsCompressorNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDynamicsCompressorNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDynamicsCompressorNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSDynamicsCompressorNodePrototype>(vm.heap)) JSDynamicsCompressorNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDynamicsCompressorNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSDynamicsCompressorNodeConstructor : public DOMConstructorObject {
-private:
-    JSDynamicsCompressorNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDynamicsCompressorNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDynamicsCompressorNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSDynamicsCompressorNodeConstructor>(vm.heap)) JSDynamicsCompressorNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsDynamicsCompressorNodeThreshold(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDynamicsCompressorNodeKnee(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDynamicsCompressorNodeRatio(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDynamicsCompressorNodeReduction(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDynamicsCompressorNodeAttack(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDynamicsCompressorNodeRelease(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDynamicsCompressorNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -31,13 +31,12 @@
 #ifndef FileReader_h
 #define FileReader_h
 
-#if ENABLE(BLOB)
-
 #include "ActiveDOMObject.h"
 #include "EventTarget.h"
 #include "FileError.h"
 #include "FileReaderLoader.h"
 #include "FileReaderLoaderClient.h"
+#include <chrono>
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
@@ -53,9 +52,9 @@ class ScriptExecutionContext;
 
 typedef int ExceptionCode;
 
-class FileReader FINAL : public RefCounted<FileReader>, public ActiveDOMObject, public EventTargetWithInlineData, public FileReaderLoaderClient {
+class FileReader final : public RefCounted<FileReader>, public ActiveDOMObject, public EventTargetWithInlineData, public FileReaderLoaderClient {
 public:
-    static PassRefPtr<FileReader> create(ScriptExecutionContext*);
+    static Ref<FileReader> create(ScriptExecutionContext&);
 
     virtual ~FileReader();
 
@@ -81,35 +80,29 @@ public:
     String stringResult();
 
     // EventTarget
-    virtual EventTargetInterface eventTargetInterface() const OVERRIDE { return FileReaderEventTargetInterfaceType; }
-    virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE { return ActiveDOMObject::scriptExecutionContext(); }
+    virtual EventTargetInterface eventTargetInterface() const override { return FileReaderEventTargetInterfaceType; }
+    virtual ScriptExecutionContext* scriptExecutionContext() const override { return ActiveDOMObject::scriptExecutionContext(); }
 
     // FileReaderLoaderClient
-    virtual void didStartLoading() OVERRIDE;
-    virtual void didReceiveData() OVERRIDE;
-    virtual void didFinishLoading() OVERRIDE;
-    virtual void didFail(int errorCode) OVERRIDE;
+    virtual void didStartLoading() override;
+    virtual void didReceiveData() override;
+    virtual void didFinishLoading() override;
+    virtual void didFail(int errorCode) override;
 
     using RefCounted<FileReader>::ref;
     using RefCounted<FileReader>::deref;
 
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(loadstart);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(progress);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(load);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(abort);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(loadend);
-
 private:
-    explicit FileReader(ScriptExecutionContext*);
+    explicit FileReader(ScriptExecutionContext&);
 
-    // ActiveDOMObject
-    virtual bool canSuspend() const OVERRIDE;
-    virtual void stop() OVERRIDE;
+    // ActiveDOMObject API.
+    const char* activeDOMObjectName() const override;
+    bool canSuspendForPageCache() const override;
+    void stop() override;
 
     // EventTarget
-    virtual void refEventTarget() OVERRIDE { ref(); }
-    virtual void derefEventTarget() OVERRIDE { deref(); }
+    virtual void refEventTarget() override { ref(); }
+    virtual void derefEventTarget() override { deref(); }
 
     void terminate();
     void readInternal(Blob*, FileReaderLoader::ReadType, ExceptionCode&);
@@ -121,13 +114,11 @@ private:
     RefPtr<Blob> m_blob;
     FileReaderLoader::ReadType m_readType;
     String m_encoding;
-    OwnPtr<FileReaderLoader> m_loader;
+    std::unique_ptr<FileReaderLoader> m_loader;
     RefPtr<FileError> m_error;
-    double m_lastProgressNotificationTimeMS;
+    std::chrono::steady_clock::time_point m_lastProgressNotificationTime;
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(BLOB)
 
 #endif // FileReader_h

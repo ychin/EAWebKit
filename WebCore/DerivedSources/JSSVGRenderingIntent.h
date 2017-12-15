@@ -21,31 +21,29 @@
 #ifndef JSSVGRenderingIntent_h
 #define JSSVGRenderingIntent_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGElement.h"
 #include "SVGRenderingIntent.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGRenderingIntent : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGRenderingIntent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGRenderingIntent> impl)
+    static JSSVGRenderingIntent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGRenderingIntent>&& impl)
     {
-        JSSVGRenderingIntent* ptr = new (NotNull, JSC::allocateCell<JSSVGRenderingIntent>(globalObject->vm().heap)) JSSVGRenderingIntent(structure, globalObject, impl);
+        JSSVGRenderingIntent* ptr = new (NotNull, JSC::allocateCell<JSSVGRenderingIntent>(globalObject->vm().heap)) JSSVGRenderingIntent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGRenderingIntent* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGRenderingIntent();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,22 +53,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     SVGRenderingIntent& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SVGRenderingIntent* m_impl;
 protected:
-    JSSVGRenderingIntent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGRenderingIntent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGRenderingIntent(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGRenderingIntent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGRenderingIntentOwner : public JSC::WeakHandleOwner {
@@ -81,79 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGRenderingIntent*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGRenderingIntentOwner, jsSVGRenderingIntentOwner, ());
-    return &jsSVGRenderingIntentOwner;
+    static NeverDestroyed<JSSVGRenderingIntentOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SVGRenderingIntent*)
-{
-    return &world;
-}
 
-SVGRenderingIntent* toSVGRenderingIntent(JSC::JSValue);
-
-class JSSVGRenderingIntentPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGRenderingIntentPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGRenderingIntentPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGRenderingIntentPrototype>(vm.heap)) JSSVGRenderingIntentPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGRenderingIntentPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGRenderingIntentConstructor : public DOMConstructorObject {
-private:
-    JSSVGRenderingIntentConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGRenderingIntentConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGRenderingIntentConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGRenderingIntentConstructor>(vm.heap)) JSSVGRenderingIntentConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGRenderingIntentConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSVGRenderingIntentRENDERING_INTENT_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGRenderingIntentRENDERING_INTENT_AUTO(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGRenderingIntentRENDERING_INTENT_PERCEPTUAL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGRenderingIntentRENDERING_INTENT_RELATIVE_COLORIMETRIC(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGRenderingIntentRENDERING_INTENT_SATURATION(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGRenderingIntentRENDERING_INTENT_ABSOLUTE_COLORIMETRIC(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

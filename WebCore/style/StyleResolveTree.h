@@ -26,6 +26,8 @@
 #ifndef StyleResolveTree_h
 #define StyleResolveTree_h
 
+#include <functional>
+
 namespace WebCore {
 
 class Document;
@@ -38,20 +40,23 @@ namespace Style {
 
 enum Change { NoChange, NoInherit, Inherit, Detach, Force };
 
-void resolveTree(Element&, Change);
 void resolveTree(Document&, Change);
 
-void attachRenderTree(Element&);
 void detachRenderTree(Element&);
-void reattachRenderTree(Element&);
-// FIXME: This is only used for "lazy reattach" for shadow trees.
-void detachRenderTreeInReattachMode(Element&);
-
-void attachTextRenderer(Text&);
 void detachTextRenderer(Text&);
+
 void updateTextRendererAfterContentChange(Text&, unsigned offsetOfReplacedData, unsigned lengthOfReplacedData);
 
-Change determineChange(const RenderStyle*, const RenderStyle*, Settings*);
+Change determineChange(const RenderStyle&, const RenderStyle&);
+
+void queuePostResolutionCallback(std::function<void ()>);
+bool postResolutionCallbacksAreSuspended();
+
+class PostResolutionCallbackDisabler {
+public:
+    explicit PostResolutionCallbackDisabler(Document&);
+    ~PostResolutionCallbackDisabler();
+};
 
 }
 

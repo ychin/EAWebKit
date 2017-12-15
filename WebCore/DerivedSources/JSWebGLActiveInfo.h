@@ -23,28 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLActiveInfo.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLActiveInfo : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLActiveInfo* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLActiveInfo> impl)
+    static JSWebGLActiveInfo* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLActiveInfo>&& impl)
     {
-        JSWebGLActiveInfo* ptr = new (NotNull, JSC::allocateCell<JSWebGLActiveInfo>(globalObject->vm().heap)) JSWebGLActiveInfo(structure, globalObject, impl);
+        JSWebGLActiveInfo* ptr = new (NotNull, JSC::allocateCell<JSWebGLActiveInfo>(globalObject->vm().heap)) JSWebGLActiveInfo(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLActiveInfo* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLActiveInfo();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +54,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     WebGLActiveInfo& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLActiveInfo* m_impl;
 protected:
-    JSWebGLActiveInfo(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLActiveInfo>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebGLActiveInfo(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLActiveInfo>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLActiveInfoOwner : public JSC::WeakHandleOwner {
@@ -80,71 +77,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLActiveInfo*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLActiveInfoOwner, jsWebGLActiveInfoOwner, ());
-    return &jsWebGLActiveInfoOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLActiveInfo*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLActiveInfoOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLActiveInfo*);
-WebGLActiveInfo* toWebGLActiveInfo(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLActiveInfo& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebGLActiveInfoPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLActiveInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLActiveInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLActiveInfoPrototype>(vm.heap)) JSWebGLActiveInfoPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLActiveInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWebGLActiveInfoConstructor : public DOMConstructorObject {
-private:
-    JSWebGLActiveInfoConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebGLActiveInfoConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebGLActiveInfoConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebGLActiveInfoConstructor>(vm.heap)) JSWebGLActiveInfoConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsWebGLActiveInfoSize(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebGLActiveInfoType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebGLActiveInfoName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebGLActiveInfoConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

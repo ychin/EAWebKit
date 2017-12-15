@@ -25,22 +25,22 @@
 
 #include "AllVideoCapabilities.h"
 #include "JSMediaStreamCapabilities.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSAllVideoCapabilities : public JSMediaStreamCapabilities {
 public:
     typedef JSMediaStreamCapabilities Base;
-    static JSAllVideoCapabilities* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AllVideoCapabilities> impl)
+    static JSAllVideoCapabilities* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AllVideoCapabilities>&& impl)
     {
-        JSAllVideoCapabilities* ptr = new (NotNull, JSC::allocateCell<JSAllVideoCapabilities>(globalObject->vm().heap)) JSAllVideoCapabilities(structure, globalObject, impl);
+        JSAllVideoCapabilities* ptr = new (NotNull, JSC::allocateCell<JSAllVideoCapabilities>(globalObject->vm().heap)) JSAllVideoCapabilities(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,45 +53,19 @@ public:
         return static_cast<AllVideoCapabilities&>(Base::impl());
     }
 protected:
-    JSAllVideoCapabilities(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AllVideoCapabilities>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAllVideoCapabilities(JSC::Structure*, JSDOMGlobalObject*, Ref<AllVideoCapabilities>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AllVideoCapabilities*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AllVideoCapabilities& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAllVideoCapabilitiesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAllVideoCapabilitiesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAllVideoCapabilitiesPrototype* ptr = new (NotNull, JSC::allocateCell<JSAllVideoCapabilitiesPrototype>(vm.heap)) JSAllVideoCapabilitiesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAllVideoCapabilitiesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsAllVideoCapabilitiesSourceType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllVideoCapabilitiesSourceId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllVideoCapabilitiesWidth(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllVideoCapabilitiesHeight(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllVideoCapabilitiesFrameRate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllVideoCapabilitiesAspectRatio(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllVideoCapabilitiesFacingMode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

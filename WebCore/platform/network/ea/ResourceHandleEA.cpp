@@ -4,7 +4,7 @@
  * Copyright (C) 2008 Holger Hans Peter Freyther
  * 
  * All rights reserved.
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -54,7 +54,7 @@ public:
 
 
     virtual void didReceiveResponse(ResourceHandle*, const ResourceResponse&);
-    virtual void didReceiveData(ResourceHandle*, const char*, int, int lengthReceived);
+    virtual void didReceiveData(ResourceHandle*, const char*, unsigned, int lengthReceived);
     virtual void didFinishLoading(ResourceHandle*, double /*finishTime*/);
     virtual void didFail(ResourceHandle*, const ResourceError&);
 
@@ -77,7 +77,7 @@ void WebCoreSynchronousLoader::didReceiveResponse(ResourceHandle*, const Resourc
     m_response = response;
 }
 
-void WebCoreSynchronousLoader::didReceiveData(ResourceHandle*, const char* data, int length, int)
+void WebCoreSynchronousLoader::didReceiveData(ResourceHandle*, const char* data, unsigned length, int)
 {
     m_data.append(data, length);
 }
@@ -123,12 +123,6 @@ bool ResourceHandle::start()
 void ResourceHandle::cancel()
 {
 	ResourceHandleManager::sharedInstance()->cancel(this);
-}
-
-bool ResourceHandle::loadsBlocked()
-{
-	notImplemented();
-	return false;
 }
 
 void ResourceHandle::platformLoadResourceSynchronously(NetworkingContext* context, const ResourceRequest& request, StoredCredentials /*storedCredentials*/, ResourceError& error, ResourceResponse& response, Vector<char>& data)

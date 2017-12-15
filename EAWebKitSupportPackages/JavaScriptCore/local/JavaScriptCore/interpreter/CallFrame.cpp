@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008, 2013 Apple Inc. All Rights Reserved.
+ * Copyright (C) 2008, 2013, 2014 Apple Inc. All Rights Reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,7 +29,10 @@
 #include "CallFrameInlines.h"
 #include "CodeBlock.h"
 #include "Interpreter.h"
-#include "Operations.h"
+#include "JSLexicalEnvironment.h"
+#include "JSCInlines.h"
+#include "VMEntryScope.h"
+#include <wtf/StringPrintStream.h>
 
 namespace JSC {
 
@@ -115,11 +118,91 @@ CodeOrigin CallFrame::codeOrigin()
     return CodeOrigin(locationAsBytecodeOffset());
 }
 
-Register* CallFrame::frameExtentInternal()
+Register* CallFrame::topOfFrameInternal()
 {
     CodeBlock* codeBlock = this->codeBlock();
     ASSERT(codeBlock);
-    return registers() - codeBlock->m_numCalleeRegisters;
+    return registers() + codeBlock->stackPointerOffset();
+}
+
+JSGlobalObject* CallFrame::vmEntryGlobalObject()
+{
+    if (this == lexicalGlobalObject()->globalExec())
+        return lexicalGlobalObject();
+
+    // For any ExecState that's not a globalExec, the 
+    // dynamic global object must be set since code is running
+    ASSERT(vm().entryScope);
+    return vm().entryScope->globalObject();
+}
+
+CallFrame* CallFrame::callerFrame(VMEntryFrame*& currVMEntryFrame)
+{
+    if (callerFrameOrVMEntryFrame() == currVMEntryFrame) {
+        VMEntryRecord* currVMEntryRecord = vmEntryRecord(currVMEntryFrame);
+        currVMEntryFrame = currVMEntryRecord->prevTopVMEntryFrame();
+        return currVMEntryRecord->prevTopCallFrame();
+    }
+    return static_cast<CallFrame*>(callerFrameOrVMEntryFrame());
+}
+
+JSLexicalEnvironment* CallFrame::lexicalEnvironment() const
+{
+    CodeBlock* codeBlock = this->codeBlock();
+    RELEASE_ASSERT(codeBlock->needsActivation());
+    VirtualRegister activationRegister = codeBlock->activationRegister();
+    return registers()[activationRegister.offset()].Register::lexicalEnvironment();
+}
+
+JSLexicalEnvironment* CallFrame::lexicalEnvironmentOrNullptr() const
+{
+    CodeBlock* codeBlock = this->codeBlock();
+    return codeBlock->needsActivation() ? lexicalEnvironment() : nullptr;
+}
+    
+void CallFrame::setActivation(JSLexicalEnvironment* lexicalEnvironment)
+{
+    CodeBlock* codeBlock = this->codeBlock();
+    RELEASE_ASSERT(codeBlock->needsActivation());
+    VirtualRegister activationRegister = codeBlock->activationRegister();
+    registers()[activationRegister.offset()] = lexicalEnvironment;
+}
+
+void CallFrame::dump(PrintStream& out)
+{
+    if (CodeBlock* codeBlock = this->codeBlock()) {
+        out.print(codeBlock->inferredName(), "#", codeBlock->hashAsStringIfPossible(), " [", codeBlock->jitType(), "]");
+
+        out.print("(");
+        thisValue().dumpForBacktrace(out);
+
+        for (size_t i = 0; i < argumentCount(); ++i) {
+            out.print(", ");
+            JSValue value = argument(i);
+            value.dumpForBacktrace(out);
+        }
+
+        out.print(")");
+
+        return;
+    }
+
+    out.print(returnPC());
+}
+
+const char* CallFrame::describeFrame()
+{
+    const size_t bufferSize = 200;
+    static char buffer[bufferSize + 1];
+    
+    WTF::StringPrintStream stringStream;
+
+    dump(stringStream);
+
+    strncpy(buffer, stringStream.toCString().data(), bufferSize);
+    buffer[bufferSize] = '\0';
+    
+    return buffer;
 }
 
 } // namespace JSC

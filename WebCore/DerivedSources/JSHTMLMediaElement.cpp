@@ -24,91 +24,242 @@
 
 #include "JSHTMLMediaElement.h"
 
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "HTMLMediaElement.h"
+#include "HTMLMediaElementMediaSession.h"
+#include "HTMLMediaElementMediaStream.h"
 #include "HTMLNames.h"
 #include "JSDOMBinding.h"
-#include "JSEventListener.h"
 #include "JSMediaController.h"
 #include "JSMediaError.h"
 #include "JSTimeRanges.h"
 #include "MediaController.h"
 #include "MediaError.h"
+#include "TextTrack.h"
 #include "TimeRanges.h"
 #include "URL.h"
+#include "VideoPlaybackQuality.h"
 #include <runtime/Error.h>
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
+
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+#include "JSMediaKeys.h"
+#include "MediaKeys.h"
+#endif
+
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+#include "JSMediaSession.h"
+#include "MediaSession.h"
+#endif
+
+#if ENABLE(MEDIA_SOURCE)
+#include "JSVideoPlaybackQuality.h"
+#endif
+
+#if ENABLE(MEDIA_STREAM) && ENABLE(VIDEO)
+#include "JSMediaStream.h"
+#include "MediaStream.h"
+#endif
+
+#if ENABLE(VIDEO_TRACK)
+#include "AudioTrackList.h"
+#include "JSAudioTrackList.h"
+#include "JSTextTrack.h"
+#include "JSTextTrackList.h"
+#include "JSVideoTrackList.h"
+#include "TextTrackList.h"
+#include "VideoTrackList.h"
+#endif
 
 using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionLoad(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionCanPlayType(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionGetStartDate(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionPlay(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionPause(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionFastSeek(JSC::ExecState*);
+#if ENABLE(ENCRYPTED_MEDIA)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitGenerateKeyRequest(JSC::ExecState*);
+#endif
+#if ENABLE(ENCRYPTED_MEDIA)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitAddKey(JSC::ExecState*);
+#endif
+#if ENABLE(ENCRYPTED_MEDIA)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitCancelKeyRequest(JSC::ExecState*);
+#endif
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitSetMediaKeys(JSC::ExecState*);
+#endif
+#if ENABLE(VIDEO_TRACK)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionAddTextTrack(JSC::ExecState*);
+#endif
+#if ENABLE(MEDIA_SOURCE)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionGetVideoPlaybackQuality(JSC::ExecState*);
+#endif
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitShowPlaybackTargetPicker(JSC::ExecState*);
+#endif
+
+// Attributes
+
+JSC::EncodedJSValue jsHTMLMediaElementError(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementCurrentSrc(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementNetworkState(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementPreload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementPreload(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementBuffered(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementReadyState(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementSeeking(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementCurrentTime(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementCurrentTime(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementDuration(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementPaused(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementDefaultPlaybackRate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementDefaultPlaybackRate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementPlaybackRate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementPlaybackRate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementPlayed(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementSeekable(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementEnded(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementAutoplay(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementAutoplay(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementLoop(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementLoop(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementControls(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementControls(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementVolume(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementVolume(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementMuted(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementMuted(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementDefaultMuted(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementDefaultMuted(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementWebkitPreservesPitch(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementWebkitPreservesPitch(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementWebkitHasClosedCaptions(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLMediaElementWebkitClosedCaptionsVisible(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementWebkitClosedCaptionsVisible(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(MEDIA_STATISTICS)
+JSC::EncodedJSValue jsHTMLMediaElementWebkitAudioDecodedByteCount(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(MEDIA_STATISTICS)
+JSC::EncodedJSValue jsHTMLMediaElementWebkitVideoDecodedByteCount(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+JSC::EncodedJSValue jsHTMLMediaElementWebkitKeys(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(VIDEO_TRACK)
+JSC::EncodedJSValue jsHTMLMediaElementAudioTracks(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(VIDEO_TRACK)
+JSC::EncodedJSValue jsHTMLMediaElementTextTracks(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(VIDEO_TRACK)
+JSC::EncodedJSValue jsHTMLMediaElementVideoTracks(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+JSC::EncodedJSValue jsHTMLMediaElementMediaGroup(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementMediaGroup(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLMediaElementController(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementController(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+JSC::EncodedJSValue jsHTMLMediaElementWebkitCurrentPlaybackTargetIsWireless(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+#endif
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+JSC::EncodedJSValue jsHTMLMediaElementKind(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementKind(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+JSC::EncodedJSValue jsHTMLMediaElementSession(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementSession(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+#if ENABLE(MEDIA_STREAM) && ENABLE(VIDEO)
+JSC::EncodedJSValue jsHTMLMediaElementSrcObject(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLMediaElementSrcObject(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+#endif
+JSC::EncodedJSValue jsHTMLMediaElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLMediaElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLMediaElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLMediaElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLMediaElementPrototype>(vm.heap)) JSHTMLMediaElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLMediaElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSHTMLMediaElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLMediaElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLMediaElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLMediaElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLMediaElementConstructor>(vm.heap)) JSHTMLMediaElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSHTMLMediaElementTableIndex[2] = {
+    { 0, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSHTMLMediaElementTableValues[] =
 {
-    { "error", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementError), (intptr_t)0 },
-    { "src", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSrc), (intptr_t)setJSHTMLMediaElementSrc },
-    { "currentSrc", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementCurrentSrc), (intptr_t)0 },
-    { "networkState", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNetworkState), (intptr_t)0 },
-    { "preload", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPreload), (intptr_t)setJSHTMLMediaElementPreload },
-    { "buffered", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementBuffered), (intptr_t)0 },
-    { "readyState", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementReadyState), (intptr_t)0 },
-    { "seeking", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSeeking), (intptr_t)0 },
-    { "currentTime", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementCurrentTime), (intptr_t)setJSHTMLMediaElementCurrentTime },
-    { "initialTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementInitialTime), (intptr_t)0 },
-    { "startTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementStartTime), (intptr_t)0 },
-    { "duration", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementDuration), (intptr_t)0 },
-    { "paused", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPaused), (intptr_t)0 },
-    { "defaultPlaybackRate", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementDefaultPlaybackRate), (intptr_t)setJSHTMLMediaElementDefaultPlaybackRate },
-    { "playbackRate", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPlaybackRate), (intptr_t)setJSHTMLMediaElementPlaybackRate },
-    { "played", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPlayed), (intptr_t)0 },
-    { "seekable", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSeekable), (intptr_t)0 },
-    { "ended", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementEnded), (intptr_t)0 },
-    { "autoplay", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementAutoplay), (intptr_t)setJSHTMLMediaElementAutoplay },
-    { "loop", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementLoop), (intptr_t)setJSHTMLMediaElementLoop },
-    { "controls", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementControls), (intptr_t)setJSHTMLMediaElementControls },
-    { "volume", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementVolume), (intptr_t)setJSHTMLMediaElementVolume },
-    { "muted", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementMuted), (intptr_t)setJSHTMLMediaElementMuted },
-    { "defaultMuted", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementDefaultMuted), (intptr_t)setJSHTMLMediaElementDefaultMuted },
-    { "webkitPreservesPitch", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitPreservesPitch), (intptr_t)setJSHTMLMediaElementWebkitPreservesPitch },
-    { "webkitHasClosedCaptions", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitHasClosedCaptions), (intptr_t)0 },
-    { "webkitClosedCaptionsVisible", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitClosedCaptionsVisible), (intptr_t)setJSHTMLMediaElementWebkitClosedCaptionsVisible },
-#if ENABLE(MEDIA_STATISTICS)
-    { "webkitAudioDecodedByteCount", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitAudioDecodedByteCount), (intptr_t)0 },
-#endif
-#if ENABLE(MEDIA_STATISTICS)
-    { "webkitVideoDecodedByteCount", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitVideoDecodedByteCount), (intptr_t)0 },
-#endif
-#if ENABLE(ENCRYPTED_MEDIA) || ENABLE(ENCRYPTED_MEDIA_V2)
-    { "onwebkitneedkey", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementOnwebkitneedkey), (intptr_t)setJSHTMLMediaElementOnwebkitneedkey },
-#endif
-    { "mediaGroup", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementMediaGroup), (intptr_t)setJSHTMLMediaElementMediaGroup },
-    { "controller", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementController), (intptr_t)setJSHTMLMediaElementController },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "controller", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementController), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementController) },
 };
 
-static const HashTable JSHTMLMediaElementTable = { 130, 127, JSHTMLMediaElementTableValues, 0 };
+static const HashTable JSHTMLMediaElementTable = { 1, 1, true, JSHTMLMediaElementTableValues, 0, JSHTMLMediaElementTableIndex };
 /* Hash table for constructor */
 
 static const HashTableValue JSHTMLMediaElementConstructorTableValues[] =
 {
-    { "NETWORK_EMPTY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_EMPTY), (intptr_t)0 },
-    { "NETWORK_IDLE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_IDLE), (intptr_t)0 },
-    { "NETWORK_LOADING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_LOADING), (intptr_t)0 },
-    { "NETWORK_NO_SOURCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_NO_SOURCE), (intptr_t)0 },
-    { "HAVE_NOTHING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_NOTHING), (intptr_t)0 },
-    { "HAVE_METADATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_METADATA), (intptr_t)0 },
-    { "HAVE_CURRENT_DATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_CURRENT_DATA), (intptr_t)0 },
-    { "HAVE_FUTURE_DATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_FUTURE_DATA), (intptr_t)0 },
-    { "HAVE_ENOUGH_DATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_ENOUGH_DATA), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "NETWORK_EMPTY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "NETWORK_IDLE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "NETWORK_LOADING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "NETWORK_NO_SOURCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "HAVE_NOTHING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "HAVE_METADATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "HAVE_CURRENT_DATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "HAVE_FUTURE_DATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "HAVE_ENOUGH_DATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
 };
 
-static const HashTable JSHTMLMediaElementConstructorTable = { 32, 31, JSHTMLMediaElementConstructorTableValues, 0 };
 
 COMPILE_ASSERT(0 == HTMLMediaElement::NETWORK_EMPTY, HTMLMediaElementEnumNETWORK_EMPTYIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(1 == HTMLMediaElement::NETWORK_IDLE, HTMLMediaElementEnumNETWORK_IDLEIsWrongUseDoNotCheckConstants);
@@ -120,7 +271,7 @@ COMPILE_ASSERT(2 == HTMLMediaElement::HAVE_CURRENT_DATA, HTMLMediaElementEnumHAV
 COMPILE_ASSERT(3 == HTMLMediaElement::HAVE_FUTURE_DATA, HTMLMediaElementEnumHAVE_FUTURE_DATAIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(4 == HTMLMediaElement::HAVE_ENOUGH_DATA, HTMLMediaElementEnumHAVE_ENOUGH_DATAIsWrongUseDoNotCheckConstants);
 
-const ClassInfo JSHTMLMediaElementConstructor::s_info = { "HTMLMediaElementConstructor", &Base::s_info, &JSHTMLMediaElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLMediaElementConstructor) };
+const ClassInfo JSHTMLMediaElementConstructor::s_info = { "HTMLMediaElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLMediaElementConstructor) };
 
 JSHTMLMediaElementConstructor::JSHTMLMediaElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -131,608 +282,1196 @@ void JSHTMLMediaElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLMediaElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLMediaElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLMediaElementConstructor, JSDOMWrapper>(exec, JSHTMLMediaElementConstructorTable, jsCast<JSHTMLMediaElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLMediaElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLMediaElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSHTMLMediaElementConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLMediaElementPrototypeTableValues[] =
 {
-    { "NETWORK_EMPTY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_EMPTY), (intptr_t)0 },
-    { "NETWORK_IDLE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_IDLE), (intptr_t)0 },
-    { "NETWORK_LOADING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_LOADING), (intptr_t)0 },
-    { "NETWORK_NO_SOURCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNETWORK_NO_SOURCE), (intptr_t)0 },
-    { "HAVE_NOTHING", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_NOTHING), (intptr_t)0 },
-    { "HAVE_METADATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_METADATA), (intptr_t)0 },
-    { "HAVE_CURRENT_DATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_CURRENT_DATA), (intptr_t)0 },
-    { "HAVE_FUTURE_DATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_FUTURE_DATA), (intptr_t)0 },
-    { "HAVE_ENOUGH_DATA", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementHAVE_ENOUGH_DATA), (intptr_t)0 },
-    { "load", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionLoad), (intptr_t)0 },
-    { "canPlayType", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionCanPlayType), (intptr_t)0 },
-    { "play", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionPlay), (intptr_t)0 },
-    { "pause", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionPause), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "error", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementError), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "src", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSrc), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementSrc) },
+    { "currentSrc", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementCurrentSrc), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "networkState", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementNetworkState), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "preload", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPreload), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementPreload) },
+    { "buffered", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementBuffered), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "readyState", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementReadyState), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "seeking", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSeeking), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "currentTime", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementCurrentTime), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementCurrentTime) },
+    { "duration", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementDuration), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "paused", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPaused), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "defaultPlaybackRate", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementDefaultPlaybackRate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementDefaultPlaybackRate) },
+    { "playbackRate", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPlaybackRate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementPlaybackRate) },
+    { "played", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementPlayed), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "seekable", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSeekable), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "ended", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementEnded), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "autoplay", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementAutoplay), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementAutoplay) },
+    { "loop", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementLoop), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementLoop) },
+    { "controls", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementControls), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementControls) },
+    { "volume", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementVolume), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementVolume) },
+    { "muted", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementMuted), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementMuted) },
+    { "defaultMuted", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementDefaultMuted), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementDefaultMuted) },
+    { "webkitPreservesPitch", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitPreservesPitch), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementWebkitPreservesPitch) },
+    { "webkitHasClosedCaptions", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitHasClosedCaptions), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "webkitClosedCaptionsVisible", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitClosedCaptionsVisible), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementWebkitClosedCaptionsVisible) },
+#if ENABLE(MEDIA_STATISTICS)
+    { "webkitAudioDecodedByteCount", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitAudioDecodedByteCount), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_STATISTICS)
+    { "webkitVideoDecodedByteCount", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitVideoDecodedByteCount), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+    { "webkitKeys", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitKeys), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(VIDEO_TRACK)
+    { "audioTracks", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementAudioTracks), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(VIDEO_TRACK)
+    { "textTracks", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementTextTracks), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(VIDEO_TRACK)
+    { "videoTracks", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementVideoTracks), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "mediaGroup", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementMediaGroup), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementMediaGroup) },
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+    { "webkitCurrentPlaybackTargetIsWireless", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementWebkitCurrentPlaybackTargetIsWireless), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+    { "kind", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementKind), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementKind) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+    { "session", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSession), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementSession) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_STREAM) && ENABLE(VIDEO)
+    { "srcObject", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLMediaElementSrcObject), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLMediaElementSrcObject) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+    { "NETWORK_EMPTY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "NETWORK_IDLE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "NETWORK_LOADING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "NETWORK_NO_SOURCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "HAVE_NOTHING", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0), (intptr_t) (0) },
+    { "HAVE_METADATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "HAVE_CURRENT_DATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "HAVE_FUTURE_DATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "HAVE_ENOUGH_DATA", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(4), (intptr_t) (0) },
+    { "load", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionLoad), (intptr_t) (0) },
+    { "canPlayType", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionCanPlayType), (intptr_t) (0) },
+    { "getStartDate", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionGetStartDate), (intptr_t) (0) },
+    { "play", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionPlay), (intptr_t) (0) },
+    { "pause", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionPause), (intptr_t) (0) },
+    { "fastSeek", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionFastSeek), (intptr_t) (1) },
+#if ENABLE(ENCRYPTED_MEDIA)
+    { "webkitGenerateKeyRequest", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionWebkitGenerateKeyRequest), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(ENCRYPTED_MEDIA)
+    { "webkitAddKey", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionWebkitAddKey), (intptr_t) (2) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(ENCRYPTED_MEDIA)
+    { "webkitCancelKeyRequest", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionWebkitCancelKeyRequest), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+    { "webkitSetMediaKeys", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionWebkitSetMediaKeys), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(VIDEO_TRACK)
+    { "addTextTrack", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionAddTextTrack), (intptr_t) (1) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(MEDIA_SOURCE)
+    { "getVideoPlaybackQuality", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionGetVideoPlaybackQuality), (intptr_t) (0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+    { "webkitShowPlaybackTargetPicker", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLMediaElementPrototypeFunctionWebkitShowPlaybackTargetPicker), (intptr_t) (0) },
+#else
+    { 0, 0, NoIntrinsic, 0, 0 },
+#endif
 };
 
-static const HashTable JSHTMLMediaElementPrototypeTable = { 32, 31, JSHTMLMediaElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLMediaElementPrototype::s_info = { "HTMLMediaElementPrototype", &Base::s_info, &JSHTMLMediaElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLMediaElementPrototype) };
+const ClassInfo JSHTMLMediaElementPrototype::s_info = { "HTMLMediaElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLMediaElementPrototype) };
 
-JSObject* JSHTMLMediaElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLMediaElement>(vm, globalObject);
-}
-
-bool JSHTMLMediaElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSHTMLMediaElementPrototype* thisObject = jsCast<JSHTMLMediaElementPrototype*>(object);
-    return getStaticPropertySlot<JSHTMLMediaElementPrototype, JSObject>(exec, JSHTMLMediaElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSHTMLMediaElement::s_info = { "HTMLMediaElement", &Base::s_info, &JSHTMLMediaElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLMediaElement) };
-
-JSHTMLMediaElement::JSHTMLMediaElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLMediaElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLMediaElement::finishCreation(VM& vm)
+void JSHTMLMediaElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLMediaElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLMediaElement::s_info = { "HTMLMediaElement", &Base::s_info, &JSHTMLMediaElementTable, CREATE_METHOD_TABLE(JSHTMLMediaElement) };
+
+JSHTMLMediaElement::JSHTMLMediaElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLMediaElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLMediaElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLMediaElementPrototype::create(vm, globalObject, JSHTMLMediaElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLMediaElementPrototype::create(vm, globalObject, JSHTMLMediaElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSHTMLMediaElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSHTMLMediaElement>(vm, globalObject);
 }
 
 bool JSHTMLMediaElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSHTMLMediaElement* thisObject = jsCast<JSHTMLMediaElement*>(object);
+    auto* thisObject = jsCast<JSHTMLMediaElement*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSHTMLMediaElement, Base>(exec, JSHTMLMediaElementTable, thisObject, propertyName, slot);
 }
 
-JSValue jsHTMLMediaElementError(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLMediaElementError(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.error()));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementSrc(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::srcAttr));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementCurrentSrc(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.currentSrc());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementNetworkState(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.networkState());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementPreload(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsStringWithCache(exec, impl.preload());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementBuffered(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.buffered()));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementReadyState(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.readyState());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementSeeking(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.seeking());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementCurrentTime(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.currentTime());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementInitialTime(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.initialTime());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementStartTime(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.startTime());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementDuration(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.duration());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementPaused(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.paused());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementDefaultPlaybackRate(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.defaultPlaybackRate());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementPlaybackRate(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.playbackRate());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementPlayed(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.played()));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementSeekable(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.seekable()));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementEnded(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.ended());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementAutoplay(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::autoplayAttr));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementLoop(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::loopAttr));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementControls(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.controls());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementVolume(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.volume());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementMuted(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.muted());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementDefaultMuted(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::mutedAttr));
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementWebkitPreservesPitch(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.webkitPreservesPitch());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementWebkitHasClosedCaptions(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.webkitHasClosedCaptions());
-    return result;
-}
-
-
-JSValue jsHTMLMediaElementWebkitClosedCaptionsVisible(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsBoolean(impl.webkitClosedCaptionsVisible());
-    return result;
-}
-
-
-#if ENABLE(MEDIA_STATISTICS)
-JSValue jsHTMLMediaElementWebkitAudioDecodedByteCount(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.webkitAudioDecodedByteCount());
-    return result;
-}
-
-#endif
-
-#if ENABLE(MEDIA_STATISTICS)
-JSValue jsHTMLMediaElementWebkitVideoDecodedByteCount(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.webkitVideoDecodedByteCount());
-    return result;
-}
-
-#endif
-
-#if ENABLE(ENCRYPTED_MEDIA) || ENABLE(ENCRYPTED_MEDIA_V2)
-JSValue jsHTMLMediaElementOnwebkitneedkey(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
-    if (EventListener* listener = impl.onwebkitneedkey()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "error");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "error");
     }
-    return jsNull();
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.error()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementSrc(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "src");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "src");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.getURLAttribute(WebCore::HTMLNames::srcAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementCurrentSrc(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "currentSrc");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "currentSrc");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.currentSrc());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementNetworkState(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "networkState");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "networkState");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.networkState());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementPreload(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "preload");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "preload");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.preload());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementBuffered(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "buffered");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "buffered");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.buffered()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementReadyState(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "readyState");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "readyState");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.readyState());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementSeeking(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "seeking");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "seeking");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.seeking());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementCurrentTime(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "currentTime");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "currentTime");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.currentTime());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementDuration(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "duration");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "duration");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.duration());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementPaused(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "paused");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "paused");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.paused());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementDefaultPlaybackRate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "defaultPlaybackRate");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "defaultPlaybackRate");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.defaultPlaybackRate());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementPlaybackRate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "playbackRate");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "playbackRate");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.playbackRate());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementPlayed(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "played");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "played");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.played()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementSeekable(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "seekable");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "seekable");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.seekable()));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementEnded(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "ended");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "ended");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.ended());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementAutoplay(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "autoplay");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "autoplay");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::autoplayAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementLoop(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "loop");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "loop");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::loopAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementControls(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "controls");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "controls");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.controls());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementVolume(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "volume");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "volume");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.volume());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementMuted(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "muted");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "muted");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.muted());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementDefaultMuted(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "defaultMuted");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "defaultMuted");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::mutedAttr));
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementWebkitPreservesPitch(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitPreservesPitch");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitPreservesPitch");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.webkitPreservesPitch());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementWebkitHasClosedCaptions(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitHasClosedCaptions");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitHasClosedCaptions");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.webkitHasClosedCaptions());
+    return JSValue::encode(result);
+}
+
+
+EncodedJSValue jsHTMLMediaElementWebkitClosedCaptionsVisible(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitClosedCaptionsVisible");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitClosedCaptionsVisible");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.webkitClosedCaptionsVisible());
+    return JSValue::encode(result);
+}
+
+
+#if ENABLE(MEDIA_STATISTICS)
+EncodedJSValue jsHTMLMediaElementWebkitAudioDecodedByteCount(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitAudioDecodedByteCount");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitAudioDecodedByteCount");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.webkitAudioDecodedByteCount());
+    return JSValue::encode(result);
 }
 
 #endif
 
-JSValue jsHTMLMediaElementMediaGroup(ExecState* exec, JSValue slotBase, PropertyName)
+#if ENABLE(MEDIA_STATISTICS)
+EncodedJSValue jsHTMLMediaElementWebkitVideoDecodedByteCount(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitVideoDecodedByteCount");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitVideoDecodedByteCount");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.webkitVideoDecodedByteCount());
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+EncodedJSValue jsHTMLMediaElementWebkitKeys(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitKeys");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitKeys");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.keys()));
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(VIDEO_TRACK)
+EncodedJSValue jsHTMLMediaElementAudioTracks(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "audioTracks");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "audioTracks");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.audioTracks()));
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(VIDEO_TRACK)
+EncodedJSValue jsHTMLMediaElementTextTracks(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "textTracks");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "textTracks");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.textTracks()));
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(VIDEO_TRACK)
+EncodedJSValue jsHTMLMediaElementVideoTracks(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "videoTracks");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "videoTracks");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.videoTracks()));
+    return JSValue::encode(result);
+}
+
+#endif
+
+EncodedJSValue jsHTMLMediaElementMediaGroup(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "mediaGroup");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "mediaGroup");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::mediagroupAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLMediaElementController(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLMediaElementController(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLMediaElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLMediaElement*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.controller()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLMediaElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSHTMLMediaElement* domObject = jsCast<JSHTMLMediaElement*>(asObject(slotBase));
-    return JSHTMLMediaElement::getConstructor(exec->vm(), domObject->globalObject());
-}
-
-void JSHTMLMediaElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSHTMLMediaElement* thisObject = jsCast<JSHTMLMediaElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLMediaElement, Base>(exec, propertyName, value, JSHTMLMediaElementTable, thisObject, slot);
-}
-
-void setJSHTMLMediaElementSrc(ExecState* exec, JSObject* thisObject, JSValue value)
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+EncodedJSValue jsHTMLMediaElementWebkitCurrentPlaybackTargetIsWireless(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "webkitCurrentPlaybackTargetIsWireless");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "webkitCurrentPlaybackTargetIsWireless");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.webkitCurrentPlaybackTargetIsWireless());
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+EncodedJSValue jsHTMLMediaElementKind(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "kind");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "kind");
+    }
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, HTMLMediaElementMediaSession::kind(&impl));
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+EncodedJSValue jsHTMLMediaElementSession(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "session");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "session");
+    }
+    bool isNull = false;
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(HTMLMediaElementMediaSession::session(&impl, isNull)));
+    if (isNull)
+        return JSValue::encode(jsNull());
+    return JSValue::encode(result);
+}
+
+#endif
+
+#if ENABLE(MEDIA_STREAM) && ENABLE(VIDEO)
+EncodedJSValue jsHTMLMediaElementSrcObject(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
+{
+    UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLMediaElement", "srcObject");
+        return throwGetterTypeError(*exec, "HTMLMediaElement", "srcObject");
+    }
+    bool isNull = false;
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(HTMLMediaElementMediaStream::srcObject(&impl, isNull)));
+    if (isNull)
+        return JSValue::encode(jsNull());
+    return JSValue::encode(result);
+}
+
+#endif
+
+EncodedJSValue jsHTMLMediaElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
+{
+    JSHTMLMediaElementPrototype* domObject = jsDynamicCast<JSHTMLMediaElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLMediaElement::getConstructor(exec->vm(), domObject->globalObject()));
+}
+
+void setJSHTMLMediaElementSrc(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "src");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "src");
         return;
-    impl.setAttribute(WebCore::HTMLNames::srcAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::srcAttr, nativeValue);
 }
 
 
-void setJSHTMLMediaElementPreload(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementPreload(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    const String& nativeValue(value.isEmpty() ? String() : value.toString(exec)->value(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "preload");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "preload");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setPreload(nativeValue);
 }
 
 
-void setJSHTMLMediaElementCurrentTime(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementCurrentTime(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "currentTime");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "currentTime");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setCurrentTime(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLMediaElementDefaultPlaybackRate(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementDefaultPlaybackRate(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "defaultPlaybackRate");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "defaultPlaybackRate");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setDefaultPlaybackRate(nativeValue);
 }
 
 
-void setJSHTMLMediaElementPlaybackRate(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementPlaybackRate(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "playbackRate");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "playbackRate");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setPlaybackRate(nativeValue);
 }
 
 
-void setJSHTMLMediaElementAutoplay(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementAutoplay(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "autoplay");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "autoplay");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::autoplayAttr, nativeValue);
 }
 
 
-void setJSHTMLMediaElementLoop(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementLoop(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "loop");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "loop");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::loopAttr, nativeValue);
 }
 
 
-void setJSHTMLMediaElementControls(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementControls(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "controls");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "controls");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setControls(nativeValue);
 }
 
 
-void setJSHTMLMediaElementVolume(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementVolume(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "volume");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "volume");
+        return;
+    }
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    double nativeValue(value.toNumber(exec));
-    if (exec->hadException())
+    double nativeValue = value.toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setVolume(nativeValue, ec);
     setDOMException(exec, ec);
 }
 
 
-void setJSHTMLMediaElementMuted(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementMuted(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "muted");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "muted");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setMuted(nativeValue);
 }
 
 
-void setJSHTMLMediaElementDefaultMuted(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementDefaultMuted(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "defaultMuted");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "defaultMuted");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::mutedAttr, nativeValue);
 }
 
 
-void setJSHTMLMediaElementWebkitPreservesPitch(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementWebkitPreservesPitch(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "webkitPreservesPitch");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "webkitPreservesPitch");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setWebkitPreservesPitch(nativeValue);
 }
 
 
-void setJSHTMLMediaElementWebkitClosedCaptionsVisible(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementWebkitClosedCaptionsVisible(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "webkitClosedCaptionsVisible");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "webkitClosedCaptionsVisible");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setWebkitClosedCaptionsVisible(nativeValue);
 }
 
 
-#if ENABLE(ENCRYPTED_MEDIA) || ENABLE(ENCRYPTED_MEDIA_V2)
-void setJSHTMLMediaElementOnwebkitneedkey(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLMediaElementMediaGroup(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "mediaGroup");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "mediaGroup");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::mediagroupAttr, nativeValue);
+}
+
+
+void setJSHTMLMediaElementController(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSHTMLMediaElement*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    impl.setOnwebkitneedkey(createJSAttributeEventListener(exec, value, thisObject));
+    castedThis->setController(exec, value);
+}
+
+
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+void setJSHTMLMediaElementKind(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "kind");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "kind");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = value.toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    HTMLMediaElementMediaSession::setKind(&impl, nativeValue);
 }
 
 #endif
 
-void setJSHTMLMediaElementMediaGroup(ExecState* exec, JSObject* thisObject, JSValue value)
+#if ENABLE(MEDIA_SESSION) && ENABLE(VIDEO)
+void setJSHTMLMediaElementSession(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(thisObject);
-    HTMLMediaElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "session");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "session");
         return;
-    impl.setAttribute(WebCore::HTMLNames::mediagroupAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    MediaSession* nativeValue = JSMediaSession::toWrapped(value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    HTMLMediaElementMediaSession::setSession(&impl, nativeValue);
 }
 
+#endif
 
-void setJSHTMLMediaElementController(ExecState* exec, JSObject* thisObject, JSValue value)
+#if ENABLE(MEDIA_STREAM) && ENABLE(VIDEO)
+void setJSHTMLMediaElementSrcObject(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    jsCast<JSHTMLMediaElement*>(thisObject)->setController(exec, value);
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLMediaElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLMediaElement", "srcObject");
+        else
+            throwSetterTypeError(*exec, "HTMLMediaElement", "srcObject");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    MediaStream* nativeValue = JSMediaStream::toWrapped(value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    HTMLMediaElementMediaStream::setSrcObject(&impl, nativeValue);
 }
 
+#endif
 
 JSValue JSHTMLMediaElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 {
@@ -741,145 +1480,301 @@ JSValue JSHTMLMediaElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionLoad(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLMediaElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "load");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
-    HTMLMediaElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.load();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionCanPlayType(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLMediaElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "canPlayType");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
-    HTMLMediaElement& impl = castedThis->impl();
-    const String& type(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String type = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsStringWithCache(exec, impl.canPlayType(type));
+    return JSValue::encode(result);
+}
 
-    JSC::JSValue result = jsStringWithCache(exec, impl.canPlayType(type));
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionGetStartDate(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "getStartDate");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    JSValue result = jsDateOrNaN(exec, impl.getStartDate());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionPlay(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLMediaElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "play");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
-    HTMLMediaElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.play();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionPause(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLMediaElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLMediaElement* castedThis = jsCast<JSHTMLMediaElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "pause");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
-    HTMLMediaElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.pause();
     return JSValue::encode(jsUndefined());
 }
 
-// Constant getters
-
-JSValue jsHTMLMediaElementNETWORK_EMPTY(ExecState* exec, JSValue, PropertyName)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionFastSeek(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "fastSeek");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    double time = exec->argument(0).toNumber(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.fastSeek(time);
+    return JSValue::encode(jsUndefined());
 }
 
-JSValue jsHTMLMediaElementNETWORK_IDLE(ExecState* exec, JSValue, PropertyName)
+#if ENABLE(ENCRYPTED_MEDIA)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitGenerateKeyRequest(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "webkitGenerateKeyRequest");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    ExceptionCode ec = 0;
+    String keySystem = valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+
+    size_t argsCount = exec->argumentCount();
+    if (argsCount <= 1) {
+        impl.webkitGenerateKeyRequest(keySystem, ec);
+        setDOMException(exec, ec);
+        return JSValue::encode(jsUndefined());
+    }
+
+    RefPtr<Uint8Array> initData = toUint8Array(exec->argument(1));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.webkitGenerateKeyRequest(keySystem, initData.get(), ec);
+    setDOMException(exec, ec);
+    return JSValue::encode(jsUndefined());
 }
 
-JSValue jsHTMLMediaElementNETWORK_LOADING(ExecState* exec, JSValue, PropertyName)
+#endif
+
+#if ENABLE(ENCRYPTED_MEDIA)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitAddKey(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "webkitAddKey");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    ExceptionCode ec = 0;
+    String keySystem = valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    RefPtr<Uint8Array> key = toUint8Array(exec->argument(1));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+
+    size_t argsCount = exec->argumentCount();
+    if (argsCount <= 2) {
+        impl.webkitAddKey(keySystem, key.get(), ec);
+        setDOMException(exec, ec);
+        return JSValue::encode(jsUndefined());
+    }
+
+    RefPtr<Uint8Array> initData = toUint8Array(exec->argument(2));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    String sessionId = exec->argumentCount() <= 3 ? String() : exec->uncheckedArgument(3).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.webkitAddKey(keySystem, key.get(), initData.get(), sessionId, ec);
+    setDOMException(exec, ec);
+    return JSValue::encode(jsUndefined());
 }
 
-JSValue jsHTMLMediaElementNETWORK_NO_SOURCE(ExecState* exec, JSValue, PropertyName)
+#endif
+
+#if ENABLE(ENCRYPTED_MEDIA)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitCancelKeyRequest(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "webkitCancelKeyRequest");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    ExceptionCode ec = 0;
+    String keySystem = valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    String sessionId = exec->argumentCount() <= 1 ? String() : exec->uncheckedArgument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.webkitCancelKeyRequest(keySystem, sessionId, ec);
+    setDOMException(exec, ec);
+    return JSValue::encode(jsUndefined());
 }
 
-JSValue jsHTMLMediaElementHAVE_NOTHING(ExecState* exec, JSValue, PropertyName)
+#endif
+
+#if ENABLE(ENCRYPTED_MEDIA_V2)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitSetMediaKeys(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "webkitSetMediaKeys");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    MediaKeys* mediaKeys = JSMediaKeys::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.setMediaKeys(mediaKeys);
+    return JSValue::encode(jsUndefined());
 }
 
-JSValue jsHTMLMediaElementHAVE_METADATA(ExecState* exec, JSValue, PropertyName)
+#endif
+
+#if ENABLE(VIDEO_TRACK)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionAddTextTrack(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "addTextTrack");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    ExceptionCode ec = 0;
+    String kind = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+
+    size_t argsCount = exec->argumentCount();
+    if (argsCount <= 1) {
+        JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.addTextTrack(kind, ec)));
+
+        setDOMException(exec, ec);
+        return JSValue::encode(result);
+    }
+
+    String label = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (argsCount <= 2) {
+        JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.addTextTrack(kind, label, ec)));
+
+        setDOMException(exec, ec);
+        return JSValue::encode(result);
+    }
+
+    String language = exec->argument(2).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.addTextTrack(kind, label, language, ec)));
+
+    setDOMException(exec, ec);
+    return JSValue::encode(result);
 }
 
-JSValue jsHTMLMediaElementHAVE_CURRENT_DATA(ExecState* exec, JSValue, PropertyName)
+#endif
+
+#if ENABLE(MEDIA_SOURCE)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionGetVideoPlaybackQuality(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "getVideoPlaybackQuality");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getVideoPlaybackQuality()));
+    return JSValue::encode(result);
 }
 
-JSValue jsHTMLMediaElementHAVE_FUTURE_DATA(ExecState* exec, JSValue, PropertyName)
+#endif
+
+#if ENABLE(WIRELESS_PLAYBACK_TARGET)
+EncodedJSValue JSC_HOST_CALL jsHTMLMediaElementPrototypeFunctionWebkitShowPlaybackTargetPicker(ExecState* exec)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLMediaElement* castedThis = jsDynamicCast<JSHTMLMediaElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLMediaElement", "webkitShowPlaybackTargetPicker");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLMediaElement::info());
+    auto& impl = castedThis->impl();
+    impl.webkitShowPlaybackTargetPicker();
+    return JSValue::encode(jsUndefined());
 }
 
-JSValue jsHTMLMediaElementHAVE_ENOUGH_DATA(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(4));
-}
-
-static inline bool isObservable(JSHTMLMediaElement* jsHTMLMediaElement)
-{
-    if (jsHTMLMediaElement->hasCustomProperties())
-        return true;
-    return false;
-}
+#endif
 
 bool JSHTMLMediaElementOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSHTMLMediaElement* jsHTMLMediaElement = jsCast<JSHTMLMediaElement*>(handle.get().asCell());
+    auto* jsHTMLMediaElement = jsCast<JSHTMLMediaElement*>(handle.slot()->asCell());
     if (jsHTMLMediaElement->impl().hasPendingActivity())
         return true;
     if (jsHTMLMediaElement->impl().isFiringEventListeners())
         return true;
     if (JSNodeOwner::isReachableFromOpaqueRoots(handle, 0, visitor))
         return true;
-    if (!isObservable(jsHTMLMediaElement))
-        return false;
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSHTMLMediaElementOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSHTMLMediaElement* jsHTMLMediaElement = jsCast<JSHTMLMediaElement*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsHTMLMediaElement = jsCast<JSHTMLMediaElement*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsHTMLMediaElement->impl(), jsHTMLMediaElement);
-    jsHTMLMediaElement->releaseImpl();
 }
 
-HTMLMediaElement* toHTMLMediaElement(JSC::JSValue value)
+HTMLMediaElement* JSHTMLMediaElement::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSHTMLMediaElement::info()) ? &jsCast<JSHTMLMediaElement*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSHTMLMediaElement*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

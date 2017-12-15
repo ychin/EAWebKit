@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,19 +26,32 @@
 #ifndef FTLState_h
 #define FTLState_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(FTL_JIT)
 
+#include "DFGCommon.h"
 #include "DFGGraph.h"
 #include "FTLAbbreviations.h"
 #include "FTLGeneratedFunction.h"
+#include "FTLInlineCacheDescriptor.h"
 #include "FTLJITCode.h"
 #include "FTLJITFinalizer.h"
+#include "FTLJSCall.h"
+#include "FTLJSCallVarargs.h"
 #include "FTLStackMaps.h"
+#include "FTLState.h"
 #include <wtf/Noncopyable.h>
 
 namespace JSC { namespace FTL {
+
+inline bool verboseCompilationEnabled()
+{
+    return DFG::verboseCompilationEnabled(DFG::FTLMode);
+}
+
+inline bool shouldShowDisassembly()
+{
+    return DFG::shouldShowDisassembly(DFG::FTLMode);
+}
 
 class State {
     WTF_MAKE_NONCOPYABLE(State);
@@ -53,14 +66,29 @@ public:
     LContext context;
     LModule module;
     LValue function;
+    bool allocationFailed { false }; // Throw out the compilation once LLVM returns.
     RefPtr<JITCode> jitCode;
     GeneratedFunction generatedFunction;
     JITFinalizer* finalizer;
+    unsigned handleStackOverflowExceptionStackmapID;
+    unsigned handleExceptionStackmapID;
+    unsigned capturedStackmapID;
+    unsigned varargsSpillSlotsStackmapID;
+    SegmentedVector<GetByIdDescriptor> getByIds;
+    SegmentedVector<PutByIdDescriptor> putByIds;
+    SegmentedVector<CheckInDescriptor> checkIns;
+    Vector<JSCall> jsCalls;
+    Vector<JSCallVarargs> jsCallVarargses;
     Vector<CString> codeSectionNames;
     Vector<CString> dataSectionNames;
-    RefCountedArray<LSectionWord> stackmapsSection;
+    void* unwindDataSection;
+    size_t unwindDataSectionSize;
+    RefPtr<DataSection> stackmapsSection;
     
     void dumpState(const char* when);
+    void dumpState(LModule, const char* when);
+
+    HashSet<CString> nativeLoadedLibraries;
 };
 
 } } // namespace JSC::FTL

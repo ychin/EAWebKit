@@ -19,13 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SQL_DATABASE)
-
 #include "JSDatabaseCallback.h"
 
 #include "JSDatabase.h"
-#include "JSDatabaseSync.h"
 #include "ScriptExecutionContext.h"
 #include <runtime/JSLock.h>
 
@@ -48,7 +44,7 @@ JSDatabaseCallback::~JSDatabaseCallback()
     if (!context || context->isContextThread())
         delete m_data;
     else
-        context->postTask(DeleteCallbackDataTask::create(m_data));
+        context->postTask(DeleteCallbackDataTask(m_data));
 #ifndef NDEBUG
     m_data = 0;
 #endif
@@ -75,24 +71,4 @@ bool JSDatabaseCallback::handleEvent(Database* database)
     return !raisedException;
 }
 
-bool JSDatabaseCallback::handleEvent(DatabaseSync* database)
-{
-    if (!canInvokeCallback())
-        return true;
-
-    Ref<JSDatabaseCallback> protect(*this);
-
-    JSLockHolder lock(m_data->globalObject()->vm());
-
-    ExecState* exec = m_data->globalObject()->globalExec();
-    MarkedArgumentBuffer args;
-    args.append(toJS(exec, m_data->globalObject(), database));
-
-    bool raisedException = false;
-    m_data->invokeCallback(args, &raisedException);
-    return !raisedException;
 }
-
-}
-
-#endif // ENABLE(SQL_DATABASE)

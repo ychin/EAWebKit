@@ -28,8 +28,6 @@
 #ifndef WebInspectorServer_h
 #define WebInspectorServer_h
 
-#if ENABLE(INSPECTOR_SERVER)
-
 #include "WebSocketServer.h"
 #include "WebSocketServerClient.h"
 #include <wtf/HashMap.h>
@@ -72,6 +70,6 @@ private:
 
 }
 
-#endif // ENABLE(INSPECTOR_SERVER)
+
 
 #endif // WebInspectorServer_h

@@ -24,25 +24,24 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
 #include "PannerNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSPannerNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSPannerNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<PannerNode> impl)
+    static JSPannerNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<PannerNode>&& impl)
     {
-        JSPannerNode* ptr = new (NotNull, JSC::allocateCell<JSPannerNode>(globalObject->vm().heap)) JSPannerNode(structure, globalObject, impl);
+        JSPannerNode* ptr = new (NotNull, JSC::allocateCell<JSPannerNode>(globalObject->vm().heap)) JSPannerNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -59,94 +58,22 @@ public:
     {
         return static_cast<PannerNode&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSPannerNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<PannerNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSPannerNode(JSC::Structure*, JSDOMGlobalObject*, Ref<PannerNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, PannerNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, PannerNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSPannerNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSPannerNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSPannerNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSPannerNodePrototype>(vm.heap)) JSPannerNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSPannerNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSPannerNodeConstructor : public DOMConstructorObject {
-private:
-    JSPannerNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSPannerNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSPannerNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSPannerNodeConstructor>(vm.heap)) JSPannerNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetPosition(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetOrientation(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsPannerNodePrototypeFunctionSetVelocity(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsPannerNodePanningModel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodePanningModel(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeDistanceModel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeDistanceModel(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeRefDistance(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeRefDistance(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeMaxDistance(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeMaxDistance(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeRolloffFactor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeRolloffFactor(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeConeInnerAngle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeConeInnerAngle(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeConeOuterAngle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeConeOuterAngle(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeConeOuterGain(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSPannerNodeConeOuterGain(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsPannerNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsPannerNodeEQUALPOWER(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPannerNodeHRTF(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPannerNodeSOUNDFIELD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPannerNodeLINEAR_DISTANCE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPannerNodeINVERSE_DISTANCE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsPannerNodeEXPONENTIAL_DISTANCE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

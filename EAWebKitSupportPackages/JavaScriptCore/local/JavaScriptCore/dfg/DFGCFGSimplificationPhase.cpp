@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2012-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,7 +33,7 @@
 #include "DFGInsertionSet.h"
 #include "DFGPhase.h"
 #include "DFGValidate.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -59,30 +59,17 @@ public:
                     continue;
                 ASSERT(block->isReachable);
             
-                switch (block->last()->op()) {
+                switch (block->terminal()->op()) {
                 case Jump: {
                     // Successor with one predecessor -> merge.
                     if (block->successor(0)->predecessors.size() == 1) {
                         ASSERT(block->successor(0)->predecessors[0] == block);
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                        dataLog("CFGSimplify: Jump merge on Block ", *block, " to Block ", *block->successor(0), ".\n");
-#endif
                         if (extremeLogging)
                             m_graph.dump();
                         m_graph.dethread();
                         mergeBlocks(block, block->successor(0), noBlocks());
                         innerChanged = outerChanged = true;
                         break;
-                    } else {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                        dataLog("CFGSimplify: Not jump merging on Block ", *block, " to Block ", *block->successor(0), " because predecessors = ",);
-                        for (unsigned i = 0; i < block->successor(0)->predecessors.size(); ++i) {
-                            if (i)
-                                dataLogF(", ");
-                            dataLog(*block->successor(0)->predecessors[i]);
-                        }
-                        dataLogF(".\n");
-#endif
                     }
                 
                     // FIXME: Block only has a jump -> remove. This is tricky though because of
@@ -92,6 +79,8 @@ public:
                     // suboptimal, because if my successor has multiple predecessors then we'll
                     // be keeping alive things on other predecessor edges unnecessarily.
                     // What we really need is the notion of end-of-block ghosties!
+                    // FIXME: Allow putting phantoms after terminals.
+                    // https://bugs.webkit.org/show_bug.cgi?id=126778
                     break;
                 }
                 
@@ -102,37 +91,27 @@ public:
                         BasicBlock* targetBlock = block->successorForCondition(condition);
                         BasicBlock* jettisonedBlock = block->successorForCondition(!condition);
                         if (targetBlock->predecessors.size() == 1) {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                            dataLog(
-                                "CFGSimplify: Known condition (", condition, ") branch merge ",
-                                "on Block ", *block, " to Block ", *targetBlock,
-                                ", jettisoning Block ", *jettisonedBlock, ".\n");
-#endif
                             if (extremeLogging)
                                 m_graph.dump();
                             m_graph.dethread();
                             mergeBlocks(block, targetBlock, oneBlock(jettisonedBlock));
                         } else {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                            dataLog(
-                                "CFGSimplify: Known condition (", condition, ") ",
-                                "branch->jump conversion on Block ", *block, " to Block ",
-                                targetBlock, ", jettisoning Block ", jettisonedBlock, ".\n");
-#endif
                             if (extremeLogging)
                                 m_graph.dump();
                             m_graph.dethread();
-                        
-                            ASSERT(block->last()->isTerminal());
-                            CodeOrigin boundaryCodeOrigin = block->last()->codeOrigin;
-                            block->last()->convertToPhantom();
-                            ASSERT(block->last()->refCount() == 1);
-                        
-                            jettisonBlock(block, jettisonedBlock, boundaryCodeOrigin);
-                        
-                            block->appendNode(
-                                m_graph, SpecNone, Jump, boundaryCodeOrigin,
+                            
+                            Node* terminal = block->terminal();
+                            ASSERT(terminal->isTerminal());
+                            NodeOrigin boundaryNodeOrigin = terminal->origin;
+
+                            jettisonBlock(block, jettisonedBlock, boundaryNodeOrigin);
+
+                            block->replaceTerminal(
+                                m_graph, SpecNone, Jump, boundaryNodeOrigin,
                                 OpInfo(targetBlock));
+                            
+                            ASSERT(block->terminal());
+                        
                         }
                         innerChanged = outerChanged = true;
                         break;
@@ -144,11 +123,6 @@ public:
                         break;
                     }
                     
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                    dataLogF("Not branch simplifying on Block #%u because the successors differ and the condition is not known.\n",
-                            blockIndex);
-#endif
-                
                     // Branch to same destination -> jump.
                     // FIXME: this will currently not be hit because of the lack of jump-only
                     // block simplification.
@@ -157,79 +131,72 @@ public:
                 }
                     
                 case Switch: {
-                    SwitchData* data = block->last()->switchData();
+                    SwitchData* data = block->terminal()->switchData();
                     
                     // Prune out cases that end up jumping to default.
                     for (unsigned i = 0; i < data->cases.size(); ++i) {
-                        if (data->cases[i].target == data->fallThrough)
-                            data->cases[i--] = data->cases.takeLast();
+                        if (data->cases[i].target.block == data->fallThrough.block) {
+                            data->fallThrough.count += data->cases[i].target.count;
+                            data->cases[i--] = data->cases.last();
+                            data->cases.removeLast();
+                        }
                     }
                     
                     // If there are no cases other than default then this turns
                     // into a jump.
                     if (data->cases.isEmpty()) {
-                        convertToJump(block, data->fallThrough);
+                        convertToJump(block, data->fallThrough.block);
                         innerChanged = outerChanged = true;
                         break;
                     }
                     
                     // Switch on constant -> jettison all other targets and merge.
-                    if (block->last()->child1()->hasConstant()) {
-                        JSValue value = m_graph.valueOfJSConstant(block->last()->child1().node());
+                    Node* terminal = block->terminal();
+                    if (terminal->child1()->hasConstant()) {
+                        FrozenValue* value = terminal->child1()->constant();
                         TriState found = FalseTriState;
                         BasicBlock* targetBlock = 0;
                         for (unsigned i = data->cases.size(); found == FalseTriState && i--;) {
                             found = data->cases[i].value.strictEqual(value);
                             if (found == TrueTriState)
-                                targetBlock = data->cases[i].target;
+                                targetBlock = data->cases[i].target.block;
                         }
                         
                         if (found == MixedTriState)
                             break;
                         if (found == FalseTriState)
-                            targetBlock = data->fallThrough;
+                            targetBlock = data->fallThrough.block;
                         ASSERT(targetBlock);
                         
                         Vector<BasicBlock*, 1> jettisonedBlocks;
-                        for (unsigned i = block->numSuccessors(); i--;) {
-                            BasicBlock* jettisonedBlock = block->successor(i);
-                            if (jettisonedBlock != targetBlock)
-                                jettisonedBlocks.append(jettisonedBlock);
+                        for (BasicBlock* successor : terminal->successors()) {
+                            if (successor != targetBlock)
+                                jettisonedBlocks.append(successor);
                         }
                         
                         if (targetBlock->predecessors.size() == 1) {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                            dataLog(
-                                "CFGSimplify: Known constant (", value, ") switch merge on ",
-                                "Block ", *block, " to Block ", *targetBlock, ".\n");
-#endif
-                            
                             if (extremeLogging)
                                 m_graph.dump();
                             m_graph.dethread();
                             
                             mergeBlocks(block, targetBlock, jettisonedBlocks);
                         } else {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-                            dataLog(
-                                "CFGSimplify: Known constant (", value, ") switch->jump "
-                                "conversion on Block ", *block, " to Block #",
-                                *targetBlock, ".\n");
-#endif
                             if (extremeLogging)
                                 m_graph.dump();
                             m_graph.dethread();
                             
-                            CodeOrigin boundaryCodeOrigin = block->last()->codeOrigin;
-                            block->last()->convertToPhantom();
+                            NodeOrigin boundaryNodeOrigin = terminal->origin;
+
                             for (unsigned i = jettisonedBlocks.size(); i--;)
-                                jettisonBlock(block, jettisonedBlocks[i], boundaryCodeOrigin);
-                            block->appendNode(
-                                m_graph, SpecNone, Jump, boundaryCodeOrigin, OpInfo(targetBlock));
+                                jettisonBlock(block, jettisonedBlocks[i], boundaryNodeOrigin);
+                            
+                            block->replaceTerminal(
+                                m_graph, SpecNone, Jump, boundaryNodeOrigin, OpInfo(targetBlock));
                         }
                         innerChanged = outerChanged = true;
                         break;
                     }
+                    break;
                 }
                     
                 default:
@@ -286,60 +253,49 @@ private:
         ASSERT(targetBlock);
         ASSERT(targetBlock->isReachable);
         if (targetBlock->predecessors.size() == 1) {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-            dataLog(
-                "CFGSimplify: Branch/Switch to same successor merge on Block ", *block,
-                " to Block ", *targetBlock, ".\n");
-#endif
             m_graph.dethread();
             mergeBlocks(block, targetBlock, noBlocks());
         } else {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-            dataLog(
-                "CFGSimplify: Branch->jump conversion to same successor on Block ",
-                *block, " to Block ", *targetBlock, ".\n",
-#endif
-            Node* branch = block->last();
-            ASSERT(branch->isTerminal());
+            Node* branch = block->terminal();
             ASSERT(branch->op() == Branch || branch->op() == Switch);
-            branch->convertToPhantom();
-            ASSERT(branch->refCount() == 1);
-            
-            block->appendNode(
-                m_graph, SpecNone, Jump, branch->codeOrigin,
-                OpInfo(targetBlock));
+
+            block->replaceTerminal(
+                m_graph, SpecNone, Jump, branch->origin, OpInfo(targetBlock));
         }
     }
-
-    void keepOperandAlive(BasicBlock* block, BasicBlock* jettisonedBlock, CodeOrigin codeOrigin, VirtualRegister operand)
+    
+    void keepOperandAlive(BasicBlock* block, BasicBlock* jettisonedBlock, NodeOrigin nodeOrigin, VirtualRegister operand)
     {
         Node* livenessNode = jettisonedBlock->variablesAtHead.operand(operand);
         if (!livenessNode)
             return;
-        if (livenessNode->variableAccessData()->isCaptured())
-            return;
+        NodeType nodeType;
+        if (livenessNode->flags() & NodeIsFlushed)
+            nodeType = Flush;
+        else {
+            // This seems like it shouldn't be necessary because we could just rematerialize
+            // PhantomLocals or something similar using bytecode liveness. However, in ThreadedCPS, it's
+            // worth the sanity to maintain this eagerly. See
+            // https://bugs.webkit.org/show_bug.cgi?id=144086
+            nodeType = PhantomLocal;
+        }
         block->appendNode(
-            m_graph, SpecNone, PhantomLocal, codeOrigin, 
+            m_graph, SpecNone, nodeType, nodeOrigin, 
             OpInfo(livenessNode->variableAccessData()));
     }
     
-    void jettisonBlock(BasicBlock* block, BasicBlock* jettisonedBlock, CodeOrigin boundaryCodeOrigin)
+    void jettisonBlock(BasicBlock* block, BasicBlock* jettisonedBlock, NodeOrigin boundaryNodeOrigin)
     {
         for (size_t i = 0; i < jettisonedBlock->variablesAtHead.numberOfArguments(); ++i)
-            keepOperandAlive(block, jettisonedBlock, boundaryCodeOrigin, virtualRegisterForArgument(i));
+            keepOperandAlive(block, jettisonedBlock, boundaryNodeOrigin, virtualRegisterForArgument(i));
         for (size_t i = 0; i < jettisonedBlock->variablesAtHead.numberOfLocals(); ++i)
-            keepOperandAlive(block, jettisonedBlock, boundaryCodeOrigin, virtualRegisterForLocal(i));
+            keepOperandAlive(block, jettisonedBlock, boundaryNodeOrigin, virtualRegisterForLocal(i));
         
         fixJettisonedPredecessors(block, jettisonedBlock);
     }
     
     void fixJettisonedPredecessors(BasicBlock* block, BasicBlock* jettisonedBlock)
     {
-#if DFG_ENABLE(DEBUG_PROPAGATION_VERBOSE)
-        dataLog(
-            "Fixing predecessors and phis due to jettison of Block ", *jettisonedBlock,
-            " from Block ", *block, ".\n");
-#endif
         jettisonedBlock->removePredecessor(block);
     }
 
@@ -366,11 +322,12 @@ private:
         // kept alive.
         
         // Remove the terminal of firstBlock since we don't need it anymore. Well, we don't
-        // really remove it; we actually turn it into a Phantom.
-        ASSERT(firstBlock->last()->isTerminal());
-        CodeOrigin boundaryCodeOrigin = firstBlock->last()->codeOrigin;
-        firstBlock->last()->convertToPhantom();
-        ASSERT(firstBlock->last()->refCount() == 1);
+        // really remove it; we actually turn it into a check.
+        Node* terminal = firstBlock->terminal();
+        ASSERT(terminal->isTerminal());
+        NodeOrigin boundaryNodeOrigin = terminal->origin;
+        terminal->remove();
+        ASSERT(terminal->refCount() == 1);
         
         for (unsigned i = jettisonedBlocks.size(); i--;) {
             BasicBlock* jettisonedBlock = jettisonedBlocks[i];
@@ -380,9 +337,9 @@ private:
             // different path than secondBlock.
             
             for (size_t i = 0; i < jettisonedBlock->variablesAtHead.numberOfArguments(); ++i)
-                keepOperandAlive(firstBlock, jettisonedBlock, boundaryCodeOrigin, virtualRegisterForArgument(i));
+                keepOperandAlive(firstBlock, jettisonedBlock, boundaryNodeOrigin, virtualRegisterForArgument(i));
             for (size_t i = 0; i < jettisonedBlock->variablesAtHead.numberOfLocals(); ++i)
-                keepOperandAlive(firstBlock, jettisonedBlock, boundaryCodeOrigin, virtualRegisterForLocal(i));
+                keepOperandAlive(firstBlock, jettisonedBlock, boundaryNodeOrigin, virtualRegisterForLocal(i));
         }
         
         for (size_t i = 0; i < secondBlock->phis.size(); ++i)
@@ -391,7 +348,7 @@ private:
         for (size_t i = 0; i < secondBlock->size(); ++i)
             firstBlock->append(secondBlock->at(i));
         
-        ASSERT(firstBlock->last()->isTerminal());
+        ASSERT(firstBlock->terminal()->isTerminal());
         
         // Fix the predecessors of my new successors. This is tricky, since we are going to reset
         // all predecessors anyway due to reachability analysis. But we need to fix the

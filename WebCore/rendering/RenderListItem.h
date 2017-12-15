@@ -24,16 +24,18 @@
 #define RenderListItem_h
 
 #include "RenderBlockFlow.h"
+#include "RenderPtr.h"
 
 namespace WebCore {
 
 class HTMLOListElement;
 class RenderListMarker;
 
-class RenderListItem FINAL : public RenderBlockFlow {
+class RenderListItem final : public RenderBlockFlow {
 public:
-    explicit RenderListItem(Element&);
-    Element& element() const { return toElement(nodeForNonAnonymous()); }
+    RenderListItem(Element&, Ref<RenderStyle>&&);
+    virtual ~RenderListItem();
+    Element& element() const { return downcast<Element>(nodeForNonAnonymous()); }
 
     int value() const { if (!m_isValueUpToDate) updateValueNow(); return m_value; }
     void updateValue();
@@ -46,37 +48,37 @@ public:
     void setNotInList(bool notInList) { m_notInList = notInList; }
     bool notInList() const { return m_notInList; }
 
-    const String& markerText() const;
+    WEBCORE_EXPORT const String& markerText() const;
     String markerTextWithSuffix() const;
 
     void updateListMarkerNumbers();
 
-    static void updateItemValuesForOrderedList(const HTMLOListElement*);
-    static unsigned itemCountForOrderedList(const HTMLOListElement*);
+    static void updateItemValuesForOrderedList(const HTMLOListElement&);
+    static unsigned itemCountForOrderedList(const HTMLOListElement&);
+
+    void didDestroyListMarker() { m_marker = nullptr; }
 
 private:
-    virtual const char* renderName() const OVERRIDE { return "RenderListItem"; }
+    virtual const char* renderName() const override { return "RenderListItem"; }
 
-    virtual bool isListItem() const OVERRIDE { return true; }
+    virtual bool isListItem() const override { return true; }
     
-    virtual void willBeDestroyed() OVERRIDE;
+    virtual void insertedIntoTree() override;
+    virtual void willBeRemovedFromTree() override;
 
-    virtual void insertedIntoTree() OVERRIDE;
-    virtual void willBeRemovedFromTree() OVERRIDE;
+    virtual bool isEmpty() const override;
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
 
-    virtual bool isEmpty() const OVERRIDE;
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
-
-    virtual void layout() OVERRIDE;
+    virtual void layout() override;
 
     void positionListMarker();
 
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
 
-    virtual bool requiresForcedStyleRecalcPropagation() const OVERRIDE { return true; }
+    virtual bool requiresForcedStyleRecalcPropagation() const override { return true; }
 
-    virtual void addOverflowFromChildren() OVERRIDE;
-    virtual void computePreferredLogicalWidths() OVERRIDE;
+    virtual void addOverflowFromChildren() override;
+    virtual void computePreferredLogicalWidths() override;
 
     void insertOrMoveMarkerRendererIfNeeded();
     inline int calcValue() const;
@@ -92,15 +94,8 @@ private:
     bool m_notInList : 1;
 };
 
-inline RenderListItem* toRenderListItem(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isListItem());
-    return static_cast<RenderListItem*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderListItem(const RenderListItem*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderListItem, isListItem())
 
 #endif // RenderListItem_h

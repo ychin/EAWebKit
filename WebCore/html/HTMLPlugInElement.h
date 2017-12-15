@@ -38,6 +38,7 @@ class Instance;
 
 namespace WebCore {
 
+class PluginReplacement;
 class RenderEmbeddedObject;
 class RenderWidget;
 class Widget;
@@ -50,46 +51,60 @@ public:
 
     PassRefPtr<JSC::Bindings::Instance> getInstance();
 
-    Widget* pluginWidget() const;
+    enum class PluginLoadingPolicy { DoNotLoad, Load };
+    WEBCORE_EXPORT Widget* pluginWidget(PluginLoadingPolicy = PluginLoadingPolicy::Load) const;
 
     enum DisplayState {
         WaitingForSnapshot,
         DisplayingSnapshot,
         Restarting,
         RestartingWithPendingMouseClick,
-        Playing
+        Playing,
+        PreparingPluginReplacement,
+        DisplayingPluginReplacement,
     };
     DisplayState displayState() const { return m_displayState; }
-    virtual void setDisplayState(DisplayState state) { m_displayState = state; }
+    virtual void setDisplayState(DisplayState);
     virtual void updateSnapshot(PassRefPtr<Image>) { }
     virtual void dispatchPendingMouseClick() { }
     virtual bool isRestartedPlugin() const { return false; }
 
+    JSC::JSObject* scriptObjectForPluginReplacement();
+
 #if ENABLE(NETSCAPE_PLUGIN_API)
-    NPObject* getNPObject();
+    WEBCORE_EXPORT NPObject* getNPObject();
 #endif
 
     bool isCapturingMouseEvents() const { return m_isCapturingMouseEvents; }
     void setIsCapturingMouseEvents(bool capturing) { m_isCapturingMouseEvents = capturing; }
 
-    virtual bool canContainRangeEndPoint() const OVERRIDE { return false; }
+    virtual bool canContainRangeEndPoint() const override { return false; }
 
     bool canProcessDrag() const;
 
-    virtual bool willRespondToMouseClickEvents() OVERRIDE;
+#if PLATFORM(IOS)
+    virtual bool willRespondToMouseMoveEvents() override { return false; }
+#endif
+    virtual bool willRespondToMouseClickEvents() override;
 
     virtual bool isPlugInImageElement() const { return false; }
 
+    bool isUserObservable() const;
+    
 protected:
     HTMLPlugInElement(const QualifiedName& tagName, Document&);
 
-    virtual void willDetachRenderers() OVERRIDE;
-    virtual bool isPresentationAttribute(const QualifiedName&) const OVERRIDE;
-    virtual void collectStyleForPresentationAttribute(const QualifiedName&, const AtomicString&, MutableStylePropertySet*) OVERRIDE;
+    virtual void willDetachRenderers() override;
+    virtual bool isPresentationAttribute(const QualifiedName&) const override;
+    virtual void collectStyleForPresentationAttribute(const QualifiedName&, const AtomicString&, MutableStyleProperties&) override;
 
     virtual bool useFallbackContent() const { return false; }
 
-    virtual void defaultEventHandler(Event*) OVERRIDE;
+    virtual void defaultEventHandler(Event*) override;
+
+    virtual bool requestObject(const String& url, const String& mimeType, const Vector<String>& paramNames, const Vector<String>& paramValues);
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual void didAddUserAgentShadowRoot(ShadowRoot*) override;
 
     // Subclasses should use guardedDispatchBeforeLoadEvent instead of calling dispatchBeforeLoadEvent directly.
     bool guardedDispatchBeforeLoadEvent(const String& sourceURL);
@@ -97,18 +112,22 @@ protected:
     bool m_inBeforeLoadEventHandler;
 
 private:
+    void swapRendererTimerFired();
+    bool shouldOverridePlugin(const String& url, const String& mimeType);
+
     bool dispatchBeforeLoadEvent(const String& sourceURL); // Not implemented, generates a compile error if subclasses call this by mistake.
 
-    virtual bool areAuthorShadowsAllowed() const OVERRIDE { return false; }
+    // This will load the plugin if necessary.
+    virtual RenderWidget* renderWidgetLoadingPlugin() const = 0;
 
-    virtual RenderWidget* renderWidgetForJSBindings() const = 0;
+    virtual bool supportsFocus() const override;
 
-    virtual bool supportsFocus() const OVERRIDE;
-
-    virtual bool isKeyboardFocusable(KeyboardEvent*) const OVERRIDE;
-    virtual bool isPluginElement() const OVERRIDE FINAL;
+    virtual bool isKeyboardFocusable(KeyboardEvent*) const override;
+    virtual bool isPluginElement() const override final;
 
     RefPtr<JSC::Bindings::Instance> m_instance;
+    Timer m_swapRendererTimer;
+    RefPtr<PluginReplacement> m_pluginReplacement;
 #if ENABLE(NETSCAPE_PLUGIN_API)
     NPObject* m_NPObject;
 #endif
@@ -117,10 +136,10 @@ private:
     DisplayState m_displayState;
 };
 
-void isHTMLPlugInElement(const HTMLPlugInElement&); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLPlugInElement(const Node& node) { return node.isPluginElement(); }
-NODE_TYPE_CASTS(HTMLPlugInElement)
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::HTMLPlugInElement)
+    static bool isType(const WebCore::Node& node) { return node.isPluginElement(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif // HTMLPlugInElement_h

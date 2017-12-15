@@ -23,12 +23,9 @@
  */
 
 #include "config.h"
-
-#if ENABLE(FILTERS)
 #include "FEConvolveMatrix.h"
 
 #include "Filter.h"
-#include "RenderTreeAsText.h"
 #include "TextStream.h"
 
 #include <runtime/Uint8ClampedArray.h>
@@ -36,7 +33,7 @@
 
 namespace WebCore {
 
-FEConvolveMatrix::FEConvolveMatrix(Filter* filter, const IntSize& kernelSize,
+FEConvolveMatrix::FEConvolveMatrix(Filter& filter, const IntSize& kernelSize,
     float divisor, float bias, const IntPoint& targetOffset, EdgeModeType edgeMode,
     const FloatPoint& kernelUnitLength, bool preserveAlpha, const Vector<float>& kernelMatrix)
     : FilterEffect(filter)
@@ -53,11 +50,11 @@ FEConvolveMatrix::FEConvolveMatrix(Filter* filter, const IntSize& kernelSize,
     ASSERT(m_kernelSize.height() > 0);
 }
 
-PassRefPtr<FEConvolveMatrix> FEConvolveMatrix::create(Filter* filter, const IntSize& kernelSize,
+Ref<FEConvolveMatrix> FEConvolveMatrix::create(Filter& filter, const IntSize& kernelSize,
     float divisor, float bias, const IntPoint& targetOffset, EdgeModeType edgeMode,
     const FloatPoint& kernelUnitLength, bool preserveAlpha, const Vector<float>& kernelMatrix)
 {
-    return adoptRef(new FEConvolveMatrix(filter, kernelSize, divisor, bias, targetOffset, edgeMode, kernelUnitLength,
+    return adoptRef(*new FEConvolveMatrix(filter, kernelSize, divisor, bias, targetOffset, edgeMode, kernelUnitLength,
         preserveAlpha, kernelMatrix));
 }
 
@@ -544,5 +541,3 @@ TextStream& FEConvolveMatrix::externalRepresentation(TextStream& ts, int indent)
 }
 
 }; // namespace WebCore
-
-#endif // ENABLE(FILTERS)

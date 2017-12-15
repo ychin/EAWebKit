@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,8 +26,6 @@
 #ifndef LLVMAPI_h
 #define LLVMAPI_h
 
-#include <wtf/Platform.h>
-
 #if HAVE(LLVM)
 
 #include "LLVMAPIFunctions.h"
@@ -40,9 +38,13 @@ struct LLVMAPI {
     returnType (*name) signature;
     FOR_EACH_LLVM_API_FUNCTION(LLVM_API_FUNCTION_DECLARATION)
 #undef LLVM_API_FUNCTION_DECLARATION
+    
+    // Functions that we add conditionally.
+    void (*AddLowerSwitchPass)(LLVMPassManagerRef PM);
 };
 
 extern LLVMAPI* llvm;
+extern bool enableLLVMFastISel;
 
 } // namespace JSC
 

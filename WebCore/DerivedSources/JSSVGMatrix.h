@@ -21,33 +21,30 @@
 #ifndef JSSVGMatrix_h
 #define JSSVGMatrix_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SVGAnimatedPropertyTearOff.h"
 #include "SVGElement.h"
 #include "SVGMatrix.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSVGMatrix : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSVGMatrix* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGPropertyTearOff<SVGMatrix> > impl)
+    static JSSVGMatrix* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGPropertyTearOff<SVGMatrix>>&& impl)
     {
-        JSSVGMatrix* ptr = new (NotNull, JSC::allocateCell<JSSVGMatrix>(globalObject->vm().heap)) JSSVGMatrix(structure, globalObject, impl);
+        JSSVGMatrix* ptr = new (NotNull, JSC::allocateCell<JSSVGMatrix>(globalObject->vm().heap)) JSSVGMatrix(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SVGPropertyTearOff<SVGMatrix>* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSSVGMatrix();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,23 +53,20 @@ public:
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
-    SVGPropertyTearOff<SVGMatrix> & impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    SVGPropertyTearOff<SVGMatrix>& impl() const { return *m_impl; }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
-    SVGPropertyTearOff<SVGMatrix> * m_impl;
+    SVGPropertyTearOff<SVGMatrix>* m_impl;
 protected:
-    JSSVGMatrix(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPropertyTearOff<SVGMatrix> >);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGMatrix(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGPropertyTearOff<SVGMatrix>>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSVGMatrixOwner : public JSC::WeakHandleOwner {
@@ -81,99 +75,16 @@ public:
     virtual void finalize(JSC::Handle<JSC::Unknown>, void* context);
 };
 
-inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGPropertyTearOff<SVGMatrix> *)
+inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SVGPropertyTearOff<SVGMatrix>*)
 {
-    DEFINE_STATIC_LOCAL(JSSVGMatrixOwner, jsSVGMatrixOwner, ());
-    return &jsSVGMatrixOwner;
+    static NeverDestroyed<JSSVGMatrixOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, SVGPropertyTearOff<SVGMatrix> *)
-{
-    return &world;
-}
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGPropertyTearOff<SVGMatrix>*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SVGPropertyTearOff<SVGMatrix>& impl) { return toJS(exec, globalObject, &impl); }
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SVGPropertyTearOff<SVGMatrix> *);
-SVGPropertyTearOff<SVGMatrix> * toSVGMatrix(JSC::JSValue);
-
-class JSSVGMatrixPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGMatrixPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGMatrixPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGMatrixPrototype>(vm.heap)) JSSVGMatrixPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGMatrixPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSSVGMatrixConstructor : public DOMConstructorObject {
-private:
-    JSSVGMatrixConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGMatrixConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGMatrixConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGMatrixConstructor>(vm.heap)) JSSVGMatrixConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionMultiply(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionInverse(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionTranslate(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionScale(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionScaleNonUniform(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionRotate(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionRotateFromVector(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionFlipX(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionFlipY(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionSkewX(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGMatrixPrototypeFunctionSkewY(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsSVGMatrixA(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGMatrixA(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGMatrixB(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGMatrixB(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGMatrixC(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGMatrixC(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGMatrixD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGMatrixD(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGMatrixE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGMatrixE(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGMatrixF(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSSVGMatrixF(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsSVGMatrixConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

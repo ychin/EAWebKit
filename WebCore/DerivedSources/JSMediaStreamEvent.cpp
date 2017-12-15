@@ -24,6 +24,7 @@
 
 #include "JSMediaStreamEvent.h"
 
+#include "JSDOMBinding.h"
 #include "JSDictionary.h"
 #include "JSMediaStream.h"
 #include "MediaStream.h"
@@ -35,34 +36,70 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSMediaStreamEventTableValues[] =
-{
-    { "stream", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaStreamEventStream), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaStreamEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsMediaStreamEventStream(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaStreamEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMediaStreamEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaStreamEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaStreamEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamEventPrototype>(vm.heap)) JSMediaStreamEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaStreamEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMediaStreamEventTable = { 5, 3, JSMediaStreamEventTableValues, 0 };
-/* Hash table for constructor */
+class JSMediaStreamEventConstructor : public DOMConstructorObject {
+private:
+    JSMediaStreamEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMediaStreamEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMediaStreamEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMediaStreamEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaStreamEventConstructor>(vm.heap)) JSMediaStreamEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMediaStreamEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSMediaStreamEventConstructorTable = { 1, 0, JSMediaStreamEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSMediaStreamEventConstructor::constructJSMediaStreamEvent(ExecState* exec)
 {
-    JSMediaStreamEventConstructor* jsConstructor = jsCast<JSMediaStreamEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSMediaStreamEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     MediaStreamEventInit eventInit;
@@ -94,7 +131,7 @@ bool fillMediaStreamEventInit(MediaStreamEventInit& eventInit, JSDictionary& dic
     return true;
 }
 
-const ClassInfo JSMediaStreamEventConstructor::s_info = { "MediaStreamEventConstructor", &Base::s_info, &JSMediaStreamEventConstructorTable, 0, CREATE_METHOD_TABLE(JSMediaStreamEventConstructor) };
+const ClassInfo JSMediaStreamEventConstructor::s_info = { "MediaStreamEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaStreamEventConstructor) };
 
 JSMediaStreamEventConstructor::JSMediaStreamEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -105,13 +142,9 @@ void JSMediaStreamEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* gl
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMediaStreamEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMediaStreamEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMediaStreamEventConstructor, JSDOMWrapper>(exec, JSMediaStreamEventConstructorTable, jsCast<JSMediaStreamEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMediaStreamEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("MediaStreamEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSMediaStreamEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -124,56 +157,58 @@ ConstructType JSMediaStreamEventConstructor::getConstructData(JSCell*, Construct
 
 static const HashTableValue JSMediaStreamEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaStreamEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "stream", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaStreamEventStream), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMediaStreamEventPrototypeTable = { 1, 0, JSMediaStreamEventPrototypeTableValues, 0 };
-const ClassInfo JSMediaStreamEventPrototype::s_info = { "MediaStreamEventPrototype", &Base::s_info, &JSMediaStreamEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaStreamEventPrototype) };
+const ClassInfo JSMediaStreamEventPrototype::s_info = { "MediaStreamEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaStreamEventPrototype) };
 
-JSObject* JSMediaStreamEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaStreamEvent>(vm, globalObject);
-}
-
-const ClassInfo JSMediaStreamEvent::s_info = { "MediaStreamEvent", &Base::s_info, &JSMediaStreamEventTable, 0 , CREATE_METHOD_TABLE(JSMediaStreamEvent) };
-
-JSMediaStreamEvent::JSMediaStreamEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaStreamEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSMediaStreamEvent::finishCreation(VM& vm)
+void JSMediaStreamEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaStreamEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaStreamEvent::s_info = { "MediaStreamEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaStreamEvent) };
+
+JSMediaStreamEvent::JSMediaStreamEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaStreamEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSMediaStreamEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSMediaStreamEventPrototype::create(vm, globalObject, JSMediaStreamEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSMediaStreamEventPrototype::create(vm, globalObject, JSMediaStreamEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSMediaStreamEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSMediaStreamEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSMediaStreamEvent* thisObject = jsCast<JSMediaStreamEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMediaStreamEvent, Base>(exec, JSMediaStreamEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSMediaStreamEvent>(vm, globalObject);
 }
 
-JSValue jsMediaStreamEventStream(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaStreamEventStream(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaStreamEvent* castedThis = jsCast<JSMediaStreamEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaStreamEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaStreamEvent* castedThis = jsDynamicCast<JSMediaStreamEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaStreamEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaStreamEvent", "stream");
+        return throwGetterTypeError(*exec, "MediaStreamEvent", "stream");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.stream()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaStreamEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaStreamEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMediaStreamEvent* domObject = jsCast<JSMediaStreamEvent*>(asObject(slotBase));
-    return JSMediaStreamEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSMediaStreamEventPrototype* domObject = jsDynamicCast<JSMediaStreamEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMediaStreamEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSMediaStreamEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

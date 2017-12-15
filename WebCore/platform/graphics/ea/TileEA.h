@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TILE_EA_H
 #define TILE_EA_H
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
 
 #include "IntPoint.h"
 #include "IntRect.h"
@@ -60,16 +60,16 @@ namespace WebCore
 		}
         virtual ~TileEA(void);
 
-        virtual bool isDirty() const OVERRIDE;
-        virtual void invalidate(const IntRect&)OVERRIDE;
-        virtual Vector<IntRect> updateBackBuffer(void) OVERRIDE;
-        virtual void swapBackBufferToFront(void) OVERRIDE;
-        virtual bool isReadyToPaint(void) const OVERRIDE;
-        virtual void paint(GraphicsContext*, const IntRect&) OVERRIDE;
+        virtual bool isDirty() const override;
+        virtual void invalidate(const IntRect&)override;
+        virtual Vector<IntRect> updateBackBuffer(void) override;
+        virtual void swapBackBufferToFront(void) override;
+        virtual bool isReadyToPaint(void) const override;
+        virtual void paint(GraphicsContext*, const IntRect&) override;
 
-        virtual const Tile::Coordinate& coordinate(void) const OVERRIDE { return mCoordinate; }
-        virtual const IntRect& rect(void) const OVERRIDE{ return mRect; }
-        virtual void resize(const WebCore::IntSize&) OVERRIDE;
+        virtual const Tile::Coordinate& coordinate(void) const override { return mCoordinate; }
+        virtual const IntRect& rect(void) const override{ return mRect; }
+        virtual void resize(const WebCore::IntSize&) override;
 
 		EA::WebKit::ISurface* GetSurface() const
 		{

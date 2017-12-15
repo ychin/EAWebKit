@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "OESTextureFloat.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSOESTextureFloat : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSOESTextureFloat* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESTextureFloat> impl)
+    static JSOESTextureFloat* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESTextureFloat>&& impl)
     {
-        JSOESTextureFloat* ptr = new (NotNull, JSC::allocateCell<JSOESTextureFloat>(globalObject->vm().heap)) JSOESTextureFloat(structure, globalObject, impl);
+        JSOESTextureFloat* ptr = new (NotNull, JSC::allocateCell<JSOESTextureFloat>(globalObject->vm().heap)) JSOESTextureFloat(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static OESTextureFloat* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSOESTextureFloat();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     OESTextureFloat& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     OESTextureFloat* m_impl;
 protected:
-    JSOESTextureFloat(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OESTextureFloat>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSOESTextureFloat(JSC::Structure*, JSDOMGlobalObject*, Ref<OESTextureFloat>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSOESTextureFloatOwner : public JSC::WeakHandleOwner {
@@ -78,40 +76,12 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, OESTextureFloat*)
 {
-    DEFINE_STATIC_LOCAL(JSOESTextureFloatOwner, jsOESTextureFloatOwner, ());
-    return &jsOESTextureFloatOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, OESTextureFloat*)
-{
-    return &world;
+    static NeverDestroyed<JSOESTextureFloatOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, OESTextureFloat*);
-OESTextureFloat* toOESTextureFloat(JSC::JSValue);
-
-class JSOESTextureFloatPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOESTextureFloatPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOESTextureFloatPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESTextureFloatPrototype>(vm.heap)) JSOESTextureFloatPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOESTextureFloatPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESTextureFloat& impl) { return toJS(exec, globalObject, &impl); }
 
 
 } // namespace WebCore

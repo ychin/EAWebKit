@@ -22,30 +22,64 @@
 #include "JSEntityReference.h"
 
 #include "EntityReference.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSEntityReferenceTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityReferenceConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsEntityReferenceConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSEntityReferencePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSEntityReferencePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSEntityReferencePrototype* ptr = new (NotNull, JSC::allocateCell<JSEntityReferencePrototype>(vm.heap)) JSEntityReferencePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSEntityReferencePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSEntityReferenceTable = { 2, 1, JSEntityReferenceTableValues, 0 };
-/* Hash table for constructor */
+class JSEntityReferenceConstructor : public DOMConstructorObject {
+private:
+    JSEntityReferenceConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSEntityReferenceConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSEntityReferenceConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSEntityReferenceConstructor* ptr = new (NotNull, JSC::allocateCell<JSEntityReferenceConstructor>(vm.heap)) JSEntityReferenceConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSEntityReferenceConstructorTable = { 1, 0, JSEntityReferenceConstructorTableValues, 0 };
-const ClassInfo JSEntityReferenceConstructor::s_info = { "EntityReferenceConstructor", &Base::s_info, &JSEntityReferenceConstructorTable, 0, CREATE_METHOD_TABLE(JSEntityReferenceConstructor) };
+const ClassInfo JSEntityReferenceConstructor::s_info = { "EntityReferenceConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEntityReferenceConstructor) };
 
 JSEntityReferenceConstructor::JSEntityReferenceConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -56,59 +90,49 @@ void JSEntityReferenceConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSEntityReferencePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSEntityReferenceConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSEntityReferenceConstructor, JSDOMWrapper>(exec, JSEntityReferenceConstructorTable, jsCast<JSEntityReferenceConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSEntityReference::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("EntityReference"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSEntityReferencePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsEntityReferenceConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSEntityReferencePrototypeTable = { 1, 0, JSEntityReferencePrototypeTableValues, 0 };
-const ClassInfo JSEntityReferencePrototype::s_info = { "EntityReferencePrototype", &Base::s_info, &JSEntityReferencePrototypeTable, 0, CREATE_METHOD_TABLE(JSEntityReferencePrototype) };
+const ClassInfo JSEntityReferencePrototype::s_info = { "EntityReferencePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEntityReferencePrototype) };
 
-JSObject* JSEntityReferencePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSEntityReference>(vm, globalObject);
-}
-
-const ClassInfo JSEntityReference::s_info = { "EntityReference", &Base::s_info, &JSEntityReferenceTable, 0 , CREATE_METHOD_TABLE(JSEntityReference) };
-
-JSEntityReference::JSEntityReference(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<EntityReference> impl)
-    : JSNode(structure, globalObject, impl)
-{
-}
-
-void JSEntityReference::finishCreation(VM& vm)
+void JSEntityReferencePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSEntityReferencePrototypeTableValues, *this);
+}
+
+const ClassInfo JSEntityReference::s_info = { "EntityReference", &Base::s_info, 0, CREATE_METHOD_TABLE(JSEntityReference) };
+
+JSEntityReference::JSEntityReference(Structure* structure, JSDOMGlobalObject* globalObject, Ref<EntityReference>&& impl)
+    : JSNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSEntityReference::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSEntityReferencePrototype::create(vm, globalObject, JSEntityReferencePrototype::createStructure(vm, globalObject, JSNodePrototype::self(vm, globalObject)));
+    return JSEntityReferencePrototype::create(vm, globalObject, JSEntityReferencePrototype::createStructure(vm, globalObject, JSNode::getPrototype(vm, globalObject)));
 }
 
-bool JSEntityReference::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSEntityReference::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSEntityReference* thisObject = jsCast<JSEntityReference*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSEntityReference, Base>(exec, JSEntityReferenceTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSEntityReference>(vm, globalObject);
 }
 
-JSValue jsEntityReferenceConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsEntityReferenceConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSEntityReference* domObject = jsCast<JSEntityReference*>(asObject(slotBase));
-    return JSEntityReference::getConstructor(exec->vm(), domObject->globalObject());
+    JSEntityReferencePrototype* domObject = jsDynamicCast<JSEntityReferencePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSEntityReference::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSEntityReference::getConstructor(VM& vm, JSGlobalObject* globalObject)

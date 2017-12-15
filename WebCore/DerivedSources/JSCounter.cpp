@@ -22,6 +22,7 @@
 #include "JSCounter.h"
 
 #include "Counter.h"
+#include "JSDOMBinding.h"
 #include "URL.h"
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
@@ -30,27 +31,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSCounterTableValues[] =
-{
-    { "identifier", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterIdentifier), (intptr_t)0 },
-    { "listStyle", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterListStyle), (intptr_t)0 },
-    { "separator", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterSeparator), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsCounterIdentifier(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCounterListStyle(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCounterSeparator(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCounterConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCounterPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCounterPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCounterPrototype* ptr = new (NotNull, JSC::allocateCell<JSCounterPrototype>(vm.heap)) JSCounterPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCounterPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSCounterTable = { 9, 7, JSCounterTableValues, 0 };
-/* Hash table for constructor */
+class JSCounterConstructor : public DOMConstructorObject {
+private:
+    JSCounterConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSCounterConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSCounterConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCounterConstructor* ptr = new (NotNull, JSC::allocateCell<JSCounterConstructor>(vm.heap)) JSCounterConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSCounterConstructorTable = { 1, 0, JSCounterConstructorTableValues, 0 };
-const ClassInfo JSCounterConstructor::s_info = { "CounterConstructor", &Base::s_info, &JSCounterConstructorTable, 0, CREATE_METHOD_TABLE(JSCounterConstructor) };
+const ClassInfo JSCounterConstructor::s_info = { "CounterConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCounterConstructor) };
 
 JSCounterConstructor::JSCounterConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -61,47 +95,45 @@ void JSCounterConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCounterPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSCounterConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSCounterConstructor, JSDOMWrapper>(exec, JSCounterConstructorTable, jsCast<JSCounterConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSCounter::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("Counter"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSCounterPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "identifier", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterIdentifier), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "listStyle", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterListStyle), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "separator", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCounterSeparator), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCounterPrototypeTable = { 1, 0, JSCounterPrototypeTableValues, 0 };
-const ClassInfo JSCounterPrototype::s_info = { "CounterPrototype", &Base::s_info, &JSCounterPrototypeTable, 0, CREATE_METHOD_TABLE(JSCounterPrototype) };
+const ClassInfo JSCounterPrototype::s_info = { "CounterPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCounterPrototype) };
 
-JSObject* JSCounterPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCounter>(vm, globalObject);
-}
-
-const ClassInfo JSCounter::s_info = { "Counter", &Base::s_info, &JSCounterTable, 0 , CREATE_METHOD_TABLE(JSCounter) };
-
-JSCounter::JSCounter(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Counter> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSCounter::finishCreation(VM& vm)
+void JSCounterPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCounterPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCounter::s_info = { "Counter", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCounter) };
+
+JSCounter::JSCounter(Structure* structure, JSDOMGlobalObject* globalObject, Ref<Counter>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSCounter::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSCounterPrototype::create(vm, globalObject, JSCounterPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSCounter::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCounter>(vm, globalObject);
 }
 
 void JSCounter::destroy(JSC::JSCell* cell)
@@ -112,50 +144,66 @@ void JSCounter::destroy(JSC::JSCell* cell)
 
 JSCounter::~JSCounter()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSCounter::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsCounterIdentifier(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCounter* thisObject = jsCast<JSCounter*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSCounter, Base>(exec, JSCounterTable, thisObject, propertyName, slot);
-}
-
-JSValue jsCounterIdentifier(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSCounter* castedThis = jsCast<JSCounter*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Counter& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCounter* castedThis = jsDynamicCast<JSCounter*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCounterPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Counter", "identifier");
+        return throwGetterTypeError(*exec, "Counter", "identifier");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.identifier());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCounterListStyle(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCounterListStyle(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCounter* castedThis = jsCast<JSCounter*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Counter& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCounter* castedThis = jsDynamicCast<JSCounter*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCounterPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Counter", "listStyle");
+        return throwGetterTypeError(*exec, "Counter", "listStyle");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.listStyle());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCounterSeparator(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCounterSeparator(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCounter* castedThis = jsCast<JSCounter*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    Counter& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSCounter* castedThis = jsDynamicCast<JSCounter*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSCounterPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "Counter", "separator");
+        return throwGetterTypeError(*exec, "Counter", "separator");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.separator());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsCounterConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCounterConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSCounter* domObject = jsCast<JSCounter*>(asObject(slotBase));
-    return JSCounter::getConstructor(exec->vm(), domObject->globalObject());
+    JSCounterPrototype* domObject = jsDynamicCast<JSCounterPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSCounter::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSCounter::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -163,35 +211,25 @@ JSValue JSCounter::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSCounterConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSCounter* jsCounter)
-{
-    if (jsCounter->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSCounterOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSCounter* jsCounter = jsCast<JSCounter*>(handle.get().asCell());
-    if (!isObservable(jsCounter))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSCounterOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSCounter* jsCounter = jsCast<JSCounter*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsCounter = jsCast<JSCounter*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsCounter->impl(), jsCounter);
-    jsCounter->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Counter* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, Counter* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSCounter>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSCounter>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -200,13 +238,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Counter
     // attribute to Counter.
     COMPILE_ASSERT(!__is_polymorphic(Counter), Counter_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<Counter>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSCounter>(exec, globalObject, impl);
+    return createNewWrapper<JSCounter>(globalObject, impl);
 }
 
-Counter* toCounter(JSC::JSValue value)
+Counter* JSCounter::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSCounter::info()) ? &jsCast<JSCounter*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSCounter*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

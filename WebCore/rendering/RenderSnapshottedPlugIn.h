@@ -34,9 +34,9 @@ namespace WebCore {
 
 class HTMLPlugInImageElement;
 
-class RenderSnapshottedPlugIn FINAL : public RenderEmbeddedObject {
+class RenderSnapshottedPlugIn final : public RenderEmbeddedObject {
 public:
-    explicit RenderSnapshottedPlugIn(HTMLPlugInImageElement&);
+    RenderSnapshottedPlugIn(HTMLPlugInImageElement&, Ref<RenderStyle>&&);
     virtual ~RenderSnapshottedPlugIn();
 
     HTMLPlugInImageElement& plugInImageElement() const;
@@ -46,32 +46,25 @@ public:
     void handleEvent(Event*);
 
 private:
-    void frameOwnerElement() const WTF_DELETED_FUNCTION;
-    virtual const char* renderName() const { return "RenderSnapshottedPlugIn"; }
+    void frameOwnerElement() const = delete;
+    virtual const char* renderName() const override { return "RenderSnapshottedPlugIn"; }
 
-    virtual CursorDirective getCursor(const LayoutPoint&, Cursor&) const OVERRIDE FINAL;
-    virtual bool isSnapshottedPlugIn() const OVERRIDE FINAL { return true; }
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
+    virtual CursorDirective getCursor(const LayoutPoint&, Cursor&) const override;
+    virtual bool isSnapshottedPlugIn() const override { return true; }
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
     
-    virtual bool canHaveWidget() const OVERRIDE FINAL { return false; }
+    virtual bool canHaveWidget() const override { return false; }
 
     void paintSnapshot(PaintInfo&, const LayoutPoint&);
 
-    virtual void layout() OVERRIDE;
+    virtual void layout() override;
 
-    OwnPtr<RenderImageResource> m_snapshotResource;
+    std::unique_ptr<RenderImageResource> m_snapshotResource;
     bool m_isPotentialMouseActivation;
 };
 
-inline RenderSnapshottedPlugIn* toRenderSnapshottedPlugIn(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSnapshottedPlugIn());
-    return static_cast<RenderSnapshottedPlugIn*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderSnapshottedPlugIn(const RenderSnapshottedPlugIn*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSnapshottedPlugIn, isSnapshottedPlugIn())
 
 #endif // RenderSnapshottedPlugIn_h

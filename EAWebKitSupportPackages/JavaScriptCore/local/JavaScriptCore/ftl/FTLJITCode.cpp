@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,6 +28,8 @@
 
 #if ENABLE(FTL_JIT)
 
+#include "FTLState.h"
+
 namespace JSC { namespace FTL {
 
 JITCode::JITCode()
@@ -37,6 +39,15 @@ JITCode::JITCode()
 
 JITCode::~JITCode()
 {
+    if (FTL::shouldShowDisassembly()) {
+        dataLog("Destroying FTL JIT code at ");
+        CommaPrinter comma;
+        for (auto& handle : m_handles)
+            dataLog(comma, pointerDump(handle.get()));
+        dataLog(comma, pointerDump(m_arityCheckEntrypoint.executableMemory()));
+        dataLog(comma, pointerDump(m_exitThunks.executableMemory()));
+        dataLog("\n");
+    }
 }
 
 void JITCode::initializeExitThunks(CodeRef exitThunks)
@@ -49,32 +60,40 @@ void JITCode::addHandle(PassRefPtr<ExecutableMemoryHandle> handle)
     m_handles.append(handle);
 }
 
-void JITCode::addDataSection(RefCountedArray<LSectionWord> dataSection)
+void JITCode::addDataSection(PassRefPtr<DataSection> dataSection)
 {
     m_dataSections.append(dataSection);
 }
 
-void JITCode::initializeCode(CodeRef entrypoint)
+void JITCode::initializeArityCheckEntrypoint(CodeRef entrypoint)
 {
-    m_entrypoint = entrypoint;
+    m_arityCheckEntrypoint = entrypoint;
 }
 
-JITCode::CodePtr JITCode::addressForCall()
+void JITCode::initializeAddressForCall(CodePtr address)
 {
-    RELEASE_ASSERT(m_entrypoint);
-    return m_entrypoint.code();
+    m_addressForCall = address;
+}
+
+JITCode::CodePtr JITCode::addressForCall(VM&, ExecutableBase*, ArityCheckMode arityCheck, RegisterPreservationMode)
+{
+    switch (arityCheck) {
+    case ArityCheckNotRequired:
+        return m_addressForCall;
+    case MustCheckArity:
+        return m_arityCheckEntrypoint.code();
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+    return CodePtr();
 }
 
 void* JITCode::executableAddressAtOffset(size_t offset)
 {
-    RELEASE_ASSERT(m_entrypoint);
-    return reinterpret_cast<char*>(m_entrypoint.code().executableAddress()) + offset;
+    return reinterpret_cast<char*>(m_addressForCall.executableAddress()) + offset;
 }
 
 void* JITCode::dataAddressAtOffset(size_t)
 {
-    RELEASE_ASSERT(m_entrypoint);
-
     // We can't patch FTL code, yet. Even if we did, it's not clear that we would do so
     // through this API.
     RELEASE_ASSERT_NOT_REACHED();
@@ -83,8 +102,6 @@ void* JITCode::dataAddressAtOffset(size_t)
 
 unsigned JITCode::offsetOf(void*)
 {
-    RELEASE_ASSERT(m_entrypoint);
-
     // We currently don't have visibility into the FTL code.
     RELEASE_ASSERT_NOT_REACHED();
     return 0;
@@ -92,8 +109,6 @@ unsigned JITCode::offsetOf(void*)
 
 size_t JITCode::size()
 {
-    RELEASE_ASSERT(m_entrypoint);
-
     // We don't know the size of FTL code, yet. Make a wild guess. This is mostly used for
     // GC load estimates.
     return 1000;
@@ -101,8 +116,6 @@ size_t JITCode::size()
 
 bool JITCode::contains(void*)
 {
-    RELEASE_ASSERT(m_entrypoint);
-
     // We have no idea what addresses the FTL code contains, yet.
     RELEASE_ASSERT_NOT_REACHED();
     return false;
@@ -121,6 +134,14 @@ JITCode* JITCode::ftl()
 DFG::CommonData* JITCode::dfgCommon()
 {
     return &common;
+}
+
+void JITCode::validateReferences(const TrackedReferences& trackedReferences)
+{
+    common.validateReferences(trackedReferences);
+    
+    for (OSRExit& exit : osrExit)
+        exit.validateReferences(trackedReferences);
 }
 
 } } // namespace JSC::FTL

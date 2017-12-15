@@ -35,22 +35,21 @@ struct ResourceLoaderOptions;
 
 class CSSImageValue : public CSSValue {
 public:
-    static PassRefPtr<CSSImageValue> create(const String& url) { return adoptRef(new CSSImageValue(url)); }
-    static PassRefPtr<CSSImageValue> create(const String& url, StyleImage* image) { return adoptRef(new CSSImageValue(url, image)); }
+    static Ref<CSSImageValue> create(const String& url) { return adoptRef(*new CSSImageValue(url)); }
+    static Ref<CSSImageValue> create(const String& url, StyleImage* image) { return adoptRef(*new CSSImageValue(url, image)); }
     ~CSSImageValue();
 
-    StyleCachedImage* cachedImage(CachedResourceLoader*, const ResourceLoaderOptions&);
-    StyleCachedImage* cachedImage(CachedResourceLoader*);
+    StyleCachedImage* cachedImage(CachedResourceLoader&, const ResourceLoaderOptions&);
     // Returns a StyleCachedImage if the image is cached already, otherwise a StylePendingImage.
     StyleImage* cachedOrPendingImage();
 
-    const String& url() { return m_url; }
+    const String& url() const { return m_url; }
 
     String customCSSText() const;
 
-    PassRefPtr<CSSValue> cloneForCSSOM() const;
+    Ref<CSSValue> cloneForCSSOM() const;
 
-    bool hasFailedOrCanceledSubresources() const;
+    bool traverseSubresources(const std::function<bool (const CachedResource&)>& handler) const;
 
     bool equals(const CSSImageValue&) const;
 
@@ -61,6 +60,7 @@ public:
 private:
     explicit CSSImageValue(const String& url);
     CSSImageValue(const String& url, StyleImage*);
+    void detachPendingImage();
 
     String m_url;
     RefPtr<StyleImage> m_image;
@@ -68,8 +68,8 @@ private:
     AtomicString m_initiatorName;
 };
 
-CSS_VALUE_TYPE_CASTS(ImageValue)
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSImageValue, isImageValue())
 
 #endif // CSSImageValue_h

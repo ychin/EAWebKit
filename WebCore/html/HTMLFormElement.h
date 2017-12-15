@@ -28,7 +28,11 @@
 #include "FormState.h"
 #include "FormSubmission.h"
 #include "HTMLElement.h"
-#include <wtf/OwnPtr.h>
+#include <memory>
+
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+#include "Autocapitalize.h"
+#endif
 
 namespace WebCore {
 
@@ -40,15 +44,15 @@ class HTMLImageElement;
 class HTMLInputElement;
 class TextEncoding;
 
-class HTMLFormElement FINAL : public HTMLElement {
+class HTMLFormElement final : public HTMLElement {
 public:
-    static PassRefPtr<HTMLFormElement> create(Document&);
-    static PassRefPtr<HTMLFormElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLFormElement> create(Document&);
+    static Ref<HTMLFormElement> create(const QualifiedName&, Document&);
     virtual ~HTMLFormElement();
 
-    PassRefPtr<HTMLCollection> elements();
+    Ref<HTMLCollection> elements();
     bool hasNamedElement(const AtomicString&);
-    void getNamedElements(const AtomicString&, Vector<Ref<Element>>&);
+    Vector<Ref<Element>> namedElements(const AtomicString&);
 
     unsigned length() const;
     Node* item(unsigned index);
@@ -61,14 +65,26 @@ public:
 
     bool shouldAutocomplete() const;
 
+#if ENABLE(IOS_AUTOCORRECT_AND_AUTOCAPITALIZE)
+    WEBCORE_EXPORT bool autocorrect() const;
+    void setAutocorrect(bool);
+
+    WEBCORE_EXPORT WebAutocapitalizeType autocapitalizeType() const;
+    const AtomicString& autocapitalize() const;
+    void setAutocapitalize(const AtomicString&);
+#endif
+
     // FIXME: Should rename these two functions to say "form control" or "form-associated element" instead of "form element".
     void registerFormElement(FormAssociatedElement*);
     void removeFormElement(FormAssociatedElement*);
 
+    void registerInvalidAssociatedFormControl(const HTMLFormControlElement&);
+    void removeInvalidAssociatedFormControlIfNeeded(const HTMLFormControlElement&);
+
     void registerImgElement(HTMLImageElement*);
     void removeImgElement(HTMLImageElement*);
 
-    bool prepareForSubmission(Event*);
+    void prepareForSubmission(Event*); // FIXME: This function doesn't only prepare, it sometimes calls submit() itself.
     void submit();
     void submitFromJavaScript();
     void reset();
@@ -91,13 +107,25 @@ public:
     String method() const;
     void setMethod(const String&);
 
-    virtual String target() const OVERRIDE;
+    virtual String target() const override;
 
     bool wasUserSubmitted() const;
 
     HTMLFormControlElement* defaultButton() const;
 
     bool checkValidity();
+
+#if ENABLE(REQUEST_AUTOCOMPLETE)
+    enum class AutocompleteResult {
+        Success,
+        ErrorDisabled,
+        ErrorCancel,
+        ErrorInvalid,
+    };
+
+    void requestAutocomplete();
+    void finishRequestAutocomplete(AutocompleteResult);
+#endif
 
     CheckedRadioButtons& checkedRadioButtons() { return m_checkedRadioButtons; }
 
@@ -111,21 +139,21 @@ public:
 private:
     HTMLFormElement(const QualifiedName&, Document&);
 
-    virtual bool rendererIsNeeded(const RenderStyle&) OVERRIDE;
-    virtual InsertionNotificationRequest insertedInto(ContainerNode&) OVERRIDE;
-    virtual void removedFrom(ContainerNode&) OVERRIDE;
-    virtual void finishParsingChildren() OVERRIDE;
+    virtual bool rendererIsNeeded(const RenderStyle&) override;
+    virtual InsertionNotificationRequest insertedInto(ContainerNode&) override;
+    virtual void removedFrom(ContainerNode&) override;
+    virtual void finishParsingChildren() override;
 
-    virtual void handleLocalEvents(Event&) OVERRIDE;
+    virtual void handleLocalEvents(Event&) override;
 
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
-    virtual bool isURLAttribute(const Attribute&) const OVERRIDE;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
+    virtual bool isURLAttribute(const Attribute&) const override;
 
-    virtual void documentDidResumeFromPageCache() OVERRIDE;
+    virtual void documentDidResumeFromPageCache() override;
 
-    virtual void didMoveToNewDocument(Document* oldDocument) OVERRIDE;
+    virtual void didMoveToNewDocument(Document* oldDocument) override;
 
-    virtual void copyNonAttributePropertiesFromElement(const Element&) OVERRIDE;
+    virtual void copyNonAttributePropertiesFromElement(const Element&) override;
 
     void submit(Event*, bool activateSubmitButton, bool processingUserGesture, FormSubmissionTrigger);
 
@@ -138,17 +166,20 @@ private:
     // Validates each of the controls, and stores controls of which 'invalid'
     // event was not canceled to the specified vector. Returns true if there
     // are any invalid controls in this form.
-    bool checkInvalidControlsAndCollectUnhandled(Vector<RefPtr<FormAssociatedElement> >&);
+    bool checkInvalidControlsAndCollectUnhandled(Vector<RefPtr<FormAssociatedElement>>&);
 
     HTMLElement* elementFromPastNamesMap(const AtomicString&) const;
     void addToPastNamesMap(FormNamedItem*, const AtomicString& pastName);
     void assertItemCanBeInPastNamesMap(FormNamedItem*) const;
     void removeFromPastNamesMap(FormNamedItem*);
 
+    virtual bool matchesValidPseudoClass() const override;
+    virtual bool matchesInvalidPseudoClass() const override;
+
     typedef HashMap<RefPtr<AtomicStringImpl>, FormNamedItem*> PastNamesMap;
 
     FormSubmission::Attributes m_attributes;
-    OwnPtr<PastNamesMap> m_pastNamesMap;
+    std::unique_ptr<PastNamesMap> m_pastNamesMap;
 
     CheckedRadioButtons m_checkedRadioButtons;
 
@@ -156,6 +187,7 @@ private:
     unsigned m_associatedElementsAfterIndex;
     Vector<FormAssociatedElement*> m_associatedElements;
     Vector<HTMLImageElement*> m_imageElements;
+    HashSet<const HTMLFormControlElement*> m_invalidAssociatedFormControls;
 
     bool m_wasUserSubmitted;
     bool m_isSubmittingOrPreparingForSubmission;
@@ -164,9 +196,14 @@ private:
     bool m_isInResetFunction;
 
     bool m_wasDemoted;
-};
 
-NODE_TYPE_CASTS(HTMLFormElement)
+#if ENABLE(REQUEST_AUTOCOMPLETE)
+    void requestAutocompleteTimerFired();
+
+    Vector<RefPtr<Event>> m_pendingAutocompleteEvents;
+    Timer m_requestAutocompleteTimer;
+#endif
+};
 
 } // namespace WebCore
 

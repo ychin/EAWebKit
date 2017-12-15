@@ -70,7 +70,7 @@
 
 /* Copy the first part of user declarations.  */
 /* Line 371 of yacc.c  */
-#line 28 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 28 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
 
 
 #include "config.h"
@@ -158,31 +158,31 @@ extern int xpathyydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 54 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 54 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  NumericOp::Opcode numericOpcode; 
 /* Line 387 of yacc.c  */
-#line 57 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 57 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  EqTestOp::Opcode equalityTestOpcode; 
 /* Line 387 of yacc.c  */
-#line 64 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 64 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  StringImpl* string; 
 /* Line 387 of yacc.c  */
-#line 68 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 68 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  Step::Axis axis; 
 /* Line 387 of yacc.c  */
-#line 74 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 74 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  LocationPath* locationPath; 
 /* Line 387 of yacc.c  */
-#line 78 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 78 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  Step::NodeTest* nodeTest; 
 /* Line 387 of yacc.c  */
-#line 82 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 82 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  Vector<std::unique_ptr<Expression>>* expressionVector; 
 /* Line 387 of yacc.c  */
-#line 86 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 86 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  Step* step; 
 /* Line 387 of yacc.c  */
-#line 90 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 90 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
  Expression* expression; 
 
 /* Line 387 of yacc.c  */
@@ -212,7 +212,7 @@ int xpathyyparse ();
 
 /* Copy the second part of user declarations.  */
 /* Line 390 of yacc.c  */
-#line 94 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 94 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
 
 
 static int xpathyylex(YYSTYPE* yylval, Parser& parser) { return parser.lex(*yylval); }
@@ -1236,217 +1236,217 @@ yydestruct (yymsg, yytype, yyvaluep, parser)
     {
       case 10: /* FUNCTIONNAME */
 /* Line 1393 of yacc.c  */
-#line 66 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 66 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { if (((*yyvaluep).string)) ((*yyvaluep).string)->deref(); };
 /* Line 1393 of yacc.c  */
 #line 1243 "./XPathGrammar.cpp"
         break;
       case 11: /* LITERAL */
 /* Line 1393 of yacc.c  */
-#line 66 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 66 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { if (((*yyvaluep).string)) ((*yyvaluep).string)->deref(); };
 /* Line 1393 of yacc.c  */
 #line 1250 "./XPathGrammar.cpp"
         break;
       case 12: /* NAMETEST */
 /* Line 1393 of yacc.c  */
-#line 66 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 66 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { if (((*yyvaluep).string)) ((*yyvaluep).string)->deref(); };
 /* Line 1393 of yacc.c  */
 #line 1257 "./XPathGrammar.cpp"
         break;
       case 13: /* NUMBER */
 /* Line 1393 of yacc.c  */
-#line 66 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 66 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { if (((*yyvaluep).string)) ((*yyvaluep).string)->deref(); };
 /* Line 1393 of yacc.c  */
 #line 1264 "./XPathGrammar.cpp"
         break;
       case 14: /* NODETYPE */
 /* Line 1393 of yacc.c  */
-#line 66 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 66 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { if (((*yyvaluep).string)) ((*yyvaluep).string)->deref(); };
 /* Line 1393 of yacc.c  */
 #line 1271 "./XPathGrammar.cpp"
         break;
       case 15: /* VARIABLEREFERENCE */
 /* Line 1393 of yacc.c  */
-#line 66 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 66 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { if (((*yyvaluep).string)) ((*yyvaluep).string)->deref(); };
 /* Line 1393 of yacc.c  */
 #line 1278 "./XPathGrammar.cpp"
         break;
       case 35: /* Expr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1285 "./XPathGrammar.cpp"
         break;
       case 36: /* LocationPath */
 /* Line 1393 of yacc.c  */
-#line 76 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 76 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).locationPath); };
 /* Line 1393 of yacc.c  */
 #line 1292 "./XPathGrammar.cpp"
         break;
       case 37: /* AbsoluteLocationPath */
 /* Line 1393 of yacc.c  */
-#line 76 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 76 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).locationPath); };
 /* Line 1393 of yacc.c  */
 #line 1299 "./XPathGrammar.cpp"
         break;
       case 38: /* RelativeLocationPath */
 /* Line 1393 of yacc.c  */
-#line 76 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 76 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).locationPath); };
 /* Line 1393 of yacc.c  */
 #line 1306 "./XPathGrammar.cpp"
         break;
       case 39: /* Step */
 /* Line 1393 of yacc.c  */
-#line 88 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 88 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).step); };
 /* Line 1393 of yacc.c  */
 #line 1313 "./XPathGrammar.cpp"
         break;
       case 41: /* NodeTest */
 /* Line 1393 of yacc.c  */
-#line 80 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 80 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).nodeTest); };
 /* Line 1393 of yacc.c  */
 #line 1320 "./XPathGrammar.cpp"
         break;
       case 42: /* OptionalPredicateList */
 /* Line 1393 of yacc.c  */
-#line 84 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 84 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expressionVector); };
 /* Line 1393 of yacc.c  */
 #line 1327 "./XPathGrammar.cpp"
         break;
       case 43: /* PredicateList */
 /* Line 1393 of yacc.c  */
-#line 84 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 84 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expressionVector); };
 /* Line 1393 of yacc.c  */
 #line 1334 "./XPathGrammar.cpp"
         break;
       case 44: /* Predicate */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1341 "./XPathGrammar.cpp"
         break;
       case 45: /* DescendantOrSelf */
 /* Line 1393 of yacc.c  */
-#line 88 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 88 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).step); };
 /* Line 1393 of yacc.c  */
 #line 1348 "./XPathGrammar.cpp"
         break;
       case 46: /* AbbreviatedStep */
 /* Line 1393 of yacc.c  */
-#line 88 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 88 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).step); };
 /* Line 1393 of yacc.c  */
 #line 1355 "./XPathGrammar.cpp"
         break;
       case 47: /* PrimaryExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1362 "./XPathGrammar.cpp"
         break;
       case 48: /* FunctionCall */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1369 "./XPathGrammar.cpp"
         break;
       case 49: /* ArgumentList */
 /* Line 1393 of yacc.c  */
-#line 84 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 84 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expressionVector); };
 /* Line 1393 of yacc.c  */
 #line 1376 "./XPathGrammar.cpp"
         break;
       case 50: /* Argument */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1383 "./XPathGrammar.cpp"
         break;
       case 51: /* UnionExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1390 "./XPathGrammar.cpp"
         break;
       case 52: /* PathExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1397 "./XPathGrammar.cpp"
         break;
       case 53: /* FilterExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1404 "./XPathGrammar.cpp"
         break;
       case 54: /* OrExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1411 "./XPathGrammar.cpp"
         break;
       case 55: /* AndExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1418 "./XPathGrammar.cpp"
         break;
       case 56: /* EqualityExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1425 "./XPathGrammar.cpp"
         break;
       case 57: /* RelationalExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1432 "./XPathGrammar.cpp"
         break;
       case 58: /* AdditiveExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1439 "./XPathGrammar.cpp"
         break;
       case 59: /* MultiplicativeExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1446 "./XPathGrammar.cpp"
         break;
       case 60: /* UnaryExpr */
 /* Line 1393 of yacc.c  */
-#line 92 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 92 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
         { delete ((*yyvaluep).expression); };
 /* Line 1393 of yacc.c  */
 #line 1453 "./XPathGrammar.cpp"
@@ -1752,7 +1752,7 @@ yyreduce:
     {
         case 2:
 /* Line 1787 of yacc.c  */
-#line 105 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 105 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         parser.setParseResult(std::unique_ptr<Expression>((yyvsp[(1) - (1)].expression)));
     }
@@ -1760,7 +1760,7 @@ yyreduce:
 
   case 4:
 /* Line 1787 of yacc.c  */
-#line 116 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 116 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = (yyvsp[(1) - (1)].locationPath);
         (yyval.locationPath)->setAbsolute();
@@ -1769,7 +1769,7 @@ yyreduce:
 
   case 6:
 /* Line 1787 of yacc.c  */
-#line 126 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 126 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = new LocationPath;
     }
@@ -1777,7 +1777,7 @@ yyreduce:
 
   case 7:
 /* Line 1787 of yacc.c  */
-#line 131 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 131 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = (yyvsp[(2) - (2)].locationPath);
     }
@@ -1785,7 +1785,7 @@ yyreduce:
 
   case 8:
 /* Line 1787 of yacc.c  */
-#line 136 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 136 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = (yyvsp[(2) - (2)].locationPath);
         (yyval.locationPath)->prependStep(std::unique_ptr<Step>((yyvsp[(1) - (2)].step)));
@@ -1794,7 +1794,7 @@ yyreduce:
 
   case 9:
 /* Line 1787 of yacc.c  */
-#line 144 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 144 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = new LocationPath;
         (yyval.locationPath)->appendStep(std::unique_ptr<Step>((yyvsp[(1) - (1)].step)));
@@ -1803,7 +1803,7 @@ yyreduce:
 
   case 10:
 /* Line 1787 of yacc.c  */
-#line 150 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 150 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = (yyvsp[(1) - (3)].locationPath);
         (yyval.locationPath)->appendStep(std::unique_ptr<Step>((yyvsp[(3) - (3)].step)));
@@ -1812,7 +1812,7 @@ yyreduce:
 
   case 11:
 /* Line 1787 of yacc.c  */
-#line 156 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 156 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.locationPath) = (yyvsp[(1) - (3)].locationPath);
         (yyval.locationPath)->appendStep(std::unique_ptr<Step>((yyvsp[(2) - (3)].step)));
@@ -1822,20 +1822,20 @@ yyreduce:
 
   case 12:
 /* Line 1787 of yacc.c  */
-#line 165 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 165 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         std::unique_ptr<Step::NodeTest> nodeTest((yyvsp[(1) - (2)].nodeTest));
         std::unique_ptr<Vector<std::unique_ptr<Expression>>> predicateList((yyvsp[(2) - (2)].expressionVector));
         if (predicateList)
-            (yyval.step) = new Step(Step::ChildAxis, std::move(*nodeTest), std::move(*predicateList));
+            (yyval.step) = new Step(Step::ChildAxis, WTF::move(*nodeTest), WTF::move(*predicateList));
         else
-            (yyval.step) = new Step(Step::ChildAxis, std::move(*nodeTest));
+            (yyval.step) = new Step(Step::ChildAxis, WTF::move(*nodeTest));
     }
     break;
 
   case 13:
 /* Line 1787 of yacc.c  */
-#line 175 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 175 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String nametest = adoptRef((yyvsp[(1) - (2)].string));
         std::unique_ptr<Vector<std::unique_ptr<Expression>>> predicateList((yyvsp[(2) - (2)].expressionVector));
@@ -1848,7 +1848,7 @@ yyreduce:
         }
 
         if (predicateList)
-            (yyval.step) = new Step(Step::ChildAxis, Step::NodeTest(Step::NodeTest::NameTest, localName, namespaceURI), std::move(*predicateList));
+            (yyval.step) = new Step(Step::ChildAxis, Step::NodeTest(Step::NodeTest::NameTest, localName, namespaceURI), WTF::move(*predicateList));
         else
             (yyval.step) = new Step(Step::ChildAxis, Step::NodeTest(Step::NodeTest::NameTest, localName, namespaceURI));
     }
@@ -1856,21 +1856,21 @@ yyreduce:
 
   case 14:
 /* Line 1787 of yacc.c  */
-#line 193 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 193 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         std::unique_ptr<Step::NodeTest> nodeTest((yyvsp[(2) - (3)].nodeTest));
         std::unique_ptr<Vector<std::unique_ptr<Expression>>> predicateList((yyvsp[(3) - (3)].expressionVector));
 
         if (predicateList)
-            (yyval.step) = new Step((yyvsp[(1) - (3)].axis), std::move(*nodeTest), std::move(*predicateList));
+            (yyval.step) = new Step((yyvsp[(1) - (3)].axis), WTF::move(*nodeTest), WTF::move(*predicateList));
         else
-            (yyval.step) = new Step((yyvsp[(1) - (3)].axis), std::move(*nodeTest));
+            (yyval.step) = new Step((yyvsp[(1) - (3)].axis), WTF::move(*nodeTest));
     }
     break;
 
   case 15:
 /* Line 1787 of yacc.c  */
-#line 204 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 204 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String nametest = adoptRef((yyvsp[(2) - (3)].string));
         std::unique_ptr<Vector<std::unique_ptr<Expression>>> predicateList((yyvsp[(3) - (3)].expressionVector));
@@ -1883,7 +1883,7 @@ yyreduce:
         }
 
         if (predicateList)
-            (yyval.step) = new Step((yyvsp[(1) - (3)].axis), Step::NodeTest(Step::NodeTest::NameTest, localName, namespaceURI), std::move(*predicateList));
+            (yyval.step) = new Step((yyvsp[(1) - (3)].axis), Step::NodeTest(Step::NodeTest::NameTest, localName, namespaceURI), WTF::move(*predicateList));
         else
             (yyval.step) = new Step((yyvsp[(1) - (3)].axis), Step::NodeTest(Step::NodeTest::NameTest, localName, namespaceURI));
     }
@@ -1891,7 +1891,7 @@ yyreduce:
 
   case 18:
 /* Line 1787 of yacc.c  */
-#line 228 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 228 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.axis) = Step::AttributeAxis;
     }
@@ -1899,7 +1899,7 @@ yyreduce:
 
   case 19:
 /* Line 1787 of yacc.c  */
-#line 235 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 235 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.nodeTest) = new Step::NodeTest(Step::NodeTest::AnyNodeTest);
     }
@@ -1907,7 +1907,7 @@ yyreduce:
 
   case 20:
 /* Line 1787 of yacc.c  */
-#line 240 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 240 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.nodeTest) = new Step::NodeTest(Step::NodeTest::TextNodeTest);
     }
@@ -1915,7 +1915,7 @@ yyreduce:
 
   case 21:
 /* Line 1787 of yacc.c  */
-#line 245 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 245 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.nodeTest) = new Step::NodeTest(Step::NodeTest::CommentNodeTest);
     }
@@ -1923,7 +1923,7 @@ yyreduce:
 
   case 22:
 /* Line 1787 of yacc.c  */
-#line 250 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 250 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.nodeTest) = new Step::NodeTest(Step::NodeTest::ProcessingInstructionNodeTest);
     }
@@ -1931,7 +1931,7 @@ yyreduce:
 
   case 23:
 /* Line 1787 of yacc.c  */
-#line 255 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 255 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String literal = adoptRef((yyvsp[(3) - (4)].string));
         (yyval.nodeTest) = new Step::NodeTest(Step::NodeTest::ProcessingInstructionNodeTest, literal.stripWhiteSpace());
@@ -1940,7 +1940,7 @@ yyreduce:
 
   case 24:
 /* Line 1787 of yacc.c  */
-#line 263 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 263 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expressionVector) = nullptr;
     }
@@ -1948,7 +1948,7 @@ yyreduce:
 
   case 26:
 /* Line 1787 of yacc.c  */
-#line 272 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 272 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expressionVector) = new Vector<std::unique_ptr<Expression>>;
         (yyval.expressionVector)->append(std::unique_ptr<Expression>((yyvsp[(1) - (1)].expression)));
@@ -1957,7 +1957,7 @@ yyreduce:
 
   case 27:
 /* Line 1787 of yacc.c  */
-#line 278 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 278 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expressionVector) = (yyvsp[(1) - (2)].expressionVector);
         (yyval.expressionVector)->append(std::unique_ptr<Expression>((yyvsp[(2) - (2)].expression)));
@@ -1966,7 +1966,7 @@ yyreduce:
 
   case 28:
 /* Line 1787 of yacc.c  */
-#line 286 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 286 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = (yyvsp[(2) - (3)].expression);
     }
@@ -1974,7 +1974,7 @@ yyreduce:
 
   case 29:
 /* Line 1787 of yacc.c  */
-#line 293 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 293 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.step) = new Step(Step::DescendantOrSelfAxis, Step::NodeTest(Step::NodeTest::AnyNodeTest));
     }
@@ -1982,7 +1982,7 @@ yyreduce:
 
   case 30:
 /* Line 1787 of yacc.c  */
-#line 300 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 300 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.step) = new Step(Step::SelfAxis, Step::NodeTest(Step::NodeTest::AnyNodeTest));
     }
@@ -1990,7 +1990,7 @@ yyreduce:
 
   case 31:
 /* Line 1787 of yacc.c  */
-#line 305 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 305 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.step) = new Step(Step::ParentAxis, Step::NodeTest(Step::NodeTest::AnyNodeTest));
     }
@@ -1998,7 +1998,7 @@ yyreduce:
 
   case 32:
 /* Line 1787 of yacc.c  */
-#line 312 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 312 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String name = adoptRef((yyvsp[(1) - (1)].string));
         (yyval.expression) = new VariableReference(name);
@@ -2007,7 +2007,7 @@ yyreduce:
 
   case 33:
 /* Line 1787 of yacc.c  */
-#line 318 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 318 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = (yyvsp[(2) - (3)].expression);
     }
@@ -2015,16 +2015,16 @@ yyreduce:
 
   case 34:
 /* Line 1787 of yacc.c  */
-#line 323 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 323 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String literal = adoptRef((yyvsp[(1) - (1)].string));
-        (yyval.expression) = new StringExpression(std::move(literal));
+        (yyval.expression) = new StringExpression(WTF::move(literal));
     }
     break;
 
   case 35:
 /* Line 1787 of yacc.c  */
-#line 329 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 329 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String numeral = adoptRef((yyvsp[(1) - (1)].string));
         (yyval.expression) = new Number(numeral.toDouble());
@@ -2033,7 +2033,7 @@ yyreduce:
 
   case 37:
 /* Line 1787 of yacc.c  */
-#line 339 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 339 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String name = adoptRef((yyvsp[(1) - (3)].string));
         (yyval.expression) = XPath::Function::create(name).release();
@@ -2044,11 +2044,11 @@ yyreduce:
 
   case 38:
 /* Line 1787 of yacc.c  */
-#line 347 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 347 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         String name = adoptRef((yyvsp[(1) - (4)].string));
         std::unique_ptr<Vector<std::unique_ptr<Expression>>> argumentList((yyvsp[(3) - (4)].expressionVector));
-        (yyval.expression) = XPath::Function::create(name, std::move(*argumentList)).release();
+        (yyval.expression) = XPath::Function::create(name, WTF::move(*argumentList)).release();
         if (!(yyval.expression))
             YYABORT;
     }
@@ -2056,7 +2056,7 @@ yyreduce:
 
   case 39:
 /* Line 1787 of yacc.c  */
-#line 358 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 358 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expressionVector) = new Vector<std::unique_ptr<Expression>>;
         (yyval.expressionVector)->append(std::unique_ptr<Expression>((yyvsp[(1) - (1)].expression)));
@@ -2065,7 +2065,7 @@ yyreduce:
 
   case 40:
 /* Line 1787 of yacc.c  */
-#line 364 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 364 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expressionVector) = (yyvsp[(1) - (3)].expressionVector);
         (yyval.expressionVector)->append(std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
@@ -2074,7 +2074,7 @@ yyreduce:
 
   case 43:
 /* Line 1787 of yacc.c  */
-#line 378 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 378 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new Union(std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2082,7 +2082,7 @@ yyreduce:
 
   case 44:
 /* Line 1787 of yacc.c  */
-#line 385 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 385 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = (yyvsp[(1) - (1)].locationPath);
     }
@@ -2090,7 +2090,7 @@ yyreduce:
 
   case 46:
 /* Line 1787 of yacc.c  */
-#line 392 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 392 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyvsp[(3) - (3)].locationPath)->setAbsolute();
         (yyval.expression) = new Path(std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<LocationPath>((yyvsp[(3) - (3)].locationPath)));
@@ -2099,7 +2099,7 @@ yyreduce:
 
   case 47:
 /* Line 1787 of yacc.c  */
-#line 398 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 398 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyvsp[(3) - (3)].locationPath)->prependStep(std::unique_ptr<Step>((yyvsp[(2) - (3)].step)));
         (yyvsp[(3) - (3)].locationPath)->setAbsolute();
@@ -2109,16 +2109,16 @@ yyreduce:
 
   case 49:
 /* Line 1787 of yacc.c  */
-#line 409 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 409 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         std::unique_ptr<Vector<std::unique_ptr<Expression>>> predicateList((yyvsp[(2) - (2)].expressionVector));
-        (yyval.expression) = new Filter(std::unique_ptr<Expression>((yyvsp[(1) - (2)].expression)), std::move(*predicateList));
+        (yyval.expression) = new Filter(std::unique_ptr<Expression>((yyvsp[(1) - (2)].expression)), WTF::move(*predicateList));
     }
     break;
 
   case 51:
 /* Line 1787 of yacc.c  */
-#line 419 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 419 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new LogicalOp(LogicalOp::OP_Or, std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2126,7 +2126,7 @@ yyreduce:
 
   case 53:
 /* Line 1787 of yacc.c  */
-#line 428 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 428 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new LogicalOp(LogicalOp::OP_And, std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2134,7 +2134,7 @@ yyreduce:
 
   case 55:
 /* Line 1787 of yacc.c  */
-#line 437 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 437 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new EqTestOp((yyvsp[(2) - (3)].equalityTestOpcode), std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2142,7 +2142,7 @@ yyreduce:
 
   case 57:
 /* Line 1787 of yacc.c  */
-#line 446 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 446 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new EqTestOp((yyvsp[(2) - (3)].equalityTestOpcode), std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2150,7 +2150,7 @@ yyreduce:
 
   case 59:
 /* Line 1787 of yacc.c  */
-#line 455 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 455 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new NumericOp(NumericOp::OP_Add, std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2158,7 +2158,7 @@ yyreduce:
 
   case 60:
 /* Line 1787 of yacc.c  */
-#line 460 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 460 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new NumericOp(NumericOp::OP_Sub, std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2166,7 +2166,7 @@ yyreduce:
 
   case 62:
 /* Line 1787 of yacc.c  */
-#line 469 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 469 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new NumericOp((yyvsp[(2) - (3)].numericOpcode), std::unique_ptr<Expression>((yyvsp[(1) - (3)].expression)), std::unique_ptr<Expression>((yyvsp[(3) - (3)].expression)));
     }
@@ -2174,7 +2174,7 @@ yyreduce:
 
   case 64:
 /* Line 1787 of yacc.c  */
-#line 478 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 478 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
     {
         (yyval.expression) = new Negative(std::unique_ptr<Expression>((yyvsp[(2) - (2)].expression)));
     }
@@ -2414,5 +2414,5 @@ yyreturn:
 
 
 /* Line 2050 of yacc.c  */
-#line 483 "/home/abaldeva/WEBKIT~1/Source/WebCore/xml/XPathGrammar.y"
+#line 483 "/cygdrive/c/eaos/EAOS/EAWebKit/DL/EAWebKit/dev/WebCore/xml/XPathGrammar.y"
 

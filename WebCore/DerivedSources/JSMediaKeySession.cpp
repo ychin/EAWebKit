@@ -25,7 +25,6 @@
 #include "JSMediaKeySession.h"
 
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSEvent.h"
@@ -42,30 +41,74 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSMediaKeySessionTableValues[] =
-{
-    { "error", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionError), (intptr_t)0 },
-    { "keySystem", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionKeySystem), (intptr_t)0 },
-    { "sessionId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionSessionId), (intptr_t)0 },
-    { "onwebkitkeyadded", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionOnwebkitkeyadded), (intptr_t)setJSMediaKeySessionOnwebkitkeyadded },
-    { "onwebkitkeyerror", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionOnwebkitkeyerror), (intptr_t)setJSMediaKeySessionOnwebkitkeyerror },
-    { "onwebkitkeymessage", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionOnwebkitkeymessage), (intptr_t)setJSMediaKeySessionOnwebkitkeymessage },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionUpdate(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionClose(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsMediaKeySessionError(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeySessionKeySystem(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeySessionSessionId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeySessionOnwebkitkeyadded(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSMediaKeySessionOnwebkitkeyadded(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsMediaKeySessionOnwebkitkeyerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSMediaKeySessionOnwebkitkeyerror(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsMediaKeySessionOnwebkitkeymessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSMediaKeySessionOnwebkitkeymessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsMediaKeySessionConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMediaKeySessionPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaKeySessionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaKeySessionPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaKeySessionPrototype>(vm.heap)) JSMediaKeySessionPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaKeySessionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMediaKeySessionTable = { 18, 15, JSMediaKeySessionTableValues, 0 };
-/* Hash table for constructor */
+class JSMediaKeySessionConstructor : public DOMConstructorObject {
+private:
+    JSMediaKeySessionConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMediaKeySessionConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMediaKeySessionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMediaKeySessionConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaKeySessionConstructor>(vm.heap)) JSMediaKeySessionConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSMediaKeySessionConstructorTable = { 1, 0, JSMediaKeySessionConstructorTableValues, 0 };
-const ClassInfo JSMediaKeySessionConstructor::s_info = { "WebKitMediaKeySessionConstructor", &Base::s_info, &JSMediaKeySessionConstructorTable, 0, CREATE_METHOD_TABLE(JSMediaKeySessionConstructor) };
+const ClassInfo JSMediaKeySessionConstructor::s_info = { "WebKitMediaKeySessionConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeySessionConstructor) };
 
 JSMediaKeySessionConstructor::JSMediaKeySessionConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -76,58 +119,53 @@ void JSMediaKeySessionConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMediaKeySessionPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMediaKeySessionConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMediaKeySessionConstructor, JSDOMWrapper>(exec, JSMediaKeySessionConstructorTable, jsCast<JSMediaKeySessionConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMediaKeySession::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebKitMediaKeySession"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSMediaKeySessionPrototypeTableValues[] =
 {
-    { "update", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionUpdate), (intptr_t)1 },
-    { "close", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionClose), (intptr_t)0 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "error", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionError), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "keySystem", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionKeySystem), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "sessionId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionSessionId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onwebkitkeyadded", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionOnwebkitkeyadded), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSMediaKeySessionOnwebkitkeyadded) },
+    { "onwebkitkeyerror", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionOnwebkitkeyerror), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSMediaKeySessionOnwebkitkeyerror) },
+    { "onwebkitkeymessage", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeySessionOnwebkitkeymessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSMediaKeySessionOnwebkitkeymessage) },
+    { "update", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionUpdate), (intptr_t) (1) },
+    { "close", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionClose), (intptr_t) (0) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeySessionPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSMediaKeySessionPrototypeTable = { 17, 15, JSMediaKeySessionPrototypeTableValues, 0 };
-const ClassInfo JSMediaKeySessionPrototype::s_info = { "WebKitMediaKeySessionPrototype", &Base::s_info, &JSMediaKeySessionPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaKeySessionPrototype) };
+const ClassInfo JSMediaKeySessionPrototype::s_info = { "WebKitMediaKeySessionPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeySessionPrototype) };
 
-JSObject* JSMediaKeySessionPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaKeySession>(vm, globalObject);
-}
-
-bool JSMediaKeySessionPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSMediaKeySessionPrototype* thisObject = jsCast<JSMediaKeySessionPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSMediaKeySessionPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSMediaKeySession::s_info = { "WebKitMediaKeySession", &Base::s_info, &JSMediaKeySessionTable, 0 , CREATE_METHOD_TABLE(JSMediaKeySession) };
-
-JSMediaKeySession::JSMediaKeySession(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaKeySession> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMediaKeySession::finishCreation(VM& vm)
+void JSMediaKeySessionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaKeySessionPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaKeySession::s_info = { "WebKitMediaKeySession", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeySession) };
+
+JSMediaKeySession::JSMediaKeySession(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaKeySession>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMediaKeySession::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMediaKeySessionPrototype::create(vm, globalObject, JSMediaKeySessionPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMediaKeySession::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMediaKeySession>(vm, globalObject);
 }
 
 void JSMediaKeySession::destroy(JSC::JSCell* cell)
@@ -138,131 +176,161 @@ void JSMediaKeySession::destroy(JSC::JSCell* cell)
 
 JSMediaKeySession::~JSMediaKeySession()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSMediaKeySession::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsMediaKeySessionError(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeySession* thisObject = jsCast<JSMediaKeySession*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMediaKeySession, Base>(exec, JSMediaKeySessionTable, thisObject, propertyName, slot);
-}
-
-JSValue jsMediaKeySessionError(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeySession& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeySession", "error");
+        return throwGetterTypeError(*exec, "MediaKeySession", "error");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.error()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeySessionKeySystem(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeySessionKeySystem(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeySession& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeySession", "keySystem");
+        return throwGetterTypeError(*exec, "MediaKeySession", "keySystem");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.keySystem());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeySessionSessionId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeySessionSessionId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeySession& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeySession", "sessionId");
+        return throwGetterTypeError(*exec, "MediaKeySession", "sessionId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.sessionId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeySessionOnwebkitkeyadded(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeySessionOnwebkitkeyadded(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeySession& impl = castedThis->impl();
-    if (EventListener* listener = impl.onwebkitkeyadded()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeySession", "onwebkitkeyadded");
+        return throwGetterTypeError(*exec, "MediaKeySession", "onwebkitkeyadded");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().webkitkeyaddedEvent));
 }
 
 
-JSValue jsMediaKeySessionOnwebkitkeyerror(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeySessionOnwebkitkeyerror(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeySession& impl = castedThis->impl();
-    if (EventListener* listener = impl.onwebkitkeyerror()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeySession", "onwebkitkeyerror");
+        return throwGetterTypeError(*exec, "MediaKeySession", "onwebkitkeyerror");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().webkitkeyerrorEvent));
 }
 
 
-JSValue jsMediaKeySessionOnwebkitkeymessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeySessionOnwebkitkeymessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeySession& impl = castedThis->impl();
-    if (EventListener* listener = impl.onwebkitkeymessage()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeySession", "onwebkitkeymessage");
+        return throwGetterTypeError(*exec, "MediaKeySession", "onwebkitkeymessage");
     }
-    return jsNull();
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().webkitkeymessageEvent));
 }
 
 
-JSValue jsMediaKeySessionConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeySessionConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMediaKeySession* domObject = jsCast<JSMediaKeySession*>(asObject(slotBase));
-    return JSMediaKeySession::getConstructor(exec->vm(), domObject->globalObject());
+    JSMediaKeySessionPrototype* domObject = jsDynamicCast<JSMediaKeySessionPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMediaKeySession::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSMediaKeySession::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSMediaKeySessionOnwebkitkeyadded(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSMediaKeySession* thisObject = jsCast<JSMediaKeySession*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSMediaKeySession, Base>(exec, propertyName, value, JSMediaKeySessionTable, thisObject, slot);
-}
-
-void setJSMediaKeySessionOnwebkitkeyadded(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(thisObject);
-    MediaKeySession& impl = castedThis->impl();
-    impl.setOnwebkitkeyadded(createJSAttributeEventListener(exec, value, thisObject));
-}
-
-
-void setJSMediaKeySessionOnwebkitkeyerror(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(thisObject);
-    MediaKeySession& impl = castedThis->impl();
-    impl.setOnwebkitkeyerror(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "MediaKeySession", "onwebkitkeyadded");
+        else
+            throwSetterTypeError(*exec, "MediaKeySession", "onwebkitkeyadded");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitkeyaddedEvent, value);
 }
 
 
-void setJSMediaKeySessionOnwebkitkeymessage(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSMediaKeySessionOnwebkitkeyerror(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(thisObject);
-    MediaKeySession& impl = castedThis->impl();
-    impl.setOnwebkitkeymessage(createJSAttributeEventListener(exec, value, thisObject));
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "MediaKeySession", "onwebkitkeyerror");
+        else
+            throwSetterTypeError(*exec, "MediaKeySession", "onwebkitkeyerror");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitkeyerrorEvent, value);
+}
+
+
+void setJSMediaKeySessionOnwebkitkeymessage(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeySessionPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "MediaKeySession", "onwebkitkeymessage");
+        else
+            throwSetterTypeError(*exec, "MediaKeySession", "onwebkitkeymessage");
+        return;
+    }
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().webkitkeymessageEvent, value);
 }
 
 
@@ -273,17 +341,17 @@ JSValue JSMediaKeySession::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionUpdate(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMediaKeySession::info()))
-        return throwVMTypeError(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MediaKeySession", "update");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMediaKeySession::info());
-    MediaKeySession& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    RefPtr<Uint8Array> key(toUint8Array(exec->argument(0)));
-    if (exec->hadException())
+    RefPtr<Uint8Array> key = toUint8Array(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.update(key.get(), ec);
     setDOMException(exec, ec);
@@ -292,102 +360,90 @@ EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionUpdate(ExecState*
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionClose(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMediaKeySession::info()))
-        return throwVMTypeError(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MediaKeySession", "close");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMediaKeySession::info());
-    MediaKeySession& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.close();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMediaKeySession::info()))
-        return throwVMTypeError(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MediaKeySession", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMediaKeySession::info());
-    MediaKeySession& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMediaKeySession::info()))
-        return throwVMTypeError(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MediaKeySession", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMediaKeySession::info());
-    MediaKeySession& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeySessionPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMediaKeySession::info()))
-        return throwVMTypeError(exec);
-    JSMediaKeySession* castedThis = jsCast<JSMediaKeySession*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMediaKeySession* castedThis = jsDynamicCast<JSMediaKeySession*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MediaKeySession", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMediaKeySession::info());
-    MediaKeySession& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* evt(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(evt, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 void JSMediaKeySession::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSMediaKeySession* thisObject = jsCast<JSMediaKeySession*>(cell);
+    auto* thisObject = jsCast<JSMediaKeySession*>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
     Base::visitChildren(thisObject, visitor);
     thisObject->impl().visitJSEventListeners(visitor);
 }
 
-static inline bool isObservable(JSMediaKeySession* jsMediaKeySession)
-{
-    if (jsMediaKeySession->hasCustomProperties())
-        return true;
-    if (jsMediaKeySession->impl().hasEventListeners())
-        return true;
-    return false;
-}
-
 bool JSMediaKeySessionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMediaKeySession* jsMediaKeySession = jsCast<JSMediaKeySession*>(handle.get().asCell());
+    auto* jsMediaKeySession = jsCast<JSMediaKeySession*>(handle.slot()->asCell());
+    if (jsMediaKeySession->impl().hasPendingActivity())
+        return true;
     if (jsMediaKeySession->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsMediaKeySession))
-        return false;
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMediaKeySessionOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMediaKeySession* jsMediaKeySession = jsCast<JSMediaKeySession*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMediaKeySession = jsCast<JSMediaKeySession*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMediaKeySession->impl(), jsMediaKeySession);
-    jsMediaKeySession->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -398,11 +454,11 @@ extern "C" { extern void (*const __identifier("??_7MediaKeySession@WebCore@@6B@"
 extern "C" { extern void* _ZTVN7WebCore15MediaKeySessionE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaKeySession* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MediaKeySession* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMediaKeySession>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMediaKeySession>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -423,13 +479,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaKe
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<MediaKeySession>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMediaKeySession>(exec, globalObject, impl);
+    return createNewWrapper<JSMediaKeySession>(globalObject, impl);
 }
 
-MediaKeySession* toMediaKeySession(JSC::JSValue value)
+MediaKeySession* JSMediaKeySession::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMediaKeySession::info()) ? &jsCast<JSMediaKeySession*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMediaKeySession*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

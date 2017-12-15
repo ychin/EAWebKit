@@ -34,12 +34,10 @@
 
 #include "MutationObserverRegistration.h"
 #include "MutationRecord.h"
-#include "Node.h"
-#include "QualifiedName.h"
 
 namespace WebCore {
 
-PassOwnPtr<MutationObserverInterestGroup> MutationObserverInterestGroup::createIfNeeded(Node& target, MutationObserver::MutationType type, MutationRecordDeliveryOptions oldValueFlag, const QualifiedName* attributeName)
+std::unique_ptr<MutationObserverInterestGroup> MutationObserverInterestGroup::createIfNeeded(Node& target, MutationObserver::MutationType type, MutationRecordDeliveryOptions oldValueFlag, const QualifiedName* attributeName)
 {
     ASSERT((type == MutationObserver::Attributes && attributeName) || !attributeName);
     HashMap<MutationObserver*, MutationRecordDeliveryOptions> observers;
@@ -47,7 +45,7 @@ PassOwnPtr<MutationObserverInterestGroup> MutationObserverInterestGroup::createI
     if (observers.isEmpty())
         return nullptr;
 
-    return adoptPtr(new MutationObserverInterestGroup(observers, oldValueFlag));
+    return std::make_unique<MutationObserverInterestGroup>(observers, oldValueFlag);
 }
 
 MutationObserverInterestGroup::MutationObserverInterestGroup(HashMap<MutationObserver*, MutationRecordDeliveryOptions>& observers, MutationRecordDeliveryOptions oldValueFlag)
@@ -59,8 +57,8 @@ MutationObserverInterestGroup::MutationObserverInterestGroup(HashMap<MutationObs
 
 bool MutationObserverInterestGroup::isOldValueRequested()
 {
-    for (HashMap<MutationObserver*, MutationRecordDeliveryOptions>::iterator iter = m_observers.begin(); iter != m_observers.end(); ++iter) {
-        if (hasOldValue(iter->value))
+    for (auto options : m_observers.values()) {
+        if (hasOldValue(options))
             return true;
     }
     return false;
@@ -70,9 +68,9 @@ void MutationObserverInterestGroup::enqueueMutationRecord(PassRefPtr<MutationRec
 {
     RefPtr<MutationRecord> mutation = prpMutation;
     RefPtr<MutationRecord> mutationWithNullOldValue;
-    for (HashMap<MutationObserver*, MutationRecordDeliveryOptions>::iterator iter = m_observers.begin(); iter != m_observers.end(); ++iter) {
-        MutationObserver* observer = iter->key;
-        if (hasOldValue(iter->value)) {
+    for (auto& observerOptionsPair : m_observers) {
+        MutationObserver* observer = observerOptionsPair.key;
+        if (hasOldValue(observerOptionsPair.value)) {
             observer->enqueueMutationRecord(mutation);
             continue;
         }

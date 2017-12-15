@@ -23,10 +23,8 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "WebGLContextEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -35,15 +33,16 @@ class JSDictionary;
 class JSWebGLContextEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSWebGLContextEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLContextEvent> impl)
+    static JSWebGLContextEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLContextEvent>&& impl)
     {
-        JSWebGLContextEvent* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextEvent>(globalObject->vm().heap)) JSWebGLContextEvent(structure, globalObject, impl);
+        JSWebGLContextEvent* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextEvent>(globalObject->vm().heap)) JSWebGLContextEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,67 +56,19 @@ public:
         return static_cast<WebGLContextEvent&>(Base::impl());
     }
 protected:
-    JSWebGLContextEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLContextEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebGLContextEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLContextEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSWebGLContextEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLContextEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLContextEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextEventPrototype>(vm.heap)) JSWebGLContextEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLContextEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWebGLContextEventConstructor : public DOMConstructorObject {
-private:
-    JSWebGLContextEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebGLContextEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebGLContextEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebGLContextEventConstructor>(vm.heap)) JSWebGLContextEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebGLContextEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillWebGLContextEventInit(WebGLContextEventInit&, JSDictionary&);
 
-// Attributes
-
-JSC::JSValue jsWebGLContextEventStatusMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebGLContextEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

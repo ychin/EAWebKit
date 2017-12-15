@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
+ * Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,20 +35,21 @@
 
 #include "RTCVoidRequestImpl.h"
 
-#include "RTCErrorCallback.h"
+#include "DOMError.h"
 #include "RTCPeerConnection.h"
+#include "RTCPeerConnectionErrorCallback.h"
 #include "VoidCallback.h"
 
 namespace WebCore {
 
-PassRefPtr<RTCVoidRequestImpl> RTCVoidRequestImpl::create(ScriptExecutionContext* context, PassRefPtr<VoidCallback> successCallback, PassRefPtr<RTCErrorCallback> errorCallback)
+Ref<RTCVoidRequestImpl> RTCVoidRequestImpl::create(ScriptExecutionContext* context, PassRefPtr<VoidCallback> successCallback, PassRefPtr<RTCPeerConnectionErrorCallback> errorCallback)
 {
-    RefPtr<RTCVoidRequestImpl> request = adoptRef(new RTCVoidRequestImpl(context, successCallback, errorCallback));
+    Ref<RTCVoidRequestImpl> request = adoptRef(*new RTCVoidRequestImpl(context, successCallback, errorCallback));
     request->suspendIfNeeded();
-    return request.release();
+    return request;
 }
 
-RTCVoidRequestImpl::RTCVoidRequestImpl(ScriptExecutionContext* context, PassRefPtr<VoidCallback> successCallback, PassRefPtr<RTCErrorCallback> errorCallback)
+RTCVoidRequestImpl::RTCVoidRequestImpl(ScriptExecutionContext* context, PassRefPtr<VoidCallback> successCallback, PassRefPtr<RTCPeerConnectionErrorCallback> errorCallback)
     : ActiveDOMObject(context)
     , m_successCallback(successCallback)
     , m_errorCallback(errorCallback)
@@ -69,7 +71,7 @@ void RTCVoidRequestImpl::requestSucceeded()
 void RTCVoidRequestImpl::requestFailed(const String& error)
 {
     if (m_errorCallback.get())
-        m_errorCallback->handleEvent(error);
+        m_errorCallback->handleEvent(DOMError::create(error).ptr());
 
     clear();
 }
@@ -79,10 +81,21 @@ void RTCVoidRequestImpl::stop()
     clear();
 }
 
+const char* RTCVoidRequestImpl::activeDOMObjectName() const
+{
+    return "RTCVoidRequestImpl";
+}
+
+bool RTCVoidRequestImpl::canSuspendForPageCache() const
+{
+    // FIXME: We should try and do better here.
+    return false;
+}
+
 void RTCVoidRequestImpl::clear()
 {
-    m_successCallback.clear();
-    m_errorCallback.clear();
+    m_successCallback = nullptr;
+    m_errorCallback = nullptr;
 }
 
 } // namespace WebCore

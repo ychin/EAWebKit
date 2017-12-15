@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSRequestAnimationFrameCallback : public RequestAnimationFrameCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSRequestAnimationFrameCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSRequestAnimationFrameCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSRequestAnimationFrameCallback(callback, globalObject));
+        return adoptRef(*new JSRequestAnimationFrameCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

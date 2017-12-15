@@ -30,15 +30,16 @@
 
 #include "CodeBlock.h"
 #include "Executable.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 
 JITToDFGDeferredCompilationCallback::JITToDFGDeferredCompilationCallback() { }
 JITToDFGDeferredCompilationCallback::~JITToDFGDeferredCompilationCallback() { }
 
-PassRefPtr<JITToDFGDeferredCompilationCallback> JITToDFGDeferredCompilationCallback::create()
+Ref<JITToDFGDeferredCompilationCallback> JITToDFGDeferredCompilationCallback::create()
 {
-    return adoptRef(new JITToDFGDeferredCompilationCallback());
+    return adoptRef(*new JITToDFGDeferredCompilationCallback());
 }
 
 void JITToDFGDeferredCompilationCallback::compilationDidBecomeReadyAsynchronously(
@@ -64,6 +65,8 @@ void JITToDFGDeferredCompilationCallback::compilationDidComplete(
         codeBlock->install();
     
     codeBlock->alternative()->setOptimizationThresholdBasedOnCompilationResult(result);
+
+    DeferredCompilationCallback::compilationDidComplete(codeBlock, result);
 }
 
 } // JSC

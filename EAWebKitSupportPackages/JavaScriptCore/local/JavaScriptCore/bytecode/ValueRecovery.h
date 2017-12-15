@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,18 +26,20 @@
 #ifndef ValueRecovery_h
 #define ValueRecovery_h
 
+#include "DFGMinifiedID.h"
 #include "DataFormat.h"
+#if ENABLE(JIT)
 #include "GPRInfo.h"
 #include "FPRInfo.h"
+#endif
 #include "JSCJSValue.h"
 #include "MacroAssembler.h"
 #include "VirtualRegister.h"
-#include <stdio.h>
-#include <wtf/Platform.h>
 
 namespace JSC {
 
 struct DumpContext;
+struct InlineCallFrame;
 
 // Describes how to recover a given bytecode virtual register at a given
 // code point.
@@ -53,7 +55,6 @@ enum ValueRecoveryTechnique {
     InPair,
 #endif
     InFPR,
-    UInt32InGPR,
     // It's in the stack, but at a different location.
     DisplacedInJSStack,
     // It's in the stack, at a different location, and it's unboxed.
@@ -63,8 +64,9 @@ enum ValueRecoveryTechnique {
     DoubleDisplacedInJSStack,
     CellDisplacedInJSStack,
     BooleanDisplacedInJSStack,
-    // It's an Arguments object.
-    ArgumentsThatWereNotCreated,
+    // It's an Arguments object. This arises because of the simplified arguments simplification done by the DFG.
+    DirectArgumentsThatWereNotCreated,
+    ClonedArgumentsThatWereNotCreated,
     // It's a constant.
     Constant,
     // Don't know how to recover it.
@@ -100,14 +102,6 @@ public:
             result.m_technique = UnboxedCellInGPR;
         else
             result.m_technique = InGPR;
-        result.m_source.gpr = gpr;
-        return result;
-    }
-    
-    static ValueRecovery uint32InGPR(MacroAssembler::RegisterID gpr)
-    {
-        ValueRecovery result;
-        result.m_technique = UInt32InGPR;
         result.m_source.gpr = gpr;
         return result;
     }
@@ -176,10 +170,19 @@ public:
         return result;
     }
     
-    static ValueRecovery argumentsThatWereNotCreated()
+    static ValueRecovery directArgumentsThatWereNotCreated(DFG::MinifiedID id)
     {
         ValueRecovery result;
-        result.m_technique = ArgumentsThatWereNotCreated;
+        result.m_technique = DirectArgumentsThatWereNotCreated;
+        result.m_source.nodeID = id.bits();
+        return result;
+    }
+    
+    static ValueRecovery outOfBandArgumentsThatWereNotCreated(DFG::MinifiedID id)
+    {
+        ValueRecovery result;
+        result.m_technique = ClonedArgumentsThatWereNotCreated;
+        result.m_source.nodeID = id.bits();
         return result;
     }
     
@@ -208,7 +211,7 @@ public:
     
     MacroAssembler::RegisterID gpr() const
     {
-        ASSERT(m_technique == InGPR || m_technique == UnboxedInt32InGPR || m_technique == UnboxedBooleanInGPR || m_technique == UInt32InGPR || m_technique == UnboxedInt52InGPR || m_technique == UnboxedStrictInt52InGPR || m_technique == UnboxedCellInGPR);
+        ASSERT(m_technique == InGPR || m_technique == UnboxedInt32InGPR || m_technique == UnboxedBooleanInGPR || m_technique == UnboxedInt52InGPR || m_technique == UnboxedStrictInt52InGPR || m_technique == UnboxedCellInGPR);
         return m_source.gpr;
     }
     
@@ -238,16 +241,45 @@ public:
         return VirtualRegister(m_source.virtualReg);
     }
     
+    ValueRecovery withLocalsOffset(int offset) const
+    {
+        switch (m_technique) {
+        case DisplacedInJSStack:
+        case Int32DisplacedInJSStack:
+        case DoubleDisplacedInJSStack:
+        case CellDisplacedInJSStack:
+        case BooleanDisplacedInJSStack:
+        case Int52DisplacedInJSStack:
+        case StrictInt52DisplacedInJSStack: {
+            ValueRecovery result;
+            result.m_technique = m_technique;
+            result.m_source.virtualReg = m_source.virtualReg + offset;
+            return result;
+        }
+            
+        default:
+            return *this;
+        }
+    }
+    
     JSValue constant() const
     {
         ASSERT(m_technique == Constant);
         return JSValue::decode(m_source.constant);
     }
     
+    DFG::MinifiedID nodeID() const
+    {
+        ASSERT(m_technique == DirectArgumentsThatWereNotCreated || m_technique == ClonedArgumentsThatWereNotCreated);
+        return DFG::MinifiedID::fromBits(m_source.nodeID);
+    }
+    
     JSValue recover(ExecState*) const;
     
+#if ENABLE(JIT)
     void dumpInContext(PrintStream& out, DumpContext* context) const;
     void dump(PrintStream& out) const;
+#endif
 
 private:
     ValueRecoveryTechnique m_technique;
@@ -262,6 +294,7 @@ private:
 #endif
         int virtualReg;
         EncodedJSValue constant;
+        uintptr_t nodeID;
     } m_source;
 };
 

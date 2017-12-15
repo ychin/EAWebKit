@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -184,6 +184,9 @@ public:
     virtual void ShowInspector(bool state);
     virtual void SetZoomFactor(float factor);   // 1.0f is the default. Note that using multiple values can have an an impact on the glyph cache capacity.
     virtual float ZoomFactor(void) const; 
+    virtual void SetTextSizeMultiplier(float factor);   // 1.0f is the default. Note that using multiple values can have an an impact on the glyph cache capacity.
+    virtual float TextSizeMultiplier(void) const;
+    virtual void SetZoomFactorAndTextSizeMultiplier(float page, float text);
 	// Turn visual debug draw on/off. For simplicity, turn everything on/off together.
 	// Hardware rendering - Red color - Dirty rects // tiled layer: orange // normal layer: green // masking layer: pale blue // container: yellow
 	// Software rendering - Red color - Dirty rects

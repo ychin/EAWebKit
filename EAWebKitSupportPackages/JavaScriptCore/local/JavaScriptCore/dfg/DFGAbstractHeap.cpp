@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,6 +28,8 @@
 
 #if ENABLE(DFG_JIT)
 
+#include "JSCInlines.h"
+
 namespace JSC { namespace DFG {
 
 void AbstractHeap::Payload::dump(PrintStream& out) const
@@ -41,7 +43,7 @@ void AbstractHeap::Payload::dump(PrintStream& out) const
 void AbstractHeap::dump(PrintStream& out) const
 {
     out.print(kind());
-    if (kind() == InvalidAbstractHeap || kind() == World || payload().isTop())
+    if (kind() == InvalidAbstractHeap || kind() == World || kind() == Heap || payload().isTop())
         return;
     out.print("(", payload(), ")");
 }

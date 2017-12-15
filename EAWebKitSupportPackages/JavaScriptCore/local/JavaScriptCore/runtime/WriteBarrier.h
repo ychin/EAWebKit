@@ -71,13 +71,7 @@ template<class T> inline void validateCell(T)
 // We have a separate base class with no constructors for use in Unions.
 template <typename T> class WriteBarrierBase {
 public:
-    void set(VM& vm, const JSCell* owner, T* value)
-    {
-        ASSERT(value);
-        ASSERT(!Options::enableConcurrentJIT() || !isCompilationThread());
-        validateCell(value);
-        setEarlyValue(vm, owner, value);
-    }
+    void set(VM&, const JSCell* owner, T* value);
     
     // This is meant to be used like operator=, but is called copyFrom instead, in
     // order to kindly inform the C++ compiler that its advice is not appreciated.
@@ -86,20 +80,11 @@ public:
         m_cell = other.m_cell;
     }
 
-    void setMayBeNull(VM& vm, const JSCell* owner, T* value)
-    {
-        if (value)
-            validateCell(value);
-        setEarlyValue(vm, owner, value);
-    }
+    void setMayBeNull(VM&, const JSCell* owner, T* value);
 
     // Should only be used by JSCell during early initialisation
     // when some basic types aren't yet completely instantiated
-    void setEarlyValue(VM&, const JSCell* owner, T* value)
-    {
-        this->m_cell = reinterpret_cast<JSCell*>(value);
-        Heap::writeBarrier(owner, this->m_cell);
-    }
+    void setEarlyValue(VM&, const JSCell* owner, T* value);
     
     T* get() const
     {
@@ -128,8 +113,7 @@ public:
     
     T** slot() { return reinterpret_cast<T**>(&m_cell); }
     
-    typedef T* (WriteBarrierBase::*UnspecifiedBoolType);
-    operator UnspecifiedBoolType*() const { return m_cell ? reinterpret_cast<UnspecifiedBoolType*>(1) : 0; }
+    explicit operator bool() const { return m_cell; }
     
     bool operator!() const { return !m_cell; }
 
@@ -141,9 +125,7 @@ public:
         this->m_cell = reinterpret_cast<JSCell*>(value);
     }
 
-#if ENABLE(GC_VALIDATION)
     T* unvalidatedGet() const { return reinterpret_cast<T*>(static_cast<void*>(m_cell)); }
-#endif
 
 private:
     JSCell* m_cell;
@@ -151,13 +133,7 @@ private:
 
 template <> class WriteBarrierBase<Unknown> {
 public:
-    void set(VM&, const JSCell* owner, JSValue value)
-    {
-        ASSERT(!Options::enableConcurrentJIT() || !isCompilationThread());
-        m_value = JSValue::encode(value);
-        Heap::writeBarrier(owner, value);
-    }
-
+    void set(VM&, const JSCell* owner, JSValue);
     void setWithoutWriteBarrier(JSValue value)
     {
         m_value = JSValue::encode(value);
@@ -169,10 +145,12 @@ public:
     }
     void clear() { m_value = JSValue::encode(JSValue()); }
     void setUndefined() { m_value = JSValue::encode(jsUndefined()); }
+    void setStartingValue(JSValue value) { m_value = JSValue::encode(value); }
     bool isNumber() const { return get().isNumber(); }
     bool isObject() const { return get().isObject(); }
     bool isNull() const { return get().isNull(); }
     bool isGetterSetter() const { return get().isGetterSetter(); }
+    bool isCustomGetterSetter() const { return get().isCustomGetterSetter(); }
     
     JSValue* slot()
     { 
@@ -187,8 +165,7 @@ public:
     int32_t* tagPointer() { return &bitwise_cast<EncodedValueDescriptor*>(&m_value)->asBits.tag; }
     int32_t* payloadPointer() { return &bitwise_cast<EncodedValueDescriptor*>(&m_value)->asBits.payload; }
     
-    typedef JSValue (WriteBarrierBase::*UnspecifiedBoolType);
-    operator UnspecifiedBoolType*() const { return get() ? reinterpret_cast<UnspecifiedBoolType*>(1) : 0; }
+    explicit operator bool() const { return !!get(); }
     bool operator!() const { return !get(); } 
     
 private:
@@ -196,6 +173,7 @@ private:
 };
 
 template <typename T> class WriteBarrier : public WriteBarrierBase<T> {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
     WriteBarrier()
     {
@@ -220,11 +198,17 @@ public:
     }
 };
 
+enum UndefinedWriteBarrierTagType { UndefinedWriteBarrierTag };
 template <> class WriteBarrier<Unknown> : public WriteBarrierBase<Unknown> {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
     WriteBarrier()
     {
         this->setWithoutWriteBarrier(JSValue());
+    }
+    WriteBarrier(UndefinedWriteBarrierTagType)
+    {
+        this->setWithoutWriteBarrier(jsUndefined());
     }
 
     WriteBarrier(VM& vm, const JSCell* owner, JSValue value)

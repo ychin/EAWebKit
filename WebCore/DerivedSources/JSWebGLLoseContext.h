@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLLoseContext.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLLoseContext : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLLoseContext* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLLoseContext> impl)
+    static JSWebGLLoseContext* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLLoseContext>&& impl)
     {
-        JSWebGLLoseContext* ptr = new (NotNull, JSC::allocateCell<JSWebGLLoseContext>(globalObject->vm().heap)) JSWebGLLoseContext(structure, globalObject, impl);
+        JSWebGLLoseContext* ptr = new (NotNull, JSC::allocateCell<JSWebGLLoseContext>(globalObject->vm().heap)) JSWebGLLoseContext(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLLoseContext* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLLoseContext();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     WebGLLoseContext& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLLoseContext* m_impl;
 protected:
-    JSWebGLLoseContext(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLLoseContext>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSWebGLLoseContext(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLLoseContext>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLLoseContextOwner : public JSC::WeakHandleOwner {
@@ -78,46 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLLoseContext*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLLoseContextOwner, jsWebGLLoseContextOwner, ());
-    return &jsWebGLLoseContextOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLLoseContext*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLLoseContextOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLLoseContext*);
-WebGLLoseContext* toWebGLLoseContext(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLLoseContext& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebGLLoseContextPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLLoseContextPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLLoseContextPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLLoseContextPrototype>(vm.heap)) JSWebGLLoseContextPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLLoseContextPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsWebGLLoseContextPrototypeFunctionLoseContext(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsWebGLLoseContextPrototypeFunctionRestoreContext(JSC::ExecState*);
 
 } // namespace WebCore
 

@@ -28,6 +28,7 @@
 #include "CapabilityRange.h"
 #include "DOMStringList.h"
 #include "JSCapabilityRange.h"
+#include "JSDOMBinding.h"
 #include "JSDOMStringList.h"
 #include <runtime/JSArray.h>
 #include <wtf/GetPtr.h>
@@ -36,128 +37,195 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSAllVideoCapabilitiesTableValues[] =
-{
-    { "sourceType", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesSourceType), (intptr_t)0 },
-    { "sourceId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesSourceId), (intptr_t)0 },
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesWidth), (intptr_t)0 },
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesHeight), (intptr_t)0 },
-    { "frameRate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesFrameRate), (intptr_t)0 },
-    { "aspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesAspectRatio), (intptr_t)0 },
-    { "facingMode", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesFacingMode), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsAllVideoCapabilitiesSourceType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllVideoCapabilitiesSourceId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllVideoCapabilitiesWidth(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllVideoCapabilitiesHeight(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllVideoCapabilitiesFrameRate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllVideoCapabilitiesAspectRatio(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllVideoCapabilitiesFacingMode(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSAllVideoCapabilitiesPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSAllVideoCapabilitiesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSAllVideoCapabilitiesPrototype* ptr = new (NotNull, JSC::allocateCell<JSAllVideoCapabilitiesPrototype>(vm.heap)) JSAllVideoCapabilitiesPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSAllVideoCapabilitiesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSAllVideoCapabilitiesTable = { 17, 15, JSAllVideoCapabilitiesTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSAllVideoCapabilitiesPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "sourceType", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesSourceType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "sourceId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesSourceId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "width", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesWidth), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "height", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesHeight), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "frameRate", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesFrameRate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "aspectRatio", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesAspectRatio), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "facingMode", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllVideoCapabilitiesFacingMode), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSAllVideoCapabilitiesPrototypeTable = { 1, 0, JSAllVideoCapabilitiesPrototypeTableValues, 0 };
-const ClassInfo JSAllVideoCapabilitiesPrototype::s_info = { "AllVideoCapabilitiesPrototype", &Base::s_info, &JSAllVideoCapabilitiesPrototypeTable, 0, CREATE_METHOD_TABLE(JSAllVideoCapabilitiesPrototype) };
+const ClassInfo JSAllVideoCapabilitiesPrototype::s_info = { "AllVideoCapabilitiesPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAllVideoCapabilitiesPrototype) };
 
-JSObject* JSAllVideoCapabilitiesPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSAllVideoCapabilities>(vm, globalObject);
-}
-
-const ClassInfo JSAllVideoCapabilities::s_info = { "AllVideoCapabilities", &Base::s_info, &JSAllVideoCapabilitiesTable, 0 , CREATE_METHOD_TABLE(JSAllVideoCapabilities) };
-
-JSAllVideoCapabilities::JSAllVideoCapabilities(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AllVideoCapabilities> impl)
-    : JSMediaStreamCapabilities(structure, globalObject, impl)
-{
-}
-
-void JSAllVideoCapabilities::finishCreation(VM& vm)
+void JSAllVideoCapabilitiesPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSAllVideoCapabilitiesPrototypeTableValues, *this);
+}
+
+const ClassInfo JSAllVideoCapabilities::s_info = { "AllVideoCapabilities", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAllVideoCapabilities) };
+
+JSAllVideoCapabilities::JSAllVideoCapabilities(Structure* structure, JSDOMGlobalObject* globalObject, Ref<AllVideoCapabilities>&& impl)
+    : JSMediaStreamCapabilities(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSAllVideoCapabilities::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSAllVideoCapabilitiesPrototype::create(vm, globalObject, JSAllVideoCapabilitiesPrototype::createStructure(vm, globalObject, JSMediaStreamCapabilitiesPrototype::self(vm, globalObject)));
+    return JSAllVideoCapabilitiesPrototype::create(vm, globalObject, JSAllVideoCapabilitiesPrototype::createStructure(vm, globalObject, JSMediaStreamCapabilities::getPrototype(vm, globalObject)));
 }
 
-bool JSAllVideoCapabilities::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSAllVideoCapabilities::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSAllVideoCapabilities* thisObject = jsCast<JSAllVideoCapabilities*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSAllVideoCapabilities, Base>(exec, JSAllVideoCapabilitiesTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSAllVideoCapabilities>(vm, globalObject);
 }
 
-JSValue jsAllVideoCapabilitiesSourceType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesSourceType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "sourceType");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "sourceType");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsArray(exec, castedThis->globalObject(), impl.sourceType());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllVideoCapabilitiesSourceId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesSourceId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "sourceId");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "sourceId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsArray(exec, castedThis->globalObject(), impl.sourceId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllVideoCapabilitiesWidth(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesWidth(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "width");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "width");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.width()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllVideoCapabilitiesHeight(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesHeight(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "height");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "height");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.height()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllVideoCapabilitiesFrameRate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesFrameRate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "frameRate");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "frameRate");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.frameRate()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllVideoCapabilitiesAspectRatio(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesAspectRatio(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "aspectRatio");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "aspectRatio");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.aspectRatio()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllVideoCapabilitiesFacingMode(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllVideoCapabilitiesFacingMode(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllVideoCapabilities* castedThis = jsCast<JSAllVideoCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllVideoCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllVideoCapabilities* castedThis = jsDynamicCast<JSAllVideoCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllVideoCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllVideoCapabilities", "facingMode");
+        return throwGetterTypeError(*exec, "AllVideoCapabilities", "facingMode");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsArray(exec, castedThis->globalObject(), impl.facingMode());
-    return result;
+    return JSValue::encode(result);
 }
 
 
@@ -169,11 +237,11 @@ extern "C" { extern void (*const __identifier("??_7AllVideoCapabilities@WebCore@
 extern "C" { extern void* _ZTVN7WebCore20AllVideoCapabilitiesE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AllVideoCapabilities* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, AllVideoCapabilities* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSAllVideoCapabilities>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSAllVideoCapabilities>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -194,8 +262,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AllVide
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<AllVideoCapabilities>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSAllVideoCapabilities>(exec, globalObject, impl);
+    return createNewWrapper<JSAllVideoCapabilities>(globalObject, impl);
 }
 
 

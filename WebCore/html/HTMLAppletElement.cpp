@@ -48,9 +48,9 @@ HTMLAppletElement::HTMLAppletElement(const QualifiedName& tagName, Document& doc
     m_serviceType = "application/x-java-applet";
 }
 
-PassRefPtr<HTMLAppletElement> HTMLAppletElement::create(const QualifiedName& tagName, Document& document, bool createdByParser)
+Ref<HTMLAppletElement> HTMLAppletElement::create(const QualifiedName& tagName, Document& document, bool createdByParser)
 {
-    return adoptRef(new HTMLAppletElement(tagName, document, createdByParser));
+    return adoptRef(*new HTMLAppletElement(tagName, document, createdByParser));
 }
 
 void HTMLAppletElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
@@ -75,23 +75,23 @@ bool HTMLAppletElement::rendererIsNeeded(const RenderStyle& style)
     return HTMLPlugInImageElement::rendererIsNeeded(style);
 }
 
-RenderElement* HTMLAppletElement::createRenderer(RenderArena&, RenderStyle& style)
+RenderPtr<RenderElement> HTMLAppletElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
     if (!canEmbedJava())
-        return RenderElement::createFor(*this, style);
+        return RenderElement::createFor(*this, WTF::move(style));
 
-    return RenderEmbeddedObject::createForApplet(*this);
+    return RenderEmbeddedObject::createForApplet(*this, WTF::move(style));
 }
 
-RenderWidget* HTMLAppletElement::renderWidgetForJSBindings() const
+RenderWidget* HTMLAppletElement::renderWidgetLoadingPlugin() const
 {
     if (!canEmbedJava())
-        return 0;
+        return nullptr;
 
     // Needs to load the plugin immediatedly because this function is called
     // when JavaScript code accesses the plugin.
     // FIXME: <rdar://16893708> Check if dispatching events here is safe.
-    document().updateLayoutIgnorePendingStylesheets(Document::RunPostLayoutTasksSynchronously);
+    document().updateLayoutIgnorePendingStylesheets(Document::RunPostLayoutTasks::Synchronously);
     return renderWidget();
 }
 
@@ -102,6 +102,9 @@ void HTMLAppletElement::updateWidget(PluginCreationOption pluginCreationOption)
     if (!isFinishedParsingChildren())
         return;
 
+#if PLATFORM(IOS)
+    UNUSED_PARAM(pluginCreationOption);
+#else
     // FIXME: It's sadness that we have this special case here.
     //        See http://trac.webkit.org/changeset/25128 and
     //        plugins/netscape-plugin-setwindow-size.html
@@ -113,20 +116,20 @@ void HTMLAppletElement::updateWidget(PluginCreationOption pluginCreationOption)
 
     RenderEmbeddedObject* renderer = renderEmbeddedObject();
 
-    LayoutUnit contentWidth = renderer->style()->width().isFixed() ? LayoutUnit(renderer->style()->width().value()) :
-        renderer->width() - renderer->borderAndPaddingWidth();
-    LayoutUnit contentHeight = renderer->style()->height().isFixed() ? LayoutUnit(renderer->style()->height().value()) :
-        renderer->height() - renderer->borderAndPaddingHeight();
+    LayoutUnit contentWidth = renderer->style().width().isFixed() ? LayoutUnit(renderer->style().width().value()) :
+        renderer->width() - renderer->horizontalBorderAndPaddingExtent();
+    LayoutUnit contentHeight = renderer->style().height().isFixed() ? LayoutUnit(renderer->style().height().value()) :
+        renderer->height() - renderer->verticalBorderAndPaddingExtent();
 
     Vector<String> paramNames;
     Vector<String> paramValues;
 
     paramNames.append("code");
-    paramValues.append(getAttribute(codeAttr).string());
+    paramValues.append(fastGetAttribute(codeAttr).string());
 
-    const AtomicString& codeBase = getAttribute(codebaseAttr);
+    const AtomicString& codeBase = fastGetAttribute(codebaseAttr);
     if (!codeBase.isNull()) {
-        paramNames.append("codeBase");
+        paramNames.append(ASCIILiteral("codeBase"));
         paramValues.append(codeBase.string());
     }
 
@@ -136,34 +139,34 @@ void HTMLAppletElement::updateWidget(PluginCreationOption pluginCreationOption)
         paramValues.append(name.string());
     }
 
-    const AtomicString& archive = getAttribute(archiveAttr);
+    const AtomicString& archive = fastGetAttribute(archiveAttr);
     if (!archive.isNull()) {
-        paramNames.append("archive");
+        paramNames.append(ASCIILiteral("archive"));
         paramValues.append(archive.string());
     }
 
-    paramNames.append("baseURL");
+    paramNames.append(ASCIILiteral("baseURL"));
     paramValues.append(document().baseURL().string());
 
-    const AtomicString& mayScript = getAttribute(mayscriptAttr);
+    const AtomicString& mayScript = fastGetAttribute(mayscriptAttr);
     if (!mayScript.isNull()) {
-        paramNames.append("mayScript");
+        paramNames.append(ASCIILiteral("mayScript"));
         paramValues.append(mayScript.string());
     }
 
-    auto paramChildren = childrenOfType<HTMLParamElement>(this);
-    for (auto param = paramChildren.begin(), end = paramChildren.end(); param != end; ++param) {
-        if (param->name().isEmpty())
+    for (auto& param : childrenOfType<HTMLParamElement>(*this)) {
+        if (param.name().isEmpty())
             continue;
 
-        paramNames.append(param->name());
-        paramValues.append(param->value());
+        paramNames.append(param.name());
+        paramValues.append(param.value());
     }
 
     Frame* frame = document().frame();
     ASSERT(frame);
 
-    renderer->setWidget(frame->loader().subframeLoader().createJavaAppletWidget(roundedIntSize(LayoutSize(contentWidth, contentHeight)), this, paramNames, paramValues));
+    renderer->setWidget(frame->loader().subframeLoader().createJavaAppletWidget(roundedIntSize(LayoutSize(contentWidth, contentHeight)), *this, paramNames, paramValues));
+#endif // !PLATFORM(IOS)
 }
 
 bool HTMLAppletElement::canEmbedJava() const

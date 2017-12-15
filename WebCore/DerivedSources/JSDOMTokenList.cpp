@@ -36,25 +36,85 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionContains(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionAdd(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionRemove(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionToggle(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionToString(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsDOMTokenListLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsDOMTokenListConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSDOMTokenListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDOMTokenListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDOMTokenListPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMTokenListPrototype>(vm.heap)) JSDOMTokenListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDOMTokenListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSDOMTokenListConstructor : public DOMConstructorObject {
+private:
+    JSDOMTokenListConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSDOMTokenListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSDOMTokenListConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMTokenListConstructor>(vm.heap)) JSDOMTokenListConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSDOMTokenListTableIndex[5] = {
+    { -1, -1 },
+    { 0, 4 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSDOMTokenListTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMTokenListLength), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMTokenListConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMTokenListConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMTokenListLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSDOMTokenListTable = { 5, 3, JSDOMTokenListTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSDOMTokenListConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSDOMTokenListConstructorTable = { 1, 0, JSDOMTokenListConstructorTableValues, 0 };
-const ClassInfo JSDOMTokenListConstructor::s_info = { "DOMTokenListConstructor", &Base::s_info, &JSDOMTokenListConstructorTable, 0, CREATE_METHOD_TABLE(JSDOMTokenListConstructor) };
+static const HashTable JSDOMTokenListTable = { 2, 3, true, JSDOMTokenListTableValues, 0, JSDOMTokenListTableIndex };
+const ClassInfo JSDOMTokenListConstructor::s_info = { "DOMTokenListConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMTokenListConstructor) };
 
 JSDOMTokenListConstructor::JSDOMTokenListConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -65,59 +125,47 @@ void JSDOMTokenListConstructor::finishCreation(VM& vm, JSDOMGlobalObject* global
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSDOMTokenListPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSDOMTokenListConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSDOMTokenListConstructor, JSDOMWrapper>(exec, JSDOMTokenListConstructorTable, jsCast<JSDOMTokenListConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSDOMTokenList::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("DOMTokenList"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSDOMTokenListPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionItem), (intptr_t)1 },
-    { "contains", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionContains), (intptr_t)1 },
-    { "add", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionAdd), (intptr_t)1 },
-    { "remove", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionRemove), (intptr_t)1 },
-    { "toggle", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionToggle), (intptr_t)1 },
-    { "toString", DontDelete | DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionToString), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionItem), (intptr_t) (1) },
+    { "contains", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionContains), (intptr_t) (1) },
+    { "add", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionAdd), (intptr_t) (1) },
+    { "remove", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionRemove), (intptr_t) (1) },
+    { "toggle", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionToggle), (intptr_t) (1) },
+    { "toString", DontEnum | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMTokenListPrototypeFunctionToString), (intptr_t) (0) },
 };
 
-static const HashTable JSDOMTokenListPrototypeTable = { 16, 15, JSDOMTokenListPrototypeTableValues, 0 };
-const ClassInfo JSDOMTokenListPrototype::s_info = { "DOMTokenListPrototype", &Base::s_info, &JSDOMTokenListPrototypeTable, 0, CREATE_METHOD_TABLE(JSDOMTokenListPrototype) };
+const ClassInfo JSDOMTokenListPrototype::s_info = { "DOMTokenListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMTokenListPrototype) };
 
-JSObject* JSDOMTokenListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDOMTokenList>(vm, globalObject);
-}
-
-bool JSDOMTokenListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDOMTokenListPrototype* thisObject = jsCast<JSDOMTokenListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDOMTokenListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSDOMTokenList::s_info = { "DOMTokenList", &Base::s_info, &JSDOMTokenListTable, 0 , CREATE_METHOD_TABLE(JSDOMTokenList) };
-
-JSDOMTokenList::JSDOMTokenList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMTokenList> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSDOMTokenList::finishCreation(VM& vm)
+void JSDOMTokenListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDOMTokenListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSDOMTokenList::s_info = { "DOMTokenList", &Base::s_info, &JSDOMTokenListTable, CREATE_METHOD_TABLE(JSDOMTokenList) };
+
+JSDOMTokenList::JSDOMTokenList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMTokenList>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSDOMTokenList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSDOMTokenListPrototype::create(vm, globalObject, JSDOMTokenListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSDOMTokenList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSDOMTokenList>(vm, globalObject);
 }
 
 void JSDOMTokenList::destroy(JSC::JSCell* cell)
@@ -128,22 +176,23 @@ void JSDOMTokenList::destroy(JSC::JSCell* cell)
 
 JSDOMTokenList::~JSDOMTokenList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSDOMTokenList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSDOMTokenList* thisObject = jsCast<JSDOMTokenList*>(object);
+    auto* thisObject = jsCast<JSDOMTokenList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSDOMTokenList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSDOMTokenList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, jsStringOrUndefined(exec, thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSDOMTokenList, Base>(exec, JSDOMTokenListTable, thisObject, propertyName, slot);
@@ -151,39 +200,43 @@ bool JSDOMTokenList::getOwnPropertySlot(JSObject* object, ExecState* exec, Prope
 
 bool JSDOMTokenList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSDOMTokenList* thisObject = jsCast<JSDOMTokenList*>(object);
+    auto* thisObject = jsCast<JSDOMTokenList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index <= MAX_ARRAY_INDEX) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, jsStringOrUndefined(exec, thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsDOMTokenListLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMTokenListLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    DOMTokenList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSDOMTokenList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsDOMTokenListConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsDOMTokenListConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSDOMTokenList* domObject = jsCast<JSDOMTokenList*>(asObject(slotBase));
-    return JSDOMTokenList::getConstructor(exec->vm(), domObject->globalObject());
+    JSDOMTokenList* domObject = jsDynamicCast<JSDOMTokenList*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSDOMTokenList::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 void JSDOMTokenList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSDOMTokenList* thisObject = jsCast<JSDOMTokenList*>(object);
+    auto* thisObject = jsCast<JSDOMTokenList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 JSValue JSDOMTokenList::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -193,53 +246,52 @@ JSValue JSDOMTokenList::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMTokenList::info()))
-        return throwVMTypeError(exec);
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMTokenList* castedThis = jsDynamicCast<JSDOMTokenList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMTokenList", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMTokenList::info());
-    DOMTokenList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsStringOrNull(exec, impl.item(index));
+    JSValue result = jsStringOrNull(exec, impl.item(index));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionContains(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMTokenList::info()))
-        return throwVMTypeError(exec);
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMTokenList* castedThis = jsDynamicCast<JSDOMTokenList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMTokenList", "contains");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMTokenList::info());
-    DOMTokenList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& token(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String token = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.contains(token, ec));
 
-    JSC::JSValue result = jsBoolean(impl.contains(token, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionAdd(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMTokenList::info()))
-        return throwVMTypeError(exec);
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMTokenList* castedThis = jsDynamicCast<JSDOMTokenList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMTokenList", "add");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMTokenList::info());
-    DOMTokenList& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     Vector<String> tokens = toNativeArguments<String>(exec, 0);
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.add(tokens, ec);
     setDOMException(exec, ec);
@@ -248,15 +300,15 @@ EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionAdd(ExecState* exec)
 
 EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionRemove(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMTokenList::info()))
-        return throwVMTypeError(exec);
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMTokenList* castedThis = jsDynamicCast<JSDOMTokenList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMTokenList", "remove");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMTokenList::info());
-    DOMTokenList& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
     Vector<String> tokens = toNativeArguments<String>(exec, 0);
-    if (exec->hadException())
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.remove(tokens, ec);
     setDOMException(exec, ec);
@@ -265,70 +317,52 @@ EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionRemove(ExecState* ex
 
 EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionToggle(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMTokenList::info()))
-        return throwVMTypeError(exec);
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMTokenList* castedThis = jsDynamicCast<JSDOMTokenList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMTokenList", "toggle");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMTokenList::info());
-    DOMTokenList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& token(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String token = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     size_t argsCount = exec->argumentCount();
     if (argsCount <= 1) {
+        JSValue result = jsBoolean(impl.toggle(token, ec));
 
-        JSC::JSValue result = jsBoolean(impl.toggle(token, ec));
         setDOMException(exec, ec);
         return JSValue::encode(result);
     }
 
-    bool force(exec->argument(1).toBoolean(exec));
-    if (exec->hadException())
+    bool force = exec->argument(1).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.toggle(token, force, ec));
 
-    JSC::JSValue result = jsBoolean(impl.toggle(token, force, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMTokenListPrototypeFunctionToString(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMTokenList::info()))
-        return throwVMTypeError(exec);
-    JSDOMTokenList* castedThis = jsCast<JSDOMTokenList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMTokenList* castedThis = jsDynamicCast<JSDOMTokenList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMTokenList", "toString");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMTokenList::info());
-    DOMTokenList& impl = castedThis->impl();
-
-    JSC::JSValue result = jsStringWithCache(exec, impl.toString());
+    auto& impl = castedThis->impl();
+    JSValue result = jsStringWithCache(exec, impl.toString());
     return JSValue::encode(result);
-}
-
-
-JSValue JSDOMTokenList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
-{
-    JSDOMTokenList* thisObj = jsCast<JSDOMTokenList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return jsStringOrUndefined(exec, thisObj->impl().item(index));
-}
-
-static inline bool isObservable(JSDOMTokenList* jsDOMTokenList)
-{
-    if (jsDOMTokenList->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSDOMTokenListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSDOMTokenList* jsDOMTokenList = jsCast<JSDOMTokenList*>(handle.get().asCell());
-    if (!isObservable(jsDOMTokenList))
-        return false;
-    Element* element = jsDOMTokenList->impl().element();
+    auto* jsDOMTokenList = jsCast<JSDOMTokenList*>(handle.slot()->asCell());
+    Element* element = WTF::getPtr(jsDOMTokenList->impl().element());
     if (!element)
         return false;
     void* root = WebCore::root(element);
@@ -337,25 +371,25 @@ bool JSDOMTokenListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> h
 
 void JSDOMTokenListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSDOMTokenList* jsDOMTokenList = jsCast<JSDOMTokenList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsDOMTokenList = jsCast<JSDOMTokenList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsDOMTokenList->impl(), jsDOMTokenList);
-    jsDOMTokenList->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMTokenList* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DOMTokenList* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDOMTokenList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDOMTokenList>(globalObject, impl))
         return result;
-    ReportMemoryCost<DOMTokenList>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDOMTokenList>(exec, globalObject, impl);
+    return createNewWrapper<JSDOMTokenList>(globalObject, impl);
 }
 
-DOMTokenList* toDOMTokenList(JSC::JSValue value)
+DOMTokenList* JSDOMTokenList::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSDOMTokenList::info()) ? &jsCast<JSDOMTokenList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSDOMTokenList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

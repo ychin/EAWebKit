@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004, 2005, 2006, 2013 Apple Computer, Inc.  All rights reserved.
+ * Copyright (C) 2004, 2005, 2006, 2013 Apple Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -29,9 +29,15 @@
 
 #if USE(CG)
 
+#if PLATFORM(IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#include <ImageIO/ImageIO.h>
+#endif
+
 #include "GraphicsContext.h"
 #include "ImageBuffer.h"
 #include "ImageObserver.h"
+#include "IntRect.h"
 #include "Length.h"
 #include "SharedBuffer.h"
 #include <CoreGraphics/CGContext.h>
@@ -39,7 +45,7 @@
 #include <wtf/MathExtras.h>
 #include <wtf/RetainPtr.h>
 
-#if !PLATFORM(MAC)
+#if !PLATFORM(COCOA)
 #include "ImageSourceCG.h"
 #endif
 
@@ -48,7 +54,7 @@ namespace WebCore {
 PDFDocumentImage::PDFDocumentImage(ImageObserver* observer)
     : Image(observer)
     , m_cachedBytes(0)
-    , m_rotation(0.0f)
+    , m_rotationDegrees(0)
     , m_hasPage(false)
 {
 }
@@ -62,16 +68,13 @@ String PDFDocumentImage::filenameExtension() const
     return "pdf";
 }
 
-IntSize PDFDocumentImage::size() const
+FloatSize PDFDocumentImage::size() const
 {
-    const float sina = sinf(-m_rotation);
-    const float cosa = cosf(-m_rotation);
-    const float width = m_mediaBox.size().width();
-    const float height = m_mediaBox.size().height();
-    const float rotWidth = fabsf(width * cosa - height * sina);
-    const float rotHeight = fabsf(width * sina + height * cosa);
-    
-    return expandedIntSize(FloatSize(rotWidth, rotHeight));
+    FloatSize expandedCropBoxSize = FloatSize(expandedIntSize(m_cropBox.size()));
+
+    if (m_rotationDegrees == 90 || m_rotationDegrees == 270)
+        return expandedCropBoxSize.transposedSize();
+    return expandedCropBoxSize;
 }
 
 void PDFDocumentImage::computeIntrinsicDimensions(Length& intrinsicWidth, Length& intrinsicHeight, FloatSize& intrinsicRatio)
@@ -93,26 +96,6 @@ bool PDFDocumentImage::dataChanged(bool allDataReceived)
         }
     }
     return m_document; // Return true if size is available.
-}
-
-void PDFDocumentImage::applyRotationForPainting(GraphicsContext* context) const
-{
-    // Rotate the crop box and calculate bounding box.
-    float sina = sinf(-m_rotation);
-    float cosa = cosf(-m_rotation);
-    float width = m_cropBox.width();
-    float height = m_cropBox.height();
-
-    // Calculate rotated x and y edges of the crop box. If they're negative, it means part of the image has
-    // been rotated outside of the bounds and we need to shift over the image so it lies inside the bounds again.
-    CGPoint rx = CGPointMake(width * cosa, width * sina);
-    CGPoint ry = CGPointMake(-height * sina, height * cosa);
-
-    // Adjust so we are at the crop box origin.
-    const CGFloat zero = 0;
-    context->translate(floorf(-std::min(zero, std::min(rx.x, ry.x))), floorf(-std::min(zero, std::min(rx.y, ry.y))));
-
-    context->rotate(-m_rotation);
 }
 
 bool PDFDocumentImage::cacheParametersMatch(GraphicsContext* context, const FloatRect& dstRect, const FloatRect& srcRect) const
@@ -138,6 +121,20 @@ static void transformContextForPainting(GraphicsContext* context, const FloatRec
 {
     float hScale = dstRect.width() / srcRect.width();
     float vScale = dstRect.height() / srcRect.height();
+
+    if (hScale != vScale) {
+        float minimumScale = std::max((dstRect.width() - 0.5) / srcRect.width(), (dstRect.height() - 0.5) / srcRect.height());
+        float maximumScale = std::min((dstRect.width() + 0.5) / srcRect.width(), (dstRect.height() + 0.5) / srcRect.height());
+
+        // If the difference between the two scales is due to integer rounding of image sizes,
+        // use the smaller of the two original scales to ensure that the image fits inside the
+        // space originally allocated for it.
+        if (minimumScale <= maximumScale) {
+            hScale = std::min(hScale, vScale);
+            vScale = hScale;
+        }
+    }
+
     context->translate(srcRect.x() * hScale, srcRect.y() * vScale);
     context->scale(FloatSize(hScale, -vScale));
     context->translate(0, -srcRect.height());
@@ -145,13 +142,22 @@ static void transformContextForPainting(GraphicsContext* context, const FloatRec
 
 void PDFDocumentImage::updateCachedImageIfNeeded(GraphicsContext* context, const FloatRect& dstRect, const FloatRect& srcRect)
 {
+#if PLATFORM(IOS)
+    // On iOS, some clients use low-quality image interpolation always, which throws off this optimization,
+    // as we never get the subsequent high-quality paint. Since live resize is rare on iOS, disable the optimization.
+    // FIXME (136593): It's also possible to do the wrong thing here if CSS specifies low-quality interpolation via the "image-rendering"
+    // property, on all platforms. We should only do this optimization if we're actually in a ImageQualityController live resize,
+    // and are guaranteed to do a high-quality paint later.
+    bool repaintIfNecessary = true;
+#else
     // If we have an existing image, reuse it if we're doing a low-quality paint, even if cache parameters don't match;
     // we'll rerender when we do the subsequent high-quality paint.
     InterpolationQuality interpolationQuality = context->imageInterpolationQuality();
-    bool useLowQualityInterpolation = interpolationQuality == InterpolationNone || interpolationQuality == InterpolationLow;
+    bool repaintIfNecessary = interpolationQuality != InterpolationNone && interpolationQuality != InterpolationLow;
+#endif
 
-    if (!m_cachedImageBuffer || (!cacheParametersMatch(context, dstRect, srcRect) && !useLowQualityInterpolation)) {
-        m_cachedImageBuffer = context->createCompatibleBuffer(enclosingIntRect(dstRect).size());
+    if (!m_cachedImageBuffer || (!cacheParametersMatch(context, dstRect, srcRect) && repaintIfNecessary)) {
+        m_cachedImageBuffer = context->createCompatibleBuffer(FloatRect(enclosingIntRect(dstRect)).size());
         if (!m_cachedImageBuffer)
             return;
         GraphicsContext* bufferContext = m_cachedImageBuffer->context();
@@ -176,7 +182,7 @@ void PDFDocumentImage::updateCachedImageIfNeeded(GraphicsContext* context, const
     }
 }
 
-void PDFDocumentImage::draw(GraphicsContext* context, const FloatRect& dstRect, const FloatRect& srcRect, ColorSpace, CompositeOperator op, BlendMode)
+void PDFDocumentImage::draw(GraphicsContext* context, const FloatRect& dstRect, const FloatRect& srcRect, ColorSpace, CompositeOperator op, BlendMode, ImageOrientationDescription)
 {
     if (!m_document || !m_hasPage)
         return;
@@ -209,35 +215,28 @@ void PDFDocumentImage::destroyDecodedData(bool)
     m_cachedBytes = 0;
 }
 
-unsigned PDFDocumentImage::decodedSize() const
-{
-    // FIXME: PDFDocumentImage is underreporting decoded sizes because this
-    // only includes the cached image and nothing else.
-
-    return m_cachedBytes;
-}
-
 #if !USE(PDFKIT_FOR_PDFDOCUMENTIMAGE)
+
 void PDFDocumentImage::createPDFDocument()
 {
     RetainPtr<CGDataProviderRef> dataProvider = adoptCF(CGDataProviderCreateWithCFData(data()->createCFData().get()));
-    m_document = CGPDFDocumentCreateWithProvider(dataProvider.get());
+    m_document = adoptCF(CGPDFDocumentCreateWithProvider(dataProvider.get()));
 }
 
 void PDFDocumentImage::computeBoundsForCurrentPage()
 {
+    ASSERT(pageCount() > 0);
     CGPDFPageRef cgPage = CGPDFDocumentGetPage(m_document.get(), 1);
-
-    m_mediaBox = CGPDFPageGetBoxRect(cgPage, kCGPDFMediaBox);
+    CGRect mediaBox = CGPDFPageGetBoxRect(cgPage, kCGPDFMediaBox);
 
     // Get crop box (not always there). If not, use media box.
     CGRect r = CGPDFPageGetBoxRect(cgPage, kCGPDFCropBox);
     if (!CGRectIsEmpty(r))
         m_cropBox = r;
     else
-        m_cropBox = m_mediaBox;
+        m_cropBox = mediaBox;
 
-    m_rotation = deg2rad(static_cast<float>(CGPDFPageGetRotationAngle(cgPage)));
+    m_rotationDegrees = CGPDFPageGetRotationAngle(cgPage);
 }
 
 unsigned PDFDocumentImage::pageCount() const
@@ -245,15 +244,28 @@ unsigned PDFDocumentImage::pageCount() const
     return CGPDFDocumentGetNumberOfPages(m_document.get());
 }
 
+static void applyRotationForPainting(GraphicsContext* context, FloatSize size, int rotationDegrees)
+{
+    if (rotationDegrees == 90)
+        context->translate(0, size.height());
+    else if (rotationDegrees == 180)
+        context->translate(size.width(), size.height());
+    else if (rotationDegrees == 270)
+        context->translate(size.width(), 0);
+
+    context->rotate(-deg2rad(static_cast<float>(rotationDegrees)));
+}
+
 void PDFDocumentImage::drawPDFPage(GraphicsContext* context)
 {
-    applyRotationForPainting(context);
+    applyRotationForPainting(context, size(), m_rotationDegrees);
 
     context->translate(-m_cropBox.x(), -m_cropBox.y());
 
     // CGPDF pages are indexed from 1.
     CGContextDrawPDFPage(context->platformContext(), CGPDFDocumentGetPage(m_document.get(), 1));
 }
+
 #endif // !USE(PDFKIT_FOR_PDFDOCUMENTIMAGE)
 
 }

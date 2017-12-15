@@ -33,31 +33,23 @@
 #include "DocumentFragment.h"
 #include "Element.h"
 #include "ExceptionCode.h"
-#include "StyleResolveTree.h"
 #include "TreeScope.h"
 
 namespace WebCore {
 
-class ShadowRoot FINAL : public DocumentFragment, public TreeScope {
+class ShadowRoot final : public DocumentFragment, public TreeScope {
 public:
-    // FIXME: We will support multiple shadow subtrees, however current implementation does not work well
-    // if a shadow root is dynamically created. So we prohibit multiple shadow subtrees
-    // in several elements for a while.
-    // See https://bugs.webkit.org/show_bug.cgi?id=77503 and related bugs.
     enum ShadowRootType {
         UserAgentShadowRoot = 0,
-        AuthorShadowRoot
     };
 
-    static PassRefPtr<ShadowRoot> create(Document& document, ShadowRootType type)
+    static Ref<ShadowRoot> create(Document& document, ShadowRootType type)
     {
-        return adoptRef(new ShadowRoot(document, type));
+        return adoptRef(*new ShadowRoot(document, type));
     }
 
     virtual ~ShadowRoot();
 
-    virtual bool applyAuthorStyles() const OVERRIDE { return m_applyAuthorStyles; }
-    void setApplyAuthorStyles(bool);
     bool resetStyleInheritance() const { return m_resetStyleInheritance; }
     void setResetStyleInheritance(bool);
 
@@ -76,22 +68,19 @@ public:
     ContentDistributor& distributor() { return m_distributor; }
     void invalidateDistribution() { m_distributor.invalidateDistribution(hostElement()); }
 
-    virtual void removeAllEventListeners() OVERRIDE;
+    virtual void removeAllEventListeners() override;
 
 private:
     ShadowRoot(Document&, ShadowRootType);
 
-    virtual void dropChildren() OVERRIDE;
-    virtual bool childTypeAllowed(NodeType) const OVERRIDE;
-    virtual void childrenChanged(const ChildChange&) OVERRIDE;
+    virtual bool childTypeAllowed(NodeType) const override;
+    virtual void childrenChanged(const ChildChange&) override;
 
-    // ShadowRoots should never be cloned.
-    virtual PassRefPtr<Node> cloneNode(bool) OVERRIDE { return 0; }
+    virtual RefPtr<Node> cloneNodeInternal(Document&, CloningOperation) override;
 
     // FIXME: This shouldn't happen. https://bugs.webkit.org/show_bug.cgi?id=88834
     bool isOrphan() const { return !hostElement(); }
 
-    unsigned m_applyAuthorStyles : 1;
     unsigned m_resetStyleInheritance : 1;
     unsigned m_type : 1;
 
@@ -105,37 +94,30 @@ inline Element* ShadowRoot::activeElement() const
     return treeScope().focusedElement();
 }
 
-inline const ShadowRoot* toShadowRoot(const Node* node)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!node || node->isShadowRoot());
-    return static_cast<const ShadowRoot*>(node);
-}
-
-inline ShadowRoot* toShadowRoot(Node* node)
-{
-    return const_cast<ShadowRoot*>(toShadowRoot(static_cast<const Node*>(node)));
-}
-
 inline ShadowRoot* Node::shadowRoot() const
 {
-    if (!isElementNode())
-        return 0;
-    return toElement(this)->shadowRoot();
+    if (!is<Element>(*this))
+        return nullptr;
+    return downcast<Element>(*this).shadowRoot();
 }
 
 inline ContainerNode* Node::parentOrShadowHostNode() const
 {
     ASSERT(isMainThreadOrGCThread());
-    if (isShadowRoot())
-        return toShadowRoot(this)->hostElement();
+    if (is<ShadowRoot>(*this))
+        return downcast<ShadowRoot>(*this).hostElement();
     return parentNode();
 }
 
-inline bool hasShadowRootParent(const Node* node)
+inline bool hasShadowRootParent(const Node& node)
 {
-    return node->parentNode() && node->parentNode()->isShadowRoot();
+    return node.parentNode() && node.parentNode()->isShadowRoot();
 }
 
-} // namespace
+} // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::ShadowRoot)
+    static bool isType(const WebCore::Node& node) { return node.isShadowRoot(); }
+SPECIALIZE_TYPE_TRAITS_END()
 
 #endif

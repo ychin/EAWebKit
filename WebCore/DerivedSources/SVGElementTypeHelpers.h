@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -33,457 +33,1123 @@
 #include "SVGNames.h"
 
 namespace WebCore {
+class SVGAElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::aTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::aTag); }
+};
+}
 
-class SVGAltGlyphElement;
-void isSVGAltGlyphElement(const SVGAltGlyphElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGAltGlyphElement(const SVGAltGlyphElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGAltGlyphElement(const Element& element) { return element.hasTagName(SVGNames::altGlyphTag); }
-inline bool isSVGAltGlyphElement(const Element* element) { ASSERT(element); return isSVGAltGlyphElement(*element); }
-inline bool isSVGAltGlyphElement(const Node& node) { return node.isElementNode() && isSVGAltGlyphElement(toElement(node)); }
-inline bool isSVGAltGlyphElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGAltGlyphElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGAltGlyphElement>(const Element& element) { return isSVGAltGlyphElement(element); }
-
+namespace WebCore {
 class SVGAltGlyphDefElement;
-void isSVGAltGlyphDefElement(const SVGAltGlyphDefElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGAltGlyphDefElement(const SVGAltGlyphDefElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGAltGlyphDefElement(const Element& element) { return element.hasTagName(SVGNames::altGlyphDefTag); }
-inline bool isSVGAltGlyphDefElement(const Element* element) { ASSERT(element); return isSVGAltGlyphDefElement(*element); }
-inline bool isSVGAltGlyphDefElement(const Node& node) { return node.isElementNode() && isSVGAltGlyphDefElement(toElement(node)); }
-inline bool isSVGAltGlyphDefElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGAltGlyphDefElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGAltGlyphDefElement>(const Element& element) { return isSVGAltGlyphDefElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAltGlyphDefElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::altGlyphDefTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::altGlyphDefTag); }
+};
+}
 
+namespace WebCore {
+class SVGAltGlyphElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAltGlyphElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::altGlyphTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::altGlyphTag); }
+};
+}
+
+namespace WebCore {
 class SVGAltGlyphItemElement;
-void isSVGAltGlyphItemElement(const SVGAltGlyphItemElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGAltGlyphItemElement(const SVGAltGlyphItemElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGAltGlyphItemElement(const Element& element) { return element.hasTagName(SVGNames::altGlyphItemTag); }
-inline bool isSVGAltGlyphItemElement(const Element* element) { ASSERT(element); return isSVGAltGlyphItemElement(*element); }
-inline bool isSVGAltGlyphItemElement(const Node& node) { return node.isElementNode() && isSVGAltGlyphItemElement(toElement(node)); }
-inline bool isSVGAltGlyphItemElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGAltGlyphItemElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGAltGlyphItemElement>(const Element& element) { return isSVGAltGlyphItemElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAltGlyphItemElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::altGlyphItemTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::altGlyphItemTag); }
+};
+}
 
+namespace WebCore {
+class SVGAnimateColorElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAnimateColorElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::animateColorTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::animateColorTag); }
+};
+}
+
+namespace WebCore {
+class SVGAnimateElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAnimateElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::animateTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::animateTag); }
+};
+}
+
+namespace WebCore {
 class SVGAnimateMotionElement;
-void isSVGAnimateMotionElement(const SVGAnimateMotionElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGAnimateMotionElement(const SVGAnimateMotionElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGAnimateMotionElement(const Element& element) { return element.hasTagName(SVGNames::animateMotionTag); }
-inline bool isSVGAnimateMotionElement(const Element* element) { ASSERT(element); return isSVGAnimateMotionElement(*element); }
-inline bool isSVGAnimateMotionElement(const Node& node) { return node.isElementNode() && isSVGAnimateMotionElement(toElement(node)); }
-inline bool isSVGAnimateMotionElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGAnimateMotionElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGAnimateMotionElement>(const Element& element) { return isSVGAnimateMotionElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAnimateMotionElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::animateMotionTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::animateMotionTag); }
+};
+}
 
+namespace WebCore {
 class SVGAnimateTransformElement;
-void isSVGAnimateTransformElement(const SVGAnimateTransformElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGAnimateTransformElement(const SVGAnimateTransformElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGAnimateTransformElement(const Element& element) { return element.hasTagName(SVGNames::animateTransformTag); }
-inline bool isSVGAnimateTransformElement(const Element* element) { ASSERT(element); return isSVGAnimateTransformElement(*element); }
-inline bool isSVGAnimateTransformElement(const Node& node) { return node.isElementNode() && isSVGAnimateTransformElement(toElement(node)); }
-inline bool isSVGAnimateTransformElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGAnimateTransformElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGAnimateTransformElement>(const Element& element) { return isSVGAnimateTransformElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGAnimateTransformElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::animateTransformTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::animateTransformTag); }
+};
+}
 
+namespace WebCore {
 class SVGCircleElement;
-void isSVGCircleElement(const SVGCircleElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGCircleElement(const SVGCircleElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGCircleElement(const Element& element) { return element.hasTagName(SVGNames::circleTag); }
-inline bool isSVGCircleElement(const Element* element) { ASSERT(element); return isSVGCircleElement(*element); }
-inline bool isSVGCircleElement(const Node& node) { return node.isElementNode() && isSVGCircleElement(toElement(node)); }
-inline bool isSVGCircleElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGCircleElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGCircleElement>(const Element& element) { return isSVGCircleElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGCircleElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::circleTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::circleTag); }
+};
+}
 
+namespace WebCore {
 class SVGClipPathElement;
-void isSVGClipPathElement(const SVGClipPathElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGClipPathElement(const SVGClipPathElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGClipPathElement(const Element& element) { return element.hasTagName(SVGNames::clipPathTag); }
-inline bool isSVGClipPathElement(const Element* element) { ASSERT(element); return isSVGClipPathElement(*element); }
-inline bool isSVGClipPathElement(const Node& node) { return node.isElementNode() && isSVGClipPathElement(toElement(node)); }
-inline bool isSVGClipPathElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGClipPathElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGClipPathElement>(const Element& element) { return isSVGClipPathElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGClipPathElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::clipPathTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::clipPathTag); }
+};
+}
 
+namespace WebCore {
 class SVGCursorElement;
-void isSVGCursorElement(const SVGCursorElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGCursorElement(const SVGCursorElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGCursorElement(const Element& element) { return element.hasTagName(SVGNames::cursorTag); }
-inline bool isSVGCursorElement(const Element* element) { ASSERT(element); return isSVGCursorElement(*element); }
-inline bool isSVGCursorElement(const Node& node) { return node.isElementNode() && isSVGCursorElement(toElement(node)); }
-inline bool isSVGCursorElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGCursorElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGCursorElement>(const Element& element) { return isSVGCursorElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGCursorElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::cursorTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::cursorTag); }
+};
+}
 
+namespace WebCore {
+class SVGDefsElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGDefsElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::defsTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::defsTag); }
+};
+}
+
+namespace WebCore {
+class SVGDescElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGDescElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::descTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::descTag); }
+};
+}
+
+namespace WebCore {
 class SVGEllipseElement;
-void isSVGEllipseElement(const SVGEllipseElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGEllipseElement(const SVGEllipseElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGEllipseElement(const Element& element) { return element.hasTagName(SVGNames::ellipseTag); }
-inline bool isSVGEllipseElement(const Element* element) { ASSERT(element); return isSVGEllipseElement(*element); }
-inline bool isSVGEllipseElement(const Node& node) { return node.isElementNode() && isSVGEllipseElement(toElement(node)); }
-inline bool isSVGEllipseElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGEllipseElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGEllipseElement>(const Element& element) { return isSVGEllipseElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGEllipseElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::ellipseTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::ellipseTag); }
+};
+}
 
+namespace WebCore {
+class SVGFEBlendElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEBlendElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feBlendTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feBlendTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEColorMatrixElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEColorMatrixElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feColorMatrixTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feColorMatrixTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEComponentTransferElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEComponentTransferElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feComponentTransferTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feComponentTransferTag); }
+};
+}
+
+namespace WebCore {
+class SVGFECompositeElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFECompositeElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feCompositeTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feCompositeTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEConvolveMatrixElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEConvolveMatrixElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feConvolveMatrixTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feConvolveMatrixTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEDiffuseLightingElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEDiffuseLightingElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feDiffuseLightingTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feDiffuseLightingTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEDisplacementMapElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEDisplacementMapElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feDisplacementMapTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feDisplacementMapTag); }
+};
+}
+
+namespace WebCore {
 class SVGFEDistantLightElement;
-void isSVGFEDistantLightElement(const SVGFEDistantLightElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEDistantLightElement(const SVGFEDistantLightElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEDistantLightElement(const Element& element) { return element.hasTagName(SVGNames::feDistantLightTag); }
-inline bool isSVGFEDistantLightElement(const Element* element) { ASSERT(element); return isSVGFEDistantLightElement(*element); }
-inline bool isSVGFEDistantLightElement(const Node& node) { return node.isElementNode() && isSVGFEDistantLightElement(toElement(node)); }
-inline bool isSVGFEDistantLightElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEDistantLightElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEDistantLightElement>(const Element& element) { return isSVGFEDistantLightElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEDistantLightElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feDistantLightTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feDistantLightTag); }
+};
+}
 
+namespace WebCore {
+class SVGFEDropShadowElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEDropShadowElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feDropShadowTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feDropShadowTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEFloodElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEFloodElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feFloodTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feFloodTag); }
+};
+}
+
+namespace WebCore {
 class SVGFEFuncAElement;
-void isSVGFEFuncAElement(const SVGFEFuncAElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEFuncAElement(const SVGFEFuncAElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEFuncAElement(const Element& element) { return element.hasTagName(SVGNames::feFuncATag); }
-inline bool isSVGFEFuncAElement(const Element* element) { ASSERT(element); return isSVGFEFuncAElement(*element); }
-inline bool isSVGFEFuncAElement(const Node& node) { return node.isElementNode() && isSVGFEFuncAElement(toElement(node)); }
-inline bool isSVGFEFuncAElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEFuncAElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEFuncAElement>(const Element& element) { return isSVGFEFuncAElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEFuncAElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feFuncATag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feFuncATag); }
+};
+}
 
+namespace WebCore {
 class SVGFEFuncBElement;
-void isSVGFEFuncBElement(const SVGFEFuncBElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEFuncBElement(const SVGFEFuncBElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEFuncBElement(const Element& element) { return element.hasTagName(SVGNames::feFuncBTag); }
-inline bool isSVGFEFuncBElement(const Element* element) { ASSERT(element); return isSVGFEFuncBElement(*element); }
-inline bool isSVGFEFuncBElement(const Node& node) { return node.isElementNode() && isSVGFEFuncBElement(toElement(node)); }
-inline bool isSVGFEFuncBElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEFuncBElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEFuncBElement>(const Element& element) { return isSVGFEFuncBElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEFuncBElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feFuncBTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feFuncBTag); }
+};
+}
 
+namespace WebCore {
 class SVGFEFuncGElement;
-void isSVGFEFuncGElement(const SVGFEFuncGElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEFuncGElement(const SVGFEFuncGElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEFuncGElement(const Element& element) { return element.hasTagName(SVGNames::feFuncGTag); }
-inline bool isSVGFEFuncGElement(const Element* element) { ASSERT(element); return isSVGFEFuncGElement(*element); }
-inline bool isSVGFEFuncGElement(const Node& node) { return node.isElementNode() && isSVGFEFuncGElement(toElement(node)); }
-inline bool isSVGFEFuncGElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEFuncGElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEFuncGElement>(const Element& element) { return isSVGFEFuncGElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEFuncGElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feFuncGTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feFuncGTag); }
+};
+}
 
+namespace WebCore {
 class SVGFEFuncRElement;
-void isSVGFEFuncRElement(const SVGFEFuncRElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEFuncRElement(const SVGFEFuncRElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEFuncRElement(const Element& element) { return element.hasTagName(SVGNames::feFuncRTag); }
-inline bool isSVGFEFuncRElement(const Element* element) { ASSERT(element); return isSVGFEFuncRElement(*element); }
-inline bool isSVGFEFuncRElement(const Node& node) { return node.isElementNode() && isSVGFEFuncRElement(toElement(node)); }
-inline bool isSVGFEFuncRElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEFuncRElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEFuncRElement>(const Element& element) { return isSVGFEFuncRElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEFuncRElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feFuncRTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feFuncRTag); }
+};
+}
 
-class SVGFEMergeNodeElement;
-void isSVGFEMergeNodeElement(const SVGFEMergeNodeElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEMergeNodeElement(const SVGFEMergeNodeElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEMergeNodeElement(const Element& element) { return element.hasTagName(SVGNames::feMergeNodeTag); }
-inline bool isSVGFEMergeNodeElement(const Element* element) { ASSERT(element); return isSVGFEMergeNodeElement(*element); }
-inline bool isSVGFEMergeNodeElement(const Node& node) { return node.isElementNode() && isSVGFEMergeNodeElement(toElement(node)); }
-inline bool isSVGFEMergeNodeElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEMergeNodeElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEMergeNodeElement>(const Element& element) { return isSVGFEMergeNodeElement(element); }
+namespace WebCore {
+class SVGFEGaussianBlurElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEGaussianBlurElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feGaussianBlurTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feGaussianBlurTag); }
+};
+}
 
-class SVGFEPointLightElement;
-void isSVGFEPointLightElement(const SVGFEPointLightElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEPointLightElement(const SVGFEPointLightElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEPointLightElement(const Element& element) { return element.hasTagName(SVGNames::fePointLightTag); }
-inline bool isSVGFEPointLightElement(const Element* element) { ASSERT(element); return isSVGFEPointLightElement(*element); }
-inline bool isSVGFEPointLightElement(const Node& node) { return node.isElementNode() && isSVGFEPointLightElement(toElement(node)); }
-inline bool isSVGFEPointLightElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEPointLightElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEPointLightElement>(const Element& element) { return isSVGFEPointLightElement(element); }
-
-class SVGFESpotLightElement;
-void isSVGFESpotLightElement(const SVGFESpotLightElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFESpotLightElement(const SVGFESpotLightElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFESpotLightElement(const Element& element) { return element.hasTagName(SVGNames::feSpotLightTag); }
-inline bool isSVGFESpotLightElement(const Element* element) { ASSERT(element); return isSVGFESpotLightElement(*element); }
-inline bool isSVGFESpotLightElement(const Node& node) { return node.isElementNode() && isSVGFESpotLightElement(toElement(node)); }
-inline bool isSVGFESpotLightElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFESpotLightElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFESpotLightElement>(const Element& element) { return isSVGFESpotLightElement(element); }
-
-class SVGFilterElement;
-void isSVGFilterElement(const SVGFilterElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFilterElement(const SVGFilterElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFilterElement(const Element& element) { return element.hasTagName(SVGNames::filterTag); }
-inline bool isSVGFilterElement(const Element* element) { ASSERT(element); return isSVGFilterElement(*element); }
-inline bool isSVGFilterElement(const Node& node) { return node.isElementNode() && isSVGFilterElement(toElement(node)); }
-inline bool isSVGFilterElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFilterElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFilterElement>(const Element& element) { return isSVGFilterElement(element); }
-
-class SVGFontElement;
-void isSVGFontElement(const SVGFontElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFontElement(const SVGFontElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFontElement(const Element& element) { return element.hasTagName(SVGNames::fontTag); }
-inline bool isSVGFontElement(const Element* element) { ASSERT(element); return isSVGFontElement(*element); }
-inline bool isSVGFontElement(const Node& node) { return node.isElementNode() && isSVGFontElement(toElement(node)); }
-inline bool isSVGFontElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFontElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFontElement>(const Element& element) { return isSVGFontElement(element); }
-
-class SVGFontFaceElement;
-void isSVGFontFaceElement(const SVGFontFaceElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFontFaceElement(const SVGFontFaceElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFontFaceElement(const Element& element) { return element.hasTagName(SVGNames::font_faceTag); }
-inline bool isSVGFontFaceElement(const Element* element) { ASSERT(element); return isSVGFontFaceElement(*element); }
-inline bool isSVGFontFaceElement(const Node& node) { return node.isElementNode() && isSVGFontFaceElement(toElement(node)); }
-inline bool isSVGFontFaceElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFontFaceElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFontFaceElement>(const Element& element) { return isSVGFontFaceElement(element); }
-
-class SVGFontFaceNameElement;
-void isSVGFontFaceNameElement(const SVGFontFaceNameElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFontFaceNameElement(const SVGFontFaceNameElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFontFaceNameElement(const Element& element) { return element.hasTagName(SVGNames::font_face_nameTag); }
-inline bool isSVGFontFaceNameElement(const Element* element) { ASSERT(element); return isSVGFontFaceNameElement(*element); }
-inline bool isSVGFontFaceNameElement(const Node& node) { return node.isElementNode() && isSVGFontFaceNameElement(toElement(node)); }
-inline bool isSVGFontFaceNameElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFontFaceNameElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFontFaceNameElement>(const Element& element) { return isSVGFontFaceNameElement(element); }
-
-class SVGFontFaceSrcElement;
-void isSVGFontFaceSrcElement(const SVGFontFaceSrcElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFontFaceSrcElement(const SVGFontFaceSrcElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFontFaceSrcElement(const Element& element) { return element.hasTagName(SVGNames::font_face_srcTag); }
-inline bool isSVGFontFaceSrcElement(const Element* element) { ASSERT(element); return isSVGFontFaceSrcElement(*element); }
-inline bool isSVGFontFaceSrcElement(const Node& node) { return node.isElementNode() && isSVGFontFaceSrcElement(toElement(node)); }
-inline bool isSVGFontFaceSrcElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFontFaceSrcElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFontFaceSrcElement>(const Element& element) { return isSVGFontFaceSrcElement(element); }
-
-class SVGFontFaceUriElement;
-void isSVGFontFaceUriElement(const SVGFontFaceUriElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFontFaceUriElement(const SVGFontFaceUriElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFontFaceUriElement(const Element& element) { return element.hasTagName(SVGNames::font_face_uriTag); }
-inline bool isSVGFontFaceUriElement(const Element* element) { ASSERT(element); return isSVGFontFaceUriElement(*element); }
-inline bool isSVGFontFaceUriElement(const Node& node) { return node.isElementNode() && isSVGFontFaceUriElement(toElement(node)); }
-inline bool isSVGFontFaceUriElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFontFaceUriElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFontFaceUriElement>(const Element& element) { return isSVGFontFaceUriElement(element); }
-
-class SVGForeignObjectElement;
-void isSVGForeignObjectElement(const SVGForeignObjectElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGForeignObjectElement(const SVGForeignObjectElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGForeignObjectElement(const Element& element) { return element.hasTagName(SVGNames::foreignObjectTag); }
-inline bool isSVGForeignObjectElement(const Element* element) { ASSERT(element); return isSVGForeignObjectElement(*element); }
-inline bool isSVGForeignObjectElement(const Node& node) { return node.isElementNode() && isSVGForeignObjectElement(toElement(node)); }
-inline bool isSVGForeignObjectElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGForeignObjectElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGForeignObjectElement>(const Element& element) { return isSVGForeignObjectElement(element); }
-
-class SVGGElement;
-void isSVGGElement(const SVGGElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGGElement(const SVGGElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGGElement(const Element& element) { return element.hasTagName(SVGNames::gTag); }
-inline bool isSVGGElement(const Element* element) { ASSERT(element); return isSVGGElement(*element); }
-inline bool isSVGGElement(const Node& node) { return node.isElementNode() && isSVGGElement(toElement(node)); }
-inline bool isSVGGElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGGElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGGElement>(const Element& element) { return isSVGGElement(element); }
-
-class SVGGlyphElement;
-void isSVGGlyphElement(const SVGGlyphElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGGlyphElement(const SVGGlyphElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGGlyphElement(const Element& element) { return element.hasTagName(SVGNames::glyphTag); }
-inline bool isSVGGlyphElement(const Element* element) { ASSERT(element); return isSVGGlyphElement(*element); }
-inline bool isSVGGlyphElement(const Node& node) { return node.isElementNode() && isSVGGlyphElement(toElement(node)); }
-inline bool isSVGGlyphElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGGlyphElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGGlyphElement>(const Element& element) { return isSVGGlyphElement(element); }
-
-class SVGGlyphRefElement;
-void isSVGGlyphRefElement(const SVGGlyphRefElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGGlyphRefElement(const SVGGlyphRefElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGGlyphRefElement(const Element& element) { return element.hasTagName(SVGNames::glyphRefTag); }
-inline bool isSVGGlyphRefElement(const Element* element) { ASSERT(element); return isSVGGlyphRefElement(*element); }
-inline bool isSVGGlyphRefElement(const Node& node) { return node.isElementNode() && isSVGGlyphRefElement(toElement(node)); }
-inline bool isSVGGlyphRefElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGGlyphRefElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGGlyphRefElement>(const Element& element) { return isSVGGlyphRefElement(element); }
-
-class SVGHKernElement;
-void isSVGHKernElement(const SVGHKernElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGHKernElement(const SVGHKernElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGHKernElement(const Element& element) { return element.hasTagName(SVGNames::hkernTag); }
-inline bool isSVGHKernElement(const Element* element) { ASSERT(element); return isSVGHKernElement(*element); }
-inline bool isSVGHKernElement(const Node& node) { return node.isElementNode() && isSVGHKernElement(toElement(node)); }
-inline bool isSVGHKernElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGHKernElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGHKernElement>(const Element& element) { return isSVGHKernElement(element); }
-
-class SVGImageElement;
-void isSVGImageElement(const SVGImageElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGImageElement(const SVGImageElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGImageElement(const Element& element) { return element.hasTagName(SVGNames::imageTag); }
-inline bool isSVGImageElement(const Element* element) { ASSERT(element); return isSVGImageElement(*element); }
-inline bool isSVGImageElement(const Node& node) { return node.isElementNode() && isSVGImageElement(toElement(node)); }
-inline bool isSVGImageElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGImageElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGImageElement>(const Element& element) { return isSVGImageElement(element); }
-
+namespace WebCore {
 class SVGFEImageElement;
-void isSVGFEImageElement(const SVGFEImageElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGFEImageElement(const SVGFEImageElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGFEImageElement(const Element& element) { return element.hasTagName(SVGNames::imageTag); }
-inline bool isSVGFEImageElement(const Element* element) { ASSERT(element); return isSVGFEImageElement(*element); }
-inline bool isSVGFEImageElement(const Node& node) { return node.isElementNode() && isSVGFEImageElement(toElement(node)); }
-inline bool isSVGFEImageElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEImageElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGFEImageElement>(const Element& element) { return isSVGFEImageElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEImageElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feImageTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feImageTag); }
+};
+}
 
+namespace WebCore {
+class SVGFEMergeElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEMergeElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feMergeTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feMergeTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEMergeNodeElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEMergeNodeElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feMergeNodeTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feMergeNodeTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEMorphologyElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEMorphologyElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feMorphologyTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feMorphologyTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEOffsetElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEOffsetElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feOffsetTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feOffsetTag); }
+};
+}
+
+namespace WebCore {
+class SVGFEPointLightElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFEPointLightElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::fePointLightTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::fePointLightTag); }
+};
+}
+
+namespace WebCore {
+class SVGFESpecularLightingElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFESpecularLightingElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feSpecularLightingTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feSpecularLightingTag); }
+};
+}
+
+namespace WebCore {
+class SVGFESpotLightElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFESpotLightElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feSpotLightTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feSpotLightTag); }
+};
+}
+
+namespace WebCore {
+class SVGFETileElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFETileElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feTileTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feTileTag); }
+};
+}
+
+namespace WebCore {
+class SVGFETurbulenceElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFETurbulenceElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::feTurbulenceTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::feTurbulenceTag); }
+};
+}
+
+namespace WebCore {
+class SVGFilterElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFilterElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::filterTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::filterTag); }
+};
+}
+
+namespace WebCore {
+class SVGFontElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFontElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::fontTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::fontTag); }
+};
+}
+
+namespace WebCore {
+class SVGFontFaceElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFontFaceElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::font_faceTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::font_faceTag); }
+};
+}
+
+namespace WebCore {
+class SVGFontFaceFormatElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFontFaceFormatElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::font_face_formatTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::font_face_formatTag); }
+};
+}
+
+namespace WebCore {
+class SVGFontFaceNameElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFontFaceNameElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::font_face_nameTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::font_face_nameTag); }
+};
+}
+
+namespace WebCore {
+class SVGFontFaceSrcElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFontFaceSrcElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::font_face_srcTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::font_face_srcTag); }
+};
+}
+
+namespace WebCore {
+class SVGFontFaceUriElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGFontFaceUriElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::font_face_uriTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::font_face_uriTag); }
+};
+}
+
+namespace WebCore {
+class SVGForeignObjectElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGForeignObjectElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::foreignObjectTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::foreignObjectTag); }
+};
+}
+
+namespace WebCore {
+class SVGGElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGGElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::gTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::gTag); }
+};
+}
+
+namespace WebCore {
+class SVGGlyphElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGGlyphElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::glyphTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::glyphTag); }
+};
+}
+
+namespace WebCore {
+class SVGGlyphRefElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGGlyphRefElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::glyphRefTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::glyphRefTag); }
+};
+}
+
+namespace WebCore {
+class SVGHKernElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGHKernElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::hkernTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::hkernTag); }
+};
+}
+
+namespace WebCore {
+class SVGImageElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGImageElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::imageTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::imageTag); }
+};
+}
+
+namespace WebCore {
 class SVGLineElement;
-void isSVGLineElement(const SVGLineElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGLineElement(const SVGLineElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGLineElement(const Element& element) { return element.hasTagName(SVGNames::lineTag); }
-inline bool isSVGLineElement(const Element* element) { ASSERT(element); return isSVGLineElement(*element); }
-inline bool isSVGLineElement(const Node& node) { return node.isElementNode() && isSVGLineElement(toElement(node)); }
-inline bool isSVGLineElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGLineElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGLineElement>(const Element& element) { return isSVGLineElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGLineElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::lineTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::lineTag); }
+};
+}
 
+namespace WebCore {
 class SVGLinearGradientElement;
-void isSVGLinearGradientElement(const SVGLinearGradientElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGLinearGradientElement(const SVGLinearGradientElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGLinearGradientElement(const Element& element) { return element.hasTagName(SVGNames::linearGradientTag); }
-inline bool isSVGLinearGradientElement(const Element* element) { ASSERT(element); return isSVGLinearGradientElement(*element); }
-inline bool isSVGLinearGradientElement(const Node& node) { return node.isElementNode() && isSVGLinearGradientElement(toElement(node)); }
-inline bool isSVGLinearGradientElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGLinearGradientElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGLinearGradientElement>(const Element& element) { return isSVGLinearGradientElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGLinearGradientElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::linearGradientTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::linearGradientTag); }
+};
+}
 
-class SVGMarkerElement;
-void isSVGMarkerElement(const SVGMarkerElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGMarkerElement(const SVGMarkerElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGMarkerElement(const Element& element) { return element.hasTagName(SVGNames::markerTag); }
-inline bool isSVGMarkerElement(const Element* element) { ASSERT(element); return isSVGMarkerElement(*element); }
-inline bool isSVGMarkerElement(const Node& node) { return node.isElementNode() && isSVGMarkerElement(toElement(node)); }
-inline bool isSVGMarkerElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGMarkerElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGMarkerElement>(const Element& element) { return isSVGMarkerElement(element); }
-
-class SVGMaskElement;
-void isSVGMaskElement(const SVGMaskElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGMaskElement(const SVGMaskElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGMaskElement(const Element& element) { return element.hasTagName(SVGNames::maskTag); }
-inline bool isSVGMaskElement(const Element* element) { ASSERT(element); return isSVGMaskElement(*element); }
-inline bool isSVGMaskElement(const Node& node) { return node.isElementNode() && isSVGMaskElement(toElement(node)); }
-inline bool isSVGMaskElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGMaskElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGMaskElement>(const Element& element) { return isSVGMaskElement(element); }
-
-class SVGMissingGlyphElement;
-void isSVGMissingGlyphElement(const SVGMissingGlyphElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGMissingGlyphElement(const SVGMissingGlyphElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGMissingGlyphElement(const Element& element) { return element.hasTagName(SVGNames::missing_glyphTag); }
-inline bool isSVGMissingGlyphElement(const Element* element) { ASSERT(element); return isSVGMissingGlyphElement(*element); }
-inline bool isSVGMissingGlyphElement(const Node& node) { return node.isElementNode() && isSVGMissingGlyphElement(toElement(node)); }
-inline bool isSVGMissingGlyphElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGMissingGlyphElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGMissingGlyphElement>(const Element& element) { return isSVGMissingGlyphElement(element); }
-
+namespace WebCore {
 class SVGMPathElement;
-void isSVGMPathElement(const SVGMPathElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGMPathElement(const SVGMPathElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGMPathElement(const Element& element) { return element.hasTagName(SVGNames::mpathTag); }
-inline bool isSVGMPathElement(const Element* element) { ASSERT(element); return isSVGMPathElement(*element); }
-inline bool isSVGMPathElement(const Node& node) { return node.isElementNode() && isSVGMPathElement(toElement(node)); }
-inline bool isSVGMPathElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGMPathElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGMPathElement>(const Element& element) { return isSVGMPathElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGMPathElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::mpathTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::mpathTag); }
+};
+}
 
+namespace WebCore {
+class SVGMarkerElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGMarkerElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::markerTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::markerTag); }
+};
+}
+
+namespace WebCore {
+class SVGMaskElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGMaskElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::maskTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::maskTag); }
+};
+}
+
+namespace WebCore {
+class SVGMetadataElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGMetadataElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::metadataTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::metadataTag); }
+};
+}
+
+namespace WebCore {
+class SVGMissingGlyphElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGMissingGlyphElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::missing_glyphTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::missing_glyphTag); }
+};
+}
+
+namespace WebCore {
 class SVGPathElement;
-void isSVGPathElement(const SVGPathElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGPathElement(const SVGPathElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGPathElement(const Element& element) { return element.hasTagName(SVGNames::pathTag); }
-inline bool isSVGPathElement(const Element* element) { ASSERT(element); return isSVGPathElement(*element); }
-inline bool isSVGPathElement(const Node& node) { return node.isElementNode() && isSVGPathElement(toElement(node)); }
-inline bool isSVGPathElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGPathElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGPathElement>(const Element& element) { return isSVGPathElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGPathElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::pathTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::pathTag); }
+};
+}
 
+namespace WebCore {
 class SVGPatternElement;
-void isSVGPatternElement(const SVGPatternElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGPatternElement(const SVGPatternElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGPatternElement(const Element& element) { return element.hasTagName(SVGNames::patternTag); }
-inline bool isSVGPatternElement(const Element* element) { ASSERT(element); return isSVGPatternElement(*element); }
-inline bool isSVGPatternElement(const Node& node) { return node.isElementNode() && isSVGPatternElement(toElement(node)); }
-inline bool isSVGPatternElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGPatternElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGPatternElement>(const Element& element) { return isSVGPatternElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGPatternElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::patternTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::patternTag); }
+};
+}
 
+namespace WebCore {
+class SVGPolygonElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGPolygonElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::polygonTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::polygonTag); }
+};
+}
+
+namespace WebCore {
+class SVGPolylineElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGPolylineElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::polylineTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::polylineTag); }
+};
+}
+
+namespace WebCore {
 class SVGRadialGradientElement;
-void isSVGRadialGradientElement(const SVGRadialGradientElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGRadialGradientElement(const SVGRadialGradientElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGRadialGradientElement(const Element& element) { return element.hasTagName(SVGNames::radialGradientTag); }
-inline bool isSVGRadialGradientElement(const Element* element) { ASSERT(element); return isSVGRadialGradientElement(*element); }
-inline bool isSVGRadialGradientElement(const Node& node) { return node.isElementNode() && isSVGRadialGradientElement(toElement(node)); }
-inline bool isSVGRadialGradientElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGRadialGradientElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGRadialGradientElement>(const Element& element) { return isSVGRadialGradientElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGRadialGradientElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::radialGradientTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::radialGradientTag); }
+};
+}
 
+namespace WebCore {
 class SVGRectElement;
-void isSVGRectElement(const SVGRectElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGRectElement(const SVGRectElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGRectElement(const Element& element) { return element.hasTagName(SVGNames::rectTag); }
-inline bool isSVGRectElement(const Element* element) { ASSERT(element); return isSVGRectElement(*element); }
-inline bool isSVGRectElement(const Node& node) { return node.isElementNode() && isSVGRectElement(toElement(node)); }
-inline bool isSVGRectElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGRectElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGRectElement>(const Element& element) { return isSVGRectElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGRectElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::rectTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::rectTag); }
+};
+}
 
-class SVGScriptElement;
-void isSVGScriptElement(const SVGScriptElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGScriptElement(const SVGScriptElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGScriptElement(const Element& element) { return element.hasTagName(SVGNames::scriptTag); }
-inline bool isSVGScriptElement(const Element* element) { ASSERT(element); return isSVGScriptElement(*element); }
-inline bool isSVGScriptElement(const Node& node) { return node.isElementNode() && isSVGScriptElement(toElement(node)); }
-inline bool isSVGScriptElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGScriptElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGScriptElement>(const Element& element) { return isSVGScriptElement(element); }
-
-class SVGStopElement;
-void isSVGStopElement(const SVGStopElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGStopElement(const SVGStopElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGStopElement(const Element& element) { return element.hasTagName(SVGNames::stopTag); }
-inline bool isSVGStopElement(const Element* element) { ASSERT(element); return isSVGStopElement(*element); }
-inline bool isSVGStopElement(const Node& node) { return node.isElementNode() && isSVGStopElement(toElement(node)); }
-inline bool isSVGStopElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGStopElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGStopElement>(const Element& element) { return isSVGStopElement(element); }
-
-class SVGStyleElement;
-void isSVGStyleElement(const SVGStyleElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGStyleElement(const SVGStyleElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGStyleElement(const Element& element) { return element.hasTagName(SVGNames::styleTag); }
-inline bool isSVGStyleElement(const Element* element) { ASSERT(element); return isSVGStyleElement(*element); }
-inline bool isSVGStyleElement(const Node& node) { return node.isElementNode() && isSVGStyleElement(toElement(node)); }
-inline bool isSVGStyleElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGStyleElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGStyleElement>(const Element& element) { return isSVGStyleElement(element); }
-
+namespace WebCore {
 class SVGSVGElement;
-void isSVGSVGElement(const SVGSVGElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGSVGElement(const SVGSVGElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGSVGElement(const Element& element) { return element.hasTagName(SVGNames::svgTag); }
-inline bool isSVGSVGElement(const Element* element) { ASSERT(element); return isSVGSVGElement(*element); }
-inline bool isSVGSVGElement(const Node& node) { return node.isElementNode() && isSVGSVGElement(toElement(node)); }
-inline bool isSVGSVGElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGSVGElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGSVGElement>(const Element& element) { return isSVGSVGElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGSVGElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::svgTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::svgTag); }
+};
+}
 
+namespace WebCore {
+class SVGScriptElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGScriptElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::scriptTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::scriptTag); }
+};
+}
+
+namespace WebCore {
+class SVGSetElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGSetElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::setTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::setTag); }
+};
+}
+
+namespace WebCore {
+class SVGStopElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGStopElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::stopTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::stopTag); }
+};
+}
+
+namespace WebCore {
+class SVGStyleElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGStyleElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::styleTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::styleTag); }
+};
+}
+
+namespace WebCore {
+class SVGSwitchElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGSwitchElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::switchTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::switchTag); }
+};
+}
+
+namespace WebCore {
+class SVGSymbolElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGSymbolElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::symbolTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::symbolTag); }
+};
+}
+
+namespace WebCore {
+class SVGTRefElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGTRefElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::trefTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::trefTag); }
+};
+}
+
+namespace WebCore {
+class SVGTSpanElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGTSpanElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::tspanTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::tspanTag); }
+};
+}
+
+namespace WebCore {
 class SVGTextElement;
-void isSVGTextElement(const SVGTextElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGTextElement(const SVGTextElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGTextElement(const Element& element) { return element.hasTagName(SVGNames::textTag); }
-inline bool isSVGTextElement(const Element* element) { ASSERT(element); return isSVGTextElement(*element); }
-inline bool isSVGTextElement(const Node& node) { return node.isElementNode() && isSVGTextElement(toElement(node)); }
-inline bool isSVGTextElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGTextElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGTextElement>(const Element& element) { return isSVGTextElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGTextElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::textTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::textTag); }
+};
+}
 
+namespace WebCore {
 class SVGTextPathElement;
-void isSVGTextPathElement(const SVGTextPathElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGTextPathElement(const SVGTextPathElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGTextPathElement(const Element& element) { return element.hasTagName(SVGNames::textPathTag); }
-inline bool isSVGTextPathElement(const Element* element) { ASSERT(element); return isSVGTextPathElement(*element); }
-inline bool isSVGTextPathElement(const Node& node) { return node.isElementNode() && isSVGTextPathElement(toElement(node)); }
-inline bool isSVGTextPathElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGTextPathElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGTextPathElement>(const Element& element) { return isSVGTextPathElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGTextPathElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::textPathTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::textPathTag); }
+};
+}
 
+namespace WebCore {
 class SVGTitleElement;
-void isSVGTitleElement(const SVGTitleElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGTitleElement(const SVGTitleElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGTitleElement(const Element& element) { return element.hasTagName(SVGNames::titleTag); }
-inline bool isSVGTitleElement(const Element* element) { ASSERT(element); return isSVGTitleElement(*element); }
-inline bool isSVGTitleElement(const Node& node) { return node.isElementNode() && isSVGTitleElement(toElement(node)); }
-inline bool isSVGTitleElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGTitleElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGTitleElement>(const Element& element) { return isSVGTitleElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGTitleElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::titleTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::titleTag); }
+};
+}
 
+namespace WebCore {
 class SVGUseElement;
-void isSVGUseElement(const SVGUseElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGUseElement(const SVGUseElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGUseElement(const Element& element) { return element.hasTagName(SVGNames::useTag); }
-inline bool isSVGUseElement(const Element* element) { ASSERT(element); return isSVGUseElement(*element); }
-inline bool isSVGUseElement(const Node& node) { return node.isElementNode() && isSVGUseElement(toElement(node)); }
-inline bool isSVGUseElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGUseElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGUseElement>(const Element& element) { return isSVGUseElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGUseElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::useTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::useTag); }
+};
+}
 
-class SVGViewElement;
-void isSVGViewElement(const SVGViewElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGViewElement(const SVGViewElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGViewElement(const Element& element) { return element.hasTagName(SVGNames::viewTag); }
-inline bool isSVGViewElement(const Element* element) { ASSERT(element); return isSVGViewElement(*element); }
-inline bool isSVGViewElement(const Node& node) { return node.isElementNode() && isSVGViewElement(toElement(node)); }
-inline bool isSVGViewElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGViewElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGViewElement>(const Element& element) { return isSVGViewElement(element); }
-
+namespace WebCore {
 class SVGVKernElement;
-void isSVGVKernElement(const SVGVKernElement&); // Catch unnecessary runtime check of type known at compile time.
-void isSVGVKernElement(const SVGVKernElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isSVGVKernElement(const Element& element) { return element.hasTagName(SVGNames::vkernTag); }
-inline bool isSVGVKernElement(const Element* element) { ASSERT(element); return isSVGVKernElement(*element); }
-inline bool isSVGVKernElement(const Node& node) { return node.isElementNode() && isSVGVKernElement(toElement(node)); }
-inline bool isSVGVKernElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGVKernElement(toElement(node)); }
-template <> inline bool isElementOfType<const SVGVKernElement>(const Element& element) { return isSVGVKernElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGVKernElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::vkernTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::vkernTag); }
+};
+}
 
+namespace WebCore {
+class SVGViewElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::SVGViewElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::SVGElement& element) { return element.hasTagName(WebCore::SVGNames::viewTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::SVGNames::viewTag); }
+};
 }
 
 #endif

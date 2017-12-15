@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSTransitionEvent.h"
 
+#include "JSDOMBinding.h"
 #include "JSDictionary.h"
 #include "TransitionEvent.h"
 #include "URL.h"
@@ -32,36 +33,72 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSTransitionEventTableValues[] =
-{
-    { "propertyName", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventPropertyName), (intptr_t)0 },
-    { "elapsedTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventElapsedTime), (intptr_t)0 },
-    { "pseudoElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventPseudoElement), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsTransitionEventPropertyName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTransitionEventElapsedTime(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTransitionEventPseudoElement(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsTransitionEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSTransitionEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSTransitionEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSTransitionEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSTransitionEventPrototype>(vm.heap)) JSTransitionEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSTransitionEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSTransitionEventTable = { 9, 7, JSTransitionEventTableValues, 0 };
-/* Hash table for constructor */
+class JSTransitionEventConstructor : public DOMConstructorObject {
+private:
+    JSTransitionEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSTransitionEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSTransitionEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSTransitionEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSTransitionEventConstructor>(vm.heap)) JSTransitionEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSTransitionEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSTransitionEventConstructorTable = { 1, 0, JSTransitionEventConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSTransitionEventConstructor::constructJSTransitionEvent(ExecState* exec)
 {
-    JSTransitionEventConstructor* jsConstructor = jsCast<JSTransitionEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSTransitionEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     TransitionEventInit eventInit;
@@ -97,7 +134,7 @@ bool fillTransitionEventInit(TransitionEventInit& eventInit, JSDictionary& dicti
     return true;
 }
 
-const ClassInfo JSTransitionEventConstructor::s_info = { "TransitionEventConstructor", &Base::s_info, &JSTransitionEventConstructorTable, 0, CREATE_METHOD_TABLE(JSTransitionEventConstructor) };
+const ClassInfo JSTransitionEventConstructor::s_info = { "TransitionEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTransitionEventConstructor) };
 
 JSTransitionEventConstructor::JSTransitionEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -108,13 +145,9 @@ void JSTransitionEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* glo
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSTransitionEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSTransitionEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSTransitionEventConstructor, JSDOMWrapper>(exec, JSTransitionEventConstructorTable, jsCast<JSTransitionEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSTransitionEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("TransitionEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSTransitionEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -127,76 +160,94 @@ ConstructType JSTransitionEventConstructor::getConstructData(JSCell*, ConstructD
 
 static const HashTableValue JSTransitionEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "propertyName", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventPropertyName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "elapsedTime", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventElapsedTime), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "pseudoElement", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsTransitionEventPseudoElement), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSTransitionEventPrototypeTable = { 1, 0, JSTransitionEventPrototypeTableValues, 0 };
-const ClassInfo JSTransitionEventPrototype::s_info = { "TransitionEventPrototype", &Base::s_info, &JSTransitionEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSTransitionEventPrototype) };
+const ClassInfo JSTransitionEventPrototype::s_info = { "TransitionEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTransitionEventPrototype) };
 
-JSObject* JSTransitionEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSTransitionEvent>(vm, globalObject);
-}
-
-const ClassInfo JSTransitionEvent::s_info = { "TransitionEvent", &Base::s_info, &JSTransitionEventTable, 0 , CREATE_METHOD_TABLE(JSTransitionEvent) };
-
-JSTransitionEvent::JSTransitionEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<TransitionEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSTransitionEvent::finishCreation(VM& vm)
+void JSTransitionEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSTransitionEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSTransitionEvent::s_info = { "TransitionEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSTransitionEvent) };
+
+JSTransitionEvent::JSTransitionEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<TransitionEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSTransitionEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSTransitionEventPrototype::create(vm, globalObject, JSTransitionEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSTransitionEventPrototype::create(vm, globalObject, JSTransitionEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSTransitionEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSTransitionEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSTransitionEvent* thisObject = jsCast<JSTransitionEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSTransitionEvent, Base>(exec, JSTransitionEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSTransitionEvent>(vm, globalObject);
 }
 
-JSValue jsTransitionEventPropertyName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTransitionEventPropertyName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTransitionEvent* castedThis = jsCast<JSTransitionEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TransitionEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTransitionEvent* castedThis = jsDynamicCast<JSTransitionEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTransitionEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TransitionEvent", "propertyName");
+        return throwGetterTypeError(*exec, "TransitionEvent", "propertyName");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.propertyName());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTransitionEventElapsedTime(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTransitionEventElapsedTime(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTransitionEvent* castedThis = jsCast<JSTransitionEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TransitionEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTransitionEvent* castedThis = jsDynamicCast<JSTransitionEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTransitionEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TransitionEvent", "elapsedTime");
+        return throwGetterTypeError(*exec, "TransitionEvent", "elapsedTime");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.elapsedTime());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTransitionEventPseudoElement(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTransitionEventPseudoElement(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSTransitionEvent* castedThis = jsCast<JSTransitionEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    TransitionEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSTransitionEvent* castedThis = jsDynamicCast<JSTransitionEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSTransitionEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "TransitionEvent", "pseudoElement");
+        return throwGetterTypeError(*exec, "TransitionEvent", "pseudoElement");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.pseudoElement());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsTransitionEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsTransitionEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSTransitionEvent* domObject = jsCast<JSTransitionEvent*>(asObject(slotBase));
-    return JSTransitionEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSTransitionEventPrototype* domObject = jsDynamicCast<JSTransitionEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSTransitionEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSTransitionEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

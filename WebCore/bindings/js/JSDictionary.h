@@ -30,9 +30,13 @@
 #include <heap/Strong.h>
 #include <heap/StrongInlines.h>
 #include <interpreter/CallFrame.h>
-#include <runtime/Operations.h>
+#include <runtime/JSCInlines.h>
 #include <runtime/Uint8Array.h>
 #include <wtf/Forward.h>
+
+namespace Deprecated {
+class ScriptValue;
+}
 
 namespace WebCore {
 
@@ -42,19 +46,15 @@ class Dictionary;
 class DOMError;
 class DOMWindow;
 class EventTarget;
+class Gamepad;
 class MediaKeyError;
 class MediaStream;
 class MediaStreamTrack;
 class Node;
-class ScriptValue;
 class SerializedScriptValue;
 class Storage;
 class TrackBase;
 class VoidCallback;
-
-#if ENABLE(SCRIPTED_SPEECH)
-class SpeechRecognitionResultList;
-#endif
 
 class JSDictionary {
 public:
@@ -74,7 +74,7 @@ public:
     // Returns true if the property was found in the dictionary, and the value could be converted to the desired type.
     template <typename Result>
     bool get(const char* propertyName, Result&) const;
-    bool getWithUndefinedOrNullCheck(const String& propertyName, String& value) const;
+    bool getWithUndefinedOrNullCheck(const char* propertyName, String& value) const;
 
     JSC::ExecState* execState() const { return m_exec; }
     JSC::JSObject* initializerObject() const { return m_initializerObject.get(); }
@@ -108,7 +108,7 @@ private:
     static void convertValue(JSC::ExecState*, JSC::JSValue, double& result);
     static void convertValue(JSC::ExecState*, JSC::JSValue, Dictionary& result);
     static void convertValue(JSC::ExecState*, JSC::JSValue, String& result);
-    static void convertValue(JSC::ExecState*, JSC::JSValue, ScriptValue& result);
+    static void convertValue(JSC::ExecState*, JSC::JSValue, Deprecated::ScriptValue& result);
     static void convertValue(JSC::ExecState*, JSC::JSValue, Vector<String>& result);
     static void convertValue(JSC::ExecState*, JSC::JSValue, RefPtr<SerializedScriptValue>& result);
     static void convertValue(JSC::ExecState*, JSC::JSValue, RefPtr<DOMWindow>& result);
@@ -134,9 +134,10 @@ private:
     static void convertValue(JSC::ExecState*, JSC::JSValue, RefPtr<DOMError>& result);
     static void convertValue(JSC::ExecState*, JSC::JSValue, RefPtr<VoidCallback>& result);
 #endif
-#if ENABLE(SCRIPTED_SPEECH)
-    static void convertValue(JSC::ExecState*, JSC::JSValue, RefPtr<SpeechRecognitionResultList>&);
+#if ENABLE(GAMEPAD)
+    static void convertValue(JSC::ExecState*, JSC::JSValue, RefPtr<Gamepad>&);
 #endif
+    static void convertValue(JSC::ExecState*, JSC::JSValue, JSC::JSFunction*&);
 
     JSC::ExecState* m_exec;
     JSC::Strong<JSC::JSObject> m_initializerObject;

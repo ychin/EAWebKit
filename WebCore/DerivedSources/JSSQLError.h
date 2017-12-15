@@ -21,30 +21,29 @@
 #ifndef JSSQLError_h
 #define JSSQLError_h
 
-#if ENABLE(SQL_DATABASE)
-
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "SQLError.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSSQLError : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSSQLError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SQLError> impl)
+    static JSSQLError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SQLError>&& impl)
     {
-        JSSQLError* ptr = new (NotNull, JSC::allocateCell<JSSQLError>(globalObject->vm().heap)) JSSQLError(structure, globalObject, impl);
+        JSSQLError* ptr = new (NotNull, JSC::allocateCell<JSSQLError>(globalObject->vm().heap)) JSSQLError(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static SQLError* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSSQLError();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +52,21 @@ public:
     }
 
     SQLError& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     SQLError* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSSQLError(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SQLError>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSQLError(JSC::Structure*, JSDOMGlobalObject*, Ref<SQLError>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSSQLErrorOwner : public JSC::WeakHandleOwner {
@@ -79,59 +77,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, SQLError*)
 {
-    DEFINE_STATIC_LOCAL(JSSQLErrorOwner, jsSQLErrorOwner, ());
-    return &jsSQLErrorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, SQLError*)
-{
-    return &world;
+    static NeverDestroyed<JSSQLErrorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, SQLError*);
-SQLError* toSQLError(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SQLError& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSSQLErrorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSQLErrorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSQLErrorPrototype* ptr = new (NotNull, JSC::allocateCell<JSSQLErrorPrototype>(vm.heap)) JSSQLErrorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSQLErrorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSQLErrorCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorMessage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsSQLErrorUNKNOWN_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorDATABASE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorVERSION_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorTOO_LARGE_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorQUOTA_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorSYNTAX_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorCONSTRAINT_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSQLErrorTIMEOUT_ERR(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif

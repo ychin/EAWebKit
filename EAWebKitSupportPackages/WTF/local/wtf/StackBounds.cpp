@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009 Apple Inc. All rights reserved.
  *  Copyright (C) 2007 Eric Seidel <eric@webkit.org>
- *  Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ *  Copyright (C) 2011 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -35,15 +35,6 @@
 #elif OS(SOLARIS)
 
 #include <thread.h>
-
-#elif OS(QNX)
-
-#include <errno.h>
-#include <fcntl.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/procfs.h>
 
 #elif OS(UNIX)
 
@@ -138,31 +129,6 @@ void StackBounds::initialize()
     m_bound = static_cast<char*>(m_origin) - size;
 }
 
-#elif OS(QNX)
-
-void StackBounds::initialize()
-{
-    void* stackBase = 0;
-    size_t stackSize = 0;
-
-    struct _debug_thread_info threadInfo;
-    memset(&threadInfo, 0, sizeof(threadInfo));
-    threadInfo.tid = pthread_self();
-    int fd = open("/proc/self", O_RDONLY);
-    if (fd == -1) {
-        LOG_ERROR("Unable to open /proc/self (errno: %d)", errno);
-        CRASH();
-    }
-    devctl(fd, DCMD_PROC_TIDSTATUS, &threadInfo, sizeof(threadInfo), 0);
-    close(fd);
-    stackBase = reinterpret_cast<void*>(threadInfo.stkbase);
-    stackSize = threadInfo.stksize;
-    ASSERT(stackBase);
-
-    m_bound = static_cast<char*>(stackBase) + 0x1000; // 4kb guard page
-    m_origin = static_cast<char*>(stackBase) + stackSize;
-}
-
 #elif OS(SOLARIS)
 
 void StackBounds::initialize()
@@ -217,21 +183,11 @@ void StackBounds::initialize()
 
 void StackBounds::initialize()
 {
-    MEMORY_BASIC_INFORMATION stackOrigin;
+    MEMORY_BASIC_INFORMATION stackOrigin = { 0 };
     VirtualQuery(&stackOrigin, &stackOrigin, sizeof(stackOrigin));
     // stackOrigin.AllocationBase points to the reserved stack memory base address.
 
     m_origin = static_cast<char*>(stackOrigin.BaseAddress) + stackOrigin.RegionSize;
-#if OS(WINCE)
-    SYSTEM_INFO systemInfo;
-    GetSystemInfo(&systemInfo);
-    DWORD pageSize = systemInfo.dwPageSize;
-
-    MEMORY_BASIC_INFORMATION stackMemory;
-    VirtualQuery(m_origin, &stackMemory, sizeof(stackMemory));
-
-    m_bound = static_cast<char*>(m_origin) - stackMemory.RegionSize + pageSize;
-#else
     // The stack on Windows consists out of three parts (uncommitted memory, a guard page and present
     // committed memory). The 3 regions have different BaseAddresses but all have the same AllocationBase
     // since they are all from the same VirtualAlloc. The 3 regions are laid out in memory (from high to
@@ -271,7 +227,6 @@ void StackBounds::initialize()
     ASSERT(endOfStack == computedEnd);
 #endif // NDEBUG
     m_bound = static_cast<char*>(endOfStack) + guardPage.RegionSize;
-#endif // OS(WINCE)
 }
 
 #else

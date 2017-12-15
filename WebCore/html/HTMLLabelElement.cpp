@@ -38,9 +38,9 @@ using namespace HTMLNames;
 
 static LabelableElement* nodeAsSupportedLabelableElement(Node* node)
 {
-    if (!node || !isLabelableElement(*node))
+    if (!is<LabelableElement>(node))
         return nullptr;
-    LabelableElement& element = toLabelableElement(*node);
+    LabelableElement& element = downcast<LabelableElement>(*node);
     return element.supportLabels() ? &element : nullptr;
 }
 
@@ -50,9 +50,9 @@ inline HTMLLabelElement::HTMLLabelElement(const QualifiedName& tagName, Document
     ASSERT(hasTagName(labelTag));
 }
 
-PassRefPtr<HTMLLabelElement> HTMLLabelElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLLabelElement> HTMLLabelElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLLabelElement(tagName, document));
+    return adoptRef(*new HTMLLabelElement(tagName, document));
 }
 
 bool HTMLLabelElement::isFocusable() const
@@ -62,17 +62,16 @@ bool HTMLLabelElement::isFocusable() const
 
 LabelableElement* HTMLLabelElement::control()
 {
-    const AtomicString& controlId = getAttribute(forAttr);
+    const AtomicString& controlId = fastGetAttribute(forAttr);
     if (controlId.isNull()) {
         // Search the children and descendants of the label element for a form element.
         // per http://dev.w3.org/html5/spec/Overview.html#the-label-element
         // the form element must be "labelable form-associated element".
-        auto labelableDescendants = descendantsOfType<LabelableElement>(this);
-        for (auto labelableElement = labelableDescendants.begin(), end = labelableDescendants.end(); labelableElement != end; ++labelableElement) {
-            if (labelableElement->supportLabels())
-                return &*labelableElement;
+        for (auto& labelableElement : descendantsOfType<LabelableElement>(*this)) {
+            if (labelableElement.supportLabels())
+                return &labelableElement;
         }
-        return 0;
+        return nullptr;
     }
     
     // Find the first element whose id is controlId. If it is found and it is a labelable form control,
@@ -142,10 +141,7 @@ void HTMLLabelElement::defaultEventHandler(Event* evt)
 
 bool HTMLLabelElement::willRespondToMouseClickEvents()
 {
-    if (control() && control()->willRespondToMouseClickEvents())
-        return true;
-
-    return HTMLElement::willRespondToMouseClickEvents();
+    return (control() && control()->willRespondToMouseClickEvents()) || HTMLElement::willRespondToMouseClickEvents();
 }
 
 void HTMLLabelElement::focus(bool, FocusDirection direction)

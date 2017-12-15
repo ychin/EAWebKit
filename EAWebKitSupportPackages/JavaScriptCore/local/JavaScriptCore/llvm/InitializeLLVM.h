@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,15 +26,24 @@
 #ifndef InitializeLLVM_h
 #define InitializeLLVM_h
 
-#include <wtf/Platform.h>
-
 #if HAVE(LLVM)
+
+#include "LLVMAPI.h"
+#include <string>
+#include <wtf/text/CString.h>
 
 namespace JSC {
 
-void initializeLLVMImpl();
+typedef void (*LoggerFunction)(const char*, ...) WTF_ATTRIBUTE_PRINTF(1, 2);
+typedef LLVMAPI* (*LLVMInitializerFunction)(LoggerFunction, bool* enableFastISel);
 
-void initializeLLVM(); // It's safe to call this multiple times.
+LLVMInitializerFunction getLLVMInitializerFunction(bool verbose);
+
+extern const CString* llvmBitcodeLibraryForInliningPath;
+
+// You must call this before using JSC::llvm. It's safe to call this multiple times.
+// Returns true if we successfully loaded LLVM. Returns false if we didn't.
+bool initializeLLVM();
 
 } // namespace JSC
 

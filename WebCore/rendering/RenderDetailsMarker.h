@@ -27,35 +27,29 @@
 
 namespace WebCore {
 
-class RenderDetailsMarker FINAL : public RenderBlockFlow {
+class RenderDetailsMarker final : public RenderBlockFlow {
 public:
-    explicit RenderDetailsMarker(DetailsMarkerControl&);
+    RenderDetailsMarker(DetailsMarkerControl&, Ref<RenderStyle>&&);
     DetailsMarkerControl& element() const { return static_cast<DetailsMarkerControl&>(nodeForNonAnonymous()); }
 
     enum Orientation { Up, Down, Left, Right };
     Orientation orientation() const;
 
 private:
-    virtual const char* renderName() const OVERRIDE { return "RenderDetailsMarker"; }
-    virtual bool isDetailsMarker() const OVERRIDE { return true; }
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
+    virtual const char* renderName() const override { return "RenderDetailsMarker"; }
+    virtual bool isDetailsMarker() const override { return true; }
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
 
     bool isOpen() const;
     Path getCanonicalPath() const;
     Path getPath(const LayoutPoint& origin) const;
 };
 
-inline const RenderDetailsMarker& toRenderDetailsMarker(const RenderObject& object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isDetailsMarker());
-    return static_cast<const RenderDetailsMarker&>(object);
-}
+} // namespace WebCore
 
-void toRenderDetailsMarker(const RenderDetailsMarker&);
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderDetailsMarker, isDetailsMarker())
 
-}
-
-#endif
+#endif // ENABLE(DETAILS_ELEMENT)
 
 #endif // RenderDetailsMarker_h
 

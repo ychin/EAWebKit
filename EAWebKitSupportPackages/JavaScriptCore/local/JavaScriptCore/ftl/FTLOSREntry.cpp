@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,17 +30,22 @@
 #include "CodeBlock.h"
 #include "DFGJITCode.h"
 #include "FTLForOSREntryJITCode.h"
+#include "JSStackInlines.h"
+#include "OperandsInlines.h"
+#include "JSCInlines.h"
 
 #if ENABLE(FTL_JIT)
 
 namespace JSC { namespace FTL {
 
+SUPPRESS_ASAN
 void* prepareOSREntry(
     ExecState* exec, CodeBlock* dfgCodeBlock, CodeBlock* entryCodeBlock,
     unsigned bytecodeIndex, unsigned streamIndex)
 {
     VM& vm = exec->vm();
     CodeBlock* baseline = dfgCodeBlock->baselineVersion();
+    ExecutableBase* executable = dfgCodeBlock->ownerExecutable();
     DFG::JITCode* dfgCode = dfgCodeBlock->jitCode()->dfg();
     ForOSREntryJITCode* entryCode = entryCodeBlock->jitCode()->ftlForOSREntry();
     
@@ -50,9 +55,12 @@ void* prepareOSREntry(
             bytecodeIndex, ".\n");
     }
     
+    if (bytecodeIndex)
+        jsCast<ScriptExecutable*>(executable)->setDidTryToEnterInLoop(true);
+
     if (bytecodeIndex != entryCode->bytecodeIndex()) {
         if (Options::verboseOSR())
-            dataLog("    OSR failed because we don't have an entrypoint for bc#", bytecodeIndex, "; ours is for bc#", entryCode->bytecodeIndex());
+            dataLog("    OSR failed because we don't have an entrypoint for bc#", bytecodeIndex, "; ours is for bc#", entryCode->bytecodeIndex(), "\n");
         return 0;
     }
     
@@ -64,8 +72,14 @@ void* prepareOSREntry(
         dataLog("    Values at entry: ", values, "\n");
     
     for (int argument = values.numberOfArguments(); argument--;) {
-        RELEASE_ASSERT(
-            exec->r(virtualRegisterForArgument(argument).offset()).jsValue() == values.argument(argument));
+        JSValue valueOnStack = exec->r(virtualRegisterForArgument(argument).offset()).asanUnsafeJSValue();
+        JSValue reconstructedValue = values.argument(argument);
+        if (valueOnStack == reconstructedValue || !argument)
+            continue;
+        dataLog("Mismatch between reconstructed values and the the value on the stack for argument arg", argument, " for ", *entryCodeBlock, " at bc#", bytecodeIndex, ":\n");
+        dataLog("    Value on stack: ", valueOnStack, "\n");
+        dataLog("    Reconstructed value: ", reconstructedValue, "\n");
+        RELEASE_ASSERT_NOT_REACHED();
     }
     
     RELEASE_ASSERT(
@@ -77,16 +91,18 @@ void* prepareOSREntry(
     for (int local = values.numberOfLocals(); local--;)
         scratch[local] = JSValue::encode(values.local(local));
     
-    int stackFrameSize = entryCodeBlock->m_numCalleeRegisters;
-    if (!vm.interpreter->stack().grow(&exec->registers()[virtualRegisterForLocal(stackFrameSize).offset()])) {
+    int stackFrameSize = entryCode->common.requiredRegisterCountForExecutionAndExit();
+    if (!vm.interpreter->stack().ensureCapacityFor(&exec->registers()[virtualRegisterForLocal(stackFrameSize - 1).offset()])) {
         if (Options::verboseOSR())
-            dataLog("    OSR failed bcause stack growth failed.\n");
+            dataLog("    OSR failed because stack growth failed.\n");
         return 0;
     }
     
     exec->setCodeBlock(entryCodeBlock);
     
-    void* result = entryCode->addressForCall().executableAddress();
+    void* result = entryCode->addressForCall(
+        vm, executable, ArityCheckNotRequired,
+        RegisterPreservationNotRequired).executableAddress();
     if (Options::verboseOSR())
         dataLog("    Entry will succeed, going to address", RawPointer(result), "\n");
     

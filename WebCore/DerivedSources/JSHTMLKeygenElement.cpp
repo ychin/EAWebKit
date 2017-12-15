@@ -41,35 +41,78 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSHTMLKeygenElementTableValues[] =
-{
-    { "autofocus", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementAutofocus), (intptr_t)setJSHTMLKeygenElementAutofocus },
-    { "challenge", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementChallenge), (intptr_t)setJSHTMLKeygenElementChallenge },
-    { "disabled", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementDisabled), (intptr_t)setJSHTMLKeygenElementDisabled },
-    { "form", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementForm), (intptr_t)0 },
-    { "keytype", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementKeytype), (intptr_t)setJSHTMLKeygenElementKeytype },
-    { "name", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementName), (intptr_t)setJSHTMLKeygenElementName },
-    { "type", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementType), (intptr_t)0 },
-    { "willValidate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementWillValidate), (intptr_t)0 },
-    { "validity", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementValidity), (intptr_t)0 },
-    { "validationMessage", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementValidationMessage), (intptr_t)0 },
-    { "labels", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementLabels), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLKeygenElementPrototypeFunctionCheckValidity(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsHTMLKeygenElementPrototypeFunctionSetCustomValidity(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsHTMLKeygenElementAutofocus(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLKeygenElementAutofocus(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLKeygenElementChallenge(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLKeygenElementChallenge(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLKeygenElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLKeygenElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLKeygenElementForm(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLKeygenElementKeytype(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLKeygenElementKeytype(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLKeygenElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLKeygenElementName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsHTMLKeygenElementType(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLKeygenElementWillValidate(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLKeygenElementValidity(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLKeygenElementValidationMessage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLKeygenElementLabels(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsHTMLKeygenElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSHTMLKeygenElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLKeygenElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLKeygenElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLKeygenElementPrototype>(vm.heap)) JSHTMLKeygenElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLKeygenElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLKeygenElementTable = { 34, 31, JSHTMLKeygenElementTableValues, 0 };
-/* Hash table for constructor */
+class JSHTMLKeygenElementConstructor : public DOMConstructorObject {
+private:
+    JSHTMLKeygenElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSHTMLKeygenElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSHTMLKeygenElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSHTMLKeygenElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLKeygenElementConstructor>(vm.heap)) JSHTMLKeygenElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSHTMLKeygenElementConstructorTable = { 1, 0, JSHTMLKeygenElementConstructorTableValues, 0 };
-const ClassInfo JSHTMLKeygenElementConstructor::s_info = { "HTMLKeygenElementConstructor", &Base::s_info, &JSHTMLKeygenElementConstructorTable, 0, CREATE_METHOD_TABLE(JSHTMLKeygenElementConstructor) };
+const ClassInfo JSHTMLKeygenElementConstructor::s_info = { "HTMLKeygenElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLKeygenElementConstructor) };
 
 JSHTMLKeygenElementConstructor::JSHTMLKeygenElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -80,243 +123,348 @@ void JSHTMLKeygenElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* g
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSHTMLKeygenElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSHTMLKeygenElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSHTMLKeygenElementConstructor, JSDOMWrapper>(exec, JSHTMLKeygenElementConstructorTable, jsCast<JSHTMLKeygenElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSHTMLKeygenElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("HTMLKeygenElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLKeygenElementPrototypeTableValues[] =
 {
-    { "checkValidity", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLKeygenElementPrototypeFunctionCheckValidity), (intptr_t)0 },
-    { "setCustomValidity", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLKeygenElementPrototypeFunctionSetCustomValidity), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "autofocus", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementAutofocus), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLKeygenElementAutofocus) },
+    { "challenge", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementChallenge), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLKeygenElementChallenge) },
+    { "disabled", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementDisabled), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLKeygenElementDisabled) },
+    { "form", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementForm), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "keytype", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementKeytype), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLKeygenElementKeytype) },
+    { "name", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLKeygenElementName) },
+    { "type", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementType), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "willValidate", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementWillValidate), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "validity", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementValidity), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "validationMessage", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementValidationMessage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "labels", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLKeygenElementLabels), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "checkValidity", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLKeygenElementPrototypeFunctionCheckValidity), (intptr_t) (0) },
+    { "setCustomValidity", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsHTMLKeygenElementPrototypeFunctionSetCustomValidity), (intptr_t) (1) },
 };
 
-static const HashTable JSHTMLKeygenElementPrototypeTable = { 4, 3, JSHTMLKeygenElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLKeygenElementPrototype::s_info = { "HTMLKeygenElementPrototype", &Base::s_info, &JSHTMLKeygenElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLKeygenElementPrototype) };
+const ClassInfo JSHTMLKeygenElementPrototype::s_info = { "HTMLKeygenElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLKeygenElementPrototype) };
 
-JSObject* JSHTMLKeygenElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLKeygenElement>(vm, globalObject);
-}
-
-bool JSHTMLKeygenElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSHTMLKeygenElementPrototype* thisObject = jsCast<JSHTMLKeygenElementPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSHTMLKeygenElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSHTMLKeygenElement::s_info = { "HTMLKeygenElement", &Base::s_info, &JSHTMLKeygenElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLKeygenElement) };
-
-JSHTMLKeygenElement::JSHTMLKeygenElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLKeygenElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLKeygenElement::finishCreation(VM& vm)
+void JSHTMLKeygenElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLKeygenElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLKeygenElement::s_info = { "HTMLKeygenElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLKeygenElement) };
+
+JSHTMLKeygenElement::JSHTMLKeygenElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLKeygenElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLKeygenElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLKeygenElementPrototype::create(vm, globalObject, JSHTMLKeygenElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLKeygenElementPrototype::create(vm, globalObject, JSHTMLKeygenElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLKeygenElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLKeygenElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLKeygenElement* thisObject = jsCast<JSHTMLKeygenElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLKeygenElement, Base>(exec, JSHTMLKeygenElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLKeygenElement>(vm, globalObject);
 }
 
-JSValue jsHTMLKeygenElementAutofocus(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementAutofocus(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "autofocus");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "autofocus");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::autofocusAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementChallenge(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementChallenge(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "challenge");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "challenge");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::challengeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementDisabled(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementDisabled(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "disabled");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "disabled");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::disabledAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementForm(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementForm(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "form");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "form");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.form()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementKeytype(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementKeytype(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "keytype");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "keytype");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.fastGetAttribute(WebCore::HTMLNames::keytypeAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "name");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "name");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.getNameAttribute());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementType(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementType(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "type");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "type");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.type());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementWillValidate(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementWillValidate(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "willValidate");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "willValidate");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.willValidate());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementValidity(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementValidity(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "validity");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "validity");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.validity()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementValidationMessage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementValidationMessage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "validationMessage");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "validationMessage");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.validationMessage());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementLabels(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementLabels(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLKeygenElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLKeygenElement", "labels");
+        return throwGetterTypeError(*exec, "HTMLKeygenElement", "labels");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.labels()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsHTMLKeygenElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLKeygenElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSHTMLKeygenElement* domObject = jsCast<JSHTMLKeygenElement*>(asObject(slotBase));
-    return JSHTMLKeygenElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSHTMLKeygenElementPrototype* domObject = jsDynamicCast<JSHTMLKeygenElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSHTMLKeygenElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSHTMLKeygenElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLKeygenElementAutofocus(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLKeygenElement* thisObject = jsCast<JSHTMLKeygenElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLKeygenElement, Base>(exec, propertyName, value, JSHTMLKeygenElementTable, thisObject, slot);
-}
-
-void setJSHTMLKeygenElementAutofocus(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(thisObject);
-    HTMLKeygenElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLKeygenElement", "autofocus");
+        else
+            throwSetterTypeError(*exec, "HTMLKeygenElement", "autofocus");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::autofocusAttr, nativeValue);
 }
 
 
-void setJSHTMLKeygenElementChallenge(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLKeygenElementChallenge(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(thisObject);
-    HTMLKeygenElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLKeygenElement", "challenge");
+        else
+            throwSetterTypeError(*exec, "HTMLKeygenElement", "challenge");
         return;
-    impl.setAttribute(WebCore::HTMLNames::challengeAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::challengeAttr, nativeValue);
 }
 
 
-void setJSHTMLKeygenElementDisabled(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLKeygenElementDisabled(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(thisObject);
-    HTMLKeygenElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLKeygenElement", "disabled");
+        else
+            throwSetterTypeError(*exec, "HTMLKeygenElement", "disabled");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::disabledAttr, nativeValue);
 }
 
 
-void setJSHTMLKeygenElementKeytype(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLKeygenElementKeytype(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(thisObject);
-    HTMLKeygenElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLKeygenElement", "keytype");
+        else
+            throwSetterTypeError(*exec, "HTMLKeygenElement", "keytype");
         return;
-    impl.setAttribute(WebCore::HTMLNames::keytypeAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::keytypeAttr, nativeValue);
 }
 
 
-void setJSHTMLKeygenElementName(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSHTMLKeygenElementName(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(thisObject);
-    HTMLKeygenElement& impl = castedThis->impl();
-    const String& nativeValue(valueToStringWithNullCheck(exec, value));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLKeygenElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLKeygenElement", "name");
+        else
+            throwSetterTypeError(*exec, "HTMLKeygenElement", "name");
         return;
-    impl.setAttribute(WebCore::HTMLNames::nameAttr, nativeValue);
+    }
+    auto& impl = castedThis->impl();
+    String nativeValue = valueToStringWithNullCheck(exec, value);
+    if (UNLIKELY(exec->hadException()))
+        return;
+    impl.setAttributeWithoutSynchronization(WebCore::HTMLNames::nameAttr, nativeValue);
 }
 
 
@@ -327,29 +475,28 @@ JSValue JSHTMLKeygenElement::getConstructor(VM& vm, JSGlobalObject* globalObject
 
 EncodedJSValue JSC_HOST_CALL jsHTMLKeygenElementPrototypeFunctionCheckValidity(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLKeygenElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLKeygenElement", "checkValidity");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLKeygenElement::info());
-    HTMLKeygenElement& impl = castedThis->impl();
-
-    JSC::JSValue result = jsBoolean(impl.checkValidity());
+    auto& impl = castedThis->impl();
+    JSValue result = jsBoolean(impl.checkValidity());
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsHTMLKeygenElementPrototypeFunctionSetCustomValidity(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSHTMLKeygenElement::info()))
-        return throwVMTypeError(exec);
-    JSHTMLKeygenElement* castedThis = jsCast<JSHTMLKeygenElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSHTMLKeygenElement* castedThis = jsDynamicCast<JSHTMLKeygenElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "HTMLKeygenElement", "setCustomValidity");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSHTMLKeygenElement::info());
-    HTMLKeygenElement& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& error(valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0)));
-    if (exec->hadException())
+    String error = valueToStringWithUndefinedOrNullCheck(exec, exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.setCustomValidity(error);
     return JSValue::encode(jsUndefined());

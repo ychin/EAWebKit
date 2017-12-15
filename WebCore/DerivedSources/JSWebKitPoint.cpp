@@ -21,6 +21,7 @@
 #include "config.h"
 #include "JSWebKitPoint.h"
 
+#include "JSDOMBinding.h"
 #include "WebKitPoint.h"
 #include <wtf/GetPtr.h>
 
@@ -28,26 +29,62 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSWebKitPointTableValues[] =
-{
-    { "x", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitPointX), (intptr_t)setJSWebKitPointX },
-    { "y", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitPointY), (intptr_t)setJSWebKitPointY },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitPointConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsWebKitPointX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebKitPointX(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebKitPointY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSWebKitPointY(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsWebKitPointConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSWebKitPointPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebKitPointPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebKitPointPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitPointPrototype>(vm.heap)) JSWebKitPointPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebKitPointPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSWebKitPointTable = { 9, 7, JSWebKitPointTableValues, 0 };
-/* Hash table for constructor */
+class JSWebKitPointConstructor : public DOMConstructorObject {
+private:
+    JSWebKitPointConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSWebKitPointConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSWebKitPointConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSWebKitPointConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitPointConstructor>(vm.heap)) JSWebKitPointConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSWebKitPointConstructorTable = { 1, 0, JSWebKitPointConstructorTableValues, 0 };
-const ClassInfo JSWebKitPointConstructor::s_info = { "WebKitPointConstructor", &Base::s_info, &JSWebKitPointConstructorTable, 0, CREATE_METHOD_TABLE(JSWebKitPointConstructor) };
+const ClassInfo JSWebKitPointConstructor::s_info = { "WebKitPointConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitPointConstructor) };
 
 JSWebKitPointConstructor::JSWebKitPointConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -58,13 +95,9 @@ void JSWebKitPointConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSWebKitPointPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSWebKitPointConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSWebKitPointConstructor, JSDOMWrapper>(exec, JSWebKitPointConstructorTable, jsCast<JSWebKitPointConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSWebKitPoint::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebKitPoint"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 ConstructType JSWebKitPointConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -77,34 +110,35 @@ ConstructType JSWebKitPointConstructor::getConstructData(JSCell*, ConstructData&
 
 static const HashTableValue JSWebKitPointPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitPointConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "x", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitPointX), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebKitPointX) },
+    { "y", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsWebKitPointY), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSWebKitPointY) },
 };
 
-static const HashTable JSWebKitPointPrototypeTable = { 1, 0, JSWebKitPointPrototypeTableValues, 0 };
-const ClassInfo JSWebKitPointPrototype::s_info = { "WebKitPointPrototype", &Base::s_info, &JSWebKitPointPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebKitPointPrototype) };
+const ClassInfo JSWebKitPointPrototype::s_info = { "WebKitPointPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitPointPrototype) };
 
-JSObject* JSWebKitPointPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebKitPoint>(vm, globalObject);
-}
-
-const ClassInfo JSWebKitPoint::s_info = { "WebKitPoint", &Base::s_info, &JSWebKitPointTable, 0 , CREATE_METHOD_TABLE(JSWebKitPoint) };
-
-JSWebKitPoint::JSWebKitPoint(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitPoint> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebKitPoint::finishCreation(VM& vm)
+void JSWebKitPointPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebKitPointPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebKitPoint::s_info = { "WebKitPoint", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebKitPoint) };
+
+JSWebKitPoint::JSWebKitPoint(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitPoint>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebKitPoint::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebKitPointPrototype::create(vm, globalObject, JSWebKitPointPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebKitPoint::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebKitPoint>(vm, globalObject);
 }
 
 void JSWebKitPoint::destroy(JSC::JSCell* cell)
@@ -115,68 +149,86 @@ void JSWebKitPoint::destroy(JSC::JSCell* cell)
 
 JSWebKitPoint::~JSWebKitPoint()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSWebKitPoint::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsWebKitPointX(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebKitPoint* thisObject = jsCast<JSWebKitPoint*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSWebKitPoint, Base>(exec, JSWebKitPointTable, thisObject, propertyName, slot);
-}
-
-JSValue jsWebKitPointX(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSWebKitPoint* castedThis = jsCast<JSWebKitPoint*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebKitPoint& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebKitPoint* castedThis = jsDynamicCast<JSWebKitPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebKitPointPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebKitPoint", "x");
+        return throwGetterTypeError(*exec, "WebKitPoint", "x");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.x());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebKitPointY(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebKitPointY(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSWebKitPoint* castedThis = jsCast<JSWebKitPoint*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    WebKitPoint& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSWebKitPoint* castedThis = jsDynamicCast<JSWebKitPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebKitPointPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "WebKitPoint", "y");
+        return throwGetterTypeError(*exec, "WebKitPoint", "y");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.y());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsWebKitPointConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsWebKitPointConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSWebKitPoint* domObject = jsCast<JSWebKitPoint*>(asObject(slotBase));
-    return JSWebKitPoint::getConstructor(exec->vm(), domObject->globalObject());
+    JSWebKitPointPrototype* domObject = jsDynamicCast<JSWebKitPointPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSWebKitPoint::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
-void JSWebKitPoint::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSWebKitPointX(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSWebKitPoint* thisObject = jsCast<JSWebKitPoint*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSWebKitPoint, Base>(exec, propertyName, value, JSWebKitPointTable, thisObject, slot);
-}
-
-void setJSWebKitPointX(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSWebKitPoint* castedThis = jsCast<JSWebKitPoint*>(thisObject);
-    WebKitPoint& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebKitPoint* castedThis = jsDynamicCast<JSWebKitPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebKitPointPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebKitPoint", "x");
+        else
+            throwSetterTypeError(*exec, "WebKitPoint", "x");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setX(nativeValue);
 }
 
 
-void setJSWebKitPointY(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSWebKitPointY(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    UNUSED_PARAM(exec);
-    JSWebKitPoint* castedThis = jsCast<JSWebKitPoint*>(thisObject);
-    WebKitPoint& impl = castedThis->impl();
-    float nativeValue(value.toFloat(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSWebKitPoint* castedThis = jsDynamicCast<JSWebKitPoint*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSWebKitPointPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "WebKitPoint", "y");
+        else
+            throwSetterTypeError(*exec, "WebKitPoint", "y");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    float nativeValue = value.toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setY(nativeValue);
 }
@@ -187,35 +239,25 @@ JSValue JSWebKitPoint::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSWebKitPointConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSWebKitPoint* jsWebKitPoint)
-{
-    if (jsWebKitPoint->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSWebKitPointOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebKitPoint* jsWebKitPoint = jsCast<JSWebKitPoint*>(handle.get().asCell());
-    if (!isObservable(jsWebKitPoint))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebKitPointOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebKitPoint* jsWebKitPoint = jsCast<JSWebKitPoint*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebKitPoint = jsCast<JSWebKitPoint*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebKitPoint->impl(), jsWebKitPoint);
-    jsWebKitPoint->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebKitPoint* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebKitPoint* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebKitPoint>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebKitPoint>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -224,13 +266,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebKitP
     // attribute to WebKitPoint.
     COMPILE_ASSERT(!__is_polymorphic(WebKitPoint), WebKitPoint_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<WebKitPoint>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebKitPoint>(exec, globalObject, impl);
+    return createNewWrapper<JSWebKitPoint>(globalObject, impl);
 }
 
-WebKitPoint* toWebKitPoint(JSC::JSValue value)
+WebKitPoint* JSWebKitPoint::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebKitPoint::info()) ? &jsCast<JSWebKitPoint*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebKitPoint*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

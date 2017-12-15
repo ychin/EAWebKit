@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Apple Inc. All Rights Reserved.
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,27 +30,26 @@
 #include "ScrollbarTheme.h"
 
 namespace WebCore {
-class ScrollbarClient;
 
 class ScrollbarThemeEA : public ScrollbarTheme {
 public:
     virtual ~ScrollbarThemeEA();
 
-    virtual bool paint(ScrollbarThemeClient*, GraphicsContext*, const IntRect& damageRect) OVERRIDE;
-    virtual void paintScrollCorner(ScrollView*, GraphicsContext*, const IntRect& cornerRect) OVERRIDE;
+    virtual bool paint(Scrollbar&, GraphicsContext&, const IntRect& damageRect) override;
+    virtual void paintScrollCorner(ScrollView*, GraphicsContext*, const IntRect& cornerRect) override;
 
-    virtual ScrollbarPart hitTest(ScrollbarThemeClient*, const IntPoint&) OVERRIDE;
+    virtual ScrollbarPart hitTest(Scrollbar&, const IntPoint&) override;
 
-    virtual bool shouldCenterOnThumb(ScrollbarThemeClient*, const PlatformMouseEvent&) OVERRIDE;
+    virtual bool shouldCenterOnThumb(Scrollbar&, const PlatformMouseEvent&) override;
 
-    virtual void invalidatePart(ScrollbarThemeClient*, ScrollbarPart) OVERRIDE;
+    virtual void invalidatePart(Scrollbar&, ScrollbarPart) override;
 
-    virtual int thumbPosition(ScrollbarThemeClient*) OVERRIDE;
-    virtual int thumbLength(ScrollbarThemeClient*) OVERRIDE;
-    virtual int trackPosition(ScrollbarThemeClient*) OVERRIDE;
-    virtual int trackLength(ScrollbarThemeClient*) OVERRIDE;
+    virtual int thumbPosition(Scrollbar&) override;
+    virtual int thumbLength(Scrollbar&) override;
+    virtual int trackPosition(Scrollbar&) override;
+    virtual int trackLength(Scrollbar&) override;
 
-    virtual int scrollbarThickness(ScrollbarControlSize = RegularScrollbar) OVERRIDE;
+    virtual int scrollbarThickness(ScrollbarControlSize = RegularScrollbar) override;
 
     static void staticFinalize();
 };

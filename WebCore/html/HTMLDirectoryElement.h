@@ -27,9 +27,9 @@
 
 namespace WebCore {
 
-class HTMLDirectoryElement FINAL : public HTMLElement {
+class HTMLDirectoryElement final : public HTMLElement {
 public:
-    static PassRefPtr<HTMLDirectoryElement> create(const QualifiedName& tagName, Document&);
+    static Ref<HTMLDirectoryElement> create(const QualifiedName& tagName, Document&);
 
 private:
     HTMLDirectoryElement(const QualifiedName&, Document&);

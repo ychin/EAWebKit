@@ -32,39 +32,82 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSNodeFilterTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsNodeFilterPrototypeFunctionAcceptNode(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsNodeFilterConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSNodeFilterPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSNodeFilterPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSNodeFilterPrototype* ptr = new (NotNull, JSC::allocateCell<JSNodeFilterPrototype>(vm.heap)) JSNodeFilterPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSNodeFilterPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSNodeFilterTable = { 2, 1, JSNodeFilterTableValues, 0 };
+class JSNodeFilterConstructor : public DOMConstructorObject {
+private:
+    JSNodeFilterConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSNodeFilterConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSNodeFilterConstructor* ptr = new (NotNull, JSC::allocateCell<JSNodeFilterConstructor>(vm.heap)) JSNodeFilterConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table for constructor */
 
 static const HashTableValue JSNodeFilterConstructorTableValues[] =
 {
-    { "FILTER_ACCEPT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterFILTER_ACCEPT), (intptr_t)0 },
-    { "FILTER_REJECT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterFILTER_REJECT), (intptr_t)0 },
-    { "FILTER_SKIP", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterFILTER_SKIP), (intptr_t)0 },
-    { "SHOW_ALL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ALL), (intptr_t)0 },
-    { "SHOW_ELEMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ELEMENT), (intptr_t)0 },
-    { "SHOW_ATTRIBUTE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ATTRIBUTE), (intptr_t)0 },
-    { "SHOW_TEXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_TEXT), (intptr_t)0 },
-    { "SHOW_CDATA_SECTION", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_CDATA_SECTION), (intptr_t)0 },
-    { "SHOW_ENTITY_REFERENCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ENTITY_REFERENCE), (intptr_t)0 },
-    { "SHOW_ENTITY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ENTITY), (intptr_t)0 },
-    { "SHOW_PROCESSING_INSTRUCTION", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_PROCESSING_INSTRUCTION), (intptr_t)0 },
-    { "SHOW_COMMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_COMMENT), (intptr_t)0 },
-    { "SHOW_DOCUMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_DOCUMENT), (intptr_t)0 },
-    { "SHOW_DOCUMENT_TYPE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_DOCUMENT_TYPE), (intptr_t)0 },
-    { "SHOW_DOCUMENT_FRAGMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_DOCUMENT_FRAGMENT), (intptr_t)0 },
-    { "SHOW_NOTATION", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_NOTATION), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "FILTER_ACCEPT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "FILTER_REJECT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "FILTER_SKIP", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "SHOW_ALL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0xFFFFFFFF), (intptr_t) (0) },
+    { "SHOW_ELEMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000001), (intptr_t) (0) },
+    { "SHOW_ATTRIBUTE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000002), (intptr_t) (0) },
+    { "SHOW_TEXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000004), (intptr_t) (0) },
+    { "SHOW_CDATA_SECTION", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000008), (intptr_t) (0) },
+    { "SHOW_ENTITY_REFERENCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000010), (intptr_t) (0) },
+    { "SHOW_ENTITY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000020), (intptr_t) (0) },
+    { "SHOW_PROCESSING_INSTRUCTION", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000040), (intptr_t) (0) },
+    { "SHOW_COMMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000080), (intptr_t) (0) },
+    { "SHOW_DOCUMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000100), (intptr_t) (0) },
+    { "SHOW_DOCUMENT_TYPE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000200), (intptr_t) (0) },
+    { "SHOW_DOCUMENT_FRAGMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000400), (intptr_t) (0) },
+    { "SHOW_NOTATION", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000800), (intptr_t) (0) },
 };
 
-static const HashTable JSNodeFilterConstructorTable = { 34, 31, JSNodeFilterConstructorTableValues, 0 };
 
 COMPILE_ASSERT(1 == NodeFilter::FILTER_ACCEPT, NodeFilterEnumFILTER_ACCEPTIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(2 == NodeFilter::FILTER_REJECT, NodeFilterEnumFILTER_REJECTIsWrongUseDoNotCheckConstants);
@@ -83,7 +126,7 @@ COMPILE_ASSERT(0x00000200 == NodeFilter::SHOW_DOCUMENT_TYPE, NodeFilterEnumSHOW_
 COMPILE_ASSERT(0x00000400 == NodeFilter::SHOW_DOCUMENT_FRAGMENT, NodeFilterEnumSHOW_DOCUMENT_FRAGMENTIsWrongUseDoNotCheckConstants);
 COMPILE_ASSERT(0x00000800 == NodeFilter::SHOW_NOTATION, NodeFilterEnumSHOW_NOTATIONIsWrongUseDoNotCheckConstants);
 
-const ClassInfo JSNodeFilterConstructor::s_info = { "NodeFilterConstructor", &Base::s_info, &JSNodeFilterConstructorTable, 0, CREATE_METHOD_TABLE(JSNodeFilterConstructor) };
+const ClassInfo JSNodeFilterConstructor::s_info = { "NodeFilterConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSNodeFilterConstructor) };
 
 JSNodeFilterConstructor::JSNodeFilterConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -94,70 +137,60 @@ void JSNodeFilterConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSNodeFilterPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSNodeFilterConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSNodeFilterConstructor, JSDOMWrapper>(exec, JSNodeFilterConstructorTable, jsCast<JSNodeFilterConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSNodeFilter::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("NodeFilter"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSNodeFilterConstructorTableValues, *this);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSNodeFilterPrototypeTableValues[] =
 {
-    { "FILTER_ACCEPT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterFILTER_ACCEPT), (intptr_t)0 },
-    { "FILTER_REJECT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterFILTER_REJECT), (intptr_t)0 },
-    { "FILTER_SKIP", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterFILTER_SKIP), (intptr_t)0 },
-    { "SHOW_ALL", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ALL), (intptr_t)0 },
-    { "SHOW_ELEMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ELEMENT), (intptr_t)0 },
-    { "SHOW_ATTRIBUTE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ATTRIBUTE), (intptr_t)0 },
-    { "SHOW_TEXT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_TEXT), (intptr_t)0 },
-    { "SHOW_CDATA_SECTION", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_CDATA_SECTION), (intptr_t)0 },
-    { "SHOW_ENTITY_REFERENCE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ENTITY_REFERENCE), (intptr_t)0 },
-    { "SHOW_ENTITY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_ENTITY), (intptr_t)0 },
-    { "SHOW_PROCESSING_INSTRUCTION", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_PROCESSING_INSTRUCTION), (intptr_t)0 },
-    { "SHOW_COMMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_COMMENT), (intptr_t)0 },
-    { "SHOW_DOCUMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_DOCUMENT), (intptr_t)0 },
-    { "SHOW_DOCUMENT_TYPE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_DOCUMENT_TYPE), (intptr_t)0 },
-    { "SHOW_DOCUMENT_FRAGMENT", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_DOCUMENT_FRAGMENT), (intptr_t)0 },
-    { "SHOW_NOTATION", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterSHOW_NOTATION), (intptr_t)0 },
-    { "acceptNode", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsNodeFilterPrototypeFunctionAcceptNode), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeFilterConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "FILTER_ACCEPT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(1), (intptr_t) (0) },
+    { "FILTER_REJECT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(2), (intptr_t) (0) },
+    { "FILTER_SKIP", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(3), (intptr_t) (0) },
+    { "SHOW_ALL", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0xFFFFFFFF), (intptr_t) (0) },
+    { "SHOW_ELEMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000001), (intptr_t) (0) },
+    { "SHOW_ATTRIBUTE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000002), (intptr_t) (0) },
+    { "SHOW_TEXT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000004), (intptr_t) (0) },
+    { "SHOW_CDATA_SECTION", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000008), (intptr_t) (0) },
+    { "SHOW_ENTITY_REFERENCE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000010), (intptr_t) (0) },
+    { "SHOW_ENTITY", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000020), (intptr_t) (0) },
+    { "SHOW_PROCESSING_INSTRUCTION", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000040), (intptr_t) (0) },
+    { "SHOW_COMMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000080), (intptr_t) (0) },
+    { "SHOW_DOCUMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000100), (intptr_t) (0) },
+    { "SHOW_DOCUMENT_TYPE", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000200), (intptr_t) (0) },
+    { "SHOW_DOCUMENT_FRAGMENT", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000400), (intptr_t) (0) },
+    { "SHOW_NOTATION", DontDelete | ReadOnly | ConstantInteger, NoIntrinsic, (intptr_t)(0x00000800), (intptr_t) (0) },
+    { "acceptNode", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsNodeFilterPrototypeFunctionAcceptNode), (intptr_t) (0) },
 };
 
-static const HashTable JSNodeFilterPrototypeTable = { 66, 63, JSNodeFilterPrototypeTableValues, 0 };
-const ClassInfo JSNodeFilterPrototype::s_info = { "NodeFilterPrototype", &Base::s_info, &JSNodeFilterPrototypeTable, 0, CREATE_METHOD_TABLE(JSNodeFilterPrototype) };
+const ClassInfo JSNodeFilterPrototype::s_info = { "NodeFilterPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSNodeFilterPrototype) };
 
-JSObject* JSNodeFilterPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSNodeFilter>(vm, globalObject);
-}
-
-bool JSNodeFilterPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSNodeFilterPrototype* thisObject = jsCast<JSNodeFilterPrototype*>(object);
-    return getStaticPropertySlot<JSNodeFilterPrototype, JSObject>(exec, JSNodeFilterPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSNodeFilter::s_info = { "NodeFilter", &Base::s_info, &JSNodeFilterTable, 0 , CREATE_METHOD_TABLE(JSNodeFilter) };
-
-JSNodeFilter::JSNodeFilter(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<NodeFilter> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSNodeFilter::finishCreation(VM& vm)
+void JSNodeFilterPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSNodeFilterPrototypeTableValues, *this);
+}
+
+const ClassInfo JSNodeFilter::s_info = { "NodeFilter", &Base::s_info, 0, CREATE_METHOD_TABLE(JSNodeFilter) };
+
+JSNodeFilter::JSNodeFilter(Structure* structure, JSDOMGlobalObject* globalObject, Ref<NodeFilter>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSNodeFilter::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSNodeFilterPrototype::create(vm, globalObject, JSNodeFilterPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSNodeFilter::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSNodeFilter>(vm, globalObject);
 }
 
 void JSNodeFilter::destroy(JSC::JSCell* cell)
@@ -168,20 +201,15 @@ void JSNodeFilter::destroy(JSC::JSCell* cell)
 
 JSNodeFilter::~JSNodeFilter()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSNodeFilter::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsNodeFilterConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSNodeFilter* thisObject = jsCast<JSNodeFilter*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSNodeFilter, Base>(exec, JSNodeFilterTable, thisObject, propertyName, slot);
-}
-
-JSValue jsNodeFilterConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSNodeFilter* domObject = jsCast<JSNodeFilter*>(asObject(slotBase));
-    return JSNodeFilter::getConstructor(exec->vm(), domObject->globalObject());
+    JSNodeFilterPrototype* domObject = jsDynamicCast<JSNodeFilterPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSNodeFilter::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSNodeFilter::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -191,149 +219,48 @@ JSValue JSNodeFilter::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsNodeFilterPrototypeFunctionAcceptNode(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSNodeFilter::info()))
-        return throwVMTypeError(exec);
-    JSNodeFilter* castedThis = jsCast<JSNodeFilter*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSNodeFilter* castedThis = jsDynamicCast<JSNodeFilter*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "NodeFilter", "acceptNode");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSNodeFilter::info());
-    NodeFilter& impl = castedThis->impl();
-    Node* n(toNode(exec->argument(0)));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    Node* n = JSNode::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsNumber(impl.acceptNode(exec, n));
-    if (exec->hadException())
+    JSValue result = jsNumber(impl.acceptNode(exec, n));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     return JSValue::encode(result);
 }
 
-// Constant getters
-
-JSValue jsNodeFilterFILTER_ACCEPT(ExecState* exec, JSValue, PropertyName)
+void JSNodeFilter::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(1));
-}
-
-JSValue jsNodeFilterFILTER_REJECT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(2));
-}
-
-JSValue jsNodeFilterFILTER_SKIP(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(3));
-}
-
-JSValue jsNodeFilterSHOW_ALL(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0xFFFFFFFF));
-}
-
-JSValue jsNodeFilterSHOW_ELEMENT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000001));
-}
-
-JSValue jsNodeFilterSHOW_ATTRIBUTE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000002));
-}
-
-JSValue jsNodeFilterSHOW_TEXT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000004));
-}
-
-JSValue jsNodeFilterSHOW_CDATA_SECTION(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000008));
-}
-
-JSValue jsNodeFilterSHOW_ENTITY_REFERENCE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000010));
-}
-
-JSValue jsNodeFilterSHOW_ENTITY(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000020));
-}
-
-JSValue jsNodeFilterSHOW_PROCESSING_INSTRUCTION(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000040));
-}
-
-JSValue jsNodeFilterSHOW_COMMENT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000080));
-}
-
-JSValue jsNodeFilterSHOW_DOCUMENT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000100));
-}
-
-JSValue jsNodeFilterSHOW_DOCUMENT_TYPE(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000200));
-}
-
-JSValue jsNodeFilterSHOW_DOCUMENT_FRAGMENT(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000400));
-}
-
-JSValue jsNodeFilterSHOW_NOTATION(ExecState* exec, JSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return jsNumber(static_cast<int>(0x00000800));
-}
-
-static inline bool isObservable(JSNodeFilter* jsNodeFilter)
-{
-    if (jsNodeFilter->hasCustomProperties())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSNodeFilter*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSNodeFilterOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSNodeFilter* jsNodeFilter = jsCast<JSNodeFilter*>(handle.get().asCell());
-    if (!isObservable(jsNodeFilter))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSNodeFilterOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSNodeFilter* jsNodeFilter = jsCast<JSNodeFilter*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsNodeFilter = jsCast<JSNodeFilter*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsNodeFilter->impl(), jsNodeFilter);
-    jsNodeFilter->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, NodeFilter* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, NodeFilter* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSNodeFilter>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSNodeFilter>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -342,8 +269,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, NodeFil
     // attribute to NodeFilter.
     COMPILE_ASSERT(!__is_polymorphic(NodeFilter), NodeFilter_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<NodeFilter>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSNodeFilter>(exec, globalObject, impl);
+    return createNewWrapper<JSNodeFilter>(globalObject, impl);
 }
 
 

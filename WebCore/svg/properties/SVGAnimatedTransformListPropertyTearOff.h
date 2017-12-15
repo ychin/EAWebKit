@@ -20,7 +20,6 @@
 #ifndef SVGAnimatedTransformListPropertyTearOff_h
 #define SVGAnimatedTransformListPropertyTearOff_h
 
-#if ENABLE(SVG)
 #include "SVGAnimatedListPropertyTearOff.h"
 #include "SVGTransformList.h"
 #include "SVGTransformListPropertyTearOff.h"
@@ -29,24 +28,30 @@ namespace WebCore {
 
 class SVGAnimatedTransformListPropertyTearOff : public SVGAnimatedListPropertyTearOff<SVGTransformList> {
 public:
-    virtual SVGListPropertyTearOff<SVGTransformList>* baseVal() OVERRIDE
+    virtual RefPtr<ListProperty> baseVal() override
     {
-        if (!m_baseVal)
-            m_baseVal = SVGTransformListPropertyTearOff::create(this, BaseValRole, m_values, m_wrappers);
-        return static_cast<SVGListPropertyTearOff<SVGTransformList>*>(m_baseVal.get());
+        if (m_baseVal)
+            return m_baseVal;
+
+        auto property = SVGTransformListPropertyTearOff::create(this, BaseValRole, m_values, m_wrappers);
+        m_baseVal = property.ptr();
+        return WTF::move(property);
     }
 
-    virtual SVGListPropertyTearOff<SVGTransformList>* animVal() OVERRIDE
+    virtual RefPtr<ListProperty> animVal() override
     {
-        if (!m_animVal)
-            m_animVal = SVGTransformListPropertyTearOff::create(this, AnimValRole, m_values, m_wrappers);
-        return static_cast<SVGListPropertyTearOff<SVGTransformList>*>(m_animVal.get());
+        if (m_animVal)
+            return m_animVal;
+
+        auto property = SVGTransformListPropertyTearOff::create(this, AnimValRole, m_values, m_wrappers);
+        m_animVal = property.ptr();
+        return WTF::move(property);
     }
 
-    static PassRefPtr<SVGAnimatedTransformListPropertyTearOff> create(SVGElement* contextElement, const QualifiedName& attributeName, AnimatedPropertyType animatedPropertyType, SVGTransformList& values)
+    static Ref<SVGAnimatedTransformListPropertyTearOff> create(SVGElement* contextElement, const QualifiedName& attributeName, AnimatedPropertyType animatedPropertyType, SVGTransformList& values)
     {
         ASSERT(contextElement);
-        return adoptRef(new SVGAnimatedTransformListPropertyTearOff(contextElement, attributeName, animatedPropertyType, values));
+        return adoptRef(*new SVGAnimatedTransformListPropertyTearOff(contextElement, attributeName, animatedPropertyType, values));
     }
 
 private:
@@ -58,5 +63,4 @@ private:
 
 }
 
-#endif // ENABLE(SVG)
 #endif // SVGAnimatedTransformListPropertyTearOff_h

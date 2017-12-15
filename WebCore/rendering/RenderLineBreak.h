@@ -26,96 +26,76 @@
 
 namespace WebCore {
 
+class InlineElementBox;
 class HTMLElement;
 class Position;
 
-class RenderLineBreak FINAL : public RenderBoxModelObject {
+class RenderLineBreak final : public RenderBoxModelObject {
 public:
-    explicit RenderLineBreak(HTMLElement&);
+    RenderLineBreak(HTMLElement&, Ref<RenderStyle>&&);
     virtual ~RenderLineBreak();
 
     // FIXME: The lies here keep render tree dump based test results unchanged.
-    virtual const char* renderName() const OVERRIDE { return m_isWBR ? "RenderWordBreak" : "RenderBR"; }
+    virtual const char* renderName() const override { return m_isWBR ? "RenderWordBreak" : "RenderBR"; }
 
-    virtual bool isWBR() const OVERRIDE { return m_isWBR; }
+    virtual bool isWBR() const override { return m_isWBR; }
 
-    InlineBox* createInlineBox();
-    InlineBox* inlineBoxWrapper() const { return m_inlineBoxWrapper; }
-    void setInlineBoxWrapper(InlineBox*);
+    std::unique_ptr<InlineElementBox> createInlineBox();
+    InlineElementBox* inlineBoxWrapper() const { return m_inlineBoxWrapper; }
+    void setInlineBoxWrapper(InlineElementBox*);
     void deleteInlineBoxWrapper();
-    void replaceInlineBoxWrapper(InlineBox*);
+    void replaceInlineBoxWrapper(InlineElementBox&);
     void dirtyLineBoxes(bool fullLayout);
+    void deleteLineBoxesBeforeSimpleLineLayout();
 
     IntRect linesBoundingBox() const;
 
-    virtual void absoluteRects(Vector<IntRect>&, const LayoutPoint& accumulatedOffset) const OVERRIDE;
-    virtual void absoluteQuads(Vector<FloatQuad>&, bool* wasFixed) const OVERRIDE;
+    virtual void absoluteRects(Vector<IntRect>&, const LayoutPoint& accumulatedOffset) const override;
+    virtual void absoluteQuads(Vector<FloatQuad>&, bool* wasFixed) const override;
+#if PLATFORM(IOS)
+virtual void collectSelectionRects(Vector<SelectionRect>&, unsigned startOffset = 0, unsigned endOffset = std::numeric_limits<unsigned>::max()) override;
+#endif
 
 private:
-    void node() const WTF_DELETED_FUNCTION;
+    void node() const = delete;
 
-    virtual bool canHaveChildren() const OVERRIDE { return false; }
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE FINAL { }
+    virtual bool canHaveChildren() const override { return false; }
+    virtual void paint(PaintInfo&, const LayoutPoint&) override { }
 
-    virtual VisiblePosition positionForPoint(const LayoutPoint&) OVERRIDE;
-    virtual int caretMinOffset() const OVERRIDE;
-    virtual int caretMaxOffset() const OVERRIDE;
-    virtual bool canBeSelectionLeaf() const OVERRIDE;
-    virtual LayoutRect localCaretRect(InlineBox*, int caretOffset, LayoutUnit* extraWidthToEndOfLine) OVERRIDE;
-    virtual void setSelectionState(SelectionState) OVERRIDE;
+    virtual VisiblePosition positionForPoint(const LayoutPoint&, const RenderRegion*) override;
+    virtual int caretMinOffset() const override;
+    virtual int caretMaxOffset() const override;
+    virtual bool canBeSelectionLeaf() const override;
+    virtual LayoutRect localCaretRect(InlineBox*, int caretOffset, LayoutUnit* extraWidthToEndOfLine) override;
+    virtual void setSelectionState(SelectionState) override;
 
-    virtual LayoutUnit lineHeight(bool firstLine, LineDirectionMode, LinePositionMode) const OVERRIDE;
-    virtual int baselinePosition(FontBaseline, bool firstLine, LineDirectionMode, LinePositionMode) const OVERRIDE;
+    virtual LayoutUnit lineHeight(bool firstLine, LineDirectionMode, LinePositionMode) const override;
+    virtual int baselinePosition(FontBaseline, bool firstLine, LineDirectionMode, LinePositionMode) const override;
 
-    virtual LayoutUnit marginTop() const OVERRIDE { return 0; }
-    virtual LayoutUnit marginBottom() const OVERRIDE { return 0; }
-    virtual LayoutUnit marginLeft() const OVERRIDE { return 0; }
-    virtual LayoutUnit marginRight() const OVERRIDE { return 0; }
-    virtual LayoutUnit marginBefore(const RenderStyle*) const OVERRIDE { return 0; }
-    virtual LayoutUnit marginAfter(const RenderStyle*) const OVERRIDE { return 0; }
-    virtual LayoutUnit marginStart(const RenderStyle*) const OVERRIDE { return 0; }
-    virtual LayoutUnit marginEnd(const RenderStyle*) const OVERRIDE { return 0; }
-    virtual LayoutUnit offsetWidth() const OVERRIDE { return linesBoundingBox().width(); }
-    virtual LayoutUnit offsetHeight() const OVERRIDE { return linesBoundingBox().height(); }
-    virtual IntRect borderBoundingBox() const OVERRIDE;
-    virtual LayoutRect frameRectForStickyPositioning() const OVERRIDE { ASSERT_NOT_REACHED(); return LayoutRect(); }
-    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject*) const OVERRIDE { return LayoutRect(); }
+    virtual LayoutUnit marginTop() const override { return 0; }
+    virtual LayoutUnit marginBottom() const override { return 0; }
+    virtual LayoutUnit marginLeft() const override { return 0; }
+    virtual LayoutUnit marginRight() const override { return 0; }
+    virtual LayoutUnit marginBefore(const RenderStyle*) const override { return 0; }
+    virtual LayoutUnit marginAfter(const RenderStyle*) const override { return 0; }
+    virtual LayoutUnit marginStart(const RenderStyle*) const override { return 0; }
+    virtual LayoutUnit marginEnd(const RenderStyle*) const override { return 0; }
+    virtual LayoutUnit offsetWidth() const override { return linesBoundingBox().width(); }
+    virtual LayoutUnit offsetHeight() const override { return linesBoundingBox().height(); }
+    virtual IntRect borderBoundingBox() const override;
+    virtual LayoutRect frameRectForStickyPositioning() const override { ASSERT_NOT_REACHED(); return LayoutRect(); }
+    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject*) const override { return LayoutRect(); }
 
-    virtual void updateFromStyle() OVERRIDE;
-    virtual bool requiresLayer() const OVERRIDE { return false; }
+    virtual void updateFromStyle() override;
+    virtual bool requiresLayer() const override { return false; }
 
-    InlineBox* m_inlineBoxWrapper;
+    InlineElementBox* m_inlineBoxWrapper;
     mutable int m_cachedLineHeight;
     bool m_isWBR;
 };
 
-inline RenderLineBreak& toRenderLineBreak(RenderObject& object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isLineBreak());
-    return static_cast<RenderLineBreak&>(object);
-}
-
-inline const RenderLineBreak& toRenderLineBreak(const RenderObject& object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isLineBreak());
-    return static_cast<const RenderLineBreak&>(object);
-}
-
-inline RenderLineBreak* toRenderLineBreak(RenderObject* object)
-{ 
-    ASSERT_WITH_SECURITY_IMPLICATION(object->isLineBreak());
-    return static_cast<RenderLineBreak*>(object);
-}
-
-inline const RenderLineBreak* toRenderLineBreak(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object->isLineBreak());
-    return static_cast<const RenderLineBreak*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderLineBreak(const RenderLineBreak&);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderLineBreak, isLineBreak())
 
 #endif // RenderLineBreak_h

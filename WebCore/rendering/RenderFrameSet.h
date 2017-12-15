@@ -53,9 +53,9 @@ private:
     Vector<bool> m_allowBorder;
 };
 
-class RenderFrameSet FINAL : public RenderBox {
+class RenderFrameSet final : public RenderBox {
 public:
-    explicit RenderFrameSet(HTMLFrameSetElement&);
+    RenderFrameSet(HTMLFrameSetElement&, Ref<RenderStyle>&&);
     virtual ~RenderFrameSet();
 
     HTMLFrameSetElement& frameSetElement() const;
@@ -73,7 +73,7 @@ public:
     void notifyFrameEdgeInfoChanged();
 
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
     static const int noSplit = -1;
 
@@ -91,14 +91,14 @@ private:
         int m_splitResizeOffset;
     };
 
-    virtual const char* renderName() const OVERRIDE { return "RenderFrameSet"; }
-    virtual bool isFrameSet() const OVERRIDE { return true; }
+    virtual const char* renderName() const override { return "RenderFrameSet"; }
+    virtual bool isFrameSet() const override { return true; }
 
-    virtual void layout() OVERRIDE;
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
-    virtual bool canHaveChildren() const OVERRIDE { return true; }
-    virtual bool isChildAllowed(RenderObject*, RenderStyle*) const OVERRIDE;
-    virtual CursorDirective getCursor(const LayoutPoint&, Cursor&) const OVERRIDE;
+    virtual void layout() override;
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
+    virtual bool canHaveChildren() const override { return true; }
+    virtual bool isChildAllowed(const RenderObject&, const RenderStyle&) const override;
+    virtual CursorDirective getCursor(const LayoutPoint&, Cursor&) const override;
 
     bool flattenFrameSet() const;
 
@@ -126,16 +126,8 @@ private:
     bool m_isChildResizing;
 };
 
-
-inline RenderFrameSet* toRenderFrameSet(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isFrameSet());
-    return static_cast<RenderFrameSet*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderFrameSet(const RenderFrameSet*);
-
 } // namespace WebCore
+
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderFrameSet, isFrameSet())
 
 #endif // RenderFrameSet_h

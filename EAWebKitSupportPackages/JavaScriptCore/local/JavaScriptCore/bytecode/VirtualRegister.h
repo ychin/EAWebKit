@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,19 +28,18 @@
 
 #include "CallFrame.h"
 
-#include <wtf/Platform.h>
 #include <wtf/PrintStream.h>
 
 namespace JSC {
 
 inline bool operandIsLocal(int operand)
 {
-    return operand <= 0;
+    return operand < 0;
 }
 
 inline bool operandIsArgument(int operand)
 {
-    return operand > 0;
+    return operand >= 0;
 }
 
 
@@ -60,21 +59,54 @@ public:
     bool isValid() const { return (m_virtualRegister != s_invalidVirtualRegister); }
     bool isLocal() const { return operandIsLocal(m_virtualRegister); }
     bool isArgument() const { return operandIsArgument(m_virtualRegister); }
+    bool isHeader() const { return m_virtualRegister >= 0 && m_virtualRegister < JSStack::ThisArgument; }
     bool isConstant() const { return m_virtualRegister >= s_firstConstantRegisterIndex; }
     int toLocal() const { ASSERT(isLocal()); return operandToLocal(m_virtualRegister); }
     int toArgument() const { ASSERT(isArgument()); return operandToArgument(m_virtualRegister); }
     int toConstantIndex() const { ASSERT(isConstant()); return m_virtualRegister - s_firstConstantRegisterIndex; }
     int offset() const { return m_virtualRegister; }
+    int offsetInBytes() const { return m_virtualRegister * sizeof(Register); }
 
-    bool operator==(const VirtualRegister other) const { return m_virtualRegister == other.m_virtualRegister; }
-    bool operator!=(const VirtualRegister other) const { return m_virtualRegister != other.m_virtualRegister; }
+    bool operator==(VirtualRegister other) const { return m_virtualRegister == other.m_virtualRegister; }
+    bool operator!=(VirtualRegister other) const { return m_virtualRegister != other.m_virtualRegister; }
+    bool operator<(VirtualRegister other) const { return m_virtualRegister < other.m_virtualRegister; }
+    bool operator>(VirtualRegister other) const { return m_virtualRegister > other.m_virtualRegister; }
+    bool operator<=(VirtualRegister other) const { return m_virtualRegister <= other.m_virtualRegister; }
+    bool operator>=(VirtualRegister other) const { return m_virtualRegister >= other.m_virtualRegister; }
+    
+    VirtualRegister operator+(int value) const
+    {
+        return VirtualRegister(offset() + value);
+    }
+    VirtualRegister operator-(int value) const
+    {
+        return VirtualRegister(offset() - value);
+    }
+    VirtualRegister operator+(VirtualRegister value) const
+    {
+        return VirtualRegister(offset() + value.offset());
+    }
+    VirtualRegister operator-(VirtualRegister value) const
+    {
+        return VirtualRegister(offset() - value.offset());
+    }
+    VirtualRegister& operator+=(int value)
+    {
+        return *this = *this + value;
+    }
+    VirtualRegister& operator-=(int value)
+    {
+        return *this = *this - value;
+    }
+    
+    void dump(PrintStream& out) const;
 
 private:
     static const int s_invalidVirtualRegister = 0x3fffffff;
     static const int s_firstConstantRegisterIndex = 0x40000000;
 
-    static int localToOperand(int local) { return -local; }
-    static int operandToLocal(int operand) { return -operand; }
+    static int localToOperand(int local) { return -1 - local; }
+    static int operandToLocal(int operand) { return -1 - operand; }
     static int operandToArgument(int operand) { return operand - CallFrame::thisArgumentOffset(); }
     static int argumentToOperand(int argument) { return argument + CallFrame::thisArgumentOffset(); }
 
@@ -94,14 +126,5 @@ inline VirtualRegister virtualRegisterForArgument(int argument, int offset = 0)
 }
 
 } // namespace JSC
-
-namespace WTF {
-
-inline void printInternal(PrintStream& out, JSC::VirtualRegister value)
-{
-    out.print(value.offset());
-}
-
-} // namespace WTF
 
 #endif // VirtualRegister_h

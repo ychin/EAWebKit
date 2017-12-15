@@ -35,19 +35,19 @@ namespace WebCore {
     
 class RenderMathMLScripts;
 
-class RenderMathMLScriptsWrapper : public RenderMathMLBlock {
+class RenderMathMLScriptsWrapper final : public RenderMathMLBlock {
 
 friend class RenderMathMLScripts;
 
 public:
     enum WrapperType { Base, SubSupPair };
 
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE;
-    virtual void removeChild(RenderObject*) OVERRIDE;
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) override;
+    virtual void removeChild(RenderObject&) override;
 
 private:
-    RenderMathMLScriptsWrapper(Document& document, WrapperType kind)
-        : RenderMathMLBlock(document)
+    RenderMathMLScriptsWrapper(Document& document, Ref<RenderStyle>&& style, WrapperType kind)
+        : RenderMathMLBlock(document, WTF::move(style))
         , m_kind(kind)
     {
     }
@@ -55,69 +55,43 @@ private:
     static RenderMathMLScriptsWrapper* createAnonymousWrapper(RenderMathMLScripts* renderObject, WrapperType);
 
     void addChildInternal(bool normalInsertion, RenderObject* child, RenderObject* beforeChild = 0);
-    void removeChildInternal(bool normalRemoval, RenderObject* child);
+    void removeChildInternal(bool normalRemoval, RenderObject& child);
 
-    virtual const char* renderName() const { return m_kind == Base ? "Base Wrapper" : "SubSupPair Wrapper"; }
-
-    virtual bool isRenderMathMLScriptsWrapper() const OVERRIDE FINAL { return true; }
+    virtual const char* renderName() const override { return m_kind == Base ? "Base Wrapper" : "SubSupPair Wrapper"; }
+    virtual bool isRenderMathMLScriptsWrapper() const override final { return true; }
 
     RenderMathMLScripts* parentMathMLScripts();
 
     WrapperType m_kind;
 };
 
-inline RenderMathMLScriptsWrapper* toRenderMathMLScriptsWrapper(RenderMathMLBlock* block)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!block || block->isRenderMathMLScriptsWrapper());
-    return static_cast<RenderMathMLScriptsWrapper*>(block);
-}
-
-inline const RenderMathMLScriptsWrapper* toRenderMathMLScriptsWrapper(const RenderMathMLBlock* block)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!block || block->isRenderMathMLScriptsWrapper());
-    return static_cast<const RenderMathMLScriptsWrapper*>(block);
-}
-
-inline RenderMathMLScriptsWrapper* toRenderMathMLScriptsWrapper(RenderObject* object)
-{
-    return toRenderMathMLScriptsWrapper(toRenderMathMLBlock(object));
-}
-
-inline const RenderMathMLScriptsWrapper* toRenderMathMLScriptsWrapper(const RenderObject* object)
-{
-    return toRenderMathMLScriptsWrapper(toRenderMathMLBlock(object));
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderMathMLScriptsWrapper(const RenderMathMLScriptsWrapper*);
-
 // Render a base with scripts.
-class RenderMathMLScripts : public RenderMathMLBlock {
+class RenderMathMLScripts final : public RenderMathMLBlock {
 
 friend class RenderMathMLScriptsWrapper;
 
 public:
-    explicit RenderMathMLScripts(Element&);
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE;
-    virtual void removeChild(RenderObject*) OVERRIDE;
+    RenderMathMLScripts(Element&, Ref<RenderStyle>&&);
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) override;
+    virtual void removeChild(RenderObject&) override;
     
-    virtual RenderMathMLOperator* unembellishedOperator();
-    virtual int firstLineBoxBaseline() const OVERRIDE;
+    virtual RenderMathMLOperator* unembellishedOperator() override;
+    virtual Optional<int> firstLineBaseline() const override;
 
 protected:
-    virtual void layout();
+    virtual void layout() override;
     
 private:
     void addChildInternal(bool normalInsertion, RenderObject* child, RenderObject* beforeChild = 0);
-    void removeChildInternal(bool normalRemoval, RenderObject* child);
+    void removeChildInternal(bool normalRemoval, RenderObject& child);
 
-    virtual bool isRenderMathMLScripts() const OVERRIDE { return true; }
+    virtual bool isRenderMathMLScripts() const override { return true; }
+    virtual const char* renderName() const override { return "RenderMathMLScripts"; }
+
     void fixAnonymousStyleForSubSupPair(RenderObject* subSupPair, bool isPostScript);
     void fixAnonymousStyles();
 
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE;
-
-    virtual const char* renderName() const { return "RenderMathMLScripts"; }
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override;
 
     // Omit our subscript and/or superscript. This may return 0 for a non-MathML base (which
     // won't occur in valid MathML).
@@ -129,32 +103,10 @@ private:
     RenderMathMLScriptsWrapper* m_baseWrapper;
 };
 
-inline RenderMathMLScripts* toRenderMathMLScripts(RenderMathMLBlock* block)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!block || block->isRenderMathMLScripts());
-    return static_cast<RenderMathMLScripts*>(block);
-}
+} // namespace WebCore
 
-inline const RenderMathMLScripts* toRenderMathMLScripts(const RenderMathMLBlock* block)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!block || block->isRenderMathMLScripts());
-    return static_cast<const RenderMathMLScripts*>(block);
-}
-
-inline RenderMathMLScripts* toRenderMathMLScripts(RenderObject* object)
-{
-    return toRenderMathMLScripts(toRenderMathMLBlock(object));
-}
-
-inline const RenderMathMLScripts* toRenderMathMLScripts(const RenderObject* object)
-{
-    return toRenderMathMLScripts(toRenderMathMLBlock(object));
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderMathMLScripts(const RenderMathMLScripts*);
-
-}
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderMathMLScriptsWrapper, isRenderMathMLScriptsWrapper())
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderMathMLScripts, isRenderMathMLScripts())
 
 #endif // ENABLE(MATHML)
 

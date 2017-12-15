@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Holger Hans Peter Freyther
- * Copyright (C) 2011, 2013 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2013, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,7 @@
 #include <EAWebKit/EAWebKitFileSystem.h>
 namespace WebCore {
 
-PassRefPtr<SharedBuffer> SharedBuffer::createWithContentsOfFile(const String& fileName)
+RefPtr<SharedBuffer> SharedBuffer::createFromReadingFile(const String& fileName)
 {
     if (fileName.isEmpty())
         return 0;

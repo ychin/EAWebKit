@@ -12,7 +12,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -40,6 +40,10 @@
 #include "ProgressTracker.h"
 #include "ResourceLoader.h"
 
+#if USE(QUICK_LOOK)
+#include "QuickLook.h"
+#endif
+
 namespace WebCore {
 
 ResourceLoadNotifier::ResourceLoadNotifier(Frame& frame)
@@ -49,12 +53,22 @@ ResourceLoadNotifier::ResourceLoadNotifier(Frame& frame)
 
 void ResourceLoadNotifier::didReceiveAuthenticationChallenge(ResourceLoader* loader, const AuthenticationChallenge& currentWebChallenge)
 {
-    m_frame.loader().client().dispatchDidReceiveAuthenticationChallenge(loader->documentLoader(), loader->identifier(), currentWebChallenge);
+    didReceiveAuthenticationChallenge(loader->identifier(), loader->documentLoader(), currentWebChallenge);
+}
+
+void ResourceLoadNotifier::didReceiveAuthenticationChallenge(unsigned long identifier, DocumentLoader* loader, const AuthenticationChallenge& currentWebChallenge)
+{
+    m_frame.loader().client().dispatchDidReceiveAuthenticationChallenge(loader, identifier, currentWebChallenge);
 }
 
 void ResourceLoadNotifier::didCancelAuthenticationChallenge(ResourceLoader* loader, const AuthenticationChallenge& currentWebChallenge)
 {
-    m_frame.loader().client().dispatchDidCancelAuthenticationChallenge(loader->documentLoader(), loader->identifier(), currentWebChallenge);
+    didCancelAuthenticationChallenge(loader->identifier(), loader->documentLoader(), currentWebChallenge);
+}
+
+void ResourceLoadNotifier::didCancelAuthenticationChallenge(unsigned long identifier, DocumentLoader* loader, const AuthenticationChallenge& currentWebChallenge)
+{
+    m_frame.loader().client().dispatchDidCancelAuthenticationChallenge(loader, identifier, currentWebChallenge);
 }
 
 void ResourceLoadNotifier::willSendRequest(ResourceLoader* loader, ResourceRequest& clientRequest, const ResourceResponse& redirectResponse)
@@ -77,7 +91,7 @@ void ResourceLoadNotifier::didReceiveResponse(ResourceLoader* loader, const Reso
 void ResourceLoadNotifier::didReceiveData(ResourceLoader* loader, const char* data, int dataLength, int encodedDataLength)
 {
     if (Page* page = m_frame.page())
-        page->progress().incrementProgress(loader->identifier(), data, dataLength);
+        page->progress().incrementProgress(loader->identifier(), dataLength);
 
     dispatchDidReceiveData(loader->documentLoader(), loader->identifier(), data, dataLength, encodedDataLength);
 }
@@ -107,6 +121,12 @@ void ResourceLoadNotifier::assignIdentifierToInitialRequest(unsigned long identi
 
 void ResourceLoadNotifier::dispatchWillSendRequest(DocumentLoader* loader, unsigned long identifier, ResourceRequest& request, const ResourceResponse& redirectResponse)
 {
+#if USE(QUICK_LOOK)
+    // Always allow QuickLook-generated URLs based on the protocol scheme.
+    if (!request.isNull() && request.url().protocolIs(QLPreviewProtocol()))
+        return;
+#endif
+
     String oldRequestURL = request.url().string();
     m_frame.loader().documentLoader()->didTellClientAboutLoad(request.url());
 
@@ -119,7 +139,7 @@ void ResourceLoadNotifier::dispatchWillSendRequest(DocumentLoader* loader, unsig
     InspectorInstrumentation::willSendRequest(&m_frame, identifier, loader, request, redirectResponse);
 
     // Report WebTiming for all frames.
-    if (loader && !request.isNull() && request.url() == loader->requestURL())
+    if (loader && !request.isNull() && request.url() == loader->url())
         request.setReportLoadTiming(true);
 
 #if ENABLE(RESOURCE_TIMING)
@@ -129,7 +149,7 @@ void ResourceLoadNotifier::dispatchWillSendRequest(DocumentLoader* loader, unsig
 
 void ResourceLoadNotifier::dispatchDidReceiveResponse(DocumentLoader* loader, unsigned long identifier, const ResourceResponse& r, ResourceLoader* resourceLoader)
 {
-    InspectorInstrumentationCookie cookie = InspectorInstrumentation::willReceiveResourceResponse(&m_frame, identifier, r);
+    InspectorInstrumentationCookie cookie = InspectorInstrumentation::willReceiveResourceResponse(&m_frame);
     m_frame.loader().client().dispatchDidReceiveResponse(loader, identifier, r);
     InspectorInstrumentation::didReceiveResourceResponse(cookie, identifier, loader, r, resourceLoader);
 }

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -34,9 +34,9 @@ namespace WebCore {
 
 class HTMLVideoElement;
 
-class RenderVideo FINAL : public RenderMedia {
+class RenderVideo final : public RenderMedia {
 public:
-    explicit RenderVideo(HTMLVideoElement&);
+    RenderVideo(HTMLVideoElement&, Ref<RenderStyle>&&);
     virtual ~RenderVideo();
 
     HTMLVideoElement& videoElement() const;
@@ -45,68 +45,54 @@ public:
 
     static IntSize defaultSize();
 
-#if USE(ACCELERATED_COMPOSITING)
     bool supportsAcceleratedRendering() const;
     void acceleratedRenderingStateChanged();
-#endif
 
     bool requiresImmediateCompositing() const;
 
-    virtual bool shouldDisplayVideo() const;
+    bool shouldDisplayVideo() const;
 
 private:
-    void mediaElement() const WTF_DELETED_FUNCTION;
+    void mediaElement() const = delete;
 
-    virtual void updateFromElement();
+    virtual void updateFromElement() override;
 
-    virtual void intrinsicSizeChanged();
+    virtual void intrinsicSizeChanged() override;
     LayoutSize calculateIntrinsicSize();
     void updateIntrinsicSize();
 
-    virtual void imageChanged(WrappedImagePtr, const IntRect*);
+    virtual void imageChanged(WrappedImagePtr, const IntRect*) override;
 
-    virtual const char* renderName() const { return "RenderVideo"; }
+    virtual const char* renderName() const override { return "RenderVideo"; }
 
-    virtual bool requiresLayer() const { return true; }
-    virtual bool isVideo() const { return true; }
+    virtual bool requiresLayer() const override { return true; }
+    virtual bool isVideo() const override { return true; }
 
-    virtual void paintReplaced(PaintInfo&, const LayoutPoint&);
+    virtual void paintReplaced(PaintInfo&, const LayoutPoint&) override;
 
-    virtual void layout();
+    virtual void layout() override;
 
-    virtual LayoutUnit computeReplacedLogicalWidth(ShouldComputePreferred  = ComputeActual) const OVERRIDE;
-    virtual LayoutUnit computeReplacedLogicalHeight() const;
-    virtual LayoutUnit minimumReplacedHeight() const OVERRIDE;
+    virtual LayoutUnit computeReplacedLogicalWidth(ShouldComputePreferred  = ComputeActual) const override;
+    virtual LayoutUnit computeReplacedLogicalHeight() const override;
+    virtual LayoutUnit minimumReplacedHeight() const override;
 
 #if ENABLE(FULLSCREEN_API)
-    virtual LayoutUnit offsetLeft() const;
-    virtual LayoutUnit offsetTop() const;
-    virtual LayoutUnit offsetWidth() const;
-    virtual LayoutUnit offsetHeight() const;
+    virtual LayoutUnit offsetLeft() const override;
+    virtual LayoutUnit offsetTop() const override;
+    virtual LayoutUnit offsetWidth() const override;
+    virtual LayoutUnit offsetHeight() const override;
 #endif
 
     void updatePlayer();
 
-    virtual bool foregroundIsKnownToBeOpaqueInRect(const LayoutRect& localRect, unsigned maxDepthToTest) const OVERRIDE;
+    virtual bool foregroundIsKnownToBeOpaqueInRect(const LayoutRect& localRect, unsigned maxDepthToTest) const override;
 
     LayoutSize m_cachedImageSize;
 };
 
-inline RenderVideo& toRenderVideo(RenderObject& object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isVideo());
-    return static_cast<RenderVideo&>(object);
-}
-
-inline const RenderVideo& toRenderVideo(const RenderObject& object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(object.isVideo());
-    return static_cast<const RenderVideo&>(object);
-}
-
-void toRenderVideo(const RenderVideo&);
-
 } // namespace WebCore
 
-#endif
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderVideo, isVideo())
+
+#endif // ENABLE(VIDEO)
 #endif // RenderVideo_h

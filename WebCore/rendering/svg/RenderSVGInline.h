@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Oliver Hunt <ojh16@student.canterbury.ac.nz>
- * Copyright (C) 2006 Apple Computer Inc.
+ * Copyright (C) 2006 Apple Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,7 +21,6 @@
 #ifndef RenderSVGInline_h
 #define RenderSVGInline_h
 
-#if ENABLE(SVG)
 #include "RenderInline.h"
 #include "SVGGraphicsElement.h"
 
@@ -29,43 +28,45 @@ namespace WebCore {
 
 class RenderSVGInline : public RenderInline {
 public:
-    explicit RenderSVGInline(SVGGraphicsElement&);
+    RenderSVGInline(SVGGraphicsElement&, Ref<RenderStyle>&&);
 
-    SVGGraphicsElement& graphicsElement() const { return toSVGGraphicsElement(nodeForNonAnonymous()); }
+    SVGGraphicsElement& graphicsElement() const { return downcast<SVGGraphicsElement>(nodeForNonAnonymous()); }
 
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGInline"; }
-    virtual bool requiresLayer() const OVERRIDE FINAL { return false; }
-    virtual bool isSVGInline() const OVERRIDE FINAL { return true; }
+    virtual const char* renderName() const override { return "RenderSVGInline"; }
+    virtual bool requiresLayer() const override final { return false; }
+    virtual bool isSVGInline() const override final { return true; }
+
+    virtual void updateFromStyle() override final;
 
     // Chapter 10.4 of the SVG Specification say that we should use the
     // object bounding box of the parent text element.
     // We search for the root text element and take its bounding box.
     // It is also necessary to take the stroke and repaint rect of
     // this element, since we need it for filters.
-    virtual FloatRect objectBoundingBox() const OVERRIDE FINAL;
-    virtual FloatRect strokeBoundingBox() const OVERRIDE FINAL;
-    virtual FloatRect repaintRectInLocalCoordinates() const OVERRIDE FINAL;
+    virtual FloatRect objectBoundingBox() const override final;
+    virtual FloatRect strokeBoundingBox() const override final;
+    virtual FloatRect repaintRectInLocalCoordinates() const override final;
 
-    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const OVERRIDE FINAL;
-    virtual void computeFloatRectForRepaint(const RenderLayerModelObject* repaintContainer, FloatRect&, bool fixed = false) const OVERRIDE FINAL;
-    virtual void mapLocalToContainer(const RenderLayerModelObject* repaintContainer, TransformState&, MapCoordinatesFlags = ApplyContainerFlip, bool* wasFixed = 0) const OVERRIDE FINAL;
-    virtual const RenderObject* pushMappingToContainer(const RenderLayerModelObject* ancestorToStopAt, RenderGeometryMap&) const OVERRIDE FINAL;
-    virtual void absoluteQuads(Vector<FloatQuad>&, bool* wasFixed) const OVERRIDE FINAL;
+    virtual LayoutRect clippedOverflowRectForRepaint(const RenderLayerModelObject* repaintContainer) const override final;
+    virtual void computeFloatRectForRepaint(const RenderLayerModelObject* repaintContainer, FloatRect&, bool fixed = false) const override final;
+    virtual void mapLocalToContainer(const RenderLayerModelObject* repaintContainer, TransformState&, MapCoordinatesFlags, bool* wasFixed) const override final;
+    virtual const RenderObject* pushMappingToContainer(const RenderLayerModelObject* ancestorToStopAt, RenderGeometryMap&) const override final;
+    virtual void absoluteQuads(Vector<FloatQuad>&, bool* wasFixed) const override final;
 
-    virtual InlineFlowBox* createInlineFlowBox() OVERRIDE FINAL;
+    virtual std::unique_ptr<InlineFlowBox> createInlineFlowBox() override final;
 
-    virtual void willBeDestroyed() OVERRIDE FINAL;
-    virtual void styleWillChange(StyleDifference, const RenderStyle* newStyle) OVERRIDE FINAL;
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE FINAL;
+    virtual void willBeDestroyed() override final;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override final;
 
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE FINAL;
-    virtual void removeChild(RenderObject*) OVERRIDE FINAL;
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild = nullptr) override final;
+    virtual void removeChild(RenderObject&) override final;
 };
 
-}
+} // namespace WebCore
 
-#endif // ENABLE(SVG)
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSVGInline, isSVGInline())
+
 #endif // !RenderSVGTSpan_H

@@ -26,7 +26,6 @@
 #include "JSNode.h"
 #include "Node.h"
 #include "NodeList.h"
-#include "wtf/text/AtomicString.h"
 #include <runtime/Error.h>
 #include <runtime/PropertyNameArray.h>
 #include <wtf/GetPtr.h>
@@ -35,25 +34,80 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsNodeListPrototypeFunctionItem(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsNodeListLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsNodeListConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSNodeListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSNodeListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSNodeListPrototype* ptr = new (NotNull, JSC::allocateCell<JSNodeListPrototype>(vm.heap)) JSNodeListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSNodeListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSNodeListConstructor : public DOMConstructorObject {
+private:
+    JSNodeListConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSNodeListConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSNodeListConstructor* ptr = new (NotNull, JSC::allocateCell<JSNodeListConstructor>(vm.heap)) JSNodeListConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSNodeListTableIndex[5] = {
+    { -1, -1 },
+    { 0, 4 },
+    { -1, -1 },
+    { -1, -1 },
+    { 1, -1 },
+};
+
 
 static const HashTableValue JSNodeListTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeListLength), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeListConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeListConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsNodeListLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSNodeListTable = { 5, 3, JSNodeListTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSNodeListConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSNodeListConstructorTable = { 1, 0, JSNodeListConstructorTableValues, 0 };
-const ClassInfo JSNodeListConstructor::s_info = { "NodeListConstructor", &Base::s_info, &JSNodeListConstructorTable, 0, CREATE_METHOD_TABLE(JSNodeListConstructor) };
+static const HashTable JSNodeListTable = { 2, 3, true, JSNodeListTableValues, 0, JSNodeListTableIndex };
+const ClassInfo JSNodeListConstructor::s_info = { "NodeListConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSNodeListConstructor) };
 
 JSNodeListConstructor::JSNodeListConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -64,54 +118,42 @@ void JSNodeListConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObje
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSNodeListPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSNodeListConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSNodeListConstructor, JSDOMWrapper>(exec, JSNodeListConstructorTable, jsCast<JSNodeListConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSNodeList::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("NodeList"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSNodeListPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsNodeListPrototypeFunctionItem), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsNodeListPrototypeFunctionItem), (intptr_t) (1) },
 };
 
-static const HashTable JSNodeListPrototypeTable = { 2, 1, JSNodeListPrototypeTableValues, 0 };
-const ClassInfo JSNodeListPrototype::s_info = { "NodeListPrototype", &Base::s_info, &JSNodeListPrototypeTable, 0, CREATE_METHOD_TABLE(JSNodeListPrototype) };
+const ClassInfo JSNodeListPrototype::s_info = { "NodeListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSNodeListPrototype) };
 
-JSObject* JSNodeListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSNodeList>(vm, globalObject);
-}
-
-bool JSNodeListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSNodeListPrototype* thisObject = jsCast<JSNodeListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSNodeListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSNodeList::s_info = { "NodeList", &Base::s_info, &JSNodeListTable, 0 , CREATE_METHOD_TABLE(JSNodeList) };
-
-JSNodeList::JSNodeList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<NodeList> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSNodeList::finishCreation(VM& vm)
+void JSNodeListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSNodeListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSNodeList::s_info = { "NodeList", &Base::s_info, &JSNodeListTable, CREATE_METHOD_TABLE(JSNodeList) };
+
+JSNodeList::JSNodeList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<NodeList>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSNodeList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSNodeListPrototype::create(vm, globalObject, JSNodeListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSNodeList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSNodeList>(vm, globalObject);
 }
 
 void JSNodeList::destroy(JSC::JSCell* cell)
@@ -122,71 +164,72 @@ void JSNodeList::destroy(JSC::JSCell* cell)
 
 JSNodeList::~JSNodeList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSNodeList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSNodeList* thisObject = jsCast<JSNodeList*>(object);
+    auto* thisObject = jsCast<JSNodeList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSNodeList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSNodeList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
-    if (canGetItemsForName(exec, &thisObject->impl(), propertyName)) {
-        slot.setCustom(thisObject, ReadOnly | DontDelete | DontEnum, thisObject->nameGetter);
+    if (thisObject->getOwnPropertySlotDelegate(exec, propertyName, slot))
         return true;
-    }
     return getStaticValueSlot<JSNodeList, Base>(exec, JSNodeListTable, thisObject, propertyName, slot);
 }
 
 bool JSNodeList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSNodeList* thisObject = jsCast<JSNodeList*>(object);
+    auto* thisObject = jsCast<JSNodeList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
-    PropertyName propertyName = Identifier::from(exec, index);
-    if (canGetItemsForName(exec, &thisObject->impl(), propertyName)) {
-        slot.setCustom(thisObject, ReadOnly | DontDelete | DontEnum, thisObject->nameGetter);
+    Identifier propertyName = Identifier::from(exec, index);
+    if (thisObject->getOwnPropertySlotDelegate(exec, propertyName, slot))
         return true;
-    }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsNodeListLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsNodeListLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSNodeList* castedThis = jsCast<JSNodeList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    NodeList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSNodeList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsNodeListConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsNodeListConstructor(ExecState* exec, JSObject*, EncodedJSValue thisValue, PropertyName)
 {
-    JSNodeList* domObject = jsCast<JSNodeList*>(asObject(slotBase));
-    return JSNodeList::getConstructor(exec->vm(), domObject->globalObject());
+    JSNodeList* domObject = jsDynamicCast<JSNodeList*>(JSValue::decode(thisValue));
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSNodeList::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 void JSNodeList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSNodeList* thisObject = jsCast<JSNodeList*>(object);
+    auto* thisObject = jsCast<JSNodeList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 JSValue JSNodeList::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -196,51 +239,41 @@ JSValue JSNodeList::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsNodeListPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSNodeList::info()))
-        return throwVMTypeError(exec);
-    JSNodeList* castedThis = jsCast<JSNodeList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSNodeList* castedThis = jsDynamicCast<JSNodeList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "NodeList", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSNodeList::info());
-    NodeList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
     return JSValue::encode(result);
 }
 
-
-JSValue JSNodeList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
+void JSNodeList::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSNodeList* thisObj = jsCast<JSNodeList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
+    auto* thisObject = jsCast<JSNodeList*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    visitor.reportExtraMemoryVisited(cell, thisObject->impl().memoryCost());
 }
 
 void JSNodeListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSNodeList* jsNodeList = jsCast<JSNodeList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsNodeList = jsCast<JSNodeList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsNodeList->impl(), jsNodeList);
-    jsNodeList->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, NodeList* impl)
+NodeList* JSNodeList::toWrapped(JSC::JSValue value)
 {
-    if (!impl)
-        return jsNull();
-    if (JSValue result = getExistingWrapper<JSNodeList>(exec, impl))
-        return result;
-    ReportMemoryCost<NodeList>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSNodeList>(exec, globalObject, impl);
-}
-
-NodeList* toNodeList(JSC::JSValue value)
-{
-    return value.inherits(JSNodeList::info()) ? &jsCast<JSNodeList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSNodeList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -25,24 +25,23 @@
 
 #include "BiquadFilterNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSBiquadFilterNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSBiquadFilterNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<BiquadFilterNode> impl)
+    static JSBiquadFilterNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<BiquadFilterNode>&& impl)
     {
-        JSBiquadFilterNode* ptr = new (NotNull, JSC::allocateCell<JSBiquadFilterNode>(globalObject->vm().heap)) JSBiquadFilterNode(structure, globalObject, impl);
+        JSBiquadFilterNode* ptr = new (NotNull, JSC::allocateCell<JSBiquadFilterNode>(globalObject->vm().heap)) JSBiquadFilterNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,84 +57,22 @@ public:
     {
         return static_cast<BiquadFilterNode&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSBiquadFilterNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<BiquadFilterNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSBiquadFilterNode(JSC::Structure*, JSDOMGlobalObject*, Ref<BiquadFilterNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, BiquadFilterNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, BiquadFilterNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSBiquadFilterNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSBiquadFilterNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSBiquadFilterNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSBiquadFilterNodePrototype>(vm.heap)) JSBiquadFilterNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSBiquadFilterNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSBiquadFilterNodeConstructor : public DOMConstructorObject {
-private:
-    JSBiquadFilterNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSBiquadFilterNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSBiquadFilterNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSBiquadFilterNodeConstructor>(vm.heap)) JSBiquadFilterNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsBiquadFilterNodePrototypeFunctionGetFrequencyResponse(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsBiquadFilterNodeType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSBiquadFilterNodeType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsBiquadFilterNodeFrequency(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeDetune(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeQ(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeGain(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsBiquadFilterNodeLOWPASS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeHIGHPASS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeBANDPASS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeLOWSHELF(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeHIGHSHELF(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodePEAKING(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeNOTCH(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsBiquadFilterNodeALLPASS(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

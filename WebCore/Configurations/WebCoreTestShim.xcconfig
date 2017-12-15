@@ -1,4 +1,4 @@
-// Copyright (C) 2013 Apple Inc. All rights reserved.
+// Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -38,4 +38,4 @@ PRODUCT_NAME = WebCoreTestShim;
 EXECUTABLE_PREFIX = lib;
 EXPORTED_SYMBOLS_FILE = ;
 OTHER_LDFLAGS = $(ASAN_OTHER_LDFLAGS);
-SECTORDER_FLAGS = ;
+OTHER_LDFLAGS[sdk=macosx*] = $(ASAN_OTHER_LDFLAGS) -framework Carbon;

@@ -23,8 +23,8 @@
 #include "NodeFilterCondition.h"
 #include <heap/Weak.h>
 #include <heap/WeakInlines.h>
+#include <runtime/JSCInlines.h>
 #include <runtime/JSCJSValue.h>
-#include <runtime/Operations.h>
 #include <wtf/PassRefPtr.h>
 
 namespace WebCore {
@@ -34,9 +34,9 @@ namespace WebCore {
 
     class JSNodeFilterCondition : public NodeFilterCondition {
     public:
-        static PassRefPtr<JSNodeFilterCondition> create(JSC::VM& vm, NodeFilter* owner, JSC::JSValue filter)
+        static Ref<JSNodeFilterCondition> create(JSC::VM& vm, NodeFilter* owner, JSC::JSValue filter)
         {
-            return adoptRef(new JSNodeFilterCondition(vm, owner, filter));
+            return adoptRef(*new JSNodeFilterCondition(vm, owner, filter));
         }
 
     private:

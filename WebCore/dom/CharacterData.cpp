@@ -22,9 +22,7 @@
 #include "config.h"
 #include "CharacterData.h"
 
-#include "Document.h"
 #include "ElementTraversal.h"
-#include "EventNames.h"
 #include "ExceptionCode.h"
 #include "FrameSelection.h"
 #include "InspectorInstrumentation.h"
@@ -34,11 +32,8 @@
 #include "ProcessingInstruction.h"
 #include "RenderText.h"
 #include "StyleInheritedData.h"
-#include "Text.h"
 #include "TextBreakIterator.h"
 #include <wtf/Ref.h>
-
-using namespace std;
 
 namespace WebCore {
 
@@ -72,14 +67,14 @@ unsigned CharacterData::parserAppendData(const String& string, unsigned offset, 
     ASSERT(lengthLimit >= oldLength);
 
     unsigned characterLength = string.length() - offset;
-    unsigned characterLengthLimit = min(characterLength, lengthLimit - oldLength);
+    unsigned characterLengthLimit = std::min(characterLength, lengthLimit - oldLength);
 
     // Check that we are not on an unbreakable boundary.
     // Some text break iterator implementations work best if the passed buffer is as small as possible,
     // see <https://bugs.webkit.org/show_bug.cgi?id=29092>.
     // We need at least two characters look-ahead to account for UTF-16 surrogates.
     if (characterLengthLimit < characterLength) {
-        NonSharedCharacterBreakIterator it(string.characters() + offset, (characterLengthLimit + 2 > characterLength) ? characterLength : characterLengthLimit + 2);
+        NonSharedCharacterBreakIterator it(StringView(string).substring(offset, (characterLengthLimit + 2 > characterLength) ? characterLength : characterLengthLimit + 2));
         if (!isTextBreak(it, characterLengthLimit))
             characterLengthLimit = textBreakPreceding(it, characterLengthLimit);
     }
@@ -92,9 +87,9 @@ unsigned CharacterData::parserAppendData(const String& string, unsigned offset, 
     else
         m_data.append(string.characters16() + offset, characterLengthLimit);
 
-    ASSERT(!renderer() || isTextNode());
-    if (isTextNode())
-        Style::updateTextRendererAfterContentChange(*toText(this), oldLength, 0);
+    ASSERT(!renderer() || is<Text>(*this));
+    if (is<Text>(*this))
+        Style::updateTextRendererAfterContentChange(downcast<Text>(*this), oldLength, 0);
 
     document().incDOMTreeVersion();
     // We don't call dispatchModifiedEvent here because we don't want the
@@ -102,8 +97,8 @@ unsigned CharacterData::parserAppendData(const String& string, unsigned offset, 
     if (parentNode()) {
         ContainerNode::ChildChange change = {
             ContainerNode::TextChanged,
-            ElementTraversal::previousSibling(this),
-            ElementTraversal::nextSibling(this),
+            ElementTraversal::previousSibling(*this),
+            ElementTraversal::nextSibling(*this),
             ContainerNode::ChildChangeSourceParser
         };
         parentNode()->childrenChanged(change);
@@ -199,12 +194,12 @@ void CharacterData::setDataAndUpdate(const String& newData, unsigned offsetOfRep
     String oldData = m_data;
     m_data = newData;
 
-    ASSERT(!renderer() || isTextNode());
-    if (isTextNode())
-        Style::updateTextRendererAfterContentChange(*toText(this), offsetOfReplacedData, oldLength);
+    ASSERT(!renderer() || is<Text>(*this));
+    if (is<Text>(*this))
+        Style::updateTextRendererAfterContentChange(downcast<Text>(*this), offsetOfReplacedData, oldLength);
 
-    if (nodeType() == PROCESSING_INSTRUCTION_NODE)
-        toProcessingInstruction(this)->checkStyleSheet();
+    if (is<ProcessingInstruction>(*this))
+        downcast<ProcessingInstruction>(*this).checkStyleSheet();
 
     if (document().frame())
         document().frame()->selection().textWasReplaced(this, offsetOfReplacedData, oldLength, newLength);
@@ -215,26 +210,25 @@ void CharacterData::setDataAndUpdate(const String& newData, unsigned offsetOfRep
 
 void CharacterData::dispatchModifiedEvent(const String& oldData)
 {
-    if (OwnPtr<MutationObserverInterestGroup> mutationRecipients = MutationObserverInterestGroup::createForCharacterDataMutation(*this))
+    if (std::unique_ptr<MutationObserverInterestGroup> mutationRecipients = MutationObserverInterestGroup::createForCharacterDataMutation(*this))
         mutationRecipients->enqueueMutationRecord(MutationRecord::createCharacterData(*this, oldData));
 
     if (!isInShadowTree()) {
         if (parentNode()) {
             ContainerNode::ChildChange change = {
                 ContainerNode::TextChanged,
-                ElementTraversal::previousSibling(this),
-                ElementTraversal::nextSibling(this),
+                ElementTraversal::previousSibling(*this),
+                ElementTraversal::nextSibling(*this),
                 ContainerNode::ChildChangeSourceAPI
             };
             parentNode()->childrenChanged(change);
         }
         if (document().hasListenerType(Document::DOMCHARACTERDATAMODIFIED_LISTENER))
-            dispatchScopedEvent(MutationEvent::create(eventNames().DOMCharacterDataModifiedEvent, true, 0, oldData, m_data));
+            dispatchScopedEvent(MutationEvent::create(eventNames().DOMCharacterDataModifiedEvent, true, nullptr, oldData, m_data));
         dispatchSubtreeModifiedEvent();
     }
-#if ENABLE(INSPECTOR)
-    InspectorInstrumentation::characterDataModified(&document(), this);
-#endif
+
+    InspectorInstrumentation::characterDataModified(document(), *this);
 }
 
 void CharacterData::checkCharDataOperation(unsigned offset, ExceptionCode& ec)

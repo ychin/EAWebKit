@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,18 +28,18 @@
 
 #include "CodeBlock.h"
 #include "DFGCommon.h"
-#include "DFGNode.h"
 #include "Executable.h"
 #include "Interpreter.h"
 #include "Intrinsic.h"
 #include "Options.h"
-#include <wtf/Platform.h>
 
 namespace JSC { namespace DFG {
 
 #if ENABLE(DFG_JIT)
 // Fast check functions; if they return true it is still necessary to
 // check opcodes.
+bool isSupported();
+bool isSupportedForInlining(CodeBlock*);
 bool mightCompileEval(CodeBlock*);
 bool mightCompileProgram(CodeBlock*);
 bool mightCompileFunctionForCall(CodeBlock*);
@@ -80,35 +80,56 @@ inline CapabilityLevel programCapabilityLevel(CodeBlock* codeBlock)
     return capabilityLevel(codeBlock);
 }
 
+inline CapabilityLevel functionCapabilityLevel(bool mightCompile, bool mightInline, CapabilityLevel computedCapabilityLevel)
+{
+    if (mightCompile && mightInline)
+        return leastUpperBound(CanCompileAndInline, computedCapabilityLevel);
+    if (mightCompile && !mightInline)
+        return leastUpperBound(CanCompile, computedCapabilityLevel);
+    if (!mightCompile)
+        return CannotCompile;
+    RELEASE_ASSERT_NOT_REACHED();
+    return CannotCompile;
+}
+
 inline CapabilityLevel functionForCallCapabilityLevel(CodeBlock* codeBlock)
 {
-    if (!mightCompileFunctionForCall(codeBlock))
-        return CannotCompile;
-    
-    return capabilityLevel(codeBlock);
+    return functionCapabilityLevel(
+        mightCompileFunctionForCall(codeBlock),
+        mightInlineFunctionForCall(codeBlock),
+        capabilityLevel(codeBlock));
 }
 
 inline CapabilityLevel functionForConstructCapabilityLevel(CodeBlock* codeBlock)
 {
-    if (!mightCompileFunctionForConstruct(codeBlock))
+    return functionCapabilityLevel(
+        mightCompileFunctionForConstruct(codeBlock),
+        mightInlineFunctionForConstruct(codeBlock),
+        capabilityLevel(codeBlock));
+}
+
+inline CapabilityLevel inlineFunctionForCallCapabilityLevel(CodeBlock* codeBlock)
+{
+    if (!mightInlineFunctionForCall(codeBlock))
         return CannotCompile;
     
     return capabilityLevel(codeBlock);
 }
 
-inline bool canInlineFunctionForCall(CodeBlock* codeBlock)
+inline CapabilityLevel inlineFunctionForClosureCallCapabilityLevel(CodeBlock* codeBlock)
 {
-    return mightInlineFunctionForCall(codeBlock) && canInline(capabilityLevel(codeBlock));
+    if (!mightInlineFunctionForClosureCall(codeBlock))
+        return CannotCompile;
+    
+    return capabilityLevel(codeBlock);
 }
 
-inline bool canInlineFunctionForClosureCall(CodeBlock* codeBlock)
+inline CapabilityLevel inlineFunctionForConstructCapabilityLevel(CodeBlock* codeBlock)
 {
-    return mightInlineFunctionForClosureCall(codeBlock) && canInline(capabilityLevel(codeBlock));
-}
-
-inline bool canInlineFunctionForConstruct(CodeBlock* codeBlock)
-{
-    return mightInlineFunctionForConstruct(codeBlock) && canInline(capabilityLevel(codeBlock));
+    if (!mightInlineFunctionForConstruct(codeBlock))
+        return CannotCompile;
+    
+    return capabilityLevel(codeBlock);
 }
 
 inline bool mightInlineFunctionFor(CodeBlock* codeBlock, CodeSpecializationKind kind)
@@ -119,21 +140,35 @@ inline bool mightInlineFunctionFor(CodeBlock* codeBlock, CodeSpecializationKind 
     return mightInlineFunctionForConstruct(codeBlock);
 }
 
+inline bool mightCompileFunctionFor(CodeBlock* codeBlock, CodeSpecializationKind kind)
+{
+    if (kind == CodeForCall)
+        return mightCompileFunctionForCall(codeBlock);
+    ASSERT(kind == CodeForConstruct);
+    return mightCompileFunctionForConstruct(codeBlock);
+}
+
 inline bool mightInlineFunction(CodeBlock* codeBlock)
 {
     return mightInlineFunctionFor(codeBlock, codeBlock->specializationKind());
 }
 
-inline bool canInlineFunctionFor(CodeBlock* codeBlock, CodeSpecializationKind kind, bool isClosureCall)
+inline CapabilityLevel inlineFunctionForCapabilityLevel(CodeBlock* codeBlock, CodeSpecializationKind kind, bool isClosureCall)
 {
     if (isClosureCall) {
-        ASSERT(kind == CodeForCall);
-        return canInlineFunctionForClosureCall(codeBlock);
+        if (kind != CodeForCall)
+            return CannotCompile;
+        return inlineFunctionForClosureCallCapabilityLevel(codeBlock);
     }
     if (kind == CodeForCall)
-        return canInlineFunctionForCall(codeBlock);
+        return inlineFunctionForCallCapabilityLevel(codeBlock);
     ASSERT(kind == CodeForConstruct);
-    return canInlineFunctionForConstruct(codeBlock);
+    return inlineFunctionForConstructCapabilityLevel(codeBlock);
+}
+
+inline bool isSmallEnoughToInlineCodeInto(CodeBlock* codeBlock)
+{
+    return codeBlock->instructionCount() <= Options::maximumInliningCallerSize();
 }
 
 } } // namespace JSC::DFG

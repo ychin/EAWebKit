@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Igalia S.L.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,6 +32,8 @@
 #ifndef GridPosition_h
 #define GridPosition_h
 
+#if ENABLE(CSS_GRID_LAYOUT)
+
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {
@@ -38,7 +41,15 @@ namespace WebCore {
 enum GridPositionType {
     AutoPosition,
     ExplicitPosition, // [ <integer> || <string> ]
-    SpanPosition
+    SpanPosition, // span && [ <integer> || <string> ]
+    NamedGridAreaPosition // <ident>
+};
+
+enum GridPositionSide {
+    ColumnStartSide,
+    ColumnEndSide,
+    RowStartSide,
+    RowEndSide
 };
 
 class GridPosition {
@@ -54,12 +65,19 @@ public:
     GridPositionType type() const { return m_type; }
     bool isAuto() const { return m_type == AutoPosition; }
     bool isSpan() const { return m_type == SpanPosition; }
+    bool isNamedGridArea() const { return m_type == NamedGridAreaPosition; }
 
     void setExplicitPosition(int position, const String& namedGridLine)
     {
         m_type = ExplicitPosition;
         m_integerPosition = position;
         m_namedGridLine = namedGridLine;
+    }
+
+    void setAutoPosition()
+    {
+        m_type = AutoPosition;
+        m_integerPosition = 0;
     }
 
     // 'span' values cannot be negative, yet we reuse the <integer> position which can
@@ -72,6 +90,12 @@ public:
         m_namedGridLine = namedGridLine;
     }
 
+    void setNamedGridArea(const String& namedGridArea)
+    {
+        m_type = NamedGridAreaPosition;
+        m_namedGridLine = namedGridArea;
+    }
+
     int integerPosition() const
     {
         ASSERT(type() == ExplicitPosition);
@@ -80,7 +104,7 @@ public:
 
     String namedGridLine() const
     {
-        ASSERT(type() == ExplicitPosition || type() == SpanPosition);
+        ASSERT(type() == ExplicitPosition || type() == SpanPosition || type() == NamedGridAreaPosition);
         return m_namedGridLine;
     }
 
@@ -92,7 +116,7 @@ public:
 
     bool operator==(const GridPosition& other) const
     {
-        return m_type == other.m_type && m_integerPosition == other.m_integerPosition;
+        return m_type == other.m_type && m_integerPosition == other.m_integerPosition && m_namedGridLine == other.m_namedGridLine;
     }
 
     bool shouldBeResolvedAgainstOppositePosition() const
@@ -106,5 +130,7 @@ private:
 };
 
 } // namespace WebCore
+
+#endif /* ENABLE(CSS_GRID_LAYOUT) */
 
 #endif // GridPosition_h

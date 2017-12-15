@@ -7,7 +7,7 @@
  * Copyright (C) 2008 Collabora, Ltd.
  *
  * All rights reserved.
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,9 +55,6 @@
 #include "NotImplemented.h"
 #include "Path.h"
 #include "PlatformMouseEvent.h"
-#include "PluginDatabase.h"
-#include "PluginPackage.h"
-#include "PluginView.h"
 #include "PluginData.h"
 #include "RenderTheme.h"
 #include "SharedBuffer.h"
@@ -71,9 +68,9 @@
 #include <wtf/text/CString.h>
 
 using namespace WebCore;
-
+/* This is our favorite dumping ground for 'mostly' useless stubs in order to avoid touching core files. */
 namespace WebCore {
-
+    /*
 void PluginView::privateBrowsingStateChanged(bool)
 {
 }
@@ -86,7 +83,7 @@ PassRefPtr<JSC::Bindings::Instance> PluginView::bindingInstance()
 void PluginView::setJavaScriptPaused(bool)
 {
 }
-
+*/
 void getSupportedKeySizes(Vector<String>&)
 {
     notImplemented();
@@ -104,6 +101,21 @@ float userIdleTime()
 }
 
 void setCookieStoragePrivateBrowsingEnabled(bool)
+{
+    notImplemented();
+}
+
+void AXObjectCache::notificationPostTimerFired()
+{
+    notImplemented();
+}
+
+AXAttributeCacheEnabler::AXAttributeCacheEnabler(AXObjectCache *cache)
+{
+    notImplemented();
+}
+
+AXAttributeCacheEnabler::~AXAttributeCacheEnabler()
 {
     notImplemented();
 }

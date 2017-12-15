@@ -19,8 +19,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG) && ENABLE(FILTERS)
 #include "SVGFEMergeElement.h"
 
 #include "ElementIterator.h"
@@ -37,29 +35,27 @@ inline SVGFEMergeElement::SVGFEMergeElement(const QualifiedName& tagName, Docume
     ASSERT(hasTagName(SVGNames::feMergeTag));
 }
 
-PassRefPtr<SVGFEMergeElement> SVGFEMergeElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGFEMergeElement> SVGFEMergeElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGFEMergeElement(tagName, document));
+    return adoptRef(*new SVGFEMergeElement(tagName, document));
 }
 
-PassRefPtr<FilterEffect> SVGFEMergeElement::build(SVGFilterBuilder* filterBuilder, Filter* filter)
+RefPtr<FilterEffect> SVGFEMergeElement::build(SVGFilterBuilder* filterBuilder, Filter& filter)
 {
     RefPtr<FilterEffect> effect = FEMerge::create(filter);
     FilterEffectVector& mergeInputs = effect->inputEffects();
 
-    for (auto mergeNode = childrenOfType<SVGFEMergeNodeElement>(this).begin(), end = childrenOfType<SVGFEMergeNodeElement>(this).end(); mergeNode != end; ++mergeNode) {
-        FilterEffect* mergeEffect = filterBuilder->getEffectById(mergeNode->in1());
+    for (auto& mergeNode : childrenOfType<SVGFEMergeNodeElement>(*this)) {
+        FilterEffect* mergeEffect = filterBuilder->getEffectById(mergeNode.in1());
         if (!mergeEffect)
-            return 0;
+            return nullptr;
         mergeInputs.append(mergeEffect);
     }
 
     if (mergeInputs.isEmpty())
-        return 0;
+        return nullptr;
 
-    return effect.release();
+    return effect;
 }
 
 }
-
-#endif // ENABLE(SVG)

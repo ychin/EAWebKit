@@ -4,7 +4,6 @@
 *   Copyright (C) 1999-2010, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
-*   Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
 ******************************************************************************
 *   file name:  umachine.h
 *   encoding:   US-ASCII
@@ -306,12 +305,7 @@ typedef int8_t UBool;
  */
 
 /* Define UChar to be compatible with wchar_t if possible. */
-//+EAWebKitChange
-//3/10/2014
-#if defined(BUILDING_EA__)
-    typedef char16_t UChar;
-#elif U_SIZEOF_WCHAR_T==2
-//-EAWebKitChange
+#if U_SIZEOF_WCHAR_T==2
     typedef wchar_t UChar;
 #elif U_GNUC_UTF16_STRING
 #if defined _GCC_

@@ -3,7 +3,7 @@
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2006, 2008 Apple Inc. All rights reserved.
  * Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * All rights reserved.
  *
@@ -33,6 +33,7 @@
 #include "EditorClientEA.h"
 
 #include "Document.h"
+#include "DocumentFragment.h"
 #include "Editor.h"
 #include "FocusController.h"
 #include "Frame.h"
@@ -49,7 +50,7 @@
 #include "Settings.h"
 #include "WindowsKeyboardCodes.h"
 #include "SpatialNavigation.h"
-#include "StylePropertySet.h"
+#include "StyleProperties.h"
 #include "webpage.h"
 #include "webpage_p.h"
 
@@ -174,10 +175,15 @@ bool EditorClientEA::shouldChangeSelectedRange(Range* currentRange, Range* propo
 	return acceptsEditing;
 }
 
-bool EditorClientEA::shouldApplyStyle(StylePropertySet*, Range*)
+bool EditorClientEA::shouldApplyStyle(StyleProperties*, Range*)
 {
 	notImplemented();
 	return acceptsEditing;
+}
+
+void EditorClientEA::didApplyStyle()
+{
+	notImplemented();
 }
 
 bool EditorClientEA::shouldMoveRangeAfterDelete(WebCore::Range*, WebCore::Range*)
@@ -325,7 +331,7 @@ void EditorClientEA::handleKeyboardEvent(KeyboardEvent* event)
     if(!frame.document()->focusedElement())
 		return;
 
-    Node* start = frame.selection().start().containerNode();
+	Node* start = frame.selection().selection().start().containerNode();
     if (!start)
         return;
 
@@ -561,7 +567,7 @@ void EditorClientEA::setInputMethodState(bool active)
 			pView->MoveMouseCursorToNode(pNode);
 			if (pNode && pNode->isHTMLElement())
 			{
-				if(isHTMLInputElement(frame.document()->focusedElement()) || isHTMLTextAreaElement(frame.document()->focusedElement())) 
+				if (is<HTMLInputElement>(frame.document()->focusedElement()) || is<HTMLTextAreaElement>(frame.document()->focusedElement()))
 				{
 					HTMLElement* pElement = static_cast<HTMLElement*> (pNode);
 					pElement->blur();
@@ -656,6 +662,17 @@ void EditorClientEA::setInputMethodState(bool active)
 
         pClient->TextInputState(textInfo);
     }
+}
+
+void Editor::pasteWithPasteboard(Pasteboard* pasteboard, bool allowPlainText, MailBlockquoteHandling mailBlockquoteHandling)
+{
+	notImplemented();
+}
+
+PassRefPtr<DocumentFragment> Editor::webContentFromPasteboard(Pasteboard& pasteboard, Range&, bool /*allowPlainText*/, bool& /*chosePlainText*/)
+{
+	notImplemented();
+	return nullptr;
 }
 
 }

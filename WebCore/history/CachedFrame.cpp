@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -31,7 +31,6 @@
 #include "DOMWindow.h"
 #include "Document.h"
 #include "DocumentLoader.h"
-#include "EventHandler.h"
 #include "EventNames.h"
 #include "ExceptionCode.h"
 #include "FocusController.h"
@@ -43,52 +42,37 @@
 #include "Logging.h"
 #include "MainFrame.h"
 #include "Page.h"
+#include "PageCache.h"
 #include "PageTransitionEvent.h"
+#include "SVGDocumentExtensions.h"
 #include "ScriptController.h"
 #include "SerializedScriptValue.h"
 #include <wtf/RefCountedLeakCounter.h>
 #include <wtf/text/CString.h>
 
-#if ENABLE(SVG)
-#include "SVGDocumentExtensions.h"
-#endif
-
-#if ENABLE(TOUCH_EVENTS)
+#if PLATFORM(IOS) || ENABLE(TOUCH_EVENTS)
 #include "Chrome.h"
 #include "ChromeClient.h"
 #endif
 
-#if USE(ACCELERATED_COMPOSITING)
-#include "PageCache.h"
-#endif
-
 namespace WebCore {
 
-#ifndef NDEBUG
-static WTF::RefCountedLeakCounter& cachedFrameCounter()
-{
-    DEFINE_STATIC_LOCAL(WTF::RefCountedLeakCounter, counter, ("CachedFrame"));
-    return counter;
-}
-#endif
+DEFINE_DEBUG_ONLY_GLOBAL(WTF::RefCountedLeakCounter, cachedFrameCounter, ("CachedFrame"));
 
 CachedFrameBase::CachedFrameBase(Frame& frame)
     : m_document(frame.document())
     , m_documentLoader(frame.loader().documentLoader())
     , m_view(frame.view())
-    , m_mousePressNode(frame.eventHandler().mousePressNode())
     , m_url(frame.document()->url())
     , m_isMainFrame(!frame.tree().parent())
-#if USE(ACCELERATED_COMPOSITING)
     , m_isComposited(frame.view()->hasCompositedContent())
-#endif
 {
 }
 
 CachedFrameBase::~CachedFrameBase()
 {
 #ifndef NDEBUG
-    cachedFrameCounter().decrement();
+    cachedFrameCounter.decrement();
 #endif
     // CachedFrames should always have had destroy() called by their parent CachedPage
     ASSERT(!m_document);
@@ -104,24 +88,19 @@ void CachedFrameBase::restore()
     Frame& frame = m_view->frame();
     m_cachedFrameScriptData->restore(frame);
 
-#if ENABLE(SVG)
     if (m_document->svgExtensions())
-        m_document->accessSVGExtensions()->unpauseAnimations();
-#endif
+        m_document->accessSVGExtensions().unpauseAnimations();
 
     frame.animation().resumeAnimationsForDocument(m_document.get());
-    frame.eventHandler().setMousePressNode(m_mousePressNode.get());
-    m_document->resumeActiveDOMObjects(ActiveDOMObject::DocumentWillBecomeInactive);
+    m_document->resumeActiveDOMObjects(ActiveDOMObject::PageCache);
     m_document->resumeScriptedAnimationControllerCallbacks();
 
     // It is necessary to update any platform script objects after restoring the
     // cached page.
     frame.script().updatePlatformScriptObjects();
 
-#if USE(ACCELERATED_COMPOSITING)
     if (m_isComposited)
         frame.view()->restoreBackingStores();
-#endif
 
     frame.loader().client().didRestoreFromPageCache();
 
@@ -131,6 +110,19 @@ void CachedFrameBase::restore()
         m_childFrames[i]->open();
     }
 
+#if PLATFORM(IOS)
+    if (m_isMainFrame) {
+        frame.loader().client().didRestoreFrameHierarchyForCachedFrame();
+
+        if (DOMWindow* domWindow = m_document->domWindow()) {
+            // FIXME: Add SCROLL_LISTENER to the list of event types on Document, and use m_document->hasListenerType(). See <rdar://problem/9615482>.
+            // FIXME: Can use Document::hasListenerType() now.
+            if (domWindow->scrollEventListenerCount() && frame.page())
+                frame.page()->chrome().client().setNeedsScrollNotifications(&frame, true);
+        }
+    }
+#endif
+
     // FIXME: update Page Visibility state here.
     // https://bugs.webkit.org/show_bug.cgi?id=116770
     m_document->enqueuePageshowEvent(PageshowEventPersisted);
@@ -138,7 +130,7 @@ void CachedFrameBase::restore()
     HistoryItem* historyItem = frame.loader().history().currentItem();
     m_document->enqueuePopstateEvent(historyItem && historyItem->stateObject() ? historyItem->stateObject() : SerializedScriptValue::nullValue());
 
-#if ENABLE(TOUCH_EVENTS)
+#if ENABLE(TOUCH_EVENTS) && !PLATFORM(IOS)
     if (m_document->hasTouchEventHandlers())
         m_document->page()->chrome().client().needTouchEvents(true);
 #endif
@@ -150,7 +142,7 @@ CachedFrame::CachedFrame(Frame& frame)
     : CachedFrameBase(frame)
 {
 #ifndef NDEBUG
-    cachedFrameCounter().increment();
+    cachedFrameCounter.increment();
 #endif
     ASSERT(m_document);
     ASSERT(m_documentLoader);
@@ -167,7 +159,7 @@ CachedFrame::CachedFrame(Frame& frame)
 
     // Create the CachedFrames for all Frames in the FrameTree.
     for (Frame* child = frame.tree().firstChild(); child; child = child->tree().nextSibling())
-        m_childFrames.append(CachedFrame::create(*child));
+        m_childFrames.append(std::make_unique<CachedFrame>(*child));
 
     // Active DOM objects must be suspended before we cache the frame script data,
     // but after we've fired the pagehide event, in case that creates more objects.
@@ -175,17 +167,15 @@ CachedFrame::CachedFrame(Frame& frame)
     // those create more objects.
     m_document->documentWillSuspendForPageCache();
     m_document->suspendScriptedAnimationControllerCallbacks();
-    m_document->suspendActiveDOMObjects(ActiveDOMObject::DocumentWillBecomeInactive);
-    m_cachedFrameScriptData = adoptPtr(new ScriptCachedFrameData(frame));
+    m_document->suspendActiveDOMObjects(ActiveDOMObject::PageCache);
+    m_cachedFrameScriptData = std::make_unique<ScriptCachedFrameData>(frame);
 
     m_document->domWindow()->suspendForPageCache();
 
     frame.loader().client().savePlatformDataToCachedFrame(this);
 
-#if USE(ACCELERATED_COMPOSITING)
-    if (m_isComposited && pageCache()->shouldClearBackingStores())
+    if (m_isComposited && PageCache::singleton().shouldClearBackingStores())
         frame.view()->clearBackingStores();
-#endif
 
     // documentWillSuspendForPageCache() can set up a layout timer on the FrameView, so clear timers after that.
     frame.clearTimers();
@@ -209,6 +199,16 @@ CachedFrame::CachedFrame(Frame& frame)
         LOG(PageCache, "Finished creating CachedFrame for child frame with url '%s' and DocumentLoader %p\n", m_url.string().utf8().data(), m_documentLoader.get());
 #endif
 
+#if PLATFORM(IOS)
+    if (m_isMainFrame) {
+        if (DOMWindow* domWindow = m_document->domWindow()) {
+            if (domWindow->scrollEventListenerCount() && frame.page())
+                frame.page()->chrome().client().setNeedsScrollNotifications(&frame, false);
+        }
+    }
+#endif
+
+    ASSERT_WITH_SECURITY_IMPLICATION(!m_documentLoader->isLoading());
 }
 
 void CachedFrame::open()
@@ -236,13 +236,12 @@ void CachedFrame::clear()
     for (int i = m_childFrames.size() - 1; i >= 0; --i)
         m_childFrames[i]->clear();
 
-    m_document = 0;
-    m_view = 0;
-    m_mousePressNode = 0;
+    m_document = nullptr;
+    m_view = nullptr;
     m_url = URL();
 
-    m_cachedFramePlatformData.clear();
-    m_cachedFrameScriptData.clear();
+    m_cachedFramePlatformData = nullptr;
+    m_cachedFrameScriptData = nullptr;
 }
 
 void CachedFrame::destroy()
@@ -280,9 +279,9 @@ void CachedFrame::destroy()
     clear();
 }
 
-void CachedFrame::setCachedFramePlatformData(PassOwnPtr<CachedFramePlatformData> data)
+void CachedFrame::setCachedFramePlatformData(std::unique_ptr<CachedFramePlatformData> data)
 {
-    m_cachedFramePlatformData = data;
+    m_cachedFramePlatformData = WTF::move(data);
 }
 
 CachedFramePlatformData* CachedFrame::cachedFramePlatformData()

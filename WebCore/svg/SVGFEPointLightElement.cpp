@@ -18,8 +18,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG) && ENABLE(FILTERS)
 #include "SVGFEPointLightElement.h"
 #include "SVGNames.h"
 
@@ -33,18 +31,14 @@ inline SVGFEPointLightElement::SVGFEPointLightElement(const QualifiedName& tagNa
     ASSERT(hasTagName(SVGNames::fePointLightTag));
 }
 
-PassRefPtr<SVGFEPointLightElement> SVGFEPointLightElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGFEPointLightElement> SVGFEPointLightElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGFEPointLightElement(tagName, document));
+    return adoptRef(*new SVGFEPointLightElement(tagName, document));
 }
 
-PassRefPtr<LightSource> SVGFEPointLightElement::lightSource() const
+Ref<LightSource> SVGFEPointLightElement::lightSource() const
 {
     return PointLightSource::create(FloatPoint3D(x(), y(), z()));
 }
 
 }
-
-#endif // ENABLE(SVG)
-
-// vim:ts=4:noet

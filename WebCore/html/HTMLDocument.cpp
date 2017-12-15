@@ -57,6 +57,7 @@
 #include "CookieJar.h"
 #include "DocumentLoader.h"
 #include "DocumentType.h"
+#include "ElementChildIterator.h"
 #include "ExceptionCode.h"
 #include "FocusController.h"
 #include "Frame.h"
@@ -69,9 +70,9 @@
 #include "HTMLElementFactory.h"
 #include "HTMLFrameOwnerElement.h"
 #include "HTMLFrameSetElement.h"
+#include "HTMLHtmlElement.h"
 #include "HTMLNames.h"
-#include "InspectorInstrumentation.h"
-#include "URL.h"
+#include "JSDOMBinding.h"
 #include "Page.h"
 #include "ScriptController.h"
 #include "Settings.h"
@@ -82,8 +83,8 @@ namespace WebCore {
 
 using namespace HTMLNames;
 
-HTMLDocument::HTMLDocument(Frame* frame, const URL& url, DocumentClassFlags documentClasses)
-    : Document(frame, url, documentClasses | HTMLDocumentClass)
+HTMLDocument::HTMLDocument(Frame* frame, const URL& url, DocumentClassFlags documentClasses, unsigned constructionFlags)
+    : Document(frame, url, documentClasses | HTMLDocumentClass, constructionFlags)
 {
     clearXMLVersion();
 }
@@ -106,19 +107,19 @@ int HTMLDocument::height()
     return frameView ? frameView->contentsHeight() : 0;
 }
 
-String HTMLDocument::dir()
+const AtomicString& HTMLDocument::dir() const
 {
-    HTMLElement* b = body();
-    if (!b)
-        return String();
-    return b->getAttribute(dirAttr);
+    auto* documentElement = this->documentElement();
+    if (!is<HTMLHtmlElement>(documentElement))
+        return nullAtom;
+    return downcast<HTMLHtmlElement>(*documentElement).dir();
 }
 
-void HTMLDocument::setDir(const String& value)
+void HTMLDocument::setDir(const AtomicString& value)
 {
-    HTMLElement* b = body();
-    if (b)
-        b->setAttribute(dirAttr, value);
+    auto* documentElement = this->documentElement();
+    if (is<HTMLHtmlElement>(documentElement))
+        downcast<HTMLHtmlElement>(*documentElement).setDir(value);
 }
 
 String HTMLDocument::designMode() const
@@ -138,135 +139,74 @@ void HTMLDocument::setDesignMode(const String& value)
     Document::setDesignMode(mode);
 }
 
-Element* HTMLDocument::activeElement()
+const AtomicString& HTMLDocument::bgColor() const
 {
-    if (Element* element = treeScope().focusedElement())
-        return element;
-    return body();
-}
-
-bool HTMLDocument::hasFocus()
-{
-    Page* page = this->page();
-    if (!page)
-        return false;
-    if (!page->focusController().isActive())
-        return false;
-    if (Frame* focusedFrame = page->focusController().focusedFrame()) {
-        if (focusedFrame->tree().isDescendantOf(frame()))
-            return true;
-    }
-    return false;
-}
-
-String HTMLDocument::bgColor()
-{
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
+    auto* bodyElement = body();
     if (!bodyElement)
-        return String();
-    return bodyElement->bgColor();
+        return emptyAtom;
+    return bodyElement->fastGetAttribute(bgcolorAttr);
 }
 
 void HTMLDocument::setBgColor(const String& value)
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
-    if (bodyElement)
-        bodyElement->setBgColor(value);
+    if (auto* bodyElement = body())
+        bodyElement->setAttribute(bgcolorAttr, value);
 }
 
-String HTMLDocument::fgColor()
+const AtomicString& HTMLDocument::fgColor() const
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
+    auto* bodyElement = body();
     if (!bodyElement)
-        return String();
-    return bodyElement->text();
+        return emptyAtom;
+    return bodyElement->fastGetAttribute(textAttr);
 }
 
 void HTMLDocument::setFgColor(const String& value)
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
-    if (bodyElement)
-        bodyElement->setText(value);
+    if (auto* bodyElement = body())
+        bodyElement->setAttribute(textAttr, value);
 }
 
-String HTMLDocument::alinkColor()
+const AtomicString& HTMLDocument::alinkColor() const
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
+    auto* bodyElement = body();
     if (!bodyElement)
-        return String();
-    return bodyElement->aLink();
+        return emptyAtom;
+    return bodyElement->fastGetAttribute(alinkAttr);
 }
 
 void HTMLDocument::setAlinkColor(const String& value)
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
-    if (bodyElement) {
-        // This check is a bit silly, but some benchmarks like to set the
-        // document's link colors over and over to the same value and we
-        // don't want to incur a style update each time.
-        if (bodyElement->aLink() != value)
-            bodyElement->setALink(value);
-    }
+    if (auto* bodyElement = body())
+        bodyElement->setAttribute(alinkAttr, value);
 }
 
-String HTMLDocument::linkColor()
+const AtomicString& HTMLDocument::linkColor() const
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
+    auto* bodyElement = body();
     if (!bodyElement)
-        return String();
-    return bodyElement->link();
+        return emptyAtom;
+    return bodyElement->fastGetAttribute(linkAttr);
 }
 
 void HTMLDocument::setLinkColor(const String& value)
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
-    if (bodyElement) {
-        // This check is a bit silly, but some benchmarks like to set the
-        // document's link colors over and over to the same value and we
-        // don't want to incur a style update each time.
-        if (bodyElement->link() != value)
-            bodyElement->setLink(value);
-    }
+    if (auto* bodyElement = body())
+        bodyElement->setAttribute(linkAttr, value);
 }
 
-String HTMLDocument::vlinkColor()
+const AtomicString& HTMLDocument::vlinkColor() const
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
+    auto* bodyElement = body();
     if (!bodyElement)
-        return String();
-    return bodyElement->vLink();
+        return emptyAtom;
+    return bodyElement->fastGetAttribute(vlinkAttr);
 }
 
 void HTMLDocument::setVlinkColor(const String& value)
 {
-    HTMLElement* b = body();
-    HTMLBodyElement* bodyElement = (b && b->hasTagName(bodyTag)) ? static_cast<HTMLBodyElement*>(b) : 0;
-
-    if (bodyElement) {
-        // This check is a bit silly, but some benchmarks like to set the
-        // document's link colors over and over to the same value and we
-        // don't want to incur a style update each time.
-        if (bodyElement->vLink() != value)
-            bodyElement->setVLink(value);
-    }
+    if (auto* bodyElement = body())
+        bodyElement->setAttribute(vlinkAttr, value);
 }
 
 void HTMLDocument::captureEvents()
@@ -277,17 +217,16 @@ void HTMLDocument::releaseEvents()
 {
 }
 
-PassRefPtr<DocumentParser> HTMLDocument::createParser()
+Ref<DocumentParser> HTMLDocument::createParser()
 {
-    bool reportErrors = InspectorInstrumentation::collectingHTMLParseErrors(this->page());
-    return HTMLDocumentParser::create(*this, reportErrors);
+    return HTMLDocumentParser::create(*this);
 }
 
 // --------------------------------------------------------------------------
 // not part of the DOM
 // --------------------------------------------------------------------------
 
-PassRefPtr<Element> HTMLDocument::createElement(const AtomicString& name, ExceptionCode& ec)
+RefPtr<Element> HTMLDocument::createElement(const AtomicString& name, ExceptionCode& ec)
 {
     if (!isValidName(name)) {
         ec = INVALID_CHARACTER_ERR;
@@ -358,7 +297,8 @@ static HashSet<AtomicStringImpl*>* createHtmlCaseInsensitiveAttributesSet()
 
 void HTMLDocument::addDocumentNamedItem(const AtomicStringImpl& name, Element& item)
 {
-    m_documentNamedItem.add(name, item);
+    m_documentNamedItem.add(name, item, *this);
+    addImpureProperty(AtomicString(const_cast<AtomicStringImpl*>(&name)));
 }
 
 void HTMLDocument::removeDocumentNamedItem(const AtomicStringImpl& name, Element& item)
@@ -368,7 +308,7 @@ void HTMLDocument::removeDocumentNamedItem(const AtomicStringImpl& name, Element
 
 void HTMLDocument::addWindowNamedItem(const AtomicStringImpl& name, Element& item)
 {
-    m_windowNamedItem.add(name, item);
+    m_windowNamedItem.add(name, item, *this);
 }
 
 void HTMLDocument::removeWindowNamedItem(const AtomicStringImpl& name, Element& item)
@@ -392,8 +332,14 @@ void HTMLDocument::clear()
 
 bool HTMLDocument::isFrameSet() const
 {
-    HTMLElement* bodyElement = body();
-    return bodyElement && isHTMLFrameSetElement(bodyElement);
+    if (!documentElement())
+        return false;
+    return !!childrenOfType<HTMLFrameSetElement>(*documentElement()).first();
+}
+
+Ref<Document> HTMLDocument::cloneDocumentWithoutChildren() const
+{
+    return create(nullptr, url());
 }
 
 }

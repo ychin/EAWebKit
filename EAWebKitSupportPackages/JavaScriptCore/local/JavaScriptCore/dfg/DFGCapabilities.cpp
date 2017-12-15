@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,47 +26,62 @@
 #include "config.h"
 #include "DFGCapabilities.h"
 
+#if ENABLE(DFG_JIT)
+
 #include "CodeBlock.h"
 #include "DFGCommon.h"
 #include "Interpreter.h"
+#include "JSCInlines.h"
+#include "Options.h"
 
 namespace JSC { namespace DFG {
 
-#if ENABLE(DFG_JIT)
+bool isSupported()
+{
+    return Options::useDFGJIT()
+        && MacroAssembler::supportsFloatingPoint();
+}
+
+bool isSupportedForInlining(CodeBlock* codeBlock)
+{
+    return codeBlock->ownerExecutable()->isInliningCandidate();
+}
+
 bool mightCompileEval(CodeBlock* codeBlock)
 {
-    return codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
+    return isSupported()
+        && codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
 }
 bool mightCompileProgram(CodeBlock* codeBlock)
 {
-    return codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
+    return isSupported()
+        && codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
 }
 bool mightCompileFunctionForCall(CodeBlock* codeBlock)
 {
-    return codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
+    return isSupported()
+        && codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
 }
 bool mightCompileFunctionForConstruct(CodeBlock* codeBlock)
 {
-    return codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
+    return isSupported()
+        && codeBlock->instructionCount() <= Options::maximumOptimizationCandidateInstructionCount();
 }
 
 bool mightInlineFunctionForCall(CodeBlock* codeBlock)
 {
     return codeBlock->instructionCount() <= Options::maximumFunctionForCallInlineCandidateInstructionCount()
-        && !codeBlock->ownerExecutable()->needsActivation()
-        && codeBlock->ownerExecutable()->isInliningCandidate();
+        && isSupportedForInlining(codeBlock);
 }
 bool mightInlineFunctionForClosureCall(CodeBlock* codeBlock)
 {
     return codeBlock->instructionCount() <= Options::maximumFunctionForClosureCallInlineCandidateInstructionCount()
-        && !codeBlock->ownerExecutable()->needsActivation()
-        && codeBlock->ownerExecutable()->isInliningCandidate();
+        && isSupportedForInlining(codeBlock);
 }
 bool mightInlineFunctionForConstruct(CodeBlock* codeBlock)
 {
     return codeBlock->instructionCount() <= Options::maximumFunctionForConstructInlineCandidateInstructionCount()
-        && !codeBlock->ownerExecutable()->needsActivation()
-        && codeBlock->ownerExecutable()->isInliningCandidate();
+        && isSupportedForInlining(codeBlock);
 }
 
 inline void debugFail(CodeBlock* codeBlock, OpcodeID opcodeID, CapabilityLevel result)
@@ -77,17 +92,20 @@ inline void debugFail(CodeBlock* codeBlock, OpcodeID opcodeID, CapabilityLevel r
 
 CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruction* pc)
 {
+    UNUSED_PARAM(codeBlock); // This function does some bytecode parsing. Ordinarily bytecode parsing requires the owning CodeBlock. It's sort of strange that we don't use it here right now.
+    
     switch (opcodeID) {
     case op_enter:
     case op_to_this:
+    case op_check_tdz:
     case op_create_this:
-    case op_get_callee:
     case op_bitand:
     case op_bitor:
     case op_bitxor:
     case op_rshift:
     case op_lshift:
     case op_urshift:
+    case op_unsigned:
     case op_inc:
     case op_dec:
     case op_add:
@@ -96,9 +114,11 @@ CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruc
     case op_mul:
     case op_mod:
     case op_div:
-#if ENABLE(DEBUG_WITH_BREAKPOINT)
     case op_debug:
-#endif
+    case op_profile_will_call:
+    case op_profile_did_call:
+    case op_profile_type:
+    case op_profile_control_flow:
     case op_mov:
     case op_check_has_instance:
     case op_instanceof:
@@ -107,6 +127,7 @@ CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruc
     case op_is_number:
     case op_is_string:
     case op_is_object:
+    case op_is_object_or_null:
     case op_is_function:
     case op_not:
     case op_less:
@@ -121,6 +142,7 @@ CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruc
     case op_nstricteq:
     case op_get_by_val:
     case op_put_by_val:
+    case op_put_by_val_direct:
     case op_get_by_id:
     case op_get_by_id_out_of_line:
     case op_get_array_length:
@@ -130,8 +152,6 @@ CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruc
     case op_put_by_id_transition_direct_out_of_line:
     case op_put_by_id_transition_normal:
     case op_put_by_id_transition_normal_out_of_line:
-    case op_init_global_const_nop:
-    case op_init_global_const:
     case op_jmp:
     case op_jtrue:
     case op_jfalse:
@@ -158,18 +178,35 @@ CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruc
     case op_throw_static_error:
     case op_call:
     case op_construct:
-    case op_init_lazy_reg:
-    case op_create_arguments:
-    case op_tear_off_arguments:
-    case op_get_argument_by_val:
-    case op_get_arguments_length:
+    case op_call_varargs:
+    case op_construct_varargs:
+    case op_create_direct_arguments:
+    case op_create_scoped_arguments:
+    case op_create_out_of_band_arguments:
+    case op_get_from_arguments:
+    case op_put_to_arguments:
     case op_jneq_ptr:
     case op_typeof:
     case op_to_number:
+    case op_to_string:
     case op_switch_imm:
     case op_switch_char:
     case op_in:
+    case op_get_scope:
     case op_get_from_scope:
+    case op_get_enumerable_length:
+    case op_has_generic_property:
+    case op_has_structure_property:
+    case op_has_indexed_property:
+    case op_get_direct_pname:
+    case op_get_property_enumerator:
+    case op_enumerator_structure_pname:
+    case op_enumerator_generic_pname:
+    case op_to_index_string:
+    case op_new_func:
+    case op_new_func_exp:
+    case op_create_lexical_environment:
+    case op_get_parent_scope:
         return CanCompileAndInline;
 
     case op_put_to_scope: {
@@ -183,22 +220,13 @@ CapabilityLevel capabilityLevel(OpcodeID opcodeID, CodeBlock* codeBlock, Instruc
 
     case op_resolve_scope: {
         // We don't compile 'catch' or 'with', so there's no point in compiling variable resolution within them.
-        ResolveType resolveType = ResolveModeAndType(pc[3].u.operand).type();
+        ResolveType resolveType = ResolveModeAndType(pc[4].u.operand).type();
         if (resolveType == Dynamic)
             return CannotCompile;
         return CanCompileAndInline;
     }
 
-    case op_call_varargs:
-        if (codeBlock->usesArguments() && pc[4].u.operand == codeBlock->argumentsRegister().offset())
-            return CanInline;
-        return CannotCompile;
-
-    case op_new_regexp: 
-    case op_create_activation:
-    case op_tear_off_activation:
-    case op_new_func:
-    case op_new_func_exp:
+    case op_new_regexp:
     case op_switch_string: // Don't inline because we don't want to copy string tables in the concurrent JIT.
         return CanCompile;
 
@@ -237,7 +265,6 @@ CapabilityLevel capabilityLevel(CodeBlock* codeBlock)
     return result;
 }
 
-#endif
-
 } } // namespace JSC::DFG
 
+#endif

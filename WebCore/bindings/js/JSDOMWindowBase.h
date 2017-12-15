@@ -34,7 +34,7 @@ namespace WebCore {
 
     class JSDOMWindowBasePrivate;
 
-    class JSDOMWindowBase : public JSDOMGlobalObject {
+    class WEBCORE_EXPORT JSDOMWindowBase : public JSDOMGlobalObject {
         typedef JSDOMGlobalObject Base;
     protected:
         JSDOMWindowBase(JSC::VM&, JSC::Structure*, PassRefPtr<DOMWindow>, JSDOMWindowShell*);
@@ -63,15 +63,19 @@ namespace WebCore {
         static bool supportsProfiling(const JSC::JSGlobalObject*);
         static bool supportsRichSourceInfo(const JSC::JSGlobalObject*);
         static bool shouldInterruptScript(const JSC::JSGlobalObject*);
-        static bool javaScriptExperimentsEnabled(const JSC::JSGlobalObject*);
-
-        static void queueTaskToEventLoop(const JSC::JSGlobalObject*, JSC::GlobalObjectMethodTable::QueueTaskToEventLoopCallbackFunctionPtr, PassRefPtr<JSC::TaskContext>);
+        static bool shouldInterruptScriptBeforeTimeout(const JSC::JSGlobalObject*);
+        static JSC::RuntimeFlags javaScriptRuntimeFlags(const JSC::JSGlobalObject*);
+        static void queueTaskToEventLoop(const JSC::JSGlobalObject*, PassRefPtr<JSC::Microtask>);
         
         void printErrorMessage(const String&) const;
 
         JSDOMWindowShell* shell() const;
 
-        static JSC::VM* commonVM();
+        static JSC::VM& commonVM();
+        static void fireFrameClearedWatchpointsForWindow(DOMWindow*);
+
+    protected:
+        JSC::WatchpointSet m_windowCloseWatchpoints;
 
     private:
         RefPtr<DOMWindow> m_impl;
@@ -81,12 +85,12 @@ namespace WebCore {
     // Returns a JSDOMWindow or jsNull()
     // JSDOMGlobalObject* is ignored, accessing a window in any context will
     // use that DOMWindow's prototype chain.
-    JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMWindow*);
+    WEBCORE_EXPORT JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMWindow*);
     JSC::JSValue toJS(JSC::ExecState*, DOMWindow*);
 
     // Returns JSDOMWindow or 0
     JSDOMWindow* toJSDOMWindow(Frame*, DOMWrapperWorld&);
-    JSDOMWindow* toJSDOMWindow(JSC::JSValue);
+    WEBCORE_EXPORT JSDOMWindow* toJSDOMWindow(JSC::JSValue);
 
 } // namespace WebCore
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009, 2011 Apple Inc. All rights reserved.
+ * Copyright (C) 2009, 2011, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,10 +29,11 @@
 #include "CopyVisitor.h"
 #include "CopyVisitorInlines.h"
 #include "GCThread.h"
-#include "VM.h"
 #include "MarkStack.h"
+#include "JSCInlines.h"
 #include "SlotVisitor.h"
 #include "SlotVisitorInlines.h"
+#include "VM.h"
 
 namespace JSC {
 
@@ -72,7 +73,7 @@ GCThreadSharedData::GCThreadSharedData(VM* vm)
     : m_vm(vm)
     , m_copiedSpace(&vm->heap.m_storageSpace)
     , m_shouldHashCons(false)
-    , m_sharedMarkStack(vm->heap.blockAllocator())
+    , m_sharedMarkStack()
     , m_numberOfActiveParallelMarkers(0)
     , m_parallelMarkersShouldExit(false)
     , m_copyIndex(0)
@@ -80,23 +81,19 @@ GCThreadSharedData::GCThreadSharedData(VM* vm)
     , m_gcThreadsShouldWait(false)
     , m_currentPhase(NoPhase)
 {
-    m_copyLock.Init();
 #if ENABLE(PARALLEL_GC)
     // Grab the lock so the new GC threads can be properly initialized before they start running.
-    MutexLocker locker(m_phaseLock);
+    std::unique_lock<Lock> lock(m_phaseMutex);
     for (unsigned i = 1; i < Options::numberOfGCMarkers(); ++i) {
         m_numberOfActiveGCThreads++;
-        SlotVisitor* slotVisitor = new SlotVisitor(*this);
-        CopyVisitor* copyVisitor = new CopyVisitor(*this);
-        GCThread* newThread = new GCThread(*this, slotVisitor, copyVisitor);
+        GCThread* newThread = new GCThread(*this, std::make_unique<SlotVisitor>(*this), std::make_unique<CopyVisitor>(*this));
         ThreadIdentifier threadID = createThread(GCThread::gcThreadStartFunc, newThread, "JavaScriptCore::Marking");
         newThread->initializeThreadID(threadID);
         m_gcThreads.append(newThread);
     }
 
     // Wait for all the GCThreads to get to the right place.
-    while (m_numberOfActiveGCThreads)
-        m_activityCondition.wait(m_phaseLock);
+    m_activityConditionVariable.wait(lock, [this] { return !m_numberOfActiveGCThreads; });
 #endif
 }
 
@@ -105,13 +102,13 @@ GCThreadSharedData::~GCThreadSharedData()
 #if ENABLE(PARALLEL_GC)    
     // Destroy our marking threads.
     {
-        MutexLocker markingLocker(m_markingLock);
-        MutexLocker phaseLocker(m_phaseLock);
+        std::lock_guard<Lock> markingLock(m_markingMutex);
+        std::lock_guard<Lock> phaseLock(m_phaseMutex);
         ASSERT(m_currentPhase == NoPhase);
         m_parallelMarkersShouldExit = true;
         m_gcThreadsShouldWait = false;
         m_currentPhase = Exit;
-        m_phaseCondition.broadcast();
+        m_phaseConditionVariable.notifyAll();
     }
     for (unsigned i = 0; i < m_gcThreads.size(); ++i) {
         waitForThreadCompletion(m_gcThreads[i]->threadID());
@@ -119,16 +116,11 @@ GCThreadSharedData::~GCThreadSharedData()
     }
 #endif
 }
-    
+
 void GCThreadSharedData::reset()
 {
     ASSERT(m_sharedMarkStack.isEmpty());
     
-#if ENABLE(PARALLEL_GC)
-    m_opaqueRoots.clear();
-#else
-    ASSERT(m_opaqueRoots.isEmpty());
-#endif
     m_weakReferenceHarvesters.removeAll();
 
     if (m_shouldHashCons) {
@@ -139,28 +131,34 @@ void GCThreadSharedData::reset()
 
 void GCThreadSharedData::startNextPhase(GCPhase phase)
 {
-    MutexLocker phaseLocker(m_phaseLock);
+    std::lock_guard<Lock> lock(m_phaseMutex);
     ASSERT(!m_gcThreadsShouldWait);
     ASSERT(m_currentPhase == NoPhase);
     m_gcThreadsShouldWait = true;
     m_currentPhase = phase;
-    m_phaseCondition.broadcast();
+    m_phaseConditionVariable.notifyAll();
 }
 
 void GCThreadSharedData::endCurrentPhase()
 {
     ASSERT(m_gcThreadsShouldWait);
-    MutexLocker locker(m_phaseLock);
+    std::unique_lock<Lock> lock(m_phaseMutex);
     m_currentPhase = NoPhase;
     m_gcThreadsShouldWait = false;
-    m_phaseCondition.broadcast();
-    while (m_numberOfActiveGCThreads)
-        m_activityCondition.wait(m_phaseLock);
+    m_phaseConditionVariable.notifyAll();
+    m_activityConditionVariable.wait(lock, [this] { return !m_numberOfActiveGCThreads; });
 }
 
 void GCThreadSharedData::didStartMarking()
 {
-    MutexLocker markingLocker(m_markingLock);
+    if (m_vm->heap.operationInProgress() == FullCollection) {
+#if ENABLE(PARALLEL_GC)
+        m_opaqueRoots.clear();
+#else
+        ASSERT(m_opaqueRoots.isEmpty());
+#endif
+}
+    std::lock_guard<Lock> lock(m_markingMutex);
     m_parallelMarkersShouldExit = false;
     startNextPhase(Mark);
 }
@@ -168,9 +166,9 @@ void GCThreadSharedData::didStartMarking()
 void GCThreadSharedData::didFinishMarking()
 {
     {
-        MutexLocker markingLocker(m_markingLock);
+        std::lock_guard<Lock> lock(m_markingMutex);
         m_parallelMarkersShouldExit = true;
-        m_markingCondition.broadcast();
+        m_markingConditionVariable.notifyAll();
     }
 
     ASSERT(m_currentPhase == Mark);
@@ -180,8 +178,16 @@ void GCThreadSharedData::didFinishMarking()
 void GCThreadSharedData::didStartCopying()
 {
     {
-        SpinLockHolder locker(&m_copyLock);
-        WTF::copyToVector(m_copiedSpace->m_blockSet, m_blocksToCopy);
+        LockHolder locker(&m_copyLock);
+        if (m_vm->heap.operationInProgress() == EdenCollection) {
+            // Reset the vector to be empty, but don't throw away the backing store.
+            m_blocksToCopy.shrink(0);
+            for (CopiedBlock* block = m_copiedSpace->m_newGen.fromSpace->head(); block; block = block->next())
+                m_blocksToCopy.append(block);
+        } else {
+            ASSERT(m_vm->heap.operationInProgress() == FullCollection);
+            WTF::copyToVector(m_copiedSpace->m_blockSet, m_blocksToCopy);
+        }
         m_copyIndex = 0;
     }
 

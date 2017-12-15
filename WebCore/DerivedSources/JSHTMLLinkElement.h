@@ -22,119 +22,53 @@
 #define JSHTMLLinkElement_h
 
 #include "HTMLLinkElement.h"
-#include "JSDOMBinding.h"
 #include "JSHTMLElement.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSHTMLLinkElement : public JSHTMLElement {
 public:
     typedef JSHTMLElement Base;
-    static JSHTMLLinkElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLLinkElement> impl)
+    static JSHTMLLinkElement* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLLinkElement>&& impl)
     {
-        JSHTMLLinkElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLLinkElement>(globalObject->vm().heap)) JSHTMLLinkElement(structure, globalObject, impl);
+        JSHTMLLinkElement* ptr = new (NotNull, JSC::allocateCell<JSHTMLLinkElement>(globalObject->vm().heap)) JSHTMLLinkElement(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSElementType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
 
     // Custom attributes
-    JSC::JSValue sizes(JSC::ExecState*) const;
     void setSizes(JSC::ExecState*, JSC::JSValue);
     HTMLLinkElement& impl() const
     {
         return static_cast<HTMLLinkElement&>(Base::impl());
     }
-protected:
-    JSHTMLLinkElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLLinkElement>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
-};
-
-
-class JSHTMLLinkElementPrototype : public JSC::JSNonFinalObject {
 public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHTMLLinkElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHTMLLinkElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLLinkElementPrototype>(vm.heap)) JSHTMLLinkElementPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHTMLLinkElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSHTMLLinkElement(JSC::Structure*, JSDOMGlobalObject*, Ref<HTMLLinkElement>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-class JSHTMLLinkElementConstructor : public DOMConstructorObject {
-private:
-    JSHTMLLinkElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-public:
-    typedef DOMConstructorObject Base;
-    static JSHTMLLinkElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHTMLLinkElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSHTMLLinkElementConstructor>(vm.heap)) JSHTMLLinkElementConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsHTMLLinkElementDisabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementDisabled(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementCharset(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementCharset(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementHref(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementHref(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementHreflang(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementHreflang(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementMedia(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementMedia(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementRel(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementRel(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementRev(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementRev(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementSizes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementSizes(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementTarget(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSHTMLLinkElementType(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsHTMLLinkElementSheet(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHTMLLinkElementConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

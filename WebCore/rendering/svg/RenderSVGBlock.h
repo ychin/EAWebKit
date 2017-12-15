@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Apple Computer, Inc.
+ * Copyright (C) 2006 Apple Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +20,6 @@
 #ifndef RenderSVGBlock_h
 #define RenderSVGBlock_h
 
-#if ENABLE(SVG)
 #include "RenderBlockFlow.h"
 #include "SVGGraphicsElement.h"
 #include "SVGRenderSupport.h"
@@ -31,28 +30,25 @@ class SVGElement;
 
 class RenderSVGBlock : public RenderBlockFlow {
 public:
-    virtual LayoutRect visualOverflowRect() const OVERRIDE FINAL;
+    virtual LayoutRect visualOverflowRect() const override final;
 
-    SVGGraphicsElement& graphicsElement() const { return toSVGGraphicsElement(nodeForNonAnonymous()); }
+    SVGGraphicsElement& graphicsElement() const { return downcast<SVGGraphicsElement>(nodeForNonAnonymous()); }
 
 protected:
-    explicit RenderSVGBlock(SVGGraphicsElement&);
-    virtual void willBeDestroyed() OVERRIDE;
+    RenderSVGBlock(SVGGraphicsElement&, Ref<RenderStyle>&&);
+    virtual void willBeDestroyed() override;
 
 private:
-    void element() const WTF_DELETED_FUNCTION;
+    void element() const = delete;
 
-    virtual void setStyle(PassRefPtr<RenderStyle>) OVERRIDE FINAL;
-    virtual void updateFromStyle() OVERRIDE FINAL;
+    virtual void updateFromStyle() override final;
 
-    virtual bool isRenderSVGBlock() const OVERRIDE FINAL { return true; };
+    virtual bool isRenderSVGBlock() const override final { return true; }
 
-    virtual void absoluteRects(Vector<IntRect>&, const LayoutPoint& accumulatedOffset) const;
+    virtual void absoluteRects(Vector<IntRect>&, const LayoutPoint& accumulatedOffset) const override;
 
-    virtual void styleWillChange(StyleDifference, const RenderStyle* newStyle) OVERRIDE FINAL;
-    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) OVERRIDE FINAL;
+    virtual void styleDidChange(StyleDifference, const RenderStyle* oldStyle) override final;
 };
 
 }
-#endif
 #endif

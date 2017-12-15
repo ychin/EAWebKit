@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,10 +50,10 @@ public:
     PopupMenuEA(PopupMenuClient*, const ChromeClientEA*);
     ~PopupMenuEA();
 
-    virtual void show(const IntRect&, FrameView*, int index) OVERRIDE;
-    virtual void hide() OVERRIDE;
-    virtual void updateFromElement() OVERRIDE;
-    virtual void disconnectClient() OVERRIDE;
+    virtual void show(const IntRect&, FrameView*, int index) override;
+    virtual void hide() override;
+    virtual void updateFromElement() override;
+    virtual void disconnectClient() override;
 
 
     // Overlay event handling (mostly input)
@@ -68,21 +68,23 @@ public:
 
 private:
     // ScrollableArea
-    virtual int scrollSize(ScrollbarOrientation) const OVERRIDE;
-    virtual int scrollPosition(Scrollbar*) const OVERRIDE;
-    virtual void setScrollOffset(const IntPoint&) OVERRIDE;
-    virtual void invalidateScrollbarRect(Scrollbar*, const IntRect&) OVERRIDE { } ;
-    virtual void invalidateScrollCornerRect(const IntRect&) OVERRIDE { }
-    virtual bool isActive() const OVERRIDE { return true; }
-    ScrollableArea* enclosingScrollableArea() const OVERRIDE { return 0; }
-    virtual bool isScrollCornerVisible() const OVERRIDE { return false; }
-    virtual IntRect scrollCornerRect() const OVERRIDE { return IntRect(); }
-    virtual Scrollbar* verticalScrollbar() const OVERRIDE { return m_scrollBar.get(); }
-    virtual int visibleHeight() const OVERRIDE;
-    virtual int visibleWidth() const OVERRIDE;
-    virtual IntSize contentsSize() const OVERRIDE;
-    virtual IntRect scrollableAreaBoundingBox() const OVERRIDE;
-    virtual bool updatesScrollLayerPositionOnMainThread() const OVERRIDE { return true; }
+    virtual int scrollSize(ScrollbarOrientation) const override;
+    virtual int scrollPosition(Scrollbar*) const override;
+    virtual void setScrollOffset(const IntPoint&) override;
+    virtual void invalidateScrollbarRect(Scrollbar*, const IntRect&) override { } ;
+    virtual void invalidateScrollCornerRect(const IntRect&) override { }
+    virtual bool isActive() const override { return true; }
+    ScrollableArea* enclosingScrollableArea() const override { return 0; }
+    virtual bool isScrollCornerVisible() const override { return false; }
+    virtual IntRect scrollCornerRect() const override { return IntRect(); }
+    virtual Scrollbar* verticalScrollbar() const override { return m_scrollBar.get(); }
+	virtual IntSize visibleSize() const;
+    virtual IntSize contentsSize() const override;
+    virtual IntRect scrollableAreaBoundingBox() const override;
+    virtual bool updatesScrollLayerPositionOnMainThread() const override { return true; }
+	virtual bool forceUpdateScrollbarsOnMainThreadForPerformanceTesting() const override { return false; }
+	virtual bool isScrollableOrRubberbandable() override { return false; }
+	virtual bool hasScrollableOrRubberbandableAncestor() override { return false; }
 
 private:
     int  getNextFocusIndex(const int delta);

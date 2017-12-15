@@ -29,15 +29,10 @@
 
 #include "Extensions3DOpenGLCommon.h"
 
+#if USE(OPENGL_ES_2)
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-
-#if OS(QNX)
-// See https://bugs.webkit.org/show_bug.cgi?id=91030.
-// Newer Khorons headers do define these with a PROC suffix, but older headers don't.
-#define PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC
-#define PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC
-#endif
 
 #ifndef GL_EXT_robustness
 /* reuse GL_NO_ERROR */
@@ -64,15 +59,12 @@ typedef void (GL_APIENTRYP PFNGLGETNUNIFORMFVEXTPROC) (GLuint program, GLint loc
 typedef void (GL_APIENTRYP PFNGLGETNUNIFORMIVEXTPROC) (GLuint program, GLint location, GC3Dsizei bufSize, GLint *params);
 #endif
 
-#if PLATFORM(NIX) && USE(OPENGL_ES_2) && !GL_IMG_multisampled_render_to_texture
-// on rPi, PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG is called PFNGLCLIPPLANEXIMG.
-typedef PFNGLCLIPPLANEXIMG PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG;
-#endif
-
 namespace WebCore {
 
 class Extensions3DOpenGLES : public Extensions3DOpenGLCommon {
 public:
+    // This class only needs to be instantiated by GraphicsContext3D implementations.
+    explicit Extensions3DOpenGLES(GraphicsContext3D*);
     virtual ~Extensions3DOpenGLES();
 
     virtual void framebufferTexture2DMultisampleIMG(unsigned long target, unsigned long attachment, unsigned long textarget, unsigned int texture, int level, unsigned long samples);
@@ -81,7 +73,6 @@ public:
     // Extension3D methods
     virtual void blitFramebuffer(long srcX0, long srcY0, long srcX1, long srcY1, long dstX0, long dstY0, long dstX1, long dstY1, unsigned long mask, unsigned long filter);
     virtual void renderbufferStorageMultisample(unsigned long target, unsigned long samples, unsigned long internalformat, unsigned long width, unsigned long height);
-    virtual void copyTextureCHROMIUM(GC3Denum, Platform3DObject, Platform3DObject, GC3Dint, GC3Denum);
     virtual void insertEventMarkerEXT(const String&);
     virtual void pushGroupMarkerEXT(const String&);
     virtual void popGroupMarkerEXT(void);
@@ -92,9 +83,13 @@ public:
     virtual void bindVertexArrayOES(Platform3DObject);
     virtual void drawBuffersEXT(GC3Dsizei, const GC3Denum*);
 
+    virtual void drawArraysInstanced(GC3Denum mode, GC3Dint first, GC3Dsizei count, GC3Dsizei primcount);
+    virtual void drawElementsInstanced(GC3Denum mode, GC3Dsizei count, GC3Denum type, long long offset, GC3Dsizei primcount);
+    virtual void vertexAttribDivisor(GC3Duint index, GC3Duint divisor);
+
     // EXT Robustness - reset
     virtual int getGraphicsResetStatusARB();
-    void setEXTContextLostCallback(PassOwnPtr<GraphicsContext3D::ContextLostCallback>);
+    void setEXTContextLostCallback(std::unique_ptr<GraphicsContext3D::ContextLostCallback>);
 
     // EXT Robustness - etc
     virtual void readnPixelsEXT(int x, int y, GC3Dsizei width, GC3Dsizei height, GC3Denum format, GC3Denum type, GC3Dsizei bufSize, void *data);
@@ -102,10 +97,6 @@ public:
     virtual void getnUniformivEXT(GC3Duint program, int location, GC3Dsizei bufSize, int *params);
 
 protected:
-    // This class only needs to be instantiated by GraphicsContext3D implementations.
-    friend class GraphicsContext3D;
-    Extensions3DOpenGLES(GraphicsContext3D*);
-
     virtual bool supportsExtension(const String&);
     virtual String getExtensions();
 
@@ -113,9 +104,10 @@ protected:
 
     bool m_supportsOESvertexArrayObject;
     bool m_supportsIMGMultisampledRenderToTexture;
+    bool m_supportsANGLEinstancedArrays;
 
-    PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG m_glFramebufferTexture2DMultisampleIMG;
-    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG m_glRenderbufferStorageMultisampleIMG;
+    PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC m_glFramebufferTexture2DMultisampleIMG;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC m_glRenderbufferStorageMultisampleIMG;
     PFNGLBINDVERTEXARRAYOESPROC m_glBindVertexArrayOES;
     PFNGLDELETEVERTEXARRAYSOESPROC m_glDeleteVertexArraysOES;
     PFNGLGENVERTEXARRAYSOESPROC m_glGenVertexArraysOES;
@@ -124,10 +116,15 @@ protected:
     PFNGLREADNPIXELSEXTPROC m_glReadnPixelsEXT;
     PFNGLGETNUNIFORMFVEXTPROC m_glGetnUniformfvEXT;
     PFNGLGETNUNIFORMIVEXTPROC m_glGetnUniformivEXT;
+    PFNGLVERTEXATTRIBDIVISORANGLEPROC m_glVertexAttribDivisorANGLE;
+    PFNGLDRAWARRAYSINSTANCEDANGLEPROC m_glDrawArraysInstancedANGLE;
+    PFNGLDRAWELEMENTSINSTANCEDANGLEPROC m_glDrawElementsInstancedANGLE;
 
-    OwnPtr<GraphicsContext3D::ContextLostCallback> m_contextLostCallback;
+    std::unique_ptr<GraphicsContext3D::ContextLostCallback> m_contextLostCallback;
 };
 
 } // namespace WebCore
+
+#endif // USE(OPENGL_ES_2)
 
 #endif // Extensions3DOpenGLES_h

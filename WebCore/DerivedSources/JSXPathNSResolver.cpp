@@ -33,45 +33,66 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsXPathNSResolverPrototypeFunctionLookupNamespaceURI(JSC::ExecState*);
+
+class JSXPathNSResolverPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSXPathNSResolverPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSXPathNSResolverPrototype* ptr = new (NotNull, JSC::allocateCell<JSXPathNSResolverPrototype>(vm.heap)) JSXPathNSResolverPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSXPathNSResolverPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSXPathNSResolverPrototypeTableValues[] =
 {
-    { "lookupNamespaceURI", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsXPathNSResolverPrototypeFunctionLookupNamespaceURI), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "lookupNamespaceURI", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsXPathNSResolverPrototypeFunctionLookupNamespaceURI), (intptr_t) (0) },
 };
 
-static const HashTable JSXPathNSResolverPrototypeTable = { 2, 1, JSXPathNSResolverPrototypeTableValues, 0 };
-const ClassInfo JSXPathNSResolverPrototype::s_info = { "XPathNSResolverPrototype", &Base::s_info, &JSXPathNSResolverPrototypeTable, 0, CREATE_METHOD_TABLE(JSXPathNSResolverPrototype) };
+const ClassInfo JSXPathNSResolverPrototype::s_info = { "XPathNSResolverPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSXPathNSResolverPrototype) };
 
-JSObject* JSXPathNSResolverPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSXPathNSResolver>(vm, globalObject);
-}
-
-bool JSXPathNSResolverPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSXPathNSResolverPrototype* thisObject = jsCast<JSXPathNSResolverPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSXPathNSResolverPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSXPathNSResolver::s_info = { "XPathNSResolver", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSXPathNSResolver) };
-
-JSXPathNSResolver::JSXPathNSResolver(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XPathNSResolver> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSXPathNSResolver::finishCreation(VM& vm)
+void JSXPathNSResolverPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSXPathNSResolverPrototypeTableValues, *this);
+}
+
+const ClassInfo JSXPathNSResolver::s_info = { "XPathNSResolver", &Base::s_info, 0, CREATE_METHOD_TABLE(JSXPathNSResolver) };
+
+JSXPathNSResolver::JSXPathNSResolver(Structure* structure, JSDOMGlobalObject* globalObject, Ref<XPathNSResolver>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSXPathNSResolver::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSXPathNSResolverPrototype::create(vm, globalObject, JSXPathNSResolverPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSXPathNSResolver::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSXPathNSResolver>(vm, globalObject);
 }
 
 void JSXPathNSResolver::destroy(JSC::JSCell* cell)
@@ -82,62 +103,52 @@ void JSXPathNSResolver::destroy(JSC::JSCell* cell)
 
 JSXPathNSResolver::~JSXPathNSResolver()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 EncodedJSValue JSC_HOST_CALL jsXPathNSResolverPrototypeFunctionLookupNamespaceURI(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSXPathNSResolver::info()))
-        return throwVMTypeError(exec);
-    JSXPathNSResolver* castedThis = jsCast<JSXPathNSResolver*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSXPathNSResolver* castedThis = jsDynamicCast<JSXPathNSResolver*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "XPathNSResolver", "lookupNamespaceURI");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSXPathNSResolver::info());
-    XPathNSResolver& impl = castedThis->impl();
-    const String& prefix(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String prefix = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsStringOrNull(exec, impl.lookupNamespaceURI(prefix));
+    JSValue result = jsStringOrNull(exec, impl.lookupNamespaceURI(prefix));
     return JSValue::encode(result);
-}
-
-static inline bool isObservable(JSXPathNSResolver* jsXPathNSResolver)
-{
-    if (jsXPathNSResolver->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSXPathNSResolverOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSXPathNSResolver* jsXPathNSResolver = jsCast<JSXPathNSResolver*>(handle.get().asCell());
-    if (!isObservable(jsXPathNSResolver))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSXPathNSResolverOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSXPathNSResolver* jsXPathNSResolver = jsCast<JSXPathNSResolver*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsXPathNSResolver = jsCast<JSXPathNSResolver*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsXPathNSResolver->impl(), jsXPathNSResolver);
-    jsXPathNSResolver->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, XPathNSResolver* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, XPathNSResolver* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSXPathNSResolver>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSXPathNSResolver>(globalObject, impl))
         return result;
-    ReportMemoryCost<XPathNSResolver>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSXPathNSResolver>(exec, globalObject, impl);
+    return createNewWrapper<JSXPathNSResolver>(globalObject, impl);
 }
 
-XPathNSResolver* toXPathNSResolver(JSC::JSValue value)
+XPathNSResolver* JSXPathNSResolver::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSXPathNSResolver::info()) ? &jsCast<JSXPathNSResolver*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSXPathNSResolver*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

@@ -18,18 +18,15 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "RenderSVGHiddenContainer.h"
 
 #include "RenderSVGPath.h"
-#include "SVGElement.h"
 #include <wtf/StackStats.h>
 
 namespace WebCore {
 
-RenderSVGHiddenContainer::RenderSVGHiddenContainer(SVGElement& element)
-    : RenderSVGContainer(element)
+RenderSVGHiddenContainer::RenderSVGHiddenContainer(SVGElement& element, Ref<RenderStyle>&& style)
+    : RenderSVGContainer(element, WTF::move(style))
 {
 }
 
@@ -37,7 +34,7 @@ void RenderSVGHiddenContainer::layout()
 {
     StackStats::LayoutCheckPoint layoutCheckPoint;
     ASSERT(needsLayout());
-    SVGRenderSupport::layoutChildren(this, selfNeedsLayout()); 
+    SVGRenderSupport::layoutChildren(*this, selfNeedsLayout());
     clearNeedsLayout();    
 }
 
@@ -57,5 +54,3 @@ bool RenderSVGHiddenContainer::nodeAtFloatPoint(const HitTestRequest&, HitTestRe
 }
 
 }
-
-#endif // ENABLE(SVG)

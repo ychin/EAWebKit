@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSNavigatorUserMediaErrorCallback : public NavigatorUserMediaErrorCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSNavigatorUserMediaErrorCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSNavigatorUserMediaErrorCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSNavigatorUserMediaErrorCallback(callback, globalObject));
+        return adoptRef(*new JSNavigatorUserMediaErrorCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

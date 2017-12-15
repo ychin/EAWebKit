@@ -2,7 +2,7 @@
  * Copyright (C) 2010 Nokia Inc. All rights reserved.
  * Copyright (C) 2009 Apple Inc. All rights reserved.
  * Copyright (C) 2009 Google Inc.  All rights reserved.
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -47,13 +47,14 @@ namespace WebCore {
 
     class AuthenticationChallenge;
     class Credential;
+	class NetworkingContext;
     class SocketStreamHandleClient;
     class SocketStreamHandlePrivate;
 
     class SocketStreamHandle : public RefCounted<SocketStreamHandle>, public SocketStreamHandleBase {
     public:
-        static PassRefPtr<SocketStreamHandle> create(const URL& url, SocketStreamHandleClient* client) { return adoptRef(new SocketStreamHandle(url, client)); }
-        static PassRefPtr<SocketStreamHandle> create(EA::WebKit::SocketHandle socketHandle, SocketStreamHandleClient* client) { return adoptRef(new SocketStreamHandle(socketHandle, client)); }
+        static Ref<SocketStreamHandle> create(const URL& url, SocketStreamHandleClient* client, NetworkingContext&) { return adoptRef(*new SocketStreamHandle(url, client)); }
+        static Ref<SocketStreamHandle> create(EA::WebKit::SocketHandle socketHandle, SocketStreamHandleClient* client) { return adoptRef(*new SocketStreamHandle(socketHandle, client)); }
 
         virtual ~SocketStreamHandle();
 
@@ -71,6 +72,9 @@ namespace WebCore {
         void receivedCredential(const AuthenticationChallenge&, const Credential&);
         void receivedRequestToContinueWithoutCredential(const AuthenticationChallenge&);
         void receivedCancellation(const AuthenticationChallenge&);
+        void receivedRequestToPerformDefaultHandling(const AuthenticationChallenge&);
+        void receivedChallengeRejection(const AuthenticationChallenge&);
+
         SocketStreamHandlePrivate* m_p;
         friend class SocketStreamHandlePrivate;
     };

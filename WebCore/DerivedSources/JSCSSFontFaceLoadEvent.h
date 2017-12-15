@@ -25,7 +25,6 @@
 
 #include "CSSFontFaceLoadEvent.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -34,15 +33,16 @@ class JSDictionary;
 class JSCSSFontFaceLoadEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSCSSFontFaceLoadEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSFontFaceLoadEvent> impl)
+    static JSCSSFontFaceLoadEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSFontFaceLoadEvent>&& impl)
     {
-        JSCSSFontFaceLoadEvent* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceLoadEvent>(globalObject->vm().heap)) JSCSSFontFaceLoadEvent(structure, globalObject, impl);
+        JSCSSFontFaceLoadEvent* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceLoadEvent>(globalObject->vm().heap)) JSCSSFontFaceLoadEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,39 +55,19 @@ public:
         return static_cast<CSSFontFaceLoadEvent&>(Base::impl());
     }
 protected:
-    JSCSSFontFaceLoadEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSFontFaceLoadEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSFontFaceLoadEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSFontFaceLoadEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSFontFaceLoadEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSFontFaceLoadEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSFontFaceLoadEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSFontFaceLoadEventPrototype>(vm.heap)) JSCSSFontFaceLoadEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+bool fillCSSFontFaceLoadEventInit(CSSFontFaceLoadEventInit&, JSDictionary&);
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSFontFaceLoadEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCSSFontFaceLoadEventFontface(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSFontFaceLoadEventError(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

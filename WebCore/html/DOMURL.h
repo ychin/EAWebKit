@@ -27,9 +27,10 @@
 #ifndef DOMURL_h
 #define DOMURL_h
 
+#include "ExceptionCode.h"
 #include "URL.h"
+#include "URLUtils.h"
 #include <wtf/HashSet.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
@@ -39,19 +40,29 @@ class Blob;
 class ScriptExecutionContext;
 class URLRegistrable;
 
-class DOMURL : public RefCounted<DOMURL> {
+class DOMURL : public RefCounted<DOMURL>, public URLUtils<DOMURL> {
 
 public:
-    static PassRefPtr<DOMURL> create() { return adoptRef(new DOMURL); }
+    static Ref<DOMURL> create(const String& url, const String& base, ExceptionCode&);
+    static Ref<DOMURL> create(const String& url, const DOMURL* base, ExceptionCode&);
+    static Ref<DOMURL> create(const String& url, ExceptionCode&);
 
-#if ENABLE(BLOB)
-    static void contextDestroyed(ScriptExecutionContext*);
+    URL href() const { return m_url; }
+    void setHref(const String& url);
+    void setHref(const String&, ExceptionCode&);
 
     static String createObjectURL(ScriptExecutionContext*, Blob*);
     static void revokeObjectURL(ScriptExecutionContext*, const String&);
 
     static String createPublicURL(ScriptExecutionContext*, URLRegistrable*);
-#endif
+
+private:
+    DOMURL(const String& url, const String& base, ExceptionCode&);
+    DOMURL(const String& url, const DOMURL& base, ExceptionCode&);
+    DOMURL(const String& url, ExceptionCode&);
+
+    URL m_baseURL;
+    URL m_url;
 };
 
 } // namespace WebCore

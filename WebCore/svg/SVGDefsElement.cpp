@@ -19,8 +19,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGDefsElement.h"
 
 #include "RenderSVGHiddenContainer.h"
@@ -43,9 +41,9 @@ inline SVGDefsElement::SVGDefsElement(const QualifiedName& tagName, Document& do
     registerAnimatedPropertiesForSVGDefsElement();
 }
 
-PassRefPtr<SVGDefsElement> SVGDefsElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGDefsElement> SVGDefsElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGDefsElement(tagName, document));
+    return adoptRef(*new SVGDefsElement(tagName, document));
 }
 
 bool SVGDefsElement::isValid() const
@@ -53,11 +51,9 @@ bool SVGDefsElement::isValid() const
     return SVGTests::isValid();
 }
 
-RenderElement* SVGDefsElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> SVGDefsElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderSVGHiddenContainer(*this);
+    return createRenderer<RenderSVGHiddenContainer>(*this, WTF::move(style));
 }
 
 }
-
-#endif // ENABLE(SVG)

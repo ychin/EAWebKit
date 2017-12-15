@@ -21,28 +21,28 @@
 #ifndef JSMutationRecord_h
 #define JSMutationRecord_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MutationRecord.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMutationRecord : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMutationRecord* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MutationRecord> impl)
+    static JSMutationRecord* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MutationRecord>&& impl)
     {
-        JSMutationRecord* ptr = new (NotNull, JSC::allocateCell<JSMutationRecord>(globalObject->vm().heap)) JSMutationRecord(structure, globalObject, impl);
+        JSMutationRecord* ptr = new (NotNull, JSC::allocateCell<JSMutationRecord>(globalObject->vm().heap)) JSMutationRecord(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MutationRecord* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSMutationRecord();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     MutationRecord& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MutationRecord* m_impl;
 protected:
-    JSMutationRecord(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MutationRecord>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMutationRecord(JSC::Structure*, JSDOMGlobalObject*, Ref<MutationRecord>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMutationRecordOwner : public JSC::WeakHandleOwner {
@@ -78,77 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MutationRecord*)
 {
-    DEFINE_STATIC_LOCAL(JSMutationRecordOwner, jsMutationRecordOwner, ());
-    return &jsMutationRecordOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MutationRecord*)
-{
-    return &world;
+    static NeverDestroyed<JSMutationRecordOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MutationRecord*);
-MutationRecord* toMutationRecord(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MutationRecord& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMutationRecordPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMutationRecordPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMutationRecordPrototype* ptr = new (NotNull, JSC::allocateCell<JSMutationRecordPrototype>(vm.heap)) JSMutationRecordPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMutationRecordPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSMutationRecordConstructor : public DOMConstructorObject {
-private:
-    JSMutationRecordConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMutationRecordConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMutationRecordConstructor* ptr = new (NotNull, JSC::allocateCell<JSMutationRecordConstructor>(vm.heap)) JSMutationRecordConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsMutationRecordType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordTarget(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordAddedNodes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordRemovedNodes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordPreviousSibling(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordNextSibling(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordAttributeName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordAttributeNamespace(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordOldValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMutationRecordConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
@@ -44,11 +44,11 @@ namespace WebCore {
 using namespace HTMLNames;
 
 // FIXME: Share more code with MediaDocumentParser.
-class PluginDocumentParser FINAL : public RawDataDocumentParser {
+class PluginDocumentParser final : public RawDataDocumentParser {
 public:
-    static PassRefPtr<PluginDocumentParser> create(PluginDocument& document)
+    static Ref<PluginDocumentParser> create(PluginDocument& document)
     {
-        return adoptRef(new PluginDocumentParser(document));
+        return adoptRef(*new PluginDocumentParser(document));
     }
 
 private:
@@ -58,7 +58,7 @@ private:
     {
     }
 
-    virtual void appendBytes(DocumentWriter&, const char*, size_t);
+    virtual void appendBytes(DocumentWriter&, const char*, size_t) override;
 
     void createDocumentStructure();
 
@@ -69,21 +69,30 @@ void PluginDocumentParser::createDocumentStructure()
 {
     RefPtr<Element> rootElement = document()->createElement(htmlTag, false);
     document()->appendChild(rootElement, IGNORE_EXCEPTION);
-    static_cast<HTMLHtmlElement*>(rootElement.get())->insertedByParser();
+    downcast<HTMLHtmlElement>(*rootElement).insertedByParser();
 
     if (document()->frame())
-        document()->frame()->loader().dispatchDocumentElementAvailable();
+        document()->frame()->injectUserScripts(InjectAtDocumentStart);
+
+#if PLATFORM(IOS)
+    // Should not be able to zoom into standalone plug-in documents.
+    document()->processViewport(ASCIILiteral("user-scalable=no"), ViewportArguments::PluginDocument);
+#endif
 
     RefPtr<Element> body = document()->createElement(bodyTag, false);
-    body->setAttribute(marginwidthAttr, "0");
-    body->setAttribute(marginheightAttr, "0");
-    body->setAttribute(styleAttr, "background-color: rgb(38,38,38)");
+    body->setAttribute(marginwidthAttr, AtomicString("0", AtomicString::ConstructFromLiteral));
+    body->setAttribute(marginheightAttr, AtomicString("0", AtomicString::ConstructFromLiteral));
+#if PLATFORM(IOS)
+    body->setAttribute(styleAttr, AtomicString("background-color: rgb(217,224,233)", AtomicString::ConstructFromLiteral));
+#else
+    body->setAttribute(styleAttr, AtomicString("background-color: rgb(38,38,38)", AtomicString::ConstructFromLiteral));
+#endif
 
     rootElement->appendChild(body, IGNORE_EXCEPTION);
         
     RefPtr<Element> embedElement = document()->createElement(embedTag, false);
         
-    m_embedElement = static_cast<HTMLEmbedElement*>(embedElement.get());
+    m_embedElement = downcast<HTMLEmbedElement>(embedElement.get());
     m_embedElement->setAttribute(widthAttr, "100%");
     m_embedElement->setAttribute(heightAttr, "100%");
     
@@ -95,7 +104,7 @@ void PluginDocumentParser::createDocumentStructure()
     if (loader)
         m_embedElement->setAttribute(typeAttr, loader->writer().mimeType());
 
-    toPluginDocument(document())->setPluginElement(m_embedElement);
+    downcast<PluginDocument>(*document()).setPluginElement(m_embedElement);
 
     body->appendChild(embedElement, IGNORE_EXCEPTION);
 }
@@ -135,22 +144,20 @@ PluginDocument::PluginDocument(Frame* frame, const URL& url)
     : HTMLDocument(frame, url, PluginDocumentClass)
     , m_shouldLoadPluginManually(true)
 {
-    setCompatibilityMode(QuirksMode);
+    setCompatibilityMode(DocumentCompatibilityMode::QuirksMode);
     lockCompatibilityMode();
 }
 
-PassRefPtr<DocumentParser> PluginDocument::createParser()
+Ref<DocumentParser> PluginDocument::createParser()
 {
     return PluginDocumentParser::create(*this);
 }
 
 Widget* PluginDocument::pluginWidget()
 {
-    if (m_pluginElement && m_pluginElement->renderer()) {
-        ASSERT(m_pluginElement->renderer()->isEmbeddedObject());
-        return toRenderEmbeddedObject(m_pluginElement->renderer())->widget();
-    }
-    return 0;
+    if (m_pluginElement && m_pluginElement->renderer())
+        return downcast<RenderEmbeddedObject>(*m_pluginElement->renderer()).widget();
+    return nullptr;
 }
 
 void PluginDocument::setPluginElement(PassRefPtr<HTMLPlugInElement> element)
@@ -161,8 +168,8 @@ void PluginDocument::setPluginElement(PassRefPtr<HTMLPlugInElement> element)
 void PluginDocument::detachFromPluginElement()
 {
     // Release the plugin Element so that we don't have a circular reference.
-    m_pluginElement = 0;
-    frame()->loader().client().redirectDataToPlugin(0);
+    m_pluginElement = nullptr;
+    frame()->loader().client().redirectDataToPlugin(nullptr);
 }
 
 void PluginDocument::cancelManualPluginLoad()

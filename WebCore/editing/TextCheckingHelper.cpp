@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006, 2007 Apple Inc. All rights reserved.
+ * Copyright (C) 2006, 2007, 2014 Apple Inc. All rights reserved.
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -11,10 +11,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -30,74 +30,81 @@
 #include "Document.h"
 #include "DocumentMarkerController.h"
 #include "Frame.h"
-#include "Range.h"
 #include "Settings.h"
 #include "TextBreakIterator.h"
 #include "TextCheckerClient.h"
 #include "TextIterator.h"
 #include "VisiblePosition.h"
 #include "VisibleUnits.h"
+#include <wtf/text/StringView.h>
 
 namespace WebCore {
 
 #if !USE(UNIFIED_TEXT_CHECKING)
 
 #if USE(GRAMMAR_CHECKING)
-static void findBadGrammars(TextCheckerClient* client, const UChar* text, int start, int length, Vector<TextCheckingResult>& results)
-{
-    int checkLocation = start;
-    int checkLength = length;
 
-    while (0 < checkLength) {
+static void findGrammaticalErrors(TextCheckerClient& client, StringView text, Vector<TextCheckingResult>& results)
+{
+    for (unsigned checkLocation = 0; checkLocation < text.length(); ) {
         int badGrammarLocation = -1;
         int badGrammarLength = 0;
         Vector<GrammarDetail> badGrammarDetails;
-        client->checkGrammarOfString(text + checkLocation, checkLength, badGrammarDetails, &badGrammarLocation, &badGrammarLength);
+        client.checkGrammarOfString(text.substring(checkLocation), badGrammarDetails, &badGrammarLocation, &badGrammarLength);
         if (!badGrammarLength)
             break;
-        ASSERT(0 <= badGrammarLocation && badGrammarLocation <= checkLength);
-        ASSERT(0 < badGrammarLength && badGrammarLocation + badGrammarLength <= checkLength);
+
+        ASSERT(badGrammarLocation >= 0);
+        ASSERT(static_cast<unsigned>(badGrammarLocation) <= text.length() - checkLocation);
+        ASSERT(badGrammarLength > 0);
+        ASSERT(static_cast<unsigned>(badGrammarLength) <= text.length() - checkLocation - badGrammarLocation);
+
         TextCheckingResult badGrammar;
         badGrammar.type = TextCheckingTypeGrammar;
         badGrammar.location = checkLocation + badGrammarLocation;
         badGrammar.length = badGrammarLength;
-        badGrammar.details.swap(badGrammarDetails);
+        badGrammar.details = WTF::move(badGrammarDetails);
         results.append(badGrammar);
 
-        checkLocation += (badGrammarLocation + badGrammarLength);
-        checkLength -= (badGrammarLocation + badGrammarLength);
+        checkLocation += badGrammarLocation + badGrammarLength;
     }
 }
+
 #endif
 
-static void findMisspellings(TextCheckerClient* client, const UChar* text, int start, int length, Vector<TextCheckingResult>& results)
+static void findMisspellings(TextCheckerClient& client, StringView text, Vector<TextCheckingResult>& results)
 {
-    TextBreakIterator* iterator = wordBreakIterator(text + start, length);
+    TextBreakIterator* iterator = wordBreakIterator(text);
     if (!iterator)
         return;
-    int wordStart = textBreakCurrent(iterator);
-    while (0 <= wordStart) {
+    for (int wordStart = textBreakCurrent(iterator); wordStart >= 0; ) {
         int wordEnd = textBreakNext(iterator);
         if (wordEnd < 0)
             break;
+
         int wordLength = wordEnd - wordStart;
         int misspellingLocation = -1;
         int misspellingLength = 0;
-        client->checkSpellingOfString(text + start + wordStart, wordLength, &misspellingLocation, &misspellingLength);
-        if (0 < misspellingLength) {
-            ASSERT(0 <= misspellingLocation && misspellingLocation <= wordLength);
-            ASSERT(0 < misspellingLength && misspellingLocation + misspellingLength <= wordLength);
+        client.checkSpellingOfString(text.substring(wordStart, wordLength), &misspellingLocation, &misspellingLength);
+
+        if (misspellingLength > 0) {
+            ASSERT(misspellingLocation >= 0);
+            ASSERT(misspellingLocation <= wordLength);
+            ASSERT(misspellingLength > 0);
+            ASSERT(misspellingLocation + misspellingLength <= wordLength);
+
             TextCheckingResult misspelling;
             misspelling.type = TextCheckingTypeSpelling;
-            misspelling.location = start + wordStart + misspellingLocation;
+            misspelling.location = wordStart + misspellingLocation;
             misspelling.length = misspellingLength;
-            misspelling.replacement = client->getAutoCorrectSuggestionForMisspelledWord(String(text + misspelling.location, misspelling.length));
+            misspelling.replacement = client.getAutoCorrectSuggestionForMisspelledWord(text.substring(misspelling.location, misspelling.length).toStringWithoutCopying());
             results.append(misspelling);
         }
 
         wordStart = wordEnd;
     }
 }
+
 #endif
 
 static PassRefPtr<Range> expandToParagraphBoundary(PassRefPtr<Range> range)
@@ -139,7 +146,7 @@ void TextCheckingParagraph::expandRangeToNextEnd()
 void TextCheckingParagraph::invalidateParagraphRangeValues()
 {
     m_checkingStart = m_checkingEnd = -1;
-    m_offsetAsRange = 0;
+    m_offsetAsRange = nullptr;
     m_text = String();
 }
 
@@ -177,7 +184,7 @@ bool TextCheckingParagraph::isEmpty() const
 {
     // Both predicates should have same result, but we check both just for sure.
     // We need to investigate to remove this redundancy.
-    return isRangeEmpty() || isTextEmpty();
+    return checkingStart() >= checkingEnd() || text().isEmpty();
 }
 
 PassRefPtr<Range> TextCheckingParagraph::offsetAsRange() const
@@ -235,58 +242,53 @@ TextCheckingHelper::~TextCheckingHelper()
 
 String TextCheckingHelper::findFirstMisspelling(int& firstMisspellingOffset, bool markAll, RefPtr<Range>& firstMisspellingRange)
 {
-    WordAwareIterator it(m_range.get());
     firstMisspellingOffset = 0;
-    
+
     String firstMisspelling;
     int currentChunkOffset = 0;
 
-    while (!it.atEnd()) {
-        const UChar* chars = it.characters();
-        int len = it.length();
-        
-        // Skip some work for one-space-char hunks
-        if (!(len == 1 && chars[0] == ' ')) {
-            
-            int misspellingLocation = -1;
-            int misspellingLength = 0;
-            m_client->textChecker()->checkSpellingOfString(chars, len, &misspellingLocation, &misspellingLength);
+    for (WordAwareIterator it(*m_range); !it.atEnd(); currentChunkOffset += it.text().length(), it.advance()) {
+        StringView text = it.text();
+        int textLength = text.length();
 
-            // 5490627 shows that there was some code path here where the String constructor below crashes.
-            // We don't know exactly what combination of bad input caused this, so we're making this much
-            // more robust against bad input on release builds.
-            ASSERT(misspellingLength >= 0);
-            ASSERT(misspellingLocation >= -1);
-            ASSERT(!misspellingLength || misspellingLocation >= 0);
-            ASSERT(misspellingLocation < len);
-            ASSERT(misspellingLength <= len);
-            ASSERT(misspellingLocation + misspellingLength <= len);
-            
-            if (misspellingLocation >= 0 && misspellingLength > 0 && misspellingLocation < len && misspellingLength <= len && misspellingLocation + misspellingLength <= len) {
-                
-                // Compute range of misspelled word
-                RefPtr<Range> misspellingRange = TextIterator::subrange(m_range.get(), currentChunkOffset + misspellingLocation, misspellingLength);
+        // Skip some work for one-space-char hunks.
+        if (textLength == 1 && text[0] == ' ')
+            continue;
 
-                // Remember first-encountered misspelling and its offset.
-                if (!firstMisspelling) {
-                    firstMisspellingOffset = currentChunkOffset + misspellingLocation;
-                    firstMisspelling = String(chars + misspellingLocation, misspellingLength);
-                    firstMisspellingRange = misspellingRange;
-                }
+        int misspellingLocation = -1;
+        int misspellingLength = 0;
+        m_client->textChecker()->checkSpellingOfString(text, &misspellingLocation, &misspellingLength);
 
-                // Store marker for misspelled word.
-                misspellingRange->startContainer()->document().markers().addMarker(misspellingRange.get(), DocumentMarker::Spelling);
+        // 5490627 shows that there was some code path here where the String constructor below crashes.
+        // We don't know exactly what combination of bad input caused this, so we're making this much
+        // more robust against bad input on release builds.
+        ASSERT(misspellingLength >= 0);
+        ASSERT(misspellingLocation >= -1);
+        ASSERT(!misspellingLength || misspellingLocation >= 0);
+        ASSERT(misspellingLocation < textLength);
+        ASSERT(misspellingLength <= textLength);
+        ASSERT(misspellingLocation + misspellingLength <= textLength);
 
-                // Bail out if we're marking only the first misspelling, and not all instances.
-                if (!markAll)
-                    break;
+        if (misspellingLocation >= 0 && misspellingLength > 0 && misspellingLocation < textLength && misspellingLength <= textLength && misspellingLocation + misspellingLength <= textLength) {
+            // Compute range of misspelled word
+            RefPtr<Range> misspellingRange = TextIterator::subrange(m_range.get(), currentChunkOffset + misspellingLocation, misspellingLength);
+
+            // Remember first-encountered misspelling and its offset.
+            if (!firstMisspelling) {
+                firstMisspellingOffset = currentChunkOffset + misspellingLocation;
+                firstMisspelling = text.substring(misspellingLocation, misspellingLength).toString();
+                firstMisspellingRange = misspellingRange;
             }
+
+            // Store marker for misspelled word.
+            misspellingRange->startContainer()->document().markers().addMarker(misspellingRange.get(), DocumentMarker::Spelling);
+
+            // Bail out if we're marking only the first misspelling, and not all instances.
+            if (!markAll)
+                break;
         }
-        
-        currentChunkOffset += len;
-        it.advance();
     }
-    
+
     return firstMisspelling;
 }
 
@@ -344,26 +346,29 @@ String TextCheckingHelper::findFirstMisspellingOrBadGrammar(bool checkGrammar, b
                 
                 Vector<TextCheckingResult> results;
                 TextCheckingTypeMask checkingTypes = checkGrammar ? (TextCheckingTypeSpelling | TextCheckingTypeGrammar) : TextCheckingTypeSpelling;
-                checkTextOfParagraph(m_client->textChecker(), paragraphString.characters(), paragraphString.length(), checkingTypes, results);
+                checkTextOfParagraph(*m_client->textChecker(), paragraphString, checkingTypes, results);
                 
                 for (unsigned i = 0; i < results.size(); i++) {
                     const TextCheckingResult* result = &results[i];
                     if (result->type == TextCheckingTypeSpelling && result->location >= currentStartOffset && result->location + result->length <= currentEndOffset) {
-                        ASSERT(result->length > 0 && result->location >= 0);
+                        ASSERT(result->length > 0);
+                        ASSERT(result->location >= 0);
                         spellingLocation = result->location;
                         misspelledWord = paragraphString.substring(result->location, result->length);
                         ASSERT(misspelledWord.length());
                         break;
                     }
                     if (checkGrammar && result->type == TextCheckingTypeGrammar && result->location < currentEndOffset && result->location + result->length > currentStartOffset) {
-                        ASSERT(result->length > 0 && result->location >= 0);
+                        ASSERT(result->length > 0);
+                        ASSERT(result->location >= 0);
                         // We can't stop after the first grammar result, since there might still be a spelling result after
                         // it begins but before the first detail in it, but we can stop if we find a second grammar result.
                         if (foundGrammar)
                             break;
                         for (unsigned j = 0; j < result->details.size(); j++) {
                             const GrammarDetail* detail = &result->details[j];
-                            ASSERT(detail->length > 0 && detail->location >= 0);
+                            ASSERT(detail->length > 0);
+                            ASSERT(detail->location >= 0);
                             if (result->location + detail->location >= currentStartOffset && result->location + detail->location + detail->length <= currentEndOffset && (!foundGrammar || result->location + detail->location < grammarDetailLocation)) {
                                 grammarDetailIndex = j;
                                 grammarDetailLocation = result->location + detail->location;
@@ -415,6 +420,7 @@ String TextCheckingHelper::findFirstMisspellingOrBadGrammar(bool checkGrammar, b
 }
 
 #if USE(GRAMMAR_CHECKING)
+
 int TextCheckingHelper::findFirstGrammarDetail(const Vector<GrammarDetail>& grammarDetails, int badGrammarPhraseLocation, int startOffset, int endOffset, bool markAll) const
 {
     // Found some bad grammar. Find the earliest detail range that starts in our search range (if any).
@@ -423,7 +429,8 @@ int TextCheckingHelper::findFirstGrammarDetail(const Vector<GrammarDetail>& gram
     int earliestDetailIndex = -1;
     for (unsigned i = 0; i < grammarDetails.size(); i++) {
         const GrammarDetail* detail = &grammarDetails[i];
-        ASSERT(detail->length > 0 && detail->location >= 0);
+        ASSERT(detail->length > 0);
+        ASSERT(detail->location >= 0);
         
         int detailStartOffsetInParagraph = badGrammarPhraseLocation + detail->location;
         
@@ -467,12 +474,11 @@ String TextCheckingHelper::findFirstBadGrammar(GrammarDetail& outGrammarDetail, 
     TextCheckingParagraph paragraph(m_range);
     
     // Start checking from beginning of paragraph, but skip past results that occur before the start of the original search range.
-    int startOffset = 0;
-    while (startOffset < paragraph.checkingEnd()) {
+    for (int startOffset = 0; startOffset < paragraph.checkingEnd(); ) {
         Vector<GrammarDetail> grammarDetails;
         int badGrammarPhraseLocation = -1;
         int badGrammarPhraseLength = 0;
-        m_client->textChecker()->checkGrammarOfString(paragraph.textCharacters() + startOffset, paragraph.textLength() - startOffset, grammarDetails, &badGrammarPhraseLocation, &badGrammarPhraseLength);
+        m_client->textChecker()->checkGrammarOfString(StringView(paragraph.text()).substring(startOffset), grammarDetails, &badGrammarPhraseLocation, &badGrammarPhraseLength);
         
         if (!badGrammarPhraseLength) {
             ASSERT(badGrammarPhraseLocation == -1);
@@ -482,7 +488,6 @@ String TextCheckingHelper::findFirstBadGrammar(GrammarDetail& outGrammarDetail, 
         ASSERT(badGrammarPhraseLocation >= 0);
         badGrammarPhraseLocation += startOffset;
 
-        
         // Found some bad grammar. Find the earliest detail range that starts in our search range (if any).
         int badGrammarIndex = findFirstGrammarDetail(grammarDetails, badGrammarPhraseLocation, paragraph.checkingStart(), paragraph.checkingEnd(), markAll);
         if (badGrammarIndex >= 0) {
@@ -509,7 +514,6 @@ String TextCheckingHelper::findFirstBadGrammar(GrammarDetail& outGrammarDetail, 
     return firstBadGrammarPhrase;
 }
 
-
 bool TextCheckingHelper::isUngrammatical() const
 {
     if (!m_client)
@@ -533,9 +537,10 @@ bool TextCheckingHelper::isUngrammatical() const
     // Bad grammar, but phrase (e.g. sentence) starts beyond start of range.
     if (grammarPhraseOffset > 0)
         return false;
-    
-    ASSERT(grammarDetail.location >= 0 && grammarDetail.length > 0);
-    
+
+    ASSERT(grammarDetail.location >= 0);
+    ASSERT(grammarDetail.length > 0);
+
     // Bad grammar, but start of detail (e.g. ungrammatical word) doesn't match start of range
     if (grammarDetail.location + grammarPhraseOffset)
         return false;
@@ -552,7 +557,8 @@ bool TextCheckingHelper::isUngrammatical() const
     
     return true;
 }
-#endif
+
+#endif // USE(GRAMMAR_CHECKING)
 
 Vector<String> TextCheckingHelper::guessesForMisspelledOrUngrammaticalRange(bool checkGrammar, bool& misspelled, bool& ungrammatical) const
 {
@@ -573,7 +579,7 @@ Vector<String> TextCheckingHelper::guessesForMisspelledOrUngrammaticalRange(bool
 
     Vector<TextCheckingResult> results;
     TextCheckingTypeMask checkingTypes = checkGrammar ? (TextCheckingTypeSpelling | TextCheckingTypeGrammar) : TextCheckingTypeSpelling;
-    checkTextOfParagraph(m_client->textChecker(), paragraph.textCharacters(), paragraph.textLength(), checkingTypes, results);
+    checkTextOfParagraph(*m_client->textChecker(), paragraph.text(), checkingTypes, results);
     
     for (unsigned i = 0; i < results.size(); i++) {
         const TextCheckingResult* result = &results[i];
@@ -595,7 +601,8 @@ Vector<String> TextCheckingHelper::guessesForMisspelledOrUngrammaticalRange(bool
         if (result->type == TextCheckingTypeGrammar && paragraph.isCheckingRangeCoveredBy(result->location, result->length)) {
             for (unsigned j = 0; j < result->details.size(); j++) {
                 const GrammarDetail* detail = &result->details[j];
-                ASSERT(detail->length > 0 && detail->location >= 0);
+                ASSERT(detail->length > 0);
+                ASSERT(detail->location >= 0);
                 if (paragraph.checkingRangeMatches(result->location + detail->location, detail->length)) {
                     String badGrammarPhrase = paragraph.textSubstring(result->location, result->length);
                     ASSERT(badGrammarPhrase.length());
@@ -610,7 +617,6 @@ Vector<String> TextCheckingHelper::guessesForMisspelledOrUngrammaticalRange(bool
     }
     return guesses;
 }
-
 
 void TextCheckingHelper::markAllMisspellings(RefPtr<Range>& firstMisspellingRange)
 {
@@ -636,40 +642,33 @@ bool TextCheckingHelper::unifiedTextCheckerEnabled() const
     return m_range && WebCore::unifiedTextCheckerEnabled(m_range->ownerDocument().frame());
 }
 
-void checkTextOfParagraph(TextCheckerClient* client, const UChar* text, int length,
-                          TextCheckingTypeMask checkingTypes, Vector<TextCheckingResult>& results)
+void checkTextOfParagraph(TextCheckerClient& client, StringView text, TextCheckingTypeMask checkingTypes, Vector<TextCheckingResult>& results)
 {
 #if USE(UNIFIED_TEXT_CHECKING)
-    client->checkTextOfParagraph(text, length, checkingTypes, results);
+    results = client.checkTextOfParagraph(text, checkingTypes);
 #else
-    Vector<TextCheckingResult> spellingResult;
+    Vector<TextCheckingResult> mispellings;
     if (checkingTypes & TextCheckingTypeSpelling)
-        findMisspellings(client, text, 0, length, spellingResult);
+        findMisspellings(client, text, mispellings);
 
 #if USE(GRAMMAR_CHECKING)
-    Vector<TextCheckingResult> grammarResult;
+    // Look for grammatical errors that occur before the first misspelling.
+    Vector<TextCheckingResult> grammaticalErrors;
     if (checkingTypes & TextCheckingTypeGrammar) {
-        // Only checks grammartical error before the first misspellings
-        int grammarCheckLength = length;
-        for (size_t i = 0; i < spellingResult.size(); ++i) {
-            if (spellingResult[i].location < grammarCheckLength)
-                grammarCheckLength = spellingResult[i].location;
-        }
-
-        findBadGrammars(client, text, 0, grammarCheckLength, grammarResult);
+        unsigned grammarCheckLength = text.length();
+        for (auto& mispelling : mispellings)
+            grammarCheckLength = std::min<unsigned>(grammarCheckLength, mispelling.location);
+        findGrammaticalErrors(client, text.substring(0, grammarCheckLength), grammaticalErrors);
     }
 
-    if (grammarResult.size())
-        results.swap(grammarResult);
+    results = WTF::move(grammaticalErrors);
 #endif
 
-    if (spellingResult.size()) {
-        if (results.isEmpty())
-            results.swap(spellingResult);
-        else
-            results.appendVector(spellingResult);
-    }
-#endif
+    if (results.isEmpty())
+        results = WTF::move(mispellings);
+    else
+        results.appendVector(mispellings);
+#endif // USE(UNIFIED_TEXT_CHECKING)
 }
 
 bool unifiedTextCheckerEnabled(const Frame* frame)

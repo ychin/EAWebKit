@@ -21,10 +21,8 @@
 #ifndef JSStorageEvent_h
 #define JSStorageEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
 #include "StorageEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSStorageEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSStorageEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<StorageEvent> impl)
+    static JSStorageEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<StorageEvent>&& impl)
     {
-        JSStorageEvent* ptr = new (NotNull, JSC::allocateCell<JSStorageEvent>(globalObject->vm().heap)) JSStorageEvent(structure, globalObject, impl);
+        JSStorageEvent* ptr = new (NotNull, JSC::allocateCell<JSStorageEvent>(globalObject->vm().heap)) JSStorageEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,75 +54,19 @@ public:
         return static_cast<StorageEvent&>(Base::impl());
     }
 protected:
-    JSStorageEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<StorageEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSStorageEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<StorageEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSStorageEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSStorageEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSStorageEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSStorageEventPrototype>(vm.heap)) JSStorageEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSStorageEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSStorageEventConstructor : public DOMConstructorObject {
-private:
-    JSStorageEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSStorageEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSStorageEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSStorageEventConstructor>(vm.heap)) JSStorageEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSStorageEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillStorageEventInit(StorageEventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsStorageEventPrototypeFunctionInitStorageEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsStorageEventKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStorageEventOldValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStorageEventNewValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStorageEventUrl(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStorageEventStorageArea(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStorageEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

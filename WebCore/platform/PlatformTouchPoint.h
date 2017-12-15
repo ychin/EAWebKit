@@ -25,13 +25,7 @@
 #include <wtf/Vector.h>
 
 #if ENABLE(TOUCH_EVENTS)
-#if PLATFORM(BLACKBERRY)
-namespace BlackBerry {
-namespace Platform {
-class TouchPoint;
-};
-};
-#endif
+
 //+EAWebKitChange
 //02/11/2015
 #if PLATFORM(EA)
@@ -76,9 +70,6 @@ public:
 	PlatformTouchPoint(const EA::WebKit::TouchPoint touchPoints);
 #endif
 //-EAWebKitChange
-#if PLATFORM(BLACKBERRY)
-    PlatformTouchPoint(const BlackBerry::Platform::TouchPoint&);
-#endif
 
     unsigned id() const { return m_id; }
     State state() const { return m_state; }

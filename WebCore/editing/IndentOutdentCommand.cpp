@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (IndentOutdentCommandINCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -32,11 +32,9 @@
 #include "HTMLNames.h"
 #include "InsertLineBreakCommand.h"
 #include "InsertListCommand.h"
-#include "Range.h"
 #include "RenderObject.h"
 #include "SplitElementCommand.h"
 #include "Text.h"
-#include "TextIterator.h"
 #include "VisibleUnits.h"
 #include "htmlediting.h"
 
@@ -65,24 +63,24 @@ bool IndentOutdentCommand::tryIndentingAsListItem(const Position& start, const P
         return false;
 
     // Find the block that we want to indent.  If it's not a list item (e.g., a div inside a list item), we bail out.
-    Element* selectedListItem = enclosingBlock(lastNodeInSelectedParagraph);
+    RefPtr<Element> selectedListItem = enclosingBlock(lastNodeInSelectedParagraph);
 
     // FIXME: we need to deal with the case where there is no li (malformed HTML)
     if (!selectedListItem->hasTagName(liTag))
         return false;
     
     // FIXME: previousElementSibling does not ignore non-rendered content like <span></span>.  Should we?
-    Element* previousList = ElementTraversal::previousSibling(selectedListItem);
-    Element* nextList = ElementTraversal::nextSibling(selectedListItem);
+    RefPtr<Element> previousList = ElementTraversal::previousSibling(*selectedListItem);
+    RefPtr<Element> nextList = ElementTraversal::nextSibling(*selectedListItem);
 
     RefPtr<Element> newList = document().createElement(listNode->tagQName(), false);
     insertNodeBefore(newList, selectedListItem);
 
-    moveParagraphWithClones(start, end, newList.get(), selectedListItem);
+    moveParagraphWithClones(start, end, newList.get(), selectedListItem.get());
 
-    if (canMergeLists(previousList, newList.get()))
+    if (canMergeLists(previousList.get(), newList.get()))
         mergeIdenticalElements(previousList, newList);
-    if (canMergeLists(newList.get(), nextList))
+    if (canMergeLists(newList.get(), nextList.get()))
         mergeIdenticalElements(newList, nextList);
 
     return true;
@@ -110,7 +108,7 @@ void IndentOutdentCommand::indentIntoBlockquote(const Position& start, const Pos
         // Create a new blockquote and insert it as a child of the root editable element. We accomplish
         // this by splitting all parents of the current paragraph up to that point.
         targetBlockquote = createBlockElement();
-        if (outerBlock == start.containerNode())
+        if (outerBlock == nodeToSplitTo)
             insertNodeAt(targetBlockquote, start);
         else
             insertNodeBefore(targetBlockquote, outerBlock);
@@ -126,7 +124,7 @@ void IndentOutdentCommand::outdentParagraph()
     VisiblePosition visibleEndOfParagraph = endOfParagraph(visibleStartOfParagraph);
 
     Node* enclosingNode = enclosingNodeOfType(visibleStartOfParagraph.deepEquivalent(), &isListOrIndentBlockquote);
-    if (!enclosingNode || !enclosingNode->parentNode()->rendererIsEditable()) // We can't outdent if there is no place to go!
+    if (!enclosingNode || !enclosingNode->parentNode()->hasEditableStyle()) // We can't outdent if there is no place to go!
         return;
 
     // Use InsertListCommand to remove the selection from the list
@@ -157,8 +155,8 @@ void IndentOutdentCommand::outdentParagraph()
             if (ContainerNode* splitPointParent = splitPoint->parentNode()) {
                 if (splitPointParent->hasTagName(blockquoteTag)
                     && !splitPoint->hasTagName(blockquoteTag)
-                    && splitPointParent->parentNode()->rendererIsEditable()) // We can't outdent if there is no place to go!
-                    splitElement(toElement(splitPointParent), splitPoint);
+                    && splitPointParent->parentNode()->hasEditableStyle()) // We can't outdent if there is no place to go!
+                    splitElement(downcast<Element>(splitPointParent), splitPoint);
             }
         }
 
@@ -179,7 +177,7 @@ void IndentOutdentCommand::outdentParagraph()
     else {
         // We split the blockquote at where we start outdenting.
         Node* highestInlineNode = highestEnclosingNodeOfType(visibleStartOfParagraph.deepEquivalent(), isInline, CannotCrossEditingBoundary, enclosingBlockFlow);
-        splitElement(toElement(enclosingNode), (highestInlineNode) ? highestInlineNode : visibleStartOfParagraph.deepEquivalent().deprecatedNode());
+        splitElement(downcast<Element>(enclosingNode), highestInlineNode ? highestInlineNode : visibleStartOfParagraph.deepEquivalent().deprecatedNode());
     }
     RefPtr<Node> placeholder = createBreakElement(document());
     insertNodeBefore(placeholder, splitBlockquoteNode);
@@ -234,7 +232,7 @@ void IndentOutdentCommand::formatSelection(const VisiblePosition& startOfSelecti
 void IndentOutdentCommand::formatRange(const Position& start, const Position& end, const Position&, RefPtr<Element>& blockquoteForNextIndent)
 {
     if (tryIndentingAsListItem(start, end))
-        blockquoteForNextIndent = 0;
+        blockquoteForNextIndent = nullptr;
     else
         indentIntoBlockquote(start, end, blockquoteForNextIndent);
 }

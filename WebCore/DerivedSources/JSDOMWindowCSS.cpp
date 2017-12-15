@@ -19,9 +19,6 @@
 */
 
 #include "config.h"
-
-#if ENABLE(CSS3_CONDITIONAL_RULES)
-
 #include "JSDOMWindowCSS.h"
 
 #include "DOMWindowCSS.h"
@@ -34,45 +31,66 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMWindowCSSPrototypeFunctionSupports(JSC::ExecState*);
+
+class JSDOMWindowCSSPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDOMWindowCSSPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDOMWindowCSSPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMWindowCSSPrototype>(vm.heap)) JSDOMWindowCSSPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDOMWindowCSSPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table for prototype */
 
 static const HashTableValue JSDOMWindowCSSPrototypeTableValues[] =
 {
-    { "supports", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMWindowCSSPrototypeFunctionSupports), (intptr_t)2 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "supports", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMWindowCSSPrototypeFunctionSupports), (intptr_t) (2) },
 };
 
-static const HashTable JSDOMWindowCSSPrototypeTable = { 4, 3, JSDOMWindowCSSPrototypeTableValues, 0 };
-const ClassInfo JSDOMWindowCSSPrototype::s_info = { "CSSPrototype", &Base::s_info, &JSDOMWindowCSSPrototypeTable, 0, CREATE_METHOD_TABLE(JSDOMWindowCSSPrototype) };
+const ClassInfo JSDOMWindowCSSPrototype::s_info = { "CSSPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMWindowCSSPrototype) };
 
-JSObject* JSDOMWindowCSSPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDOMWindowCSS>(vm, globalObject);
-}
-
-bool JSDOMWindowCSSPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDOMWindowCSSPrototype* thisObject = jsCast<JSDOMWindowCSSPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDOMWindowCSSPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSDOMWindowCSS::s_info = { "CSS", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSDOMWindowCSS) };
-
-JSDOMWindowCSS::JSDOMWindowCSS(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMWindowCSS> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSDOMWindowCSS::finishCreation(VM& vm)
+void JSDOMWindowCSSPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDOMWindowCSSPrototypeTableValues, *this);
+}
+
+const ClassInfo JSDOMWindowCSS::s_info = { "CSS", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMWindowCSS) };
+
+JSDOMWindowCSS::JSDOMWindowCSS(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMWindowCSS>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSDOMWindowCSS::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSDOMWindowCSSPrototype::create(vm, globalObject, JSDOMWindowCSSPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSDOMWindowCSS::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSDOMWindowCSS>(vm, globalObject);
 }
 
 void JSDOMWindowCSS::destroy(JSC::JSCell* cell)
@@ -83,51 +101,49 @@ void JSDOMWindowCSS::destroy(JSC::JSCell* cell)
 
 JSDOMWindowCSS::~JSDOMWindowCSS()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 static EncodedJSValue JSC_HOST_CALL jsDOMWindowCSSPrototypeFunctionSupports1(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMWindowCSS::info()))
-        return throwVMTypeError(exec);
-    JSDOMWindowCSS* castedThis = jsCast<JSDOMWindowCSS*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMWindowCSS* castedThis = jsDynamicCast<JSDOMWindowCSS*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMWindowCSS", "supports");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMWindowCSS::info());
-    DOMWindowCSS& impl = castedThis->impl();
-    if (exec->argumentCount() < 2)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 2))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& property(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String property = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& value(exec->argument(1).isEmpty() ? String() : exec->argument(1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String value = exec->argument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.supports(property, value));
+    JSValue result = jsBoolean(impl.supports(property, value));
     return JSValue::encode(result);
 }
 
 static EncodedJSValue JSC_HOST_CALL jsDOMWindowCSSPrototypeFunctionSupports2(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMWindowCSS::info()))
-        return throwVMTypeError(exec);
-    JSDOMWindowCSS* castedThis = jsCast<JSDOMWindowCSS*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMWindowCSS* castedThis = jsDynamicCast<JSDOMWindowCSS*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMWindowCSS", "supports");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMWindowCSS::info());
-    DOMWindowCSS& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& conditionText(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String conditionText = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.supports(conditionText));
+    JSValue result = jsBoolean(impl.supports(conditionText));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMWindowCSSPrototypeFunctionSupports(ExecState* exec)
 {
-    size_t argsCount = exec->argumentCount();
+    size_t argsCount = std::min<size_t>(2, exec->argumentCount());
     if (argsCount == 2)
         return jsDOMWindowCSSPrototypeFunctionSupports1(exec);
     if (argsCount == 1)
@@ -137,72 +153,41 @@ EncodedJSValue JSC_HOST_CALL jsDOMWindowCSSPrototypeFunctionSupports(ExecState* 
     return throwVMTypeError(exec);
 }
 
-static inline bool isObservable(JSDOMWindowCSS* jsDOMWindowCSS)
-{
-    if (jsDOMWindowCSS->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSDOMWindowCSSOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSDOMWindowCSS* jsDOMWindowCSS = jsCast<JSDOMWindowCSS*>(handle.get().asCell());
-    if (!isObservable(jsDOMWindowCSS))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSDOMWindowCSSOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSDOMWindowCSS* jsDOMWindowCSS = jsCast<JSDOMWindowCSS*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsDOMWindowCSS = jsCast<JSDOMWindowCSS*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsDOMWindowCSS->impl(), jsDOMWindowCSS);
-    jsDOMWindowCSS->releaseImpl();
 }
 
-#if ENABLE(BINDING_INTEGRITY)
-#if PLATFORM(WIN)
-#pragma warning(disable: 4483)
-extern "C" { extern void (*const __identifier("??_7DOMWindowCSS@WebCore@@6B@")[])(); }
-#else
-extern "C" { extern void* _ZTVN7WebCore12DOMWindowCSSE[]; }
-#endif
-#endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMWindowCSS* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DOMWindowCSS* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDOMWindowCSS>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDOMWindowCSS>(globalObject, impl))
         return result;
-
-#if ENABLE(BINDING_INTEGRITY)
-    void* actualVTablePointer = *(reinterpret_cast<void**>(impl));
-#if PLATFORM(WIN)
-    void* expectedVTablePointer = reinterpret_cast<void*>(__identifier("??_7DOMWindowCSS@WebCore@@6B@"));
-#else
-    void* expectedVTablePointer = &_ZTVN7WebCore12DOMWindowCSSE[2];
 #if COMPILER(CLANG)
-    // If this fails DOMWindowCSS does not have a vtable, so you need to add the
-    // ImplementationLacksVTable attribute to the interface definition
-    COMPILE_ASSERT(__is_polymorphic(DOMWindowCSS), DOMWindowCSS_is_not_polymorphic);
+    // If you hit this failure the interface definition has the ImplementationLacksVTable
+    // attribute. You should remove that attribute. If the class has subclasses
+    // that may be passed through this toJS() function you should use the SkipVTableValidation
+    // attribute to DOMWindowCSS.
+    COMPILE_ASSERT(!__is_polymorphic(DOMWindowCSS), DOMWindowCSS_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-#endif
-    // If you hit this assertion you either have a use after free bug, or
-    // DOMWindowCSS has subclasses. If DOMWindowCSS has subclasses that get passed
-    // to toJS() we currently require DOMWindowCSS you to opt out of binding hardening
-    // by adding the SkipVTableValidation attribute to the interface IDL definition
-    RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
-#endif
-    ReportMemoryCost<DOMWindowCSS>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDOMWindowCSS>(exec, globalObject, impl);
+    return createNewWrapper<JSDOMWindowCSS>(globalObject, impl);
 }
 
-DOMWindowCSS* toDOMWindowCSS(JSC::JSValue value)
+DOMWindowCSS* JSDOMWindowCSS::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSDOMWindowCSS::info()) ? &jsCast<JSDOMWindowCSS*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSDOMWindowCSS*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(CSS3_CONDITIONAL_RULES)

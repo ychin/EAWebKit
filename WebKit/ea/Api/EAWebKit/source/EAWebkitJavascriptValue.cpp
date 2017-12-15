@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -229,10 +229,16 @@ const char16_t *JavascriptValue::GetStringValue(size_t *pLengthOut) const
     
 	EAW_ASSERT_MSG(GetImpl()->isString(),"Trying to read characters from a JavaScriptValue which is not a string");
 
-	WTF::String s =  GetImpl()->getString(mExecState);
-    if (pLengthOut) 
-        *pLengthOut = s.length();
-    return s.characters();
+	WTF::String s = GetImpl()->getString(mExecState);
+	EA::WebKit::FixedString16_128 sString(StringView(s).upconvertedCharacters(), s.length());
+	if (!mString16Wrapper)
+		mString16Wrapper = new EASTLFixedString16Wrapper(sString.c_str());
+	else
+		mString16Wrapper->SetCharacters(sString.c_str());
+
+	if (pLengthOut)
+		*pLengthOut = Internal::Strlen(mString16Wrapper->GetCharacters());
+	return mString16Wrapper->GetCharacters();
 }
 
 void JavascriptValue::SetArrayType(size_t arraySize) 
@@ -334,8 +340,8 @@ void JavascriptValue::SetProperty(const char16_t *key, const JavascriptValue &v)
 	JSC::JSObject *jsObject = ValueToObject(GetImpl());
     JSC::JSValue sourceJSValue = *(v.GetImpl());
 
-    JSC::Identifier id(&(mExecState->vm()), key, EA::Internal::Strlen(key));
-    JSC::PutPropertySlot slot;
+	JSC::Identifier id = JSC::Identifier::fromString(&(mExecState->vm()), key, EA::Internal::Strlen(key));
+    JSC::PutPropertySlot slot(sourceJSValue);
     JSC::JSObject::put(jsObject,mExecState, id, sourceJSValue, slot);
 }
 
@@ -346,7 +352,7 @@ void JavascriptValue::GetProperty(const char16_t *key, JavascriptValue* pValueOu
     EAWWBKIT_INIT_CHECK(); 
     
 	JSC::JSObject *jsObject = ValueToObject(GetImpl());
-    JSC::Identifier id(&(mExecState->vm()), key, EA::Internal::Strlen(key));
+	JSC::Identifier id = JSC::Identifier::fromString(&(mExecState->vm()), key, EA::Internal::Strlen(key));
     JSC::JSValue jsValue = jsObject->get(mExecState, id);
     if (pValueOut)
         *pValueOut = JavascriptValue(&jsValue, mExecState);
@@ -364,7 +370,7 @@ JavascriptValue::PropertyIterator* JavascriptValue::First(void)
         mIterator = new JavascriptValue::PropertyIterator(this);  
 
     JSC::PropertyNameArray *names = reinterpret_cast<JSC::PropertyNameArray*>((void*)mIterator->mNames);
-    JSC::JSObject::getPropertyNames(jsObject,mExecState, *names,JSC::ExcludeDontEnumProperties);
+    JSC::JSObject::getPropertyNames(jsObject,mExecState, *names,JSC::EnumerationMode());
 
     if (!names->size()) 
         return NULL;
@@ -451,6 +457,7 @@ bool JavascriptValue::Call(JavascriptValue *args, size_t argCount, JavascriptVal
 JavascriptValue::JavascriptValue(JSC::JSValue *jsValue, JSC::ExecState *execState)
 : mExecState(execState)
 , mIterator(NULL) 
+, mString16Wrapper(NULL)
 {
     new (mJSValue) JSC::JSValue();
     Assign(jsValue);
@@ -459,6 +466,7 @@ JavascriptValue::JavascriptValue(JSC::JSValue *jsValue, JSC::ExecState *execStat
 JavascriptValue::JavascriptValue(void)
 : mExecState(NULL)
 , mIterator(NULL) 
+, mString16Wrapper(NULL)
 {
     new (mJSValue) JSC::JSValue();
 }
@@ -466,35 +474,45 @@ JavascriptValue::JavascriptValue(void)
 JavascriptValue::JavascriptValue(const JavascriptValue &source) 
 {
     mIterator = NULL;
+	mString16Wrapper = NULL;
     new (mJSValue) JSC::JSValue();
     Copy(source);
 }
 
-void JavascriptValue::Destruct(void) 
+void JavascriptValue::Destruct(void)
 {
-    if (mIterator) 
-    {
-        delete mIterator;
-        mIterator = NULL;
-    }
-        
-    JSC::gcUnprotect(*GetImpl());//The user does not need the underlying JSValue so unprotect it from garbage collection.
+	if (mIterator)
+	{
+		delete mIterator;
+		mIterator = NULL;
+	}
+	if (mString16Wrapper) {
+		delete mString16Wrapper;
+		mString16Wrapper = NULL;
+	}
+
+	JSC::gcUnprotect(*GetImpl());//The user does not need the underlying JSValue so unprotect it from garbage collection.
 	GetImpl()->~JSValue();
 }
 
 void JavascriptValue::Copy(const JavascriptValue &source) 
 {
-    Assign(source.GetImpl());
     mExecState = source.mExecState;
+    Assign(source.GetImpl());
+	if (mString16Wrapper) { // For assignment operation, to clean the original
+		delete mString16Wrapper;
+		mString16Wrapper = NULL;
+	}
+	if (source.mString16Wrapper)
+		mString16Wrapper = new EASTLFixedString16Wrapper(*source.mString16Wrapper);
 }
 
 void JavascriptValue::Assign(const JSC::JSValue* jsValue) 
 {
-    JSC::JSValue* thisValue = GetImpl();
-
-    JSC::gcUnprotect(*thisValue);//Unprotect the previously held value so that it can be garbage collected
-    *thisValue = *jsValue;
-    JSC::gcProtect(*thisValue);//protect the new value from garbage collection
+	JSC::JSValue* thisValue = GetImpl();
+	JSC::gcUnprotect(*thisValue);//Unprotect the previously held value so that it can be garbage collected
+	*thisValue = *jsValue;
+	JSC::gcProtect(*thisValue);//protect the new value from garbage collection
 }
 
 JavascriptValueType::JavascriptValueType JavascriptValue::Type(void) const 
@@ -560,8 +578,9 @@ JavascriptValue::PropertyIterator::PropertyIterator(JavascriptValue *owner)
 {
     mObject = owner;
     mIterator = NULL;
+	mPropString16Wrapper = NULL;
 
-    new (mNames) JSC::PropertyNameArray(owner->mExecState);
+    new (mNames) JSC::PropertyNameArray(owner->mExecState, JSC::PropertyNameMode::Strings);
 }
 
 JavascriptValue::PropertyIterator::~PropertyIterator(void) 
@@ -569,6 +588,11 @@ JavascriptValue::PropertyIterator::~PropertyIterator(void)
     JSC::PropertyNameArray *names = reinterpret_cast<JSC::PropertyNameArray*>((void*)mNames);
     names->~PropertyNameArray();
     mIterator = NULL;
+	if (mPropString16Wrapper) {
+		delete mPropString16Wrapper;
+		mPropString16Wrapper = NULL;
+	}
+
 }
 
 void JavascriptValue::PropertyIterator::GetValue(JavascriptValue* pValueOut) const 
@@ -597,9 +621,18 @@ const char16_t *JavascriptValue::PropertyIterator::GetKey(size_t *pLengthOut) co
     JSC::PropertyNameArray::const_iterator iProperty = reinterpret_cast<JSC::PropertyNameArray::const_iterator>(mIterator);
     EAW_ASSERT(iProperty != names->end());
     (void) names;
+	
+	WTF::String s = iProperty->string();
+	EA::WebKit::FixedString16_128 sString(StringView(s).upconvertedCharacters(), s.length());
+	if (!mPropString16Wrapper)
+		mPropString16Wrapper = new EASTLFixedString16Wrapper(sString.c_str());
+	else
+		mPropString16Wrapper->SetCharacters(sString.c_str());
 
-    *pLengthOut = iProperty->length();
-    return iProperty->characters();
+	if (pLengthOut)
+		*pLengthOut = Internal::Strlen(mPropString16Wrapper->GetCharacters());
+
+    return mPropString16Wrapper->GetCharacters();
 }
 
 void JavascriptValue::PropertyIterator::SetValue(const JavascriptValue &v) 
@@ -615,7 +648,8 @@ void JavascriptValue::PropertyIterator::SetValue(const JavascriptValue &v)
     JSC::JSObject *jsObject = ValueToObject(mObject->GetImpl());
     JSC::ExecState *exec = mObject->mExecState;
 
-    JSC::PutPropertySlot slot;
+	JSC::JSValue sourceJSValue = *(v.GetImpl());
+    JSC::PutPropertySlot slot(sourceJSValue);
     JSC::JSObject::put(jsObject,exec, *iProperty, *(v.GetImpl()), slot);
 }
 }}

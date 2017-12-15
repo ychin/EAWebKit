@@ -24,6 +24,7 @@
 
 #include "JSSourceInfo.h"
 
+#include "JSDOMBinding.h"
 #include "SourceInfo.h"
 #include "URL.h"
 #include <runtime/JSString.h>
@@ -33,49 +34,70 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSourceInfoTableValues[] =
-{
-    { "sourceId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSourceInfoSourceId), (intptr_t)0 },
-    { "kind", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSourceInfoKind), (intptr_t)0 },
-    { "label", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSourceInfoLabel), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSourceInfoSourceId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSourceInfoKind(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSourceInfoLabel(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSourceInfoPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSourceInfoPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSourceInfoPrototype* ptr = new (NotNull, JSC::allocateCell<JSSourceInfoPrototype>(vm.heap)) JSSourceInfoPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSourceInfoPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSourceInfoTable = { 8, 7, JSSourceInfoTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSSourceInfoPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "sourceId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSourceInfoSourceId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "kind", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSourceInfoKind), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "label", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSourceInfoLabel), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSourceInfoPrototypeTable = { 1, 0, JSSourceInfoPrototypeTableValues, 0 };
-const ClassInfo JSSourceInfoPrototype::s_info = { "SourceInfoPrototype", &Base::s_info, &JSSourceInfoPrototypeTable, 0, CREATE_METHOD_TABLE(JSSourceInfoPrototype) };
+const ClassInfo JSSourceInfoPrototype::s_info = { "SourceInfoPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSourceInfoPrototype) };
 
-JSObject* JSSourceInfoPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSourceInfo>(vm, globalObject);
-}
-
-const ClassInfo JSSourceInfo::s_info = { "SourceInfo", &Base::s_info, &JSSourceInfoTable, 0 , CREATE_METHOD_TABLE(JSSourceInfo) };
-
-JSSourceInfo::JSSourceInfo(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SourceInfo> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSSourceInfo::finishCreation(VM& vm)
+void JSSourceInfoPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSourceInfoPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSourceInfo::s_info = { "SourceInfo", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSourceInfo) };
+
+JSSourceInfo::JSSourceInfo(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SourceInfo>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSSourceInfo::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSSourceInfoPrototype::create(vm, globalObject, JSSourceInfoPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSSourceInfo::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSSourceInfo>(vm, globalObject);
 }
 
 void JSSourceInfo::destroy(JSC::JSCell* cell)
@@ -86,75 +108,79 @@ void JSSourceInfo::destroy(JSC::JSCell* cell)
 
 JSSourceInfo::~JSSourceInfo()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSSourceInfo::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsSourceInfoSourceId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSourceInfo* thisObject = jsCast<JSSourceInfo*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSourceInfo, Base>(exec, JSSourceInfoTable, thisObject, propertyName, slot);
-}
-
-JSValue jsSourceInfoSourceId(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSSourceInfo* castedThis = jsCast<JSSourceInfo*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SourceInfo& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSourceInfo* castedThis = jsDynamicCast<JSSourceInfo*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSourceInfoPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SourceInfo", "sourceId");
+        return throwGetterTypeError(*exec, "SourceInfo", "sourceId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.sourceId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSourceInfoKind(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSourceInfoKind(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSourceInfo* castedThis = jsCast<JSSourceInfo*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SourceInfo& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSourceInfo* castedThis = jsDynamicCast<JSSourceInfo*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSourceInfoPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SourceInfo", "kind");
+        return throwGetterTypeError(*exec, "SourceInfo", "kind");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.kind());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSourceInfoLabel(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSourceInfoLabel(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSourceInfo* castedThis = jsCast<JSSourceInfo*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SourceInfo& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSourceInfo* castedThis = jsDynamicCast<JSSourceInfo*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSourceInfoPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SourceInfo", "label");
+        return throwGetterTypeError(*exec, "SourceInfo", "label");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.label());
-    return result;
+    return JSValue::encode(result);
 }
 
-
-static inline bool isObservable(JSSourceInfo* jsSourceInfo)
-{
-    if (jsSourceInfo->hasCustomProperties())
-        return true;
-    return false;
-}
 
 bool JSSourceInfoOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSSourceInfo* jsSourceInfo = jsCast<JSSourceInfo*>(handle.get().asCell());
-    if (!isObservable(jsSourceInfo))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSSourceInfoOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSSourceInfo* jsSourceInfo = jsCast<JSSourceInfo*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsSourceInfo = jsCast<JSSourceInfo*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsSourceInfo->impl(), jsSourceInfo);
-    jsSourceInfo->releaseImpl();
 }
 
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SourceInfo* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, SourceInfo* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSSourceInfo>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSSourceInfo>(globalObject, impl))
         return result;
 #if COMPILER(CLANG)
     // If you hit this failure the interface definition has the ImplementationLacksVTable
@@ -163,13 +189,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, SourceI
     // attribute to SourceInfo.
     COMPILE_ASSERT(!__is_polymorphic(SourceInfo), SourceInfo_is_polymorphic_but_idl_claims_not_to_be);
 #endif
-    ReportMemoryCost<SourceInfo>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSSourceInfo>(exec, globalObject, impl);
+    return createNewWrapper<JSSourceInfo>(globalObject, impl);
 }
 
-SourceInfo* toSourceInfo(JSC::JSValue value)
+SourceInfo* JSSourceInfo::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSSourceInfo::info()) ? &jsCast<JSSourceInfo*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSSourceInfo*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

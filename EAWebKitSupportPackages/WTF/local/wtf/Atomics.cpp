@@ -11,7 +11,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -65,7 +65,7 @@
 // (http://gcc.gnu.org/bugzilla/show_bug.cgi?id=56296). GCC >= 4.8 will support __atomic_* builtin
 // functions for this purpose for all the GCC targets, but for current compilers we have to include
 // our own implementation.
-#if COMPILER(GCC) && !defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8) && USE(LOCKFREE_THREADSAFEREFCOUNTED) && USE(PTHREADS)
+#if COMPILER(GCC_OR_CLANG) && !defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8) && USE(PTHREADS)
 
 #include "ThreadingPrimitives.h"
 

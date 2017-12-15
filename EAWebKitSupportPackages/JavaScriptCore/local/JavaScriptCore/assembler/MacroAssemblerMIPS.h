@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Apple Inc. All rights reserved.
+ * Copyright (C) 2008, 2014 Apple Inc. All rights reserved.
  * Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
 
 namespace JSC {
 
-class MacroAssemblerMIPS : public AbstractMacroAssembler<MIPSAssembler> {
+class MacroAssemblerMIPS : public AbstractMacroAssembler<MIPSAssembler, MacroAssemblerMIPS> {
 public:
     typedef MIPSRegisters::FPRegisterID FPRegisterID;
 
@@ -101,6 +101,7 @@ public:
     };
 
     static const RegisterID stackPointerRegister = MIPSRegisters::sp;
+    static const RegisterID framePointerRegister = MIPSRegisters::fp;
     static const RegisterID returnAddressRegister = MIPSRegisters::ra;
 
     // Integer arithmetic operations:
@@ -691,7 +692,22 @@ public:
         }
     }
 
-    void load8Signed(BaseIndex address, RegisterID dest)
+    ALWAYS_INLINE void load8(AbsoluteAddress address, RegisterID dest)
+    {
+        load8(address.m_ptr, dest);
+    }
+
+    void load8(const void* address, RegisterID dest)
+    {
+        /*
+            li  addrTemp, address
+            lbu dest, 0(addrTemp)
+        */
+        move(TrustedImmPtr(address), addrTempRegister);
+        m_assembler.lbu(dest, addrTempRegister, 0);
+    }
+
+    void load8SignedExtendTo32(BaseIndex address, RegisterID dest)
     {
         if (address.offset >= -32768 && address.offset <= 32767
             && !m_fixedWidth) {
@@ -903,7 +919,7 @@ public:
         }
     }
 
-    void load16Signed(BaseIndex address, RegisterID dest)
+    void load16SignedExtendTo32(BaseIndex address, RegisterID dest)
     {
         if (address.offset >= -32768 && address.offset <= 32767
             && !m_fixedWidth) {
@@ -974,6 +990,12 @@ public:
             m_assembler.addu(addrTempRegister, addrTempRegister, immTempRegister);
             m_assembler.sb(src, addrTempRegister, address.offset);
         }
+    }
+
+    void store8(RegisterID src, void* address)
+    {
+        move(TrustedImmPtr(address), addrTempRegister);
+        m_assembler.sb(src, addrTempRegister, 0);
     }
 
     void store8(TrustedImm32 imm, void* address)
@@ -1292,6 +1314,15 @@ public:
         return branch32(cond, dataTempRegister, immTempRegister);
     }
 
+    Jump branch8(RelationalCondition cond, AbsoluteAddress left, TrustedImm32 right)
+    {
+        // Make sure the immediate value is unsigned 8 bits.
+        ASSERT(!(right.m_value & 0xFFFFFF00));
+        load8(left, dataTempRegister);
+        move(right, immTempRegister);
+        return branch32(cond, dataTempRegister, immTempRegister);
+    }
+
     void compare8(RelationalCondition cond, Address left, TrustedImm32 right, RegisterID dest)
     {
         // Make sure the immediate value is unsigned 8 bits.
@@ -1441,6 +1472,12 @@ public:
     Jump branchTest32(ResultCondition cond, BaseIndex address, TrustedImm32 mask = TrustedImm32(-1))
     {
         load32(address, dataTempRegister);
+        return branchTest32(cond, dataTempRegister, mask);
+    }
+
+    Jump branchTest8(ResultCondition cond, BaseIndex address, TrustedImm32 mask = TrustedImm32(-1))
+    {
+        load8(address, dataTempRegister);
         return branchTest32(cond, dataTempRegister, mask);
     }
 
@@ -2083,6 +2120,16 @@ public:
         return temp;
     }
 
+    Jump branch32WithPatch(RelationalCondition cond, Address left, DataLabel32& dataLabel, TrustedImm32 initialRightValue = TrustedImm32(0))
+    {
+        m_fixedWidth = true;
+        load32(left, dataTempRegister);
+        dataLabel = moveWithPatch(initialRightValue, immTempRegister);
+        Jump temp = branch32(cond, dataTempRegister, immTempRegister);
+        m_fixedWidth = false;
+        return temp;
+    }
+
     DataLabelPtr storePtrWithPatch(TrustedImmPtr initialValue, ImplicitAddress address)
     {
         m_fixedWidth = true;
@@ -2231,7 +2278,7 @@ public:
 #endif
     }
 
-    void loadDouble(const void* address, FPRegisterID dest)
+    void loadDouble(TrustedImmPtr address, FPRegisterID dest)
     {
 #if WTF_MIPS_ISA(1)
         /*
@@ -2239,7 +2286,7 @@ public:
             lwc1        dest, 0(addrTemp)
             lwc1        dest+1, 4(addrTemp)
          */
-        move(TrustedImmPtr(address), addrTempRegister);
+        move(address, addrTempRegister);
         m_assembler.lwc1(dest, addrTempRegister, 0);
         m_assembler.lwc1(FPRegisterID(dest + 1), addrTempRegister, 4);
 #else
@@ -2247,7 +2294,7 @@ public:
             li          addrTemp, address
             ldc1        dest, 0(addrTemp)
         */
-        move(TrustedImmPtr(address), addrTempRegister);
+        move(address, addrTempRegister);
         m_assembler.ldc1(dest, addrTempRegister, 0);
 #endif
     }
@@ -2369,14 +2416,14 @@ public:
 #endif
     }
 
-    void storeDouble(FPRegisterID src, const void* address)
+    void storeDouble(FPRegisterID src, TrustedImmPtr address)
     {
 #if WTF_MIPS_ISA(1)
-        move(TrustedImmPtr(address), addrTempRegister);
+        move(address, addrTempRegister);
         m_assembler.swc1(src, addrTempRegister, 0);
         m_assembler.swc1(FPRegisterID(src + 1), addrTempRegister, 4);
 #else
-        move(TrustedImmPtr(address), addrTempRegister);
+        move(address, addrTempRegister);
         m_assembler.sdc1(src, addrTempRegister, 0);
 #endif
     }
@@ -2412,7 +2459,7 @@ public:
 
     void addDouble(AbsoluteAddress address, FPRegisterID dest)
     {
-        loadDouble(address.m_ptr, fpTempRegister);
+        loadDouble(TrustedImmPtr(address.m_ptr), fpTempRegister);
         m_assembler.addd(dest, dest, fpTempRegister);
     }
 
@@ -2698,6 +2745,11 @@ public:
         m_assembler.nop();
     }
 
+    void memoryFence()
+    {
+        m_assembler.sync();
+    }
+
     static FunctionPtr readCallTarget(CodeLocationCall call)
     {
         return FunctionPtr(reinterpret_cast<void(*)()>(MIPSAssembler::readCallTarget(call.dataLocation())));
@@ -2732,7 +2784,7 @@ public:
         return CodeLocationLabel();
     }
 
-    static void revertJumpReplacementToPatchableBranchPtrWithPatch(CodeLocationLabel instructionStart, Address, void* initialValue)
+    static void revertJumpReplacementToPatchableBranchPtrWithPatch(CodeLocationLabel, Address, void*)
     {
         UNREACHABLE_FOR_PLATFORM();
     }

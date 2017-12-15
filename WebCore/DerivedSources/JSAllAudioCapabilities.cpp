@@ -28,6 +28,7 @@
 #include "CapabilityRange.h"
 #include "DOMStringList.h"
 #include "JSCapabilityRange.h"
+#include "JSDOMBinding.h"
 #include "JSDOMStringList.h"
 #include <runtime/JSArray.h>
 #include <wtf/GetPtr.h>
@@ -36,73 +37,100 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSAllAudioCapabilitiesTableValues[] =
-{
-    { "sourceId", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllAudioCapabilitiesSourceId), (intptr_t)0 },
-    { "volume", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllAudioCapabilitiesVolume), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsAllAudioCapabilitiesSourceId(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsAllAudioCapabilitiesVolume(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSAllAudioCapabilitiesPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSAllAudioCapabilitiesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSAllAudioCapabilitiesPrototype* ptr = new (NotNull, JSC::allocateCell<JSAllAudioCapabilitiesPrototype>(vm.heap)) JSAllAudioCapabilitiesPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSAllAudioCapabilitiesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSAllAudioCapabilitiesTable = { 4, 3, JSAllAudioCapabilitiesTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSAllAudioCapabilitiesPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "sourceId", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllAudioCapabilitiesSourceId), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "volume", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsAllAudioCapabilitiesVolume), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSAllAudioCapabilitiesPrototypeTable = { 1, 0, JSAllAudioCapabilitiesPrototypeTableValues, 0 };
-const ClassInfo JSAllAudioCapabilitiesPrototype::s_info = { "AllAudioCapabilitiesPrototype", &Base::s_info, &JSAllAudioCapabilitiesPrototypeTable, 0, CREATE_METHOD_TABLE(JSAllAudioCapabilitiesPrototype) };
+const ClassInfo JSAllAudioCapabilitiesPrototype::s_info = { "AllAudioCapabilitiesPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAllAudioCapabilitiesPrototype) };
 
-JSObject* JSAllAudioCapabilitiesPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSAllAudioCapabilities>(vm, globalObject);
-}
-
-const ClassInfo JSAllAudioCapabilities::s_info = { "AllAudioCapabilities", &Base::s_info, &JSAllAudioCapabilitiesTable, 0 , CREATE_METHOD_TABLE(JSAllAudioCapabilities) };
-
-JSAllAudioCapabilities::JSAllAudioCapabilities(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AllAudioCapabilities> impl)
-    : JSMediaStreamCapabilities(structure, globalObject, impl)
-{
-}
-
-void JSAllAudioCapabilities::finishCreation(VM& vm)
+void JSAllAudioCapabilitiesPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSAllAudioCapabilitiesPrototypeTableValues, *this);
+}
+
+const ClassInfo JSAllAudioCapabilities::s_info = { "AllAudioCapabilities", &Base::s_info, 0, CREATE_METHOD_TABLE(JSAllAudioCapabilities) };
+
+JSAllAudioCapabilities::JSAllAudioCapabilities(Structure* structure, JSDOMGlobalObject* globalObject, Ref<AllAudioCapabilities>&& impl)
+    : JSMediaStreamCapabilities(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSAllAudioCapabilities::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSAllAudioCapabilitiesPrototype::create(vm, globalObject, JSAllAudioCapabilitiesPrototype::createStructure(vm, globalObject, JSMediaStreamCapabilitiesPrototype::self(vm, globalObject)));
+    return JSAllAudioCapabilitiesPrototype::create(vm, globalObject, JSAllAudioCapabilitiesPrototype::createStructure(vm, globalObject, JSMediaStreamCapabilities::getPrototype(vm, globalObject)));
 }
 
-bool JSAllAudioCapabilities::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSAllAudioCapabilities::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSAllAudioCapabilities* thisObject = jsCast<JSAllAudioCapabilities*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSAllAudioCapabilities, Base>(exec, JSAllAudioCapabilitiesTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSAllAudioCapabilities>(vm, globalObject);
 }
 
-JSValue jsAllAudioCapabilitiesSourceId(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllAudioCapabilitiesSourceId(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllAudioCapabilities* castedThis = jsCast<JSAllAudioCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllAudioCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllAudioCapabilities* castedThis = jsDynamicCast<JSAllAudioCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllAudioCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllAudioCapabilities", "sourceId");
+        return throwGetterTypeError(*exec, "AllAudioCapabilities", "sourceId");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsArray(exec, castedThis->globalObject(), impl.sourceId());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsAllAudioCapabilitiesVolume(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsAllAudioCapabilitiesVolume(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSAllAudioCapabilities* castedThis = jsCast<JSAllAudioCapabilities*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    AllAudioCapabilities& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSAllAudioCapabilities* castedThis = jsDynamicCast<JSAllAudioCapabilities*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSAllAudioCapabilitiesPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "AllAudioCapabilities", "volume");
+        return throwGetterTypeError(*exec, "AllAudioCapabilities", "volume");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.volume()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
@@ -114,11 +142,11 @@ extern "C" { extern void (*const __identifier("??_7AllAudioCapabilities@WebCore@
 extern "C" { extern void* _ZTVN7WebCore20AllAudioCapabilitiesE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AllAudioCapabilities* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, AllAudioCapabilities* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSAllAudioCapabilities>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSAllAudioCapabilities>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -139,8 +167,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AllAudi
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<AllAudioCapabilities>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSAllAudioCapabilities>(exec, globalObject, impl);
+    return createNewWrapper<JSAllAudioCapabilities>(globalObject, impl);
 }
 
 

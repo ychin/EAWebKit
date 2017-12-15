@@ -23,11 +23,9 @@
 #include "config.h"
 #include "Event.h"
 
-#include "EventNames.h"
 #include "EventTarget.h"
 #include "UserGestureIndicator.h"
 #include <wtf/CurrentTime.h>
-#include <wtf/text/AtomicString.h>
 
 namespace WebCore {
 
@@ -166,6 +164,21 @@ bool Event::isBeforeTextInsertedEvent() const
 }
 
 bool Event::isBeforeUnloadEvent() const
+{
+    return false;
+}
+
+bool Event::isErrorEvent() const
+{
+    return false;
+}
+
+bool Event::isTextEvent() const
+{
+    return false;
+}
+
+bool Event::isWheelEvent() const
 {
     return false;
 }

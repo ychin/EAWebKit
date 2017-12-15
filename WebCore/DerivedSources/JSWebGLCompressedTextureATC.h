@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebGLCompressedTextureATC.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebGLCompressedTextureATC : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebGLCompressedTextureATC* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLCompressedTextureATC> impl)
+    static JSWebGLCompressedTextureATC* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLCompressedTextureATC>&& impl)
     {
-        JSWebGLCompressedTextureATC* ptr = new (NotNull, JSC::allocateCell<JSWebGLCompressedTextureATC>(globalObject->vm().heap)) JSWebGLCompressedTextureATC(structure, globalObject, impl);
+        JSWebGLCompressedTextureATC* ptr = new (NotNull, JSC::allocateCell<JSWebGLCompressedTextureATC>(globalObject->vm().heap)) JSWebGLCompressedTextureATC(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebGLCompressedTextureATC* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebGLCompressedTextureATC();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     WebGLCompressedTextureATC& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebGLCompressedTextureATC* m_impl;
 protected:
-    JSWebGLCompressedTextureATC(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLCompressedTextureATC>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSWebGLCompressedTextureATC(JSC::Structure*, JSDOMGlobalObject*, Ref<WebGLCompressedTextureATC>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebGLCompressedTextureATCOwner : public JSC::WeakHandleOwner {
@@ -78,47 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebGLCompressedTextureATC*)
 {
-    DEFINE_STATIC_LOCAL(JSWebGLCompressedTextureATCOwner, jsWebGLCompressedTextureATCOwner, ());
-    return &jsWebGLCompressedTextureATCOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebGLCompressedTextureATC*)
-{
-    return &world;
+    static NeverDestroyed<JSWebGLCompressedTextureATCOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebGLCompressedTextureATC*);
-WebGLCompressedTextureATC* toWebGLCompressedTextureATC(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLCompressedTextureATC& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebGLCompressedTextureATCPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebGLCompressedTextureATCPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebGLCompressedTextureATCPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLCompressedTextureATCPrototype>(vm.heap)) JSWebGLCompressedTextureATCPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebGLCompressedTextureATCPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Constants
-
-JSC::JSValue jsWebGLCompressedTextureATCCOMPRESSED_RGB_ATC_WEBGL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebGLCompressedTextureATCCOMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsWebGLCompressedTextureATCCOMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

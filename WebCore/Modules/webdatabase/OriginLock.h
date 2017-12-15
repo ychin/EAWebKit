@@ -26,10 +26,9 @@
 #ifndef OriginLock_h
 #define OriginLock_h
 
-#if ENABLE(SQL_DATABASE)
-
 #include "FileSystem.h"
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/ThreadingPrimitives.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {
@@ -38,7 +37,7 @@ class OriginLock : public ThreadSafeRefCounted<OriginLock> {
     WTF_MAKE_NONCOPYABLE(OriginLock); WTF_MAKE_FAST_ALLOCATED;
 public:
     OriginLock(String originPath);
-    ~OriginLock();
+    WEBCORE_EXPORT ~OriginLock();
 
     void lock();
     void unlock();
@@ -56,7 +55,5 @@ private:
 };
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif // OriginLock_h

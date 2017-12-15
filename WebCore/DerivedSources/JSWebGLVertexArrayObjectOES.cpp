@@ -24,12 +24,38 @@
 
 #include "JSWebGLVertexArrayObjectOES.h"
 
+#include "JSDOMBinding.h"
 #include "WebGLVertexArrayObjectOES.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
+
+class JSWebGLVertexArrayObjectOESPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSWebGLVertexArrayObjectOESPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSWebGLVertexArrayObjectOESPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebGLVertexArrayObjectOESPrototype>(vm.heap)) JSWebGLVertexArrayObjectOESPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSWebGLVertexArrayObjectOESPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
 
 /* Hash table for prototype */
 
@@ -38,31 +64,30 @@ static const HashTableValue JSWebGLVertexArrayObjectOESPrototypeTableValues[] =
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSWebGLVertexArrayObjectOESPrototypeTable = { 1, 0, JSWebGLVertexArrayObjectOESPrototypeTableValues, 0 };
-const ClassInfo JSWebGLVertexArrayObjectOESPrototype::s_info = { "WebGLVertexArrayObjectOESPrototype", &Base::s_info, &JSWebGLVertexArrayObjectOESPrototypeTable, 0, CREATE_METHOD_TABLE(JSWebGLVertexArrayObjectOESPrototype) };
+const ClassInfo JSWebGLVertexArrayObjectOESPrototype::s_info = { "WebGLVertexArrayObjectOESPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLVertexArrayObjectOESPrototype) };
 
-JSObject* JSWebGLVertexArrayObjectOESPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSWebGLVertexArrayObjectOES>(vm, globalObject);
-}
-
-const ClassInfo JSWebGLVertexArrayObjectOES::s_info = { "WebGLVertexArrayObjectOES", &Base::s_info, 0, 0 , CREATE_METHOD_TABLE(JSWebGLVertexArrayObjectOES) };
-
-JSWebGLVertexArrayObjectOES::JSWebGLVertexArrayObjectOES(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebGLVertexArrayObjectOES> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSWebGLVertexArrayObjectOES::finishCreation(VM& vm)
+void JSWebGLVertexArrayObjectOESPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSWebGLVertexArrayObjectOESPrototypeTableValues, *this);
+}
+
+const ClassInfo JSWebGLVertexArrayObjectOES::s_info = { "WebGLVertexArrayObjectOES", &Base::s_info, 0, CREATE_METHOD_TABLE(JSWebGLVertexArrayObjectOES) };
+
+JSWebGLVertexArrayObjectOES::JSWebGLVertexArrayObjectOES(Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebGLVertexArrayObjectOES>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSWebGLVertexArrayObjectOES::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSWebGLVertexArrayObjectOESPrototype::create(vm, globalObject, JSWebGLVertexArrayObjectOESPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSWebGLVertexArrayObjectOES::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSWebGLVertexArrayObjectOES>(vm, globalObject);
 }
 
 void JSWebGLVertexArrayObjectOES::destroy(JSC::JSCell* cell)
@@ -73,31 +98,21 @@ void JSWebGLVertexArrayObjectOES::destroy(JSC::JSCell* cell)
 
 JSWebGLVertexArrayObjectOES::~JSWebGLVertexArrayObjectOES()
 {
-    releaseImplIfNotNull();
-}
-
-static inline bool isObservable(JSWebGLVertexArrayObjectOES* jsWebGLVertexArrayObjectOES)
-{
-    if (jsWebGLVertexArrayObjectOES->hasCustomProperties())
-        return true;
-    return false;
+    releaseImpl();
 }
 
 bool JSWebGLVertexArrayObjectOESOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSWebGLVertexArrayObjectOES* jsWebGLVertexArrayObjectOES = jsCast<JSWebGLVertexArrayObjectOES*>(handle.get().asCell());
-    if (!isObservable(jsWebGLVertexArrayObjectOES))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSWebGLVertexArrayObjectOESOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSWebGLVertexArrayObjectOES* jsWebGLVertexArrayObjectOES = jsCast<JSWebGLVertexArrayObjectOES*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsWebGLVertexArrayObjectOES = jsCast<JSWebGLVertexArrayObjectOES*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsWebGLVertexArrayObjectOES->impl(), jsWebGLVertexArrayObjectOES);
-    jsWebGLVertexArrayObjectOES->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -108,11 +123,11 @@ extern "C" { extern void (*const __identifier("??_7WebGLVertexArrayObjectOES@Web
 extern "C" { extern void* _ZTVN7WebCore25WebGLVertexArrayObjectOESE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLVertexArrayObjectOES* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, WebGLVertexArrayObjectOES* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSWebGLVertexArrayObjectOES>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSWebGLVertexArrayObjectOES>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -133,13 +148,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebGLVe
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<WebGLVertexArrayObjectOES>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSWebGLVertexArrayObjectOES>(exec, globalObject, impl);
+    return createNewWrapper<JSWebGLVertexArrayObjectOES>(globalObject, impl);
 }
 
-WebGLVertexArrayObjectOES* toWebGLVertexArrayObjectOES(JSC::JSValue value)
+WebGLVertexArrayObjectOES* JSWebGLVertexArrayObjectOES::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSWebGLVertexArrayObjectOES::info()) ? &jsCast<JSWebGLVertexArrayObjectOES*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSWebGLVertexArrayObjectOES*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

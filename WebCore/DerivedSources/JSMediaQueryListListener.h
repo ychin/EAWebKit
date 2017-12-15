@@ -30,9 +30,9 @@ namespace WebCore {
 
 class JSMediaQueryListListener : public MediaQueryListListener, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSMediaQueryListListener> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSMediaQueryListListener> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSMediaQueryListListener(callback, globalObject));
+        return adoptRef(*new JSMediaQueryListListener(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

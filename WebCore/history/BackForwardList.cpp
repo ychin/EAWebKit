@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005, 2006 Apple Computer, Inc.  All rights reserved.
+ * Copyright (C) 2005, 2006 Apple Inc.  All rights reserved.
  * Copyright (C) 2008 Torch Mobile Inc. All rights reserved. (http://www.torchmobile.com/)
  *
  * Redistribution and use in source and binary forms, with or without
@@ -11,10 +11,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -36,8 +36,6 @@
 #include "PageCache.h"
 #include "SerializedScriptValue.h"
 
-using namespace std;
-
 namespace WebCore {
 
 static const unsigned DefaultCapacity = 100;
@@ -57,36 +55,34 @@ BackForwardList::~BackForwardList()
     ASSERT(m_closed);
 }
 
-void BackForwardList::addItem(PassRefPtr<HistoryItem> prpItem)
+void BackForwardList::addItem(Ref<HistoryItem>&& newItem)
 {
-    ASSERT(prpItem);
-    if (m_capacity == 0 || !m_enabled)
+    if (!m_capacity || !m_enabled)
         return;
     
     // Toss anything in the forward list    
     if (m_current != NoCurrentItemIndex) {
         unsigned targetSize = m_current + 1;
         while (m_entries.size() > targetSize) {
-            RefPtr<HistoryItem> item = m_entries.last();
-            m_entries.removeLast();
-            m_entryHash.remove(item);
-            pageCache()->remove(item.get());
+            Ref<HistoryItem> item = m_entries.takeLast();
+            m_entryHash.remove(item.ptr());
+            PageCache::singleton().remove(item);
         }
     }
 
     // Toss the first item if the list is getting too big, as long as we're not using it
     // (or even if we are, if we only want 1 entry).
-    if (m_entries.size() == m_capacity && (m_current != 0 || m_capacity == 1)) {
-        RefPtr<HistoryItem> item = m_entries[0];
+    if (m_entries.size() == m_capacity && (m_current || m_capacity == 1)) {
+        Ref<HistoryItem> item = WTF::move(m_entries[0]);
         m_entries.remove(0);
-        m_entryHash.remove(item);
-        pageCache()->remove(item.get());
-        m_current--;
+        m_entryHash.remove(item.ptr());
+        PageCache::singleton().remove(item);
+        --m_current;
     }
 
-    m_entryHash.add(prpItem.get());
-    m_entries.insert(m_current + 1, prpItem);
-    m_current++;
+    m_entryHash.add(newItem.ptr());
+    m_entries.insert(m_current + 1, WTF::move(newItem));
+    ++m_current;
 }
 
 void BackForwardList::goBack()
@@ -112,7 +108,7 @@ void BackForwardList::goToItem(HistoryItem* item)
         
     unsigned int index = 0;
     for (; index < m_entries.size(); ++index)
-        if (m_entries[index] == item)
+        if (m_entries[index].ptr() == item)
             break;
     if (index < m_entries.size()) {
         m_current = index;
@@ -122,31 +118,31 @@ void BackForwardList::goToItem(HistoryItem* item)
 HistoryItem* BackForwardList::backItem()
 {
     if (m_current && m_current != NoCurrentItemIndex)
-        return m_entries[m_current - 1].get();
-    return 0;
+        return m_entries[m_current - 1].ptr();
+    return nullptr;
 }
 
 HistoryItem* BackForwardList::currentItem()
 {
     if (m_current != NoCurrentItemIndex)
-        return m_entries[m_current].get();
-    return 0;
+        return m_entries[m_current].ptr();
+    return nullptr;
 }
 
 HistoryItem* BackForwardList::forwardItem()
 {
     if (m_entries.size() && m_current < m_entries.size() - 1)
-        return m_entries[m_current + 1].get();
-    return 0;
+        return m_entries[m_current + 1].ptr();
+    return nullptr;
 }
 
 void BackForwardList::backListWithLimit(int limit, HistoryItemVector& list)
 {
     list.clear();
     if (m_current != NoCurrentItemIndex) {
-        unsigned first = max((int)m_current - limit, 0);
+        unsigned first = std::max(static_cast<int>(m_current) - limit, 0);
         for (; first < m_current; ++first)
-            list.append(m_entries[first]);
+            list.append(m_entries[first].get());
     }
 }
 
@@ -159,10 +155,10 @@ void BackForwardList::forwardListWithLimit(int limit, HistoryItemVector& list)
         
     unsigned lastEntry = m_entries.size() - 1;
     if (m_current < lastEntry) {
-        int last = min(m_current + limit, lastEntry);
+        int last = std::min(m_current + limit, lastEntry);
         limit = m_current + 1;
         for (; limit <= last; ++limit)
-            list.append(m_entries[limit]);
+            list.append(m_entries[limit].get());
     }
 }
 
@@ -173,11 +169,10 @@ int BackForwardList::capacity()
 
 void BackForwardList::setCapacity(int size)
 {    
-    while (size < (int)m_entries.size()) {
-        RefPtr<HistoryItem> item = m_entries.last();
-        m_entries.removeLast();
-        m_entryHash.remove(item);
-        pageCache()->remove(item.get());
+    while (size < static_cast<int>(m_entries.size())) {
+        Ref<HistoryItem> item = m_entries.takeLast();
+        m_entryHash.remove(item.ptr());
+        PageCache::singleton().remove(item);
     }
 
     if (!size)
@@ -216,13 +211,13 @@ int BackForwardList::forwardListCount()
 HistoryItem* BackForwardList::itemAtIndex(int index)
 {
     // Do range checks without doing math on index to avoid overflow.
-    if (index < -(int)m_current)
-        return 0;
+    if (index < -static_cast<int>(m_current))
+        return nullptr;
     
     if (index > forwardListCount())
-        return 0;
+        return nullptr;
         
-    return m_entries[index + m_current].get();
+    return m_entries[index + m_current].ptr();
 }
 
 HistoryItemVector& BackForwardList::entries()
@@ -230,14 +225,37 @@ HistoryItemVector& BackForwardList::entries()
     return m_entries;
 }
 
+#if PLATFORM(IOS)
+unsigned BackForwardList::current()
+{
+    return m_current;
+}
+
+void BackForwardList::setCurrent(unsigned newCurrent)
+{
+    m_current = newCurrent;
+}
+
+bool BackForwardList::clearAllPageCaches()
+{
+    bool didRemoveAtLeastOneItem = false;
+    for (auto& item : m_entries) {
+        if (item->isInPageCache()) {
+            didRemoveAtLeastOneItem = true;
+            PageCache::singleton().remove(item);
+        }
+    }
+    return didRemoveAtLeastOneItem;
+}
+#endif
+
 void BackForwardList::close()
 {
-    int size = m_entries.size();
-    for (int i = 0; i < size; ++i)
-        pageCache()->remove(m_entries[i].get());
+    for (auto& item : m_entries)
+        PageCache::singleton().remove(item);
     m_entries.clear();
     m_entryHash.clear();
-    m_page = 0;
+    m_page = nullptr;
     m_closed = true;
 }
 
@@ -251,8 +269,8 @@ void BackForwardList::removeItem(HistoryItem* item)
     if (!item)
         return;
     
-    for (unsigned i = 0; i < m_entries.size(); ++i)
-        if (m_entries[i] == item) {
+    for (unsigned i = 0; i < m_entries.size(); ++i) {
+        if (m_entries[i].ptr() == item) {
             m_entries.remove(i);
             m_entryHash.remove(item);
             if (m_current == NoCurrentItemIndex || m_current < i)
@@ -266,6 +284,7 @@ void BackForwardList::removeItem(HistoryItem* item)
             }
             break;
         }
+    }
 }
 
 bool BackForwardList::containsItem(HistoryItem* entry)

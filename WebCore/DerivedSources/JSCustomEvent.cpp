@@ -25,6 +25,7 @@
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSDictionary.h"
+#include <bindings/ScriptValue.h>
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
@@ -32,34 +33,88 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsCustomEventPrototypeFunctionInitCustomEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsCustomEventDetail(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsCustomEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSCustomEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSCustomEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSCustomEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSCustomEventPrototype>(vm.heap)) JSCustomEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSCustomEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
+class JSCustomEventConstructor : public DOMConstructorObject {
+private:
+    JSCustomEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSCustomEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSCustomEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSCustomEventConstructor>(vm.heap)) JSCustomEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSCustomEvent(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSCustomEventTableIndex[2] = {
+    { 0, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSCustomEventTableValues[] =
 {
-    { "detail", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCustomEventDetail), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCustomEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "detail", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCustomEventDetail), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSCustomEventTable = { 4, 3, JSCustomEventTableValues, 0 };
-/* Hash table for constructor */
-
-static const HashTableValue JSCustomEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
-};
-
-static const HashTable JSCustomEventConstructorTable = { 1, 0, JSCustomEventConstructorTableValues, 0 };
+static const HashTable JSCustomEventTable = { 1, 1, true, JSCustomEventTableValues, 0, JSCustomEventTableIndex };
 EncodedJSValue JSC_HOST_CALL JSCustomEventConstructor::constructJSCustomEvent(ExecState* exec)
 {
-    JSCustomEventConstructor* jsConstructor = jsCast<JSCustomEventConstructor*>(exec->callee());
+    auto* jsConstructor = jsCast<JSCustomEventConstructor*>(exec->callee());
 
     ScriptExecutionContext* executionContext = jsConstructor->scriptExecutionContext();
     if (!executionContext)
         return throwVMError(exec, createReferenceError(exec, "Constructor associated execution context is unavailable"));
 
-    AtomicString eventType = exec->argument(0).toString(exec)->value(exec);
-    if (exec->hadException())
+    AtomicString eventType = exec->argument(0).toString(exec)->toAtomicString(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
 
     CustomEventInit eventInit;
@@ -91,7 +146,7 @@ bool fillCustomEventInit(CustomEventInit& eventInit, JSDictionary& dictionary)
     return true;
 }
 
-const ClassInfo JSCustomEventConstructor::s_info = { "CustomEventConstructor", &Base::s_info, &JSCustomEventConstructorTable, 0, CREATE_METHOD_TABLE(JSCustomEventConstructor) };
+const ClassInfo JSCustomEventConstructor::s_info = { "CustomEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCustomEventConstructor) };
 
 JSCustomEventConstructor::JSCustomEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -102,13 +157,9 @@ void JSCustomEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalO
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSCustomEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSCustomEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSCustomEventConstructor, JSDOMWrapper>(exec, JSCustomEventConstructorTable, jsCast<JSCustomEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSCustomEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("CustomEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
 }
 
 ConstructType JSCustomEventConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -121,63 +172,58 @@ ConstructType JSCustomEventConstructor::getConstructData(JSCell*, ConstructData&
 
 static const HashTableValue JSCustomEventPrototypeTableValues[] =
 {
-    { "initCustomEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCustomEventPrototypeFunctionInitCustomEvent), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsCustomEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "initCustomEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCustomEventPrototypeFunctionInitCustomEvent), (intptr_t) (0) },
 };
 
-static const HashTable JSCustomEventPrototypeTable = { 2, 1, JSCustomEventPrototypeTableValues, 0 };
-const ClassInfo JSCustomEventPrototype::s_info = { "CustomEventPrototype", &Base::s_info, &JSCustomEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSCustomEventPrototype) };
+const ClassInfo JSCustomEventPrototype::s_info = { "CustomEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSCustomEventPrototype) };
 
-JSObject* JSCustomEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSCustomEvent>(vm, globalObject);
-}
-
-bool JSCustomEventPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSCustomEventPrototype* thisObject = jsCast<JSCustomEventPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSCustomEventPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSCustomEvent::s_info = { "CustomEvent", &Base::s_info, &JSCustomEventTable, 0 , CREATE_METHOD_TABLE(JSCustomEvent) };
-
-JSCustomEvent::JSCustomEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CustomEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSCustomEvent::finishCreation(VM& vm)
+void JSCustomEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSCustomEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSCustomEvent::s_info = { "CustomEvent", &Base::s_info, &JSCustomEventTable, CREATE_METHOD_TABLE(JSCustomEvent) };
+
+JSCustomEvent::JSCustomEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<CustomEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSCustomEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSCustomEventPrototype::create(vm, globalObject, JSCustomEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSCustomEventPrototype::create(vm, globalObject, JSCustomEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
+}
+
+JSObject* JSCustomEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSCustomEvent>(vm, globalObject);
 }
 
 bool JSCustomEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSCustomEvent* thisObject = jsCast<JSCustomEvent*>(object);
+    auto* thisObject = jsCast<JSCustomEvent*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSCustomEvent, Base>(exec, JSCustomEventTable, thisObject, propertyName, slot);
 }
 
-JSValue jsCustomEventDetail(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCustomEventDetail(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSCustomEvent* castedThis = jsCast<JSCustomEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    CustomEvent& impl = castedThis->impl();
-    JSValue result = (impl.detail().hasNoValue() ? jsNull() : impl.detail().jsValue());
-    return result;
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSCustomEvent*>(slotBase);
+    return JSValue::encode(castedThis->detail(exec));
 }
 
 
-JSValue jsCustomEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsCustomEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSCustomEvent* domObject = jsCast<JSCustomEvent*>(asObject(slotBase));
-    return JSCustomEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSCustomEventPrototype* domObject = jsDynamicCast<JSCustomEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSCustomEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSCustomEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -187,23 +233,23 @@ JSValue JSCustomEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsCustomEventPrototypeFunctionInitCustomEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSCustomEvent::info()))
-        return throwVMTypeError(exec);
-    JSCustomEvent* castedThis = jsCast<JSCustomEvent*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSCustomEvent* castedThis = jsDynamicCast<JSCustomEvent*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "CustomEvent", "initCustomEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSCustomEvent::info());
-    CustomEvent& impl = castedThis->impl();
-    const String& typeArg(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String typeArg = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool canBubbleArg(exec->argument(1).toBoolean(exec));
-    if (exec->hadException())
+    bool canBubbleArg = exec->argument(1).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool cancelableArg(exec->argument(2).toBoolean(exec));
-    if (exec->hadException())
+    bool cancelableArg = exec->argument(2).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    ScriptValue detailArg(exec->vm(), exec->argument(3));
-    if (exec->hadException())
+    Deprecated::ScriptValue detailArg = { exec->vm(), exec->argument(3) };
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.initCustomEvent(typeArg, canBubbleArg, cancelableArg, detailArg);
     return JSValue::encode(jsUndefined());

@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
- * Copyright (C) 2016 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,7 +32,7 @@
 #if ENABLE(GC_VALIDATION)
 #define ASSERT_GC_OBJECT_LOOKS_VALID(cell) do { \
     RELEASE_ASSERT(cell);\
-    RELEASE_ASSERT(cell->unvalidatedStructure()->unvalidatedStructure() == cell->unvalidatedStructure()->unvalidatedStructure()->unvalidatedStructure()); \
+    RELEASE_ASSERT(cell->structure()->structure() == cell->structure()->structure()->structure()); \
 } while (0)
 
 #define ASSERT_GC_OBJECT_INHERITS(object, classInfo) do {\
@@ -46,9 +45,6 @@
 #define ASSERT_GC_OBJECT_INHERITS(object, classInfo) do { (void)object; (void)classInfo; } while (0)
 #endif
 
-//+EAWebKitChange
-//06/06/2016 - Updated based off changes from w-188436 for VS2015 compatibility
 #define STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(klass) static_assert(std::is_trivially_destructible<klass>::value, #klass " must have a trivial destructor")
-//-EAWebKitChange
 
 #endif // GCAssertions_h

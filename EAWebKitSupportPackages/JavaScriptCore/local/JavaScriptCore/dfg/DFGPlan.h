@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,83 +26,103 @@
 #ifndef DFGPlan_h
 #define DFGPlan_h
 
-#include <wtf/Platform.h>
-
 #include "CompilationResult.h"
 #include "DFGCompilationKey.h"
 #include "DFGCompilationMode.h"
 #include "DFGDesiredIdentifiers.h"
-#include "DFGDesiredStructureChains.h"
 #include "DFGDesiredTransitions.h"
 #include "DFGDesiredWatchpoints.h"
 #include "DFGDesiredWeakReferences.h"
-#include "DFGDesiredWriteBarriers.h"
 #include "DFGFinalizer.h"
 #include "DeferredCompilationCallback.h"
 #include "Operands.h"
 #include "ProfilerCompilation.h"
+#include <wtf/HashMap.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/text/CString.h>
 
 namespace JSC {
 
 class CodeBlock;
+class CodeBlockSet;
+class SlotVisitor;
 
 namespace DFG {
 
 class LongLivedState;
+class ThreadData;
 
 #if ENABLE(DFG_JIT)
 
 struct Plan : public ThreadSafeRefCounted<Plan> {
     Plan(
-        PassRefPtr<CodeBlock>, CompilationMode, unsigned osrEntryBytecodeIndex,
+        PassRefPtr<CodeBlock> codeBlockToCompile, CodeBlock* profiledDFGCodeBlock,
+        CompilationMode, unsigned osrEntryBytecodeIndex,
         const Operands<JSValue>& mustHandleValues);
     ~Plan();
-    
-    void compileInThread(LongLivedState&);
+
+    void compileInThread(LongLivedState&, ThreadData*);
     
     CompilationResult finalizeWithoutNotifyingCallback();
     void finalizeAndNotifyCallback();
     
+    void notifyCompiling();
+    void notifyCompiled();
     void notifyReady();
     
     CompilationKey key();
     
+    void checkLivenessAndVisitChildren(SlotVisitor&, CodeBlockSet&);
+    bool isKnownToBeLiveDuringGC();
+    void cancel();
+    
     VM& vm;
     RefPtr<CodeBlock> codeBlock;
+    RefPtr<CodeBlock> profiledDFGCodeBlock;
     CompilationMode mode;
     const unsigned osrEntryBytecodeIndex;
     Operands<JSValue> mustHandleValues;
+    
+    ThreadData* threadData;
 
     RefPtr<Profiler::Compilation> compilation;
 
-    OwnPtr<Finalizer> finalizer;
+    std::unique_ptr<Finalizer> finalizer;
     
+    RefPtr<InlineCallFrameSet> inlineCallFrames;
     DesiredWatchpoints watchpoints;
     DesiredIdentifiers identifiers;
-    DesiredStructureChains chains;
     DesiredWeakReferences weakReferences;
-    DesiredWriteBarriers writeBarriers;
     DesiredTransitions transitions;
-
-    double beforeFTL;
     
-    bool isCompiled;
+    bool willTryToTierUp;
+
+    enum Stage { Preparing, Compiling, Compiled, Ready, Cancelled };
+    Stage stage;
 
     RefPtr<DeferredCompilationCallback> callback;
 
+    JS_EXPORT_PRIVATE static HashMap<CString, double> compileTimeStats();
+
 private:
-    enum CompilationPath { FailPath, DFGPath, FTLPath };
+    bool computeCompileTimes() const;
+    bool reportCompileTimes() const;
+    
+    enum CompilationPath { FailPath, DFGPath, FTLPath, CancelPath };
     CompilationPath compileInThreadImpl(LongLivedState&);
     
     bool isStillValid();
     void reallyAdd(CommonData*);
+
+    double m_timeBeforeFTL;
 };
 
 #else // ENABLE(DFG_JIT)
 
 class Plan : public RefCounted<Plan> {
     // Dummy class to allow !ENABLE(DFG_JIT) to build.
+public:
+    static HashMap<CString, double> compileTimeStats() { return HashMap<CString, double>(); }
 };
 
 #endif // ENABLE(DFG_JIT)

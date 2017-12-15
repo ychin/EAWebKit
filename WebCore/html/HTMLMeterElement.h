@@ -29,9 +29,9 @@ namespace WebCore {
 class MeterValueElement;
 class RenderMeter;
 
-class HTMLMeterElement FINAL : public LabelableElement {
+class HTMLMeterElement final : public LabelableElement {
 public:
-    static PassRefPtr<HTMLMeterElement> create(const QualifiedName&, Document&);
+    static Ref<HTMLMeterElement> create(const QualifiedName&, Document&);
 
     enum GaugeRegion {
         GaugeRegionOptimum,
@@ -60,29 +60,25 @@ public:
     double valueRatio() const;
     GaugeRegion gaugeRegion() const;
 
-    virtual bool canContainRangeEndPoint() const OVERRIDE { return false; }
+    virtual bool canContainRangeEndPoint() const override { return false; }
 
 private:
     HTMLMeterElement(const QualifiedName&, Document&);
     virtual ~HTMLMeterElement();
 
-    virtual bool areAuthorShadowsAllowed() const OVERRIDE { return false; }
     RenderMeter* renderMeter() const;
 
-    virtual bool supportLabels() const OVERRIDE { return true; }
+    virtual bool supportLabels() const override { return true; }
 
-    virtual bool recalcWillValidate() const { return false; }
-    virtual RenderElement* createRenderer(RenderArena&, RenderStyle&) OVERRIDE;
-    virtual bool childShouldCreateRenderer(const Node*) const OVERRIDE;
-    virtual void parseAttribute(const QualifiedName&, const AtomicString&) OVERRIDE;
+    virtual RenderPtr<RenderElement> createElementRenderer(Ref<RenderStyle>&&, const RenderTreePosition&) override;
+    virtual bool childShouldCreateRenderer(const Node&) const override;
+    virtual void parseAttribute(const QualifiedName&, const AtomicString&) override;
 
     void didElementStateChange();
-    virtual void didAddUserAgentShadowRoot(ShadowRoot*) OVERRIDE;
+    virtual void didAddUserAgentShadowRoot(ShadowRoot*) override;
 
     RefPtr<MeterValueElement> m_value;
 };
-
-NODE_TYPE_CASTS(HTMLMeterElement)
 
 } // namespace
 

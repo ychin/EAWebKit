@@ -24,24 +24,23 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBCursorWithValue.h"
-#include "JSDOMBinding.h"
 #include "JSIDBCursor.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSIDBCursorWithValue : public JSIDBCursor {
 public:
     typedef JSIDBCursor Base;
-    static JSIDBCursorWithValue* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBCursorWithValue> impl)
+    static JSIDBCursorWithValue* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBCursorWithValue>&& impl)
     {
-        JSIDBCursorWithValue* ptr = new (NotNull, JSC::allocateCell<JSIDBCursorWithValue>(globalObject->vm().heap)) JSIDBCursorWithValue(structure, globalObject, impl);
+        JSIDBCursorWithValue* ptr = new (NotNull, JSC::allocateCell<JSIDBCursorWithValue>(globalObject->vm().heap)) JSIDBCursorWithValue(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,63 +54,17 @@ public:
         return static_cast<IDBCursorWithValue&>(Base::impl());
     }
 protected:
-    JSIDBCursorWithValue(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBCursorWithValue>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSIDBCursorWithValue(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBCursorWithValue>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSIDBCursorWithValuePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBCursorWithValuePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBCursorWithValuePrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBCursorWithValuePrototype>(vm.heap)) JSIDBCursorWithValuePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBCursorWithValuePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSIDBCursorWithValueConstructor : public DOMConstructorObject {
-private:
-    JSIDBCursorWithValueConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBCursorWithValueConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBCursorWithValueConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBCursorWithValueConstructor>(vm.heap)) JSIDBCursorWithValueConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsIDBCursorWithValueValue(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBCursorWithValueConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

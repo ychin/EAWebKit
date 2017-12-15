@@ -21,28 +21,25 @@
 #ifndef JSSVGZoomEvent_h
 #define JSSVGZoomEvent_h
 
-#if ENABLE(SVG)
-
-#include "JSDOMBinding.h"
 #include "JSUIEvent.h"
 #include "SVGElement.h"
 #include "SVGZoomEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSSVGZoomEvent : public JSUIEvent {
 public:
     typedef JSUIEvent Base;
-    static JSSVGZoomEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGZoomEvent> impl)
+    static JSSVGZoomEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGZoomEvent>&& impl)
     {
-        JSSVGZoomEvent* ptr = new (NotNull, JSC::allocateCell<JSSVGZoomEvent>(globalObject->vm().heap)) JSSVGZoomEvent(structure, globalObject, impl);
+        JSSVGZoomEvent* ptr = new (NotNull, JSC::allocateCell<JSSVGZoomEvent>(globalObject->vm().heap)) JSSVGZoomEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,70 +53,18 @@ public:
         return static_cast<SVGZoomEvent&>(Base::impl());
     }
 protected:
-    JSSVGZoomEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGZoomEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSSVGZoomEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<SVGZoomEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSSVGZoomEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSSVGZoomEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSSVGZoomEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGZoomEventPrototype>(vm.heap)) JSSVGZoomEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSSVGZoomEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSSVGZoomEventConstructor : public DOMConstructorObject {
-private:
-    JSSVGZoomEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSSVGZoomEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSSVGZoomEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGZoomEventConstructor>(vm.heap)) JSSVGZoomEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsSVGZoomEventZoomRectScreen(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGZoomEventPreviousScale(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGZoomEventPreviousTranslate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGZoomEventNewScale(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGZoomEventNewTranslate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsSVGZoomEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SVG)
 
 #endif

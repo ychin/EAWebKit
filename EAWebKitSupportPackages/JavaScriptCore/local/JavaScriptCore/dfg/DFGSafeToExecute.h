@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,8 +26,6 @@
 #ifndef DFGSafeToExecute_h
 #define DFGSafeToExecute_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "DFGGraph.h"
@@ -48,29 +46,32 @@ public:
         switch (edge.useKind()) {
         case UntypedUse:
         case Int32Use:
-        case RealNumberUse:
+        case DoubleRepUse:
+        case DoubleRepRealUse:
+        case Int52RepUse:
         case NumberUse:
+        case RealNumberUse:
         case BooleanUse:
         case CellUse:
         case ObjectUse:
+        case FunctionUse:
         case FinalObjectUse:
         case ObjectOrOtherUse:
         case StringIdentUse:
         case StringUse:
+        case SymbolUse:
         case StringObjectUse:
         case StringOrStringObjectUse:
+        case NotStringVarUse:
         case NotCellUse:
         case OtherUse:
+        case MiscUse:
         case MachineIntUse:
+        case DoubleRepMachineIntUse:
             return;
             
         case KnownInt32Use:
             if (m_state.forNode(edge).m_type & ~SpecInt32)
-                m_result = false;
-            return;
-            
-        case KnownNumberUse:
-            if (m_state.forNode(edge).m_type & ~SpecFullNumber)
                 m_result = false;
             return;
             
@@ -99,8 +100,15 @@ private:
 
 // Determines if it's safe to execute a node within the given abstract state. This may
 // return false conservatively. If it returns true, then you can hoist the given node
-// up to the given point and expect that it will not crash. This doesn't guarantee that
-// the node will produce the result you wanted other than not crashing.
+// up to the given point and expect that it will not crash. It also guarantees that the
+// node will not produce a malformed JSValue or object pointer when executed in the
+// given state. But this doesn't guarantee that the node will produce the result you
+// wanted. For example, you may have a GetByOffset from a prototype that only makes
+// semantic sense if you've also checked that some nearer prototype doesn't also have
+// a property of the same name. This could still return true even if that check hadn't
+// been performed in the given abstract state. That's fine though: the load can still
+// safely execute before that check, so long as that check continues to guard any
+// user-observable things done to the loaded value.
 template<typename AbstractStateType>
 bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
 {
@@ -111,17 +119,20 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
 
     switch (node->op()) {
     case JSConstant:
-    case WeakJSConstant:
+    case DoubleConstant:
+    case Int52Constant:
     case Identity:
     case ToThis:
     case CreateThis:
     case GetCallee:
+    case GetArgumentCount:
     case GetLocal:
     case SetLocal:
-    case MovHintAndCheck:
+    case PutStack:
+    case KillStack:
+    case GetStack:
     case MovHint:
     case ZombieHint:
-    case GetArgument:
     case Phantom:
     case Upsilon:
     case Phi:
@@ -129,7 +140,6 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
     case PhantomLocal:
     case GetLocalUnlinked:
     case SetArgument:
-    case InlineStart:
     case BitAnd:
     case BitOr:
     case BitXor:
@@ -138,9 +148,9 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
     case BitURShift:
     case ValueToInt32:
     case UInt32ToNumber:
-    case Int32ToDouble:
     case DoubleAsInt32:
     case ArithAdd:
+    case ArithClz32:
     case ArithSub:
     case ArithNegate:
     case ArithMul:
@@ -150,31 +160,36 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
     case ArithAbs:
     case ArithMin:
     case ArithMax:
+    case ArithPow:
     case ArithSqrt:
+    case ArithFRound:
+    case ArithRound:
+    case ArithSin:
+    case ArithCos:
+    case ArithLog:
     case ValueAdd:
     case GetById:
     case GetByIdFlush:
     case PutById:
+    case PutByIdFlush:
     case PutByIdDirect:
     case CheckStructure:
-    case CheckExecutable:
+    case GetExecutable:
     case GetButterfly:
     case CheckArray:
     case Arrayify:
     case ArrayifyToStructure:
     case GetScope:
-    case GetMyScope:
-    case SkipTopScope:
     case SkipScope:
-    case GetClosureRegisters:
     case GetClosureVar:
     case PutClosureVar:
     case GetGlobalVar:
     case PutGlobalVar:
-    case GlobalVarWatchpoint:
     case VarInjectionWatchpoint:
-    case CheckFunction:
-    case AllocationProfileWatchpoint:
+    case CheckCell:
+    case CheckBadCell:
+    case CheckNotEmpty:
+    case CheckIdent:
     case RegExpExec:
     case RegExpTest:
     case CompareLess:
@@ -184,15 +199,23 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
     case CompareEq:
     case CompareEqConstant:
     case CompareStrictEq:
-    case CompareStrictEqConstant:
     case Call:
     case Construct:
+    case CallVarargs:
+    case ConstructVarargs:
+    case LoadVarargs:
+    case CallForwardVarargs:
+    case ConstructForwardVarargs:
     case NewObject:
     case NewArray:
     case NewArrayWithSize:
     case NewArrayBuffer:
     case NewRegexp:
     case Breakpoint:
+    case ProfileWillCall:
+    case ProfileDidCall:
+    case ProfileType:
+    case ProfileControlFlow:
     case CheckHasInstance:
     case InstanceOf:
     case IsUndefined:
@@ -200,27 +223,23 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
     case IsNumber:
     case IsString:
     case IsObject:
+    case IsObjectOrNull:
     case IsFunction:
     case TypeOf:
     case LogicalNot:
     case ToPrimitive:
     case ToString:
+    case CallStringConstructor:
     case NewStringObject:
     case MakeRope:
     case In:
     case CreateActivation:
-    case TearOffActivation:
-    case CreateArguments:
-    case PhantomArguments:
-    case TearOffArguments:
-    case GetMyArgumentsLength:
-    case GetMyArgumentByVal:
-    case GetMyArgumentsLengthSafe:
-    case GetMyArgumentByValSafe:
-    case CheckArgumentsNotCreated:
-    case NewFunctionNoCheck:
+    case CreateDirectArguments:
+    case CreateScopedArguments:
+    case CreateClonedArguments:
+    case GetFromArguments:
+    case PutToArguments:
     case NewFunction:
-    case NewFunctionExpression:
     case Jump:
     case Branch:
     case Switch:
@@ -237,11 +256,49 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
     case CheckTierUpInLoop:
     case CheckTierUpAtReturn:
     case CheckTierUpAndOSREnter:
+    case CheckTierUpWithNestedTriggerAndOSREnter:
     case LoopHint:
-    case Int52ToDouble:
-    case Int52ToValue:
+    case StoreBarrier:
+    case InvalidationPoint:
+    case NotifyWrite:
+    case CheckInBounds:
+    case ConstantStoragePointer:
+    case Check:
+    case MultiPutByOffset:
+    case ValueRep:
+    case DoubleRep:
+    case Int52Rep:
+    case BooleanToNumber:
+    case FiatInt52:
+    case GetGetter:
+    case GetSetter:
+    case GetEnumerableLength:
+    case HasGenericProperty:
+    case HasStructureProperty:
+    case HasIndexedProperty:
+    case GetDirectPname:
+    case GetPropertyEnumerator:
+    case GetEnumeratorStructurePname:
+    case GetEnumeratorGenericPname:
+    case ToIndexString:
+    case PhantomNewObject:
+    case PhantomNewFunction:
+    case PhantomCreateActivation:
+    case PutHint:
+    case CheckStructureImmediate:
+    case MaterializeNewObject:
+    case MaterializeCreateActivation:
+    case PhantomDirectArguments:
+    case PhantomClonedArguments:
+    case GetMyArgumentByVal:
+    case ForwardVarargs:
         return true;
-        
+
+    case BottomValue:
+        // If in doubt, assume that this isn't safe to execute, just because we have no way of
+        // compiling this node.
+        return false;
+
     case GetByVal:
     case GetIndexedPropertyStorage:
     case GetArrayLength:
@@ -253,28 +310,69 @@ bool safeToExecute(AbstractStateType& state, Graph& graph, Node* node)
         
     case GetTypedArrayByteOffset:
         return !(state.forNode(node->child1()).m_type & ~(SpecTypedArrayView));
-        
+            
+    case PutByValDirect:
     case PutByVal:
     case PutByValAlias:
         return node->arrayMode().modeForPut().alreadyChecked(
             graph, node, state.forNode(graph.varArgChild(node, 0)));
 
-    case StructureTransitionWatchpoint:
-        return state.forNode(node->child1()).m_futurePossibleStructure.isSubsetOf(
-            StructureSet(node->structure()));
-        
     case PutStructure:
-    case PhantomPutStructure:
     case AllocatePropertyStorage:
     case ReallocatePropertyStorage:
-        return state.forNode(node->child1()).m_currentKnownStructure.isSubsetOf(
-            StructureSet(node->structureTransitionData().previousStructure));
+        return state.forNode(node->child1()).m_structure.isSubsetOf(
+            StructureSet(node->transition()->previous));
         
     case GetByOffset:
-    case PutByOffset:
-        return state.forNode(node->child1()).m_currentKnownStructure.isValidOffset(
-            graph.m_storageAccessData[node->storageAccessDataIndex()].offset);
+    case GetGetterSetterByOffset:
+    case PutByOffset: {
+        PropertyOffset offset = node->storageAccessData().offset;
+
+        if (state.structureClobberState() == StructuresAreWatched) {
+            if (JSObject* knownBase = node->child1()->dynamicCastConstant<JSObject*>()) {
+                if (graph.isSafeToLoad(knownBase, offset))
+                    return true;
+            }
+        }
         
+        StructureAbstractValue& value = state.forNode(node->child1()).m_structure;
+        if (value.isInfinite())
+            return false;
+        for (unsigned i = value.size(); i--;) {
+            if (!value[i]->isValidOffset(offset))
+                return false;
+        }
+        return true;
+    }
+        
+    case MultiGetByOffset: {
+        // We can't always guarantee that the MultiGetByOffset is safe to execute if it
+        // contains loads from prototypes. If the load requires a check in IR, which is rare, then
+        // we currently claim that we don't know if it's safe to execute because finding that
+        // check in the abstract state would be hard. If the load requires watchpoints, we just
+        // check if we're not in a clobbered state (i.e. in between a side effect and an
+        // invalidation point).
+        for (const MultiGetByOffsetCase& getCase : node->multiGetByOffsetData().cases) {
+            GetByOffsetMethod method = getCase.method();
+            switch (method.kind()) {
+            case GetByOffsetMethod::Invalid:
+                RELEASE_ASSERT_NOT_REACHED();
+                break;
+            case GetByOffsetMethod::Constant: // OK because constants are always safe to execute.
+            case GetByOffsetMethod::Load: // OK because the MultiGetByOffset has its own checks for loading from self.
+                break;
+            case GetByOffsetMethod::LoadFromPrototype:
+                // Only OK if the state isn't clobbered. That's almost always the case.
+                if (state.structureClobberState() != StructuresAreWatched)
+                    return false;
+                if (!graph.isSafeToLoad(method.prototype()->cast<JSObject*>(), method.offset()))
+                    return false;
+                break;
+            }
+        }
+        return true;
+    }
+
     case LastNodeType:
         RELEASE_ASSERT_NOT_REACHED();
         return false;

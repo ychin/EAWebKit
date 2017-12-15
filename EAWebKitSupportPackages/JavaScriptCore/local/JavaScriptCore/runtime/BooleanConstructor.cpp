@@ -23,13 +23,13 @@
 
 #include "BooleanPrototype.h"
 #include "JSGlobalObject.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 
 STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(BooleanConstructor);
 
-const ClassInfo BooleanConstructor::s_info = { "Function", &Base::s_info, 0, 0, CREATE_METHOD_TABLE(BooleanConstructor) };
+const ClassInfo BooleanConstructor::s_info = { "Function", &Base::s_info, 0, CREATE_METHOD_TABLE(BooleanConstructor) };
 
 BooleanConstructor::BooleanConstructor(VM& vm, Structure* structure)
     : InternalFunction(vm, structure)

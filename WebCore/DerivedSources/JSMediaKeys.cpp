@@ -38,33 +38,80 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSMediaKeysTableValues[] =
-{
-    { "keySystem", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeysKeySystem), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeysConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeysPrototypeFunctionCreateSession(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsMediaKeysConstructorFunctionIsTypeSupported(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsMediaKeysKeySystem(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaKeysConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMediaKeysPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaKeysPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaKeysPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaKeysPrototype>(vm.heap)) JSMediaKeysPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaKeysPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMediaKeysTable = { 4, 3, JSMediaKeysTableValues, 0 };
+class JSMediaKeysConstructor : public DOMConstructorObject {
+private:
+    JSMediaKeysConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
+
+public:
+    typedef DOMConstructorObject Base;
+    static JSMediaKeysConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMediaKeysConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaKeysConstructor>(vm.heap)) JSMediaKeysConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSMediaKeys(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
+};
+
 /* Hash table for constructor */
 
 static const HashTableValue JSMediaKeysConstructorTableValues[] =
 {
-    { "isTypeSupported", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeysConstructorFunctionIsTypeSupported), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "isTypeSupported", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeysConstructorFunctionIsTypeSupported), (intptr_t) (1) },
 };
 
-static const HashTable JSMediaKeysConstructorTable = { 1, 0, JSMediaKeysConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSMediaKeysConstructor::constructJSMediaKeys(ExecState* exec)
 {
-    JSMediaKeysConstructor* castedThis = jsCast<JSMediaKeysConstructor*>(exec->callee());
-    if (exec->argumentCount() < 1)
+    auto* castedThis = jsCast<JSMediaKeysConstructor*>(exec->callee());
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    const String& keySystem(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String keySystem = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     RefPtr<MediaKeys> object = MediaKeys::create(keySystem, ec);
     if (ec) {
@@ -74,7 +121,7 @@ EncodedJSValue JSC_HOST_CALL JSMediaKeysConstructor::constructJSMediaKeys(ExecSt
     return JSValue::encode(asObject(toJS(exec, castedThis->globalObject(), object.get())));
 }
 
-const ClassInfo JSMediaKeysConstructor::s_info = { "WebKitMediaKeysConstructor", &Base::s_info, &JSMediaKeysConstructorTable, 0, CREATE_METHOD_TABLE(JSMediaKeysConstructor) };
+const ClassInfo JSMediaKeysConstructor::s_info = { "WebKitMediaKeysConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeysConstructor) };
 
 JSMediaKeysConstructor::JSMediaKeysConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -85,13 +132,10 @@ void JSMediaKeysConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObj
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMediaKeysPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMediaKeysConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticPropertySlot<JSMediaKeysConstructor, JSDOMWrapper>(exec, JSMediaKeysConstructorTable, jsCast<JSMediaKeysConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMediaKeys::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("WebKitMediaKeys"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(1), ReadOnly | DontEnum);
+    reifyStaticProperties(vm, JSMediaKeysConstructorTableValues, *this);
 }
 
 ConstructType JSMediaKeysConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -104,41 +148,35 @@ ConstructType JSMediaKeysConstructor::getConstructData(JSCell*, ConstructData& c
 
 static const HashTableValue JSMediaKeysPrototypeTableValues[] =
 {
-    { "createSession", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeysPrototypeFunctionCreateSession), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeysConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "keySystem", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaKeysKeySystem), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "createSession", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsMediaKeysPrototypeFunctionCreateSession), (intptr_t) (0) },
 };
 
-static const HashTable JSMediaKeysPrototypeTable = { 4, 3, JSMediaKeysPrototypeTableValues, 0 };
-const ClassInfo JSMediaKeysPrototype::s_info = { "WebKitMediaKeysPrototype", &Base::s_info, &JSMediaKeysPrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaKeysPrototype) };
+const ClassInfo JSMediaKeysPrototype::s_info = { "WebKitMediaKeysPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeysPrototype) };
 
-JSObject* JSMediaKeysPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaKeys>(vm, globalObject);
-}
-
-bool JSMediaKeysPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSMediaKeysPrototype* thisObject = jsCast<JSMediaKeysPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSMediaKeysPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSMediaKeys::s_info = { "WebKitMediaKeys", &Base::s_info, &JSMediaKeysTable, 0 , CREATE_METHOD_TABLE(JSMediaKeys) };
-
-JSMediaKeys::JSMediaKeys(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaKeys> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSMediaKeys::finishCreation(VM& vm)
+void JSMediaKeysPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaKeysPrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaKeys::s_info = { "WebKitMediaKeys", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaKeys) };
+
+JSMediaKeys::JSMediaKeys(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaKeys>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSMediaKeys::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSMediaKeysPrototype::create(vm, globalObject, JSMediaKeysPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSMediaKeys::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSMediaKeys>(vm, globalObject);
 }
 
 void JSMediaKeys::destroy(JSC::JSCell* cell)
@@ -149,30 +187,32 @@ void JSMediaKeys::destroy(JSC::JSCell* cell)
 
 JSMediaKeys::~JSMediaKeys()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSMediaKeys::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsMediaKeysKeySystem(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaKeys* thisObject = jsCast<JSMediaKeys*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMediaKeys, Base>(exec, JSMediaKeysTable, thisObject, propertyName, slot);
-}
-
-JSValue jsMediaKeysKeySystem(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSMediaKeys* castedThis = jsCast<JSMediaKeys*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaKeys& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaKeys* castedThis = jsDynamicCast<JSMediaKeys*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaKeysPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaKeys", "keySystem");
+        return throwGetterTypeError(*exec, "MediaKeys", "keySystem");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.keySystem());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaKeysConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaKeysConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMediaKeys* domObject = jsCast<JSMediaKeys*>(asObject(slotBase));
-    return JSMediaKeys::getConstructor(exec->vm(), domObject->globalObject());
+    JSMediaKeysPrototype* domObject = jsDynamicCast<JSMediaKeysPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMediaKeys::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSMediaKeys::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -182,65 +222,54 @@ JSValue JSMediaKeys::getConstructor(VM& vm, JSGlobalObject* globalObject)
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeysPrototypeFunctionCreateSession(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSMediaKeys::info()))
-        return throwVMTypeError(exec);
-    JSMediaKeys* castedThis = jsCast<JSMediaKeys*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSMediaKeys* castedThis = jsDynamicCast<JSMediaKeys*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "MediaKeys", "createSession");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSMediaKeys::info());
-    MediaKeys& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    ScriptExecutionContext* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
+    auto* scriptContext = jsCast<JSDOMGlobalObject*>(exec->lexicalGlobalObject())->scriptExecutionContext();
     if (!scriptContext)
         return JSValue::encode(jsUndefined());
-    const String& type(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String type = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    RefPtr<Uint8Array> initData(toUint8Array(exec->argument(1)));
-    if (exec->hadException())
+    RefPtr<Uint8Array> initData = toUint8Array(exec->argument(1));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.createSession(scriptContext, type, initData.get(), ec)));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.createSession(scriptContext, type, initData.get(), ec)));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsMediaKeysConstructorFunctionIsTypeSupported(ExecState* exec)
 {
-    if (exec->argumentCount() < 1)
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& keySystem(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String keySystem = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    const String& type(argumentOrNull(exec, 1).isEmpty() ? String() : argumentOrNull(exec, 1).toString(exec)->value(exec));
-    if (exec->hadException())
+    String type = exec->argumentCount() <= 1 ? String() : exec->uncheckedArgument(1).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(MediaKeys::isTypeSupported(keySystem, type));
+    JSValue result = jsBoolean(MediaKeys::isTypeSupported(keySystem, type));
     return JSValue::encode(result);
-}
-
-static inline bool isObservable(JSMediaKeys* jsMediaKeys)
-{
-    if (jsMediaKeys->hasCustomProperties())
-        return true;
-    return false;
 }
 
 bool JSMediaKeysOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSMediaKeys* jsMediaKeys = jsCast<JSMediaKeys*>(handle.get().asCell());
-    if (!isObservable(jsMediaKeys))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSMediaKeysOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSMediaKeys* jsMediaKeys = jsCast<JSMediaKeys*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsMediaKeys = jsCast<JSMediaKeys*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsMediaKeys->impl(), jsMediaKeys);
-    jsMediaKeys->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -251,11 +280,11 @@ extern "C" { extern void (*const __identifier("??_7MediaKeys@WebCore@@6B@")[])()
 extern "C" { extern void* _ZTVN7WebCore9MediaKeysE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaKeys* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MediaKeys* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMediaKeys>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMediaKeys>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -276,13 +305,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaKe
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<MediaKeys>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMediaKeys>(exec, globalObject, impl);
+    return createNewWrapper<JSMediaKeys>(globalObject, impl);
 }
 
-MediaKeys* toMediaKeys(JSC::JSValue value)
+MediaKeys* JSMediaKeys::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSMediaKeys::info()) ? &jsCast<JSMediaKeys*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSMediaKeys*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

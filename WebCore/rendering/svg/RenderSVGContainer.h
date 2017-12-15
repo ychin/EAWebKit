@@ -23,8 +23,6 @@
 #ifndef RenderSVGContainer_h
 #define RenderSVGContainer_h
 
-#if ENABLE(SVG)
-
 #include "RenderSVGModelObject.h"
 
 namespace WebCore {
@@ -35,31 +33,30 @@ class RenderSVGContainer : public RenderSVGModelObject {
 public:
     virtual ~RenderSVGContainer();
 
-    virtual void paint(PaintInfo&, const LayoutPoint&) OVERRIDE;
-    virtual void setNeedsBoundariesUpdate() OVERRIDE FINAL { m_needsBoundariesUpdate = true; }
-    virtual bool needsBoundariesUpdate() OVERRIDE FINAL { return m_needsBoundariesUpdate; }
+    virtual void paint(PaintInfo&, const LayoutPoint&) override;
+    virtual void setNeedsBoundariesUpdate() override final { m_needsBoundariesUpdate = true; }
+    virtual bool needsBoundariesUpdate() override final { return m_needsBoundariesUpdate; }
     virtual bool didTransformToRootUpdate() { return false; }
     bool isObjectBoundingBoxValid() const { return m_objectBoundingBoxValid; }
 
 protected:
-    explicit RenderSVGContainer(SVGElement&);
+    RenderSVGContainer(SVGElement&, Ref<RenderStyle>&&);
 
-    virtual bool isSVGContainer() const OVERRIDE FINAL { return true; }
-    virtual const char* renderName() const OVERRIDE { return "RenderSVGContainer"; }
+    virtual const char* renderName() const override { return "RenderSVGContainer"; }
 
-    virtual bool canHaveChildren() const OVERRIDE FINAL { return true; }
+    virtual bool canHaveChildren() const override final { return true; }
 
-    virtual void layout() OVERRIDE;
+    virtual void layout() override;
 
-    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) OVERRIDE FINAL;
-    virtual void removeChild(RenderObject*) OVERRIDE FINAL;
-    virtual void addFocusRingRects(Vector<IntRect>&, const LayoutPoint& additionalOffset, const RenderLayerModelObject* paintContainer = 0) OVERRIDE FINAL;
+    virtual void addChild(RenderObject* child, RenderObject* beforeChild = 0) override final;
+    virtual void removeChild(RenderObject&) override final;
+    virtual void addFocusRingRects(Vector<IntRect>&, const LayoutPoint& additionalOffset, const RenderLayerModelObject* paintContainer = 0) override final;
 
-    virtual FloatRect objectBoundingBox() const OVERRIDE FINAL { return m_objectBoundingBox; }
-    virtual FloatRect strokeBoundingBox() const OVERRIDE FINAL { return m_strokeBoundingBox; }
-    virtual FloatRect repaintRectInLocalCoordinates() const OVERRIDE FINAL { return m_repaintBoundingBox; }
+    virtual FloatRect objectBoundingBox() const override final { return m_objectBoundingBox; }
+    virtual FloatRect strokeBoundingBox() const override final { return m_strokeBoundingBox; }
+    virtual FloatRect repaintRectInLocalCoordinates() const override final { return m_repaintBoundingBox; }
 
-    virtual bool nodeAtFloatPoint(const HitTestRequest&, HitTestResult&, const FloatPoint& pointInParent, HitTestAction) OVERRIDE;
+    virtual bool nodeAtFloatPoint(const HitTestRequest&, HitTestResult&, const FloatPoint& pointInParent, HitTestAction) override;
 
     // Allow RenderSVGTransformableContainer to hook in at the right time in layout()
     virtual bool calculateLocalTransform() { return false; }
@@ -75,29 +72,17 @@ protected:
     void updateCachedBoundaries();
 
 private:
+    virtual bool isSVGContainer() const override final { return true; }
+
     FloatRect m_objectBoundingBox;
     bool m_objectBoundingBoxValid;
     FloatRect m_strokeBoundingBox;
     FloatRect m_repaintBoundingBox;
     bool m_needsBoundariesUpdate : 1;
 };
-  
-inline RenderSVGContainer* toRenderSVGContainer(RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGContainer());
-    return static_cast<RenderSVGContainer*>(object);
-}
-
-inline const RenderSVGContainer* toRenderSVGContainer(const RenderObject* object)
-{
-    ASSERT_WITH_SECURITY_IMPLICATION(!object || object->isSVGContainer());
-    return static_cast<const RenderSVGContainer*>(object);
-}
-
-// This will catch anyone doing an unnecessary cast.
-void toRenderSVGContainer(const RenderSVGContainer*);
 
 } // namespace WebCore
 
-#endif // ENABLE(SVG)
+SPECIALIZE_TYPE_TRAITS_RENDER_OBJECT(RenderSVGContainer, isSVGContainer())
+
 #endif // RenderSVGContainer_h

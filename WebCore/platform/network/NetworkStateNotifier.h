@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Apple Inc. All Rights Reserved.
+ * Copyright (C) 2008, 2014 Apple Inc. All Rights Reserved.
  * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 #ifndef NetworkStateNotifier_h
 #define NetworkStateNotifier_h
 
+#include <functional>
 #include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Vector.h>
@@ -43,10 +44,10 @@ typedef const struct __SCDynamicStore * SCDynamicStoreRef;
 
 #include <windows.h>
 
-#elif PLATFORM(EFL)
+#elif PLATFORM(IOS)
 
-typedef struct _Ecore_Fd_Handler Ecore_Fd_Handler;
-typedef unsigned char Eina_Bool;
+#include <wtf/RetainPtr.h>
+OBJC_CLASS WebNetworkStateObserver;
 
 #endif
 
@@ -56,35 +57,36 @@ class NetworkStateNotifier {
     WTF_MAKE_NONCOPYABLE(NetworkStateNotifier); WTF_MAKE_FAST_ALLOCATED;
 public:
     NetworkStateNotifier();
-#if PLATFORM(EFL)
+#if PLATFORM(EFL) || PLATFORM(IOS)
     ~NetworkStateNotifier();
 #endif
-    typedef void (*NetworkStateChangeListener)(bool m_isOnLine);
-    void addNetworkStateChangeListener(NetworkStateChangeListener);
+    void addNetworkStateChangeListener(std::function<void (bool isOnLine)>);
 
-    bool onLine() const { return m_isOnLine; }
+    bool onLine() const;
 
 	//+EAWebKitChange
 	//1/13/2014
-#if PLATFORM(BLACKBERRY) || PLATFORM(EA)
+#if PLATFORM(EA)
 	//-EAWebKitChange
     void networkStateChange(bool online);
 #endif
 
 private:
+#if !PLATFORM(IOS)
     bool m_isOnLine;
-    Vector<NetworkStateChangeListener> m_listeners;
+#endif
+    Vector<std::function<void (bool)>> m_listeners;
 
-    void notifyNetworkStateChange();
+    void notifyNetworkStateChange() const;
     void updateState();
 
 #if PLATFORM(MAC)
-    void networkStateChangeTimerFired(Timer<NetworkStateNotifier>*);
+    void networkStateChangeTimerFired();
 
     static void dynamicStoreCallback(SCDynamicStoreRef, CFArrayRef changedKeys, void *info); 
 
     RetainPtr<SCDynamicStoreRef> m_store;
-    Timer<NetworkStateNotifier> m_networkStateChangeTimer;
+    Timer m_networkStateChangeTimer;
 
 #elif PLATFORM(WIN)
     static void CALLBACK addrChangeCallback(void*, BOOLEAN timedOut);
@@ -101,10 +103,18 @@ private:
 
     int m_netlinkSocket;
     Ecore_Fd_Handler* m_fdHandler;
+
+#elif PLATFORM(IOS)
+    void registerObserverIfNecessary() const;
+    friend void setOnLine(const NetworkStateNotifier*, bool);
+
+    mutable bool m_isOnLine;
+    mutable bool m_isOnLineInitialized;
+    mutable RetainPtr<WebNetworkStateObserver> m_observer;
 #endif
 };
 
-#if !PLATFORM(MAC) && !PLATFORM(WIN) && !PLATFORM(BLACKBERRY) && !PLATFORM(EFL)
+#if !PLATFORM(COCOA) && !PLATFORM(WIN) && !PLATFORM(EFL)
 
 inline NetworkStateNotifier::NetworkStateNotifier()
     : m_isOnLine(true)
@@ -115,8 +125,15 @@ inline void NetworkStateNotifier::updateState() { }
 
 #endif
 
-NetworkStateNotifier& networkStateNotifier();
+#if !PLATFORM(IOS)
+inline bool NetworkStateNotifier::onLine() const
+{
+    return m_isOnLine;
+}
+#endif
 
-};
+WEBCORE_EXPORT NetworkStateNotifier& networkStateNotifier();
+
+} // namespace WebCore
 
 #endif // NetworkStateNotifier_h

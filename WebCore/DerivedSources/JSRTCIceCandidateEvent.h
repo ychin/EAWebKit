@@ -25,22 +25,22 @@
 
 #include "JSEvent.h"
 #include "RTCIceCandidateEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSRTCIceCandidateEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSRTCIceCandidateEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCIceCandidateEvent> impl)
+    static JSRTCIceCandidateEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCIceCandidateEvent>&& impl)
     {
-        JSRTCIceCandidateEvent* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidateEvent>(globalObject->vm().heap)) JSRTCIceCandidateEvent(structure, globalObject, impl);
+        JSRTCIceCandidateEvent* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidateEvent>(globalObject->vm().heap)) JSRTCIceCandidateEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,38 +53,17 @@ public:
         return static_cast<RTCIceCandidateEvent&>(Base::impl());
     }
 protected:
-    JSRTCIceCandidateEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCIceCandidateEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSRTCIceCandidateEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCIceCandidateEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSRTCIceCandidateEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCIceCandidateEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCIceCandidateEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCIceCandidateEventPrototype>(vm.heap)) JSRTCIceCandidateEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCIceCandidateEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsRTCIceCandidateEventCandidate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

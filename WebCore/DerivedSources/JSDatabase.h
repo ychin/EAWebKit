@@ -21,30 +21,28 @@
 #ifndef JSDatabase_h
 #define JSDatabase_h
 
-#if ENABLE(SQL_DATABASE)
-
 #include "Database.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDatabase : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDatabase* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Database> impl)
+    static JSDatabase* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Database>&& impl)
     {
-        JSDatabase* ptr = new (NotNull, JSC::allocateCell<JSDatabase>(globalObject->vm().heap)) JSDatabase(structure, globalObject, impl);
+        JSDatabase* ptr = new (NotNull, JSC::allocateCell<JSDatabase>(globalObject->vm().heap)) JSDatabase(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Database* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDatabase();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +51,19 @@ public:
     }
 
     Database& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Database* m_impl;
 protected:
-    JSDatabase(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Database>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDatabase(JSC::Structure*, JSDOMGlobalObject*, Ref<Database>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDatabaseOwner : public JSC::WeakHandleOwner {
@@ -79,53 +74,14 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Database*)
 {
-    DEFINE_STATIC_LOCAL(JSDatabaseOwner, jsDatabaseOwner, ());
-    return &jsDatabaseOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Database*)
-{
-    return &world;
+    static NeverDestroyed<JSDatabaseOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Database*);
-Database* toDatabase(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Database& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDatabasePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDatabasePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDatabasePrototype* ptr = new (NotNull, JSC::allocateCell<JSDatabasePrototype>(vm.heap)) JSDatabasePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDatabasePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDatabasePrototypeFunctionChangeVersion(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDatabasePrototypeFunctionTransaction(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDatabasePrototypeFunctionReadTransaction(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDatabaseVersion(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
-
-#endif // ENABLE(SQL_DATABASE)
 
 #endif

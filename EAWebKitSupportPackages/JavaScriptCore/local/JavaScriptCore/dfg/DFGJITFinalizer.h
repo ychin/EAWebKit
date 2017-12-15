@@ -26,8 +26,6 @@
 #ifndef DFGJITFinalizer_h
 #define DFGJITFinalizer_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "DFGFinalizer.h"
@@ -39,18 +37,19 @@ namespace JSC { namespace DFG {
 
 class JITFinalizer : public Finalizer {
 public:
-    JITFinalizer(Plan&, PassRefPtr<JITCode>, PassOwnPtr<LinkBuffer>, MacroAssembler::Label arityCheck = MacroAssembler::Label());
+    JITFinalizer(Plan&, PassRefPtr<JITCode>, std::unique_ptr<LinkBuffer>, MacroAssemblerCodePtr withArityCheck = MacroAssemblerCodePtr(MacroAssemblerCodePtr::EmptyValue));
     virtual ~JITFinalizer();
     
-    virtual bool finalize() OVERRIDE;
-    virtual bool finalizeFunction() OVERRIDE;
+    virtual size_t codeSize() override;
+    virtual bool finalize() override;
+    virtual bool finalizeFunction() override;
 
 private:
     void finalizeCommon();
     
     RefPtr<JITCode> m_jitCode;
-    OwnPtr<LinkBuffer> m_linkBuffer;
-    MacroAssembler::Label m_arityCheck;
+    std::unique_ptr<LinkBuffer> m_linkBuffer;
+    MacroAssemblerCodePtr m_withArityCheck;
 };
 
 } } // namespace JSC::DFG

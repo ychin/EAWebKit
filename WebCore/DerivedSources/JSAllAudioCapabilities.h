@@ -25,22 +25,22 @@
 
 #include "AllAudioCapabilities.h"
 #include "JSMediaStreamCapabilities.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSAllAudioCapabilities : public JSMediaStreamCapabilities {
 public:
     typedef JSMediaStreamCapabilities Base;
-    static JSAllAudioCapabilities* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AllAudioCapabilities> impl)
+    static JSAllAudioCapabilities* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AllAudioCapabilities>&& impl)
     {
-        JSAllAudioCapabilities* ptr = new (NotNull, JSC::allocateCell<JSAllAudioCapabilities>(globalObject->vm().heap)) JSAllAudioCapabilities(structure, globalObject, impl);
+        JSAllAudioCapabilities* ptr = new (NotNull, JSC::allocateCell<JSAllAudioCapabilities>(globalObject->vm().heap)) JSAllAudioCapabilities(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,40 +53,19 @@ public:
         return static_cast<AllAudioCapabilities&>(Base::impl());
     }
 protected:
-    JSAllAudioCapabilities(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AllAudioCapabilities>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAllAudioCapabilities(JSC::Structure*, JSDOMGlobalObject*, Ref<AllAudioCapabilities>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AllAudioCapabilities*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AllAudioCapabilities& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAllAudioCapabilitiesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAllAudioCapabilitiesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAllAudioCapabilitiesPrototype* ptr = new (NotNull, JSC::allocateCell<JSAllAudioCapabilitiesPrototype>(vm.heap)) JSAllAudioCapabilitiesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAllAudioCapabilitiesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsAllAudioCapabilitiesSourceId(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAllAudioCapabilitiesVolume(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

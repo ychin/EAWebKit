@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,41 +40,42 @@ class Element;
 class HTMLElement;
 class HTMLSelectElement;
     
-class AccessibilityListBoxOption : public AccessibilityObject {
-
-private:
-    AccessibilityListBoxOption();
+class AccessibilityListBoxOption final : public AccessibilityObject {
 public:
-    static PassRefPtr<AccessibilityListBoxOption> create();
+    static Ref<AccessibilityListBoxOption> create();
     virtual ~AccessibilityListBoxOption();
     
     void setHTMLElement(HTMLElement* element) { m_optionElement = element; }
     
-    virtual AccessibilityRole roleValue() const OVERRIDE { return ListBoxOptionRole; }
-    virtual bool isSelected() const OVERRIDE;
-    virtual bool isEnabled() const OVERRIDE;
-    virtual bool isSelectedOptionActive() const OVERRIDE;
-    virtual String stringValue() const OVERRIDE;
-    virtual Element* actionElement() const OVERRIDE;
-    virtual Node* node() const OVERRIDE { return m_optionElement; }
-    virtual void setSelected(bool) OVERRIDE;
-    virtual bool canSetSelectedAttribute() const OVERRIDE;
+    virtual AccessibilityRole roleValue() const override { return ListBoxOptionRole; }
+    virtual bool isSelected() const override;
+    virtual bool isEnabled() const override;
+    virtual bool isSelectedOptionActive() const override;
+    virtual String stringValue() const override;
+    virtual Element* actionElement() const override;
+    virtual Node* node() const override { return m_optionElement; }
+    virtual void setSelected(bool) override;
+    virtual bool canSetSelectedAttribute() const override;
 
-    virtual LayoutRect elementRect() const OVERRIDE;
-    virtual AccessibilityObject* parentObject() const OVERRIDE;
-    bool isListBoxOption() const { return true; }
-    
+    virtual LayoutRect elementRect() const override;
+    virtual AccessibilityObject* parentObject() const override;
+
 private:
-    HTMLElement* m_optionElement;
-    
-    virtual bool canHaveChildren() const OVERRIDE { return false; }
+    AccessibilityListBoxOption();
+
+    virtual bool isListBoxOption() const override { return true; }
+    virtual bool canHaveChildren() const override { return false; }
     HTMLSelectElement* listBoxOptionParentNode() const;
     int listBoxOptionIndex() const;
     IntRect listBoxOptionRect() const;
     AccessibilityObject* listBoxOptionAccessibilityObject(HTMLElement*) const;
-    virtual bool computeAccessibilityIsIgnored() const OVERRIDE;
+    virtual bool computeAccessibilityIsIgnored() const override;
+
+    HTMLElement* m_optionElement;
 };
     
 } // namespace WebCore 
+
+SPECIALIZE_TYPE_TRAITS_ACCESSIBILITY(AccessibilityListBoxOption, isListBoxOption())
 
 #endif // AccessibilityListBoxOption_h

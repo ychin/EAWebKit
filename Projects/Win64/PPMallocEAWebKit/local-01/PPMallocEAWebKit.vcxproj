@@ -18,6 +18,12 @@
     <ProjectGuid>{C89D6CA2-A103-E6EF-1436-277FDCB9757B}</ProjectGuid>
     <Keyword>x64Proj</Keyword>
     <ProjectName>PPMallocEAWebKit</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <UCRTContentRoot>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</UCRTContentRoot>
+    <UniversalCRTSdkDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</UniversalCRTSdkDir>
+    <WindowsSdkDir_10>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</WindowsSdkDir_10>
+    <NETFXKitsDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6</NETFXKitsDir>
+    <NETFXSDKDir>$(WindowsSDKDir)</NETFXSDKDir>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -46,40 +52,36 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
-    <Midl />
-    <Masm>
-      <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
-      <WarningLevel>2</WarningLevel>
-    </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\source";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-bigobj </AdditionalOptions>
-      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include";"..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\source";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
+      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4987; 4986; 4574; 4365; 4464; 4061; 4062; 4100; 4324; 4619; 4514; 4571; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4987; 4482; 4819; 4826; 4692; 4746; 4350; 4371; </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
+      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>C:\work\15.4.2.0.0\Build\Win64\PPMallocEAWebKit\local-01\pc64-vc-dev-debug\lib\PPMallocEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-dev-debug\lib\PPMallocEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
       <TreatWarningAsError>FALSE</TreatWarningAsError>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\work\15.4.2.0.0\Build\Win64\PPMallocEAWebKit\local-01\pc64-vc-dev-debug\lib\PPMallocEAWebKit.lib</OutputFile>
+      <OutputFile>pc64-vc-dev-debug\lib\PPMallocEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
@@ -92,7 +94,7 @@
     <IntDir>pc64-vc-dev-debug\build\PPMallocEAWebKit\vstmp\</IntDir>
     <TargetName>PPMallocEAWebKit</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -104,40 +106,36 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
-    <Midl />
-    <Masm>
-      <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
-      <WarningLevel>2</WarningLevel>
-    </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\source";"C:\work\15.4.2.0.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zo -bigobj </AdditionalOptions>
-      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include";"..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\source";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS -w44946 -w44555 -w44312 -w44296 -w44287 -w44265 -w44254 -w44242 </AdditionalOptions>
+      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileOnly>TRUE</CompileOnly>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4987; 4986; 4574; 4365; 4464; 4061; 4062; 4100; 4324; 4619; 4514; 4571; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4987; 4482; 4819; 4826; 4692; 4746; 4350; 4371; </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4574; 4365; 4100; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
       <ExceptionHandling>FALSE</ExceptionHandling>
       <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;NDEBUG;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
+      <NantUnescapedPreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;NDEBUG;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;NDEBUG;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_VS_UPDATE_MAJOR_VER=14;EA_VS_UPDATE_MINOR_VER=0;EA_VS_UPDATE_PATCH_VER=24720;NDEBUG;PPM_HIGH_SUPPORTED;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>C:\work\15.4.2.0.0\Build\Win64\PPMallocEAWebKit\local-01\pc64-vc-dev-opt\lib\PPMallocEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc64-vc-dev-opt\lib\PPMallocEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
       <TreatWarningAsError>FALSE</TreatWarningAsError>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\work\15.4.2.0.0\Build\Win64\PPMallocEAWebKit\local-01\pc64-vc-dev-opt\lib\PPMallocEAWebKit.lib</OutputFile>
+      <OutputFile>pc64-vc-dev-opt\lib\PPMallocEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
@@ -150,7 +148,7 @@
     <IntDir>pc64-vc-dev-opt\build\PPMallocEAWebKit\vstmp\</IntDir>
     <TargetName>PPMallocEAWebKit</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>C:\Program Files (x86)\Windows Kits\10\bin\x64;C:\Program Files (x86)\Windows Kits\10\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -158,19 +156,20 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include\PPMalloc\EAStackAllocator.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include\PPMalloc\internal\config.h" />
-    <ClInclude Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include\PPMalloc\internal\dllinfo.h" />
-    <ClCompile Include="C:\work\15.4.2.0.0\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\source\cmn\EAStackAllocator.cpp" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include\PPMalloc\EAStackAllocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include\PPMalloc\internal\config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\include\PPMalloc\internal\dllinfo.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMallocEAWebKit\local-01\source\cmn\EAStackAllocator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="C:\packages\Framework\3.34.00\data\FrameworkMsbuild.tasks" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\amd64\cl.exe" vc64-compiler_clang="" vc64-asm="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\amd64\ml64.exe" vc64-librarian="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 14.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 14.0\\Common7\IDE"></UserProperties>
+      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="$(VSInstallDir)\VC\BIN\amd64\cl.exe" vc64-compiler_clang="" vc64-librarian="$(VSInstallDir)\VC\BIN\amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="$(VSInstallDir)\VC\BIN;$(VSInstallDir)\Common7\IDE"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

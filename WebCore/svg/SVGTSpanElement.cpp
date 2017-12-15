@@ -19,8 +19,6 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGTSpanElement.h"
 
 #include "RenderInline.h"
@@ -35,25 +33,25 @@ inline SVGTSpanElement::SVGTSpanElement(const QualifiedName& tagName, Document& 
     ASSERT(hasTagName(SVGNames::tspanTag));
 }
 
-PassRefPtr<SVGTSpanElement> SVGTSpanElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGTSpanElement> SVGTSpanElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGTSpanElement(tagName, document));
+    return adoptRef(*new SVGTSpanElement(tagName, document));
 }
 
-RenderElement* SVGTSpanElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> SVGTSpanElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderSVGTSpan(*this);
+    return createRenderer<RenderSVGTSpan>(*this, WTF::move(style));
 }
 
-bool SVGTSpanElement::childShouldCreateRenderer(const Node* child) const
+bool SVGTSpanElement::childShouldCreateRenderer(const Node& child) const
 {
-    if (child->isTextNode()
-        || child->hasTagName(SVGNames::aTag)
+    if (child.isTextNode()
+        || child.hasTagName(SVGNames::aTag)
 #if ENABLE(SVG_FONTS)
-        || child->hasTagName(SVGNames::altGlyphTag)
+        || child.hasTagName(SVGNames::altGlyphTag)
 #endif
-        || child->hasTagName(SVGNames::trefTag)
-        || child->hasTagName(SVGNames::tspanTag))
+        || child.hasTagName(SVGNames::trefTag)
+        || child.hasTagName(SVGNames::tspanTag))
         return true;
 
     return false;
@@ -75,5 +73,3 @@ bool SVGTSpanElement::rendererIsNeeded(const RenderStyle& style)
 }
 
 }
-
-#endif // ENABLE(SVG)

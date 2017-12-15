@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2012-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,7 @@
 #include "CodeBlock.h"
 #include "DFGJITCode.h"
 #include "DFGValueSource.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include <wtf/DataLog.h>
 #include <wtf/HashMap.h>
 
@@ -48,11 +48,14 @@ namespace {
 
 struct MinifiedGenerationInfo {
     bool filled; // true -> in gpr/fpr/pair, false -> spilled
+    bool alive;
     VariableRepresentation u;
     DataFormat format;
     
     MinifiedGenerationInfo()
-        : format(DataFormatNone)
+        : filled(false)
+        , alive(false)
+        , format(DataFormatNone)
     {
     }
     
@@ -62,13 +65,19 @@ struct MinifiedGenerationInfo {
         case BirthToFill:
         case Fill:
             filled = true;
+            alive = true;
             break;
         case BirthToSpill:
         case Spill:
             filled = false;
+            alive = true;
             break;
+        case Birth:
+            alive = true;
+            return;
         case Death:
             format = DataFormatNone;
+            alive = false;
             return;
         default:
             return;
@@ -81,25 +90,23 @@ struct MinifiedGenerationInfo {
 
 } // namespace
 
-bool VariableEventStream::tryToSetConstantRecovery(ValueRecovery& recovery, CodeBlock* codeBlock, MinifiedNode* node) const
+bool VariableEventStream::tryToSetConstantRecovery(ValueRecovery& recovery, MinifiedNode* node) const
 {
     if (!node)
         return false;
     
-    if (node->hasConstantNumber()) {
-        recovery = ValueRecovery::constant(
-            codeBlock->constantRegister(
-                FirstConstantRegisterIndex + node->constantNumber()).get());
+    if (node->hasConstant()) {
+        recovery = ValueRecovery::constant(node->constant());
         return true;
     }
     
-    if (node->hasWeakConstant()) {
-        recovery = ValueRecovery::constant(node->weakConstant());
+    if (node->op() == PhantomDirectArguments) {
+        recovery = ValueRecovery::directArgumentsThatWereNotCreated(node->id());
         return true;
     }
     
-    if (node->op() == PhantomArguments) {
-        recovery = ValueRecovery::argumentsThatWereNotCreated();
+    if (node->op() == PhantomClonedArguments) {
+        recovery = ValueRecovery::outOfBandArgumentsThatWereNotCreated(node->id());
         return true;
     }
     
@@ -115,7 +122,7 @@ void VariableEventStream::reconstruct(
     
     unsigned numVariables;
     if (codeOrigin.inlineCallFrame)
-        numVariables = baselineCodeBlockForInlineCallFrame(codeOrigin.inlineCallFrame)->m_numCalleeRegisters + VirtualRegister(codeOrigin.inlineCallFrame->stackOffset).toLocal();
+        numVariables = baselineCodeBlockForInlineCallFrame(codeOrigin.inlineCallFrame)->m_numCalleeRegisters + VirtualRegister(codeOrigin.inlineCallFrame->stackOffset).toLocal() + 1;
     else
         numVariables = baselineCodeBlock->m_numCalleeRegisters;
     
@@ -136,10 +143,6 @@ void VariableEventStream::reconstruct(
     while (at(startIndex).kind() != Reset)
         startIndex--;
     
-#if DFG_ENABLE(DEBUG_VERBOSE)
-    dataLogF("Computing OSR exit recoveries starting at seq#%u.\n", startIndex);
-#endif
-
     // Step 2: Create a mock-up of the DFG's state and execute the events.
     Operands<ValueSource> operandSources(codeBlock->numParameters(), numVariables);
     for (unsigned i = operandSources.size(); i--;)
@@ -152,7 +155,8 @@ void VariableEventStream::reconstruct(
             // nothing to do.
             break;
         case BirthToFill:
-        case BirthToSpill: {
+        case BirthToSpill:
+        case Birth: {
             MinifiedGenerationInfo info;
             info.update(event);
             generationInfos.add(event.id(), info);
@@ -191,76 +195,14 @@ void VariableEventStream::reconstruct(
         
         ASSERT(source.kind() == HaveNode);
         MinifiedNode* node = graph.at(source.id());
-        if (tryToSetConstantRecovery(valueRecoveries[i], codeBlock, node))
-            continue;
-        
         MinifiedGenerationInfo info = generationInfos.get(source.id());
-        if (info.format == DataFormatNone) {
-            // Try to see if there is an alternate node that would contain the value we want.
-            //
-            // Backward rewiring refers to:
-            //
-            //     a: Something(...)
-            //     b: Id(@a) // some identity function
-            //     c: SetLocal(@b)
-            //
-            // Where we find @b being dead, but @a is still alive.
-            //
-            // Forward rewiring refers to:
-            //
-            //     a: Something(...)
-            //     b: SetLocal(@a)
-            //     c: Id(@a) // some identity function
-            //
-            // Where we find @a being dead, but @b is still alive.
-            
-            bool found = false;
-            
-            if (node && permitsOSRBackwardRewiring(node->op())) {
-                MinifiedID id = node->child1();
-                if (tryToSetConstantRecovery(valueRecoveries[i], codeBlock, graph.at(id)))
-                    continue;
-                info = generationInfos.get(id);
-                if (info.format != DataFormatNone)
-                    found = true;
-            }
-            
-            if (!found) {
-                MinifiedID bestID;
-                unsigned bestScore = 0;
-                
-                HashMap<MinifiedID, MinifiedGenerationInfo>::iterator iter = generationInfos.begin();
-                HashMap<MinifiedID, MinifiedGenerationInfo>::iterator end = generationInfos.end();
-                for (; iter != end; ++iter) {
-                    MinifiedID id = iter->key;
-                    node = graph.at(id);
-                    if (!node)
-                        continue;
-                    if (!node->hasChild1())
-                        continue;
-                    if (node->child1() != source.id())
-                        continue;
-                    if (iter->value.format == DataFormatNone)
-                        continue;
-                    unsigned myScore = forwardRewiringSelectionScore(node->op());
-                    if (myScore <= bestScore)
-                        continue;
-                    bestID = id;
-                    bestScore = myScore;
-                }
-                
-                if (!!bestID) {
-                    info = generationInfos.get(bestID);
-                    ASSERT(info.format != DataFormatNone);
-                    found = true;
-                }
-            }
-            
-            if (!found) {
-                valueRecoveries[i] = ValueRecovery::constant(jsUndefined());
-                continue;
-            }
+        if (!info.alive) {
+            valueRecoveries[i] = ValueRecovery::constant(jsUndefined());
+            continue;
         }
+
+        if (tryToSetConstantRecovery(valueRecoveries[i], node))
+            continue;
         
         ASSERT(info.format != DataFormatNone);
         

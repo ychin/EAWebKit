@@ -26,7 +26,6 @@
 
 #include "Element.h"
 #include "Event.h"
-#include "EventListener.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSEvent.h"
@@ -43,61 +42,117 @@ using namespace JSC;
 
 namespace WebCore {
 
+// Functions
+
+JSC::EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionItem(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionGetTrackById(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionAddEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionRemoveEventListener(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionDispatchEvent(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsVideoTrackListLength(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsVideoTrackListSelectedIndex(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsVideoTrackListOnchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSVideoTrackListOnchange(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsVideoTrackListOnaddtrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSVideoTrackListOnaddtrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+JSC::EncodedJSValue jsVideoTrackListOnremovetrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSVideoTrackListOnremovetrack(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSVideoTrackListPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSVideoTrackListPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSVideoTrackListPrototype* ptr = new (NotNull, JSC::allocateCell<JSVideoTrackListPrototype>(vm.heap)) JSVideoTrackListPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSVideoTrackListPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
+};
+
 /* Hash table */
+
+static const struct CompactHashIndex JSVideoTrackListTableIndex[16] = {
+    { -1, -1 },
+    { 0, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 4, -1 },
+    { -1, -1 },
+    { 2, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { 3, -1 },
+    { -1, -1 },
+    { 1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+    { -1, -1 },
+};
+
 
 static const HashTableValue JSVideoTrackListTableValues[] =
 {
-    { "length", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListLength), (intptr_t)0 },
-    { "onchange", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListOnchange), (intptr_t)setJSVideoTrackListOnchange },
-    { "onaddtrack", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListOnaddtrack), (intptr_t)setJSVideoTrackListOnaddtrack },
-    { "onremovetrack", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListOnremovetrack), (intptr_t)setJSVideoTrackListOnremovetrack },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "length", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListLength), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "selectedIndex", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListSelectedIndex), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "onchange", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListOnchange), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSVideoTrackListOnchange) },
+    { "onaddtrack", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListOnaddtrack), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSVideoTrackListOnaddtrack) },
+    { "onremovetrack", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsVideoTrackListOnremovetrack), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSVideoTrackListOnremovetrack) },
 };
 
-static const HashTable JSVideoTrackListTable = { 9, 7, JSVideoTrackListTableValues, 0 };
+static const HashTable JSVideoTrackListTable = { 5, 15, true, JSVideoTrackListTableValues, 0, JSVideoTrackListTableIndex };
 /* Hash table for prototype */
 
 static const HashTableValue JSVideoTrackListPrototypeTableValues[] =
 {
-    { "item", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionItem), (intptr_t)1 },
-    { "getTrackById", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionGetTrackById), (intptr_t)1 },
-    { "addEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionAddEventListener), (intptr_t)2 },
-    { "removeEventListener", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionRemoveEventListener), (intptr_t)2 },
-    { "dispatchEvent", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionDispatchEvent), (intptr_t)1 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "item", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionItem), (intptr_t) (1) },
+    { "getTrackById", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionGetTrackById), (intptr_t) (1) },
+    { "addEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionAddEventListener), (intptr_t) (2) },
+    { "removeEventListener", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionRemoveEventListener), (intptr_t) (2) },
+    { "dispatchEvent", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsVideoTrackListPrototypeFunctionDispatchEvent), (intptr_t) (1) },
 };
 
-static const HashTable JSVideoTrackListPrototypeTable = { 16, 15, JSVideoTrackListPrototypeTableValues, 0 };
-const ClassInfo JSVideoTrackListPrototype::s_info = { "VideoTrackListPrototype", &Base::s_info, &JSVideoTrackListPrototypeTable, 0, CREATE_METHOD_TABLE(JSVideoTrackListPrototype) };
+const ClassInfo JSVideoTrackListPrototype::s_info = { "VideoTrackListPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSVideoTrackListPrototype) };
 
-JSObject* JSVideoTrackListPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSVideoTrackList>(vm, globalObject);
-}
-
-bool JSVideoTrackListPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSVideoTrackListPrototype* thisObject = jsCast<JSVideoTrackListPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSVideoTrackListPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSVideoTrackList::s_info = { "VideoTrackList", &Base::s_info, &JSVideoTrackListTable, 0 , CREATE_METHOD_TABLE(JSVideoTrackList) };
-
-JSVideoTrackList::JSVideoTrackList(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<VideoTrackList> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSVideoTrackList::finishCreation(VM& vm)
+void JSVideoTrackListPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSVideoTrackListPrototypeTableValues, *this);
+}
+
+const ClassInfo JSVideoTrackList::s_info = { "VideoTrackList", &Base::s_info, &JSVideoTrackListTable, CREATE_METHOD_TABLE(JSVideoTrackList) };
+
+JSVideoTrackList::JSVideoTrackList(Structure* structure, JSDOMGlobalObject* globalObject, Ref<VideoTrackList>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSVideoTrackList::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSVideoTrackListPrototype::create(vm, globalObject, JSVideoTrackListPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSVideoTrackList::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSVideoTrackList>(vm, globalObject);
 }
 
 void JSVideoTrackList::destroy(JSC::JSCell* cell)
@@ -108,22 +163,23 @@ void JSVideoTrackList::destroy(JSC::JSCell* cell)
 
 JSVideoTrackList::~JSVideoTrackList()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
 bool JSVideoTrackList::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
-    JSVideoTrackList* thisObject = jsCast<JSVideoTrackList*>(object);
+    auto* thisObject = jsCast<JSVideoTrackList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    const HashEntry* entry = getStaticValueSlotEntryWithoutCaching<JSVideoTrackList>(exec, propertyName);
+    const HashTableValue* entry = getStaticValueSlotEntryWithoutCaching<JSVideoTrackList>(exec, propertyName);
     if (entry) {
-        slot.setCustom(thisObject, entry->attributes(), entry->propertyGetter());
+        slot.setCacheableCustom(thisObject, entry->attributes(), entry->propertyGetter());
         return true;
     }
-    unsigned index = propertyName.asIndex();
-    if (index != PropertyName::NotAnIndex && index < thisObject->impl().length()) {
+    Optional<uint32_t> optionalIndex = parseIndex(propertyName);
+    if (optionalIndex && optionalIndex.value() < thisObject->impl().length()) {
+        unsigned index = optionalIndex.value();
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return getStaticValueSlot<JSVideoTrackList, Base>(exec, JSVideoTrackListTable, thisObject, propertyName, slot);
@@ -131,228 +187,217 @@ bool JSVideoTrackList::getOwnPropertySlot(JSObject* object, ExecState* exec, Pro
 
 bool JSVideoTrackList::getOwnPropertySlotByIndex(JSObject* object, ExecState* exec, unsigned index, PropertySlot& slot)
 {
-    JSVideoTrackList* thisObject = jsCast<JSVideoTrackList*>(object);
+    auto* thisObject = jsCast<JSVideoTrackList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (index < thisObject->impl().length()) {
         unsigned attributes = DontDelete | ReadOnly;
-        slot.setCustomIndex(thisObject, attributes, index, thisObject->indexGetter);
+        slot.setValue(thisObject, attributes, toJS(exec, thisObject->globalObject(), thisObject->impl().item(index)));
         return true;
     }
     return Base::getOwnPropertySlotByIndex(thisObject, exec, index, slot);
 }
 
-JSValue jsVideoTrackListLength(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsVideoTrackListLength(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    VideoTrackList& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(slotBase);
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.length());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsVideoTrackListOnchange(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsVideoTrackListSelectedIndex(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    VideoTrackList& impl = castedThis->impl();
-    if (EventListener* listener = impl.onchange()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(slotBase);
+    auto& impl = castedThis->impl();
+    JSValue result = jsNumber(impl.selectedIndex());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsVideoTrackListOnaddtrack(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsVideoTrackListOnchange(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    VideoTrackList& impl = castedThis->impl();
-    if (EventListener* listener = impl.onaddtrack()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(slotBase);
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().changeEvent));
 }
 
 
-JSValue jsVideoTrackListOnremovetrack(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsVideoTrackListOnaddtrack(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    VideoTrackList& impl = castedThis->impl();
-    if (EventListener* listener = impl.onremovetrack()) {
-        if (const JSEventListener* jsListener = JSEventListener::cast(listener)) {
-            if (JSObject* jsFunction = jsListener->jsFunction(impl.scriptExecutionContext()))
-                return jsFunction;
-        }
-    }
-    return jsNull();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(slotBase);
+    UNUSED_PARAM(exec);
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().addtrackEvent));
 }
 
 
-void JSVideoTrackList::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
-{
-    JSVideoTrackList* thisObject = jsCast<JSVideoTrackList*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSVideoTrackList, Base>(exec, propertyName, value, JSVideoTrackListTable, thisObject, slot);
-}
-
-void setJSVideoTrackListOnchange(ExecState* exec, JSObject* thisObject, JSValue value)
+EncodedJSValue jsVideoTrackListOnremovetrack(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
     UNUSED_PARAM(exec);
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(slotBase);
     UNUSED_PARAM(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(thisObject);
-    VideoTrackList& impl = castedThis->impl();
-    impl.setOnchange(createJSAttributeEventListener(exec, value, thisObject));
+    return JSValue::encode(eventHandlerAttribute(castedThis->impl(), eventNames().removetrackEvent));
 }
 
 
-void setJSVideoTrackListOnaddtrack(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSVideoTrackListOnchange(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    UNUSED_PARAM(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(thisObject);
-    VideoTrackList& impl = castedThis->impl();
-    impl.setOnaddtrack(createJSAttributeEventListener(exec, value, thisObject));
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().changeEvent, value);
 }
 
 
-void setJSVideoTrackListOnremovetrack(ExecState* exec, JSObject* thisObject, JSValue value)
+void setJSVideoTrackListOnaddtrack(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().addtrackEvent, value);
+}
+
+
+void setJSVideoTrackListOnremovetrack(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
+{
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    UNUSED_PARAM(thisValue);
+    auto* castedThis = jsCast<JSVideoTrackList*>(baseObject);
+    UNUSED_PARAM(thisValue);
     UNUSED_PARAM(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(thisObject);
-    VideoTrackList& impl = castedThis->impl();
-    impl.setOnremovetrack(createJSAttributeEventListener(exec, value, thisObject));
+    setEventHandlerAttribute(*exec, *castedThis, castedThis->impl(), eventNames().removetrackEvent, value);
 }
 
 
 void JSVideoTrackList::getOwnPropertyNames(JSObject* object, ExecState* exec, PropertyNameArray& propertyNames, EnumerationMode mode)
 {
-    JSVideoTrackList* thisObject = jsCast<JSVideoTrackList*>(object);
+    auto* thisObject = jsCast<JSVideoTrackList*>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     for (unsigned i = 0, count = thisObject->impl().length(); i < count; ++i)
         propertyNames.add(Identifier::from(exec, i));
-     Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
+    Base::getOwnPropertyNames(thisObject, exec, propertyNames, mode);
 }
 
 EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionItem(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSVideoTrackList::info()))
-        return throwVMTypeError(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSVideoTrackList* castedThis = jsDynamicCast<JSVideoTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "VideoTrackList", "item");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSVideoTrackList::info());
-    VideoTrackList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    unsigned index(toUInt32(exec, exec->argument(0), NormalConversion));
-    if (exec->hadException())
+    unsigned index = toUInt32(exec, exec->argument(0), NormalConversion);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.item(index)));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionGetTrackById(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSVideoTrackList::info()))
-        return throwVMTypeError(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSVideoTrackList* castedThis = jsDynamicCast<JSVideoTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "VideoTrackList", "getTrackById");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSVideoTrackList::info());
-    VideoTrackList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& id(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String id = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getTrackById(id)));
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.getTrackById(id)));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionAddEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSVideoTrackList::info()))
-        return throwVMTypeError(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSVideoTrackList* castedThis = jsDynamicCast<JSVideoTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "VideoTrackList", "addEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSVideoTrackList::info());
-    VideoTrackList& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.addEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)), exec->argument(2).toBoolean(exec));
+    impl.addEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForAdd(*exec, *asObject(listener), *castedThis), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionRemoveEventListener(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSVideoTrackList::info()))
-        return throwVMTypeError(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSVideoTrackList* castedThis = jsDynamicCast<JSVideoTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "VideoTrackList", "removeEventListener");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSVideoTrackList::info());
-    VideoTrackList& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     JSValue listener = exec->argument(1);
-    if (!listener.isObject())
+    if (UNLIKELY(!listener.isObject()))
         return JSValue::encode(jsUndefined());
-    impl.removeEventListener(exec->argument(0).toString(exec)->value(exec), JSEventListener::create(asObject(listener), castedThis, false, currentWorld(exec)).get(), exec->argument(2).toBoolean(exec));
+    impl.removeEventListener(exec->argument(0).toString(exec)->toAtomicString(exec), createJSEventListenerForRemove(*exec, *asObject(listener), *castedThis).ptr(), exec->argument(2).toBoolean(exec));
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsVideoTrackListPrototypeFunctionDispatchEvent(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSVideoTrackList::info()))
-        return throwVMTypeError(exec);
-    JSVideoTrackList* castedThis = jsCast<JSVideoTrackList*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSVideoTrackList* castedThis = jsDynamicCast<JSVideoTrackList*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "VideoTrackList", "dispatchEvent");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSVideoTrackList::info());
-    VideoTrackList& impl = castedThis->impl();
-    if (exec->argumentCount() < 1)
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
     ExceptionCode ec = 0;
-    Event* evt(toEvent(exec->argument(0)));
-    if (exec->hadException())
+    Event* event = JSEvent::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = jsBoolean(impl.dispatchEvent(event, ec));
 
-    JSC::JSValue result = jsBoolean(impl.dispatchEvent(evt, ec));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-
-JSValue JSVideoTrackList::indexGetter(ExecState* exec, JSValue slotBase, unsigned index)
+void JSVideoTrackList::visitChildren(JSCell* cell, SlotVisitor& visitor)
 {
-    JSVideoTrackList* thisObj = jsCast<JSVideoTrackList*>(asObject(slotBase));
-    ASSERT_GC_OBJECT_INHERITS(thisObj, info());
-    return toJS(exec, thisObj->globalObject(), thisObj->impl().item(index));
-}
-
-static inline bool isObservable(JSVideoTrackList* jsVideoTrackList)
-{
-    if (jsVideoTrackList->hasCustomProperties())
-        return true;
-    if (jsVideoTrackList->impl().hasEventListeners())
-        return true;
-    return false;
+    auto* thisObject = jsCast<JSVideoTrackList*>(cell);
+    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
+    Base::visitChildren(thisObject, visitor);
+    thisObject->impl().visitJSEventListeners(visitor);
+    thisObject->visitAdditionalChildren(visitor);
 }
 
 bool JSVideoTrackListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSVideoTrackList* jsVideoTrackList = jsCast<JSVideoTrackList*>(handle.get().asCell());
+    auto* jsVideoTrackList = jsCast<JSVideoTrackList*>(handle.slot()->asCell());
     if (jsVideoTrackList->impl().isFiringEventListeners())
         return true;
-    if (!isObservable(jsVideoTrackList))
-        return false;
-    Element* element = jsVideoTrackList->impl().element();
+    Element* element = WTF::getPtr(jsVideoTrackList->impl().element());
     if (!element)
         return false;
     void* root = WebCore::root(element);
@@ -361,10 +406,9 @@ bool JSVideoTrackListOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>
 
 void JSVideoTrackListOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSVideoTrackList* jsVideoTrackList = jsCast<JSVideoTrackList*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsVideoTrackList = jsCast<JSVideoTrackList*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsVideoTrackList->impl(), jsVideoTrackList);
-    jsVideoTrackList->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -375,11 +419,11 @@ extern "C" { extern void (*const __identifier("??_7VideoTrackList@WebCore@@6B@")
 extern "C" { extern void* _ZTVN7WebCore14VideoTrackListE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, VideoTrackList* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, VideoTrackList* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSVideoTrackList>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSVideoTrackList>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -400,13 +444,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, VideoTr
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<VideoTrackList>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSVideoTrackList>(exec, globalObject, impl);
+    return createNewWrapper<JSVideoTrackList>(globalObject, impl);
 }
 
-VideoTrackList* toVideoTrackList(JSC::JSValue value)
+VideoTrackList* JSVideoTrackList::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSVideoTrackList::info()) ? &jsCast<JSVideoTrackList*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSVideoTrackList*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

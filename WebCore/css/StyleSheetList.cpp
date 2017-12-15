@@ -41,7 +41,7 @@ StyleSheetList::~StyleSheetList()
 {
 }
 
-inline const Vector<RefPtr<StyleSheet> >& StyleSheetList::styleSheets() const
+inline const Vector<RefPtr<StyleSheet>>& StyleSheetList::styleSheets() const
 {
     if (!m_document)
         return m_detachedStyleSheets;
@@ -61,14 +61,14 @@ unsigned StyleSheetList::length() const
 
 StyleSheet* StyleSheetList::item(unsigned index)
 {
-    const Vector<RefPtr<StyleSheet> >& sheets = styleSheets();
+    const Vector<RefPtr<StyleSheet>>& sheets = styleSheets();
     return index < sheets.size() ? sheets[index].get() : 0;
 }
 
 HTMLStyleElement* StyleSheetList::getNamedItem(const String& name) const
 {
     if (!m_document)
-        return 0;
+        return nullptr;
 
     // IE also supports retrieving a stylesheet by name, using the name/id of the <style> tag
     // (this is consistent with all the other collections)
@@ -76,9 +76,9 @@ HTMLStyleElement* StyleSheetList::getNamedItem(const String& name) const
     // and doesn't look for name attribute.
     // But unicity of stylesheet ids is good practice anyway ;)
     Element* element = m_document->getElementById(name);
-    if (element && isHTMLStyleElement(element))
-        return toHTMLStyleElement(element);
-    return 0;
+    if (is<HTMLStyleElement>(element))
+        return downcast<HTMLStyleElement>(element);
+    return nullptr;
 }
 
 } // namespace WebCore

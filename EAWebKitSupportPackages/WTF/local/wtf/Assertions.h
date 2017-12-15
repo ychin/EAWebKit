@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2003, 2006, 2007, 2013 Apple Inc.  All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,10 +11,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -26,6 +27,8 @@
 #ifndef WTF_Assertions_h
 #define WTF_Assertions_h
 
+#include <wtf/Platform.h>
+
 /*
    no namespaces because this file has to be includable from C and Objective-C
 
@@ -36,13 +39,11 @@
    Defining any of the symbols explicitly prevents this from having any effect.
 */
 
-#include <wtf/Platform.h>
-
-#include <stddef.h>
-
-#if !COMPILER(MSVC)
 #include <inttypes.h>
-#endif
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <wtf/ExportMacros.h>
 
 #ifdef NDEBUG
 /* Disable ASSERT* macros in release mode. */
@@ -79,7 +80,7 @@
 #define LOG_DISABLED ASSERTIONS_DISABLED_DEFAULT
 #endif
 
-#if COMPILER(GCC)
+#if COMPILER(GCC_OR_CLANG)
 #define WTF_PRETTY_FUNCTION __PRETTY_FUNCTION__
 #else
 #define WTF_PRETTY_FUNCTION __FUNCTION__
@@ -88,7 +89,7 @@
 /* WTF logging functions can process %@ in the format string to log a NSObject* but the printf format attribute
    emits a warning when %@ is used in the format string.  Until <rdar://problem/5195437> is resolved we can't include
    the attribute when being used from Objective-C code in case it decides to use %@. */
-#if COMPILER(GCC) && !defined(__OBJC__)
+#if COMPILER(GCC_OR_CLANG) && !defined(__OBJC__)
 #define WTF_ATTRIBUTE_PRINTF(formatStringArgument, extraArguments) __attribute__((__format__(printf, formatStringArgument, extraArguments)))
 #else
 #define WTF_ATTRIBUTE_PRINTF(formatStringArgument, extraArguments)
@@ -107,6 +108,20 @@
 extern "C" {
 #endif
 
+/* CRASH() - Raises a fatal error resulting in program termination and triggering either the debugger or the crash reporter.
+
+   Use CRASH() in response to known, unrecoverable errors like out-of-memory.
+   Macro is enabled in both debug and release mode.
+   To test for unknown errors and verify assumptions, use ASSERT instead, to avoid impacting performance in release builds.
+
+   Signals are ignored by the crash reporter on OS X so we must do better.
+*/
+#if COMPILER(GCC_OR_CLANG) || COMPILER(MSVC)
+#define NO_RETURN_DUE_TO_CRASH NO_RETURN
+#else
+#define NO_RETURN_DUE_TO_CRASH
+#endif
+
 typedef enum { WTFLogChannelOff, WTFLogChannelOn } WTFLogChannelState;
 
 typedef struct {
@@ -121,7 +136,9 @@ WTF_EXPORT_PRIVATE void WTFReportFatalError(const char* file, int line, const ch
 WTF_EXPORT_PRIVATE void WTFReportError(const char* file, int line, const char* function, const char* format, ...) WTF_ATTRIBUTE_PRINTF(4, 5);
 WTF_EXPORT_PRIVATE void WTFLog(WTFLogChannel*, const char* format, ...) WTF_ATTRIBUTE_PRINTF(2, 3);
 WTF_EXPORT_PRIVATE void WTFLogVerbose(const char* file, int line, const char* function, WTFLogChannel*, const char* format, ...) WTF_ATTRIBUTE_PRINTF(5, 6);
+WTF_EXPORT_PRIVATE void WTFLogAlwaysV(const char* format, va_list);
 WTF_EXPORT_PRIVATE void WTFLogAlways(const char* format, ...) WTF_ATTRIBUTE_PRINTF(1, 2);
+WTF_EXPORT_PRIVATE NO_RETURN_DUE_TO_CRASH void WTFLogAlwaysAndCrash(const char* format, ...) WTF_ATTRIBUTE_PRINTF(1, 2);
 WTF_EXPORT_PRIVATE WTFLogChannel* WTFLogChannelByName(WTFLogChannel*[], size_t count, const char*);
 WTF_EXPORT_PRIVATE void WTFInitializeLogChannelStatesFromString(WTFLogChannel*[], size_t count, const char*);
 
@@ -133,24 +150,10 @@ typedef void (*WTFCrashHookFunction)();
 WTF_EXPORT_PRIVATE void WTFSetCrashHook(WTFCrashHookFunction);
 WTF_EXPORT_PRIVATE void WTFInstallReportBacktraceOnCrashHook();
 
-// Exist for binary compatibility with older Safari. Do not use.
-WTF_EXPORT_PRIVATE void WTFInvokeCrashHook();
+WTF_EXPORT_PRIVATE bool WTFIsDebuggerAttached();
+
 #ifdef __cplusplus
 }
-#endif
-
-/* CRASH() - Raises a fatal error resulting in program termination and triggering either the debugger or the crash reporter.
-
-   Use CRASH() in response to known, unrecoverable errors like out-of-memory.
-   Macro is enabled in both debug and release mode.
-   To test for unknown errors and verify assumptions, use ASSERT instead, to avoid impacting performance in release builds.
-
-   Signals are ignored by the crash reporter on OS X so we must do better.
-*/
-#if COMPILER(CLANG)
-#define NO_RETURN_DUE_TO_CRASH NO_RETURN
-#else
-#define NO_RETURN_DUE_TO_CRASH
 #endif
 
 #ifndef CRASH
@@ -160,7 +163,19 @@ WTF_EXPORT_PRIVATE void WTFInvokeCrashHook();
 #ifdef __cplusplus
 extern "C" {
 #endif
-WTF_EXPORT_PRIVATE void WTFCrash() NO_RETURN_DUE_TO_CRASH;
+    WTF_EXPORT_PRIVATE NO_RETURN_DUE_TO_CRASH void WTFCrash();
+#ifdef __cplusplus
+}
+#endif
+
+#ifndef CRASH_WITH_SECURITY_IMPLICATION
+#define CRASH_WITH_SECURITY_IMPLICATION() WTFCrashWithSecurityImplication()
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    WTF_EXPORT_PRIVATE NO_RETURN_DUE_TO_CRASH void WTFCrashWithSecurityImplication();
 #ifdef __cplusplus
 }
 #endif
@@ -188,14 +203,6 @@ WTF_EXPORT_PRIVATE void WTFCrash() NO_RETURN_DUE_TO_CRASH;
   Expressions inside them are evaluated in debug builds only.
 */
 
-#if OS(WINCE)
-/* FIXME: We include this here only to avoid a conflict with the ASSERT macro. */
-#include <windows.h>
-#undef min
-#undef max
-#undef ERROR
-#endif
-
 #if OS(WINDOWS)
 /* FIXME: Change to use something other than ASSERT to avoid this conflict with the underlying platform */
 #undef ASSERT
@@ -208,12 +215,19 @@ WTF_EXPORT_PRIVATE void WTFCrash() NO_RETURN_DUE_TO_CRASH;
 #define ASSERT_NOT_REACHED() ((void)0)
 #define NO_RETURN_DUE_TO_ASSERT
 
-#if COMPILER(INTEL) && !OS(WINDOWS) || COMPILER(RVCT)
-template<typename T>
-inline void assertUnused(T& x) { (void)x; }
-#define ASSERT_UNUSED(variable, assertion) (assertUnused(variable))
-#else
 #define ASSERT_UNUSED(variable, assertion) ((void)variable)
+
+#if ENABLE(SECURITY_ASSERTIONS)
+#define ASSERT_WITH_SECURITY_IMPLICATION(assertion) \
+    (!(assertion) ? \
+        (WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion), \
+         CRASH_WITH_SECURITY_IMPLICATION()) : \
+        (void)0)
+
+#define ASSERT_WITH_SECURITY_IMPLICATION_DISABLED 0
+#else
+#define ASSERT_WITH_SECURITY_IMPLICATION(assertion) ((void)0)
+#define ASSERT_WITH_SECURITY_IMPLICATION_DISABLED 1
 #endif
 
 #else
@@ -239,28 +253,20 @@ inline void assertUnused(T& x) { (void)x; }
 
 #define NO_RETURN_DUE_TO_ASSERT NO_RETURN_DUE_TO_CRASH
 
-#endif
-
 /* ASSERT_WITH_SECURITY_IMPLICATION
-   
+ 
    Failure of this assertion indicates a possible security vulnerability.
    Class of vulnerabilities that it tests include bad casts, out of bounds
    accesses, use-after-frees, etc. Please file a bug using the security
    template - https://bugs.webkit.org/enter_bug.cgi?product=Security.
-
+ 
 */
-#ifdef ADDRESS_SANITIZER
-
 #define ASSERT_WITH_SECURITY_IMPLICATION(assertion) \
     (!(assertion) ? \
         (WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion), \
-         CRASH()) : \
+         CRASH_WITH_SECURITY_IMPLICATION()) : \
         (void)0)
-
-#else
-
-#define ASSERT_WITH_SECURITY_IMPLICATION(assertion) ASSERT(assertion)
-
+#define ASSERT_WITH_SECURITY_IMPLICATION_DISABLED 0
 #endif
 
 /* ASSERT_WITH_MESSAGE */
@@ -279,13 +285,7 @@ while (0)
 /* ASSERT_WITH_MESSAGE_UNUSED */
 
 #if ASSERT_MSG_DISABLED
-#if COMPILER(INTEL) && !OS(WINDOWS) || COMPILER(RVCT)
-template<typename T>
-inline void assertWithMessageUnused(T& x) { (void)x; }
-#define ASSERT_WITH_MESSAGE_UNUSED(variable, assertion, ...) (assertWithMessageUnused(variable))
-#else
 #define ASSERT_WITH_MESSAGE_UNUSED(variable, assertion, ...) ((void)variable)
-#endif
 #else
 #define ASSERT_WITH_MESSAGE_UNUSED(variable, assertion, ...) do \
     if (!(assertion)) { \
@@ -315,13 +315,14 @@ while (0)
 
 /* COMPILE_ASSERT */
 #ifndef COMPILE_ASSERT
-#if COMPILER_SUPPORTS(C_STATIC_ASSERT)
+//+EAWebKitChange
+//3/29/2015
+#if COMPILER_SUPPORTS(C_STATIC_ASSERT) || defined (EA_PLATFORM_PS4)
+//-EAWebKitChange
 /* Unlike static_assert below, this also works in plain C code. */
 #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
-#elif COMPILER_SUPPORTS(CXX_STATIC_ASSERT)
-#define COMPILE_ASSERT(exp, name) static_assert((exp), #name)
 #else
-#define COMPILE_ASSERT(exp, name) typedef int dummy##name [(exp) ? 1 : -1]
+#define COMPILE_ASSERT(exp, name) static_assert((exp), #name)
 #endif
 #endif
 
@@ -362,21 +363,7 @@ while (0)
 #define LOG_VERBOSE(channel, ...) WTFLogVerbose(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, &JOIN_LOG_CHANNEL_WITH_PREFIX(LOG_CHANNEL_PREFIX, channel), __VA_ARGS__)
 #endif
 
-/* UNREACHABLE_FOR_PLATFORM */
-
-#if COMPILER(CLANG)
-// This would be a macro except that its use of #pragma works best around
-// a function. Hence it uses macro naming convention.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-static inline void UNREACHABLE_FOR_PLATFORM()
-{
-    ASSERT_NOT_REACHED();
-}
-#pragma clang diagnostic pop
-#else
-#define UNREACHABLE_FOR_PLATFORM() ASSERT_NOT_REACHED()
-#endif
+/* RELEASE_ASSERT */
 
 #if ASSERT_DISABLED
 #define RELEASE_ASSERT(assertion) (UNLIKELY(!(assertion)) ? (CRASH()) : (void)0)
@@ -387,5 +374,22 @@ static inline void UNREACHABLE_FOR_PLATFORM()
 #define RELEASE_ASSERT_WITH_MESSAGE(assertion, ...) ASSERT_WITH_MESSAGE(assertion, __VA_ARGS__)
 #define RELEASE_ASSERT_NOT_REACHED() ASSERT_NOT_REACHED()
 #endif
+
+/* UNREACHABLE_FOR_PLATFORM */
+
+#if COMPILER(CLANG)
+// This would be a macro except that its use of #pragma works best around
+// a function. Hence it uses macro naming convention.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+static inline void UNREACHABLE_FOR_PLATFORM()
+{
+    RELEASE_ASSERT_NOT_REACHED();
+}
+#pragma clang diagnostic pop
+#else
+#define UNREACHABLE_FOR_PLATFORM() RELEASE_ASSERT_NOT_REACHED()
+#endif
+
 
 #endif /* WTF_Assertions_h */

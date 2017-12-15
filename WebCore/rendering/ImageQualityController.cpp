@@ -43,7 +43,7 @@ static const double cLowQualityTimeThreshold = 0.050; // 50 ms
 
 ImageQualityController::ImageQualityController(const RenderView& renderView)
     : m_renderView(renderView)
-    , m_timer(this, &ImageQualityController::highQualityRepaintTimerFired)
+    , m_timer(*this, &ImageQualityController::highQualityRepaintTimerFired)
     , m_animatedResizeIsActive(false)
     , m_liveResizeOptimizationIsActive(false)
 {
@@ -78,7 +78,7 @@ void ImageQualityController::removeObject(RenderBoxModelObject* object)
     }
 }
 
-void ImageQualityController::highQualityRepaintTimerFired(Timer<ImageQualityController>*)
+void ImageQualityController::highQualityRepaintTimerFired()
 {
     if (m_renderView.documentBeingDestroyed())
         return;
@@ -110,7 +110,7 @@ bool ImageQualityController::shouldPaintAtLowQuality(GraphicsContext* context, R
     if (!image || !(image->isBitmapImage() || image->isPDFDocumentImage()) || context->paintingDisabled())
         return false;
 
-    switch (object->style()->imageRendering()) {
+    switch (object->style().imageRendering()) {
     case ImageRenderingOptimizeSpeed:
     case ImageRenderingCrispEdges:
         return true;

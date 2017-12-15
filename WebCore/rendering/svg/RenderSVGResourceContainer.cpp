@@ -18,14 +18,11 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "RenderSVGResourceContainer.h"
 
 #include "RenderLayer.h"
 #include "RenderSVGRoot.h"
 #include "RenderView.h"
-#include "SVGGraphicsElement.h"
 #include "SVGRenderingContext.h"
 #include "SVGResourcesCache.h"
 #include <wtf/StackStats.h>
@@ -34,12 +31,11 @@ namespace WebCore {
 
 static inline SVGDocumentExtensions& svgExtensionsFromElement(SVGElement& element)
 {
-    // FIXME: accessSVGExtensions() should return a reference.
-    return *element.document().accessSVGExtensions();
+    return element.document().accessSVGExtensions();
 }
 
-RenderSVGResourceContainer::RenderSVGResourceContainer(SVGElement& element)
-    : RenderSVGHiddenContainer(element)
+RenderSVGResourceContainer::RenderSVGResourceContainer(SVGElement& element, Ref<RenderStyle>&& style)
+    : RenderSVGHiddenContainer(element, WTF::move(style))
     , m_id(element.getIdAttribute())
     , m_registered(false)
     , m_isInvalidating(false)
@@ -56,7 +52,7 @@ void RenderSVGResourceContainer::layout()
 {
     StackStats::LayoutCheckPoint layoutCheckPoint;
     // Invalidate all resources if our layout changed.
-    if (everHadLayout() && selfNeedsLayout())
+    if (selfNeedsClientInvalidation())
         RenderSVGRoot::addResourceForClientInvalidation(this);
 
     RenderSVGHiddenContainer::layout();
@@ -64,7 +60,7 @@ void RenderSVGResourceContainer::layout()
 
 void RenderSVGResourceContainer::willBeDestroyed()
 {
-    SVGResourcesCache::resourceDestroyed(this);
+    SVGResourcesCache::resourceDestroyed(*this);
     RenderSVGHiddenContainer::willBeDestroyed();
 }
 
@@ -99,18 +95,16 @@ void RenderSVGResourceContainer::markAllClientsForInvalidation(InvalidationMode 
     bool needsLayout = mode == LayoutAndBoundariesInvalidation;
     bool markForInvalidation = mode != ParentOnlyInvalidation;
 
-    HashSet<RenderObject*>::iterator end = m_clients.end();
-    for (HashSet<RenderObject*>::iterator it = m_clients.begin(); it != end; ++it) {
-        RenderObject* client = *it;
-        if (client->isSVGResourceContainer()) {
-            client->toRenderSVGResourceContainer()->removeAllClientsFromCache(markForInvalidation);
+    for (auto* client : m_clients) {
+        if (is<RenderSVGResourceContainer>(*client)) {
+            downcast<RenderSVGResourceContainer>(*client).removeAllClientsFromCache(markForInvalidation);
             continue;
         }
 
         if (markForInvalidation)
-            markClientForInvalidation(client, mode);
+            markClientForInvalidation(*client, mode);
 
-        RenderSVGResource::markForLayoutAndParentResourceInvalidation(client, needsLayout);
+        RenderSVGResource::markForLayoutAndParentResourceInvalidation(*client, needsLayout);
     }
 
     markAllClientLayersForInvalidation();
@@ -120,43 +114,37 @@ void RenderSVGResourceContainer::markAllClientsForInvalidation(InvalidationMode 
 
 void RenderSVGResourceContainer::markAllClientLayersForInvalidation()
 {
-#if ENABLE(CSS_FILTERS)
-    HashSet<RenderLayer*>::iterator layerEnd = m_clientLayers.end();
-    for (HashSet<RenderLayer*>::iterator it = m_clientLayers.begin(); it != layerEnd; ++it)
-        (*it)->filterNeedsRepaint();
-#endif
+    for (auto* clientLayer : m_clientLayers)
+        clientLayer->filterNeedsRepaint();
 }
 
-void RenderSVGResourceContainer::markClientForInvalidation(RenderObject* client, InvalidationMode mode)
+void RenderSVGResourceContainer::markClientForInvalidation(RenderObject& client, InvalidationMode mode)
 {
-    ASSERT(client);
     ASSERT(!m_clients.isEmpty());
 
     switch (mode) {
     case LayoutAndBoundariesInvalidation:
     case BoundariesInvalidation:
-        client->setNeedsBoundariesUpdate();
+        client.setNeedsBoundariesUpdate();
         break;
     case RepaintInvalidation:
-        if (!client->documentBeingDestroyed())
-            client->repaint();
+        if (!client.documentBeingDestroyed())
+            client.repaint();
         break;
     case ParentOnlyInvalidation:
         break;
     }
 }
 
-void RenderSVGResourceContainer::addClient(RenderObject* client)
+void RenderSVGResourceContainer::addClient(RenderElement& client)
 {
-    ASSERT(client);
-    m_clients.add(client);
+    m_clients.add(&client);
 }
 
-void RenderSVGResourceContainer::removeClient(RenderObject* client)
+void RenderSVGResourceContainer::removeClient(RenderElement& client)
 {
-    ASSERT(client);
     removeClientFromCache(client, false);
-    m_clients.remove(client);
+    m_clients.remove(&client);
 }
 
 void RenderSVGResourceContainer::addClientRenderLayer(RenderLayer* client)
@@ -174,43 +162,42 @@ void RenderSVGResourceContainer::removeClientRenderLayer(RenderLayer* client)
 void RenderSVGResourceContainer::registerResource()
 {
     SVGDocumentExtensions& extensions = svgExtensionsFromElement(element());
-    if (!extensions.hasPendingResource(m_id)) {
+    if (!extensions.isIdOfPendingResource(m_id)) {
         extensions.addResource(m_id, this);
         return;
     }
 
-    OwnPtr<SVGDocumentExtensions::SVGPendingElements> clients = extensions.removePendingResource(m_id);
+    std::unique_ptr<SVGDocumentExtensions::PendingElements> clients = extensions.removePendingResource(m_id);
 
     // Cache us with the new id.
     extensions.addResource(m_id, this);
 
     // Update cached resources of pending clients.
-    const SVGDocumentExtensions::SVGPendingElements::const_iterator end = clients->end();
-    for (SVGDocumentExtensions::SVGPendingElements::const_iterator it = clients->begin(); it != end; ++it) {
-        ASSERT((*it)->hasPendingResources());
-        extensions.clearHasPendingResourcesIfPossible(*it);
-        RenderObject* renderer = (*it)->renderer();
+    for (auto* client : *clients) {
+        ASSERT(client->hasPendingResources());
+        extensions.clearHasPendingResourcesIfPossible(client);
+        auto* renderer = client->renderer();
         if (!renderer)
             continue;
-        SVGResourcesCache::clientStyleChanged(renderer, StyleDifferenceLayout, renderer->style());
+        SVGResourcesCache::clientStyleChanged(*renderer, StyleDifferenceLayout, renderer->style());
         renderer->setNeedsLayout();
     }
 }
 
-bool RenderSVGResourceContainer::shouldTransformOnTextPainting(RenderObject* object, AffineTransform& resourceTransform)
+bool RenderSVGResourceContainer::shouldTransformOnTextPainting(const RenderElement& renderer, AffineTransform& resourceTransform)
 {
-    ASSERT_UNUSED(object, object);
 #if USE(CG)
+    UNUSED_PARAM(renderer);
     UNUSED_PARAM(resourceTransform);
     return false;
 #else
     // This method should only be called for RenderObjects that deal with text rendering. Cmp. RenderObject.h's is*() methods.
-    ASSERT(object->isSVGText() || object->isSVGTextPath() || object->isSVGInline());
+    ASSERT(renderer.isSVGText() || renderer.isSVGTextPath() || renderer.isSVGInline());
 
     // In text drawing, the scaling part of the graphics context CTM is removed, compare SVGInlineTextBox::paintTextWithShadows.
     // So, we use that scaling factor here, too, and then push it down to pattern or gradient space
     // in order to keep the pattern or gradient correctly scaled.
-    float scalingFactor = SVGRenderingContext::calculateScreenFontSizeScalingFactor(object);
+    float scalingFactor = SVGRenderingContext::calculateScreenFontSizeScalingFactor(renderer);
     if (scalingFactor == 1)
         return false;
     resourceTransform.scale(scalingFactor);
@@ -224,12 +211,10 @@ AffineTransform RenderSVGResourceContainer::transformOnNonScalingStroke(RenderOb
     if (!object->isSVGShape())
         return resourceTransform;
 
-    SVGGraphicsElement* element = toSVGGraphicsElement(object->node());
+    SVGGraphicsElement* element = downcast<SVGGraphicsElement>(object->node());
     AffineTransform transform = element->getScreenCTM(SVGLocatable::DisallowStyleUpdate);
     transform *= resourceTransform;
     return transform;
 }
 
 }
-
-#endif

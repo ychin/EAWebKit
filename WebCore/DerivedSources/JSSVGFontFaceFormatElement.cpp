@@ -20,10 +20,11 @@
 
 #include "config.h"
 
-#if ENABLE(SVG) && ENABLE(SVG_FONTS)
+#if ENABLE(SVG_FONTS)
 
 #include "JSSVGFontFaceFormatElement.h"
 
+#include "JSDOMBinding.h"
 #include "SVGFontFaceFormatElement.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +32,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGFontFaceFormatElementTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFontFaceFormatElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGFontFaceFormatElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGFontFaceFormatElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGFontFaceFormatElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGFontFaceFormatElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGFontFaceFormatElementPrototype>(vm.heap)) JSSVGFontFaceFormatElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGFontFaceFormatElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGFontFaceFormatElementTable = { 2, 1, JSSVGFontFaceFormatElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGFontFaceFormatElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGFontFaceFormatElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGFontFaceFormatElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGFontFaceFormatElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGFontFaceFormatElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGFontFaceFormatElementConstructor>(vm.heap)) JSSVGFontFaceFormatElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGFontFaceFormatElementConstructorTable = { 1, 0, JSSVGFontFaceFormatElementConstructorTableValues, 0 };
-const ClassInfo JSSVGFontFaceFormatElementConstructor::s_info = { "SVGFontFaceFormatElementConstructor", &Base::s_info, &JSSVGFontFaceFormatElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGFontFaceFormatElementConstructor) };
+const ClassInfo JSSVGFontFaceFormatElementConstructor::s_info = { "SVGFontFaceFormatElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFontFaceFormatElementConstructor) };
 
 JSSVGFontFaceFormatElementConstructor::JSSVGFontFaceFormatElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,59 +93,49 @@ void JSSVGFontFaceFormatElementConstructor::finishCreation(VM& vm, JSDOMGlobalOb
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGFontFaceFormatElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGFontFaceFormatElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGFontFaceFormatElementConstructor, JSDOMWrapper>(exec, JSSVGFontFaceFormatElementConstructorTable, jsCast<JSSVGFontFaceFormatElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGFontFaceFormatElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGFontFaceFormatElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGFontFaceFormatElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFontFaceFormatElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGFontFaceFormatElementPrototypeTable = { 1, 0, JSSVGFontFaceFormatElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGFontFaceFormatElementPrototype::s_info = { "SVGFontFaceFormatElementPrototype", &Base::s_info, &JSSVGFontFaceFormatElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGFontFaceFormatElementPrototype) };
+const ClassInfo JSSVGFontFaceFormatElementPrototype::s_info = { "SVGFontFaceFormatElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFontFaceFormatElementPrototype) };
 
-JSObject* JSSVGFontFaceFormatElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGFontFaceFormatElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGFontFaceFormatElement::s_info = { "SVGFontFaceFormatElement", &Base::s_info, &JSSVGFontFaceFormatElementTable, 0 , CREATE_METHOD_TABLE(JSSVGFontFaceFormatElement) };
-
-JSSVGFontFaceFormatElement::JSSVGFontFaceFormatElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGFontFaceFormatElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGFontFaceFormatElement::finishCreation(VM& vm)
+void JSSVGFontFaceFormatElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGFontFaceFormatElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGFontFaceFormatElement::s_info = { "SVGFontFaceFormatElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGFontFaceFormatElement) };
+
+JSSVGFontFaceFormatElement::JSSVGFontFaceFormatElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGFontFaceFormatElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGFontFaceFormatElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGFontFaceFormatElementPrototype::create(vm, globalObject, JSSVGFontFaceFormatElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGFontFaceFormatElementPrototype::create(vm, globalObject, JSSVGFontFaceFormatElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGFontFaceFormatElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGFontFaceFormatElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGFontFaceFormatElement* thisObject = jsCast<JSSVGFontFaceFormatElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGFontFaceFormatElement, Base>(exec, JSSVGFontFaceFormatElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGFontFaceFormatElement>(vm, globalObject);
 }
 
-JSValue jsSVGFontFaceFormatElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGFontFaceFormatElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGFontFaceFormatElement* domObject = jsCast<JSSVGFontFaceFormatElement*>(asObject(slotBase));
-    return JSSVGFontFaceFormatElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGFontFaceFormatElementPrototype* domObject = jsDynamicCast<JSSVGFontFaceFormatElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGFontFaceFormatElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGFontFaceFormatElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -122,4 +146,4 @@ JSValue JSSVGFontFaceFormatElement::getConstructor(VM& vm, JSGlobalObject* globa
 
 }
 
-#endif // ENABLE(SVG) && ENABLE(SVG_FONTS)
+#endif // ENABLE(SVG_FONTS)

@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -29,7 +29,6 @@
 #ifndef SourceProvider_h
 #define SourceProvider_h
 
-#include <wtf/PassOwnPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/text/TextPosition.h>
 #include <wtf/text/WTFString.h>
@@ -54,9 +53,6 @@ namespace JSC {
         TextPosition startPosition() const { return m_startPosition; }
         intptr_t asID()
         {
-            ASSERT(this);
-            if (!this) // Be defensive in release mode.
-                return nullID;
             if (!m_id)
                 getID();
             return m_id;
@@ -78,12 +74,12 @@ namespace JSC {
 
     class StringSourceProvider : public SourceProvider {
     public:
-        static PassRefPtr<StringSourceProvider> create(const String& source, const String& url, const TextPosition& startPosition = TextPosition::minimumPosition())
+        static Ref<StringSourceProvider> create(const String& source, const String& url, const TextPosition& startPosition = TextPosition::minimumPosition())
         {
-            return adoptRef(new StringSourceProvider(source, url, startPosition));
+            return adoptRef(*new StringSourceProvider(source, url, startPosition));
         }
 
-        virtual const String& source() const OVERRIDE
+        virtual const String& source() const override
         {
             return m_source;
         }
@@ -98,6 +94,37 @@ namespace JSC {
         String m_source;
     };
     
+#if ENABLE(WEBASSEMBLY)
+    class WebAssemblySourceProvider : public SourceProvider {
+    public:
+        static Ref<WebAssemblySourceProvider> create(const Vector<uint8_t>& data, const String& url)
+        {
+            return adoptRef(*new WebAssemblySourceProvider(data, url));
+        }
+
+        virtual const String& source() const override
+        {
+            return m_source;
+        }
+
+        const Vector<uint8_t>& data() const
+        {
+            return m_data;
+        }
+
+    private:
+        WebAssemblySourceProvider(const Vector<uint8_t>& data, const String& url)
+            : SourceProvider(url, TextPosition::minimumPosition())
+            , m_source("[WebAssembly source]")
+            , m_data(data)
+        {
+        }
+
+        String m_source;
+        Vector<uint8_t> m_data;
+    };
+#endif
+
 } // namespace JSC
 
 #endif // SourceProvider_h

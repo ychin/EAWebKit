@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -28,82 +28,119 @@
  */
 
 #ifndef DOM_MathMLNames_h
+
 #define DOM_MathMLNames_h
 
 #include "QualifiedName.h"
 
 namespace WebCore {
 
+class MathMLQualifiedName : public QualifiedName { };
+
 namespace MathMLNames {
 
-#ifndef DOM_MathMLNAMES_HIDE_GLOBALS
+#ifndef DOM_MathML_NAMES_HIDE_GLOBALS
+
 // Namespace
-extern const WTF::AtomicString mathmlNamespaceURI;
+WEBCORE_EXPORT extern const WTF::AtomicString mathmlNamespaceURI;
 
 // Tags
-extern const WebCore::QualifiedName annotation_xmlTag;
-extern const WebCore::QualifiedName malignmarkTag;
-extern const WebCore::QualifiedName mathTag;
-extern const WebCore::QualifiedName mfencedTag;
-extern const WebCore::QualifiedName mfracTag;
-extern const WebCore::QualifiedName mglyphTag;
-extern const WebCore::QualifiedName miTag;
-extern const WebCore::QualifiedName mmultiscriptsTag;
-extern const WebCore::QualifiedName mnTag;
-extern const WebCore::QualifiedName moTag;
-extern const WebCore::QualifiedName moverTag;
-extern const WebCore::QualifiedName mprescriptsTag;
-extern const WebCore::QualifiedName mrootTag;
-extern const WebCore::QualifiedName mrowTag;
-extern const WebCore::QualifiedName msTag;
-extern const WebCore::QualifiedName mspaceTag;
-extern const WebCore::QualifiedName msqrtTag;
-extern const WebCore::QualifiedName msubTag;
-extern const WebCore::QualifiedName msubsupTag;
-extern const WebCore::QualifiedName msupTag;
-extern const WebCore::QualifiedName mtableTag;
-extern const WebCore::QualifiedName mtdTag;
-extern const WebCore::QualifiedName mtextTag;
-extern const WebCore::QualifiedName mtrTag;
-extern const WebCore::QualifiedName munderTag;
-extern const WebCore::QualifiedName munderoverTag;
-extern const WebCore::QualifiedName noneTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName annotationTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName annotation_xmlTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mactionTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName maligngroupTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName malignmarkTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mathTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mencloseTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName merrorTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mfencedTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mfracTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mglyphTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName miTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mlabeledtrTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mlongdivTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mmultiscriptsTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mnTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName moTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName moverTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mpaddedTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mphantomTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mprescriptsTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mrootTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mrowTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mscarriesTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mscarryTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msgroupTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mslineTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mspaceTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msqrtTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msrowTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mstackTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mstyleTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msubTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msubsupTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName msupTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mtableTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mtdTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mtextTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName mtrTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName munderTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName munderoverTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName noneTag;
+WEBCORE_EXPORT extern const WebCore::MathMLQualifiedName semanticsTag;
 // Attributes
-extern const WebCore::QualifiedName alttextAttr;
-extern const WebCore::QualifiedName backgroundAttr;
-extern const WebCore::QualifiedName closeAttr;
-extern const WebCore::QualifiedName colorAttr;
-extern const WebCore::QualifiedName columnspanAttr;
-extern const WebCore::QualifiedName definitionURLAttr;
-extern const WebCore::QualifiedName denomalignAttr;
-extern const WebCore::QualifiedName depthAttr;
-extern const WebCore::QualifiedName encodingAttr;
-extern const WebCore::QualifiedName fontfamilyAttr;
-extern const WebCore::QualifiedName fontsizeAttr;
-extern const WebCore::QualifiedName fontstyleAttr;
-extern const WebCore::QualifiedName fontweightAttr;
-extern const WebCore::QualifiedName heightAttr;
-extern const WebCore::QualifiedName linethicknessAttr;
-extern const WebCore::QualifiedName mathbackgroundAttr;
-extern const WebCore::QualifiedName mathcolorAttr;
-extern const WebCore::QualifiedName mathsizeAttr;
-extern const WebCore::QualifiedName mathvariantAttr;
-extern const WebCore::QualifiedName numalignAttr;
-extern const WebCore::QualifiedName openAttr;
-extern const WebCore::QualifiedName rowspanAttr;
-extern const WebCore::QualifiedName separatorsAttr;
-extern const WebCore::QualifiedName stretchyAttr;
-extern const WebCore::QualifiedName subscriptshiftAttr;
-extern const WebCore::QualifiedName superscriptshiftAttr;
-extern const WebCore::QualifiedName widthAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName accentAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName actiontypeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName alttextAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName backgroundAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName closeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName colorAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName columnspanAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName definitionURLAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName denomalignAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName depthAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName dirAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName encodingAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName fenceAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName fontfamilyAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName fontsizeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName fontstyleAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName fontweightAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName formAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName heightAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName largeopAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName linethicknessAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName lspaceAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName mathbackgroundAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName mathcolorAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName mathsizeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName mathvariantAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName maxsizeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName minsizeAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName movablelimitsAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName notationAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName numalignAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName openAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName rowspanAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName rspaceAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName selectionAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName separatorAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName separatorsAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName srcAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName stretchyAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName subscriptshiftAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName superscriptshiftAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName symmetricAttr;
+WEBCORE_EXPORT extern const WebCore::QualifiedName widthAttr;
 #endif
 
-const unsigned MathMLTagsCount = 27;
-const WebCore::QualifiedName* const * getMathMLTags();
-const unsigned MathMLAttrsCount = 27;
-const WebCore::QualifiedName* const * getMathMLAttrs();
+const unsigned MathMLTagsCount = 44;
+const WebCore::MathMLQualifiedName* const* getMathMLTags();
+const unsigned MathMLAttrsCount = 43;
+const WebCore::QualifiedName* const* getMathMLAttrs();
 
-void init();
+WEBCORE_EXPORT void init();
 
 } }
 

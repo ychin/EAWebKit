@@ -26,32 +26,47 @@
 #ifndef FTLJITFinalizer_h
 #define FTLJITFinalizer_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(FTL_JIT)
 
 #include "DFGFinalizer.h"
 #include "FTLGeneratedFunction.h"
 #include "FTLJITCode.h"
 #include "FTLOSRExitCompilationInfo.h"
+#include "FTLSlowPathCall.h"
 #include "LLVMAPI.h"
 #include "LinkBuffer.h"
 #include "MacroAssembler.h"
 
 namespace JSC { namespace FTL {
 
+class OutOfLineCodeInfo {
+public:
+    OutOfLineCodeInfo(std::unique_ptr<LinkBuffer> linkBuffer, const char* codeDescription)
+        : m_linkBuffer(WTF::move(linkBuffer))
+        , m_codeDescription(codeDescription)
+    {
+    }
+
+    std::unique_ptr<LinkBuffer> m_linkBuffer;
+    const char* m_codeDescription;
+};
+
 class JITFinalizer : public DFG::Finalizer {
 public:
     JITFinalizer(DFG::Plan&);
     virtual ~JITFinalizer();
-    
-    bool finalize();
-    bool finalizeFunction();
 
-    OwnPtr<LinkBuffer> exitThunksLinkBuffer;
-    OwnPtr<LinkBuffer> entrypointLinkBuffer;
+    size_t codeSize() override;
+    bool finalize() override;
+    bool finalizeFunction() override;
+
+    std::unique_ptr<LinkBuffer> exitThunksLinkBuffer;
+    std::unique_ptr<LinkBuffer> entrypointLinkBuffer;
+    std::unique_ptr<LinkBuffer> sideCodeLinkBuffer;
+    std::unique_ptr<LinkBuffer> handleExceptionsLinkBuffer;
+    Vector<OutOfLineCodeInfo> outOfLineCodeInfos;
+    Vector<SlowPathCall> slowPathCalls; // Calls inside the side code.
     Vector<OSRExitCompilationInfo> osrExit;
-    MacroAssembler::Label arityCheck;
     GeneratedFunction function;
     RefPtr<JITCode> jitCode;
 };

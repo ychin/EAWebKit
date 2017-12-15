@@ -21,28 +21,28 @@
 #ifndef JSAbstractView_h
 #define JSAbstractView_h
 
-#include "AbstractView.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "DOMWindow.h"
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSAbstractView : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSAbstractView* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AbstractView> impl)
+    static JSAbstractView* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMWindow>&& impl)
     {
-        JSAbstractView* ptr = new (NotNull, JSC::allocateCell<JSAbstractView>(globalObject->vm().heap)) JSAbstractView(structure, globalObject, impl);
+        JSAbstractView* ptr = new (NotNull, JSC::allocateCell<JSAbstractView>(globalObject->vm().heap)) JSAbstractView(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMWindow* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSAbstractView();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -50,23 +50,20 @@ public:
         return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
     }
 
-    AbstractView& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    DOMWindow& impl() const { return *m_impl; }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
-    AbstractView* m_impl;
+    DOMWindow* m_impl;
 protected:
-    JSAbstractView(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AbstractView>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAbstractView(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMWindow>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSAbstractViewOwner : public JSC::WeakHandleOwner {
@@ -75,47 +72,13 @@ public:
     virtual void finalize(JSC::Handle<JSC::Unknown>, void* context);
 };
 
-inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, AbstractView*)
+inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMWindow*)
 {
-    DEFINE_STATIC_LOCAL(JSAbstractViewOwner, jsAbstractViewOwner, ());
-    return &jsAbstractViewOwner;
+    static NeverDestroyed<JSAbstractViewOwner> owner;
+    return &owner.get();
 }
 
-inline void* wrapperContext(DOMWrapperWorld& world, AbstractView*)
-{
-    return &world;
-}
 
-JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AbstractView*);
-AbstractView* toAbstractView(JSC::JSValue);
-
-class JSAbstractViewPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAbstractViewPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAbstractViewPrototype* ptr = new (NotNull, JSC::allocateCell<JSAbstractViewPrototype>(vm.heap)) JSAbstractViewPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAbstractViewPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsAbstractViewDocument(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAbstractViewStyleMedia(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

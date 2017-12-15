@@ -25,24 +25,23 @@
 
 #include "AudioBufferSourceNode.h"
 #include "JSAudioNode.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSAudioBufferSourceNode : public JSAudioNode {
 public:
     typedef JSAudioNode Base;
-    static JSAudioBufferSourceNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<AudioBufferSourceNode> impl)
+    static JSAudioBufferSourceNode* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<AudioBufferSourceNode>&& impl)
     {
-        JSAudioBufferSourceNode* ptr = new (NotNull, JSC::allocateCell<JSAudioBufferSourceNode>(globalObject->vm().heap)) JSAudioBufferSourceNode(structure, globalObject, impl);
+        JSAudioBufferSourceNode* ptr = new (NotNull, JSC::allocateCell<JSAudioBufferSourceNode>(globalObject->vm().heap)) JSAudioBufferSourceNode(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,101 +57,22 @@ public:
     {
         return static_cast<AudioBufferSourceNode&>(Base::impl());
     }
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSAudioBufferSourceNode(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<AudioBufferSourceNode>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSAudioBufferSourceNode(JSC::Structure*, JSDOMGlobalObject*, Ref<AudioBufferSourceNode>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, AudioBufferSourceNode*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, AudioBufferSourceNode& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSAudioBufferSourceNodePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSAudioBufferSourceNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSAudioBufferSourceNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSAudioBufferSourceNodePrototype>(vm.heap)) JSAudioBufferSourceNodePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSAudioBufferSourceNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSAudioBufferSourceNodeConstructor : public DOMConstructorObject {
-private:
-    JSAudioBufferSourceNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSAudioBufferSourceNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSAudioBufferSourceNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSAudioBufferSourceNodeConstructor>(vm.heap)) JSAudioBufferSourceNodeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioBufferSourceNodePrototypeFunctionStart(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioBufferSourceNodePrototypeFunctionStop(JSC::ExecState*);
-#if ENABLE(LEGACY_WEB_AUDIO)
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioBufferSourceNodePrototypeFunctionNoteOn(JSC::ExecState*);
-#endif
-#if ENABLE(LEGACY_WEB_AUDIO)
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioBufferSourceNodePrototypeFunctionNoteGrainOn(JSC::ExecState*);
-#endif
-#if ENABLE(LEGACY_WEB_AUDIO)
-JSC::EncodedJSValue JSC_HOST_CALL jsAudioBufferSourceNodePrototypeFunctionNoteOff(JSC::ExecState*);
-#endif
-// Attributes
-
-JSC::JSValue jsAudioBufferSourceNodeBuffer(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioBufferSourceNodeBuffer(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioBufferSourceNodePlaybackState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioBufferSourceNodeGain(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioBufferSourceNodePlaybackRate(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioBufferSourceNodeLoop(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioBufferSourceNodeLoop(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioBufferSourceNodeLoopStart(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioBufferSourceNodeLoopStart(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioBufferSourceNodeLoopEnd(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioBufferSourceNodeLoopEnd(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#if ENABLE(LEGACY_WEB_AUDIO)
-JSC::JSValue jsAudioBufferSourceNodeLooping(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioBufferSourceNodeLooping(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-#endif
-JSC::JSValue jsAudioBufferSourceNodeOnended(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSAudioBufferSourceNodeOnended(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsAudioBufferSourceNodeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsAudioBufferSourceNodeUNSCHEDULED_STATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioBufferSourceNodeSCHEDULED_STATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioBufferSourceNodePLAYING_STATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsAudioBufferSourceNodeFINISHED_STATE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

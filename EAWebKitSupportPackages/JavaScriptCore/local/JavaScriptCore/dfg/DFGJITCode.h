@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,8 +26,6 @@
 #ifndef DFGJITCode_h
 #define DFGJITCode_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "CompilationResult.h"
@@ -38,10 +36,13 @@
 #include "DFGVariableEventStream.h"
 #include "ExecutionCounter.h"
 #include "JITCode.h"
-#include "JumpReplacementWatchpoint.h"
 #include <wtf/SegmentedVector.h>
 
-namespace JSC { namespace DFG {
+namespace JSC {
+
+class TrackedReferences;
+
+namespace DFG {
 
 class JITCompiler;
 
@@ -50,8 +51,8 @@ public:
     JITCode();
     virtual ~JITCode();
     
-    virtual CommonData* dfgCommon() OVERRIDE;
-    virtual JITCode* dfg() OVERRIDE;
+    virtual CommonData* dfgCommon() override;
+    virtual JITCode* dfg() override;
     
     OSREntryData* appendOSREntryData(unsigned bytecodeIndex, unsigned machineCodeOffset)
     {
@@ -88,13 +89,6 @@ public:
         return result;
     }
     
-    unsigned appendWatchpoint(const JumpReplacementWatchpoint& watchpoint)
-    {
-        unsigned result = watchpoints.size();
-        watchpoints.append(watchpoint);
-        return result;
-    }
-    
     void reconstruct(
         CodeBlock*, CodeOrigin, unsigned streamIndex, Operands<ValueRecovery>& result);
     
@@ -117,6 +111,8 @@ public:
     void setOptimizationThresholdBasedOnCompilationResult(CodeBlock*, CompilationResult);
 #endif // ENABLE(FTL_JIT)
     
+    void validateReferences(const TrackedReferences&) override;
+    
     void shrinkToFit();
     
 private:
@@ -127,12 +123,14 @@ public:
     Vector<DFG::OSREntryData> osrEntry;
     SegmentedVector<DFG::OSRExit, 8> osrExit;
     Vector<DFG::SpeculationRecovery> speculationRecovery;
-    SegmentedVector<JumpReplacementWatchpoint, 1, 0> watchpoints;
     DFG::VariableEventStream variableEventStream;
     DFG::MinifiedGraph minifiedDFG;
 #if ENABLE(FTL_JIT)
-    ExecutionCounter tierUpCounter;
+    uint8_t nestedTriggerIsSet { 0 };
+    UpperTierExecutionCounter tierUpCounter;
     RefPtr<CodeBlock> osrEntryBlock;
+    unsigned osrEntryRetry;
+    bool abandonOSREntry;
 #endif // ENABLE(FTL_JIT)
 };
 

@@ -32,9 +32,9 @@ class CSSValueList;
 
 class CSSFontValue : public CSSValue {
 public:
-    static PassRefPtr<CSSFontValue> create()
+    static Ref<CSSFontValue> create()
     {
-        return adoptRef(new CSSFontValue);
+        return adoptRef(*new CSSFontValue);
     }
 
     String customCSSText() const;
@@ -55,8 +55,8 @@ private:
     }
 };
 
-CSS_VALUE_TYPE_CASTS(FontValue)
+} // namespace WebCore
 
-} // namespace
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSFontValue, isFontValue())
 
 #endif

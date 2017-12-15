@@ -26,85 +26,107 @@
 
 #include "HTMLDetailsElement.h"
 #include "HTMLNames.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSHTMLDetailsElementTableValues[] =
-{
-    { "open", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDetailsElementOpen), (intptr_t)setJSHTMLDetailsElementOpen },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsHTMLDetailsElementOpen(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+void setJSHTMLDetailsElementOpen(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::EncodedJSValue);
+
+class JSHTMLDetailsElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSHTMLDetailsElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSHTMLDetailsElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSHTMLDetailsElementPrototype>(vm.heap)) JSHTMLDetailsElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSHTMLDetailsElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSHTMLDetailsElementTable = { 2, 1, JSHTMLDetailsElementTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSHTMLDetailsElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "open", DontDelete | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsHTMLDetailsElementOpen), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(setJSHTMLDetailsElementOpen) },
 };
 
-static const HashTable JSHTMLDetailsElementPrototypeTable = { 1, 0, JSHTMLDetailsElementPrototypeTableValues, 0 };
-const ClassInfo JSHTMLDetailsElementPrototype::s_info = { "HTMLDetailsElementPrototype", &Base::s_info, &JSHTMLDetailsElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSHTMLDetailsElementPrototype) };
+const ClassInfo JSHTMLDetailsElementPrototype::s_info = { "HTMLDetailsElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLDetailsElementPrototype) };
 
-JSObject* JSHTMLDetailsElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSHTMLDetailsElement>(vm, globalObject);
-}
-
-const ClassInfo JSHTMLDetailsElement::s_info = { "HTMLDetailsElement", &Base::s_info, &JSHTMLDetailsElementTable, 0 , CREATE_METHOD_TABLE(JSHTMLDetailsElement) };
-
-JSHTMLDetailsElement::JSHTMLDetailsElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HTMLDetailsElement> impl)
-    : JSHTMLElement(structure, globalObject, impl)
-{
-}
-
-void JSHTMLDetailsElement::finishCreation(VM& vm)
+void JSHTMLDetailsElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSHTMLDetailsElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSHTMLDetailsElement::s_info = { "HTMLDetailsElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSHTMLDetailsElement) };
+
+JSHTMLDetailsElement::JSHTMLDetailsElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<HTMLDetailsElement>&& impl)
+    : JSHTMLElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSHTMLDetailsElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSHTMLDetailsElementPrototype::create(vm, globalObject, JSHTMLDetailsElementPrototype::createStructure(vm, globalObject, JSHTMLElementPrototype::self(vm, globalObject)));
+    return JSHTMLDetailsElementPrototype::create(vm, globalObject, JSHTMLDetailsElementPrototype::createStructure(vm, globalObject, JSHTMLElement::getPrototype(vm, globalObject)));
 }
 
-bool JSHTMLDetailsElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSHTMLDetailsElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSHTMLDetailsElement* thisObject = jsCast<JSHTMLDetailsElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSHTMLDetailsElement, Base>(exec, JSHTMLDetailsElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSHTMLDetailsElement>(vm, globalObject);
 }
 
-JSValue jsHTMLDetailsElementOpen(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsHTMLDetailsElementOpen(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSHTMLDetailsElement* castedThis = jsCast<JSHTMLDetailsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    HTMLDetailsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSHTMLDetailsElement* castedThis = jsDynamicCast<JSHTMLDetailsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLDetailsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "HTMLDetailsElement", "open");
+        return throwGetterTypeError(*exec, "HTMLDetailsElement", "open");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.fastHasAttribute(WebCore::HTMLNames::openAttr));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-void JSHTMLDetailsElement::put(JSCell* cell, ExecState* exec, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+void setJSHTMLDetailsElementOpen(ExecState* exec, JSObject* baseObject, EncodedJSValue thisValue, EncodedJSValue encodedValue)
 {
-    JSHTMLDetailsElement* thisObject = jsCast<JSHTMLDetailsElement*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    lookupPut<JSHTMLDetailsElement, Base>(exec, propertyName, value, JSHTMLDetailsElementTable, thisObject, slot);
-}
-
-void setJSHTMLDetailsElementOpen(ExecState* exec, JSObject* thisObject, JSValue value)
-{
-    UNUSED_PARAM(exec);
-    JSHTMLDetailsElement* castedThis = jsCast<JSHTMLDetailsElement*>(thisObject);
-    HTMLDetailsElement& impl = castedThis->impl();
-    bool nativeValue(value.toBoolean(exec));
-    if (exec->hadException())
+    JSValue value = JSValue::decode(encodedValue);
+    UNUSED_PARAM(baseObject);
+    JSHTMLDetailsElement* castedThis = jsDynamicCast<JSHTMLDetailsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSHTMLDetailsElementPrototype*>(JSValue::decode(thisValue)))
+            reportDeprecatedSetterError(*exec, "HTMLDetailsElement", "open");
+        else
+            throwSetterTypeError(*exec, "HTMLDetailsElement", "open");
+        return;
+    }
+    auto& impl = castedThis->impl();
+    bool nativeValue = value.toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return;
     impl.setBooleanAttribute(WebCore::HTMLNames::openAttr, nativeValue);
 }

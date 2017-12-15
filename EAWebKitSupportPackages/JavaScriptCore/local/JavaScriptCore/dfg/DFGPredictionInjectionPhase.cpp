@@ -31,7 +31,7 @@
 #include "DFGBasicBlockInlines.h"
 #include "DFGGraph.h"
 #include "DFGPhase.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -58,13 +58,6 @@ public:
             
                 m_graph.m_arguments[arg]->variableAccessData()->predict(
                     profile->computeUpdatedPrediction(locker));
-            
-#if DFG_ENABLE(DEBUG_VERBOSE)
-                dataLog(
-                    "Argument [", arg, "] prediction: ",
-                    SpeculationDump(m_graph.m_arguments[arg]->variableAccessData()->prediction()),
-                    "\n");
-#endif
             }
         }
         

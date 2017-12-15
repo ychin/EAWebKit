@@ -19,9 +19,6 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGGraphicsElement.h"
 
 #include "ExceptionCode.h"
@@ -30,52 +27,84 @@
 #include "JSSVGElement.h"
 #include "JSSVGMatrix.h"
 #include "JSSVGRect.h"
+#include "JSSVGStringList.h"
 #include "SVGElement.h"
 #include "SVGGraphicsElement.h"
 #include "SVGMatrix.h"
 #include "SVGRect.h"
+#include "SVGStringList.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
-#include "JSSVGStringList.h"
-#include "SVGStringList.h"
-#endif
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSSVGGraphicsElementTableValues[] =
-{
-    { "transform", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementTransform), (intptr_t)0 },
-    { "nearestViewportElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementNearestViewportElement), (intptr_t)0 },
-    { "farthestViewportElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementFarthestViewportElement), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "requiredFeatures", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementRequiredFeatures), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "requiredExtensions", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementRequiredExtensions), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "systemLanguage", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementSystemLanguage), (intptr_t)0 },
-#endif
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetBBox(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetCTM(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetScreenCTM(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetTransformToElement(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionHasExtension(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsSVGGraphicsElementTransform(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGraphicsElementNearestViewportElement(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGraphicsElementFarthestViewportElement(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGraphicsElementRequiredFeatures(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGraphicsElementRequiredExtensions(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGraphicsElementSystemLanguage(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSVGGraphicsElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGGraphicsElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGGraphicsElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGGraphicsElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGGraphicsElementPrototype>(vm.heap)) JSSVGGraphicsElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGGraphicsElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGGraphicsElementTable = { 19, 15, JSSVGGraphicsElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGGraphicsElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGGraphicsElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGGraphicsElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGGraphicsElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGGraphicsElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGGraphicsElementConstructor>(vm.heap)) JSSVGGraphicsElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGGraphicsElementConstructorTable = { 1, 0, JSSVGGraphicsElementConstructorTableValues, 0 };
-const ClassInfo JSSVGGraphicsElementConstructor::s_info = { "SVGGraphicsElementConstructor", &Base::s_info, &JSSVGGraphicsElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGGraphicsElementConstructor) };
+const ClassInfo JSSVGGraphicsElementConstructor::s_info = { "SVGGraphicsElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGraphicsElementConstructor) };
 
 JSSVGGraphicsElementConstructor::JSSVGGraphicsElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -86,139 +115,163 @@ void JSSVGGraphicsElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* 
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGGraphicsElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGGraphicsElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGGraphicsElementConstructor, JSDOMWrapper>(exec, JSSVGGraphicsElementConstructorTable, jsCast<JSSVGGraphicsElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGGraphicsElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGGraphicsElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGGraphicsElementPrototypeTableValues[] =
 {
-    { "getBBox", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetBBox), (intptr_t)0 },
-    { "getCTM", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetCTM), (intptr_t)0 },
-    { "getScreenCTM", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetScreenCTM), (intptr_t)0 },
-    { "getTransformToElement", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetTransformToElement), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "hasExtension", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionHasExtension), (intptr_t)0 },
-#endif
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "transform", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementTransform), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "nearestViewportElement", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementNearestViewportElement), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "farthestViewportElement", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementFarthestViewportElement), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "requiredFeatures", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementRequiredFeatures), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "requiredExtensions", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementRequiredExtensions), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "systemLanguage", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementSystemLanguage), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "getBBox", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetBBox), (intptr_t) (0) },
+    { "getCTM", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetCTM), (intptr_t) (0) },
+    { "getScreenCTM", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetScreenCTM), (intptr_t) (0) },
+    { "getTransformToElement", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetTransformToElement), (intptr_t) (0) },
+    { "hasExtension", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionHasExtension), (intptr_t) (0) },
 };
 
-static const HashTable JSSVGGraphicsElementPrototypeTable = { 17, 15, JSSVGGraphicsElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGGraphicsElementPrototype::s_info = { "SVGGraphicsElementPrototype", &Base::s_info, &JSSVGGraphicsElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGGraphicsElementPrototype) };
+const ClassInfo JSSVGGraphicsElementPrototype::s_info = { "SVGGraphicsElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGraphicsElementPrototype) };
 
-JSObject* JSSVGGraphicsElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGGraphicsElement>(vm, globalObject);
-}
-
-bool JSSVGGraphicsElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGGraphicsElementPrototype* thisObject = jsCast<JSSVGGraphicsElementPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSSVGGraphicsElementPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSSVGGraphicsElement::s_info = { "SVGGraphicsElement", &Base::s_info, &JSSVGGraphicsElementTable, 0 , CREATE_METHOD_TABLE(JSSVGGraphicsElement) };
-
-JSSVGGraphicsElement::JSSVGGraphicsElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGGraphicsElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGGraphicsElement::finishCreation(VM& vm)
+void JSSVGGraphicsElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGGraphicsElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGGraphicsElement::s_info = { "SVGGraphicsElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGGraphicsElement) };
+
+JSSVGGraphicsElement::JSSVGGraphicsElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGGraphicsElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGGraphicsElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGGraphicsElementPrototype::create(vm, globalObject, JSSVGGraphicsElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGGraphicsElementPrototype::create(vm, globalObject, JSSVGGraphicsElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGGraphicsElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGGraphicsElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGGraphicsElement* thisObject = jsCast<JSSVGGraphicsElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGGraphicsElement, Base>(exec, JSSVGGraphicsElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGGraphicsElement>(vm, globalObject);
 }
 
-JSValue jsSVGGraphicsElementTransform(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementTransform(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGraphicsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGraphicsElement", "transform");
+        return throwGetterTypeError(*exec, "SVGGraphicsElement", "transform");
+    }
+    auto& impl = castedThis->impl();
     RefPtr<SVGAnimatedTransformList> obj = impl.transformAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return result;
+    JSValue result = toJS(exec, castedThis->globalObject(), obj.get());
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGGraphicsElementNearestViewportElement(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementNearestViewportElement(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGraphicsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGraphicsElement", "nearestViewportElement");
+        return throwGetterTypeError(*exec, "SVGGraphicsElement", "nearestViewportElement");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.nearestViewportElement()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSVGGraphicsElementFarthestViewportElement(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementFarthestViewportElement(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGraphicsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGraphicsElement", "farthestViewportElement");
+        return throwGetterTypeError(*exec, "SVGGraphicsElement", "farthestViewportElement");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.farthestViewportElement()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-#if ENABLE(SVG)
-JSValue jsSVGGraphicsElementRequiredFeatures(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementRequiredFeatures(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGraphicsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGraphicsElement", "requiredFeatures");
+        return throwGetterTypeError(*exec, "SVGGraphicsElement", "requiredFeatures");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.requiredFeatures())));
-    return result;
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGGraphicsElementRequiredExtensions(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementRequiredExtensions(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGraphicsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGraphicsElement", "requiredExtensions");
+        return throwGetterTypeError(*exec, "SVGGraphicsElement", "requiredExtensions");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.requiredExtensions())));
-    return result;
+    return JSValue::encode(result);
 }
 
-#endif
 
-#if ENABLE(SVG)
-JSValue jsSVGGraphicsElementSystemLanguage(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementSystemLanguage(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSVGGraphicsElementPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SVGGraphicsElement", "systemLanguage");
+        return throwGetterTypeError(*exec, "SVGGraphicsElement", "systemLanguage");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.systemLanguage())));
-    return result;
+    return JSValue::encode(result);
 }
 
-#endif
 
-JSValue jsSVGGraphicsElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGGraphicsElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGGraphicsElement* domObject = jsCast<JSSVGGraphicsElement*>(asObject(slotBase));
-    return JSSVGGraphicsElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGGraphicsElementPrototype* domObject = jsDynamicCast<JSSVGGraphicsElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGGraphicsElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGGraphicsElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -228,81 +281,72 @@ JSValue JSSVGGraphicsElement::getConstructor(VM& vm, JSGlobalObject* globalObjec
 
 EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetBBox(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGGraphicsElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGGraphicsElement", "getBBox");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGGraphicsElement::info());
-    SVGGraphicsElement& impl = castedThis->impl();
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<FloatRect>::create(impl.getBBox())));
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<FloatRect>::create(impl.getBBox())));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetCTM(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGGraphicsElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGGraphicsElement", "getCTM");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGGraphicsElement::info());
-    SVGGraphicsElement& impl = castedThis->impl();
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGMatrix>::create(impl.getCTM())));
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGMatrix>::create(impl.getCTM())));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetScreenCTM(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGGraphicsElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGGraphicsElement", "getScreenCTM");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGGraphicsElement::info());
-    SVGGraphicsElement& impl = castedThis->impl();
-
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGMatrix>::create(impl.getScreenCTM())));
+    auto& impl = castedThis->impl();
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGMatrix>::create(impl.getScreenCTM())));
     return JSValue::encode(result);
 }
 
 EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetTransformToElement(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGGraphicsElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGGraphicsElement", "getTransformToElement");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGGraphicsElement::info());
-    SVGGraphicsElement& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    SVGElement* element(toSVGElement(exec->argument(0)));
-    if (exec->hadException())
+    SVGElement* element = JSSVGElement::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGMatrix>::create(impl.getTransformToElement(element, ec))));
 
-    JSC::JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGPropertyTearOff<SVGMatrix>::create(impl.getTransformToElement(element, ec))));
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
 
-#if ENABLE(SVG)
 EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionHasExtension(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSSVGGraphicsElement::info()))
-        return throwVMTypeError(exec);
-    JSSVGGraphicsElement* castedThis = jsCast<JSSVGGraphicsElement*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "SVGGraphicsElement", "hasExtension");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGGraphicsElement::info());
-    SVGGraphicsElement& impl = castedThis->impl();
-    const String& extension(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    String extension = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.hasExtension(extension));
+    JSValue result = jsBoolean(impl.hasExtension(extension));
     return JSValue::encode(result);
 }
 
-#endif
-
 
 }
-
-#endif // ENABLE(SVG)

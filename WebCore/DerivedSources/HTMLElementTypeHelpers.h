@@ -14,10 +14,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -33,377 +33,885 @@
 #include "HTMLNames.h"
 
 namespace WebCore {
-
 class HTMLAnchorElement;
-void isHTMLAnchorElement(const HTMLAnchorElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLAnchorElement(const HTMLAnchorElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLAnchorElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::aTag); }
-inline bool isHTMLAnchorElement(const HTMLElement* element) { ASSERT(element); return isHTMLAnchorElement(*element); }
-inline bool isHTMLAnchorElement(const Node& node) { return node.isHTMLElement() && isHTMLAnchorElement(toHTMLElement(node)); }
-inline bool isHTMLAnchorElement(const Node* node) { ASSERT(node); return isHTMLAnchorElement(*node); }
-template <> inline bool isElementOfType<const HTMLAnchorElement>(const HTMLElement& element) { return isHTMLAnchorElement(element); }
-template <> inline bool isElementOfType<const HTMLAnchorElement>(const Element& element) { return isHTMLAnchorElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLAnchorElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::aTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::aTag); }
+};
+}
 
+namespace WebCore {
 class HTMLAppletElement;
-void isHTMLAppletElement(const HTMLAppletElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLAppletElement(const HTMLAppletElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLAppletElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::appletTag); }
-inline bool isHTMLAppletElement(const HTMLElement* element) { ASSERT(element); return isHTMLAppletElement(*element); }
-inline bool isHTMLAppletElement(const Node& node) { return node.isHTMLElement() && isHTMLAppletElement(toHTMLElement(node)); }
-inline bool isHTMLAppletElement(const Node* node) { ASSERT(node); return isHTMLAppletElement(*node); }
-template <> inline bool isElementOfType<const HTMLAppletElement>(const HTMLElement& element) { return isHTMLAppletElement(element); }
-template <> inline bool isElementOfType<const HTMLAppletElement>(const Element& element) { return isHTMLAppletElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLAppletElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::appletTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::appletTag); }
+};
+}
 
+namespace WebCore {
 class HTMLAreaElement;
-void isHTMLAreaElement(const HTMLAreaElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLAreaElement(const HTMLAreaElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLAreaElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::areaTag); }
-inline bool isHTMLAreaElement(const HTMLElement* element) { ASSERT(element); return isHTMLAreaElement(*element); }
-inline bool isHTMLAreaElement(const Node& node) { return node.isHTMLElement() && isHTMLAreaElement(toHTMLElement(node)); }
-inline bool isHTMLAreaElement(const Node* node) { ASSERT(node); return isHTMLAreaElement(*node); }
-template <> inline bool isElementOfType<const HTMLAreaElement>(const HTMLElement& element) { return isHTMLAreaElement(element); }
-template <> inline bool isElementOfType<const HTMLAreaElement>(const Element& element) { return isHTMLAreaElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLAreaElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::areaTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::areaTag); }
+};
+}
 
-class HTMLAudioElement;
-void isHTMLAudioElement(const HTMLAudioElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLAudioElement(const HTMLAudioElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLAudioElement(const HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasLocalName(HTMLNames::audioTag); }
-inline bool isHTMLAudioElement(const HTMLElement* element) { ASSERT(element); return isHTMLAudioElement(*element); }
-inline bool isHTMLAudioElement(const Node& node) { return node.isHTMLElement() && isHTMLAudioElement(toHTMLElement(node)); }
-inline bool isHTMLAudioElement(const Node* node) { ASSERT(node); return isHTMLAudioElement(*node); }
-template <> inline bool isElementOfType<const HTMLAudioElement>(const HTMLElement& element) { return isHTMLAudioElement(element); }
-template <> inline bool isElementOfType<const HTMLAudioElement>(const Element& element) { return isHTMLAudioElement(element); }
+namespace WebCore {
+class HTMLAttachmentElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLAttachmentElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasTagName(WebCore::HTMLNames::attachmentTag); }
+    static bool checkTagName(const WebCore::Node& node) { return is<WebCore::HTMLElement>(node) && checkTagName(downcast<WebCore::HTMLElement>(node)); }
+};
+}
 
+namespace WebCore {
+class HTMLBDIElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLBDIElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::bdiTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::bdiTag); }
+};
+}
+
+namespace WebCore {
+class HTMLBRElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLBRElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::brTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::brTag); }
+};
+}
+
+namespace WebCore {
 class HTMLBaseElement;
-void isHTMLBaseElement(const HTMLBaseElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLBaseElement(const HTMLBaseElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLBaseElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::baseTag); }
-inline bool isHTMLBaseElement(const HTMLElement* element) { ASSERT(element); return isHTMLBaseElement(*element); }
-inline bool isHTMLBaseElement(const Node& node) { return node.isHTMLElement() && isHTMLBaseElement(toHTMLElement(node)); }
-inline bool isHTMLBaseElement(const Node* node) { ASSERT(node); return isHTMLBaseElement(*node); }
-template <> inline bool isElementOfType<const HTMLBaseElement>(const HTMLElement& element) { return isHTMLBaseElement(element); }
-template <> inline bool isElementOfType<const HTMLBaseElement>(const Element& element) { return isHTMLBaseElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLBaseElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::baseTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::baseTag); }
+};
+}
 
+namespace WebCore {
+class HTMLBaseFontElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLBaseFontElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::basefontTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::basefontTag); }
+};
+}
+
+namespace WebCore {
 class HTMLBodyElement;
-void isHTMLBodyElement(const HTMLBodyElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLBodyElement(const HTMLBodyElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLBodyElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::bodyTag); }
-inline bool isHTMLBodyElement(const HTMLElement* element) { ASSERT(element); return isHTMLBodyElement(*element); }
-inline bool isHTMLBodyElement(const Node& node) { return node.isHTMLElement() && isHTMLBodyElement(toHTMLElement(node)); }
-inline bool isHTMLBodyElement(const Node* node) { ASSERT(node); return isHTMLBodyElement(*node); }
-template <> inline bool isElementOfType<const HTMLBodyElement>(const HTMLElement& element) { return isHTMLBodyElement(element); }
-template <> inline bool isElementOfType<const HTMLBodyElement>(const Element& element) { return isHTMLBodyElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLBodyElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::bodyTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::bodyTag); }
+};
+}
 
+namespace WebCore {
+class HTMLButtonElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLButtonElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::buttonTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::buttonTag); }
+};
+}
+
+namespace WebCore {
 class HTMLCanvasElement;
-void isHTMLCanvasElement(const HTMLCanvasElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLCanvasElement(const HTMLCanvasElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLCanvasElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::canvasTag); }
-inline bool isHTMLCanvasElement(const HTMLElement* element) { ASSERT(element); return isHTMLCanvasElement(*element); }
-inline bool isHTMLCanvasElement(const Node& node) { return node.isHTMLElement() && isHTMLCanvasElement(toHTMLElement(node)); }
-inline bool isHTMLCanvasElement(const Node* node) { ASSERT(node); return isHTMLCanvasElement(*node); }
-template <> inline bool isElementOfType<const HTMLCanvasElement>(const HTMLElement& element) { return isHTMLCanvasElement(element); }
-template <> inline bool isElementOfType<const HTMLCanvasElement>(const Element& element) { return isHTMLCanvasElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLCanvasElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::canvasTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::canvasTag); }
+};
+}
 
+namespace WebCore {
+class HTMLDListElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLDListElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::dlTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::dlTag); }
+};
+}
+
+namespace WebCore {
+class HTMLDataListElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLDataListElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::datalistTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::datalistTag); }
+};
+}
+
+namespace WebCore {
+class HTMLDetailsElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLDetailsElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::detailsTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::detailsTag); }
+};
+}
+
+namespace WebCore {
+class HTMLDirectoryElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLDirectoryElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::dirTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::dirTag); }
+};
+}
+
+namespace WebCore {
+class HTMLDivElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLDivElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::divTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::divTag); }
+};
+}
+
+namespace WebCore {
 class HTMLEmbedElement;
-void isHTMLEmbedElement(const HTMLEmbedElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLEmbedElement(const HTMLEmbedElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLEmbedElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::embedTag); }
-inline bool isHTMLEmbedElement(const HTMLElement* element) { ASSERT(element); return isHTMLEmbedElement(*element); }
-inline bool isHTMLEmbedElement(const Node& node) { return node.isHTMLElement() && isHTMLEmbedElement(toHTMLElement(node)); }
-inline bool isHTMLEmbedElement(const Node* node) { ASSERT(node); return isHTMLEmbedElement(*node); }
-template <> inline bool isElementOfType<const HTMLEmbedElement>(const HTMLElement& element) { return isHTMLEmbedElement(element); }
-template <> inline bool isElementOfType<const HTMLEmbedElement>(const Element& element) { return isHTMLEmbedElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLEmbedElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::embedTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::embedTag); }
+};
+}
 
+namespace WebCore {
 class HTMLFieldSetElement;
-void isHTMLFieldSetElement(const HTMLFieldSetElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLFieldSetElement(const HTMLFieldSetElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLFieldSetElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::fieldsetTag); }
-inline bool isHTMLFieldSetElement(const HTMLElement* element) { ASSERT(element); return isHTMLFieldSetElement(*element); }
-inline bool isHTMLFieldSetElement(const Node& node) { return node.isHTMLElement() && isHTMLFieldSetElement(toHTMLElement(node)); }
-inline bool isHTMLFieldSetElement(const Node* node) { ASSERT(node); return isHTMLFieldSetElement(*node); }
-template <> inline bool isElementOfType<const HTMLFieldSetElement>(const HTMLElement& element) { return isHTMLFieldSetElement(element); }
-template <> inline bool isElementOfType<const HTMLFieldSetElement>(const Element& element) { return isHTMLFieldSetElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLFieldSetElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::fieldsetTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::fieldsetTag); }
+};
+}
 
+namespace WebCore {
+class HTMLFontElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLFontElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::fontTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::fontTag); }
+};
+}
+
+namespace WebCore {
 class HTMLFormElement;
-void isHTMLFormElement(const HTMLFormElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLFormElement(const HTMLFormElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLFormElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::formTag); }
-inline bool isHTMLFormElement(const HTMLElement* element) { ASSERT(element); return isHTMLFormElement(*element); }
-inline bool isHTMLFormElement(const Node& node) { return node.isHTMLElement() && isHTMLFormElement(toHTMLElement(node)); }
-inline bool isHTMLFormElement(const Node* node) { ASSERT(node); return isHTMLFormElement(*node); }
-template <> inline bool isElementOfType<const HTMLFormElement>(const HTMLElement& element) { return isHTMLFormElement(element); }
-template <> inline bool isElementOfType<const HTMLFormElement>(const Element& element) { return isHTMLFormElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLFormElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::formTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::formTag); }
+};
+}
 
+namespace WebCore {
 class HTMLFrameElement;
-void isHTMLFrameElement(const HTMLFrameElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLFrameElement(const HTMLFrameElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLFrameElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::frameTag); }
-inline bool isHTMLFrameElement(const HTMLElement* element) { ASSERT(element); return isHTMLFrameElement(*element); }
-inline bool isHTMLFrameElement(const Node& node) { return node.isHTMLElement() && isHTMLFrameElement(toHTMLElement(node)); }
-inline bool isHTMLFrameElement(const Node* node) { ASSERT(node); return isHTMLFrameElement(*node); }
-template <> inline bool isElementOfType<const HTMLFrameElement>(const HTMLElement& element) { return isHTMLFrameElement(element); }
-template <> inline bool isElementOfType<const HTMLFrameElement>(const Element& element) { return isHTMLFrameElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLFrameElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::frameTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::frameTag); }
+};
+}
 
+namespace WebCore {
 class HTMLFrameSetElement;
-void isHTMLFrameSetElement(const HTMLFrameSetElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLFrameSetElement(const HTMLFrameSetElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLFrameSetElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::framesetTag); }
-inline bool isHTMLFrameSetElement(const HTMLElement* element) { ASSERT(element); return isHTMLFrameSetElement(*element); }
-inline bool isHTMLFrameSetElement(const Node& node) { return node.isHTMLElement() && isHTMLFrameSetElement(toHTMLElement(node)); }
-inline bool isHTMLFrameSetElement(const Node* node) { ASSERT(node); return isHTMLFrameSetElement(*node); }
-template <> inline bool isElementOfType<const HTMLFrameSetElement>(const HTMLElement& element) { return isHTMLFrameSetElement(element); }
-template <> inline bool isElementOfType<const HTMLFrameSetElement>(const Element& element) { return isHTMLFrameSetElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLFrameSetElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::framesetTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::framesetTag); }
+};
+}
 
+namespace WebCore {
+class HTMLHRElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLHRElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::hrTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::hrTag); }
+};
+}
+
+namespace WebCore {
 class HTMLHeadElement;
-void isHTMLHeadElement(const HTMLHeadElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLHeadElement(const HTMLHeadElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLHeadElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::headTag); }
-inline bool isHTMLHeadElement(const HTMLElement* element) { ASSERT(element); return isHTMLHeadElement(*element); }
-inline bool isHTMLHeadElement(const Node& node) { return node.isHTMLElement() && isHTMLHeadElement(toHTMLElement(node)); }
-inline bool isHTMLHeadElement(const Node* node) { ASSERT(node); return isHTMLHeadElement(*node); }
-template <> inline bool isElementOfType<const HTMLHeadElement>(const HTMLElement& element) { return isHTMLHeadElement(element); }
-template <> inline bool isElementOfType<const HTMLHeadElement>(const Element& element) { return isHTMLHeadElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLHeadElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::headTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::headTag); }
+};
+}
 
+namespace WebCore {
+class HTMLHtmlElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLHtmlElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::htmlTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::htmlTag); }
+};
+}
+
+namespace WebCore {
 class HTMLIFrameElement;
-void isHTMLIFrameElement(const HTMLIFrameElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLIFrameElement(const HTMLIFrameElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLIFrameElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::iframeTag); }
-inline bool isHTMLIFrameElement(const HTMLElement* element) { ASSERT(element); return isHTMLIFrameElement(*element); }
-inline bool isHTMLIFrameElement(const Node& node) { return node.isHTMLElement() && isHTMLIFrameElement(toHTMLElement(node)); }
-inline bool isHTMLIFrameElement(const Node* node) { ASSERT(node); return isHTMLIFrameElement(*node); }
-template <> inline bool isElementOfType<const HTMLIFrameElement>(const HTMLElement& element) { return isHTMLIFrameElement(element); }
-template <> inline bool isElementOfType<const HTMLIFrameElement>(const Element& element) { return isHTMLIFrameElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLIFrameElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::iframeTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::iframeTag); }
+};
+}
 
+namespace WebCore {
 class HTMLImageElement;
-void isHTMLImageElement(const HTMLImageElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLImageElement(const HTMLImageElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLImageElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::imgTag); }
-inline bool isHTMLImageElement(const HTMLElement* element) { ASSERT(element); return isHTMLImageElement(*element); }
-inline bool isHTMLImageElement(const Node& node) { return node.isHTMLElement() && isHTMLImageElement(toHTMLElement(node)); }
-inline bool isHTMLImageElement(const Node* node) { ASSERT(node); return isHTMLImageElement(*node); }
-template <> inline bool isElementOfType<const HTMLImageElement>(const HTMLElement& element) { return isHTMLImageElement(element); }
-template <> inline bool isElementOfType<const HTMLImageElement>(const Element& element) { return isHTMLImageElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLImageElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::imgTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::imgTag); }
+};
+}
 
+namespace WebCore {
 class HTMLInputElement;
-void isHTMLInputElement(const HTMLInputElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLInputElement(const HTMLInputElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLInputElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::inputTag); }
-inline bool isHTMLInputElement(const HTMLElement* element) { ASSERT(element); return isHTMLInputElement(*element); }
-inline bool isHTMLInputElement(const Node& node) { return node.isHTMLElement() && isHTMLInputElement(toHTMLElement(node)); }
-inline bool isHTMLInputElement(const Node* node) { ASSERT(node); return isHTMLInputElement(*node); }
-template <> inline bool isElementOfType<const HTMLInputElement>(const HTMLElement& element) { return isHTMLInputElement(element); }
-template <> inline bool isElementOfType<const HTMLInputElement>(const Element& element) { return isHTMLInputElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLInputElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::inputTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::inputTag); }
+};
+}
 
+namespace WebCore {
+class HTMLKeygenElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLKeygenElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::keygenTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::keygenTag); }
+};
+}
+
+namespace WebCore {
+class HTMLLIElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLLIElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::liTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::liTag); }
+};
+}
+
+namespace WebCore {
 class HTMLLabelElement;
-void isHTMLLabelElement(const HTMLLabelElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLLabelElement(const HTMLLabelElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLLabelElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::labelTag); }
-inline bool isHTMLLabelElement(const HTMLElement* element) { ASSERT(element); return isHTMLLabelElement(*element); }
-inline bool isHTMLLabelElement(const Node& node) { return node.isHTMLElement() && isHTMLLabelElement(toHTMLElement(node)); }
-inline bool isHTMLLabelElement(const Node* node) { ASSERT(node); return isHTMLLabelElement(*node); }
-template <> inline bool isElementOfType<const HTMLLabelElement>(const HTMLElement& element) { return isHTMLLabelElement(element); }
-template <> inline bool isElementOfType<const HTMLLabelElement>(const Element& element) { return isHTMLLabelElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLLabelElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::labelTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::labelTag); }
+};
+}
 
+namespace WebCore {
 class HTMLLegendElement;
-void isHTMLLegendElement(const HTMLLegendElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLLegendElement(const HTMLLegendElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLLegendElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::legendTag); }
-inline bool isHTMLLegendElement(const HTMLElement* element) { ASSERT(element); return isHTMLLegendElement(*element); }
-inline bool isHTMLLegendElement(const Node& node) { return node.isHTMLElement() && isHTMLLegendElement(toHTMLElement(node)); }
-inline bool isHTMLLegendElement(const Node* node) { ASSERT(node); return isHTMLLegendElement(*node); }
-template <> inline bool isElementOfType<const HTMLLegendElement>(const HTMLElement& element) { return isHTMLLegendElement(element); }
-template <> inline bool isElementOfType<const HTMLLegendElement>(const Element& element) { return isHTMLLegendElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLLegendElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::legendTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::legendTag); }
+};
+}
 
+namespace WebCore {
 class HTMLLinkElement;
-void isHTMLLinkElement(const HTMLLinkElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLLinkElement(const HTMLLinkElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLLinkElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::linkTag); }
-inline bool isHTMLLinkElement(const HTMLElement* element) { ASSERT(element); return isHTMLLinkElement(*element); }
-inline bool isHTMLLinkElement(const Node& node) { return node.isHTMLElement() && isHTMLLinkElement(toHTMLElement(node)); }
-inline bool isHTMLLinkElement(const Node* node) { ASSERT(node); return isHTMLLinkElement(*node); }
-template <> inline bool isElementOfType<const HTMLLinkElement>(const HTMLElement& element) { return isHTMLLinkElement(element); }
-template <> inline bool isElementOfType<const HTMLLinkElement>(const Element& element) { return isHTMLLinkElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLLinkElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::linkTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::linkTag); }
+};
+}
 
+namespace WebCore {
 class HTMLMapElement;
-void isHTMLMapElement(const HTMLMapElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLMapElement(const HTMLMapElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLMapElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::mapTag); }
-inline bool isHTMLMapElement(const HTMLElement* element) { ASSERT(element); return isHTMLMapElement(*element); }
-inline bool isHTMLMapElement(const Node& node) { return node.isHTMLElement() && isHTMLMapElement(toHTMLElement(node)); }
-inline bool isHTMLMapElement(const Node* node) { ASSERT(node); return isHTMLMapElement(*node); }
-template <> inline bool isElementOfType<const HTMLMapElement>(const HTMLElement& element) { return isHTMLMapElement(element); }
-template <> inline bool isElementOfType<const HTMLMapElement>(const Element& element) { return isHTMLMapElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLMapElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::mapTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::mapTag); }
+};
+}
 
+namespace WebCore {
+class HTMLMarqueeElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLMarqueeElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::marqueeTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::marqueeTag); }
+};
+}
+
+namespace WebCore {
+class HTMLMenuElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLMenuElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::menuTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::menuTag); }
+};
+}
+
+namespace WebCore {
+class HTMLMetaElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLMetaElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::metaTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::metaTag); }
+};
+}
+
+namespace WebCore {
 class HTMLMeterElement;
-void isHTMLMeterElement(const HTMLMeterElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLMeterElement(const HTMLMeterElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLMeterElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::meterTag); }
-inline bool isHTMLMeterElement(const HTMLElement* element) { ASSERT(element); return isHTMLMeterElement(*element); }
-inline bool isHTMLMeterElement(const Node& node) { return node.isHTMLElement() && isHTMLMeterElement(toHTMLElement(node)); }
-inline bool isHTMLMeterElement(const Node* node) { ASSERT(node); return isHTMLMeterElement(*node); }
-template <> inline bool isElementOfType<const HTMLMeterElement>(const HTMLElement& element) { return isHTMLMeterElement(element); }
-template <> inline bool isElementOfType<const HTMLMeterElement>(const Element& element) { return isHTMLMeterElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLMeterElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::meterTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::meterTag); }
+};
+}
 
+namespace WebCore {
+class HTMLOListElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLOListElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::olTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::olTag); }
+};
+}
+
+namespace WebCore {
 class HTMLObjectElement;
-void isHTMLObjectElement(const HTMLObjectElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLObjectElement(const HTMLObjectElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLObjectElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::objectTag); }
-inline bool isHTMLObjectElement(const HTMLElement* element) { ASSERT(element); return isHTMLObjectElement(*element); }
-inline bool isHTMLObjectElement(const Node& node) { return node.isHTMLElement() && isHTMLObjectElement(toHTMLElement(node)); }
-inline bool isHTMLObjectElement(const Node* node) { ASSERT(node); return isHTMLObjectElement(*node); }
-template <> inline bool isElementOfType<const HTMLObjectElement>(const HTMLElement& element) { return isHTMLObjectElement(element); }
-template <> inline bool isElementOfType<const HTMLObjectElement>(const Element& element) { return isHTMLObjectElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLObjectElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::objectTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::objectTag); }
+};
+}
 
+namespace WebCore {
 class HTMLOptGroupElement;
-void isHTMLOptGroupElement(const HTMLOptGroupElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLOptGroupElement(const HTMLOptGroupElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLOptGroupElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::optgroupTag); }
-inline bool isHTMLOptGroupElement(const HTMLElement* element) { ASSERT(element); return isHTMLOptGroupElement(*element); }
-inline bool isHTMLOptGroupElement(const Node& node) { return node.isHTMLElement() && isHTMLOptGroupElement(toHTMLElement(node)); }
-inline bool isHTMLOptGroupElement(const Node* node) { ASSERT(node); return isHTMLOptGroupElement(*node); }
-template <> inline bool isElementOfType<const HTMLOptGroupElement>(const HTMLElement& element) { return isHTMLOptGroupElement(element); }
-template <> inline bool isElementOfType<const HTMLOptGroupElement>(const Element& element) { return isHTMLOptGroupElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLOptGroupElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::optgroupTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::optgroupTag); }
+};
+}
 
+namespace WebCore {
 class HTMLOptionElement;
-void isHTMLOptionElement(const HTMLOptionElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLOptionElement(const HTMLOptionElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLOptionElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::optionTag); }
-inline bool isHTMLOptionElement(const HTMLElement* element) { ASSERT(element); return isHTMLOptionElement(*element); }
-inline bool isHTMLOptionElement(const Node& node) { return node.isHTMLElement() && isHTMLOptionElement(toHTMLElement(node)); }
-inline bool isHTMLOptionElement(const Node* node) { ASSERT(node); return isHTMLOptionElement(*node); }
-template <> inline bool isElementOfType<const HTMLOptionElement>(const HTMLElement& element) { return isHTMLOptionElement(element); }
-template <> inline bool isElementOfType<const HTMLOptionElement>(const Element& element) { return isHTMLOptionElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLOptionElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::optionTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::optionTag); }
+};
+}
 
+namespace WebCore {
+class HTMLOutputElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLOutputElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::outputTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::outputTag); }
+};
+}
+
+namespace WebCore {
+class HTMLParagraphElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLParagraphElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::pTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::pTag); }
+};
+}
+
+namespace WebCore {
 class HTMLParamElement;
-void isHTMLParamElement(const HTMLParamElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLParamElement(const HTMLParamElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLParamElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::paramTag); }
-inline bool isHTMLParamElement(const HTMLElement* element) { ASSERT(element); return isHTMLParamElement(*element); }
-inline bool isHTMLParamElement(const Node& node) { return node.isHTMLElement() && isHTMLParamElement(toHTMLElement(node)); }
-inline bool isHTMLParamElement(const Node* node) { ASSERT(node); return isHTMLParamElement(*node); }
-template <> inline bool isElementOfType<const HTMLParamElement>(const HTMLElement& element) { return isHTMLParamElement(element); }
-template <> inline bool isElementOfType<const HTMLParamElement>(const Element& element) { return isHTMLParamElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLParamElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::paramTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::paramTag); }
+};
+}
 
+namespace WebCore {
 class HTMLProgressElement;
-void isHTMLProgressElement(const HTMLProgressElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLProgressElement(const HTMLProgressElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLProgressElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::progressTag); }
-inline bool isHTMLProgressElement(const HTMLElement* element) { ASSERT(element); return isHTMLProgressElement(*element); }
-inline bool isHTMLProgressElement(const Node& node) { return node.isHTMLElement() && isHTMLProgressElement(toHTMLElement(node)); }
-inline bool isHTMLProgressElement(const Node* node) { ASSERT(node); return isHTMLProgressElement(*node); }
-template <> inline bool isElementOfType<const HTMLProgressElement>(const HTMLElement& element) { return isHTMLProgressElement(element); }
-template <> inline bool isElementOfType<const HTMLProgressElement>(const Element& element) { return isHTMLProgressElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLProgressElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::progressTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::progressTag); }
+};
+}
 
+namespace WebCore {
 class HTMLScriptElement;
-void isHTMLScriptElement(const HTMLScriptElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLScriptElement(const HTMLScriptElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLScriptElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::scriptTag); }
-inline bool isHTMLScriptElement(const HTMLElement* element) { ASSERT(element); return isHTMLScriptElement(*element); }
-inline bool isHTMLScriptElement(const Node& node) { return node.isHTMLElement() && isHTMLScriptElement(toHTMLElement(node)); }
-inline bool isHTMLScriptElement(const Node* node) { ASSERT(node); return isHTMLScriptElement(*node); }
-template <> inline bool isElementOfType<const HTMLScriptElement>(const HTMLElement& element) { return isHTMLScriptElement(element); }
-template <> inline bool isElementOfType<const HTMLScriptElement>(const Element& element) { return isHTMLScriptElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLScriptElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::scriptTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::scriptTag); }
+};
+}
 
+namespace WebCore {
 class HTMLSelectElement;
-void isHTMLSelectElement(const HTMLSelectElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLSelectElement(const HTMLSelectElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLSelectElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::selectTag); }
-inline bool isHTMLSelectElement(const HTMLElement* element) { ASSERT(element); return isHTMLSelectElement(*element); }
-inline bool isHTMLSelectElement(const Node& node) { return node.isHTMLElement() && isHTMLSelectElement(toHTMLElement(node)); }
-inline bool isHTMLSelectElement(const Node* node) { ASSERT(node); return isHTMLSelectElement(*node); }
-template <> inline bool isElementOfType<const HTMLSelectElement>(const HTMLElement& element) { return isHTMLSelectElement(element); }
-template <> inline bool isElementOfType<const HTMLSelectElement>(const Element& element) { return isHTMLSelectElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLSelectElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::selectTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::selectTag); }
+};
+}
 
+namespace WebCore {
 class HTMLSourceElement;
-void isHTMLSourceElement(const HTMLSourceElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLSourceElement(const HTMLSourceElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLSourceElement(const HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasLocalName(HTMLNames::sourceTag); }
-inline bool isHTMLSourceElement(const HTMLElement* element) { ASSERT(element); return isHTMLSourceElement(*element); }
-inline bool isHTMLSourceElement(const Node& node) { return node.isHTMLElement() && isHTMLSourceElement(toHTMLElement(node)); }
-inline bool isHTMLSourceElement(const Node* node) { ASSERT(node); return isHTMLSourceElement(*node); }
-template <> inline bool isElementOfType<const HTMLSourceElement>(const HTMLElement& element) { return isHTMLSourceElement(element); }
-template <> inline bool isElementOfType<const HTMLSourceElement>(const Element& element) { return isHTMLSourceElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLSourceElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasTagName(WebCore::HTMLNames::sourceTag); }
+    static bool checkTagName(const WebCore::Node& node) { return is<WebCore::HTMLElement>(node) && checkTagName(downcast<WebCore::HTMLElement>(node)); }
+};
+}
 
+namespace WebCore {
+class HTMLSpanElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLSpanElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::spanTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::spanTag); }
+};
+}
+
+namespace WebCore {
 class HTMLStyleElement;
-void isHTMLStyleElement(const HTMLStyleElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLStyleElement(const HTMLStyleElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLStyleElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::styleTag); }
-inline bool isHTMLStyleElement(const HTMLElement* element) { ASSERT(element); return isHTMLStyleElement(*element); }
-inline bool isHTMLStyleElement(const Node& node) { return node.isHTMLElement() && isHTMLStyleElement(toHTMLElement(node)); }
-inline bool isHTMLStyleElement(const Node* node) { ASSERT(node); return isHTMLStyleElement(*node); }
-template <> inline bool isElementOfType<const HTMLStyleElement>(const HTMLElement& element) { return isHTMLStyleElement(element); }
-template <> inline bool isElementOfType<const HTMLStyleElement>(const Element& element) { return isHTMLStyleElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLStyleElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::styleTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::styleTag); }
+};
+}
 
+namespace WebCore {
+class HTMLSummaryElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLSummaryElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::summaryTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::summaryTag); }
+};
+}
+
+namespace WebCore {
+class HTMLTableCaptionElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTableCaptionElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::captionTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::captionTag); }
+};
+}
+
+namespace WebCore {
 class HTMLTableElement;
-void isHTMLTableElement(const HTMLTableElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLTableElement(const HTMLTableElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLTableElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::tableTag); }
-inline bool isHTMLTableElement(const HTMLElement* element) { ASSERT(element); return isHTMLTableElement(*element); }
-inline bool isHTMLTableElement(const Node& node) { return node.isHTMLElement() && isHTMLTableElement(toHTMLElement(node)); }
-inline bool isHTMLTableElement(const Node* node) { ASSERT(node); return isHTMLTableElement(*node); }
-template <> inline bool isElementOfType<const HTMLTableElement>(const HTMLElement& element) { return isHTMLTableElement(element); }
-template <> inline bool isElementOfType<const HTMLTableElement>(const Element& element) { return isHTMLTableElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTableElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::tableTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::tableTag); }
+};
+}
 
-class HTMLTemplateElement;
-void isHTMLTemplateElement(const HTMLTemplateElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLTemplateElement(const HTMLTemplateElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLTemplateElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::templateTag); }
-inline bool isHTMLTemplateElement(const HTMLElement* element) { ASSERT(element); return isHTMLTemplateElement(*element); }
-inline bool isHTMLTemplateElement(const Node& node) { return node.isHTMLElement() && isHTMLTemplateElement(toHTMLElement(node)); }
-inline bool isHTMLTemplateElement(const Node* node) { ASSERT(node); return isHTMLTemplateElement(*node); }
-template <> inline bool isElementOfType<const HTMLTemplateElement>(const HTMLElement& element) { return isHTMLTemplateElement(element); }
-template <> inline bool isElementOfType<const HTMLTemplateElement>(const Element& element) { return isHTMLTemplateElement(element); }
-
-class HTMLTextAreaElement;
-void isHTMLTextAreaElement(const HTMLTextAreaElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLTextAreaElement(const HTMLTextAreaElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLTextAreaElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::textareaTag); }
-inline bool isHTMLTextAreaElement(const HTMLElement* element) { ASSERT(element); return isHTMLTextAreaElement(*element); }
-inline bool isHTMLTextAreaElement(const Node& node) { return node.isHTMLElement() && isHTMLTextAreaElement(toHTMLElement(node)); }
-inline bool isHTMLTextAreaElement(const Node* node) { ASSERT(node); return isHTMLTextAreaElement(*node); }
-template <> inline bool isElementOfType<const HTMLTextAreaElement>(const HTMLElement& element) { return isHTMLTextAreaElement(element); }
-template <> inline bool isElementOfType<const HTMLTextAreaElement>(const Element& element) { return isHTMLTextAreaElement(element); }
-
-class HTMLTitleElement;
-void isHTMLTitleElement(const HTMLTitleElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLTitleElement(const HTMLTitleElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLTitleElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::titleTag); }
-inline bool isHTMLTitleElement(const HTMLElement* element) { ASSERT(element); return isHTMLTitleElement(*element); }
-inline bool isHTMLTitleElement(const Node& node) { return node.isHTMLElement() && isHTMLTitleElement(toHTMLElement(node)); }
-inline bool isHTMLTitleElement(const Node* node) { ASSERT(node); return isHTMLTitleElement(*node); }
-template <> inline bool isElementOfType<const HTMLTitleElement>(const HTMLElement& element) { return isHTMLTitleElement(element); }
-template <> inline bool isElementOfType<const HTMLTitleElement>(const Element& element) { return isHTMLTitleElement(element); }
-
+namespace WebCore {
 class HTMLTableRowElement;
-void isHTMLTableRowElement(const HTMLTableRowElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLTableRowElement(const HTMLTableRowElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLTableRowElement(const HTMLElement& element) { return element.hasLocalName(HTMLNames::trTag); }
-inline bool isHTMLTableRowElement(const HTMLElement* element) { ASSERT(element); return isHTMLTableRowElement(*element); }
-inline bool isHTMLTableRowElement(const Node& node) { return node.isHTMLElement() && isHTMLTableRowElement(toHTMLElement(node)); }
-inline bool isHTMLTableRowElement(const Node* node) { ASSERT(node); return isHTMLTableRowElement(*node); }
-template <> inline bool isElementOfType<const HTMLTableRowElement>(const HTMLElement& element) { return isHTMLTableRowElement(element); }
-template <> inline bool isElementOfType<const HTMLTableRowElement>(const Element& element) { return isHTMLTableRowElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTableRowElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::trTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::trTag); }
+};
+}
 
+namespace WebCore {
+class HTMLTemplateElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTemplateElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::templateTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::templateTag); }
+};
+}
+
+namespace WebCore {
+class HTMLTextAreaElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTextAreaElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::textareaTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::textareaTag); }
+};
+}
+
+namespace WebCore {
+class HTMLTitleElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTitleElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::titleTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::titleTag); }
+};
+}
+
+namespace WebCore {
 class HTMLTrackElement;
-void isHTMLTrackElement(const HTMLTrackElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLTrackElement(const HTMLTrackElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLTrackElement(const HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasLocalName(HTMLNames::trackTag); }
-inline bool isHTMLTrackElement(const HTMLElement* element) { ASSERT(element); return isHTMLTrackElement(*element); }
-inline bool isHTMLTrackElement(const Node& node) { return node.isHTMLElement() && isHTMLTrackElement(toHTMLElement(node)); }
-inline bool isHTMLTrackElement(const Node* node) { ASSERT(node); return isHTMLTrackElement(*node); }
-template <> inline bool isElementOfType<const HTMLTrackElement>(const HTMLElement& element) { return isHTMLTrackElement(element); }
-template <> inline bool isElementOfType<const HTMLTrackElement>(const Element& element) { return isHTMLTrackElement(element); }
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLTrackElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasTagName(WebCore::HTMLNames::trackTag); }
+    static bool checkTagName(const WebCore::Node& node) { return is<WebCore::HTMLElement>(node) && checkTagName(downcast<WebCore::HTMLElement>(node)); }
+};
+}
 
-class HTMLVideoElement;
-void isHTMLVideoElement(const HTMLVideoElement&); // Catch unnecessary runtime check of type known at compile time.
-void isHTMLVideoElement(const HTMLVideoElement*); // Catch unnecessary runtime check of type known at compile time.
-inline bool isHTMLVideoElement(const HTMLElement& element) { return !element.isHTMLUnknownElement() && element.hasLocalName(HTMLNames::videoTag); }
-inline bool isHTMLVideoElement(const HTMLElement* element) { ASSERT(element); return isHTMLVideoElement(*element); }
-inline bool isHTMLVideoElement(const Node& node) { return node.isHTMLElement() && isHTMLVideoElement(toHTMLElement(node)); }
-inline bool isHTMLVideoElement(const Node* node) { ASSERT(node); return isHTMLVideoElement(*node); }
-template <> inline bool isElementOfType<const HTMLVideoElement>(const HTMLElement& element) { return isHTMLVideoElement(element); }
-template <> inline bool isElementOfType<const HTMLVideoElement>(const Element& element) { return isHTMLVideoElement(element); }
+namespace WebCore {
+class HTMLUListElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLUListElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::ulTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::ulTag); }
+};
+}
 
+namespace WebCore {
+class HTMLWBRElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::HTMLWBRElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::wbrTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::wbrTag); }
+};
+}
+
+namespace WebCore {
+class RubyElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::RubyElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::rubyTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::rubyTag); }
+};
+}
+
+namespace WebCore {
+class RubyTextElement;
+}
+namespace WTF {
+template <typename ArgType>
+class TypeCastTraits<const WebCore::RubyTextElement, ArgType, false /* isBaseType */> {
+public:
+    static bool isOfType(ArgType& node) { return checkTagName(node); }
+private:
+    static bool checkTagName(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::rtTag); }
+    static bool checkTagName(const WebCore::Node& node) { return node.hasTagName(WebCore::HTMLNames::rtTag); }
+};
 }
 
 #endif

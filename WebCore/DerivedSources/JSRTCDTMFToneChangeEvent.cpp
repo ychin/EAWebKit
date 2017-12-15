@@ -24,6 +24,7 @@
 
 #include "JSRTCDTMFToneChangeEvent.h"
 
+#include "JSDOMBinding.h"
 #include "RTCDTMFToneChangeEvent.h"
 #include "URL.h"
 #include <runtime/JSString.h>
@@ -33,62 +34,81 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSRTCDTMFToneChangeEventTableValues[] =
-{
-    { "tone", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFToneChangeEventTone), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsRTCDTMFToneChangeEventTone(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSRTCDTMFToneChangeEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSRTCDTMFToneChangeEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSRTCDTMFToneChangeEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFToneChangeEventPrototype>(vm.heap)) JSRTCDTMFToneChangeEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSRTCDTMFToneChangeEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSRTCDTMFToneChangeEventTable = { 2, 1, JSRTCDTMFToneChangeEventTableValues, 0 };
 /* Hash table for prototype */
 
 static const HashTableValue JSRTCDTMFToneChangeEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "tone", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsRTCDTMFToneChangeEventTone), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSRTCDTMFToneChangeEventPrototypeTable = { 1, 0, JSRTCDTMFToneChangeEventPrototypeTableValues, 0 };
-const ClassInfo JSRTCDTMFToneChangeEventPrototype::s_info = { "RTCDTMFToneChangeEventPrototype", &Base::s_info, &JSRTCDTMFToneChangeEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSRTCDTMFToneChangeEventPrototype) };
+const ClassInfo JSRTCDTMFToneChangeEventPrototype::s_info = { "RTCDTMFToneChangeEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDTMFToneChangeEventPrototype) };
 
-JSObject* JSRTCDTMFToneChangeEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSRTCDTMFToneChangeEvent>(vm, globalObject);
-}
-
-const ClassInfo JSRTCDTMFToneChangeEvent::s_info = { "RTCDTMFToneChangeEvent", &Base::s_info, &JSRTCDTMFToneChangeEventTable, 0 , CREATE_METHOD_TABLE(JSRTCDTMFToneChangeEvent) };
-
-JSRTCDTMFToneChangeEvent::JSRTCDTMFToneChangeEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDTMFToneChangeEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSRTCDTMFToneChangeEvent::finishCreation(VM& vm)
+void JSRTCDTMFToneChangeEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSRTCDTMFToneChangeEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSRTCDTMFToneChangeEvent::s_info = { "RTCDTMFToneChangeEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSRTCDTMFToneChangeEvent) };
+
+JSRTCDTMFToneChangeEvent::JSRTCDTMFToneChangeEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDTMFToneChangeEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSRTCDTMFToneChangeEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSRTCDTMFToneChangeEventPrototype::create(vm, globalObject, JSRTCDTMFToneChangeEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSRTCDTMFToneChangeEventPrototype::create(vm, globalObject, JSRTCDTMFToneChangeEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSRTCDTMFToneChangeEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSRTCDTMFToneChangeEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSRTCDTMFToneChangeEvent* thisObject = jsCast<JSRTCDTMFToneChangeEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSRTCDTMFToneChangeEvent, Base>(exec, JSRTCDTMFToneChangeEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSRTCDTMFToneChangeEvent>(vm, globalObject);
 }
 
-JSValue jsRTCDTMFToneChangeEventTone(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsRTCDTMFToneChangeEventTone(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSRTCDTMFToneChangeEvent* castedThis = jsCast<JSRTCDTMFToneChangeEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    RTCDTMFToneChangeEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSRTCDTMFToneChangeEvent* castedThis = jsDynamicCast<JSRTCDTMFToneChangeEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSRTCDTMFToneChangeEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "RTCDTMFToneChangeEvent", "tone");
+        return throwGetterTypeError(*exec, "RTCDTMFToneChangeEvent", "tone");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.tone());
-    return result;
+    return JSValue::encode(result);
 }
 
 

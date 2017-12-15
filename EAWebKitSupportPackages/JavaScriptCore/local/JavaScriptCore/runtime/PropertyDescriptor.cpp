@@ -30,7 +30,7 @@
 
 #include "GetterSetter.h"
 #include "JSObject.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC {
 unsigned PropertyDescriptor::defaultAttributes = DontDelete | DontEnum | ReadOnly;
@@ -106,13 +106,23 @@ void PropertyDescriptor::setDescriptor(JSValue value, unsigned attributes)
         m_attributes &= ~ReadOnly; // FIXME: we should be able to ASSERT this!
 
         GetterSetter* accessor = asGetterSetter(value);
-        m_getter = accessor->getter() ? accessor->getter() : jsUndefined();
-        m_setter = accessor->setter() ? accessor->setter() : jsUndefined();
+        m_getter = !accessor->isGetterNull() ? accessor->getter() : jsUndefined();
+        m_setter = !accessor->isSetterNull() ? accessor->setter() : jsUndefined();
         m_seenAttributes = EnumerablePresent | ConfigurablePresent;
     } else {
         m_value = value;
         m_seenAttributes = EnumerablePresent | ConfigurablePresent | WritablePresent;
     }
+}
+
+void PropertyDescriptor::setCustomDescriptor(unsigned attributes)
+{
+    m_attributes = attributes | Accessor | CustomAccessor;
+    m_attributes &= ~ReadOnly;
+    m_seenAttributes = EnumerablePresent | ConfigurablePresent;
+    setGetter(jsUndefined());
+    setSetter(jsUndefined());
+    m_value = JSValue();
 }
 
 void PropertyDescriptor::setAccessorDescriptor(GetterSetter* accessor, unsigned attributes)
@@ -121,8 +131,8 @@ void PropertyDescriptor::setAccessorDescriptor(GetterSetter* accessor, unsigned 
     attributes &= ~ReadOnly; // FIXME: we should be able to ASSERT this!
 
     m_attributes = attributes;
-    m_getter = accessor->getter() ? accessor->getter() : jsUndefined();
-    m_setter = accessor->setter() ? accessor->setter() : jsUndefined();
+    m_getter = !accessor->isGetterNull() ? accessor->getter() : jsUndefined();
+    m_setter = !accessor->isSetterNull() ? accessor->setter() : jsUndefined();
     m_seenAttributes = EnumerablePresent | ConfigurablePresent;
 }
 
@@ -176,8 +186,10 @@ bool sameValue(ExecState* exec, JSValue a, JSValue b)
         return false;
     double x = a.asNumber();
     double y = b.asNumber();
-    if (std::isnan(x))
-        return std::isnan(y);
+    bool xIsNaN = std::isnan(x);
+    bool yIsNaN = std::isnan(y);
+    if (xIsNaN || yIsNaN)
+        return xIsNaN && yIsNaN;
     return bitwise_cast<uint64_t>(x) == bitwise_cast<uint64_t>(y);
 }
 

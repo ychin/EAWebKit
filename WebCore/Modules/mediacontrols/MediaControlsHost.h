@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -29,12 +29,15 @@
 #if ENABLE(MEDIA_CONTROLS_SCRIPT)
 
 #include "ScriptState.h"
+#include <bindings/ScriptObject.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
+class AudioTrack;
+class AudioTrackList;
 class Element;
 class HTMLMediaElement;
 class MediaControlTextTrackContainerElement;
@@ -43,21 +46,38 @@ class TextTrackList;
 
 class MediaControlsHost : public RefCounted<MediaControlsHost> {
 public:
-    static PassRefPtr<MediaControlsHost> create(HTMLMediaElement*);
+    static Ref<MediaControlsHost> create(HTMLMediaElement*);
     ~MediaControlsHost();
 
     static const AtomicString& automaticKeyword();
     static const AtomicString& forcedOnlyKeyword();
     static const AtomicString& alwaysOnKeyword();
 
-    Vector<RefPtr<TextTrack> > sortedTrackListForMenu(TextTrackList*);
+    Vector<RefPtr<TextTrack>> sortedTrackListForMenu(TextTrackList*);
+    Vector<RefPtr<AudioTrack>> sortedTrackListForMenu(AudioTrackList*);
     String displayNameForTrack(TextTrack*);
+    String displayNameForTrack(AudioTrack*);
     TextTrack* captionMenuOffItem();
     TextTrack* captionMenuAutomaticItem();
     AtomicString captionDisplayMode();
     void setSelectedTextTrack(TextTrack*);
     Element* textTrackContainer();
     void updateTextTrackContainer();
+    bool allowsInlineMediaPlayback() const;
+    bool supportsFullscreen();
+    bool userGestureRequired() const;
+
+    void updateCaptionDisplaySizes();
+    void enteredFullscreen();
+    void exitedFullscreen();
+
+    String externalDeviceDisplayName() const;
+    String externalDeviceType() const;
+
+    bool controlsDependOnPageScaleFactor() const;
+    void setControlsDependOnPageScaleFactor(bool v);
+
+    String generateUUID() const;
 
 private:
     MediaControlsHost(HTMLMediaElement*);

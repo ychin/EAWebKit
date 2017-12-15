@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -35,8 +35,8 @@ class EAField : public Field {
 public:
     EAField(const char *ident) : mIdent(ident) {}
 
-    virtual JSValue valueFromInstance(ExecState*, const Instance*) const OVERRIDE;
-    virtual void setValueToInstance(ExecState*, const Instance*, JSValue) const OVERRIDE;
+    virtual JSValue valueFromInstance(ExecState*, const Instance*) const override;
+    virtual void setValueToInstance(ExecState*, const Instance*, JSValue) const override;
 
     const char8_t *name(void) { return mIdent.c_str(); }
 
@@ -51,7 +51,7 @@ public:
     EAMethod(const char *ident) : mIdent(ident) {}
 
     //EAWebKitTODO: This is called in response to function.length in JavaScript land. Implement it.
-	virtual int numParameters(void) const OVERRIDE { 
+	virtual int numParameters(void) const override { 
 		ASSERT(false);
 		return 0; 
 	}

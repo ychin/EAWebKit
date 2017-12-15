@@ -21,28 +21,28 @@
 #ifndef JSXPathExpression_h
 #define JSXPathExpression_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "XPathExpression.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSXPathExpression : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSXPathExpression* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<XPathExpression> impl)
+    static JSXPathExpression* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<XPathExpression>&& impl)
     {
-        JSXPathExpression* ptr = new (NotNull, JSC::allocateCell<JSXPathExpression>(globalObject->vm().heap)) JSXPathExpression(structure, globalObject, impl);
+        JSXPathExpression* ptr = new (NotNull, JSC::allocateCell<JSXPathExpression>(globalObject->vm().heap)) JSXPathExpression(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static XPathExpression* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSXPathExpression();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     XPathExpression& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     XPathExpression* m_impl;
 protected:
-    JSXPathExpression(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<XPathExpression>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSXPathExpression(JSC::Structure*, JSDOMGlobalObject*, Ref<XPathExpression>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSXPathExpressionOwner : public JSC::WeakHandleOwner {
@@ -78,72 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, XPathExpression*)
 {
-    DEFINE_STATIC_LOCAL(JSXPathExpressionOwner, jsXPathExpressionOwner, ());
-    return &jsXPathExpressionOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, XPathExpression*)
-{
-    return &world;
+    static NeverDestroyed<JSXPathExpressionOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, XPathExpression*);
-XPathExpression* toXPathExpression(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, XPathExpression& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSXPathExpressionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSXPathExpressionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSXPathExpressionPrototype* ptr = new (NotNull, JSC::allocateCell<JSXPathExpressionPrototype>(vm.heap)) JSXPathExpressionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSXPathExpressionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSXPathExpressionConstructor : public DOMConstructorObject {
-private:
-    JSXPathExpressionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSXPathExpressionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSXPathExpressionConstructor* ptr = new (NotNull, JSC::allocateCell<JSXPathExpressionConstructor>(vm.heap)) JSXPathExpressionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsXPathExpressionPrototypeFunctionEvaluate(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsXPathExpressionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

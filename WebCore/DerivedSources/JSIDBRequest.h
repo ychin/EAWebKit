@@ -24,25 +24,25 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBRequest.h"
-#include "JSDOMBinding.h"
 #include "JSEventTarget.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSIDBRequest : public JSEventTarget {
 public:
     typedef JSEventTarget Base;
-    static JSIDBRequest* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBRequest> impl)
+    static JSIDBRequest* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBRequest>&& impl)
     {
-        JSIDBRequest* ptr = new (NotNull, JSC::allocateCell<JSIDBRequest>(globalObject->vm().heap)) JSIDBRequest(structure, globalObject, impl);
+        JSIDBRequest* ptr = new (NotNull, JSC::allocateCell<JSIDBRequest>(globalObject->vm().heap)) JSIDBRequest(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static IDBRequest* toWrapped(JSC::JSValue);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -58,9 +58,14 @@ public:
         return static_cast<IDBRequest&>(Base::impl());
     }
 protected:
-    JSIDBRequest(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBRequest>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSIDBRequest(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBRequest>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSIDBRequestOwner : public JSC::WeakHandleOwner {
@@ -71,77 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, IDBRequest*)
 {
-    DEFINE_STATIC_LOCAL(JSIDBRequestOwner, jsIDBRequestOwner, ());
-    return &jsIDBRequestOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, IDBRequest*)
-{
-    return &world;
+    static NeverDestroyed<JSIDBRequestOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, IDBRequest*);
-IDBRequest* toIDBRequest(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, IDBRequest& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSIDBRequestPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBRequestPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBRequestPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBRequestPrototype>(vm.heap)) JSIDBRequestPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBRequestPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSIDBRequestConstructor : public DOMConstructorObject {
-private:
-    JSIDBRequestConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBRequestConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBRequestConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBRequestConstructor>(vm.heap)) JSIDBRequestConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsIDBRequestResult(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBRequestError(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBRequestSource(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBRequestTransaction(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBRequestReadyState(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBRequestOnsuccess(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBRequestOnsuccess(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBRequestOnerror(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSIDBRequestOnerror(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsIDBRequestConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

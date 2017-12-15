@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2010, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2010, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -43,14 +43,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //Since we EAWebKit is always going to be used as a dll, this is pretty effective. 
 
-//Intercept any global usage. However, We should use the macros defined below. So that we can better 
-//control the allocation if we need in the future.
+//Intercept any global usage. 
 void* operator new		(size_t size);
 void* operator new[]	(size_t size);
 void operator delete	(void *p);
 void operator delete[]	(void *p);
 
-//For use with EAWEBKIT_NEW/EAWEBKIT_NEW_ALIGNED macros
 void* operator new(size_t size, const char* name, int flags, unsigned debugFlags = 0, const char* file = 0, int line = 0);
 void* operator new(size_t size, size_t alignment, size_t alignmentOffset, const char* name, int flags = 0, unsigned debugFlags = 0, const char* file = 0, int line = 0);
 
@@ -60,6 +58,9 @@ void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, cons
 //void operator delete[](void *p, const char* /*name*/, int /*flags*/, unsigned /*debugFlags*/, const char* /*file*/, int /*line*/);
 //void operator delete[](void *p, size_t /*alignment*/, size_t /*alignmentOffset*/, const char* /*name*/, int /*flags*/, unsigned /*debugFlags*/, const char* /*file*/, int /*line*/);
 
+// Some more overloads to deal with some platforms that implement these signatures
+void* operator new		(size_t size, int, const char* pFileName, int nLine);
+void* operator new[]	(size_t size, int, const char* pFileName, int nLine);
 /*
 // The new/delete overrides below are there to deal with an MS VC++ issue.
 // When compiling some VC++ code (you especially run into this with MFC), 

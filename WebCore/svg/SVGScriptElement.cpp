@@ -19,18 +19,15 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGScriptElement.h"
 
-#include "Attribute.h"
 #include "Document.h"
 #include "Event.h"
 #include "EventNames.h"
 #include "HTMLNames.h"
 #include "SVGAnimatedStaticPropertyTearOff.h"
-#include "SVGElementInstance.h"
 #include "XLinkNames.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
@@ -45,76 +42,36 @@ END_REGISTER_ANIMATED_PROPERTIES
 
 inline SVGScriptElement::SVGScriptElement(const QualifiedName& tagName, Document& document, bool wasInsertedByParser, bool alreadyStarted)
     : SVGElement(tagName, document)
-    , ScriptElement(this, wasInsertedByParser, alreadyStarted)
-    , m_svgLoadEventTimer(this, &SVGElement::svgLoadEventTimerFired)
+    , ScriptElement(*this, wasInsertedByParser, alreadyStarted)
+    , m_svgLoadEventTimer(*this, &SVGElement::svgLoadEventTimerFired)
 {
     ASSERT(hasTagName(SVGNames::scriptTag));
     registerAnimatedPropertiesForSVGScriptElement();
 }
 
-PassRefPtr<SVGScriptElement> SVGScriptElement::create(const QualifiedName& tagName, Document& document, bool insertedByParser)
+Ref<SVGScriptElement> SVGScriptElement::create(const QualifiedName& tagName, Document& document, bool insertedByParser)
 {
-    return adoptRef(new SVGScriptElement(tagName, document, insertedByParser, false));
-}
-
-bool SVGScriptElement::isSupportedAttribute(const QualifiedName& attrName)
-{
-    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());
-    if (supportedAttributes.isEmpty()) {
-        SVGURIReference::addSupportedAttributes(supportedAttributes);
-        SVGExternalResourcesRequired::addSupportedAttributes(supportedAttributes);
-        supportedAttributes.add(SVGNames::typeAttr);
-        supportedAttributes.add(HTMLNames::onerrorAttr);
-    }
-    return supportedAttributes.contains<SVGAttributeHashTranslator>(attrName);
+    return adoptRef(*new SVGScriptElement(tagName, document, insertedByParser, false));
 }
 
 void SVGScriptElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
-    if (!isSupportedAttribute(name)) {
-        SVGElement::parseAttribute(name, value);
-        return;
-    }
-
-    if (name == SVGNames::typeAttr) {
-        setType(value);
-        return;
-    }
-
-    if (name == HTMLNames::onerrorAttr) {
-        setAttributeEventListener(eventNames().errorEvent, name, value);
-        return;
-    }
-
-    if (SVGURIReference::parseAttribute(name, value))
-        return;
-    if (SVGExternalResourcesRequired::parseAttribute(name, value))
-        return;
-
-    ASSERT_NOT_REACHED();
+    SVGElement::parseAttribute(name, value);
+    SVGURIReference::parseAttribute(name, value);
+    SVGExternalResourcesRequired::parseAttribute(name, value);
 }
 
 void SVGScriptElement::svgAttributeChanged(const QualifiedName& attrName)
 {
-    if (!isSupportedAttribute(attrName)) {
-        SVGElement::svgAttributeChanged(attrName);
-        return;
-    }
-
-    SVGElementInstance::InvalidationGuard invalidationGuard(this);
-
-    if (attrName == SVGNames::typeAttr || attrName == HTMLNames::onerrorAttr)
-        return;
+    InstanceInvalidationGuard guard(*this);
 
     if (SVGURIReference::isKnownAttribute(attrName)) {
         handleSourceAttribute(href());
         return;
     }
 
-    if (SVGExternalResourcesRequired::handleAttributeChange(this, attrName))
-        return;
-
-    ASSERT_NOT_REACHED();
+    SVGExternalResourcesRequired::handleAttributeChange(this, attrName);
+    SVGElement::svgAttributeChanged(attrName);
 }
 
 Node::InsertionNotificationRequest SVGScriptElement::insertedInto(ContainerNode& rootParent)
@@ -122,12 +79,12 @@ Node::InsertionNotificationRequest SVGScriptElement::insertedInto(ContainerNode&
     SVGElement::insertedInto(rootParent);
     if (rootParent.inDocument())
         SVGExternalResourcesRequired::insertedIntoDocument(this);
-    return shouldNotifySubtreeInsertions(rootParent) ? InsertionShouldCallDidNotifySubtreeInsertions : InsertionDone;
+    return shouldCallFinishedInsertingSubtree(rootParent) ? InsertionShouldCallFinishedInsertingSubtree : InsertionDone;
 }
 
-void SVGScriptElement::didNotifySubtreeInsertions()
+void SVGScriptElement::finishedInsertingSubtree()
 {
-    ScriptElement::didNotifySubtreeInsertions();
+    ScriptElement::finishedInsertingSubtree();
 }
 
 void SVGScriptElement::childrenChanged(const ChildChange& change)
@@ -145,16 +102,6 @@ void SVGScriptElement::finishParsingChildren()
 {
     SVGElement::finishParsingChildren();
     SVGExternalResourcesRequired::finishParsingChildren();
-}
-
-String SVGScriptElement::type() const
-{
-    return m_type;
-}
-
-void SVGScriptElement::setType(const String& type)
-{
-    m_type = type;
 }
 
 void SVGScriptElement::addSubresourceAttributeURLs(ListHashSet<URL>& urls) const
@@ -176,7 +123,7 @@ String SVGScriptElement::charsetAttributeValue() const
 
 String SVGScriptElement::typeAttributeValue() const
 {
-    return type();
+    return getAttribute(SVGNames::typeAttr).string();
 }
 
 String SVGScriptElement::languageAttributeValue() const
@@ -209,11 +156,16 @@ bool SVGScriptElement::hasSourceAttribute() const
     return hasAttribute(XLinkNames::hrefAttr);
 }
 
-PassRefPtr<Element> SVGScriptElement::cloneElementWithoutAttributesAndChildren()
+RefPtr<Element> SVGScriptElement::cloneElementWithoutAttributesAndChildren(Document& targetDocument)
 {
-    return adoptRef(new SVGScriptElement(tagQName(), document(), false, alreadyStarted()));
+    return adoptRef(new SVGScriptElement(tagQName(), targetDocument, false, alreadyStarted()));
 }
 
+#ifndef NDEBUG
+bool SVGScriptElement::filterOutAnimatableAttribute(const QualifiedName& name) const
+{
+    return name == SVGNames::typeAttr;
 }
+#endif
 
-#endif // ENABLE(SVG)
+}

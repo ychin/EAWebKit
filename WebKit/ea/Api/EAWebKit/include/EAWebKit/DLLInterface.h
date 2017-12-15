@@ -131,7 +131,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	#define FALSE 0 
 #endif
 
-#if   defined(_WIN32) || defined(_WIN64) 
+#if defined(_WIN32) || defined(_WIN64) 
 
 #define PLATFORM_DLL_MODULE(name,attr,major,minor) 
 

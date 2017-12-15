@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,16 +29,19 @@
 #if ENABLE(DFG_JIT)
 
 #include "CodeBlock.h"
+#include "CodeBlockWithJITType.h"
 #include "DFGCommon.h"
 #include "DFGPlan.h"
+#include "JSCInlines.h"
+#include "ProfilerDatabase.h"
 
 namespace JSC { namespace DFG {
 
-JITFinalizer::JITFinalizer(Plan& plan, PassRefPtr<JITCode> jitCode, PassOwnPtr<LinkBuffer> linkBuffer, MacroAssembler::Label arityCheck)
+JITFinalizer::JITFinalizer(Plan& plan, PassRefPtr<JITCode> jitCode, std::unique_ptr<LinkBuffer> linkBuffer, MacroAssemblerCodePtr withArityCheck)
     : Finalizer(plan)
     , m_jitCode(jitCode)
-    , m_linkBuffer(linkBuffer)
-    , m_arityCheck(arityCheck)
+    , m_linkBuffer(WTF::move(linkBuffer))
+    , m_withArityCheck(withArityCheck)
 {
 }
 
@@ -46,10 +49,18 @@ JITFinalizer::~JITFinalizer()
 {
 }
 
+size_t JITFinalizer::codeSize()
+{
+    return m_linkBuffer->size();
+}
+
 bool JITFinalizer::finalize()
 {
-    m_jitCode->initializeCodeRef(m_linkBuffer->finalizeCodeWithoutDisassembly());
-    m_plan.codeBlock->setJITCode(m_jitCode, MacroAssemblerCodePtr());
+    m_jitCode->initializeCodeRef(
+        FINALIZE_DFG_CODE(*m_linkBuffer, ("DFG JIT code for %s", toCString(CodeBlockWithJITType(m_plan.codeBlock.get(), JITCode::DFGJIT)).data())),
+        MacroAssemblerCodePtr());
+    
+    m_plan.codeBlock->setJITCode(m_jitCode);
     
     finalizeCommon();
     
@@ -58,9 +69,11 @@ bool JITFinalizer::finalize()
 
 bool JITFinalizer::finalizeFunction()
 {
-    MacroAssemblerCodePtr withArityCheck = m_linkBuffer->locationOf(m_arityCheck);
-    m_jitCode->initializeCodeRef(m_linkBuffer->finalizeCodeWithoutDisassembly());
-    m_plan.codeBlock->setJITCode(m_jitCode, withArityCheck);
+    RELEASE_ASSERT(!m_withArityCheck.isEmptyValue());
+    m_jitCode->initializeCodeRef(
+        FINALIZE_DFG_CODE(*m_linkBuffer, ("DFG JIT code for %s", toCString(CodeBlockWithJITType(m_plan.codeBlock.get(), JITCode::DFGJIT)).data())),
+        m_withArityCheck);
+    m_plan.codeBlock->setJITCode(m_jitCode);
     
     finalizeCommon();
     
@@ -75,6 +88,9 @@ void JITFinalizer::finalizeCommon()
     
     if (m_plan.compilation)
         m_plan.vm.m_perBytecodeProfiler->addCompilation(m_plan.compilation);
+    
+    if (!m_plan.willTryToTierUp)
+        m_plan.codeBlock->baselineVersion()->m_didFailFTLCompilation = true;
 }
 
 } } // namespace JSC::DFG

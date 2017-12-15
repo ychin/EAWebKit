@@ -22,9 +22,7 @@
 #define JSHashChangeEvent_h
 
 #include "HashChangeEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSHashChangeEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSHashChangeEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<HashChangeEvent> impl)
+    static JSHashChangeEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<HashChangeEvent>&& impl)
     {
-        JSHashChangeEvent* ptr = new (NotNull, JSC::allocateCell<JSHashChangeEvent>(globalObject->vm().heap)) JSHashChangeEvent(structure, globalObject, impl);
+        JSHashChangeEvent* ptr = new (NotNull, JSC::allocateCell<JSHashChangeEvent>(globalObject->vm().heap)) JSHashChangeEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,72 +54,19 @@ public:
         return static_cast<HashChangeEvent&>(Base::impl());
     }
 protected:
-    JSHashChangeEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HashChangeEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSHashChangeEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<HashChangeEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSHashChangeEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSHashChangeEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSHashChangeEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSHashChangeEventPrototype>(vm.heap)) JSHashChangeEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSHashChangeEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSHashChangeEventConstructor : public DOMConstructorObject {
-private:
-    JSHashChangeEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSHashChangeEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSHashChangeEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSHashChangeEventConstructor>(vm.heap)) JSHashChangeEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSHashChangeEvent(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
 
 bool fillHashChangeEventInit(HashChangeEventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsHashChangeEventPrototypeFunctionInitHashChangeEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsHashChangeEventOldURL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHashChangeEventNewURL(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsHashChangeEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

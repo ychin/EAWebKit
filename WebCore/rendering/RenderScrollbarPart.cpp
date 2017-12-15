@@ -32,12 +32,10 @@
 #include "RenderView.h"
 #include <wtf/StackStats.h>
 
-using namespace std;
-
 namespace WebCore {
 
-RenderScrollbarPart::RenderScrollbarPart(Document& document, RenderScrollbar* scrollbar, ScrollbarPart part)
-    : RenderBlock(document, 0)
+RenderScrollbarPart::RenderScrollbarPart(Document& document, Ref<RenderStyle>&& style, RenderScrollbar* scrollbar, ScrollbarPart part)
+    : RenderBlock(document, WTF::move(style), 0)
     , m_scrollbar(scrollbar)
     , m_part(part)
 {
@@ -81,10 +79,10 @@ void RenderScrollbarPart::layoutVerticalPart()
     } 
 }
 
-static int calcScrollbarThicknessUsing(SizeType sizeType, const Length& length, int containingLength, RenderView* renderView)
+static int calcScrollbarThicknessUsing(SizeType sizeType, const Length& length, int containingLength)
 {
     if (!length.isIntrinsicOrAuto() || (sizeType == MinSize && length.isAuto()))
-        return minimumValueForLength(length, containingLength, renderView);
+        return minimumValueForLength(length, containingLength);
     return ScrollbarTheme::theme()->scrollbarThickness();
 }
 
@@ -92,36 +90,34 @@ void RenderScrollbarPart::computeScrollbarWidth()
 {
     if (!m_scrollbar->owningRenderer())
         return;
-    RenderView* renderView = &view();
     // FIXME: We are querying layout information but nothing guarantees that it's up-to-date, especially since we are called at style change.
     // FIXME: Querying the style's border information doesn't work on table cells with collapsing borders.
-    int visibleSize = m_scrollbar->owningRenderer()->width() - m_scrollbar->owningRenderer()->style()->borderLeftWidth() - m_scrollbar->owningRenderer()->style()->borderRightWidth();
-    int w = calcScrollbarThicknessUsing(MainOrPreferredSize, style()->width(), visibleSize, renderView);
-    int minWidth = calcScrollbarThicknessUsing(MinSize, style()->minWidth(), visibleSize, renderView);
-    int maxWidth = style()->maxWidth().isUndefined() ? w : calcScrollbarThicknessUsing(MaxSize, style()->maxWidth(), visibleSize, renderView);
-    setWidth(max(minWidth, min(maxWidth, w)));
+    int visibleSize = m_scrollbar->owningRenderer()->width() - m_scrollbar->owningRenderer()->style().borderLeftWidth() - m_scrollbar->owningRenderer()->style().borderRightWidth();
+    int w = calcScrollbarThicknessUsing(MainOrPreferredSize, style().width(), visibleSize);
+    int minWidth = calcScrollbarThicknessUsing(MinSize, style().minWidth(), visibleSize);
+    int maxWidth = style().maxWidth().isUndefined() ? w : calcScrollbarThicknessUsing(MaxSize, style().maxWidth(), visibleSize);
+    setWidth(std::max(minWidth, std::min(maxWidth, w)));
     
     // Buttons and track pieces can all have margins along the axis of the scrollbar. 
-    m_marginBox.setLeft(minimumValueForLength(style()->marginLeft(), visibleSize, renderView));
-    m_marginBox.setRight(minimumValueForLength(style()->marginRight(), visibleSize, renderView));
+    m_marginBox.setLeft(minimumValueForLength(style().marginLeft(), visibleSize));
+    m_marginBox.setRight(minimumValueForLength(style().marginRight(), visibleSize));
 }
 
 void RenderScrollbarPart::computeScrollbarHeight()
 {
     if (!m_scrollbar->owningRenderer())
         return;
-    RenderView* renderView = &view();
     // FIXME: We are querying layout information but nothing guarantees that it's up-to-date, especially since we are called at style change.
     // FIXME: Querying the style's border information doesn't work on table cells with collapsing borders.
-    int visibleSize = m_scrollbar->owningRenderer()->height() -  m_scrollbar->owningRenderer()->style()->borderTopWidth() - m_scrollbar->owningRenderer()->style()->borderBottomWidth();
-    int h = calcScrollbarThicknessUsing(MainOrPreferredSize, style()->height(), visibleSize, renderView);
-    int minHeight = calcScrollbarThicknessUsing(MinSize, style()->minHeight(), visibleSize, renderView);
-    int maxHeight = style()->maxHeight().isUndefined() ? h : calcScrollbarThicknessUsing(MaxSize, style()->maxHeight(), visibleSize, renderView);
-    setHeight(max(minHeight, min(maxHeight, h)));
+    int visibleSize = m_scrollbar->owningRenderer()->height() -  m_scrollbar->owningRenderer()->style().borderTopWidth() - m_scrollbar->owningRenderer()->style().borderBottomWidth();
+    int h = calcScrollbarThicknessUsing(MainOrPreferredSize, style().height(), visibleSize);
+    int minHeight = calcScrollbarThicknessUsing(MinSize, style().minHeight(), visibleSize);
+    int maxHeight = style().maxHeight().isUndefined() ? h : calcScrollbarThicknessUsing(MaxSize, style().maxHeight(), visibleSize);
+    setHeight(std::max(minHeight, std::min(maxHeight, h)));
 
     // Buttons and track pieces can all have margins along the axis of the scrollbar. 
-    m_marginBox.setTop(minimumValueForLength(style()->marginTop(), visibleSize, renderView));
-    m_marginBox.setBottom(minimumValueForLength(style()->marginBottom(), visibleSize, renderView));
+    m_marginBox.setTop(minimumValueForLength(style().marginTop(), visibleSize));
+    m_marginBox.setBottom(minimumValueForLength(style().marginBottom(), visibleSize));
 }
 
 void RenderScrollbarPart::computePreferredLogicalWidths()
@@ -134,12 +130,6 @@ void RenderScrollbarPart::computePreferredLogicalWidths()
     setPreferredLogicalWidthsDirty(false);
 }
 
-void RenderScrollbarPart::styleWillChange(StyleDifference diff, const RenderStyle* newStyle)
-{
-    RenderBlock::styleWillChange(diff, newStyle);
-    setInline(false);
-}
-
 void RenderScrollbarPart::styleDidChange(StyleDifference diff, const RenderStyle* oldStyle)
 {
     RenderBlock::styleDidChange(diff, oldStyle);
@@ -148,15 +138,15 @@ void RenderScrollbarPart::styleDidChange(StyleDifference diff, const RenderStyle
     setFloating(false);
     setHasOverflowClip(false);
     if (oldStyle && m_scrollbar && m_part != NoPart && diff >= StyleDifferenceRepaint)
-        m_scrollbar->theme()->invalidatePart(m_scrollbar, m_part);
+        m_scrollbar->theme()->invalidatePart(*m_scrollbar, m_part);
 }
 
 void RenderScrollbarPart::imageChanged(WrappedImagePtr image, const IntRect* rect)
 {
     if (m_scrollbar && m_part != NoPart)
-        m_scrollbar->theme()->invalidatePart(m_scrollbar, m_part);
+        m_scrollbar->theme()->invalidatePart(*m_scrollbar, m_part);
     else {
-        if (view().frameView().isFrameViewScrollCorner(this)) {
+        if (view().frameView().isFrameViewScrollCorner(*this)) {
             view().frameView().invalidateScrollCorner(view().frameView().scrollCornerRect());
             return;
         }
@@ -168,24 +158,24 @@ void RenderScrollbarPart::imageChanged(WrappedImagePtr image, const IntRect* rec
 void RenderScrollbarPart::paintIntoRect(GraphicsContext* graphicsContext, const LayoutPoint& paintOffset, const LayoutRect& rect)
 {
     // Make sure our dimensions match the rect.
-    setLocation(rect.location() - toSize(paintOffset));
+    setLocation(rect.location() - toLayoutSize(paintOffset));
     setWidth(rect.width());
     setHeight(rect.height());
 
-    if (graphicsContext->paintingDisabled() || !style()->opacity())
+    if (graphicsContext->paintingDisabled() || !style().opacity())
         return;
 
     // We don't use RenderLayers for scrollbar parts, so we need to handle opacity here.
     // Opacity for ScrollbarBGPart is handled by RenderScrollbarTheme::willPaintScrollbar().
-    bool needsTransparencyLayer = m_part != ScrollbarBGPart && style()->opacity() < 1;
+    bool needsTransparencyLayer = m_part != ScrollbarBGPart && style().opacity() < 1;
     if (needsTransparencyLayer) {
         graphicsContext->save();
         graphicsContext->clip(rect);
-        graphicsContext->beginTransparencyLayer(style()->opacity());
+        graphicsContext->beginTransparencyLayer(style().opacity());
     }
     
     // Now do the paint.
-    PaintInfo paintInfo(graphicsContext, pixelSnappedIntRect(rect), PaintPhaseBlockBackground, PaintBehaviorNormal);
+    PaintInfo paintInfo(graphicsContext, snappedIntRect(rect), PaintPhaseBlockBackground, PaintBehaviorNormal);
     paint(paintInfo, paintOffset);
     paintInfo.phase = PaintPhaseChildBlockBackgrounds;
     paint(paintInfo, paintOffset);

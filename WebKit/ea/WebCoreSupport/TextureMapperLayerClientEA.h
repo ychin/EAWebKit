@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies)
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,7 +34,6 @@ class WebFrame;
 #include "TextureMapper.h"
 #include "TextureMapperFPSCounter.h"
 #include "Timer.h"
-#include <wtf/OwnPtr.h>
 
 namespace WebCore {
 
@@ -59,7 +58,7 @@ private:
     EA::WebKit::WebFrame* m_frame;
     std::unique_ptr<GraphicsLayer> m_rootGraphicsLayer;
     WebCore::TextureMapperLayer* m_rootTextureMapperLayer;
-    OwnPtr<WebCore::TextureMapper> m_textureMapper;
+    std::unique_ptr<WebCore::TextureMapper> m_textureMapper;
     WebCore::TextureMapperFPSCounter m_fpsCounter;
 	bool m_needSync;
 };

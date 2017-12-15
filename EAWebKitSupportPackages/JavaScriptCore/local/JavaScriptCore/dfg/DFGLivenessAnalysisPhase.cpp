@@ -32,7 +32,7 @@
 #include "DFGGraph.h"
 #include "DFGInsertionSet.h"
 #include "DFGPhase.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -68,12 +68,11 @@ public:
         } while (m_changed);
         
         if (!m_graph.block(0)->ssa->liveAtHead.isEmpty()) {
-            dataLog(
-                "Bad liveness analysis result: live at root is not empty: ",
-                nodeListDump(m_graph.block(0)->ssa->liveAtHead), "\n");
-            dataLog("IR at time of error:\n");
-            m_graph.dump();
-            CRASH();
+            DFG_CRASH(
+                m_graph, nullptr,
+                toCString(
+                    "Bad liveness analysis result: live at root is not empty: ",
+                    nodeListDump(m_graph.block(0)->ssa->liveAtHead)).data());
         }
         
         return true;
@@ -85,9 +84,7 @@ private:
         BasicBlock* block = m_graph.block(blockIndex);
         if (!block)
             return;
-        
-        // FIXME: It's likely that this can be improved, for static analyses that use
-        // HashSets. https://bugs.webkit.org/show_bug.cgi?id=118455
+
         m_live = block->ssa->liveAtTail;
         
         for (unsigned nodeIndex = block->size(); nodeIndex--;) {
@@ -135,9 +132,9 @@ private:
             return;
         
         m_changed = true;
-        block->ssa->liveAtHead = m_live;
         for (unsigned i = block->predecessors.size(); i--;)
             block->predecessors[i]->ssa->liveAtTail.add(m_live.begin(), m_live.end());
+        block->ssa->liveAtHead = WTF::move(m_live);
     }
     
     void addChildUse(Node*, Edge& edge)

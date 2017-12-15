@@ -32,14 +32,14 @@ class CSSPrimitiveValue;
 // Used for text-shadow and box-shadow
 class CSSShadowValue : public CSSValue {
 public:
-    static PassRefPtr<CSSShadowValue> create(PassRefPtr<CSSPrimitiveValue> x,
+    static Ref<CSSShadowValue> create(PassRefPtr<CSSPrimitiveValue> x,
         PassRefPtr<CSSPrimitiveValue> y,
         PassRefPtr<CSSPrimitiveValue> blur,
         PassRefPtr<CSSPrimitiveValue> spread,
         PassRefPtr<CSSPrimitiveValue> style,
         PassRefPtr<CSSPrimitiveValue> color)
     {
-        return adoptRef(new CSSShadowValue(x, y, blur, spread, style, color));
+        return adoptRef(*new CSSShadowValue(x, y, blur, spread, style, color));
     }
 
     String customCSSText() const;
@@ -62,8 +62,8 @@ private:
         PassRefPtr<CSSPrimitiveValue> color);
 };
 
-CSS_VALUE_TYPE_CASTS(ShadowValue)
+} // namespace WebCore
 
-} // namespace
+SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSShadowValue, isShadowValue())
 
-#endif
+#endif // CSSShadowValue_h

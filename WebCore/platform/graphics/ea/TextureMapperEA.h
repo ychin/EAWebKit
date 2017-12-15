@@ -30,7 +30,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TEXTUREMAPPER_EA_H
 
 #include "TextureMapper.h"
-#include "FilterOperation.h"
 
 #if USE(TEXTURE_MAPPER)
 
@@ -39,10 +38,7 @@ namespace EA
 namespace WebKit
 {
 	class View;
-	class ISurface;
 	class IHardwareRenderer;
-    struct FilterInfo;
-    class Filters;
 }
 }
 
@@ -52,26 +48,27 @@ namespace WebCore {
 class TextureMapperEA : public TextureMapper {
 	WTF_MAKE_FAST_ALLOCATED;
 public:
+
 	friend class BitmapTextureEA;
-	static PassOwnPtr<TextureMapper> create(EA::WebKit::View* view) { return adoptPtr(new TextureMapperEA(view)); }
+	static std::unique_ptr<TextureMapper> create(EA::WebKit::View* view)
+	{
+		std::unique_ptr<TextureMapper> tm(new TextureMapperEA(view));
+		return tm;
+	}
 
 	// TextureMapper implementation
-	virtual void drawBorder(const Color&, float borderWidth, const FloatRect&, const TransformationMatrix&) OVERRIDE;
-	virtual void drawNumber(int number, const Color&, const FloatPoint&, const TransformationMatrix&) OVERRIDE;
-	virtual void drawTexture(const BitmapTexture&, const FloatRect& targetRect, const TransformationMatrix&, float opacity, unsigned exposedEdges) OVERRIDE;
-	virtual void drawSolidColor(const FloatRect&, const TransformationMatrix&, const Color&) OVERRIDE;
-	virtual void beginClip(const TransformationMatrix&, const FloatRect&) OVERRIDE;
-	virtual void bindSurface(BitmapTexture* surface) OVERRIDE;
-	virtual void endClip() OVERRIDE; 
-	virtual IntRect clipBounds() OVERRIDE;
+	virtual void drawBorder(const Color&, float borderWidth, const FloatRect&, const TransformationMatrix&) override;
+	virtual void drawNumber(int number, const Color&, const FloatPoint&, const TransformationMatrix&) override;
+	virtual void drawTexture(const BitmapTexture&, const FloatRect& targetRect, const TransformationMatrix&, float opacity, unsigned exposedEdges) override;
+	virtual void drawSolidColor(const FloatRect&, const TransformationMatrix&, const Color&) override;
+	virtual void beginClip(const TransformationMatrix&, const FloatRect&) override;
+	virtual void bindSurface(BitmapTexture* surface) override;
+	virtual void endClip() override; 
+	virtual IntRect clipBounds() override;
 	virtual IntSize maxTextureSize() const;
-	virtual PassRefPtr<BitmapTexture> createTexture(EA::WebKit::SurfaceType type, const void* data = 0, size_t length = 0) OVERRIDE;
-	virtual void beginPainting(PaintFlags = 0) OVERRIDE;
-	virtual void endPainting() OVERRIDE;
-
-#if ENABLE(CSS_FILTERS)
-    void setupFilterInfo(const FilterOperation& source, EA::WebKit::FilterInfo *target);
-#endif
+	virtual PassRefPtr<BitmapTexture> createTexture(EA::WebKit::SurfaceType type, const void* data = 0, size_t length = 0) override;
+	virtual void beginPainting(PaintFlags = 0) override;
+	virtual void endPainting() override;
 
 private:
 	struct ClipState {
@@ -118,7 +115,6 @@ private:
 		bool clipStateDirty;
 		IntSize size;
 	};
-
 	 
 	bool beginScissorClip(const TransformationMatrix&, const FloatRect&);
 	void bindDefaultSurface();
@@ -132,57 +128,8 @@ private:
 	ClipStack m_clipStack;
 	bool m_didModifyStencil;
 	bool m_useCustomClip;
-
 };
-
-
-class BitmapTextureEA : public BitmapTexture {
-	friend class TextureMapperEA;
-public:
-	//static PassRefPtr<BitmapTexture> create() { return adoptRef(new BitmapTextureEA); }
-	virtual IntSize size() const OVERRIDE;
-	virtual bool isValid() const OVERRIDE;
-	virtual bool canReuseWith(const IntSize& contentsSize, Flags = 0) OVERRIDE;
-	virtual void didReset() OVERRIDE;
-	virtual void updateContents(Image*, const IntRect&, const IntPoint&, UpdateContentsFlag) OVERRIDE;
-	virtual void updateContents(TextureMapper*, GraphicsLayer*, const IntRect& target, const IntPoint& offset, UpdateContentsFlag) OVERRIDE;
-	virtual void updateContents(const void*, const IntRect& target, const IntPoint& sourceOffset, int bytesPerLine, UpdateContentsFlag) OVERRIDE;
-#if ENABLE(CSS_FILTERS)
-	virtual PassRefPtr<BitmapTexture> applyFilters(TextureMapper*, const FilterOperations&) OVERRIDE;
-	EA::WebKit::Filters *GetFilters(void) const {return mFilterList;}
-#endif
-	void bind(TextureMapperEA*);
-	void initializeStencil();
-	EA::WebKit::ISurface *GetSurface(void) const {return mSurface;}
-	void saveToPng(const char8_t *filepath) const;
-
-private:
-	BitmapTextureEA(EA::WebKit::ISurface *surface, EA::WebKit::View* view);
-	~BitmapTextureEA(void);
-
-	GraphicsContext* graphicsContext() { return mContext ? mContext.get() : 0 ; }
-
-	EA::WebKit::View* mView;
-	EA::WebKit::ISurface *mSurface;
-	EA::WebKit::IHardwareRenderer* mRenderer;
-
-	RefPtr<cairo_surface_t> mCairoSurface;
-	RefPtr<cairo_t> mCairoContext;
-	OwnPtr<GraphicsContext> mContext;
-
-	TextureMapperEA::ClipStack m_clipStack;
-	bool m_shouldClear;
-	bool m_boundFirstTime;
-	bool m_clearedStencil;
-
-#if ENABLE(CSS_FILTERS)
-	EA::WebKit::Filters *mFilterList;
-#endif
-	
-};
-
-
 }
 #endif // USE(TEXTURE_MAPPER)
-#endif //TEXTUREMAPPER_EA_H
+#endif // TEXTUREMAPPER_EA_H
 

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google Inc. All rights reserved.
+ * Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,18 +34,19 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "MediaStreamDescriptor.h"
-#include <wtf/PassOwnPtr.h>
+#include "MediaStreamPrivate.h"
 #include <wtf/PassRefPtr.h>
 
 namespace WebCore {
 
-class MediaConstraints;
-class MediaStreamSource;
-class RTCConfiguration;
+class RealtimeMediaSource;
+class RTCConfigurationPrivate;
 class RTCDTMFSenderHandler;
 class RTCDataChannelHandler;
 class RTCIceCandidateDescriptor;
+class RTCOfferOptionsPrivate;
+class RTCOfferAnswerOptionsPrivate;
+class RTCPeerConnectionHandler;
 class RTCPeerConnectionHandlerClient;
 class RTCSessionDescriptionDescriptor;
 class RTCSessionDescriptionRequest;
@@ -67,30 +69,34 @@ public:
     int id;
 };
 
+typedef std::unique_ptr<RTCPeerConnectionHandler> (*CreatePeerConnectionHandler)(RTCPeerConnectionHandlerClient*);
+
 class RTCPeerConnectionHandler {
 public:
-    static PassOwnPtr<RTCPeerConnectionHandler> create(RTCPeerConnectionHandlerClient*);
+    WEBCORE_EXPORT static CreatePeerConnectionHandler create;
     virtual ~RTCPeerConnectionHandler() { }
 
-    virtual bool initialize(PassRefPtr<RTCConfiguration>, PassRefPtr<MediaConstraints>) = 0;
+    static const AtomicString& incompatibleConstraintsErrorName();
+    static const AtomicString& invalidSessionDescriptionErrorName();
+    static const AtomicString& incompatibleSessionDescriptionErrorName();
+    static const AtomicString& internalErrorName();
 
-    virtual void createOffer(PassRefPtr<RTCSessionDescriptionRequest>, PassRefPtr<MediaConstraints>) = 0;
-    virtual void createAnswer(PassRefPtr<RTCSessionDescriptionRequest>, PassRefPtr<MediaConstraints>) = 0;
+    virtual bool initialize(PassRefPtr<RTCConfigurationPrivate>) = 0;
+
+    virtual void createOffer(PassRefPtr<RTCSessionDescriptionRequest>, PassRefPtr<RTCOfferOptionsPrivate>) = 0;
+    virtual void createAnswer(PassRefPtr<RTCSessionDescriptionRequest>, PassRefPtr<RTCOfferAnswerOptionsPrivate>) = 0;
     virtual void setLocalDescription(PassRefPtr<RTCVoidRequest>, PassRefPtr<RTCSessionDescriptionDescriptor>) = 0;
     virtual void setRemoteDescription(PassRefPtr<RTCVoidRequest>, PassRefPtr<RTCSessionDescriptionDescriptor>) = 0;
     virtual PassRefPtr<RTCSessionDescriptionDescriptor> localDescription() = 0;
     virtual PassRefPtr<RTCSessionDescriptionDescriptor> remoteDescription() = 0;
-    virtual bool updateIce(PassRefPtr<RTCConfiguration>, PassRefPtr<MediaConstraints>) = 0;
+    virtual bool updateIce(PassRefPtr<RTCConfigurationPrivate>) = 0;
     virtual bool addIceCandidate(PassRefPtr<RTCVoidRequest>, PassRefPtr<RTCIceCandidateDescriptor>) = 0;
-    virtual bool addStream(PassRefPtr<MediaStreamDescriptor>, PassRefPtr<MediaConstraints>) = 0;
-    virtual void removeStream(PassRefPtr<MediaStreamDescriptor>) = 0;
+    virtual bool addStream(PassRefPtr<MediaStreamPrivate>) = 0;
+    virtual void removeStream(PassRefPtr<MediaStreamPrivate>) = 0;
     virtual void getStats(PassRefPtr<RTCStatsRequest>) = 0;
-    virtual PassOwnPtr<RTCDataChannelHandler> createDataChannel(const String& label, const RTCDataChannelInit&) = 0;
-    virtual PassOwnPtr<RTCDTMFSenderHandler> createDTMFSender(PassRefPtr<MediaStreamSource>) = 0;
+    virtual std::unique_ptr<RTCDataChannelHandler> createDataChannel(const String& label, const RTCDataChannelInit&) = 0;
+    virtual std::unique_ptr<RTCDTMFSenderHandler> createDTMFSender(PassRefPtr<RealtimeMediaSource>) = 0;
     virtual void stop() = 0;
-
-protected:
-    RTCPeerConnectionHandler() { }
 };
 
 } // namespace WebCore

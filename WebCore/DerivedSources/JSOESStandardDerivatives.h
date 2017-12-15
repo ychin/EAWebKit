@@ -23,27 +23,28 @@
 
 #if ENABLE(WEBGL)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "OESStandardDerivatives.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSOESStandardDerivatives : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSOESStandardDerivatives* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OESStandardDerivatives> impl)
+    static JSOESStandardDerivatives* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OESStandardDerivatives>&& impl)
     {
-        JSOESStandardDerivatives* ptr = new (NotNull, JSC::allocateCell<JSOESStandardDerivatives>(globalObject->vm().heap)) JSOESStandardDerivatives(structure, globalObject, impl);
+        JSOESStandardDerivatives* ptr = new (NotNull, JSC::allocateCell<JSOESStandardDerivatives>(globalObject->vm().heap)) JSOESStandardDerivatives(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static OESStandardDerivatives* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSOESStandardDerivatives();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +53,19 @@ public:
     }
 
     OESStandardDerivatives& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     OESStandardDerivatives* m_impl;
 protected:
-    JSOESStandardDerivatives(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OESStandardDerivatives>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = Base::StructureFlags;
+    JSOESStandardDerivatives(JSC::Structure*, JSDOMGlobalObject*, Ref<OESStandardDerivatives>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSOESStandardDerivativesOwner : public JSC::WeakHandleOwner {
@@ -78,45 +76,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, OESStandardDerivatives*)
 {
-    DEFINE_STATIC_LOCAL(JSOESStandardDerivativesOwner, jsOESStandardDerivativesOwner, ());
-    return &jsOESStandardDerivativesOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, OESStandardDerivatives*)
-{
-    return &world;
+    static NeverDestroyed<JSOESStandardDerivativesOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, OESStandardDerivatives*);
-OESStandardDerivatives* toOESStandardDerivatives(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OESStandardDerivatives& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSOESStandardDerivativesPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOESStandardDerivativesPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOESStandardDerivativesPrototype* ptr = new (NotNull, JSC::allocateCell<JSOESStandardDerivativesPrototype>(vm.heap)) JSOESStandardDerivativesPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOESStandardDerivativesPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-// Constants
-
-JSC::JSValue jsOESStandardDerivativesFRAGMENT_SHADER_DERIVATIVE_HINT_OES(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

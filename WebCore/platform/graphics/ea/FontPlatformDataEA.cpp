@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008 Holger Hans Peter Freyther
     Copyright (C) 2009 Torch Mobile Inc. http://www.torchmobile.com/
-	Copyright (C) 2011, 2012, 2013, 2014, 2016 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011-2016 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

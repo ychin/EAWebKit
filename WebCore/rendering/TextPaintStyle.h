@@ -31,6 +31,7 @@
 
 namespace WebCore {
 
+class Frame;
 class GraphicsContext;
 class RenderText;
 class RenderStyle;
@@ -46,13 +47,16 @@ struct TextPaintStyle {
     Color strokeColor;
     Color emphasisMarkColor;
     float strokeWidth;
+#if ENABLE(LETTERPRESS)
+    bool useLetterpressEffect;
+#endif
 };
 
-TextPaintStyle computeTextPaintStyle(const RenderText&, const RenderStyle&, const PaintInfo&);
+TextPaintStyle computeTextPaintStyle(const Frame&, const RenderStyle&, const PaintInfo&);
 TextPaintStyle computeTextSelectionPaintStyle(const TextPaintStyle&, const RenderText&, const RenderStyle&, const PaintInfo&, bool& paintSelectedTextOnly, bool& paintSelectedTextSeparately, const ShadowData*& selectionShadow);
 
-enum StrokeColorType { UseNormalStrokeColor, UseEmphasisMarkColor };
-void updateGraphicsContext(GraphicsContext&, const TextPaintStyle&, StrokeColorType = UseNormalStrokeColor);
+enum FillColorType { UseNormalFillColor, UseEmphasisMarkColor };
+void updateGraphicsContext(GraphicsContext&, const TextPaintStyle&, FillColorType = UseNormalFillColor);
 
 }
 

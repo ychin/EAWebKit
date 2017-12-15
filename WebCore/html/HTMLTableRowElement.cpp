@@ -26,12 +26,13 @@
 #include "HTMLTableRowElement.h"
 
 #include "ExceptionCode.h"
-#include "HTMLCollection.h"
+#include "GenericCachedHTMLCollection.h"
 #include "HTMLNames.h"
 #include "HTMLTableCellElement.h"
 #include "HTMLTableElement.h"
 #include "HTMLTableSectionElement.h"
 #include "NodeList.h"
+#include "NodeRareData.h"
 #include "Text.h"
 
 namespace WebCore {
@@ -44,14 +45,14 @@ HTMLTableRowElement::HTMLTableRowElement(const QualifiedName& tagName, Document&
     ASSERT(hasTagName(trTag));
 }
 
-PassRefPtr<HTMLTableRowElement> HTMLTableRowElement::create(Document& document)
+Ref<HTMLTableRowElement> HTMLTableRowElement::create(Document& document)
 {
-    return adoptRef(new HTMLTableRowElement(trTag, document));
+    return adoptRef(*new HTMLTableRowElement(trTag, document));
 }
 
-PassRefPtr<HTMLTableRowElement> HTMLTableRowElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLTableRowElement> HTMLTableRowElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new HTMLTableRowElement(tagName, document));
+    return adoptRef(*new HTMLTableRowElement(tagName, document));
 }
 
 int HTMLTableRowElement::rowIndex() const
@@ -60,7 +61,7 @@ int HTMLTableRowElement::rowIndex() const
     if (!table)
         return -1;
     table = table->parentNode();
-    if (!table || !isHTMLTableElement(table))
+    if (!is<HTMLTableElement>(table))
         return -1;
 
     // To match Firefox, the row indices work like this:
@@ -70,7 +71,7 @@ int HTMLTableRowElement::rowIndex() const
 
     int rIndex = 0;
 
-    if (HTMLTableSectionElement* head = toHTMLTableElement(table)->tHead()) {
+    if (HTMLTableSectionElement* head = downcast<HTMLTableElement>(*table).tHead()) {
         for (Node *row = head->firstChild(); row; row = row->nextSibling()) {
             if (row == this)
                 return rIndex;
@@ -81,8 +82,8 @@ int HTMLTableRowElement::rowIndex() const
     
     for (Node *node = table->firstChild(); node; node = node->nextSibling()) {
         if (node->hasTagName(tbodyTag)) {
-            HTMLTableSectionElement* section = static_cast<HTMLTableSectionElement*>(node);
-            for (Node* row = section->firstChild(); row; row = row->nextSibling()) {
+            HTMLTableSectionElement& section = downcast<HTMLTableSectionElement>(*node);
+            for (Node* row = section.firstChild(); row; row = row->nextSibling()) {
                 if (row == this)
                     return rIndex;
                 if (row->hasTagName(trTag))
@@ -91,7 +92,7 @@ int HTMLTableRowElement::rowIndex() const
         }
     }
 
-    if (HTMLTableSectionElement* foot = toHTMLTableElement(table)->tFoot()) {
+    if (HTMLTableSectionElement* foot = downcast<HTMLTableElement>(*table).tFoot()) {
         for (Node *row = foot->firstChild(); row; row = row->nextSibling()) {
             if (row == this)
                 return rIndex;
@@ -118,10 +119,10 @@ int HTMLTableRowElement::sectionRowIndex() const
     return rIndex;
 }
 
-PassRefPtr<HTMLElement> HTMLTableRowElement::insertCell(int index, ExceptionCode& ec)
+RefPtr<HTMLElement> HTMLTableRowElement::insertCell(int index, ExceptionCode& ec)
 {
-    RefPtr<HTMLCollection> children = cells();
-    int numCells = children ? children->length() : 0;
+    Ref<HTMLCollection> children = cells();
+    int numCells = children->length();
     if (index < -1 || index > numCells) {
         ec = INDEX_SIZE_ERR;
         return 0;
@@ -138,13 +139,13 @@ PassRefPtr<HTMLElement> HTMLTableRowElement::insertCell(int index, ExceptionCode
             n = children->item(index);
         insertBefore(cell, n, ec);
     }
-    return cell.release();
+    return cell;
 }
 
 void HTMLTableRowElement::deleteCell(int index, ExceptionCode& ec)
 {
-    RefPtr<HTMLCollection> children = cells();
-    int numCells = children ? children->length() : 0;
+    Ref<HTMLCollection> children = cells();
+    int numCells = children->length();
     if (index == -1)
         index = numCells-1;
     if (index >= 0 && index < numCells) {
@@ -154,9 +155,9 @@ void HTMLTableRowElement::deleteCell(int index, ExceptionCode& ec)
         ec = INDEX_SIZE_ERR;
 }
 
-PassRefPtr<HTMLCollection> HTMLTableRowElement::cells()
+Ref<HTMLCollection> HTMLTableRowElement::cells()
 {
-    return ensureCachedHTMLCollection(TRCells);
+    return ensureRareData().ensureNodeLists().addCachedCollection<GenericCachedHTMLCollection<CollectionTypeTraits<TRCells>::traversalType>>(*this, TRCells);
 }
 
 void HTMLTableRowElement::setCells(HTMLCollection*, ExceptionCode& ec)

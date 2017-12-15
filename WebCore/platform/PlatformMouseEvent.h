@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2004, 2005, 2006, 2009 Apple Inc. All rights reserved.
- * Copyright (C) 2011 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -11,10 +11,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -56,14 +56,13 @@ namespace EA
 #endif
 //-EAWebKitChange
 namespace WebCore {
-    
-    // These button numbers match the ones used in the DOM API, 0 through 2, except for NoButton which isn't specified.
-    enum MouseButton { NoButton = -1, LeftButton, MiddleButton, RightButton };
 
-#if PLATFORM(BLACKBERRY)
-    enum MouseInputMethod { PointingDevice, TouchScreen };
-#endif
-    
+const double ForceAtClick = 1;
+const double ForceAtForceClick = 2;
+
+    // These button numbers match the ones used in the DOM API, 0 through 2, except for NoButton which isn't specified.
+    enum MouseButton : int8_t { NoButton = -1, LeftButton, MiddleButton, RightButton };
+
     class PlatformMouseEvent : public PlatformEvent {
     public:
         PlatformMouseEvent()
@@ -73,6 +72,7 @@ namespace WebCore {
             , m_modifierFlags(0)
 #if PLATFORM(MAC)
             , m_eventNumber(0)
+            , m_menuTypeForEvent(0)
 #elif PLATFORM(WIN)
             , m_didActivateWebView(false)
 #endif
@@ -80,15 +80,17 @@ namespace WebCore {
         }
 
         PlatformMouseEvent(const IntPoint& position, const IntPoint& globalPosition, MouseButton button, PlatformEvent::Type type,
-                           int clickCount, bool shiftKey, bool ctrlKey, bool altKey, bool metaKey, double timestamp)
+                           int clickCount, bool shiftKey, bool ctrlKey, bool altKey, bool metaKey, double timestamp, double force)
             : PlatformEvent(type, shiftKey, ctrlKey, altKey, metaKey, timestamp)
             , m_position(position)
             , m_globalPosition(globalPosition)
             , m_button(button)
             , m_clickCount(clickCount)
             , m_modifierFlags(0)
+            , m_force(force)
 #if PLATFORM(MAC)
             , m_eventNumber(0)
+            , m_menuTypeForEvent(0)
 #elif PLATFORM(WIN)
             , m_didActivateWebView(false)
 #endif
@@ -104,6 +106,7 @@ namespace WebCore {
         MouseButton button() const { return m_button; }
         int clickCount() const { return m_clickCount; }
         unsigned modifierFlags() const { return m_modifierFlags; }
+        double force() const { return m_force; }
         
 
 #if PLATFORM(GTK) 
@@ -121,6 +124,7 @@ namespace WebCore {
 
 #if PLATFORM(MAC)
         int eventNumber() const { return m_eventNumber; }
+        int menuTypeForEvent() const { return m_menuTypeForEvent; }
 #endif
 
 		//+EAWebKitChange
@@ -136,10 +140,6 @@ namespace WebCore {
         bool didActivateWebView() const { return m_didActivateWebView; }
 #endif
 
-#if PLATFORM(BLACKBERRY)
-        PlatformMouseEvent(const IntPoint& eventPosition, const IntPoint& globalPosition, const PlatformEvent::Type, int clickCount, MouseButton, bool shiftKey, bool ctrlKey, bool altKey, MouseInputMethod = PointingDevice);
-        MouseInputMethod inputMethod() const { return m_inputMethod; }
-#endif
     protected:
         IntPoint m_position;
         IntPoint m_globalPosition;
@@ -149,16 +149,26 @@ namespace WebCore {
         MouseButton m_button;
         int m_clickCount;
         unsigned m_modifierFlags;
+        double m_force { 0 };
 
 #if PLATFORM(MAC)
         int m_eventNumber;
+        int m_menuTypeForEvent;
 #elif PLATFORM(WIN)
         bool m_didActivateWebView;
-#elif PLATFORM(BLACKBERRY)
-        MouseInputMethod m_inputMethod;
 #endif
     };
+    //+EAWebKitChange
+    //4/02/2015
+#if PLATFORM(WIN) || PLATFORM(EA)
+    //-EAWebKitChange
+    // These methods are necessary to work around the fact that MSVC will not find a most-specific
+    // operator== to use after implicitly converting MouseButton to an unsigned short.
+    bool operator==(unsigned short a, MouseButton b);
+    bool operator!=(unsigned short a, MouseButton b);
+#endif
 
 } // namespace WebCore
+
 
 #endif // PlatformMouseEvent_h

@@ -26,7 +26,7 @@
 #ifndef TextCombinerGStreamer_h
 #define TextCombinerGStreamer_h
 
-#if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK) && defined(GST_API_VERSION_1)
+#if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
 
 #include <glib-object.h>
 #include <gst/gst.h>
@@ -46,8 +46,6 @@ struct _WebKitTextCombiner {
     GstBin parent;
 
     GstElement *funnel;
-private:
-
 };
 
 struct _WebKitTextCombinerClass {
@@ -64,5 +62,5 @@ struct _WebKitTextCombinerClass {
 
 GstElement* webkitTextCombinerNew();
 
-#endif // ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK) && defined(GST_API_VERSION_1)
+#endif // ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
 #endif

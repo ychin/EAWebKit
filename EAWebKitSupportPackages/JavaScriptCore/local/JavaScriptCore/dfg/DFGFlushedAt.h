@@ -26,8 +26,6 @@
 #ifndef DFGFlushedAt_h
 #define DFGFlushedAt_h
 
-#include <wtf/Platform.h>
-
 #if ENABLE(DFG_JIT)
 
 #include "DFGFlushFormat.h"
@@ -42,14 +40,18 @@ public:
     {
     }
     
+    explicit FlushedAt(FlushFormat format)
+        : m_format(format)
+    {
+        ASSERT(format == DeadFlush || format == ConflictingFlush);
+    }
+    
     FlushedAt(FlushFormat format, VirtualRegister virtualRegister)
         : m_format(format)
         , m_virtualRegister(virtualRegister)
     {
         if (format == DeadFlush)
             ASSERT(!virtualRegister.isValid());
-        else
-            ASSERT(virtualRegister.isValid());
     }
     
     bool operator!() const { return m_format == DeadFlush; }
@@ -64,6 +66,17 @@ public:
     }
     
     bool operator!=(const FlushedAt& other) const { return !(*this == other); }
+    
+    FlushedAt merge(const FlushedAt& other) const
+    {
+        if (!*this)
+            return other;
+        if (!other)
+            return *this;
+        if (*this == other)
+            return *this;
+        return FlushedAt(ConflictingFlush);
+    }
     
     void dump(PrintStream&) const;
     void dumpInContext(PrintStream&, DumpContext*) const;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,30 +28,105 @@
 
 #if ENABLE(DFG_JIT)
 
+#include "ArrayBufferNeuteringWatchpoint.h"
+#include "CodeBlock.h"
+#include "JSCInlines.h"
+
 namespace JSC { namespace DFG {
+
+void ArrayBufferViewWatchpointAdaptor::add(
+    CodeBlock* codeBlock, JSArrayBufferView* view, CommonData& common)
+{
+    Watchpoint* watchpoint = common.watchpoints.add(codeBlock);
+    ArrayBufferNeuteringWatchpoint* neuteringWatchpoint =
+        ArrayBufferNeuteringWatchpoint::create(*codeBlock->vm());
+    neuteringWatchpoint->set()->add(watchpoint);
+    codeBlock->addConstant(neuteringWatchpoint);
+    codeBlock->vm()->heap.addReference(neuteringWatchpoint, view->buffer());
+}
+
+void InferredValueAdaptor::add(
+    CodeBlock* codeBlock, InferredValue* inferredValue, CommonData& common)
+{
+    codeBlock->addConstant(inferredValue); // For common users, it doesn't really matter if it's weak or not. If references to it go away, we go away, too.
+    inferredValue->add(common.watchpoints.add(codeBlock));
+}
+
+void AdaptiveStructureWatchpointAdaptor::add(
+    CodeBlock* codeBlock, const ObjectPropertyCondition& key, CommonData& common)
+{
+    switch (key.kind()) {
+    case PropertyCondition::Equivalence:
+        common.adaptiveInferredPropertyValueWatchpoints.add(key, codeBlock)->install();
+        break;
+    default:
+        common.adaptiveStructureWatchpoints.add(key, codeBlock)->install();
+        break;
+    }
+}
 
 DesiredWatchpoints::DesiredWatchpoints() { }
 DesiredWatchpoints::~DesiredWatchpoints() { }
 
-void DesiredWatchpoints::addLazily(Watchpoint* watchpoint, WatchpointSet* set)
+void DesiredWatchpoints::addLazily(WatchpointSet* set)
 {
-    m_sets.addLazily(WatchpointForWatchpointSet(watchpoint, set));
+    m_sets.addLazily(set);
 }
 
-void DesiredWatchpoints::addLazily(Watchpoint* watchpoint, InlineWatchpointSet& set)
+void DesiredWatchpoints::addLazily(InlineWatchpointSet& set)
 {
-    m_inlineSets.addLazily(WatchpointForInlineWatchpointSet(watchpoint, &set));
+    m_inlineSets.addLazily(&set);
 }
 
-void DesiredWatchpoints::reallyAdd()
+void DesiredWatchpoints::addLazily(InferredValue* inferredValue)
 {
-    m_sets.reallyAdd();
-    m_inlineSets.reallyAdd();
+    m_inferredValues.addLazily(inferredValue);
+}
+
+void DesiredWatchpoints::addLazily(JSArrayBufferView* view)
+{
+    m_bufferViews.addLazily(view);
+}
+
+void DesiredWatchpoints::addLazily(const ObjectPropertyCondition& key)
+{
+    m_adaptiveStructureSets.addLazily(key);
+}
+
+bool DesiredWatchpoints::consider(Structure* structure)
+{
+    if (!structure->dfgShouldWatch())
+        return false;
+    addLazily(structure->transitionWatchpointSet());
+    return true;
+}
+
+void DesiredWatchpoints::reallyAdd(CodeBlock* codeBlock, CommonData& commonData)
+{
+    m_sets.reallyAdd(codeBlock, commonData);
+    m_inlineSets.reallyAdd(codeBlock, commonData);
+    m_inferredValues.reallyAdd(codeBlock, commonData);
+    m_bufferViews.reallyAdd(codeBlock, commonData);
+    m_adaptiveStructureSets.reallyAdd(codeBlock, commonData);
 }
 
 bool DesiredWatchpoints::areStillValid() const
 {
-    return m_sets.areStillValid() && m_inlineSets.areStillValid();
+    return m_sets.areStillValid()
+        && m_inlineSets.areStillValid()
+        && m_inferredValues.areStillValid()
+        && m_bufferViews.areStillValid()
+        && m_adaptiveStructureSets.areStillValid();
+}
+
+void DesiredWatchpoints::dumpInContext(PrintStream& out, DumpContext* context) const
+{
+    out.print("Desired watchpoints:\n");
+    out.print("    Watchpoint sets: ", inContext(m_sets, context), "\n");
+    out.print("    Inline watchpoint sets: ", inContext(m_inlineSets, context), "\n");
+    out.print("    Inferred values: ", inContext(m_inferredValues, context), "\n");
+    out.print("    Buffer views: ", inContext(m_bufferViews, context), "\n");
+    out.print("    Object property conditions: ", inContext(m_adaptiveStructureSets, context), "\n");
 }
 
 } } // namespace JSC::DFG

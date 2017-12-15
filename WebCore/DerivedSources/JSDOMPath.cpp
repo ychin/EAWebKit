@@ -19,15 +19,13 @@
 */
 
 #include "config.h"
-
-#if ENABLE(CANVAS_PATH)
-
 #include "JSDOMPath.h"
 
 #include "DOMPath.h"
 #include "ExceptionCode.h"
 #include "JSDOMBinding.h"
 #include "JSDOMPath.h"
+#include "JSSVGMatrix.h"
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
@@ -35,37 +33,89 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Functions
 
-static const HashTableValue JSDOMPathTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMPathConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionAddPath(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionClosePath(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionMoveTo(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionLineTo(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionQuadraticCurveTo(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionBezierCurveTo(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArcTo(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionRect(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArc(JSC::ExecState*);
+JSC::EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionEllipse(JSC::ExecState*);
+
+// Attributes
+
+JSC::EncodedJSValue jsDOMPathConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSDOMPathPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSDOMPathPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSDOMPathPrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMPathPrototype>(vm.heap)) JSDOMPathPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSDOMPathPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSDOMPathTable = { 2, 1, JSDOMPathTableValues, 0 };
-/* Hash table for constructor */
+class JSDOMPathConstructor : public DOMConstructorObject {
+private:
+    JSDOMPathConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSDOMPathConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSDOMPathConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSDOMPathConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMPathConstructor>(vm.heap)) JSDOMPathConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+protected:
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath(JSC::ExecState*);
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath1(JSC::ExecState*);
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath2(JSC::ExecState*);
+    static JSC::EncodedJSValue JSC_HOST_CALL constructJSDOMPath3(JSC::ExecState*);
+    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
 };
 
-static const HashTable JSDOMPathConstructorTable = { 1, 0, JSDOMPathConstructorTableValues, 0 };
 EncodedJSValue JSC_HOST_CALL JSDOMPathConstructor::constructJSDOMPath1(ExecState* exec)
 {
-    JSDOMPathConstructor* castedThis = jsCast<JSDOMPathConstructor*>(exec->callee());
+    auto* castedThis = jsCast<JSDOMPathConstructor*>(exec->callee());
     RefPtr<DOMPath> object = DOMPath::create();
     return JSValue::encode(asObject(toJS(exec, castedThis->globalObject(), object.get())));
 }
 
 EncodedJSValue JSC_HOST_CALL JSDOMPathConstructor::constructJSDOMPath2(ExecState* exec)
 {
-    JSDOMPathConstructor* castedThis = jsCast<JSDOMPathConstructor*>(exec->callee());
-    if (exec->argumentCount() < 1)
+    auto* castedThis = jsCast<JSDOMPathConstructor*>(exec->callee());
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    DOMPath* path(toDOMPath(exec->argument(0)));
-    if (exec->hadException())
+    DOMPath* path = JSDOMPath::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     RefPtr<DOMPath> object = DOMPath::create(path);
     return JSValue::encode(asObject(toJS(exec, castedThis->globalObject(), object.get())));
@@ -73,11 +123,11 @@ EncodedJSValue JSC_HOST_CALL JSDOMPathConstructor::constructJSDOMPath2(ExecState
 
 EncodedJSValue JSC_HOST_CALL JSDOMPathConstructor::constructJSDOMPath3(ExecState* exec)
 {
-    JSDOMPathConstructor* castedThis = jsCast<JSDOMPathConstructor*>(exec->callee());
-    if (exec->argumentCount() < 1)
+    auto* castedThis = jsCast<JSDOMPathConstructor*>(exec->callee());
+    if (UNLIKELY(exec->argumentCount() < 1))
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
-    const String& text(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
+    String text = exec->argument(0).toString(exec)->value(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     RefPtr<DOMPath> object = DOMPath::create(text);
     return JSValue::encode(asObject(toJS(exec, castedThis->globalObject(), object.get())));
@@ -85,18 +135,18 @@ EncodedJSValue JSC_HOST_CALL JSDOMPathConstructor::constructJSDOMPath3(ExecState
 
 EncodedJSValue JSC_HOST_CALL JSDOMPathConstructor::constructJSDOMPath(ExecState* exec)
 {
-    size_t argsCount = exec->argumentCount();
+    size_t argsCount = std::min<size_t>(1, exec->argumentCount());
     if (argsCount == 0)
         return JSDOMPathConstructor::constructJSDOMPath1(exec);
     JSValue arg0(exec->argument(0));
-    if ((argsCount == 1 && (arg0.isObject() && asObject(arg0)->inherits(JSDOMPath::info()))))
+    if ((argsCount == 1 && ((arg0.isObject() && asObject(arg0)->inherits(JSDOMPath::info())))))
         return JSDOMPathConstructor::constructJSDOMPath2(exec);
     if (argsCount == 1)
         return JSDOMPathConstructor::constructJSDOMPath3(exec);
     return throwVMTypeError(exec);
 }
 
-const ClassInfo JSDOMPathConstructor::s_info = { "PathConstructor", &Base::s_info, &JSDOMPathConstructorTable, 0, CREATE_METHOD_TABLE(JSDOMPathConstructor) };
+const ClassInfo JSDOMPathConstructor::s_info = { "Path2DConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMPathConstructor) };
 
 JSDOMPathConstructor::JSDOMPathConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -107,13 +157,9 @@ void JSDOMPathConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSDOMPathPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSDOMPathConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSDOMPathConstructor, JSDOMWrapper>(exec, JSDOMPathConstructorTable, jsCast<JSDOMPathConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSDOMPath::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("Path2D"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 ConstructType JSDOMPathConstructor::getConstructData(JSCell*, ConstructData& constructData)
@@ -126,48 +172,43 @@ ConstructType JSDOMPathConstructor::getConstructData(JSCell*, ConstructData& con
 
 static const HashTableValue JSDOMPathPrototypeTableValues[] =
 {
-    { "closePath", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionClosePath), (intptr_t)0 },
-    { "moveTo", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionMoveTo), (intptr_t)0 },
-    { "lineTo", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionLineTo), (intptr_t)0 },
-    { "quadraticCurveTo", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionQuadraticCurveTo), (intptr_t)0 },
-    { "bezierCurveTo", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionBezierCurveTo), (intptr_t)0 },
-    { "arcTo", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionArcTo), (intptr_t)0 },
-    { "rect", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionRect), (intptr_t)0 },
-    { "arc", DontDelete | JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionArc), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsDOMPathConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "addPath", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionAddPath), (intptr_t) (1) },
+    { "closePath", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionClosePath), (intptr_t) (0) },
+    { "moveTo", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionMoveTo), (intptr_t) (0) },
+    { "lineTo", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionLineTo), (intptr_t) (0) },
+    { "quadraticCurveTo", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionQuadraticCurveTo), (intptr_t) (0) },
+    { "bezierCurveTo", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionBezierCurveTo), (intptr_t) (0) },
+    { "arcTo", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionArcTo), (intptr_t) (0) },
+    { "rect", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionRect), (intptr_t) (0) },
+    { "arc", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionArc), (intptr_t) (0) },
+    { "ellipse", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDOMPathPrototypeFunctionEllipse), (intptr_t) (7) },
 };
 
-static const HashTable JSDOMPathPrototypeTable = { 16, 15, JSDOMPathPrototypeTableValues, 0 };
-const ClassInfo JSDOMPathPrototype::s_info = { "PathPrototype", &Base::s_info, &JSDOMPathPrototypeTable, 0, CREATE_METHOD_TABLE(JSDOMPathPrototype) };
+const ClassInfo JSDOMPathPrototype::s_info = { "Path2DPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMPathPrototype) };
 
-JSObject* JSDOMPathPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSDOMPath>(vm, globalObject);
-}
-
-bool JSDOMPathPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDOMPathPrototype* thisObject = jsCast<JSDOMPathPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDOMPathPrototypeTable, thisObject, propertyName, slot);
-}
-
-const ClassInfo JSDOMPath::s_info = { "Path", &Base::s_info, &JSDOMPathTable, 0 , CREATE_METHOD_TABLE(JSDOMPath) };
-
-JSDOMPath::JSDOMPath(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMPath> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSDOMPath::finishCreation(VM& vm)
+void JSDOMPathPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSDOMPathPrototypeTableValues, *this);
+}
+
+const ClassInfo JSDOMPath::s_info = { "Path2D", &Base::s_info, 0, CREATE_METHOD_TABLE(JSDOMPath) };
+
+JSDOMPath::JSDOMPath(Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMPath>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSDOMPath::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSDOMPathPrototype::create(vm, globalObject, JSDOMPathPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSDOMPath::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSDOMPath>(vm, globalObject);
 }
 
 void JSDOMPath::destroy(JSC::JSCell* cell)
@@ -178,20 +219,15 @@ void JSDOMPath::destroy(JSC::JSCell* cell)
 
 JSDOMPath::~JSDOMPath()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSDOMPath::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsDOMPathConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSDOMPath* thisObject = jsCast<JSDOMPath*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSDOMPath, Base>(exec, JSDOMPathTable, thisObject, propertyName, slot);
-}
-
-JSValue jsDOMPathConstructor(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSDOMPath* domObject = jsCast<JSDOMPath*>(asObject(slotBase));
-    return JSDOMPath::getConstructor(exec->vm(), domObject->globalObject());
+    JSDOMPathPrototype* domObject = jsDynamicCast<JSDOMPathPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSDOMPath::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSDOMPath::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -199,132 +235,239 @@ JSValue JSDOMPath::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSDOMPathConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
+EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionAddPath(ExecState* exec)
+{
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "addPath");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 1))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    DOMPath* path = JSDOMPath::toWrapped(exec->argument(0));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+
+    size_t argsCount = exec->argumentCount();
+    if (argsCount <= 1) {
+        impl.addPath(path);
+        return JSValue::encode(jsUndefined());
+    }
+
+    SVGPropertyTearOff<SVGMatrix>* transform = JSSVGMatrix::toWrapped(exec->argument(1));
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!transform) {
+        setDOMException(exec, TYPE_MISMATCH_ERR);
+        return JSValue::encode(jsUndefined());
+    }
+    impl.addPath(path, transform->propertyReference());
+    return JSValue::encode(jsUndefined());
+}
+
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionClosePath(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "closePath");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     impl.closePath();
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionMoveTo(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "moveTo");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(x)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
+    }
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(y)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
     impl.moveTo(x, y);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionLineTo(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "lineTo");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(x)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
+    }
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(y)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
     impl.lineTo(x, y);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionQuadraticCurveTo(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "quadraticCurveTo");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
-    float cpx(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    float cpx = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float cpy(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(cpx)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float x(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    }
+    float cpy = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(3).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(cpy)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
+    }
+    float x = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(x)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float y = exec->argument(3).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(y)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
     impl.quadraticCurveTo(cpx, cpy, x, y);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionBezierCurveTo(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "bezierCurveTo");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
-    float cp1x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    float cp1x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float cp1y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(cp1x)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float cp2x(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    }
+    float cp1y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float cp2y(exec->argument(3).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(cp1y)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float x(exec->argument(4).toFloat(exec));
-    if (exec->hadException())
+    }
+    float cp2x = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(5).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(cp2x)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
+    }
+    float cp2y = exec->argument(3).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(cp2y)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float x = exec->argument(4).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(x)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float y = exec->argument(5).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(y)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
     impl.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArcTo(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "arcTo");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    float x1(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float x1 = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y1(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(x1)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float x2(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    }
+    float y1 = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y2(exec->argument(3).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(y1)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float radius(exec->argument(4).toFloat(exec));
-    if (exec->hadException())
+    }
+    float x2 = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
+    if (!std::isfinite(x2)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float y2 = exec->argument(3).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(y2)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float radius = exec->argument(4).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(radius)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
     impl.arcTo(x1, y1, x2, y2, radius, ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
@@ -332,82 +475,148 @@ EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArcTo(ExecState* exec)
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionRect(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "rect");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    auto& impl = castedThis->impl();
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(x)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float width(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    }
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float height(exec->argument(3).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(y)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
+    }
+    float width = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(width)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float height = exec->argument(3).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(height)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
     impl.rect(x, y, width, height);
     return JSValue::encode(jsUndefined());
 }
 
 EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionArc(ExecState* exec)
 {
-    JSValue thisValue = exec->hostThisValue();
-    if (!thisValue.inherits(JSDOMPath::info()))
-        return throwVMTypeError(exec);
-    JSDOMPath* castedThis = jsCast<JSDOMPath*>(asObject(thisValue));
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "arc");
     ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
-    DOMPath& impl = castedThis->impl();
+    auto& impl = castedThis->impl();
     ExceptionCode ec = 0;
-    float x(exec->argument(0).toFloat(exec));
-    if (exec->hadException())
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float y(exec->argument(1).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(x)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float radius(exec->argument(2).toFloat(exec));
-    if (exec->hadException())
+    }
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    float startAngle(exec->argument(3).toFloat(exec));
-    if (exec->hadException())
+    if (!std::isfinite(y)) {
+        setDOMException(exec, TypeError);
         return JSValue::encode(jsUndefined());
-    float endAngle(exec->argument(4).toFloat(exec));
-    if (exec->hadException())
+    }
+    float radius = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
-    bool anticlockwise(exec->argument(5).toBoolean(exec));
-    if (exec->hadException())
+    if (!std::isfinite(radius)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float startAngle = exec->argument(3).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(startAngle)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    float endAngle = exec->argument(4).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    if (!std::isfinite(endAngle)) {
+        setDOMException(exec, TypeError);
+        return JSValue::encode(jsUndefined());
+    }
+    bool anticlockwise = exec->argument(5).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
         return JSValue::encode(jsUndefined());
     impl.arc(x, y, radius, startAngle, endAngle, anticlockwise, ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }
 
-static inline bool isObservable(JSDOMPath* jsDOMPath)
+EncodedJSValue JSC_HOST_CALL jsDOMPathPrototypeFunctionEllipse(ExecState* exec)
 {
-    if (jsDOMPath->hasCustomProperties())
-        return true;
-    return false;
+    JSValue thisValue = exec->thisValue();
+    JSDOMPath* castedThis = jsDynamicCast<JSDOMPath*>(thisValue);
+    if (UNLIKELY(!castedThis))
+        return throwThisTypeError(*exec, "DOMPath", "ellipse");
+    ASSERT_GC_OBJECT_INHERITS(castedThis, JSDOMPath::info());
+    auto& impl = castedThis->impl();
+    if (UNLIKELY(exec->argumentCount() < 7))
+        return throwVMError(exec, createNotEnoughArgumentsError(exec));
+    ExceptionCode ec = 0;
+    float x = exec->argument(0).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    float y = exec->argument(1).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    float radiusX = exec->argument(2).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    float radiusY = exec->argument(3).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    float rotation = exec->argument(4).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    float startAngle = exec->argument(5).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    float endAngle = exec->argument(6).toFloat(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    bool anticlockwise = exec->argument(7).toBoolean(exec);
+    if (UNLIKELY(exec->hadException()))
+        return JSValue::encode(jsUndefined());
+    impl.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise, ec);
+    setDOMException(exec, ec);
+    return JSValue::encode(jsUndefined());
 }
 
 bool JSDOMPathOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSDOMPath* jsDOMPath = jsCast<JSDOMPath*>(handle.get().asCell());
-    if (!isObservable(jsDOMPath))
-        return false;
+    UNUSED_PARAM(handle);
     UNUSED_PARAM(visitor);
     return false;
 }
 
 void JSDOMPathOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSDOMPath* jsDOMPath = jsCast<JSDOMPath*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsDOMPath = jsCast<JSDOMPath*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsDOMPath->impl(), jsDOMPath);
-    jsDOMPath->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -418,11 +627,11 @@ extern "C" { extern void (*const __identifier("??_7DOMPath@WebCore@@6B@")[])(); 
 extern "C" { extern void* _ZTVN7WebCore7DOMPathE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMPath* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, DOMPath* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSDOMPath>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSDOMPath>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -443,15 +652,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMPath
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<DOMPath>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSDOMPath>(exec, globalObject, impl);
+    return createNewWrapper<JSDOMPath>(globalObject, impl);
 }
 
-DOMPath* toDOMPath(JSC::JSValue value)
+DOMPath* JSDOMPath::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSDOMPath::info()) ? &jsCast<JSDOMPath*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSDOMPath*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }
-
-#endif // ENABLE(CANVAS_PATH)

@@ -22,31 +22,65 @@
 #include "JSBarProp.h"
 
 #include "BarProp.h"
+#include "JSDOMBinding.h"
 #include <wtf/GetPtr.h>
 
 using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSBarPropTableValues[] =
-{
-    { "visible", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBarPropVisible), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBarPropConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsBarPropVisible(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsBarPropConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSBarPropPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSBarPropPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSBarPropPrototype* ptr = new (NotNull, JSC::allocateCell<JSBarPropPrototype>(vm.heap)) JSBarPropPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSBarPropPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSBarPropTable = { 4, 3, JSBarPropTableValues, 0 };
-/* Hash table for constructor */
+class JSBarPropConstructor : public DOMConstructorObject {
+private:
+    JSBarPropConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSBarPropConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSBarPropConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSBarPropConstructor* ptr = new (NotNull, JSC::allocateCell<JSBarPropConstructor>(vm.heap)) JSBarPropConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSBarPropConstructorTable = { 1, 0, JSBarPropConstructorTableValues, 0 };
-const ClassInfo JSBarPropConstructor::s_info = { "BarPropConstructor", &Base::s_info, &JSBarPropConstructorTable, 0, CREATE_METHOD_TABLE(JSBarPropConstructor) };
+const ClassInfo JSBarPropConstructor::s_info = { "BarPropConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSBarPropConstructor) };
 
 JSBarPropConstructor::JSBarPropConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -57,47 +91,43 @@ void JSBarPropConstructor::finishCreation(VM& vm, JSDOMGlobalObject* globalObjec
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSBarPropPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSBarPropConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSBarPropConstructor, JSDOMWrapper>(exec, JSBarPropConstructorTable, jsCast<JSBarPropConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSBarProp::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("BarProp"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSBarPropPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBarPropConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "visible", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsBarPropVisible), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSBarPropPrototypeTable = { 1, 0, JSBarPropPrototypeTableValues, 0 };
-const ClassInfo JSBarPropPrototype::s_info = { "BarPropPrototype", &Base::s_info, &JSBarPropPrototypeTable, 0, CREATE_METHOD_TABLE(JSBarPropPrototype) };
+const ClassInfo JSBarPropPrototype::s_info = { "BarPropPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSBarPropPrototype) };
 
-JSObject* JSBarPropPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSBarProp>(vm, globalObject);
-}
-
-const ClassInfo JSBarProp::s_info = { "BarProp", &Base::s_info, &JSBarPropTable, 0 , CREATE_METHOD_TABLE(JSBarProp) };
-
-JSBarProp::JSBarProp(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<BarProp> impl)
-    : JSDOMWrapper(structure, globalObject)
-    , m_impl(impl.leakRef())
-{
-}
-
-void JSBarProp::finishCreation(VM& vm)
+void JSBarPropPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSBarPropPrototypeTableValues, *this);
+}
+
+const ClassInfo JSBarProp::s_info = { "BarProp", &Base::s_info, 0, CREATE_METHOD_TABLE(JSBarProp) };
+
+JSBarProp::JSBarProp(Structure* structure, JSDOMGlobalObject* globalObject, Ref<BarProp>&& impl)
+    : JSDOMWrapper(structure, globalObject)
+    , m_impl(&impl.leakRef())
+{
 }
 
 JSObject* JSBarProp::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
     return JSBarPropPrototype::create(vm, globalObject, JSBarPropPrototype::createStructure(vm, globalObject, globalObject->objectPrototype()));
+}
+
+JSObject* JSBarProp::getPrototype(VM& vm, JSGlobalObject* globalObject)
+{
+    return getDOMPrototype<JSBarProp>(vm, globalObject);
 }
 
 void JSBarProp::destroy(JSC::JSCell* cell)
@@ -108,30 +138,32 @@ void JSBarProp::destroy(JSC::JSCell* cell)
 
 JSBarProp::~JSBarProp()
 {
-    releaseImplIfNotNull();
+    releaseImpl();
 }
 
-bool JSBarProp::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+EncodedJSValue jsBarPropVisible(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSBarProp* thisObject = jsCast<JSBarProp*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSBarProp, Base>(exec, JSBarPropTable, thisObject, propertyName, slot);
-}
-
-JSValue jsBarPropVisible(ExecState* exec, JSValue slotBase, PropertyName)
-{
-    JSBarProp* castedThis = jsCast<JSBarProp*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    BarProp& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSBarProp* castedThis = jsDynamicCast<JSBarProp*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSBarPropPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "BarProp", "visible");
+        return throwGetterTypeError(*exec, "BarProp", "visible");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsBoolean(impl.visible());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsBarPropConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsBarPropConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSBarProp* domObject = jsCast<JSBarProp*>(asObject(slotBase));
-    return JSBarProp::getConstructor(exec->vm(), domObject->globalObject());
+    JSBarPropPrototype* domObject = jsDynamicCast<JSBarPropPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSBarProp::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSBarProp::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -139,19 +171,10 @@ JSValue JSBarProp::getConstructor(VM& vm, JSGlobalObject* globalObject)
     return getDOMConstructor<JSBarPropConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
 
-static inline bool isObservable(JSBarProp* jsBarProp)
-{
-    if (jsBarProp->hasCustomProperties())
-        return true;
-    return false;
-}
-
 bool JSBarPropOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, SlotVisitor& visitor)
 {
-    JSBarProp* jsBarProp = jsCast<JSBarProp*>(handle.get().asCell());
-    if (!isObservable(jsBarProp))
-        return false;
-    Frame* root = jsBarProp->impl().frame();
+    auto* jsBarProp = jsCast<JSBarProp*>(handle.slot()->asCell());
+    Frame* root = WTF::getPtr(jsBarProp->impl().frame());
     if (!root)
         return false;
     return visitor.containsOpaqueRoot(root);
@@ -159,10 +182,9 @@ bool JSBarPropOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle
 
 void JSBarPropOwner::finalize(JSC::Handle<JSC::Unknown> handle, void* context)
 {
-    JSBarProp* jsBarProp = jsCast<JSBarProp*>(handle.get().asCell());
-    DOMWrapperWorld& world = *static_cast<DOMWrapperWorld*>(context);
+    auto* jsBarProp = jsCast<JSBarProp*>(handle.slot()->asCell());
+    auto& world = *static_cast<DOMWrapperWorld*>(context);
     uncacheWrapper(world, &jsBarProp->impl(), jsBarProp);
-    jsBarProp->releaseImpl();
 }
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -173,11 +195,11 @@ extern "C" { extern void (*const __identifier("??_7BarProp@WebCore@@6B@")[])(); 
 extern "C" { extern void* _ZTVN7WebCore7BarPropE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, BarProp* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, BarProp* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSBarProp>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSBarProp>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -198,13 +220,14 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, BarProp
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<BarProp>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSBarProp>(exec, globalObject, impl);
+    return createNewWrapper<JSBarProp>(globalObject, impl);
 }
 
-BarProp* toBarProp(JSC::JSValue value)
+BarProp* JSBarProp::toWrapped(JSC::JSValue value)
 {
-    return value.inherits(JSBarProp::info()) ? &jsCast<JSBarProp*>(asObject(value))->impl() : 0;
+    if (auto* wrapper = jsDynamicCast<JSBarProp*>(value))
+        return &wrapper->impl();
+    return nullptr;
 }
 
 }

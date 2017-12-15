@@ -27,44 +27,49 @@
 #ifndef SVGImage_h
 #define SVGImage_h
 
-#if ENABLE(SVG)
-
 #include "Image.h"
+#include "URL.h"
 
 namespace WebCore {
 
 class Element;
+class FrameLoader;
 class FrameView;
 class ImageBuffer;
 class Page;
 class RenderBox;
+class SVGSVGElement;
+class SVGFrameLoaderClient;
 class SVGImageChromeClient;
 class SVGImageForContainer;
 
-class SVGImage FINAL : public Image {
+class SVGImage final : public Image {
 public:
-    static PassRefPtr<SVGImage> create(ImageObserver* observer)
+    static Ref<SVGImage> create(ImageObserver& observer, const URL& url)
     {
-        return adoptRef(new SVGImage(observer));
+        return adoptRef(*new SVGImage(observer, url));
     }
 
     RenderBox* embeddedContentBox() const;
     FrameView* frameView() const;
 
-    virtual bool isSVGImage() const OVERRIDE { return true; }
-    virtual IntSize size() const OVERRIDE { return m_intrinsicSize; }
+    virtual bool isSVGImage() const override { return true; }
+    virtual FloatSize size() const override { return m_intrinsicSize; }
 
-    virtual bool hasSingleSecurityOrigin() const OVERRIDE;
+    void setURL(const URL& url) { m_url = url; }
+    void setDataProtocolLoader(FrameLoader* dataProtocolLoader) { m_dataProtocolLoader = dataProtocolLoader; }
 
-    virtual bool hasRelativeWidth() const OVERRIDE;
-    virtual bool hasRelativeHeight() const OVERRIDE;
+    virtual bool hasSingleSecurityOrigin() const override;
 
-    virtual void startAnimation(bool /*catchUpIfNecessary*/ = true) OVERRIDE;
-    virtual void stopAnimation() OVERRIDE;
-    virtual void resetAnimation() OVERRIDE;
+    virtual bool hasRelativeWidth() const override;
+    virtual bool hasRelativeHeight() const override;
+
+    virtual void startAnimation(CatchUpAnimation = CatchUp) override;
+    virtual void stopAnimation() override;
+    virtual void resetAnimation() override;
 
 #if USE(CAIRO)
-    virtual PassNativeImagePtr nativeImageForCurrentFrame() OVERRIDE;
+    virtual PassNativeImagePtr nativeImageForCurrentFrame() override;
 #endif
 
 private:
@@ -73,37 +78,41 @@ private:
 
     virtual ~SVGImage();
 
-    virtual String filenameExtension() const OVERRIDE;
+    virtual String filenameExtension() const override;
 
-    virtual void setContainerSize(const IntSize&) OVERRIDE;
+    virtual void setContainerSize(const FloatSize&) override;
     IntSize containerSize() const;
-    virtual bool usesContainerSize() const OVERRIDE { return true; }
-    virtual void computeIntrinsicDimensions(Length& intrinsicWidth, Length& intrinsicHeight, FloatSize& intrinsicRatio) OVERRIDE;
+    virtual bool usesContainerSize() const override { return true; }
+    virtual void computeIntrinsicDimensions(Length& intrinsicWidth, Length& intrinsicHeight, FloatSize& intrinsicRatio) override;
 
-    virtual bool dataChanged(bool allDataReceived) OVERRIDE;
+    virtual bool dataChanged(bool allDataReceived) override;
 
-    // FIXME: SVGImages are underreporting decoded sizes and will be unable
-    // to prune because these functions are not implemented yet.
-    virtual void destroyDecodedData(bool) OVERRIDE { }
-    virtual unsigned decodedSize() const OVERRIDE { return 0; }
+    // FIXME: SVGImages will be unable to prune because this function is not implemented yet.
+    virtual void destroyDecodedData(bool) override { }
 
     // FIXME: Implement this to be less conservative.
-    virtual bool currentFrameKnownToBeOpaque() OVERRIDE { return false; }
+    virtual bool currentFrameKnownToBeOpaque() override { return false; }
 
-    SVGImage(ImageObserver*);
-    virtual void draw(GraphicsContext*, const FloatRect& fromRect, const FloatRect& toRect, ColorSpace styleColorSpace, CompositeOperator, BlendMode) OVERRIDE;
+    SVGImage(ImageObserver&, const URL&);
+    virtual void draw(GraphicsContext*, const FloatRect& fromRect, const FloatRect& toRect, ColorSpace styleColorSpace, CompositeOperator, BlendMode, ImageOrientationDescription) override;
     void drawForContainer(GraphicsContext*, const FloatSize, float, const FloatRect&, const FloatRect&, ColorSpace, CompositeOperator, BlendMode);
     void drawPatternForContainer(GraphicsContext*, const FloatSize, float, const FloatRect&, const AffineTransform&, const FloatPoint&, ColorSpace,
-        CompositeOperator, const FloatRect&);
+        CompositeOperator, const FloatRect&, BlendMode);
 
-    OwnPtr<SVGImageChromeClient> m_chromeClient;
-    OwnPtr<Page> m_page;
-    IntSize m_intrinsicSize;
+    SVGSVGElement* rootElement() const;
+
+    std::unique_ptr<SVGFrameLoaderClient> m_loaderClient;
+    std::unique_ptr<SVGImageChromeClient> m_chromeClient;
+    std::unique_ptr<Page> m_page;
+    FloatSize m_intrinsicSize;
+    URL m_url;
+    FrameLoader* m_dataProtocolLoader { nullptr };
 };
 
 bool isInSVGImage(const Element*);
 
-}
+} // namespace WebCore
 
-#endif // ENABLE(SVG)
+SPECIALIZE_TYPE_TRAITS_IMAGE(SVGImage)
+
 #endif // SVGImage_h

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2013-2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,7 +32,7 @@
 #include "DFGGraph.h"
 #include "DFGInsertionSet.h"
 #include "DFGPhase.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 
 namespace JSC { namespace DFG {
 
@@ -47,77 +47,54 @@ public:
     {
         ASSERT(m_graph.m_form == SSA);
         
-        Vector<BasicBlock*> depthFirst;
-        m_graph.getBlocksInDepthFirstOrder(depthFirst);
-        
-        for (unsigned i = 0; i < depthFirst.size(); ++i) {
-            BasicBlock* block = depthFirst[i];
-            block->ssa->availabilityAtHead.fill(0);
-            block->ssa->availabilityAtTail.fill(0);
+        for (BlockIndex blockIndex = m_graph.numBlocks(); blockIndex--;) {
+            BasicBlock* block = m_graph.block(blockIndex);
+            if (!block)
+                continue;
+            block->ssa->availabilityAtHead.clear();
+            block->ssa->availabilityAtTail.clear();
         }
         
-        for (unsigned i = 0; i < depthFirst.size(); ++i) {
-            BasicBlock* block = depthFirst[i];
-            
-            // We edit availabilityAtTail in-place, but first initialize it to
-            // availabilityAtHead.
-            Operands<Node*>& availability = block->ssa->availabilityAtTail;
-            availability = block->ssa->availabilityAtHead;
-            
-            for (unsigned nodeIndex = 0; nodeIndex < block->size(); ++nodeIndex) {
-                Node* node = block->at(nodeIndex);
-                switch (node->op()) {
-                case SetLocal:
-                case MovHint:
-                case MovHintAndCheck: {
-                    availability.operand(node->local()) = node->child1().node();
-                    break;
-                }
-                    
-                case ZombieHint: {
-                    availability.operand(node->local()) = 0;
-                    break;
-                }
-                    
-                case GetArgument: {
-                    availability.operand(node->local()) = node;
-                    break;
-                }
-                    
-                default:
-                    break;
-                }
-            }
-            
-            for (unsigned j = block->numSuccessors(); j--;) {
-                BasicBlock* successor = block->successor(j);
-                Operands<Node*>& successorAvailability = successor->ssa->availabilityAtHead;
-                for (unsigned k = availability.size(); k--;) {
-                    Node* myNode = availability[k];
-                    if (!myNode)
-                        continue;
-                    
-                    if (!successor->ssa->liveAtHead.contains(myNode))
-                        continue;
-                    
-                    // Note that this may overwrite availability with a bogus node
-                    // at merge points. This is fine, since merge points have
-                    // MovHint(Phi)'s to work around this. The outcome of this is
-                    // you might have a program in which a node happens to remain
-                    // live into some block B, and separately (due to copy
-                    // propagation) just one of the predecessors of B issued a
-                    // MovHint putting that node into some local. Then in B we might
-                    // think that that node is a valid value for that local. Of
-                    // course if that local was actually live in B, B would have a
-                    // Phi for it. So essentially we'll have OSR exit dropping this
-                    // node's value into the local when we otherwise (in the DFG)
-                    // would have dropped undefined into the local. This seems
-                    // harmless.
-                    
-                    successorAvailability[k] = myNode;
-                }
-            }
+        BasicBlock* root = m_graph.block(0);
+        root->ssa->availabilityAtHead.m_locals.fill(Availability::unavailable());
+        for (unsigned argument = m_graph.m_argumentFormats.size(); argument--;) {
+            FlushedAt flushedAt = FlushedAt(
+                m_graph.m_argumentFormats[argument],
+                virtualRegisterForArgument(argument));
+            root->ssa->availabilityAtHead.m_locals.argument(argument) = Availability(flushedAt);
         }
+
+        // This could be made more efficient by processing blocks in reverse postorder.
+        
+        LocalOSRAvailabilityCalculator calculator;
+        bool changed;
+        do {
+            changed = false;
+            
+            for (BlockIndex blockIndex = 0; blockIndex < m_graph.numBlocks(); ++blockIndex) {
+                BasicBlock* block = m_graph.block(blockIndex);
+                if (!block)
+                    continue;
+                
+                calculator.beginBlock(block);
+                
+                for (unsigned nodeIndex = 0; nodeIndex < block->size(); ++nodeIndex)
+                    calculator.executeNode(block->at(nodeIndex));
+                
+                if (calculator.m_availability == block->ssa->availabilityAtTail)
+                    continue;
+                
+                block->ssa->availabilityAtTail = calculator.m_availability;
+                changed = true;
+                
+                for (unsigned successorIndex = block->numSuccessors(); successorIndex--;) {
+                    BasicBlock* successor = block->successor(successorIndex);
+                    successor->ssa->availabilityAtHead.merge(calculator.m_availability);
+                    successor->ssa->availabilityAtHead.pruneByLiveness(
+                        m_graph, successor->firstOrigin().forExit);
+                }
+            }
+        } while (changed);
         
         return true;
     }
@@ -127,6 +104,110 @@ bool performOSRAvailabilityAnalysis(Graph& graph)
 {
     SamplingRegion samplingRegion("DFG OSR Availability Analysis Phase");
     return runPhase<OSRAvailabilityAnalysisPhase>(graph);
+}
+
+LocalOSRAvailabilityCalculator::LocalOSRAvailabilityCalculator()
+{
+}
+
+LocalOSRAvailabilityCalculator::~LocalOSRAvailabilityCalculator()
+{
+}
+
+void LocalOSRAvailabilityCalculator::beginBlock(BasicBlock* block)
+{
+    m_availability = block->ssa->availabilityAtHead;
+}
+
+void LocalOSRAvailabilityCalculator::endBlock(BasicBlock* block)
+{
+    m_availability = block->ssa->availabilityAtTail;
+}
+
+void LocalOSRAvailabilityCalculator::executeNode(Node* node)
+{
+    switch (node->op()) {
+    case PutStack: {
+        StackAccessData* data = node->stackAccessData();
+        m_availability.m_locals.operand(data->local).setFlush(data->flushedAt());
+        break;
+    }
+        
+    case KillStack: {
+        m_availability.m_locals.operand(node->unlinkedLocal()).setFlush(FlushedAt(ConflictingFlush));
+        break;
+    }
+
+    case GetStack: {
+        StackAccessData* data = node->stackAccessData();
+        m_availability.m_locals.operand(data->local) = Availability(node, data->flushedAt());
+        break;
+    }
+
+    case MovHint: {
+        m_availability.m_locals.operand(node->unlinkedLocal()).setNode(node->child1().node());
+        break;
+    }
+
+    case ZombieHint: {
+        m_availability.m_locals.operand(node->unlinkedLocal()).setNodeUnavailable();
+        break;
+    }
+        
+    case LoadVarargs:
+    case ForwardVarargs: {
+        LoadVarargsData* data = node->loadVarargsData();
+        m_availability.m_locals.operand(data->count) =
+            Availability(FlushedAt(FlushedInt32, data->machineCount));
+        for (unsigned i = data->limit; i--;) {
+            m_availability.m_locals.operand(VirtualRegister(data->start.offset() + i)) =
+                Availability(FlushedAt(FlushedJSValue, VirtualRegister(data->machineStart.offset() + i)));
+        }
+        break;
+    }
+        
+    case PhantomDirectArguments:
+    case PhantomClonedArguments: {
+        InlineCallFrame* inlineCallFrame = node->origin.semantic.inlineCallFrame;
+        if (!inlineCallFrame) {
+            // We don't need to record anything about how the arguments are to be recovered. It's just a
+            // given that we can read them from the stack.
+            break;
+        }
+        
+        if (inlineCallFrame->isVarargs()) {
+            // Record how to read each argument and the argument count.
+            Availability argumentCount =
+                m_availability.m_locals.operand(inlineCallFrame->stackOffset + JSStack::ArgumentCount);
+            
+            m_availability.m_heap.set(PromotedHeapLocation(ArgumentCountPLoc, node), argumentCount);
+        }
+        
+        if (inlineCallFrame->isClosureCall) {
+            Availability callee = m_availability.m_locals.operand(
+                inlineCallFrame->stackOffset + JSStack::Callee);
+            m_availability.m_heap.set(PromotedHeapLocation(ArgumentsCalleePLoc, node), callee);
+        }
+        
+        for (unsigned i = 0; i < inlineCallFrame->arguments.size() - 1; ++i) {
+            Availability argument = m_availability.m_locals.operand(
+                inlineCallFrame->stackOffset + CallFrame::argumentOffset(i));
+            
+            m_availability.m_heap.set(PromotedHeapLocation(ArgumentPLoc, node, i), argument);
+        }
+        break;
+    }
+        
+    case PutHint: {
+        m_availability.m_heap.set(
+            PromotedHeapLocation(node->child1().node(), node->promotedLocationDescriptor()),
+            Availability(node->child2().node()));
+        break;
+    }
+        
+    default:
+        break;
+    }
 }
 
 } } // namespace JSC::DFG

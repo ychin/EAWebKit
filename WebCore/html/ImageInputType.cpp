@@ -33,20 +33,14 @@
 #include "InputTypeNames.h"
 #include "MouseEvent.h"
 #include "RenderImage.h"
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
 using namespace HTMLNames;
 
-inline ImageInputType::ImageInputType(HTMLInputElement& element)
+ImageInputType::ImageInputType(HTMLInputElement& element)
     : BaseButtonInputType(element)
 {
-}
-
-OwnPtr<InputType> ImageInputType::create(HTMLInputElement& element)
-{
-    return adoptPtr(new ImageInputType(element));
 }
 
 const AtomicString& ImageInputType::formControlType() const
@@ -70,8 +64,8 @@ bool ImageInputType::appendFormData(FormDataList& encoding, bool) const
         return true;
     }
 
-    DEFINE_STATIC_LOCAL(String, dotXString, (ASCIILiteral(".x")));
-    DEFINE_STATIC_LOCAL(String, dotYString, (ASCIILiteral(".y")));
+    DEPRECATED_DEFINE_STATIC_LOCAL(String, dotXString, (ASCIILiteral(".x")));
+    DEPRECATED_DEFINE_STATIC_LOCAL(String, dotYString, (ASCIILiteral(".y")));
     encoding.appendData(name + dotXString, m_clickLocation.x());
     encoding.appendData(name + dotYString, m_clickLocation.y());
 
@@ -91,58 +85,62 @@ void ImageInputType::handleDOMActivateEvent(Event* event)
     if (element->isDisabledFormControl() || !element->form())
         return;
     element->setActivatedSubmit(true);
-    if (event->underlyingEvent() && event->underlyingEvent()->isMouseEvent()) {
-        MouseEvent* mouseEvent = static_cast<MouseEvent*>(event->underlyingEvent());
-        m_clickLocation = IntPoint(mouseEvent->offsetX(), mouseEvent->offsetY());
-    } else
-        m_clickLocation = IntPoint();
+
+    m_clickLocation = IntPoint();
+    if (event->underlyingEvent()) {
+        Event& underlyingEvent = *event->underlyingEvent();
+        if (is<MouseEvent>(underlyingEvent)) {
+            MouseEvent& mouseEvent = downcast<MouseEvent>(underlyingEvent);
+            if (!mouseEvent.isSimulated())
+                m_clickLocation = IntPoint(mouseEvent.offsetX(), mouseEvent.offsetY());
+        }
+    }
+
     element->form()->prepareForSubmission(event); // Event handlers can run.
     element->setActivatedSubmit(false);
     event->setDefaultHandled();
 }
 
-RenderElement* ImageInputType::createRenderer(RenderArena& arena, RenderStyle&) const
+RenderPtr<RenderElement> ImageInputType::createInputRenderer(Ref<RenderStyle>&& style)
 {
-    RenderImage* image = new (arena) RenderImage(element());
-    image->setImageResource(RenderImageResource::create());
-    return image;
+    return createRenderer<RenderImage>(element(), WTF::move(style));
 }
 
 void ImageInputType::altAttributeChanged()
 {
-    RenderImage* image = toRenderImage(element().renderer());
-    if (!image)
+    auto* renderer = downcast<RenderImage>(element().renderer());
+    if (!renderer)
         return;
-    image->updateAltText();
+    renderer->updateAltText();
 }
 
 void ImageInputType::srcAttributeChanged()
 {
     if (!element().renderer())
         return;
-    element().imageLoader()->updateFromElementIgnoringPreviousError();
+    element().ensureImageLoader().updateFromElementIgnoringPreviousError();
 }
 
 void ImageInputType::attach()
 {
     BaseButtonInputType::attach();
 
-    HTMLImageLoader* imageLoader = element().imageLoader();
-    imageLoader->updateFromElement();
+    HTMLImageLoader& imageLoader = element().ensureImageLoader();
+    imageLoader.updateFromElement();
 
-    RenderImage* renderer = toRenderImage(element().renderer());
+    auto* renderer = downcast<RenderImage>(element().renderer());
     if (!renderer)
         return;
 
-    if (imageLoader->hasPendingBeforeLoadEvent())
+    if (imageLoader.hasPendingBeforeLoadEvent())
         return;
 
-    RenderImageResource* imageResource = renderer->imageResource();
-    imageResource->setCachedImage(imageLoader->image()); 
+    auto& imageResource = renderer->imageResource();
+    imageResource.setCachedImage(imageLoader.image());
 
     // If we have no image at all because we have no src attribute, set
     // image height and width for the alt text instead.
-    if (!imageLoader->image() && !imageResource->cachedImage())
+    if (!imageLoader.image() && !imageResource.cachedImage())
         renderer->setImageSizeForAltText();
 }
 
@@ -182,17 +180,15 @@ unsigned ImageInputType::height() const
             return height;
 
         // If the image is available, use its height.
-        if (element->hasImageLoader()) {
-            HTMLImageLoader* imageLoader = element->imageLoader();
-            if (imageLoader->image())
-                return imageLoader->image()->imageSizeForRenderer(element->renderer(), 1).height();
-        }
+        HTMLImageLoader* imageLoader = element->imageLoader();
+        if (imageLoader && imageLoader->image())
+            return imageLoader->image()->imageSizeForRenderer(element->renderer(), 1).height();
     }
 
     element->document().updateLayout();
 
     RenderBox* box = element->renderBox();
-    return box ? adjustForAbsoluteZoom(box->contentHeight(), box) : 0;
+    return box ? adjustForAbsoluteZoom(box->contentHeight(), *box) : 0;
 }
 
 unsigned ImageInputType::width() const
@@ -206,17 +202,15 @@ unsigned ImageInputType::width() const
             return width;
 
         // If the image is available, use its width.
-        if (element->hasImageLoader()) {
-            HTMLImageLoader* imageLoader = element->imageLoader();
-            if (imageLoader->image())
-                return imageLoader->image()->imageSizeForRenderer(element->renderer(), 1).width();
-        }
+        HTMLImageLoader* imageLoader = element->imageLoader();
+        if (imageLoader && imageLoader->image())
+            return imageLoader->image()->imageSizeForRenderer(element->renderer(), 1).width();
     }
 
     element->document().updateLayout();
 
     RenderBox* box = element->renderBox();
-    return box ? adjustForAbsoluteZoom(box->contentWidth(), box) : 0;
+    return box ? adjustForAbsoluteZoom(box->contentWidth(), *box) : 0;
 }
 
 } // namespace WebCore

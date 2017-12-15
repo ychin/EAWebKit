@@ -10,10 +10,10 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -35,7 +35,9 @@
 #include "JSNode.h"
 #include "RuntimeEnabledFeatures.h"
 #include "Settings.h"
-#include "StylePropertySet.h"
+#include "StyleProperties.h"
+#include "StyledElement.h"
+#include <runtime/IdentifierInlines.h>
 #include <runtime/StringPrototype.h>
 #include <wtf/ASCIICType.h>
 #include <wtf/text/AtomicString.h>
@@ -44,19 +46,12 @@
 #include <wtf/text/WTFString.h>
 
 using namespace JSC;
-using namespace WTF;
-using namespace std;
 
 namespace WebCore {
 
-void JSCSSStyleDeclaration::visitChildren(JSCell* cell, SlotVisitor& visitor)
+void JSCSSStyleDeclaration::visitAdditionalChildren(SlotVisitor& visitor)
 {
-    JSCSSStyleDeclaration* thisObject = jsCast<JSCSSStyleDeclaration*>(cell);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    COMPILE_ASSERT(StructureFlags & OverridesVisitChildren, OverridesVisitChildrenWithoutSettingFlag);
-    ASSERT(thisObject->structure()->typeInfo().overridesVisitChildren());
-    Base::visitChildren(thisObject, visitor);
-    visitor.addOpaqueRoot(root(&thisObject->impl()));
+    visitor.addOpaqueRoot(root(&impl()));
 }
 
 class CSSPropertyInfo {
@@ -65,8 +60,7 @@ public:
     bool hadPixelOrPosPrefix;
 };
 
-enum PropertyNamePrefix
-{
+enum PropertyNamePrefix {
     PropertyNamePrefixNone,
     PropertyNamePrefixCSS,
     PropertyNamePrefixPixel,
@@ -190,7 +184,7 @@ static CSSPropertyInfo cssPropertyIDForJSCSSPropertyName(PropertyName propertyNa
 
     String stringForCache = String(propertyNameString);
     typedef HashMap<String, CSSPropertyInfo> CSSPropertyInfoMap;
-    DEFINE_STATIC_LOCAL(CSSPropertyInfoMap, propertyInfoCache, ());
+    DEPRECATED_DEFINE_STATIC_LOCAL(CSSPropertyInfoMap, propertyInfoCache, ());
     propertyInfo = propertyInfoCache.get(stringForCache);
     if (propertyInfo.propertyID)
         return propertyInfo;
@@ -304,11 +298,6 @@ static inline JSValue cssPropertyGetterPixelOrPosPrefix(ExecState* exec, JSCSSSt
     return getPropertyValueFallback(exec, thisObj, propertyID);
 }
 
-static JSValue cssPropertyGetterPixelOrPosPrefixCallback(ExecState* exec, JSValue slotBase, unsigned propertyID)
-{
-    return cssPropertyGetterPixelOrPosPrefix(exec, jsCast<JSCSSStyleDeclaration*>(asObject(slotBase)), propertyID);
-}
-
 static inline JSValue cssPropertyGetter(ExecState* exec, JSCSSStyleDeclaration* thisObj, unsigned propertyID)
 {
     RefPtr<CSSValue> v = thisObj->impl().getPropertyCSSValueInternal(static_cast<CSSPropertyID>(propertyID));
@@ -318,21 +307,16 @@ static inline JSValue cssPropertyGetter(ExecState* exec, JSCSSStyleDeclaration* 
     return getPropertyValueFallback(exec, thisObj, propertyID);
 }
 
-static JSValue cssPropertyGetterCallback(ExecState* exec, JSValue slotBase, unsigned propertyID)
-{
-    return cssPropertyGetter(exec, jsCast<JSCSSStyleDeclaration*>(asObject(slotBase)), propertyID);
-}
-
-bool JSCSSStyleDeclaration::getOwnPropertySlotDelegate(ExecState*, PropertyName propertyIdentifier, PropertySlot& slot)
+bool JSCSSStyleDeclaration::getOwnPropertySlotDelegate(ExecState* exec, PropertyName propertyIdentifier, PropertySlot& slot)
 {
     CSSPropertyInfo propertyInfo = cssPropertyIDForJSCSSPropertyName(propertyIdentifier);
     if (!propertyInfo.propertyID)
         return false;
 
     if (propertyInfo.hadPixelOrPosPrefix)
-        slot.setCustomIndex(this, ReadOnly | DontDelete | DontEnum, static_cast<unsigned>(propertyInfo.propertyID), cssPropertyGetterPixelOrPosPrefixCallback);
+        slot.setValue(this, DontDelete, cssPropertyGetterPixelOrPosPrefix(exec, this, propertyInfo.propertyID));
     else
-        slot.setCustomIndex(this, ReadOnly | DontDelete | DontEnum, static_cast<unsigned>(propertyInfo.propertyID), cssPropertyGetterCallback);
+        slot.setValue(this, DontDelete, cssPropertyGetter(exec, this, propertyInfo.propertyID));
     return true;
 }
 
@@ -356,8 +340,10 @@ bool JSCSSStyleDeclaration::putDelegate(ExecState* exec, PropertyName propertyNa
     }
 
     ExceptionCode ec = 0;
-    impl().setPropertyInternal(static_cast<CSSPropertyID>(propertyInfo.propertyID), propValue, important, ec);
+    CSSPropertyID propertyID = static_cast<CSSPropertyID>(propertyInfo.propertyID);
+    impl().setPropertyInternal(propertyID, propValue, important, ec);
     setDOMException(exec, ec);
+
     return true;
 }
 
@@ -371,7 +357,7 @@ JSValue JSCSSStyleDeclaration::getPropertyCSSValue(ExecState* exec)
     if (!cssValue)
         return jsNull();
 
-    currentWorld(exec).m_cssValueRoots.add(cssValue.get(), root(&impl())); // Balanced by JSCSSValueOwner::finalize().
+    globalObject()->world().m_cssValueRoots.add(cssValue.get(), root(&impl())); // Balanced by JSCSSValueOwner::finalize().
     return toJS(exec, globalObject(), WTF::getPtr(cssValue));
 }
 
@@ -389,11 +375,11 @@ void JSCSSStyleDeclaration::getOwnPropertyNames(JSObject* object, ExecState* exe
         Vector<String, numCSSProperties> jsPropertyNames;
         for (int id = firstCSSProperty; id < firstCSSProperty + numCSSProperties; ++id)
             jsPropertyNames.append(getJSPropertyName(static_cast<CSSPropertyID>(id)));
-        sort(jsPropertyNames.begin(), jsPropertyNames.end(), WTF::codePointCompareLessThan);
+        std::sort(jsPropertyNames.begin(), jsPropertyNames.end(), WTF::codePointCompareLessThan);
 
         propertyIdentifiers = new Identifier[numCSSProperties];
         for (int i = 0; i < numCSSProperties; ++i)
-            propertyIdentifiers[i] = Identifier(exec, jsPropertyNames[i].impl());
+            propertyIdentifiers[i] = Identifier::fromString(exec, jsPropertyNames[i]);
     }
 
     for (int i = 0; i < numCSSProperties; ++i)

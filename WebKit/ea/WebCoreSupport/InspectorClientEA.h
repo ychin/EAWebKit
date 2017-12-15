@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2007 Apple Inc.  All rights reserved.
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,8 +35,6 @@
 #include "InspectorFrontendChannel.h"
 #include "InspectorFrontendClientLocal.h"
 #include <wtf/Forward.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 
 
 #include <eastl/string.h>
@@ -58,16 +56,16 @@ class InspectorClientEA : public InspectorClient, public InspectorFrontendChanne
 public:
     InspectorClientEA(EA::WebKit::WebPage*);
 
-    virtual void inspectorDestroyed(void) OVERRIDE; 
+    virtual void inspectorDestroyed(void) override; 
 
-    virtual WebCore::InspectorFrontendChannel* openInspectorFrontend(WebCore::InspectorController*) OVERRIDE;
-    virtual void closeInspectorFrontend() OVERRIDE;
-    virtual void bringFrontendToFront() OVERRIDE;
+    virtual WebCore::InspectorFrontendChannel* openInspectorFrontend(WebCore::InspectorController*) override;
+    virtual void closeInspectorFrontend() override;
+    virtual void bringFrontendToFront() override;
 
-    virtual void highlight(void) OVERRIDE;
-    virtual void hideHighlight(void) OVERRIDE;
+    virtual void highlight(void) override;
+    virtual void hideHighlight(void) override;
 
-    virtual bool sendMessageToFrontend(const String&) OVERRIDE;
+    virtual bool sendMessageToFrontend(const String&) override;
 
     void releaseFrontendPage(void);
 
@@ -83,20 +81,20 @@ public:
     InspectorFrontendClientEA(EA::WebKit::WebPage* inspectedWebPage, EA::WebKit::View *inspectorView, InspectorClientEA* inspectorClient);
     virtual ~InspectorFrontendClientEA(void);
 
-    virtual void frontendLoaded(void) OVERRIDE;
-    virtual String localizedStringsURL(void) OVERRIDE;
+    virtual void frontendLoaded(void) override;
+    virtual String localizedStringsURL(void) override;
 
-    virtual void bringToFront(void) OVERRIDE;
-    virtual void closeWindow(void) OVERRIDE;
+    virtual void bringToFront(void) override;
+    virtual void closeWindow(void) override;
 
-    virtual void attachWindow(DockSide) OVERRIDE;
-    virtual void detachWindow(void) OVERRIDE;
+    virtual void attachWindow(DockSide) override;
+    virtual void detachWindow(void) override;
 
-	virtual void setAttachedWindowHeight(unsigned height) OVERRIDE;
-    virtual void setAttachedWindowWidth(unsigned) OVERRIDE;
-    virtual void setToolbarHeight(unsigned) OVERRIDE;
+	virtual void setAttachedWindowHeight(unsigned height) override;
+    virtual void setAttachedWindowWidth(unsigned) override;
+    virtual void setToolbarHeight(unsigned) override;
 
-    virtual void inspectedURLChanged(const String& newURL) OVERRIDE;
+    virtual void inspectedURLChanged(const String& newURL) override;
 
 	void disconnectFromBackend(void);
 

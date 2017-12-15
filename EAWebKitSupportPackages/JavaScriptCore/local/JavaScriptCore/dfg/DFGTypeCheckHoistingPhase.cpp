@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2012, 2013, 2015 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,7 +33,7 @@
 #include "DFGInsertionSet.h"
 #include "DFGPhase.h"
 #include "DFGVariableAccessDataDump.h"
-#include "Operations.h"
+#include "JSCInlines.h"
 #include <wtf/HashMap.h>
 
 namespace JSC { namespace DFG {
@@ -115,7 +115,6 @@ public:
                 // from the node, before doing any appending.
                 switch (node->op()) {
                 case SetArgument: {
-                    ASSERT(!blockIndex);
                     // Insert a GetLocal and a CheckStructure immediately following this
                     // SetArgument, if the variable was a candidate for structure hoisting.
                     // If the basic block previously only had the SetArgument as its
@@ -127,20 +126,23 @@ public:
                     if (!iter->value.m_structure && !iter->value.m_arrayModeIsValid)
                         break;
 
-                    CodeOrigin codeOrigin = node->codeOrigin;
+                    // Currently we should only be doing this hoisting for SetArguments at the prologue.
+                    ASSERT(!blockIndex);
+
+                    NodeOrigin origin = node->origin;
                     
                     Node* getLocal = insertionSet.insertNode(
-                        indexInBlock + 1, variable->prediction(), GetLocal, codeOrigin,
+                        indexInBlock + 1, variable->prediction(), GetLocal, origin,
                         OpInfo(variable), Edge(node));
                     if (iter->value.m_structure) {
                         insertionSet.insertNode(
-                            indexInBlock + 1, SpecNone, CheckStructure, codeOrigin,
+                            indexInBlock + 1, SpecNone, CheckStructure, origin,
                             OpInfo(m_graph.addStructureSet(iter->value.m_structure)),
                             Edge(getLocal, CellUse));
                     } else if (iter->value.m_arrayModeIsValid) {
                         ASSERT(iter->value.m_arrayModeHoistingOkay);
                         insertionSet.insertNode(
-                            indexInBlock + 1, SpecNone, CheckArray, codeOrigin,
+                            indexInBlock + 1, SpecNone, CheckArray, origin,
                             OpInfo(iter->value.m_arrayMode.asWord()),
                             Edge(getLocal, CellUse));
                     } else
@@ -163,33 +165,22 @@ public:
                     if (!iter->value.m_structure && !iter->value.m_arrayModeIsValid)
                         break;
 
-                    // First insert a dead SetLocal to tell OSR that the child's value should
-                    // be dropped into this bytecode variable if the CheckStructure decides
-                    // to exit.
-                    
-                    CodeOrigin codeOrigin = node->codeOrigin;
+                    NodeOrigin origin = node->origin;
                     Edge child1 = node->child1();
                     
-                    insertionSet.insertNode(
-                        indexInBlock, SpecNone, SetLocal, codeOrigin, OpInfo(variable), child1);
-
-                    // Use NodeExitsForward to indicate that we should exit to the next
-                    // bytecode instruction rather than reexecuting the current one.
-                    Node* newNode = 0;
                     if (iter->value.m_structure) {
-                        newNode = insertionSet.insertNode(
-                            indexInBlock, SpecNone, CheckStructure, codeOrigin,
+                        insertionSet.insertNode(
+                            indexInBlock, SpecNone, CheckStructure, origin,
                             OpInfo(m_graph.addStructureSet(iter->value.m_structure)),
                             Edge(child1.node(), CellUse));
                     } else if (iter->value.m_arrayModeIsValid) {
                         ASSERT(iter->value.m_arrayModeHoistingOkay);
-                        newNode = insertionSet.insertNode(
-                            indexInBlock, SpecNone, CheckArray, codeOrigin,
+                        insertionSet.insertNode(
+                            indexInBlock, SpecNone, CheckArray, origin,
                             OpInfo(iter->value.m_arrayMode.asWord()),
                             Edge(child1.node(), CellUse));
                     } else
                         RELEASE_ASSERT_NOT_REACHED();
-                    newNode->mergeFlags(NodeExitsForward);
                     changed = true;
                     break;
                 }
@@ -226,11 +217,7 @@ private:
             for (unsigned indexInBlock = 0; indexInBlock < block->size(); ++indexInBlock) {
                 Node* node = block->at(indexInBlock);
                 switch (node->op()) {
-                case CheckStructure:
-                case StructureTransitionWatchpoint: {
-                    // We currently rely on the fact that we're the only ones who would
-                    // insert these nodes with NodeExitsForward.
-                    RELEASE_ASSERT(!(node->flags() & NodeExitsForward));
+                case CheckStructure: {
                     Node* child = node->child1().node();
                     if (child->op() != GetLocal)
                         break;
@@ -241,7 +228,9 @@ private:
                     noticeStructureCheck(variable, node->structureSet());
                     break;
                 }
-                    
+
+                case ArrayifyToStructure:
+                case Arrayify:
                 case GetByOffset:
                 case PutByOffset:
                 case PutStructure:
@@ -249,6 +238,7 @@ private:
                 case ReallocatePropertyStorage:
                 case GetButterfly:
                 case GetByVal:
+                case PutByValDirect:
                 case PutByVal:
                 case PutByValAlias:
                 case GetArrayLength:
@@ -256,23 +246,10 @@ private:
                 case GetIndexedPropertyStorage:
                 case GetTypedArrayByteOffset:
                 case Phantom:
+                case MovHint:
+                case MultiGetByOffset:
+                case MultiPutByOffset:
                     // Don't count these uses.
-                    break;
-                    
-                case ArrayifyToStructure:
-                case Arrayify:
-                    if (node->arrayMode().conversion() == Array::RageConvert) {
-                        // Rage conversion changes structures. We should avoid tying to do
-                        // any kind of hoisting when rage conversion is in play.
-                        Node* child = node->child1().node();
-                        if (child->op() != GetLocal)
-                            break;
-                        VariableAccessData* variable = child->variableAccessData();
-                        variable->vote(VoteOther);
-                        if (!shouldConsiderForHoisting<StructureTypeCheck>(variable))
-                            break;
-                        noticeStructureCheck(variable, 0);
-                    }
                     break;
                     
                 case SetLocal: {
@@ -292,13 +269,6 @@ private:
                                 break;
                             
                             noticeStructureCheck(variable, subNode->structureSet());
-                            break;
-                        }
-                        case StructureTransitionWatchpoint: {
-                            if (subNode->child1() != source)
-                                break;
-                            
-                            noticeStructureCheck(variable, subNode->structure());
                             break;
                         }
                         default:
@@ -328,9 +298,6 @@ private:
                 Node* node = block->at(indexInBlock);
                 switch (node->op()) {
                 case CheckArray: {
-                    // We currently rely on the fact that we're the only ones who would
-                    // insert these nodes with NodeExitsForward.
-                    RELEASE_ASSERT(!(node->flags() & NodeExitsForward));
                     Node* child = node->child1().node();
                     if (child->op() != GetLocal)
                         break;
@@ -343,18 +310,21 @@ private:
                 }
 
                 case CheckStructure:
-                case StructureTransitionWatchpoint:
                 case GetByOffset:
                 case PutByOffset:
                 case PutStructure:
                 case ReallocatePropertyStorage:
                 case GetButterfly:
                 case GetByVal:
+                case PutByValDirect:
                 case PutByVal:
                 case PutByValAlias:
                 case GetArrayLength:
                 case GetIndexedPropertyStorage:
                 case Phantom:
+                case MovHint:
+                case MultiGetByOffset:
+                case MultiPutByOffset:
                     // Don't count these uses.
                     break;
                     
@@ -391,13 +361,6 @@ private:
                                 break;
                             
                             noticeStructureCheckAccountingForArrayMode(variable, subNode->structureSet());
-                            break;
-                        }
-                        case StructureTransitionWatchpoint: {
-                            if (subNode->child1() != source)
-                                break;
-                            
-                            noticeStructureCheckAccountingForArrayMode(variable, subNode->structure());
                             break;
                         }
                         case CheckArray: {
@@ -510,7 +473,7 @@ private:
             noticeStructureCheck(variable, 0);
             return;
         }
-        noticeStructureCheck(variable, set.singletonStructure());
+        noticeStructureCheck(variable, set.onlyStructure());
     }
 
     void noticeCheckArray(VariableAccessData* variable, ArrayMode arrayMode)

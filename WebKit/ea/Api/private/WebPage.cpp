@@ -86,10 +86,8 @@
 #include "PlatformKeyboardEvent.h"
 #include "PlatformTouchEvent.h"
 #include "PlatformWheelEvent.h"
-#include "PluginDatabase.h"
-#include "PluginDatabase.h"
-#include "PluginPackage.h"
 #include "ProgressTracker.h"
+#include "ProgressTrackerClientEA.h"
 #include <wtf/RefPtr.h>
 #include "RenderTextControl.h"
 #include "SchemeRegistry.h"
@@ -108,13 +106,35 @@
 
 #include "DatabaseManager.h"
 #include "DatabaseTracker.h"
+#include "WebDataBaseProvider.h"
+#include "WebStorageNamespaceProvider.h"
+#include "VisitedLinkStoreEA.h"
+#include "UserContentController.h"
+
+#include "InspectorAgentBase.h"
+#include "PageConfiguration.h"
+#include "BackForwardController.h"
 
 namespace EA
 {
 namespace WebKit
 {
 extern const char8_t* kDefaultPageGroupName;
+static const char8_t* kLocalStorageSubDir = "LocalStorage";
+static const char8_t* kOfflineCacheSubDir = "OfflineCache";
 
+WTF::String constructPathInTempDir(const char* subDir)
+{
+    char tempDir[EA::IO::kMaxDirectoryLength];
+    memset(tempDir, 0, EA::IO::kMaxDirectoryLength);
+    if (EA::WebKit::GetFileSystem()->GetTempDirectory(tempDir, EA::IO::kMaxDirectoryLength - 1))
+    {
+        WTF::String tempDirStr = WTF::String::fromUTF8(tempDir, strlen(tempDir));
+        return WebCore::pathByAppendingComponent(tempDirStr, subDir);
+    }
+
+    return WTF::String();
+}
 // Apply the global EAWebKit Params to the page
 static void ApplyParamsToSettings(WebCore::Settings& settings)
 {
@@ -152,21 +172,26 @@ static void ApplyParamsToSettings(WebCore::Settings& settings)
     settings.setDeveloperExtrasEnabled(true);
     settings.setOfflineWebApplicationCacheEnabled(true);
     settings.setXSSAuditorEnabled(true);
+	settings.setAuthorAndUserStylesEnabled(true);
+	settings.setRequestAnimationFrameEnabled(true);
+	//settings.setImagesEnabled(false); //could be interesting for profiling a page
+	//settings.setHiddenPageCSSAnimationSuspensionEnabled(true);//could be interesting for multiple views
 
-	char tempDir[EA::IO::kMaxDirectoryLength];
-	memset(tempDir, 0, EA::IO::kMaxDirectoryLength);
-	if(EA::WebKit::GetFileSystem()->GetTempDirectory(tempDir, EA::IO::kMaxDirectoryLength - 1))
-	{
-		WTF::String tempDirStr = WTF::String::fromUTF8(tempDir,strlen(tempDir));
-		(void) tempDirStr;
+    WTF::String localStoragePath = constructPathInTempDir(kLocalStorageSubDir);
+    if (!localStoragePath.isEmpty())
+    {
+        settings.setLocalStorageEnabled(true);
+        if (settings.localStorageDatabasePath().isEmpty())
+            settings.setLocalStorageDatabasePath(localStoragePath);
+    }
 
-		settings.setLocalStorageEnabled(true);
-		if(settings.localStorageDatabasePath().isEmpty())
-			settings.setLocalStorageDatabasePath(WebCore::pathByAppendingComponent(tempDirStr, "LocalStorage"));
-
-		settings.setOfflineWebApplicationCacheEnabled(true);
-		if(WebCore::cacheStorage().cacheDirectory().isEmpty())
-			WebCore::cacheStorage().setCacheDirectory(WebCore::pathByAppendingComponent(tempDirStr, "OfflineCache"));
+    WTF::String offlineCachePath = constructPathInTempDir(kOfflineCacheSubDir);
+    if (!offlineCachePath.isEmpty())
+    {
+        settings.setOfflineWebApplicationCacheEnabled(true);
+        if (WebCore::ApplicationCacheStorage::singleton().cacheDirectory().isEmpty())
+			WebCore::ApplicationCacheStorage::singleton().setCacheDirectory(offlineCachePath);
+    }
 
 		//Web SQL database is deprecated and does not seem to function correctly anymore. 
 #if 0// ENABLE(SQL_DATABASE)
@@ -179,7 +204,6 @@ static void ApplyParamsToSettings(WebCore::Settings& settings)
 			dbInitialized = true;
 		}
 #endif
-	}
 
 	// We disable page cache because it causes WebCore to hold onto some resources at shutdown and results in hard to reproduce bugs.   
     settings.setUsesPageCache(false);
@@ -303,29 +327,34 @@ WebPagePrivate::WebPagePrivate(WebPage *wPage)
 , useFixedLayout(false)
 , mInspector(NULL)
 {
-	WebCore::Page::PageClients pageClients;
-	pageClients.chromeClient = new WebCore::ChromeClientEA(webPage);
-	pageClients.editorClient = new WebCore::EditorClientEA(webPage);
-	pageClients.dragClient = new WebCore::EmptyDragClient(); //Even though we don't suppor it, we still need to provide a stub implementation otherwise user action can cause it to crash. 
-	pageClients.loaderClientForMainFrame = new WebCore::FrameLoaderClientEA();
+	WebCore::PageConfiguration pageConfiguration;
+    fillWithEmptyClients(pageConfiguration);
+	pageConfiguration.chromeClient = new WebCore::ChromeClientEA(webPage);
+	pageConfiguration.editorClient = new WebCore::EditorClientEA(webPage);
+	pageConfiguration.loaderClientForMainFrame = new WebCore::FrameLoaderClientEA();
+	pageConfiguration.progressTrackerClient = new WebCore::ProgressTrackerClientEA(webPage);
+    WTF::String localStoragePath = constructPathInTempDir(kLocalStorageSubDir);
+    if (!localStoragePath.isEmpty())
+    {
+        pageConfiguration.storageNamespaceProvider = WebStorageNamespaceProvider::create(localStoragePath);
+        // This is the guy for IndexedDB which I don't believe we support yet.  It is not a mistake to create this guy inside the if check.
+        pageConfiguration.databaseProvider = &WebDatabaseProvider::singleton(); 
+    }
+    // Use this for progress notification configuration.progressTrackerClient = static_cast<WebFrameLoaderClient*>(configuration.loaderClientForMainFrame);
+	pageConfiguration.inspectorClient = new WebCore::InspectorClientEA(webPage);
 
-#if ENABLE(INSPECTOR)
-	pageClients.inspectorClient = new WebCore::InspectorClientEA(webPage);
-#else
-    pageClients.inspectorClient = NULL;
-#endif
+    VisitedLinkStoreEA::setShouldTrackVisitedLinks(true);
+    pageConfiguration.visitedLinkStore = VisitedLinkStoreEA::create();
+    pageConfiguration.userContentController = WebCore::UserContentController::create();
 
-	page = new WebCore::Page(pageClients);
+	page = new WebCore::Page(pageConfiguration);
 	page->setGroupName(kDefaultPageGroupName);
 
     // Set up the page settings
     ApplyParamsToSettings(page->settings());
-
 #if 0
 	memset(actions, 0, sizeof(actions));
 #endif
-	WebCore::PageGroup::setShouldTrackVisitedLinks(true);
-
 #if ENABLE(NOTIFICATIONS)    
 	//NotificationPresenterClientEA::notificationPresenter()->addClient();
 #endif
@@ -397,8 +426,8 @@ void WebPagePrivate::updateNavigationActions()
 		info.mpView = webView;
 		info.mpUserData = webView->GetUserData();
 		
-		info.mCanGoBack = page->canGoBackOrForward(-1);
-		info.mCanGoForward = page->canGoBackOrForward(1);
+		info.mCanGoBack = page->backForward().canGoBackOrForward(-1);
+		info.mCanGoForward = page->backForward().canGoBackOrForward(1);
 		info.mCanStop = loader.isLoading();
 		info.mCanReload = !info.mCanStop;
 
@@ -927,24 +956,18 @@ WebPage::ViewportAttributes& WebPage::ViewportAttributes::operator=(const WebPag
 
 WebPage::WebPage(View *pView)
 : d(new WebPagePrivate(this))
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
 , mRemoteInspectorId(0)
-#endif
 {
     setView(pView);
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
     mRemoteInspectorId = ::WebKit::WebInspectorServer::shared().registerPage(this);
-#endif
 }
 
 WebPage::~WebPage()
 {
 	d->createMainFrame();
 	WebCore::FrameLoader& loader = d->mainFrame->d->frame->loader();
-    loader.detachFromParent();
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)    
+    loader.detachFromParent(); 
     ::WebKit::WebInspectorServer::shared().unregisterPage(mRemoteInspectorId);
-#endif
     delete d;
 }
 
@@ -986,12 +1009,13 @@ void WebPage::setView(View* pView)
 
     if (pView)
     {
-		d->client = adoptPtr(new WebCore::PageClientWebView(pView, this));
+		d->client = std::make_unique<WebCore::PageClientWebView>(pView, this);
 
-#if USE(TILED_BACKING_STORE)
+#if USE(COORDINATED_GRAPHICS)
         if (pView->IsUsingTiledBackingStore())
         {
-            d->page->settings().setTiledBackingStoreEnabled(true);
+			//EAWEBKITBUILDFIX - method no longer exists
+            /*d->page->settings().setTiledBackingStoreEnabled(true);*/
         }
 #endif
     }
@@ -1012,10 +1036,10 @@ void WebPage::triggerAction(WebAction action, bool)
 
 	switch (action) {
 		case Back:
-			d->page->goBack();
+			d->page->backForward().goBack();
 			break;
 		case Forward:
-			d->page->goForward();
+			d->page->backForward().goForward();
 			break;
 		case Stop:
 			mainFrame()->d->frame->loader().stopForUserCancel();
@@ -1068,7 +1092,7 @@ bool WebPage::acceptNavigationRequest(WebFrame *frame, const WebCore::ResourceRe
 		lni.mLinkNotificationType	= LinkNotificationInfo::kLinkNavigationBlock;
 
 		const WTF::String& webCoreURI = request.url().string();
-		GetFixedString(lni.mOriginalURI)->assign(webCoreURI.characters(), webCoreURI.length());
+        GetFixedString(lni.mOriginalURI)->assign(StringView(webCoreURI).upconvertedCharacters(), webCoreURI.length());
 
 		pClient->LinkNotification(lni);
 
@@ -1123,7 +1147,8 @@ WTF::String WebPage::userAgentForUrl(const WebCore::URL& url) const
 	else
 	{
 		// Could not find the version info inside the source code base so took it from Wikipedia (http://en.wikipedia.org/wiki/Safari_version_history) October 22nd, 2013 release of Safari 
-		return WTF::String("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.71 (KHTML, like Gecko) Safari/537.71 WebKit/157437 EAWebKit/" EAWEBKIT_VERSION_S);
+		// Additionally, if the wiki page is also not updated, use http://www.useragentstring.com/ on the available reference browser app (using same WebKit build).
+		return WTF::String("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) WebKit/188436 EAWebKit/" EAWEBKIT_VERSION_S);
 	}
 }
 
@@ -1139,28 +1164,23 @@ uint64_t WebPage::bytesReceived() const
 
 void WebPage::SetInspectorDisplay(bool show)
 {
-#if ENABLE(INSPECTOR)
-    WebCore::InspectorController *ic = d->page->inspectorController();
-    if (ic)
+    WebCore::InspectorController &ic = d->page->inspectorController();
+    if (show)
     {
-        if (show)
+        EA::WebKit::WebFrame* pMainFrame = mainFrame();
+        int cursorX, cursorY;
+        view()->GetCursorPosition(cursorX, cursorY);
+        EA::WebKit::WebHitTestResult hitTestResult = pMainFrame->hitTestContent(WebCore::IntPoint(cursorX, cursorY), false);
+        if (hitTestResult.d)  
         {
-			EA::WebKit::WebFrame* pMainFrame = mainFrame();
-			int cursorX, cursorY;
-			view()->GetCursorPosition(cursorX, cursorY);
-			EA::WebKit::WebHitTestResult hitTestResult = pMainFrame->hitTestContent(WebCore::IntPoint(cursorX, cursorY), false);
-			if (hitTestResult.d)  
-            {
-                WebCore::Node* nodeToInspect = hitTestResult.d->innerNonSharedNode.get();
-                ic->inspect(nodeToInspect); 
-            }
-        }
-        else
-        {
-            ic->close();
+            WebCore::Node* nodeToInspect = hitTestResult.d->innerNonSharedNode.get();
+            ic.inspect(nodeToInspect); 
         }
     }
-#endif
+    else
+    {
+        ic.close();
+    }
 }
 
 WebInspector *WebPage::GetInspector(void)
@@ -1179,23 +1199,22 @@ void WebPage::DestroyInspector(void)
     d->mInspector = NULL;
 }
 
-#if ENABLE(INSPECTOR_SERVER) && ENABLE(INSPECTOR)
 void WebPage::remoteFrontendConnected()
 {
-    WebCore::InspectorController *ic = d->page->inspectorController();
-    ic->connectFrontend(this);
+    WebCore::InspectorController &ic = d->page->inspectorController();
+    ic.connectFrontend(this, false);
 }
 
 void WebPage::remoteFrontendDisconnected()
 {
-    WebCore::InspectorController *ic = d->page->inspectorController();
-    ic->disconnectFrontend();
+    WebCore::InspectorController &ic = d->page->inspectorController();
+    ic.disconnectFrontend(Inspector::DisconnectReason::InspectorDestroyed);
 }
 
 void WebPage::dispatchMessageFromRemoteFrontend(const String& message)
 {
-    WebCore::InspectorController *ic = d->page->inspectorController();
-    ic->dispatchMessageFromFrontend(message);
+    WebCore::InspectorController &ic = d->page->inspectorController();
+    ic.dispatchMessageFromFrontend(message);
 }
 
 bool WebPage::sendMessageToFrontend(const String& message)
@@ -1203,6 +1222,5 @@ bool WebPage::sendMessageToFrontend(const String& message)
     ::WebKit::WebInspectorServer::shared().sendMessageOverConnection(mRemoteInspectorId, message);
     return true;
 }
-#endif
 
 }}

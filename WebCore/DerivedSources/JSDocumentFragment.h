@@ -22,98 +22,51 @@
 #define JSDocumentFragment_h
 
 #include "DocumentFragment.h"
-#include "JSDOMBinding.h"
 #include "JSNode.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSDocumentFragment : public JSNode {
 public:
     typedef JSNode Base;
-    static JSDocumentFragment* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DocumentFragment> impl)
+    static JSDocumentFragment* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DocumentFragment>&& impl)
     {
-        JSDocumentFragment* ptr = new (NotNull, JSC::allocateCell<JSDocumentFragment>(globalObject->vm().heap)) JSDocumentFragment(structure, globalObject, impl);
+        JSDocumentFragment* ptr = new (NotNull, JSC::allocateCell<JSDocumentFragment>(globalObject->vm().heap)) JSDocumentFragment(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
+
+    // Custom functions
+    JSC::JSValue prepend(JSC::ExecState*);
+    JSC::JSValue append(JSC::ExecState*);
     DocumentFragment& impl() const
     {
         return static_cast<DocumentFragment&>(Base::impl());
     }
 protected:
-    JSDocumentFragment(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DocumentFragment>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDocumentFragment(JSC::Structure*, JSDOMGlobalObject*, Ref<DocumentFragment>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSDocumentFragmentPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDocumentFragmentPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDocumentFragmentPrototype* ptr = new (NotNull, JSC::allocateCell<JSDocumentFragmentPrototype>(vm.heap)) JSDocumentFragmentPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDocumentFragmentPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSDocumentFragmentConstructor : public DOMConstructorObject {
-private:
-    JSDocumentFragmentConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDocumentFragmentConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDocumentFragmentConstructor* ptr = new (NotNull, JSC::allocateCell<JSDocumentFragmentConstructor>(vm.heap)) JSDocumentFragmentConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsDocumentFragmentPrototypeFunctionQuerySelector(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsDocumentFragmentPrototypeFunctionQuerySelectorAll(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsDocumentFragmentConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

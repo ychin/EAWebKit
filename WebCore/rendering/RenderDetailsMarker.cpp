@@ -24,6 +24,7 @@
 
 #include "Element.h"
 #include "GraphicsContext.h"
+#include "HTMLDetailsElement.h"
 #include "HTMLInputElement.h"
 #include "HTMLNames.h"
 #include "PaintInfo.h"
@@ -32,8 +33,8 @@ namespace WebCore {
 
 using namespace HTMLNames;
 
-RenderDetailsMarker::RenderDetailsMarker(DetailsMarkerControl& element)
-    : RenderBlockFlow(element)
+RenderDetailsMarker::RenderDetailsMarker(DetailsMarkerControl& element, Ref<RenderStyle>&& style)
+    : RenderBlockFlow(element, WTF::move(style))
 {
 }
 
@@ -72,21 +73,21 @@ static Path createRightArrowPath()
 
 RenderDetailsMarker::Orientation RenderDetailsMarker::orientation() const
 {
-    switch (style()->writingMode()) {
+    switch (style().writingMode()) {
     case TopToBottomWritingMode:
-        if (style()->isLeftToRightDirection())
+        if (style().isLeftToRightDirection())
             return isOpen() ? Down : Right;
         return isOpen() ? Down : Left;
     case RightToLeftWritingMode:
-        if (style()->isLeftToRightDirection())
+        if (style().isLeftToRightDirection())
             return isOpen() ? Left : Down;
         return isOpen() ? Left : Up;
     case LeftToRightWritingMode:
-        if (style()->isLeftToRightDirection())
+        if (style().isLeftToRightDirection())
             return isOpen() ? Right : Down;
         return isOpen() ? Right : Up;
     case BottomToTopWritingMode:
-        if (style()->isLeftToRightDirection())
+        if (style().isLeftToRightDirection())
             return isOpen() ? Up : Right;
         return isOpen() ? Up : Left;
     }
@@ -115,8 +116,8 @@ Path RenderDetailsMarker::getPath(const LayoutPoint& origin) const
 
 void RenderDetailsMarker::paint(PaintInfo& paintInfo, const LayoutPoint& paintOffset)
 {
-    if (paintInfo.phase != PaintPhaseForeground || style()->visibility() != VISIBLE) {
-        RenderBlock::paint(paintInfo, paintOffset);
+    if (paintInfo.phase != PaintPhaseForeground || style().visibility() != VISIBLE) {
+        RenderBlockFlow::paint(paintInfo, paintOffset);
         return;
     }
 
@@ -125,14 +126,14 @@ void RenderDetailsMarker::paint(PaintInfo& paintInfo, const LayoutPoint& paintOf
     overflowRect.moveBy(boxOrigin);
     overflowRect.inflate(maximalOutlineSize(paintInfo.phase));
 
-    if (!paintInfo.rect.intersects(pixelSnappedIntRect(overflowRect)))
+    if (!paintInfo.rect.intersects(snappedIntRect(overflowRect)))
         return;
 
-    const Color color(style()->visitedDependentColor(CSSPropertyColor));
-    paintInfo.context->setStrokeColor(color, style()->colorSpace());
+    const Color color(style().visitedDependentColor(CSSPropertyColor));
+    paintInfo.context->setStrokeColor(color, style().colorSpace());
     paintInfo.context->setStrokeStyle(SolidStroke);
     paintInfo.context->setStrokeThickness(1.0f);
-    paintInfo.context->setFillColor(color, style()->colorSpace());
+    paintInfo.context->setFillColor(color, style().colorSpace());
 
     boxOrigin.move(borderLeft() + paddingLeft(), borderTop() + paddingTop());
     paintInfo.context->fillPath(getPath(boxOrigin));
@@ -143,9 +144,9 @@ bool RenderDetailsMarker::isOpen() const
     for (RenderObject* renderer = parent(); renderer; renderer = renderer->parent()) {
         if (!renderer->node())
             continue;
-        if (renderer->node()->hasTagName(detailsTag))
-            return !toElement(renderer->node())->getAttribute(openAttr).isNull();
-        if (isHTMLInputElement(renderer->node()))
+        if (is<HTMLDetailsElement>(*renderer->node()))
+            return !downcast<HTMLDetailsElement>(*renderer->node()).getAttribute(openAttr).isNull();
+        if (is<HTMLInputElement>(*renderer->node()))
             return true;
     }
 

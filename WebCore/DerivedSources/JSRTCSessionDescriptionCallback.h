@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSRTCSessionDescriptionCallback : public RTCSessionDescriptionCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSRTCSessionDescriptionCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSRTCSessionDescriptionCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSRTCSessionDescriptionCallback(callback, globalObject));
+        return adoptRef(*new JSRTCSessionDescriptionCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }

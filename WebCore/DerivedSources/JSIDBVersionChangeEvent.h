@@ -24,24 +24,23 @@
 #if ENABLE(INDEXED_DATABASE)
 
 #include "IDBVersionChangeEvent.h"
-#include "JSDOMBinding.h"
 #include "JSEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSIDBVersionChangeEvent : public JSEvent {
 public:
     typedef JSEvent Base;
-    static JSIDBVersionChangeEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<IDBVersionChangeEvent> impl)
+    static JSIDBVersionChangeEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<IDBVersionChangeEvent>&& impl)
     {
-        JSIDBVersionChangeEvent* ptr = new (NotNull, JSC::allocateCell<JSIDBVersionChangeEvent>(globalObject->vm().heap)) JSIDBVersionChangeEvent(structure, globalObject, impl);
+        JSIDBVersionChangeEvent* ptr = new (NotNull, JSC::allocateCell<JSIDBVersionChangeEvent>(globalObject->vm().heap)) JSIDBVersionChangeEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,64 +54,17 @@ public:
         return static_cast<IDBVersionChangeEvent&>(Base::impl());
     }
 protected:
-    JSIDBVersionChangeEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<IDBVersionChangeEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSIDBVersionChangeEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<IDBVersionChangeEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSIDBVersionChangeEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSIDBVersionChangeEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSIDBVersionChangeEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSIDBVersionChangeEventPrototype>(vm.heap)) JSIDBVersionChangeEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSIDBVersionChangeEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSIDBVersionChangeEventConstructor : public DOMConstructorObject {
-private:
-    JSIDBVersionChangeEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSIDBVersionChangeEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSIDBVersionChangeEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSIDBVersionChangeEventConstructor>(vm.heap)) JSIDBVersionChangeEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsIDBVersionChangeEventOldVersion(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBVersionChangeEventNewVersion(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsIDBVersionChangeEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -23,28 +23,29 @@
 
 #if ENABLE(ENCRYPTED_MEDIA) || ENABLE(ENCRYPTED_MEDIA_V2)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "MediaKeyError.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSMediaKeyError : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSMediaKeyError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaKeyError> impl)
+    static JSMediaKeyError* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaKeyError>&& impl)
     {
-        JSMediaKeyError* ptr = new (NotNull, JSC::allocateCell<JSMediaKeyError>(globalObject->vm().heap)) JSMediaKeyError(structure, globalObject, impl);
+        JSMediaKeyError* ptr = new (NotNull, JSC::allocateCell<JSMediaKeyError>(globalObject->vm().heap)) JSMediaKeyError(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static MediaKeyError* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSMediaKeyError();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -54,22 +55,21 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     MediaKeyError& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     MediaKeyError* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSMediaKeyError(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaKeyError>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSMediaKeyError(JSC::Structure*, JSDOMGlobalObject*, Ref<MediaKeyError>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSMediaKeyErrorOwner : public JSC::WeakHandleOwner {
@@ -80,81 +80,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, MediaKeyError*)
 {
-    DEFINE_STATIC_LOCAL(JSMediaKeyErrorOwner, jsMediaKeyErrorOwner, ());
-    return &jsMediaKeyErrorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, MediaKeyError*)
-{
-    return &world;
+    static NeverDestroyed<JSMediaKeyErrorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, MediaKeyError*);
-MediaKeyError* toMediaKeyError(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaKeyError& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSMediaKeyErrorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSMediaKeyErrorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSMediaKeyErrorPrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaKeyErrorPrototype>(vm.heap)) JSMediaKeyErrorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSMediaKeyErrorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSMediaKeyErrorConstructor : public DOMConstructorObject {
-private:
-    JSMediaKeyErrorConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSMediaKeyErrorConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSMediaKeyErrorConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaKeyErrorConstructor>(vm.heap)) JSMediaKeyErrorConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsMediaKeyErrorCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(ENCRYPTED_MEDIA_V2)
-JSC::JSValue jsMediaKeyErrorSystemCode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsMediaKeyErrorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsMediaKeyErrorMEDIA_KEYERR_UNKNOWN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeyErrorMEDIA_KEYERR_CLIENT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeyErrorMEDIA_KEYERR_SERVICE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeyErrorMEDIA_KEYERR_OUTPUT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeyErrorMEDIA_KEYERR_HARDWARECHANGE(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsMediaKeyErrorMEDIA_KEYERR_DOMAIN(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

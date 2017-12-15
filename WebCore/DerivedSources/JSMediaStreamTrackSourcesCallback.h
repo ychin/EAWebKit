@@ -32,9 +32,9 @@ namespace WebCore {
 
 class JSMediaStreamTrackSourcesCallback : public MediaStreamTrackSourcesCallback, public ActiveDOMCallback {
 public:
-    static PassRefPtr<JSMediaStreamTrackSourcesCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
+    static Ref<JSMediaStreamTrackSourcesCallback> create(JSC::JSObject* callback, JSDOMGlobalObject* globalObject)
     {
-        return adoptRef(new JSMediaStreamTrackSourcesCallback(callback, globalObject));
+        return adoptRef(*new JSMediaStreamTrackSourcesCallback(callback, globalObject));
     }
 
     virtual ScriptExecutionContext* scriptExecutionContext() const { return ContextDestructionObserver::scriptExecutionContext(); }
@@ -42,7 +42,7 @@ public:
     virtual ~JSMediaStreamTrackSourcesCallback();
 
     // Functions
-    virtual bool handleEvent(Vector<RefPtr<SourceInfo> > sources);
+    virtual bool handleEvent(Vector<RefPtr<SourceInfo>> sources);
 
 private:
     JSMediaStreamTrackSourcesCallback(JSC::JSObject* callback, JSDOMGlobalObject*);

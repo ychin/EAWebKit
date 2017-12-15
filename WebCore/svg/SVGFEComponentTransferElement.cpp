@@ -19,11 +19,8 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG) && ENABLE(FILTERS)
 #include "SVGFEComponentTransferElement.h"
 
-#include "Attr.h"
 #include "ElementIterator.h"
 #include "FilterEffect.h"
 #include "SVGFEFuncAElement.h"
@@ -32,6 +29,7 @@
 #include "SVGFEFuncRElement.h"
 #include "SVGFilterBuilder.h"
 #include "SVGNames.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
@@ -50,63 +48,47 @@ inline SVGFEComponentTransferElement::SVGFEComponentTransferElement(const Qualif
     registerAnimatedPropertiesForSVGFEComponentTransferElement();
 }
 
-PassRefPtr<SVGFEComponentTransferElement> SVGFEComponentTransferElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGFEComponentTransferElement> SVGFEComponentTransferElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGFEComponentTransferElement(tagName, document));
-}
-
-bool SVGFEComponentTransferElement::isSupportedAttribute(const QualifiedName& attrName)
-{
-    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());
-    if (supportedAttributes.isEmpty())
-        supportedAttributes.add(SVGNames::inAttr);
-    return supportedAttributes.contains<SVGAttributeHashTranslator>(attrName);
+    return adoptRef(*new SVGFEComponentTransferElement(tagName, document));
 }
 
 void SVGFEComponentTransferElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
-    if (!isSupportedAttribute(name)) {
-        SVGFilterPrimitiveStandardAttributes::parseAttribute(name, value);
-        return;
-    }
-
     if (name == SVGNames::inAttr) {
         setIn1BaseValue(value);
         return;
     }
 
-    ASSERT_NOT_REACHED();
+    SVGFilterPrimitiveStandardAttributes::parseAttribute(name, value);
 }
 
-PassRefPtr<FilterEffect> SVGFEComponentTransferElement::build(SVGFilterBuilder* filterBuilder, Filter* filter)
+RefPtr<FilterEffect> SVGFEComponentTransferElement::build(SVGFilterBuilder* filterBuilder, Filter& filter)
 {
     FilterEffect* input1 = filterBuilder->getEffectById(in1());
     
     if (!input1)
-        return 0;
+        return nullptr;
 
     ComponentTransferFunction red;
     ComponentTransferFunction green;
     ComponentTransferFunction blue;
     ComponentTransferFunction alpha;
 
-    for (auto child = childrenOfType<SVGElement>(this).begin(), end = childrenOfType<SVGElement>(this).end(); child != end; ++child) {
-        SVGElement* element = &*child;
-        if (isSVGFEFuncRElement(element))
-            red = toSVGFEFuncRElement(element)->transferFunction();
-        else if (isSVGFEFuncGElement(element))
-            green = toSVGFEFuncGElement(element)->transferFunction();
-        else if (isSVGFEFuncBElement(element))
-            blue = toSVGFEFuncBElement(element)->transferFunction();
-        else if (isSVGFEFuncAElement(element))
-            alpha = toSVGFEFuncAElement(element)->transferFunction();
+    for (auto& child : childrenOfType<SVGElement>(*this)) {
+        if (is<SVGFEFuncRElement>(child))
+            red = downcast<SVGFEFuncRElement>(child).transferFunction();
+        else if (is<SVGFEFuncGElement>(child))
+            green = downcast<SVGFEFuncGElement>(child).transferFunction();
+        else if (is<SVGFEFuncBElement>(child))
+            blue = downcast<SVGFEFuncBElement>(child).transferFunction();
+        else if (is<SVGFEFuncAElement>(child))
+            alpha = downcast<SVGFEFuncAElement>(child).transferFunction();
     }
     
     RefPtr<FilterEffect> effect = FEComponentTransfer::create(filter, red, green, blue, alpha);
     effect->inputEffects().append(input1);
-    return effect.release();
+    return effect;
 }
 
 }
-
-#endif

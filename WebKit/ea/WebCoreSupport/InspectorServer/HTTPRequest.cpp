@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 Apple Inc. All Rights Reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -82,7 +83,7 @@ size_t HTTPRequest::parseHeaders(const char* data, size_t length, String& failur
 {
     const char* p = data;
     const char* end = data + length;
-    AtomicString name;
+    String name;
     String value;
     for (; p < data + length; p++) {
         size_t consumedLength = parseHTTPHeader(p, end - p, failureReason, name, value);

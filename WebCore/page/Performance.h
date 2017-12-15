@@ -52,13 +52,13 @@ class ResourceRequest;
 class ResourceResponse;
 class UserTiming;
 
-class Performance FINAL : public ScriptWrappable, public RefCounted<Performance>, public DOMWindowProperty, public EventTargetWithInlineData {
+class Performance final : public ScriptWrappable, public RefCounted<Performance>, public DOMWindowProperty, public EventTargetWithInlineData {
 public:
-    static PassRefPtr<Performance> create(Frame* frame) { return adoptRef(new Performance(frame)); }
+    static Ref<Performance> create(Frame* frame) { return adoptRef(*new Performance(frame)); }
     ~Performance();
 
-    virtual EventTargetInterface eventTargetInterface() const OVERRIDE { return PerformanceEventTargetInterfaceType; }
-    virtual ScriptExecutionContext* scriptExecutionContext() const OVERRIDE;
+    virtual EventTargetInterface eventTargetInterface() const override { return PerformanceEventTargetInterfaceType; }
+    virtual ScriptExecutionContext* scriptExecutionContext() const override;
 
     PerformanceNavigation* navigation() const;
     PerformanceTiming* timing() const;
@@ -73,8 +73,6 @@ public:
 #if ENABLE(RESOURCE_TIMING)
     void webkitClearResourceTimings();
     void webkitSetResourceTimingBufferSize(unsigned int);
-
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitresourcetimingbufferfull);
 
     void addResourceTiming(const String& initiatorName, Document*, const ResourceRequest&, const ResourceResponse&, double initiationTime, double finishTime);
 #endif
@@ -93,17 +91,19 @@ public:
 private:
     explicit Performance(Frame*);
 
-    virtual void refEventTarget() OVERRIDE { ref(); }
-    virtual void derefEventTarget() OVERRIDE { deref(); }
+    virtual void refEventTarget() override { ref(); }
+    virtual void derefEventTarget() override { deref(); }
     bool isResourceTimingBufferFull();
 
     mutable RefPtr<PerformanceNavigation> m_navigation;
     mutable RefPtr<PerformanceTiming> m_timing;
     
 #if ENABLE(RESOURCE_TIMING)
-    Vector<RefPtr<PerformanceEntry> > m_resourceTimingBuffer;
+    Vector<RefPtr<PerformanceEntry>> m_resourceTimingBuffer;
     unsigned m_resourceTimingBufferSize;
 #endif
+
+    double m_referenceTime;
 
 #if ENABLE(USER_TIMING)
     RefPtr<UserTiming> m_userTiming;

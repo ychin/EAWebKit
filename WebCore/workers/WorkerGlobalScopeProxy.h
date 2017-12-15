@@ -31,12 +31,10 @@
 #ifndef WorkerGlobalScopeProxy_h
 #define WorkerGlobalScopeProxy_h
 
-#if ENABLE(WORKERS)
-
 #include "MessagePort.h"
 #include "WorkerThread.h"
+#include <memory>
 #include <wtf/Forward.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 
@@ -54,7 +52,7 @@ namespace WebCore {
 
         virtual void terminateWorkerGlobalScope() = 0;
 
-        virtual void postMessageToWorkerGlobalScope(PassRefPtr<SerializedScriptValue>, PassOwnPtr<MessagePortChannelArray>) = 0;
+        virtual void postMessageToWorkerGlobalScope(PassRefPtr<SerializedScriptValue>, std::unique_ptr<MessagePortChannelArray>) = 0;
 
         virtual bool hasPendingActivity() const = 0;
 
@@ -62,7 +60,6 @@ namespace WebCore {
 
         virtual void notifyNetworkStateChange(bool isOnline) = 0;
 
-#if ENABLE(INSPECTOR)
         class PageInspector {
         public:
             virtual ~PageInspector() { }
@@ -71,11 +68,8 @@ namespace WebCore {
         virtual void connectToInspector(PageInspector*) { }
         virtual void disconnectFromInspector() { }
         virtual void sendMessageToInspector(const String&) { }
-#endif
     };
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)
 
 #endif // WorkerGlobalScopeProxy_h

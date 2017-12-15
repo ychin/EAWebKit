@@ -42,13 +42,11 @@ class URL;
 class ResourceRequest;
 class SecurityOrigin;
 
-typedef Vector<std::pair<URL, URL> > FallbackURLVector;
+typedef Vector<std::pair<URL, URL>> FallbackURLVector;
 
 class ApplicationCache : public RefCounted<ApplicationCache> {
 public:
-    static PassRefPtr<ApplicationCache> create() { return adoptRef(new ApplicationCache); }
-    
-    static void deleteCacheForOrigin(SecurityOrigin*);
+    static Ref<ApplicationCache> create() { return adoptRef(*new ApplicationCache); }
     
     ~ApplicationCache();
 
@@ -61,7 +59,7 @@ public:
     void setGroup(ApplicationCacheGroup*);
     ApplicationCacheGroup* group() const { return m_group; }
 
-    bool isComplete() const;
+    bool isComplete();
 
     ApplicationCacheResource* resourceForRequest(const ResourceRequest&);
     ApplicationCacheResource* resourceForURL(const String& url);
@@ -80,9 +78,8 @@ public:
     void dump();
 #endif
 
-    typedef HashMap<String, RefPtr<ApplicationCacheResource> > ResourceMap;
-    ResourceMap::const_iterator begin() const { return m_resources.begin(); }
-    ResourceMap::const_iterator end() const { return m_resources.end(); }
+    typedef HashMap<String, RefPtr<ApplicationCacheResource>> ResourceMap;
+    const ResourceMap& resources() const { return m_resources; }
     
     void setStorageID(unsigned storageID) { m_storageID = storageID; }
     unsigned storageID() const { return m_storageID; }
@@ -90,8 +87,6 @@ public:
     
     static bool requestIsHTTPOrHTTPSGet(const ResourceRequest&);
 
-    static int64_t diskUsageForOrigin(SecurityOrigin*);
-    
     int64_t estimatedSizeInStorage() const { return m_estimatedSizeInStorage; }
 
 private:

@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003, 2007 Apple Inc.
+ *  Copyright (C) 2003, 2007, 2013 Apple Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -26,20 +26,22 @@
 #include "CallFrame.h"
 #include "CodeProfiling.h"
 #include "Debugger.h"
+#include "Exception.h"
 #include "Interpreter.h"
 #include "JSGlobalObject.h"
 #include "JSLock.h"
-#include "Operations.h"
+#include "JSCInlines.h"
+#include "ModuleAnalyzer.h"
+#include "ModuleRecord.h"
 #include "Parser.h"
 #include <wtf/WTFThreadData.h>
-#include <stdio.h>
 
 namespace JSC {
 
 bool checkSyntax(ExecState* exec, const SourceCode& source, JSValue* returnedException)
 {
     JSLockHolder lock(exec);
-    RELEASE_ASSERT(exec->vm().identifierTable == wtfThreadData().currentIdentifierTable());
+    RELEASE_ASSERT(exec->vm().atomicStringTable() == wtfThreadData().atomicStringTable());
 
     ProgramExecutable* program = ProgramExecutable::create(exec, source);
     JSObject* error = program->checkSyntax(exec);
@@ -55,37 +57,49 @@ bool checkSyntax(ExecState* exec, const SourceCode& source, JSValue* returnedExc
 bool checkSyntax(VM& vm, const SourceCode& source, ParserError& error)
 {
     JSLockHolder lock(vm);
-    RELEASE_ASSERT(vm.identifierTable == wtfThreadData().currentIdentifierTable());
-    RefPtr<ProgramNode> programNode = parse<ProgramNode>(&vm, source, 0, Identifier(), JSParseNormal, JSParseProgramCode, error);
-    return programNode;
+    RELEASE_ASSERT(vm.atomicStringTable() == wtfThreadData().atomicStringTable());
+    return !!parse<ProgramNode>(
+        &vm, source, Identifier(), JSParserBuiltinMode::NotBuiltin,
+        JSParserStrictMode::NotStrict, SourceParseMode::ProgramMode, error);
 }
 
-JSValue evaluate(ExecState* exec, const SourceCode& source, JSValue thisValue, JSValue* returnedException)
+bool checkModuleSyntax(VM& vm, const SourceCode& source, ParserError& error)
+{
+    JSLockHolder lock(vm);
+    RELEASE_ASSERT(vm.atomicStringTable() == wtfThreadData().atomicStringTable());
+    std::unique_ptr<ModuleProgramNode> moduleProgramNode = parse<ModuleProgramNode>(
+        &vm, source, Identifier(), JSParserBuiltinMode::NotBuiltin,
+        JSParserStrictMode::Strict, SourceParseMode::ModuleAnalyzeMode, error);
+    if (!moduleProgramNode)
+        return false;
+
+    ModuleAnalyzer moduleAnalyzer(vm, moduleProgramNode->varDeclarations(), moduleProgramNode->lexicalVariables());
+    moduleAnalyzer.analyze(*moduleProgramNode);
+    return true;
+}
+
+JSValue evaluate(ExecState* exec, const SourceCode& source, JSValue thisValue, NakedPtr<Exception>& returnedException)
 {
     JSLockHolder lock(exec);
-    RELEASE_ASSERT(exec->vm().identifierTable == wtfThreadData().currentIdentifierTable());
+    RELEASE_ASSERT(exec->vm().atomicStringTable() == wtfThreadData().atomicStringTable());
     RELEASE_ASSERT(!exec->vm().isCollectorBusy());
 
     CodeProfiling profile(source);
 
     ProgramExecutable* program = ProgramExecutable::create(exec, source);
     if (!program) {
-        if (returnedException)
-            *returnedException = exec->vm().exception();
-
+        returnedException = exec->vm().exception();
         exec->vm().clearException();
         return jsUndefined();
     }
 
     if (!thisValue || thisValue.isUndefinedOrNull())
-        thisValue = exec->dynamicGlobalObject();
+        thisValue = exec->vmEntryGlobalObject();
     JSObject* thisObj = jsCast<JSObject*>(thisValue.toThis(exec, NotStrictMode));
     JSValue result = exec->interpreter()->execute(program, exec, thisObj);
 
     if (exec->hadException()) {
-        if (returnedException)
-            *returnedException = exec->exception();
-
+        returnedException = exec->exception();
         exec->clearException();
         return jsUndefined();
     }

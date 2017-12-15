@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2011 Google Inc. All Rights Reserved.
  * Copyright (C) 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,124 +28,98 @@
 #include "config.h"
 #include "TreeScope.h"
 
-#include "ContainerNode.h"
 #include "DOMSelection.h"
 #include "DOMWindow.h"
-#include "Document.h"
-#include "Element.h"
 #include "ElementIterator.h"
 #include "FocusController.h"
 #include "Frame.h"
-#include "FrameView.h"
 #include "HTMLAnchorElement.h"
 #include "HTMLFrameOwnerElement.h"
 #include "HTMLLabelElement.h"
 #include "HTMLMapElement.h"
-#include "HTMLNames.h"
 #include "HitTestResult.h"
 #include "IdTargetObserverRegistry.h"
 #include "Page.h"
-#include "RenderView.h"
 #include "RuntimeEnabledFeatures.h"
 #include "ShadowRoot.h"
 #include "TreeScopeAdopter.h"
-#include <wtf/Vector.h>
-#include <wtf/text/AtomicString.h>
 #include <wtf/text/CString.h>
 
 namespace WebCore {
-
+//+EAWebKitChange
+//3/29/2015
 struct SameSizeAsTreeScope {
-    virtual ~SameSizeAsTreeScope();
-    void* pointers[9];
-    int ints[1];
+    void* pointers[4];
+	std::unique_ptr<DocumentOrderedMap> pointers2[5];
 };
+//-EAWebKitChange
 
 COMPILE_ASSERT(sizeof(TreeScope) == sizeof(SameSizeAsTreeScope), treescope_should_stay_small);
 
 using namespace HTMLNames;
 
-TreeScope::TreeScope(ContainerNode* rootNode, Document* document)
-    : m_rootNode(rootNode)
-    , m_documentScope(document)
-    , m_parentTreeScope(document)
-    , m_selfOnlyRefCount(0)
-    , m_idTargetObserverRegistry(IdTargetObserverRegistry::create())
+TreeScope::TreeScope(ShadowRoot& shadowRoot, Document& document)
+    : m_rootNode(shadowRoot)
+    , m_documentScope(&document)
+    , m_parentTreeScope(&document)
+    , m_idTargetObserverRegistry(std::make_unique<IdTargetObserverRegistry>())
 {
-    ASSERT(rootNode);
-    ASSERT(document);
-    ASSERT(rootNode != document);
-    m_parentTreeScope->selfOnlyRef();
-    m_rootNode->setTreeScope(*this);
+    shadowRoot.setTreeScope(*this);
 }
 
-TreeScope::TreeScope(Document* document)
+TreeScope::TreeScope(Document& document)
     : m_rootNode(document)
-    , m_documentScope(document)
+    , m_documentScope(&document)
     , m_parentTreeScope(nullptr)
-    , m_selfOnlyRefCount(0)
-    , m_idTargetObserverRegistry(IdTargetObserverRegistry::create())
+    , m_idTargetObserverRegistry(std::make_unique<IdTargetObserverRegistry>())
 {
-    ASSERT(document);
-    m_rootNode->setTreeScope(*this);
-}
-
-TreeScope::TreeScope()
-    : m_rootNode(nullptr)
-    , m_documentScope(nullptr)
-    , m_parentTreeScope(nullptr)
-    , m_selfOnlyRefCount(0)
-{
+    document.setTreeScope(*this);
 }
 
 TreeScope::~TreeScope()
 {
-    ASSERT(!m_selfOnlyRefCount);
-    m_rootNode->setTreeScope(noDocumentInstance());
-
     if (m_selection) {
         m_selection->clearTreeScope();
         m_selection = nullptr;
     }
-
-    if (m_parentTreeScope)
-        m_parentTreeScope->selfOnlyDeref();
 }
 
 void TreeScope::destroyTreeScopeData()
 {
-    m_elementsById.clear();
-    m_imageMapsByName.clear();
-    m_labelsByForAttribute.clear();
-}
-
-void TreeScope::clearDocumentScope()
-{
-    ASSERT(rootNode()->isDocumentNode());
-    m_documentScope = nullptr;
+    m_elementsById = nullptr;
+    m_imageMapsByName = nullptr;
+    m_labelsByForAttribute = nullptr;
 }
 
 void TreeScope::setParentTreeScope(TreeScope* newParentScope)
 {
     // A document node cannot be re-parented.
-    ASSERT(!rootNode()->isDocumentNode());
+    ASSERT(!m_rootNode.isDocumentNode());
     // Every scope other than document needs a parent scope.
     ASSERT(newParentScope);
 
-    newParentScope->selfOnlyRef();
-    if (m_parentTreeScope)
-        m_parentTreeScope->selfOnlyDeref();
     m_parentTreeScope = newParentScope;
-    setDocumentScope(newParentScope->documentScope());
+    setDocumentScope(&newParentScope->documentScope());
 }
 
 Element* TreeScope::getElementById(const AtomicString& elementId) const
 {
-    if (elementId.isEmpty())
+    if (elementId.isNull())
         return nullptr;
     if (!m_elementsById)
         return nullptr;
     return m_elementsById->getElementById(*elementId.impl(), *this);
+}
+
+Element* TreeScope::getElementById(const String& elementId) const
+{
+    if (!m_elementsById)
+        return nullptr;
+
+    if (RefPtr<AtomicStringImpl> atomicElementId = AtomicStringImpl::lookUp(elementId.impl()))
+        return m_elementsById->getElementById(*atomicElementId, *this);
+
+    return nullptr;
 }
 
 const Vector<Element*>* TreeScope::getAllElementsById(const AtomicString& elementId) const
@@ -156,20 +131,22 @@ const Vector<Element*>* TreeScope::getAllElementsById(const AtomicString& elemen
     return m_elementsById->getAllElementsById(*elementId.impl(), *this);
 }
 
-void TreeScope::addElementById(const AtomicStringImpl& elementId, Element& element)
+void TreeScope::addElementById(const AtomicStringImpl& elementId, Element& element, bool notifyObservers)
 {
     if (!m_elementsById)
-        m_elementsById = adoptPtr(new DocumentOrderedMap);
-    m_elementsById->add(elementId, element);
-    m_idTargetObserverRegistry->notifyObservers(elementId);
+        m_elementsById = std::make_unique<DocumentOrderedMap>();
+    m_elementsById->add(elementId, element, *this);
+    if (notifyObservers)
+        m_idTargetObserverRegistry->notifyObservers(elementId);
 }
 
-void TreeScope::removeElementById(const AtomicStringImpl& elementId, Element& element)
+void TreeScope::removeElementById(const AtomicStringImpl& elementId, Element& element, bool notifyObservers)
 {
     if (!m_elementsById)
         return;
     m_elementsById->remove(elementId, element);
-    m_idTargetObserverRegistry->notifyObservers(elementId);
+    if (notifyObservers)
+        m_idTargetObserverRegistry->notifyObservers(elementId);
 }
 
 Element* TreeScope::getElementByName(const AtomicString& name) const
@@ -184,8 +161,8 @@ Element* TreeScope::getElementByName(const AtomicString& name) const
 void TreeScope::addElementByName(const AtomicStringImpl& name, Element& element)
 {
     if (!m_elementsByName)
-        m_elementsByName = adoptPtr(new DocumentOrderedMap);
-    m_elementsByName->add(name, element);
+        m_elementsByName = std::make_unique<DocumentOrderedMap>();
+    m_elementsByName->add(name, element, *this);
 }
 
 void TreeScope::removeElementByName(const AtomicStringImpl& name, Element& element)
@@ -212,8 +189,8 @@ void TreeScope::addImageMap(HTMLMapElement& imageMap)
     if (!name)
         return;
     if (!m_imageMapsByName)
-        m_imageMapsByName = adoptPtr(new DocumentOrderedMap);
-    m_imageMapsByName->add(*name, imageMap);
+        m_imageMapsByName = std::make_unique<DocumentOrderedMap>();
+    m_imageMapsByName->add(*name, imageMap, *this);
 }
 
 void TreeScope::removeImageMap(HTMLMapElement& imageMap)
@@ -233,56 +210,20 @@ HTMLMapElement* TreeScope::getImageMap(const String& url) const
     if (!m_imageMapsByName)
         return nullptr;
     size_t hashPos = url.find('#');
-    String name = (hashPos == notFound ? url : url.substring(hashPos + 1)).impl();
+    String name = (hashPos == notFound ? String() : url.substring(hashPos + 1)).impl();
     if (name.isEmpty())
         return nullptr;
-    if (rootNode()->document().isHTMLDocument()) {
+    if (m_rootNode.document().isHTMLDocument()) {
         AtomicString lowercasedName = name.lower();
         return m_imageMapsByName->getElementByLowercasedMapName(*lowercasedName.impl(), *this);
     }
     return m_imageMapsByName->getElementByMapName(*AtomicString(name).impl(), *this);
 }
 
-Node* nodeFromPoint(Document* document, int x, int y, LayoutPoint* localPoint)
-{
-    Frame* frame = document->frame();
-
-    if (!frame)
-        return nullptr;
-    FrameView* frameView = frame->view();
-    if (!frameView)
-        return nullptr;
-
-    float scaleFactor = frame->pageZoomFactor() * frame->frameScaleFactor();
-    IntPoint point = roundedIntPoint(FloatPoint(x * scaleFactor  + frameView->scrollX(), y * scaleFactor + frameView->scrollY()));
-
-    if (!frameView->visibleContentRect().contains(point))
-        return nullptr;
-
-    HitTestRequest request(HitTestRequest::ReadOnly | HitTestRequest::Active | HitTestRequest::DisallowShadowContent);
-    HitTestResult result(point);
-    document->renderView()->hitTest(request, result);
-
-    if (localPoint)
-        *localPoint = result.localPoint();
-
-    return result.innerNode();
-}
-
-Element* TreeScope::elementFromPoint(int x, int y) const
-{
-    Node* node = nodeFromPoint(&rootNode()->document(), x, y);
-    while (node && !node->isElementNode())
-        node = node->parentNode();
-    if (node)
-        node = ancestorInThisScope(node);
-    return toElement(node);
-}
-
 void TreeScope::addLabel(const AtomicStringImpl& forAttributeValue, HTMLLabelElement& element)
 {
     ASSERT(m_labelsByForAttribute);
-    m_labelsByForAttribute->add(forAttributeValue, element);
+    m_labelsByForAttribute->add(forAttributeValue, element, *this);
 }
 
 void TreeScope::removeLabel(const AtomicStringImpl& forAttributeValue, HTMLLabelElement& element)
@@ -298,13 +239,12 @@ HTMLLabelElement* TreeScope::labelElementForId(const AtomicString& forAttributeV
 
     if (!m_labelsByForAttribute) {
         // Populate the map on first access.
-        m_labelsByForAttribute = adoptPtr(new DocumentOrderedMap);
+        m_labelsByForAttribute = std::make_unique<DocumentOrderedMap>();
 
-        auto labelDescendants = descendantsOfType<HTMLLabelElement>(rootNode());
-        for (auto label = labelDescendants.begin(), end = labelDescendants.end(); label != end; ++label) {
-            const AtomicString& forValue = label->fastGetAttribute(forAttr);
+        for (auto& label : descendantsOfType<HTMLLabelElement>(m_rootNode)) {
+            const AtomicString& forValue = label.fastGetAttribute(forAttr);
             if (!forValue.isEmpty())
-                addLabel(*forValue.impl(), *label);
+                addLabel(*forValue.impl(), label);
         }
     }
 
@@ -313,26 +253,16 @@ HTMLLabelElement* TreeScope::labelElementForId(const AtomicString& forAttributeV
 
 DOMSelection* TreeScope::getSelection() const
 {
-    if (!rootNode()->document().frame())
+    if (!m_rootNode.document().frame())
         return nullptr;
 
     if (m_selection)
         return m_selection.get();
 
-    // FIXME: The correct selection in Shadow DOM requires that Position can have a ShadowRoot
-    // as a container. It is now enabled only if runtime Shadow DOM feature is enabled.
-    // See https://bugs.webkit.org/show_bug.cgi?id=82697
-#if ENABLE(SHADOW_DOM)
-    if (RuntimeEnabledFeatures::sharedFeatures().shadowDOMEnabled()) {
-        m_selection = DOMSelection::create(this);
-        return m_selection.get();
-    }
-#endif
+    if (this != &m_rootNode.document())
+        return m_rootNode.document().getSelection();
 
-    if (this != &rootNode()->document())
-        return rootNode()->document().getSelection();
-
-    m_selection = DOMSelection::create(&rootNode()->document());
+    m_selection = DOMSelection::create(&m_rootNode.document());
     return m_selection.get();
 }
 
@@ -342,24 +272,18 @@ Element* TreeScope::findAnchor(const String& name)
         return nullptr;
     if (Element* element = getElementById(name))
         return element;
-    auto anchorDescendants = descendantsOfType<HTMLAnchorElement>(rootNode());
-    for (auto anchor = anchorDescendants.begin(), end = anchorDescendants.end(); anchor != end; ++anchor) {
-        if (rootNode()->document().inQuirksMode()) {
+    for (auto& anchor : descendantsOfType<HTMLAnchorElement>(m_rootNode)) {
+        if (m_rootNode.document().inQuirksMode()) {
             // Quirks mode, case insensitive comparison of names.
-            if (equalIgnoringCase(anchor->name(), name))
-                return &*anchor;
+            if (equalIgnoringCase(anchor.name(), name))
+                return &anchor;
         } else {
             // Strict mode, names need to match exactly.
-            if (anchor->name() == name)
-                return &*anchor;
+            if (anchor.name() == name)
+                return &anchor;
         }
     }
     return nullptr;
-}
-
-bool TreeScope::applyAuthorStyles() const
-{
-    return true;
 }
 
 void TreeScope::adoptIfNeeded(Node* node)
@@ -384,7 +308,7 @@ static Element* focusedFrameOwnerElement(Frame* focusedFrame, Frame* currentFram
 
 Element* TreeScope::focusedElement()
 {
-    Document& document = rootNode()->document();
+    Document& document = m_rootNode.document();
     Element* element = document.focusedElement();
 
     if (!element && document.page())
@@ -393,7 +317,7 @@ Element* TreeScope::focusedElement()
         return nullptr;
     TreeScope* treeScope = &element->treeScope();
     while (treeScope != this && treeScope != &document) {
-        element = toShadowRoot(treeScope->rootNode())->hostElement();
+        element = downcast<ShadowRoot>(treeScope->rootNode()).hostElement();
         treeScope = &element->treeScope();
     }
     if (this != treeScope)
@@ -431,27 +355,11 @@ TreeScope* commonTreeScope(Node* nodeA, Node* nodeB)
 
     for (; indexA > 0 && indexB > 0 && treeScopesA[indexA - 1] == treeScopesB[indexB - 1]; --indexA, --indexB) { }
 
+    // If the nodes had no common tree scope, return immediately.
+    if (indexA == treeScopesA.size())
+        return nullptr;
+    
     return treeScopesA[indexA] == treeScopesB[indexB] ? treeScopesA[indexA] : nullptr;
-}
-
-#ifndef NDEBUG
-bool TreeScope::deletionHasBegun()
-{
-    return rootNode() && rootNode()->m_deletionHasBegun;
-}
-
-void TreeScope::beginDeletion()
-{
-    ASSERT(this != &noDocumentInstance());
-    rootNode()->m_deletionHasBegun = true;
-}
-#endif
-
-int TreeScope::refCount() const
-{
-    if (Node* root = rootNode())
-        return root->refCount();
-    return 0;
 }
 
 } // namespace WebCore

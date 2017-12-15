@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2007 Apple Inc. All rights reserved.
  * Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -47,8 +47,6 @@ namespace WTF {
 
 COMPILE_ASSERT(sizeof(EA::WebKit::ThreadId) == sizeof(WTF::ThreadIdentifier), sizeof_EAWebKit_ThreadId_must_be_same_as_WTF_ThreadIdentifier); //Currently, both are typedef of uint32_t
 
-static Mutex* atomicallyInitializedStaticMutex = NULL;
-
 static Mutex* spthreadMapMutex = NULL;
 static HashMap<EA::WebKit::ThreadId, EA::WebKit::IThread*>* spthreadMap = NULL;
 // We "new" following in order to avoid running static destructors at the dll unload.
@@ -92,20 +90,24 @@ static void clearThreadForIdentifier(EA::WebKit::ThreadId id)
 
 void initializeThreading() 
 { 
-	if (!atomicallyInitializedStaticMutex) {
-		// StringImpl::empty() does not construct its static string in a threadsafe fashion,
-		// so ensure it has been initialized from here.
-		StringImpl::empty();
-		atomicallyInitializedStaticMutex = new Mutex;
-		threadMapMutex();
-		initializeRandomNumberGenerator();
-		wtfThreadData();
+	static bool isInitialized;
+
+	if (isInitialized)
+		return;
+
+	isInitialized = true;
+
+	// StringImpl::empty() does not construct its static string in a threadsafe fashion,
+	// so ensure it has been initialized from here.
+	StringImpl::empty();
+	threadMapMutex();
+	initializeRandomNumberGenerator();
+	wtfThreadData();
 		
-		s_dtoaP5Mutex = new Mutex;
-		initializeDates();
+	s_dtoaP5Mutex = new Mutex;
+	initializeDates();
 		
-		ASSERT(EA::WebKit::GetThreadSystem()->IsMainThread());
-	}
+	ASSERT(EA::WebKit::GetThreadSystem()->IsMainThread());
 }
 
 // Return ThreadIdentifier if successful or zero for failure.
@@ -140,6 +142,23 @@ void initializeCurrentThreadInternal(const char* name)
 	}
 }
 
+
+void changeThreadPriority(ThreadIdentifier threadIdentifier, int delta)
+{
+	ASSERT(FALSE); //EAWebKitTodo 03/04/2015 verify functional, only ever called from \Source\JavaScriptCore\dfg\DFGWorklist.cpp
+	ASSERT(threadIdentifier);
+	const EA::WebKit::ThreadId threadID = (EA::WebKit::ThreadId)threadIdentifier;
+	EA::WebKit::IThread* theThread = threadForIdentifier(threadID);
+
+	if (theThread)
+	{
+		theThread->ChangePriority(delta);
+	}
+	else
+	{
+		LOG_ERROR("changeThreadPriority: ThreadIdentifier %u does not correspond to an active thread", threadID);
+	}
+}
 
 // Return 0 on success, same as pthread_join().
 int waitForThreadCompletion(ThreadIdentifier threadIdentifier)
@@ -199,23 +218,6 @@ bool isMainThread()
 	// in debug mode so it is important to optimize this call in order to keep debug builds running at a reasonable frame rate.
 	//(currentThread() == mainThreadIdentifier);
 }
-
-void yield()
-{
-	EA::WebKit::GetThreadSystem()->YieldThread();
-}
-
-void lockAtomicallyInitializedStaticMutex()
-{
-	ASSERT(atomicallyInitializedStaticMutex);
-	atomicallyInitializedStaticMutex->lock();
-}
-
-void unlockAtomicallyInitializedStaticMutex()
-{
-	atomicallyInitializedStaticMutex->unlock();
-}
-
 
 Mutex::Mutex()
 {

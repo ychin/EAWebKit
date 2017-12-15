@@ -22,27 +22,27 @@
 #define JSDOMMimeType_h
 
 #include "DOMMimeType.h"
-#include "JSDOMBinding.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include "JSDOMWrapper.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSDOMMimeType : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSDOMMimeType* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<DOMMimeType> impl)
+    static JSDOMMimeType* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<DOMMimeType>&& impl)
     {
-        JSDOMMimeType* ptr = new (NotNull, JSC::allocateCell<JSDOMMimeType>(globalObject->vm().heap)) JSDOMMimeType(structure, globalObject, impl);
+        JSDOMMimeType* ptr = new (NotNull, JSC::allocateCell<JSDOMMimeType>(globalObject->vm().heap)) JSDOMMimeType(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static DOMMimeType* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSDOMMimeType();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -52,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     DOMMimeType& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     DOMMimeType* m_impl;
 protected:
-    JSDOMMimeType(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMMimeType>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSDOMMimeType(JSC::Structure*, JSDOMGlobalObject*, Ref<DOMMimeType>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSDOMMimeTypeOwner : public JSC::WeakHandleOwner {
@@ -78,72 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, DOMMimeType*)
 {
-    DEFINE_STATIC_LOCAL(JSDOMMimeTypeOwner, jsDOMMimeTypeOwner, ());
-    return &jsDOMMimeTypeOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, DOMMimeType*)
-{
-    return &world;
+    static NeverDestroyed<JSDOMMimeTypeOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, DOMMimeType*);
-DOMMimeType* toDOMMimeType(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, DOMMimeType& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSDOMMimeTypePrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSDOMMimeTypePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSDOMMimeTypePrototype* ptr = new (NotNull, JSC::allocateCell<JSDOMMimeTypePrototype>(vm.heap)) JSDOMMimeTypePrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSDOMMimeTypePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSDOMMimeTypeConstructor : public DOMConstructorObject {
-private:
-    JSDOMMimeTypeConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSDOMMimeTypeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSDOMMimeTypeConstructor* ptr = new (NotNull, JSC::allocateCell<JSDOMMimeTypeConstructor>(vm.heap)) JSDOMMimeTypeConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsDOMMimeTypeType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMMimeTypeSuffixes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMMimeTypeDescription(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMMimeTypeEnabledPlugin(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsDOMMimeTypeConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

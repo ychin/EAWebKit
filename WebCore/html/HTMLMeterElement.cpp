@@ -23,7 +23,7 @@
 #include "HTMLMeterElement.h"
 
 #include "Attribute.h"
-#include "ElementTraversal.h"
+#include "ElementIterator.h"
 #include "EventNames.h"
 #include "ExceptionCode.h"
 #include "FormDataList.h"
@@ -50,22 +50,22 @@ HTMLMeterElement::~HTMLMeterElement()
 {
 }
 
-PassRefPtr<HTMLMeterElement> HTMLMeterElement::create(const QualifiedName& tagName, Document& document)
+Ref<HTMLMeterElement> HTMLMeterElement::create(const QualifiedName& tagName, Document& document)
 {
-    RefPtr<HTMLMeterElement> meter = adoptRef(new HTMLMeterElement(tagName, document));
+    Ref<HTMLMeterElement> meter = adoptRef(*new HTMLMeterElement(tagName, document));
     meter->ensureUserAgentShadowRoot();
     return meter;
 }
 
-RenderElement* HTMLMeterElement::createRenderer(RenderArena& arena, RenderStyle& style)
+RenderPtr<RenderElement> HTMLMeterElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    if (hasAuthorShadowRoot() || !document().page()->theme()->supportsMeter(style.appearance()))
-        return RenderElement::createFor(*this, style);
+    if (!document().page()->theme().supportsMeter(style.get().appearance()))
+        return RenderElement::createFor(*this, WTF::move(style));
 
-    return new (arena) RenderMeter(*this);
+    return createRenderer<RenderMeter>(*this, WTF::move(style));
 }
 
-bool HTMLMeterElement::childShouldCreateRenderer(const Node* child) const
+bool HTMLMeterElement::childShouldCreateRenderer(const Node& child) const
 {
     return hasShadowRootParent(child) && HTMLElement::childShouldCreateRenderer(child);
 }
@@ -220,9 +220,9 @@ void HTMLMeterElement::didElementStateChange()
 
 RenderMeter* HTMLMeterElement::renderMeter() const
 {
-    if (renderer() && renderer()->isMeter())
-        return toRenderMeter(renderer());
-    return toRenderMeter(ElementTraversal::firstWithin(userAgentShadowRoot())->renderer());
+    if (is<RenderMeter>(renderer()))
+        return downcast<RenderMeter>(renderer());
+    return downcast<RenderMeter>(descendantsOfType<Element>(*userAgentShadowRoot()).first()->renderer());
 }
 
 void HTMLMeterElement::didAddUserAgentShadowRoot(ShadowRoot* root)

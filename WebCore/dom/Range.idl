@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Apple Computer, Inc.
+ * Copyright (C) 2006 Apple Inc.
  * Copyright (C) 2006 Samuel Weinig <sam.weinig@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -20,8 +20,9 @@
 
 // Introduced in DOM Level 2:
 [
-    ImplementationLacksVTable,
-    OperationsNotDeletable
+    Constructor,
+    ConstructorCallWith=Document,
+    ImplementationLacksVTable
 ] interface Range {
 
     [GetterRaisesException] readonly attribute Node startContainer;

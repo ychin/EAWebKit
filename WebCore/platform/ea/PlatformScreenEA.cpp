@@ -2,7 +2,7 @@
  * Copyright (C) 2007 Apple Inc.  All rights reserved.
  * Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) 2008 Holger Hans Peter Freyther
- * Copyright (C) 2011, 2012 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -72,6 +72,11 @@ bool screenIsMonochrome(Widget* w)
 FloatRect screenRect(Widget* w)
 {
 	return w->frameRect(); // For our usage, screenRect is same as our surface size.
+}
+
+bool screenHasInvertedColors()
+{
+	return false;
 }
 
 FloatRect screenAvailableRect(Widget* w)

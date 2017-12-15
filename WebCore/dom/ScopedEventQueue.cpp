@@ -34,29 +34,13 @@
 #include "Event.h"
 #include "EventDispatcher.h"
 #include "EventTarget.h"
-#include <wtf/OwnPtr.h>
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
 
-ScopedEventQueue* ScopedEventQueue::s_instance = 0;
-
-ScopedEventQueue::ScopedEventQueue()
-    : m_scopingLevel(0)
+ScopedEventQueue& ScopedEventQueue::singleton()
 {
-}
-
-ScopedEventQueue::~ScopedEventQueue()
-{
-    ASSERT(!m_scopingLevel);
-    ASSERT(!m_queuedEvents.size());
-}
-
-void ScopedEventQueue::initialize()
-{
-    ASSERT(!s_instance);
-    OwnPtr<ScopedEventQueue> instance = adoptPtr(new ScopedEventQueue);
-    s_instance = instance.leakPtr();
+    static NeverDestroyed<ScopedEventQueue> scopedEventQueue;
+    return scopedEventQueue;
 }
 
 void ScopedEventQueue::enqueueEvent(PassRefPtr<Event> event)
@@ -67,42 +51,30 @@ void ScopedEventQueue::enqueueEvent(PassRefPtr<Event> event)
         dispatchEvent(event);
 }
 
-void ScopedEventQueue::dispatchAllEvents()
-{
-    Vector<RefPtr<Event>> queuedEvents;
-    queuedEvents.swap(m_queuedEvents);
-
-    for (size_t i = 0; i < queuedEvents.size(); i++)
-        dispatchEvent(queuedEvents[i].release());
-}
-
 void ScopedEventQueue::dispatchEvent(PassRefPtr<Event> event) const
 {
     ASSERT(event->target());
-    // Passing the PassRefPtr<Event> object into the method call creates a new copy and also nullifies
-    // the original object, which is causing crashes in GCC-compiled code that only after that goes on
-    // to retrieve the Event's target, calling Event::target() on the now-null PassRefPtr<Event> object.
+    // Store the target in a local variable to avoid possibly dereferencing a nullified PassRefPtr after it's passed on.
     Node* node = event->target()->toNode();
     EventDispatcher::dispatchEvent(node, event);
 }
 
-ScopedEventQueue* ScopedEventQueue::instance()
+void ScopedEventQueue::dispatchAllEvents()
 {
-    if (!s_instance)
-        initialize();
-
-    return s_instance;
+    Vector<RefPtr<Event>> queuedEvents = WTF::move(m_queuedEvents);
+    for (auto& queuedEvent : queuedEvents)
+        dispatchEvent(queuedEvent.release());
 }
 
 void ScopedEventQueue::incrementScopingLevel()
 {
-    m_scopingLevel++;
+    ++m_scopingLevel;
 }
 
 void ScopedEventQueue::decrementScopingLevel()
 {
     ASSERT(m_scopingLevel);
-    m_scopingLevel--;
+    --m_scopingLevel;
     if (!m_scopingLevel)
         dispatchAllEvents();
 }

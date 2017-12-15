@@ -22,24 +22,23 @@
 #define JSCSSStyleSheet_h
 
 #include "CSSStyleSheet.h"
-#include "JSDOMBinding.h"
 #include "JSStyleSheet.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCSSStyleSheet : public JSStyleSheet {
 public:
     typedef JSStyleSheet Base;
-    static JSCSSStyleSheet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CSSStyleSheet> impl)
+    static JSCSSStyleSheet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CSSStyleSheet>&& impl)
     {
-        JSCSSStyleSheet* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleSheet>(globalObject->vm().heap)) JSCSSStyleSheet(structure, globalObject, impl);
+        JSCSSStyleSheet* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleSheet>(globalObject->vm().heap)) JSCSSStyleSheet(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,72 +52,17 @@ public:
         return static_cast<CSSStyleSheet&>(Base::impl());
     }
 protected:
-    JSCSSStyleSheet(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CSSStyleSheet>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCSSStyleSheet(JSC::Structure*, JSDOMGlobalObject*, Ref<CSSStyleSheet>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 
-class JSCSSStyleSheetPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCSSStyleSheetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCSSStyleSheetPrototype* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleSheetPrototype>(vm.heap)) JSCSSStyleSheetPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCSSStyleSheetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSCSSStyleSheetConstructor : public DOMConstructorObject {
-private:
-    JSCSSStyleSheetConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCSSStyleSheetConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCSSStyleSheetConstructor* ptr = new (NotNull, JSC::allocateCell<JSCSSStyleSheetConstructor>(vm.heap)) JSCSSStyleSheetConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleSheetPrototypeFunctionInsertRule(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleSheetPrototypeFunctionDeleteRule(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleSheetPrototypeFunctionAddRule(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCSSStyleSheetPrototypeFunctionRemoveRule(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsCSSStyleSheetOwnerRule(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSStyleSheetCssRules(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSStyleSheetRules(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsCSSStyleSheetConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

@@ -52,7 +52,7 @@ ApplicationCache::ApplicationCache()
 
 ApplicationCache::~ApplicationCache()
 {
-    if (m_group && !m_group->isCopy())
+    if (m_group)
         m_group->cacheDestroyed(this);
 }
     
@@ -62,9 +62,9 @@ void ApplicationCache::setGroup(ApplicationCacheGroup* group)
     m_group = group;
 }
 
-bool ApplicationCache::isComplete() const
+bool ApplicationCache::isComplete()
 {
-    return !m_group->cacheIsBeingUpdated(this);
+    return m_group && m_group->cacheIsComplete(this);
 }
 
 void ApplicationCache::setManifestResource(PassRefPtr<ApplicationCacheResource> manifest)
@@ -91,7 +91,7 @@ void ApplicationCache::addResource(PassRefPtr<ApplicationCacheResource> resource
         ASSERT(resource->type() & ApplicationCacheResource::Master);
         
         // Add the resource to the storage.
-        cacheStorage().store(resource.get(), this);
+        ApplicationCacheStorage::singleton().store(resource.get(), this);
     }
 
     m_estimatedSizeInStorage += resource->estimatedSizeInStorage();
@@ -101,16 +101,16 @@ void ApplicationCache::addResource(PassRefPtr<ApplicationCacheResource> resource
 
 unsigned ApplicationCache::removeResource(const String& url)
 {
-    HashMap<String, RefPtr<ApplicationCacheResource> >::iterator it = m_resources.find(url);
+    HashMap<String, RefPtr<ApplicationCacheResource>>::iterator it = m_resources.find(url);
     if (it == m_resources.end())
         return 0;
 
     // The resource exists, get its type so we can return it.
     unsigned type = it->value->type();
 
-    m_resources.remove(it);
-
     m_estimatedSizeInStorage -= it->value->estimatedSizeInStorage();
+
+    m_resources.remove(it);
 
     return type;
 }    
@@ -186,48 +186,16 @@ void ApplicationCache::clearStorageID()
 {
     m_storageID = 0;
     
-    ResourceMap::const_iterator end = m_resources.end();
-    for (ResourceMap::const_iterator it = m_resources.begin(); it != end; ++it)
-        it->value->clearStorageID();
+    for (const auto& resource : m_resources.values())
+        resource->clearStorageID();
 }
     
-void ApplicationCache::deleteCacheForOrigin(SecurityOrigin* origin)
-{
-    Vector<URL> urls;
-    if (!cacheStorage().manifestURLs(&urls)) {
-        LOG_ERROR("Failed to retrieve ApplicationCache manifest URLs");
-        return;
-    }
-
-    URL originURL(URL(), origin->toString());
-
-    size_t count = urls.size();
-    for (size_t i = 0; i < count; ++i) {
-        if (protocolHostAndPortAreEqual(urls[i], originURL)) {
-            ApplicationCacheGroup* group = cacheStorage().findInMemoryCacheGroup(urls[i]);
-            if (group)
-                group->makeObsolete();
-            else
-                cacheStorage().deleteCacheGroup(urls[i]);
-        }
-    }
-}
-
-int64_t ApplicationCache::diskUsageForOrigin(SecurityOrigin* origin)
-{
-    int64_t usage = 0;
-    cacheStorage().calculateUsageForOrigin(origin, usage);
-    return usage;
-}
-
 #ifndef NDEBUG
 void ApplicationCache::dump()
 {
-    HashMap<String, RefPtr<ApplicationCacheResource> >::const_iterator end = m_resources.end();
-    
-    for (HashMap<String, RefPtr<ApplicationCacheResource> >::const_iterator it = m_resources.begin(); it != end; ++it) {
-        printf("%s ", it->key.ascii().data());
-        ApplicationCacheResource::dumpType(it->value->type());
+    for (const auto& urlAndResource : m_resources) {
+        printf("%s ", urlAndResource.key.utf8().data());
+        ApplicationCacheResource::dumpType(urlAndResource.value->type());
     }
 }
 #endif

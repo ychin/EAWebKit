@@ -26,15 +26,14 @@
 
 #include "config.h"
 
-#if ENABLE(WORKERS)
-
 #include "JSWorker.h"
 
 #include "Document.h"
+#include "JSDOMBinding.h"
 #include "JSDOMGlobalObject.h"
+#include "JSDOMWindowCustom.h"
 #include "JSMessagePortCustom.h"
 #include "Worker.h"
-#include "JSDOMWindowCustom.h"
 #include <runtime/Error.h>
 
 using namespace JSC;
@@ -46,9 +45,9 @@ JSC::JSValue JSWorker::postMessage(JSC::ExecState* exec)
     return handlePostMessage(exec, &impl());
 }
 
-EncodedJSValue JSC_HOST_CALL JSWorkerConstructor::constructJSWorker(ExecState* exec)
+EncodedJSValue JSC_HOST_CALL constructJSWorker(ExecState* exec)
 {
-    JSWorkerConstructor* jsConstructor = jsCast<JSWorkerConstructor*>(exec->callee());
+    DOMConstructorObject* jsConstructor = jsCast<DOMConstructorObject*>(exec->callee());
 
     if (!exec->argumentCount())
         return throwVMError(exec, createNotEnoughArgumentsError(exec));
@@ -72,5 +71,3 @@ EncodedJSValue JSC_HOST_CALL JSWorkerConstructor::constructJSWorker(ExecState* e
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WORKERS)

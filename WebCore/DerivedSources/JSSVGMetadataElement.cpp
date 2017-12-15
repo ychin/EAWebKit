@@ -19,11 +19,9 @@
 */
 
 #include "config.h"
-
-#if ENABLE(SVG)
-
 #include "JSSVGMetadataElement.h"
 
+#include "JSDOMBinding.h"
 #include "SVGMetadataElement.h"
 #include <wtf/GetPtr.h>
 
@@ -31,24 +29,57 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSVGMetadataElementTableValues[] =
-{
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGMetadataElementConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSVGMetadataElementConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSVGMetadataElementPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSVGMetadataElementPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSVGMetadataElementPrototype* ptr = new (NotNull, JSC::allocateCell<JSSVGMetadataElementPrototype>(vm.heap)) JSSVGMetadataElementPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSVGMetadataElementPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSVGMetadataElementTable = { 2, 1, JSSVGMetadataElementTableValues, 0 };
-/* Hash table for constructor */
+class JSSVGMetadataElementConstructor : public DOMConstructorObject {
+private:
+    JSSVGMetadataElementConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSVGMetadataElementConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSVGMetadataElementConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSVGMetadataElementConstructor* ptr = new (NotNull, JSC::allocateCell<JSSVGMetadataElementConstructor>(vm.heap)) JSSVGMetadataElementConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSVGMetadataElementConstructorTable = { 1, 0, JSSVGMetadataElementConstructorTableValues, 0 };
-const ClassInfo JSSVGMetadataElementConstructor::s_info = { "SVGMetadataElementConstructor", &Base::s_info, &JSSVGMetadataElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGMetadataElementConstructor) };
+const ClassInfo JSSVGMetadataElementConstructor::s_info = { "SVGMetadataElementConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGMetadataElementConstructor) };
 
 JSSVGMetadataElementConstructor::JSSVGMetadataElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -59,59 +90,49 @@ void JSSVGMetadataElementConstructor::finishCreation(VM& vm, JSDOMGlobalObject* 
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSVGMetadataElementPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSVGMetadataElementConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSVGMetadataElementConstructor, JSDOMWrapper>(exec, JSSVGMetadataElementConstructorTable, jsCast<JSSVGMetadataElementConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSVGMetadataElement::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SVGMetadataElement"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSVGMetadataElementPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGMetadataElementConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSVGMetadataElementPrototypeTable = { 1, 0, JSSVGMetadataElementPrototypeTableValues, 0 };
-const ClassInfo JSSVGMetadataElementPrototype::s_info = { "SVGMetadataElementPrototype", &Base::s_info, &JSSVGMetadataElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGMetadataElementPrototype) };
+const ClassInfo JSSVGMetadataElementPrototype::s_info = { "SVGMetadataElementPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGMetadataElementPrototype) };
 
-JSObject* JSSVGMetadataElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSVGMetadataElement>(vm, globalObject);
-}
-
-const ClassInfo JSSVGMetadataElement::s_info = { "SVGMetadataElement", &Base::s_info, &JSSVGMetadataElementTable, 0 , CREATE_METHOD_TABLE(JSSVGMetadataElement) };
-
-JSSVGMetadataElement::JSSVGMetadataElement(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SVGMetadataElement> impl)
-    : JSSVGElement(structure, globalObject, impl)
-{
-}
-
-void JSSVGMetadataElement::finishCreation(VM& vm)
+void JSSVGMetadataElementPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSVGMetadataElementPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSVGMetadataElement::s_info = { "SVGMetadataElement", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSVGMetadataElement) };
+
+JSSVGMetadataElement::JSSVGMetadataElement(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SVGMetadataElement>&& impl)
+    : JSSVGElement(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSVGMetadataElement::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSVGMetadataElementPrototype::create(vm, globalObject, JSSVGMetadataElementPrototype::createStructure(vm, globalObject, JSSVGElementPrototype::self(vm, globalObject)));
+    return JSSVGMetadataElementPrototype::create(vm, globalObject, JSSVGMetadataElementPrototype::createStructure(vm, globalObject, JSSVGElement::getPrototype(vm, globalObject)));
 }
 
-bool JSSVGMetadataElement::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSVGMetadataElement::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSVGMetadataElement* thisObject = jsCast<JSSVGMetadataElement*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSVGMetadataElement, Base>(exec, JSSVGMetadataElementTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSVGMetadataElement>(vm, globalObject);
 }
 
-JSValue jsSVGMetadataElementConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSVGMetadataElementConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSVGMetadataElement* domObject = jsCast<JSSVGMetadataElement*>(asObject(slotBase));
-    return JSSVGMetadataElement::getConstructor(exec->vm(), domObject->globalObject());
+    JSSVGMetadataElementPrototype* domObject = jsDynamicCast<JSSVGMetadataElementPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSVGMetadataElement::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSVGMetadataElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -121,5 +142,3 @@ JSValue JSSVGMetadataElement::getConstructor(VM& vm, JSGlobalObject* globalObjec
 
 
 }
-
-#endif // ENABLE(SVG)

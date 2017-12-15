@@ -25,6 +25,7 @@
 #include "JSMediaElementAudioSourceNode.h"
 
 #include "HTMLMediaElement.h"
+#include "JSDOMBinding.h"
 #include "JSHTMLMediaElement.h"
 #include "MediaElementAudioSourceNode.h"
 #include <wtf/GetPtr.h>
@@ -33,25 +34,58 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSMediaElementAudioSourceNodeTableValues[] =
-{
-    { "mediaElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaElementAudioSourceNodeMediaElement), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaElementAudioSourceNodeConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsMediaElementAudioSourceNodeMediaElement(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsMediaElementAudioSourceNodeConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSMediaElementAudioSourceNodePrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSMediaElementAudioSourceNodePrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSMediaElementAudioSourceNodePrototype* ptr = new (NotNull, JSC::allocateCell<JSMediaElementAudioSourceNodePrototype>(vm.heap)) JSMediaElementAudioSourceNodePrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSMediaElementAudioSourceNodePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSMediaElementAudioSourceNodeTable = { 4, 3, JSMediaElementAudioSourceNodeTableValues, 0 };
-/* Hash table for constructor */
+class JSMediaElementAudioSourceNodeConstructor : public DOMConstructorObject {
+private:
+    JSMediaElementAudioSourceNodeConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSMediaElementAudioSourceNodeConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSMediaElementAudioSourceNodeConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSMediaElementAudioSourceNodeConstructor* ptr = new (NotNull, JSC::allocateCell<JSMediaElementAudioSourceNodeConstructor>(vm.heap)) JSMediaElementAudioSourceNodeConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSMediaElementAudioSourceNodeConstructorTable = { 1, 0, JSMediaElementAudioSourceNodeConstructorTableValues, 0 };
-const ClassInfo JSMediaElementAudioSourceNodeConstructor::s_info = { "MediaElementAudioSourceNodeConstructor", &Base::s_info, &JSMediaElementAudioSourceNodeConstructorTable, 0, CREATE_METHOD_TABLE(JSMediaElementAudioSourceNodeConstructor) };
+const ClassInfo JSMediaElementAudioSourceNodeConstructor::s_info = { "MediaElementAudioSourceNodeConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaElementAudioSourceNodeConstructor) };
 
 JSMediaElementAudioSourceNodeConstructor::JSMediaElementAudioSourceNodeConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -62,69 +96,67 @@ void JSMediaElementAudioSourceNodeConstructor::finishCreation(VM& vm, JSDOMGloba
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSMediaElementAudioSourceNodePrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSMediaElementAudioSourceNodeConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSMediaElementAudioSourceNodeConstructor, JSDOMWrapper>(exec, JSMediaElementAudioSourceNodeConstructorTable, jsCast<JSMediaElementAudioSourceNodeConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSMediaElementAudioSourceNode::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("MediaElementAudioSourceNode"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSMediaElementAudioSourceNodePrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaElementAudioSourceNodeConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "mediaElement", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsMediaElementAudioSourceNodeMediaElement), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSMediaElementAudioSourceNodePrototypeTable = { 1, 0, JSMediaElementAudioSourceNodePrototypeTableValues, 0 };
-const ClassInfo JSMediaElementAudioSourceNodePrototype::s_info = { "MediaElementAudioSourceNodePrototype", &Base::s_info, &JSMediaElementAudioSourceNodePrototypeTable, 0, CREATE_METHOD_TABLE(JSMediaElementAudioSourceNodePrototype) };
+const ClassInfo JSMediaElementAudioSourceNodePrototype::s_info = { "MediaElementAudioSourceNodePrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaElementAudioSourceNodePrototype) };
 
-JSObject* JSMediaElementAudioSourceNodePrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSMediaElementAudioSourceNode>(vm, globalObject);
-}
-
-const ClassInfo JSMediaElementAudioSourceNode::s_info = { "MediaElementAudioSourceNode", &Base::s_info, &JSMediaElementAudioSourceNodeTable, 0 , CREATE_METHOD_TABLE(JSMediaElementAudioSourceNode) };
-
-JSMediaElementAudioSourceNode::JSMediaElementAudioSourceNode(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<MediaElementAudioSourceNode> impl)
-    : JSAudioNode(structure, globalObject, impl)
-{
-}
-
-void JSMediaElementAudioSourceNode::finishCreation(VM& vm)
+void JSMediaElementAudioSourceNodePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSMediaElementAudioSourceNodePrototypeTableValues, *this);
+}
+
+const ClassInfo JSMediaElementAudioSourceNode::s_info = { "MediaElementAudioSourceNode", &Base::s_info, 0, CREATE_METHOD_TABLE(JSMediaElementAudioSourceNode) };
+
+JSMediaElementAudioSourceNode::JSMediaElementAudioSourceNode(Structure* structure, JSDOMGlobalObject* globalObject, Ref<MediaElementAudioSourceNode>&& impl)
+    : JSAudioNode(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSMediaElementAudioSourceNode::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSMediaElementAudioSourceNodePrototype::create(vm, globalObject, JSMediaElementAudioSourceNodePrototype::createStructure(vm, globalObject, JSAudioNodePrototype::self(vm, globalObject)));
+    return JSMediaElementAudioSourceNodePrototype::create(vm, globalObject, JSMediaElementAudioSourceNodePrototype::createStructure(vm, globalObject, JSAudioNode::getPrototype(vm, globalObject)));
 }
 
-bool JSMediaElementAudioSourceNode::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSMediaElementAudioSourceNode::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSMediaElementAudioSourceNode* thisObject = jsCast<JSMediaElementAudioSourceNode*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSMediaElementAudioSourceNode, Base>(exec, JSMediaElementAudioSourceNodeTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSMediaElementAudioSourceNode>(vm, globalObject);
 }
 
-JSValue jsMediaElementAudioSourceNodeMediaElement(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaElementAudioSourceNodeMediaElement(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSMediaElementAudioSourceNode* castedThis = jsCast<JSMediaElementAudioSourceNode*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    MediaElementAudioSourceNode& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSMediaElementAudioSourceNode* castedThis = jsDynamicCast<JSMediaElementAudioSourceNode*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSMediaElementAudioSourceNodePrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "MediaElementAudioSourceNode", "mediaElement");
+        return throwGetterTypeError(*exec, "MediaElementAudioSourceNode", "mediaElement");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(impl.mediaElement()));
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsMediaElementAudioSourceNodeConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsMediaElementAudioSourceNodeConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSMediaElementAudioSourceNode* domObject = jsCast<JSMediaElementAudioSourceNode*>(asObject(slotBase));
-    return JSMediaElementAudioSourceNode::getConstructor(exec->vm(), domObject->globalObject());
+    JSMediaElementAudioSourceNodePrototype* domObject = jsDynamicCast<JSMediaElementAudioSourceNodePrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSMediaElementAudioSourceNode::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSMediaElementAudioSourceNode::getConstructor(VM& vm, JSGlobalObject* globalObject)
@@ -140,11 +172,11 @@ extern "C" { extern void (*const __identifier("??_7MediaElementAudioSourceNode@W
 extern "C" { extern void* _ZTVN7WebCore27MediaElementAudioSourceNodeE[]; }
 #endif
 #endif
-JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaElementAudioSourceNode* impl)
+JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject* globalObject, MediaElementAudioSourceNode* impl)
 {
     if (!impl)
         return jsNull();
-    if (JSValue result = getExistingWrapper<JSMediaElementAudioSourceNode>(exec, impl))
+    if (JSValue result = getExistingWrapper<JSMediaElementAudioSourceNode>(globalObject, impl))
         return result;
 
 #if ENABLE(BINDING_INTEGRITY)
@@ -165,8 +197,7 @@ JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, MediaEl
     // by adding the SkipVTableValidation attribute to the interface IDL definition
     RELEASE_ASSERT(actualVTablePointer == expectedVTablePointer);
 #endif
-    ReportMemoryCost<MediaElementAudioSourceNode>::reportMemoryCost(exec, impl);
-    return createNewWrapper<JSMediaElementAudioSourceNode>(exec, globalObject, impl);
+    return createNewWrapper<JSMediaElementAudioSourceNode>(globalObject, impl);
 }
 
 

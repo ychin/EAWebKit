@@ -24,24 +24,24 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "JSAudioContext.h"
-#include "JSDOMBinding.h"
 #include "OfflineAudioContext.h"
-#include <runtime/JSObject.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSOfflineAudioContext : public JSAudioContext {
 public:
     typedef JSAudioContext Base;
-    static JSOfflineAudioContext* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<OfflineAudioContext> impl)
+    static JSOfflineAudioContext* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<OfflineAudioContext>&& impl)
     {
-        JSOfflineAudioContext* ptr = new (NotNull, JSC::allocateCell<JSOfflineAudioContext>(globalObject->vm().heap)) JSOfflineAudioContext(structure, globalObject, impl);
+        JSOfflineAudioContext* ptr = new (NotNull, JSC::allocateCell<JSOfflineAudioContext>(globalObject->vm().heap)) JSOfflineAudioContext(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -57,9 +57,14 @@ public:
         return static_cast<OfflineAudioContext&>(Base::impl());
     }
 protected:
-    JSOfflineAudioContext(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<OfflineAudioContext>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSOfflineAudioContext(JSC::Structure*, JSDOMGlobalObject*, Ref<OfflineAudioContext>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSOfflineAudioContextOwner : public JSC::WeakHandleOwner {
@@ -70,69 +75,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, OfflineAudioContext*)
 {
-    DEFINE_STATIC_LOCAL(JSOfflineAudioContextOwner, jsOfflineAudioContextOwner, ());
-    return &jsOfflineAudioContextOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, OfflineAudioContext*)
-{
-    return &world;
+    static NeverDestroyed<JSOfflineAudioContextOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, OfflineAudioContext*);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, OfflineAudioContext& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSOfflineAudioContextPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSOfflineAudioContextPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSOfflineAudioContextPrototype* ptr = new (NotNull, JSC::allocateCell<JSOfflineAudioContextPrototype>(vm.heap)) JSOfflineAudioContextPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSOfflineAudioContextPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSOfflineAudioContextConstructor : public DOMConstructorObject {
-private:
-    JSOfflineAudioContextConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSOfflineAudioContextConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSOfflineAudioContextConstructor* ptr = new (NotNull, JSC::allocateCell<JSOfflineAudioContextConstructor>(vm.heap)) JSOfflineAudioContextConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSOfflineAudioContext(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Attributes
-
-JSC::JSValue jsOfflineAudioContextConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

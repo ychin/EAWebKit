@@ -21,29 +21,28 @@
 #ifndef JSStyleSheet_h
 #define JSStyleSheet_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "StyleSheet.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSStyleSheet : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSStyleSheet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<StyleSheet> impl)
+    static JSStyleSheet* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<StyleSheet>&& impl)
     {
-        JSStyleSheet* ptr = new (NotNull, JSC::allocateCell<JSStyleSheet>(globalObject->vm().heap)) JSStyleSheet(structure, globalObject, impl);
+        JSStyleSheet* ptr = new (NotNull, JSC::allocateCell<JSStyleSheet>(globalObject->vm().heap)) JSStyleSheet(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static StyleSheet* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSStyleSheet();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,24 +52,22 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
+    void visitAdditionalChildren(JSC::SlotVisitor&);
 
     StyleSheet& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     StyleSheet* m_impl;
 protected:
-    JSStyleSheet(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<StyleSheet>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSStyleSheet(JSC::Structure*, JSDOMGlobalObject*, Ref<StyleSheet>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSStyleSheetOwner : public JSC::WeakHandleOwner {
@@ -81,76 +78,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, StyleSheet*)
 {
-    DEFINE_STATIC_LOCAL(JSStyleSheetOwner, jsStyleSheetOwner, ());
-    return &jsStyleSheetOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, StyleSheet*)
-{
-    return &world;
+    static NeverDestroyed<JSStyleSheetOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, StyleSheet*);
-StyleSheet* toStyleSheet(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, StyleSheet& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSStyleSheetPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSStyleSheetPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSStyleSheetPrototype* ptr = new (NotNull, JSC::allocateCell<JSStyleSheetPrototype>(vm.heap)) JSStyleSheetPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSStyleSheetPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-class JSStyleSheetConstructor : public DOMConstructorObject {
-private:
-    JSStyleSheetConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSStyleSheetConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSStyleSheetConstructor* ptr = new (NotNull, JSC::allocateCell<JSStyleSheetConstructor>(vm.heap)) JSStyleSheetConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsStyleSheetType(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStyleSheetDisabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSStyleSheetDisabled(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsStyleSheetOwnerNode(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStyleSheetParentStyleSheet(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStyleSheetHref(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStyleSheetTitle(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStyleSheetMedia(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsStyleSheetConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

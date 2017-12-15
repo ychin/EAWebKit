@@ -22,29 +22,28 @@
 #define JSCDATASection_h
 
 #include "CDATASection.h"
-#include "JSDOMBinding.h"
 #include "JSText.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
 class JSCDATASection : public JSText {
 public:
     typedef JSText Base;
-    static JSCDATASection* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<CDATASection> impl)
+    static JSCDATASection* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<CDATASection>&& impl)
     {
-        JSCDATASection* ptr = new (NotNull, JSC::allocateCell<JSCDATASection>(globalObject->vm().heap)) JSCDATASection(structure, globalObject, impl);
+        JSCDATASection* ptr = new (NotNull, JSC::allocateCell<JSCDATASection>(globalObject->vm().heap)) JSCDATASection(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
     {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSNodeType), StructureFlags), info());
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
@@ -53,63 +52,18 @@ public:
         return static_cast<CDATASection&>(Base::impl());
     }
 protected:
-    JSCDATASection(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<CDATASection>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSCDATASection(JSC::Structure*, JSDOMGlobalObject*, Ref<CDATASection>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 JSC::JSValue toJSNewlyCreated(JSC::ExecState*, JSDOMGlobalObject*, CDATASection*);
 
-class JSCDATASectionPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSCDATASectionPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSCDATASectionPrototype* ptr = new (NotNull, JSC::allocateCell<JSCDATASectionPrototype>(vm.heap)) JSCDATASectionPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSCDATASectionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSCDATASectionConstructor : public DOMConstructorObject {
-private:
-    JSCDATASectionConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSCDATASectionConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSCDATASectionConstructor* ptr = new (NotNull, JSC::allocateCell<JSCDATASectionConstructor>(vm.heap)) JSCDATASectionConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Attributes
-
-JSC::JSValue jsCDATASectionConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

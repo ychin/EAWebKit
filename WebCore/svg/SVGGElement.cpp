@@ -19,15 +19,13 @@
  */
 
 #include "config.h"
-
-#if ENABLE(SVG)
 #include "SVGGElement.h"
 
 #include "RenderSVGHiddenContainer.h"
 #include "RenderSVGResource.h"
 #include "RenderSVGTransformableContainer.h"
-#include "SVGElementInstance.h"
 #include "SVGNames.h"
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
@@ -46,34 +44,30 @@ SVGGElement::SVGGElement(const QualifiedName& tagName, Document& document)
     registerAnimatedPropertiesForSVGGElement();
 }
 
-PassRefPtr<SVGGElement> SVGGElement::create(const QualifiedName& tagName, Document& document)
+Ref<SVGGElement> SVGGElement::create(const QualifiedName& tagName, Document& document)
 {
-    return adoptRef(new SVGGElement(tagName, document));
+    return adoptRef(*new SVGGElement(tagName, document));
+}
+
+Ref<SVGGElement> SVGGElement::create(Document& document)
+{
+    return create(SVGNames::gTag, document);
 }
 
 bool SVGGElement::isSupportedAttribute(const QualifiedName& attrName)
 {
-    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());
-    if (supportedAttributes.isEmpty()) {
+    static NeverDestroyed<HashSet<QualifiedName>> supportedAttributes;
+    if (supportedAttributes.get().isEmpty()) {
         SVGLangSpace::addSupportedAttributes(supportedAttributes);
         SVGExternalResourcesRequired::addSupportedAttributes(supportedAttributes);
     }
-    return supportedAttributes.contains<SVGAttributeHashTranslator>(attrName);
+    return supportedAttributes.get().contains<SVGAttributeHashTranslator>(attrName);
 }
 
 void SVGGElement::parseAttribute(const QualifiedName& name, const AtomicString& value)
 {
-    if (!isSupportedAttribute(name)) {
-        SVGGraphicsElement::parseAttribute(name, value);
-        return;
-    }
-
-    if (SVGLangSpace::parseAttribute(name, value))
-        return;
-    if (SVGExternalResourcesRequired::parseAttribute(name, value))
-        return;
-
-    ASSERT_NOT_REACHED();
+    SVGGraphicsElement::parseAttribute(name, value);
+    SVGExternalResourcesRequired::parseAttribute(name, value);
 }
 
 void SVGGElement::svgAttributeChanged(const QualifiedName& attrName)
@@ -83,22 +77,22 @@ void SVGGElement::svgAttributeChanged(const QualifiedName& attrName)
         return;
     }
 
-    SVGElementInstance::InvalidationGuard invalidationGuard(this);
+    InstanceInvalidationGuard guard(*this);
 
-    if (RenderObject* renderer = this->renderer())
-        RenderSVGResource::markForLayoutAndParentResourceInvalidation(renderer);
+    if (auto renderer = this->renderer())
+        RenderSVGResource::markForLayoutAndParentResourceInvalidation(*renderer);
 }
 
-RenderElement* SVGGElement::createRenderer(RenderArena& arena, RenderStyle& style)
+RenderPtr<RenderElement> SVGGElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
     // SVG 1.1 testsuite explicitely uses constructs like <g display="none"><linearGradient>
     // We still have to create renderers for the <g> & <linearGradient> element, though the
     // subtree may be hidden - we only want the resource renderers to exist so they can be
     // referenced from somewhere else.
-    if (style.display() == NONE)
-        return new (arena) RenderSVGHiddenContainer(*this);
+    if (style.get().display() == NONE)
+        return createRenderer<RenderSVGHiddenContainer>(*this, WTF::move(style));
 
-    return new (arena) RenderSVGTransformableContainer(*this);
+    return createRenderer<RenderSVGTransformableContainer>(*this, WTF::move(style));
 }
 
 bool SVGGElement::rendererIsNeeded(const RenderStyle&)
@@ -109,5 +103,3 @@ bool SVGGElement::rendererIsNeeded(const RenderStyle&)
 }
 
 }
-
-#endif // ENABLE(SVG)

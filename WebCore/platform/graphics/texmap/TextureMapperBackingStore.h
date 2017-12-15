@@ -20,7 +20,7 @@
 #ifndef TextureMapperBackingStore_h
 #define TextureMapperBackingStore_h
 
-#if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER)
+#if USE(TEXTURE_MAPPER)
 
 #include "FloatRect.h"
 #include "Image.h"
@@ -38,7 +38,7 @@ class GraphicsLayer;
 
 class TextureMapperBackingStore : public TextureMapperPlatformLayer, public RefCounted<TextureMapperBackingStore> {
 public:
-    virtual PassRefPtr<BitmapTexture> texture() const = 0;
+    virtual RefPtr<BitmapTexture> texture() const = 0;
     virtual void paintToTextureMapper(TextureMapper*, const FloatRect&, const TransformationMatrix&, float) = 0;
     virtual void drawRepaintCounter(TextureMapper*, int /* repaintCount */, const Color&, const FloatRect&, const TransformationMatrix&) { }
     virtual ~TextureMapperBackingStore() { }

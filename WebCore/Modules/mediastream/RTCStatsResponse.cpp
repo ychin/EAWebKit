@@ -30,9 +30,9 @@
 
 namespace WebCore {
 
-PassRefPtr<RTCStatsResponse> RTCStatsResponse::create()
+Ref<RTCStatsResponse> RTCStatsResponse::create()
 {
-    return adoptRef(new RTCStatsResponse());
+    return adoptRef(*new RTCStatsResponse());
 }
 
 RTCStatsResponse::RTCStatsResponse()
@@ -43,7 +43,7 @@ PassRefPtr<RTCStatsReport> RTCStatsResponse::namedItem(const AtomicString& name)
 {
     if (m_idmap.find(name) != m_idmap.end())
         return m_result[m_idmap.get(name)];
-    return 0;
+    return nullptr;
 }
 
 bool RTCStatsResponse::canGetItemsForName(const AtomicString& name)

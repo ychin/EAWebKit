@@ -28,7 +28,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "config.h"
-#if ENABLE(INSPECTOR_SERVER)
 #include "WebSocketServer.h"
 #include "WebInspectorServer.h" 
 #include "WebSocketServerConnection.h"
@@ -56,9 +55,9 @@ void WebSocketServer::SocketEvent(EA::WebKit::SocketEventType eventType)
 void WebSocketServer::ConnectionAccepted(EA::WebKit::SocketHandle newClient)
 {
     //this will hand off the newClient to be managed by SocketStreamHandle callbacks
-    OwnPtr<WebSocketServerConnection> webSocketConnection = adoptPtr(new WebSocketServerConnection(this->client(), this));
+    auto webSocketConnection = std::make_unique<WebSocketServerConnection>(this->client(), this);
     webSocketConnection->setSocketHandle(SocketStreamHandle::create(newClient, webSocketConnection.get()));
-    this->didAcceptConnection(webSocketConnection.release());
+    this->didAcceptConnection(WTF::move(webSocketConnection));
 }
 
 void WebSocketServer::platformInitialize()
@@ -96,4 +95,4 @@ void WebSocketServer::platformClose()
 
 } //namespace WebKit
 
-#endif // ENABLE(INSPECTOR_SERVER)
+

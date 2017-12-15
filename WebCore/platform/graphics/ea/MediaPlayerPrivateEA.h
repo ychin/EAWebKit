@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
-    Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+    Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,54 +45,50 @@ class IntSize;
 class MediaPlayerPrivateEA : public MediaPlayerPrivateInterface
 {
 public:
+	explicit MediaPlayerPrivateEA(MediaPlayer* player);
     ~MediaPlayerPrivateEA();
 
     // For setting up the engine
     static void registerMediaEngine(MediaEngineRegistrar);
-    static PassOwnPtr<MediaPlayerPrivateInterface> create(MediaPlayer* player);
     static void getSupportedTypes(HashSet<String> &supported);
-    static MediaPlayer::SupportsType supportsType(const String& mime, const String& codec, const URL& url);
+	static MediaPlayer::SupportsType supportsType(const MediaEngineSupportParameters& parameters);
 
     // For playing the media
-    virtual void load(const String& url) OVERRIDE;
-    virtual void cancelLoad() OVERRIDE;
-    virtual void play() OVERRIDE; 
-    virtual void pause() OVERRIDE;    
-    virtual bool supportsFullscreen() const OVERRIDE;
-    virtual IntSize naturalSize() const OVERRIDE;
-    virtual bool hasVideo() const OVERRIDE;
-    virtual bool hasAudio() const OVERRIDE;
-    virtual void setVisible(bool) OVERRIDE;
-    virtual float duration() const OVERRIDE;
-    virtual float currentTime() const OVERRIDE;
-    virtual void seek(float time) OVERRIDE;
-    virtual bool seeking() const OVERRIDE;
-    virtual float startTime() const OVERRIDE;
-    virtual double initialTime() const OVERRIDE;
-    virtual void setRate(float) OVERRIDE;
-    virtual bool paused() const OVERRIDE;
-    virtual void setVolume(float) OVERRIDE;
-    virtual bool supportsMuting() const OVERRIDE;
-    virtual void setMuted(bool) OVERRIDE;
-    virtual MediaPlayer::NetworkState networkState() const OVERRIDE; 
-    virtual MediaPlayer::ReadyState readyState() const OVERRIDE; 
-    virtual float maxTimeSeekable() const OVERRIDE;
-    virtual PassRefPtr<TimeRanges> buffered() const OVERRIDE; 
-    virtual void setSize(const IntSize& ) OVERRIDE;
-    virtual void paint(GraphicsContext*, const IntRect&) OVERRIDE;
+    virtual void load(const String& url) override;
+    virtual void cancelLoad() override;
+    virtual void play() override; 
+    virtual void pause() override;    
+    virtual bool supportsFullscreen() const override;
+    virtual FloatSize naturalSize() const override;
+    virtual bool hasVideo() const override;
+    virtual bool hasAudio() const override;
+    virtual void setVisible(bool) override;
+    virtual float duration() const override;
+    virtual float currentTime() const override;
+    virtual void seek(float time) override;
+    virtual bool seeking() const override;
+    virtual void setRate(float) override;
+    virtual bool paused() const override;
+    virtual void setVolume(float) override;
+    virtual bool supportsMuting() const override;
+    virtual void setMuted(bool) override;
+    virtual MediaPlayer::NetworkState networkState() const override; 
+    virtual MediaPlayer::ReadyState readyState() const override; 
+    virtual float maxTimeSeekable() const override;
+    virtual std::unique_ptr<PlatformTimeRanges> buffered() const override; 
+    virtual void setSize(const IntSize& ) override;
+    virtual void paint(GraphicsContext*, const FloatRect&) override;
 
     // Ignore these for now as unclear if needed.
-    virtual bool supportsSave() const OVERRIDE { return false; }
-    virtual void prepareToPlay() OVERRIDE { }
-    virtual void setPreservesPitch(bool) OVERRIDE { }
-    virtual bool hasClosedCaptions() const OVERRIDE { return false; }    
-    virtual void setClosedCaptionsVisible(bool) OVERRIDE { }
+    virtual void prepareToPlay() override { }
+    virtual void setPreservesPitch(bool) override { }
+    virtual bool hasClosedCaptions() const override { return false; }    
+    virtual void setClosedCaptionsVisible(bool) override { }
     
-    void UpdateTimerFired(Timer<MediaPlayerPrivateEA>* );
-    virtual bool didLoadingProgress() const OVERRIDE;
+    void UpdateTimerFired();
+    virtual bool didLoadingProgress() const override;
 
-private:
-    MediaPlayerPrivateEA(MediaPlayer* player);   
+private: 
     static EA::WebKit::MediaUpdateInfo& GetMediaUpdateInfo(void);
     static void Finalize(void);
     void ClientUpdate(EA::WebKit::MediaUpdateInfo::UpdateType type) const;
@@ -111,13 +107,13 @@ private:
     bool                        mIsLooping;         // Store if looping set
     bool                        mIsVideo;           // Set if using the video tag.
     IntSize                     mSize;              // The movie rect size.
-    IntSize                     mNaturalSize;       // The natural movie size (used for aspect ratio)
+    FloatSize                   mNaturalSize;       // The natural movie size (used for aspect ratio) 
     IntRect                     mMovieRect;         // The last movie position used to detect changes for client notification.
     IntRect                     mWindowRect;        // The last movie window position (clip rect) used to detect changes for client notification.    
     MediaPlayer::ReadyState     mReadyState;        // Current ready state.    
     MediaPlayer::NetworkState   mNetworkState;      // Current network state.
     EA::WebKit::MediaUpdateInfo::MediaState mMediaState; // Current media state.    
-    Timer<MediaPlayerPrivateEA> mUpdateTimer;       // Used to control the repaint and check on status.
+    Timer mUpdateTimer;       // Used to control the repaint and check on status.
 
     mutable unsigned int mBytesLoadedAtLastDidLoadingProgress;
 

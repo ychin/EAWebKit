@@ -26,9 +26,12 @@
 #ifndef WebCoreTypedArrayController_h
 #define WebCoreTypedArrayController_h
 
-#include <heap/Weak.h>
 #include <runtime/JSGlobalObject.h>
 #include <runtime/TypedArrayController.h>
+
+namespace JSC {
+class WeakHandleOwner;
+}
 
 namespace WebCore {
 
@@ -37,15 +40,15 @@ public:
     WebCoreTypedArrayController();
     virtual ~WebCoreTypedArrayController();
     
-    virtual JSC::JSArrayBuffer* toJS(JSC::ExecState*, JSC::JSGlobalObject*, JSC::ArrayBuffer*) OVERRIDE;
+    virtual JSC::JSArrayBuffer* toJS(JSC::ExecState*, JSC::JSGlobalObject*, JSC::ArrayBuffer*) override;
     
     JSC::WeakHandleOwner* wrapperOwner() { return &m_owner; }
 
 private:
     class JSArrayBufferOwner : public JSC::WeakHandleOwner {
     public:
-        virtual bool isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>, void* context, JSC::SlotVisitor&) OVERRIDE;
-        virtual void finalize(JSC::Handle<JSC::Unknown>, void* context) OVERRIDE;
+        virtual bool isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown>, void* context, JSC::SlotVisitor&) override;
+        virtual void finalize(JSC::Handle<JSC::Unknown>, void* context) override;
     };
 
     JSArrayBufferOwner m_owner;

@@ -10,7 +10,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,8 +33,6 @@
 #include "AccessibilityTable.h"
 #include "AccessibilityTableRow.h"
 
-using namespace std;
-
 namespace WebCore {
     
 AccessibilityARIAGridCell::AccessibilityARIAGridCell(RenderObject* renderer)
@@ -46,47 +44,41 @@ AccessibilityARIAGridCell::~AccessibilityARIAGridCell()
 {
 }
 
-PassRefPtr<AccessibilityARIAGridCell> AccessibilityARIAGridCell::create(RenderObject* renderer)
+Ref<AccessibilityARIAGridCell> AccessibilityARIAGridCell::create(RenderObject* renderer)
 {
-    return adoptRef(new AccessibilityARIAGridCell(renderer));
+    return adoptRef(*new AccessibilityARIAGridCell(renderer));
 }
 
-AccessibilityObject* AccessibilityARIAGridCell::parentTable() const
+AccessibilityTable* AccessibilityARIAGridCell::parentTable() const
 {
-    AccessibilityObject* parent = parentObjectUnignored();
-    if (!parent)
-        return 0;
-    
-    if (parent->isAccessibilityTable())
-        return parent;
+    // ARIA gridcells may have multiple levels of unignored ancestors that are not the parent table,
+    // including rows and interactive rowgroups. In addition, poorly-formed grids may contain elements
+    // which pass the tests for inclusion.
+    for (AccessibilityObject* parent = parentObjectUnignored(); parent; parent = parent->parentObjectUnignored()) {
+        if (is<AccessibilityTable>(*parent) && downcast<AccessibilityTable>(*parent).isExposableThroughAccessibility())
+            return downcast<AccessibilityTable>(parent);
+    }
 
-    // It could happen that we hadn't reached the parent table yet (in
-    // case objects for rows were not ignoring accessibility) so for
-    // that reason we need to run parentObjectUnignored once again.
-    parent = parent->parentObjectUnignored();
-    if (!parent || !parent->isAccessibilityTable())
-        return 0;
-    
-    return parent;
+    return nullptr;
 }
     
-void AccessibilityARIAGridCell::rowIndexRange(pair<unsigned, unsigned>& rowRange)
+void AccessibilityARIAGridCell::rowIndexRange(std::pair<unsigned, unsigned>& rowRange) const
 {
     AccessibilityObject* parent = parentObjectUnignored();
     if (!parent)
         return;
 
-    if (parent->isTableRow()) {
+    if (is<AccessibilityTableRow>(*parent)) {
         // We already got a table row, use its API.
-        rowRange.first = static_cast<AccessibilityTableRow*>(parent)->rowIndex();
-    } else if (parent->isAccessibilityTable()) {
+        rowRange.first = downcast<AccessibilityTableRow>(*parent).rowIndex();
+    } else if (is<AccessibilityTable>(*parent) && downcast<AccessibilityTable>(*parent).isExposableThroughAccessibility()) {
         // We reached the parent table, so we need to inspect its
         // children to determine the row index for the cell in it.
-        unsigned columnCount = static_cast<AccessibilityTable*>(parent)->columnCount();
+        unsigned columnCount = downcast<AccessibilityTable>(*parent).columnCount();
         if (!columnCount)
             return;
 
-        AccessibilityChildrenVector siblings = parent->children();
+        const auto& siblings = parent->children();
         unsigned childrenSize = siblings.size();
         for (unsigned k = 0; k < childrenSize; ++k) {
             if (siblings[k].get() == this) {
@@ -100,16 +92,17 @@ void AccessibilityARIAGridCell::rowIndexRange(pair<unsigned, unsigned>& rowRange
     rowRange.second = 1;
 }
 
-void AccessibilityARIAGridCell::columnIndexRange(pair<unsigned, unsigned>& columnRange)
+void AccessibilityARIAGridCell::columnIndexRange(std::pair<unsigned, unsigned>& columnRange) const
 {
     AccessibilityObject* parent = parentObjectUnignored();
     if (!parent)
         return;
 
-    if (!parent->isTableRow() && !parent->isAccessibilityTable())
+    if (!is<AccessibilityTableRow>(*parent)
+        && !(is<AccessibilityTable>(*parent) && downcast<AccessibilityTable>(*parent).isExposableThroughAccessibility()))
         return;
 
-    AccessibilityChildrenVector siblings = parent->children();
+    const AccessibilityChildrenVector& siblings = parent->children();
     unsigned childrenSize = siblings.size();
     for (unsigned k = 0; k < childrenSize; ++k) {
         if (siblings[k].get() == this) {

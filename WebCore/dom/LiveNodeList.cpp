@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2004, 2006, 2007, 2008, 2010 Apple Inc. All rights reserved.
+ * Copyright (C) 2004, 2006-2008, 2010, 2013-2014 Apple Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,13 +23,27 @@
 #include "config.h"
 #include "LiveNodeList.h"
 
-#include "Document.h"
+#include "ClassNodeList.h"
 #include "Element.h"
+#include "ElementTraversal.h"
 #include "HTMLCollection.h"
+#include "TagNodeList.h"
 
 namespace WebCore {
 
-Node& LiveNodeListBase::rootNode() const
+LiveNodeList::LiveNodeList(ContainerNode& ownerNode, NodeListInvalidationType invalidationType)
+    : m_ownerNode(ownerNode)
+    , m_invalidationType(invalidationType)
+    , m_isRegisteredForInvalidationAtDocument(false)
+{
+    ASSERT(m_invalidationType == static_cast<unsigned>(invalidationType));
+}
+
+LiveNodeList::~LiveNodeList()
+{
+}
+
+ContainerNode& LiveNodeList::rootNode() const
 {
     if (isRootedAtDocument() && ownerNode().inDocument())
         return ownerNode().document();
@@ -37,63 +51,35 @@ Node& LiveNodeListBase::rootNode() const
     return ownerNode();
 }
 
-ContainerNode* LiveNodeListBase::rootContainerNode() const
-{
-    Node& rootNode = this->rootNode();
-    if (!rootNode.isContainerNode())
-        return 0;
-    return &toContainerNode(rootNode);
-}
-
-void LiveNodeListBase::invalidateCache() const
-{
-    m_cachedItem = 0;
-    m_isLengthCacheValid = false;
-    m_isItemCacheValid = false;
-    m_isNameCacheValid = false;
-    m_isItemRefElementsCacheValid = false;
-    if (isNodeList(type()))
-        return;
-
-    const HTMLCollection* cacheBase = static_cast<const HTMLCollection*>(this);
-    cacheBase->m_idCache.clear();
-    cacheBase->m_nameCache.clear();
-    cacheBase->m_cachedElementsArrayOffset = 0;
-}
-
-void LiveNodeListBase::invalidateIdNameCacheMaps() const
-{
-    ASSERT(hasIdNameCache());
-    const HTMLCollection* cacheBase = static_cast<const HTMLCollection*>(this);
-    cacheBase->m_idCache.clear();
-    cacheBase->m_nameCache.clear();
-}
-
 Node* LiveNodeList::namedItem(const AtomicString& elementId) const
 {
+    // FIXME: Why doesn't this look into the name attribute like HTMLCollection::namedItem does?
     Node& rootNode = this->rootNode();
 
     if (rootNode.inDocument()) {
         Element* element = rootNode.treeScope().getElementById(elementId);
-        if (element && nodeMatches(element) && element->isDescendantOf(&rootNode))
+        if (element && elementMatches(*element) && element->isDescendantOf(&rootNode))
             return element;
         if (!element)
-            return 0;
+            return nullptr;
         // In the case of multiple nodes with the same name, just fall through.
     }
+
+    if (elementId.isEmpty())
+        return nullptr;
 
     unsigned length = this->length();
     for (unsigned i = 0; i < length; i++) {
         Node* node = item(i);
-        if (!node->isElementNode())
+        if (!is<Element>(*node))
             continue;
-        Element* element = toElement(node);
+        Element& element = downcast<Element>(*node);
         // FIXME: This should probably be using getIdAttribute instead of idForStyleResolution.
-        if (element->hasID() && element->idForStyleResolution() == elementId)
+        if (element.hasID() && element.idForStyleResolution() == elementId)
             return node;
     }
 
-    return 0;
+    return nullptr;
 }
 
 } // namespace WebCore

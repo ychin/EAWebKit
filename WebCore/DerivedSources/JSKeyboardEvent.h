@@ -21,10 +21,8 @@
 #ifndef JSKeyboardEvent_h
 #define JSKeyboardEvent_h
 
-#include "JSDOMBinding.h"
 #include "JSUIEvent.h"
 #include "KeyboardEvent.h"
-#include <runtime/JSObject.h>
 
 namespace WebCore {
 
@@ -33,15 +31,16 @@ class JSDictionary;
 class JSKeyboardEvent : public JSUIEvent {
 public:
     typedef JSUIEvent Base;
-    static JSKeyboardEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<KeyboardEvent> impl)
+    static JSKeyboardEvent* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<KeyboardEvent>&& impl)
     {
-        JSKeyboardEvent* ptr = new (NotNull, JSC::allocateCell<JSKeyboardEvent>(globalObject->vm().heap)) JSKeyboardEvent(structure, globalObject, impl);
+        JSKeyboardEvent* ptr = new (NotNull, JSC::allocateCell<JSKeyboardEvent>(globalObject->vm().heap)) JSKeyboardEvent(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -55,86 +54,19 @@ public:
         return static_cast<KeyboardEvent&>(Base::impl());
     }
 protected:
-    JSKeyboardEvent(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<KeyboardEvent>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSKeyboardEvent(JSC::Structure*, JSDOMGlobalObject*, Ref<KeyboardEvent>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
-
-class JSKeyboardEventPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSKeyboardEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSKeyboardEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSKeyboardEventPrototype>(vm.heap)) JSKeyboardEventPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSKeyboardEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSKeyboardEventConstructor : public DOMConstructorObject {
-private:
-    JSKeyboardEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSKeyboardEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSKeyboardEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSKeyboardEventConstructor>(vm.heap)) JSKeyboardEventConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSKeyboardEvent(JSC::ExecState*);
-#if ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-#endif // ENABLE(DOM4_EVENTS_CONSTRUCTOR)
-};
 
 bool fillKeyboardEventInit(KeyboardEventInit&, JSDictionary&);
 
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsKeyboardEventPrototypeFunctionInitKeyboardEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsKeyboardEventKeyIdentifier(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventLocation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventKeyLocation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventCtrlKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventShiftKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventAltKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventMetaKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventAltGraphKey(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-// Constants
-
-JSC::JSValue jsKeyboardEventDOM_KEY_LOCATION_STANDARD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventDOM_KEY_LOCATION_LEFT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventDOM_KEY_LOCATION_RIGHT(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsKeyboardEventDOM_KEY_LOCATION_NUMPAD(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

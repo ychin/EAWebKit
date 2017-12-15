@@ -20,6 +20,7 @@
 #ifndef MediaQueryMatcher_h
 #define MediaQueryMatcher_h
 
+#include <memory>
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
@@ -39,14 +40,14 @@ class MediaQuerySet;
 
 class MediaQueryMatcher : public RefCounted<MediaQueryMatcher> {
 public:
-    static PassRefPtr<MediaQueryMatcher> create(Document* document) { return adoptRef(new MediaQueryMatcher(document)); }
+    static Ref<MediaQueryMatcher> create(Document* document) { return adoptRef(*new MediaQueryMatcher(document)); }
     ~MediaQueryMatcher();
     void documentDestroyed();
 
     void addListener(PassRefPtr<MediaQueryListListener>, PassRefPtr<MediaQueryList>);
     void removeListener(MediaQueryListListener*, MediaQueryList*);
 
-    PassRefPtr<MediaQueryList> matchMedia(const String&);
+    RefPtr<MediaQueryList> matchMedia(const String&);
 
     unsigned evaluationRound() const { return m_evaluationRound; }
     void styleResolverChanged();
@@ -69,11 +70,11 @@ private:
     };
 
     MediaQueryMatcher(Document*);
-    PassOwnPtr<MediaQueryEvaluator> prepareEvaluator() const;
+    std::unique_ptr<MediaQueryEvaluator> prepareEvaluator() const;
     String mediaType() const;
 
     Document* m_document;
-    Vector<OwnPtr<Listener> > m_listeners;
+    Vector<std::unique_ptr<Listener>> m_listeners;
 
     // This value is incremented at style selector changes.
     // It is used to avoid evaluating queries more then once and to make sure

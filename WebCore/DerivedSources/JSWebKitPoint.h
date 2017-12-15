@@ -21,29 +21,28 @@
 #ifndef JSWebKitPoint_h
 #define JSWebKitPoint_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "WebKitPoint.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSWebKitPoint : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSWebKitPoint* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<WebKitPoint> impl)
+    static JSWebKitPoint* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<WebKitPoint>&& impl)
     {
-        JSWebKitPoint* ptr = new (NotNull, JSC::allocateCell<JSWebKitPoint>(globalObject->vm().heap)) JSWebKitPoint(structure, globalObject, impl);
+        JSWebKitPoint* ptr = new (NotNull, JSC::allocateCell<JSWebKitPoint>(globalObject->vm().heap)) JSWebKitPoint(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static WebKitPoint* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSWebKitPoint();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -53,22 +52,19 @@ public:
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
     WebKitPoint& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     WebKitPoint* m_impl;
 protected:
-    JSWebKitPoint(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebKitPoint>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSWebKitPoint(JSC::Structure*, JSDOMGlobalObject*, Ref<WebKitPoint>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSWebKitPointOwner : public JSC::WeakHandleOwner {
@@ -79,74 +75,16 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, WebKitPoint*)
 {
-    DEFINE_STATIC_LOCAL(JSWebKitPointOwner, jsWebKitPointOwner, ());
-    return &jsWebKitPointOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, WebKitPoint*)
-{
-    return &world;
+    static NeverDestroyed<JSWebKitPointOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, WebKitPoint*);
-WebKitPoint* toWebKitPoint(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, WebKitPoint& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSWebKitPointPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSWebKitPointPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSWebKitPointPrototype* ptr = new (NotNull, JSC::allocateCell<JSWebKitPointPrototype>(vm.heap)) JSWebKitPointPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
+// Custom constructor
+JSC::EncodedJSValue JSC_HOST_CALL constructJSWebKitPoint(JSC::ExecState*);
 
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSWebKitPointPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = Base::StructureFlags;
-};
-
-class JSWebKitPointConstructor : public DOMConstructorObject {
-private:
-    JSWebKitPointConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSWebKitPointConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSWebKitPointConstructor* ptr = new (NotNull, JSC::allocateCell<JSWebKitPointConstructor>(vm.heap)) JSWebKitPointConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-    static JSC::EncodedJSValue JSC_HOST_CALL constructJSWebKitPoint(JSC::ExecState*);
-    static JSC::ConstructType getConstructData(JSC::JSCell*, JSC::ConstructData&);
-};
-
-// Attributes
-
-JSC::JSValue jsWebKitPointX(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebKitPointX(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebKitPointY(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSWebKitPointY(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
-JSC::JSValue jsWebKitPointConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

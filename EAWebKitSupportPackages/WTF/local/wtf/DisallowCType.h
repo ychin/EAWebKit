@@ -11,7 +11,7 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution. 
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+ * 3.  Neither the name of Apple Inc. ("Apple") nor the names of
  *     its contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission. 
  *
@@ -41,7 +41,6 @@
 // are used from wx headers. On GTK+ for Mac many GTK+ files include <libintl.h>
 // or <glib/gi18n-lib.h>, which in turn include <xlocale/_ctype.h> which uses
 // isacii(). 
-#include <wtf/Platform.h>
 //+EAWebKitChange
 //1/7/2014
 // Note by Arpit Baldeva: WebKit does not want to include <ctype.h> in its code base as all functionality there is locale dependent. This is not something
@@ -49,7 +48,7 @@
 // Update 02/17/2011 - It turns out that inclusion of this file in config.h is rather undesirable for EA port as well. config.h is included in EVERY source file in the 
 // WebCore including the platform specific files. Now if the platform specific files include a platform specific existing library (say an EASTL header 
 // in our case) that uses the functions defined in ctype.h, they will end up with error. This is probably the reason few platforms don't like this header file already.
-#if !(OS(DARWIN) && PLATFORM(GTK)) && !OS(QNX) && !defined(_LIBCPP_VERSION) && !PLATFORM(EA)
+#if !(OS(DARWIN) && PLATFORM(GTK)) && !PLATFORM(EFL) && !defined(_LIBCPP_VERSION) && !PLATFORM(EA)
 //-EAWebKitChange
 
 #include <ctype.h>

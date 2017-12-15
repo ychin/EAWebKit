@@ -102,8 +102,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //         va_end(args);
 //     }
 #ifndef va_list_reference
+	#if defined(EA_PLATFORM_MICROSOFT) || (EA_PLATFORM_PTR_SIZE == 4) ||(defined(EA_PLATFORM_APPLE) && defined(EA_PROCESSOR_ARM64))
 		// This is required for platform ABIs in which va_list is a struct or pointer.
 		#define va_list_reference va_list&
+	#else
+		// This is required for platform ABIs in which va_list is defined to be an array.
+		#define va_list_reference va_list
+	#endif
 #endif
 
 

@@ -38,7 +38,7 @@
 #include "RenderMeter.h"
 #include "RenderTheme.h"
 #include "ShadowRoot.h"
-#include "StylePropertySet.h"
+#include "StyleProperties.h"
 
 namespace WebCore {
 
@@ -51,41 +51,38 @@ MeterShadowElement::MeterShadowElement(Document& document)
 
 HTMLMeterElement* MeterShadowElement::meterElement() const
 {
-    return toHTMLMeterElement(shadowHost());
+    return downcast<HTMLMeterElement>(shadowHost());
 }
 
 bool MeterShadowElement::rendererIsNeeded(const RenderStyle& style)
 {
     auto render = meterElement()->renderer();
-    return render && !render->theme()->supportsMeter(render->style()->appearance()) && HTMLDivElement::rendererIsNeeded(style);
+    return render && !render->theme().supportsMeter(render->style().appearance()) && HTMLDivElement::rendererIsNeeded(style);
 }
 
 MeterInnerElement::MeterInnerElement(Document& document)
     : MeterShadowElement(document)
 {
-    DEFINE_STATIC_LOCAL(AtomicString, pseudoId, ("-webkit-meter-inner-element", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(AtomicString, pseudoId, ("-webkit-meter-inner-element", AtomicString::ConstructFromLiteral));
     setPseudo(pseudoId);
 }
 
 bool MeterInnerElement::rendererIsNeeded(const RenderStyle& style)
 {
-    if (meterElement()->hasAuthorShadowRoot())
-        return HTMLDivElement::rendererIsNeeded(style);
-
     auto render = meterElement()->renderer();
-    return render && !render->theme()->supportsMeter(render->style()->appearance()) && HTMLDivElement::rendererIsNeeded(style);
+    return render && !render->theme().supportsMeter(render->style().appearance()) && HTMLDivElement::rendererIsNeeded(style);
 }
 
-RenderElement* MeterInnerElement::createRenderer(RenderArena& arena, RenderStyle&)
+RenderPtr<RenderElement> MeterInnerElement::createElementRenderer(Ref<RenderStyle>&& style, const RenderTreePosition&)
 {
-    return new (arena) RenderMeter(*this);
+    return createRenderer<RenderMeter>(*this, WTF::move(style));
 }
 
 const AtomicString& MeterValueElement::valuePseudoId() const
 {
-    DEFINE_STATIC_LOCAL(AtomicString, optimumPseudoId, ("-webkit-meter-optimum-value", AtomicString::ConstructFromLiteral));
-    DEFINE_STATIC_LOCAL(AtomicString, suboptimumPseudoId, ("-webkit-meter-suboptimum-value", AtomicString::ConstructFromLiteral));
-    DEFINE_STATIC_LOCAL(AtomicString, evenLessGoodPseudoId, ("-webkit-meter-even-less-good-value", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(AtomicString, optimumPseudoId, ("-webkit-meter-optimum-value", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(AtomicString, suboptimumPseudoId, ("-webkit-meter-suboptimum-value", AtomicString::ConstructFromLiteral));
+    DEPRECATED_DEFINE_STATIC_LOCAL(AtomicString, evenLessGoodPseudoId, ("-webkit-meter-even-less-good-value", AtomicString::ConstructFromLiteral));
 
     HTMLMeterElement* meter = meterElement();
     if (!meter)

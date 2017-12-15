@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2011, 2013, 2014 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,8 +25,6 @@
 
 #ifndef DFGEdge_h
 #define DFGEdge_h
-
-#include <wtf/Platform.h>
 
 #if ENABLE(DFG_JIT)
 
@@ -117,14 +115,10 @@ public:
     {
         return proofStatus() == IsProved;
     }
-    bool needsCheck() const
-    {
-        return proofStatus() == NeedsCheck;
-    }
     
     bool willNotHaveCheck() const
     {
-        return isProved() || useKind() == UntypedUse;
+        return isProved() || shouldNotHaveTypeCheck(useKind());
     }
     bool willHaveCheck() const
     {
@@ -153,11 +147,20 @@ public:
     bool doesNotKill() const { return !doesKill(); }
     
     bool isSet() const { return !!node(); }
-    
-    typedef void* Edge::*UnspecifiedBoolType;
-    operator UnspecifiedBoolType*() const { return reinterpret_cast<UnspecifiedBoolType*>(isSet()); }
-    
+
+    Edge sanitized() const
+    {
+        Edge result = *this;
+#if USE(JSVALUE64)
+        result.m_encodedWord = makeWord(node(), useKindUnchecked(), NeedsCheck, DoesNotKill);
+#else
+        result.m_encodedWord = makeWord(useKindUnchecked(), NeedsCheck, DoesNotKill);
+#endif
+        return result;
+    }
+
     bool operator!() const { return !isSet(); }
+    explicit operator bool() const { return isSet(); }
     
     bool operator==(Edge other) const
     {
@@ -173,6 +176,15 @@ public:
     }
     
     void dump(PrintStream&) const;
+    
+    unsigned hash() const
+    {
+#if USE(JSVALUE64)
+        return IntHash<uintptr_t>::hash(m_encodedWord);
+#else
+        return PtrHash<Node*>::hash(m_node) + m_encodedWord;
+#endif
+    }
 
 private:
     friend class AdjacencyList;
@@ -187,13 +199,13 @@ private:
         ASSERT((shiftedValue >> shift()) == bitwise_cast<uintptr_t>(node));
         ASSERT(useKind >= 0 && useKind < LastUseKind);
         ASSERT((static_cast<uintptr_t>(LastUseKind) << 2) <= (static_cast<uintptr_t>(2) << shift()));
-        return shiftedValue | (static_cast<uintptr_t>(useKind) << 2) | (DFG::doesKill(killStatus) << 1) | DFG::isProved(proofStatus);
+        return shiftedValue | (static_cast<uintptr_t>(useKind) << 2) | (DFG::doesKill(killStatus) << 1) | static_cast<uintptr_t>(DFG::isProved(proofStatus));
     }
     
 #else
     static uintptr_t makeWord(UseKind useKind, ProofStatus proofStatus, KillStatus killStatus)
     {
-        return (static_cast<uintptr_t>(useKind) << 2) | (DFG::doesKill(killStatus) << 1) | DFG::isProved(proofStatus);
+        return (static_cast<uintptr_t>(useKind) << 2) | (DFG::doesKill(killStatus) << 1) | static_cast<uintptr_t>(DFG::isProved(proofStatus));
     }
     
     Node* m_node;

@@ -23,29 +23,28 @@
 
 #if ENABLE(MEDIA_STREAM)
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "RTCDTMFSender.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSRTCDTMFSender : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSRTCDTMFSender* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<RTCDTMFSender> impl)
+    static JSRTCDTMFSender* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<RTCDTMFSender>&& impl)
     {
-        JSRTCDTMFSender* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFSender>(globalObject->vm().heap)) JSRTCDTMFSender(structure, globalObject, impl);
+        JSRTCDTMFSender* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFSender>(globalObject->vm().heap)) JSRTCDTMFSender(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static void put(JSC::JSCell*, JSC::ExecState*, JSC::PropertyName, JSC::JSValue, JSC::PutPropertySlot&);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static RTCDTMFSender* toWrapped(JSC::JSValue);
     static void destroy(JSC::JSCell*);
     ~JSRTCDTMFSender();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -56,22 +55,19 @@ public:
     static void visitChildren(JSCell*, JSC::SlotVisitor&);
 
     RTCDTMFSender& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
-
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     RTCDTMFSender* m_impl;
 protected:
-    JSRTCDTMFSender(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RTCDTMFSender>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    JSRTCDTMFSender(JSC::Structure*, JSDOMGlobalObject*, Ref<RTCDTMFSender>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSRTCDTMFSenderOwner : public JSC::WeakHandleOwner {
@@ -82,57 +78,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, RTCDTMFSender*)
 {
-    DEFINE_STATIC_LOCAL(JSRTCDTMFSenderOwner, jsRTCDTMFSenderOwner, ());
-    return &jsRTCDTMFSenderOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, RTCDTMFSender*)
-{
-    return &world;
+    static NeverDestroyed<JSRTCDTMFSenderOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, RTCDTMFSender*);
-RTCDTMFSender* toRTCDTMFSender(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, RTCDTMFSender& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSRTCDTMFSenderPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSRTCDTMFSenderPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSRTCDTMFSenderPrototype* ptr = new (NotNull, JSC::allocateCell<JSRTCDTMFSenderPrototype>(vm.heap)) JSRTCDTMFSenderPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSRTCDTMFSenderPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionInsertDTMF(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionAddEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionRemoveEventListener(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsRTCDTMFSenderPrototypeFunctionDispatchEvent(JSC::ExecState*);
-// Attributes
-
-JSC::JSValue jsRTCDTMFSenderCanInsertDTMF(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDTMFSenderTrack(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDTMFSenderToneBuffer(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDTMFSenderDuration(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDTMFSenderInterToneGap(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsRTCDTMFSenderOntonechange(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-void setJSRTCDTMFSenderOntonechange(JSC::ExecState*, JSC::JSObject*, JSC::JSValue);
 
 } // namespace WebCore
 

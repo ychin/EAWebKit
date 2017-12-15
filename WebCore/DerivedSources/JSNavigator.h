@@ -21,28 +21,29 @@
 #ifndef JSNavigator_h
 #define JSNavigator_h
 
-#include "JSDOMBinding.h"
+#include "JSDOMWrapper.h"
 #include "Navigator.h"
-#include <runtime/JSGlobalObject.h>
-#include <runtime/JSObject.h>
-#include <runtime/ObjectPrototype.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
 class JSNavigator : public JSDOMWrapper {
 public:
     typedef JSDOMWrapper Base;
-    static JSNavigator* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<Navigator> impl)
+    static JSNavigator* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<Navigator>&& impl)
     {
-        JSNavigator* ptr = new (NotNull, JSC::allocateCell<JSNavigator>(globalObject->vm().heap)) JSNavigator(structure, globalObject, impl);
+        JSNavigator* ptr = new (NotNull, JSC::allocateCell<JSNavigator>(globalObject->vm().heap)) JSNavigator(structure, globalObject, WTF::move(impl));
         ptr->finishCreation(globalObject->vm());
         return ptr;
     }
 
     static JSC::JSObject* createPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static JSC::JSObject* getPrototype(JSC::VM&, JSC::JSGlobalObject*);
+    static Navigator* toWrapped(JSC::JSValue);
     static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
     static void destroy(JSC::JSCell*);
     ~JSNavigator();
+
     DECLARE_INFO;
 
     static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
@@ -51,23 +52,27 @@ public:
     }
 
     static JSC::JSValue getConstructor(JSC::VM&, JSC::JSGlobalObject*);
-    Navigator& impl() const { return *m_impl; }
-    void releaseImpl() { m_impl->deref(); m_impl = 0; }
 
-    void releaseImplIfNotNull()
-    {
-        if (m_impl) {
-            m_impl->deref();
-            m_impl = 0;
-        }
-    }
+    // Custom functions
+#if ENABLE(MEDIA_STREAM)
+    JSC::JSValue webkitGetUserMedia(JSC::ExecState*);
+#endif
+    Navigator& impl() const { return *m_impl; }
+    void releaseImpl() { std::exchange(m_impl, nullptr)->deref(); }
 
 private:
     Navigator* m_impl;
+public:
+    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 protected:
-    JSNavigator(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Navigator>);
-    void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    JSNavigator(JSC::Structure*, JSDOMGlobalObject*, Ref<Navigator>&&);
+
+    void finishCreation(JSC::VM& vm)
+    {
+        Base::finishCreation(vm);
+        ASSERT(inherits(info()));
+    }
+
 };
 
 class JSNavigatorOwner : public JSC::WeakHandleOwner {
@@ -78,99 +83,13 @@ public:
 
 inline JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, Navigator*)
 {
-    DEFINE_STATIC_LOCAL(JSNavigatorOwner, jsNavigatorOwner, ());
-    return &jsNavigatorOwner;
-}
-
-inline void* wrapperContext(DOMWrapperWorld& world, Navigator*)
-{
-    return &world;
+    static NeverDestroyed<JSNavigatorOwner> owner;
+    return &owner.get();
 }
 
 JSC::JSValue toJS(JSC::ExecState*, JSDOMGlobalObject*, Navigator*);
-Navigator* toNavigator(JSC::JSValue);
+inline JSC::JSValue toJS(JSC::ExecState* exec, JSDOMGlobalObject* globalObject, Navigator& impl) { return toJS(exec, globalObject, &impl); }
 
-class JSNavigatorPrototype : public JSC::JSNonFinalObject {
-public:
-    typedef JSC::JSNonFinalObject Base;
-    static JSC::JSObject* self(JSC::VM&, JSC::JSGlobalObject*);
-    static JSNavigatorPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
-    {
-        JSNavigatorPrototype* ptr = new (NotNull, JSC::allocateCell<JSNavigatorPrototype>(vm.heap)) JSNavigatorPrototype(vm, globalObject, structure);
-        ptr->finishCreation(vm);
-        return ptr;
-    }
-
-    DECLARE_INFO;
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-
-private:
-    JSNavigatorPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
-};
-
-class JSNavigatorConstructor : public DOMConstructorObject {
-private:
-    JSNavigatorConstructor(JSC::Structure*, JSDOMGlobalObject*);
-    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
-
-public:
-    typedef DOMConstructorObject Base;
-    static JSNavigatorConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
-    {
-        JSNavigatorConstructor* ptr = new (NotNull, JSC::allocateCell<JSNavigatorConstructor>(vm.heap)) JSNavigatorConstructor(structure, globalObject);
-        ptr->finishCreation(vm, globalObject);
-        return ptr;
-    }
-
-    static bool getOwnPropertySlot(JSC::JSObject*, JSC::ExecState*, JSC::PropertyName, JSC::PropertySlot&);
-    DECLARE_INFO;
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
-protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::ImplementsHasInstance | DOMConstructorObject::StructureFlags;
-};
-
-// Functions
-
-JSC::EncodedJSValue JSC_HOST_CALL jsNavigatorPrototypeFunctionJavaEnabled(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsNavigatorPrototypeFunctionGetStorageUpdates(JSC::ExecState*);
-#if ENABLE(MEDIA_STREAM)
-JSC::EncodedJSValue JSC_HOST_CALL jsNavigatorPrototypeFunctionWebkitGetUserMedia(JSC::ExecState*);
-#endif
-// Attributes
-
-JSC::JSValue jsNavigatorAppCodeName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorAppName(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorAppVersion(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorLanguage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorUserAgent(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorPlatform(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorPlugins(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorMimeTypes(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorProduct(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorProductSub(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorVendor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorVendorSub(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorCookieEnabled(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-JSC::JSValue jsNavigatorOnLine(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#if ENABLE(GEOLOCATION)
-JSC::JSValue jsNavigatorGeolocation(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(QUOTA)
-JSC::JSValue jsNavigatorWebkitTemporaryStorage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-#if ENABLE(QUOTA)
-JSC::JSValue jsNavigatorWebkitPersistentStorage(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
-#endif
-JSC::JSValue jsNavigatorConstructor(JSC::ExecState*, JSC::JSValue, JSC::PropertyName);
 
 } // namespace WebCore
 

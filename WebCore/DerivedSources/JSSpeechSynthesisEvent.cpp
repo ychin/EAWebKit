@@ -24,6 +24,7 @@
 
 #include "JSSpeechSynthesisEvent.h"
 
+#include "JSDOMBinding.h"
 #include "SpeechSynthesisEvent.h"
 #include "URL.h"
 #include <runtime/JSString.h>
@@ -33,27 +34,60 @@ using namespace JSC;
 
 namespace WebCore {
 
-/* Hash table */
+// Attributes
 
-static const HashTableValue JSSpeechSynthesisEventTableValues[] =
-{
-    { "charIndex", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventCharIndex), (intptr_t)0 },
-    { "elapsedTime", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventElapsedTime), (intptr_t)0 },
-    { "name", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventName), (intptr_t)0 },
-    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventConstructor), (intptr_t)0 },
-    { 0, 0, NoIntrinsic, 0, 0 }
+JSC::EncodedJSValue jsSpeechSynthesisEventCharIndex(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSpeechSynthesisEventElapsedTime(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSpeechSynthesisEventName(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+JSC::EncodedJSValue jsSpeechSynthesisEventConstructor(JSC::ExecState*, JSC::JSObject*, JSC::EncodedJSValue, JSC::PropertyName);
+
+class JSSpeechSynthesisEventPrototype : public JSC::JSNonFinalObject {
+public:
+    typedef JSC::JSNonFinalObject Base;
+    static JSSpeechSynthesisEventPrototype* create(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::Structure* structure)
+    {
+        JSSpeechSynthesisEventPrototype* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisEventPrototype>(vm.heap)) JSSpeechSynthesisEventPrototype(vm, globalObject, structure);
+        ptr->finishCreation(vm);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
+
+private:
+    JSSpeechSynthesisEventPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
+        : JSC::JSNonFinalObject(vm, structure)
+    {
+    }
+
+    void finishCreation(JSC::VM&);
 };
 
-static const HashTable JSSpeechSynthesisEventTable = { 9, 7, JSSpeechSynthesisEventTableValues, 0 };
-/* Hash table for constructor */
+class JSSpeechSynthesisEventConstructor : public DOMConstructorObject {
+private:
+    JSSpeechSynthesisEventConstructor(JSC::Structure*, JSDOMGlobalObject*);
+    void finishCreation(JSC::VM&, JSDOMGlobalObject*);
 
-static const HashTableValue JSSpeechSynthesisEventConstructorTableValues[] =
-{
-    { 0, 0, NoIntrinsic, 0, 0 }
+public:
+    typedef DOMConstructorObject Base;
+    static JSSpeechSynthesisEventConstructor* create(JSC::VM& vm, JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+    {
+        JSSpeechSynthesisEventConstructor* ptr = new (NotNull, JSC::allocateCell<JSSpeechSynthesisEventConstructor>(vm.heap)) JSSpeechSynthesisEventConstructor(structure, globalObject);
+        ptr->finishCreation(vm, globalObject);
+        return ptr;
+    }
+
+    DECLARE_INFO;
+    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+    {
+        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+    }
 };
 
-static const HashTable JSSpeechSynthesisEventConstructorTable = { 1, 0, JSSpeechSynthesisEventConstructorTableValues, 0 };
-const ClassInfo JSSpeechSynthesisEventConstructor::s_info = { "SpeechSynthesisEventConstructor", &Base::s_info, &JSSpeechSynthesisEventConstructorTable, 0, CREATE_METHOD_TABLE(JSSpeechSynthesisEventConstructor) };
+const ClassInfo JSSpeechSynthesisEventConstructor::s_info = { "SpeechSynthesisEventConstructor", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSpeechSynthesisEventConstructor) };
 
 JSSpeechSynthesisEventConstructor::JSSpeechSynthesisEventConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
     : DOMConstructorObject(structure, globalObject)
@@ -64,89 +98,103 @@ void JSSpeechSynthesisEventConstructor::finishCreation(VM& vm, JSDOMGlobalObject
 {
     Base::finishCreation(vm);
     ASSERT(inherits(info()));
-    putDirect(vm, vm.propertyNames->prototype, JSSpeechSynthesisEventPrototype::self(vm, globalObject), DontDelete | ReadOnly);
-    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontDelete | DontEnum);
-}
-
-bool JSSpeechSynthesisEventConstructor::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    return getStaticValueSlot<JSSpeechSynthesisEventConstructor, JSDOMWrapper>(exec, JSSpeechSynthesisEventConstructorTable, jsCast<JSSpeechSynthesisEventConstructor*>(object), propertyName, slot);
+    putDirect(vm, vm.propertyNames->prototype, JSSpeechSynthesisEvent::getPrototype(vm, globalObject), DontDelete | ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->name, jsNontrivialString(&vm, String(ASCIILiteral("SpeechSynthesisEvent"))), ReadOnly | DontEnum);
+    putDirect(vm, vm.propertyNames->length, jsNumber(0), ReadOnly | DontEnum);
 }
 
 /* Hash table for prototype */
 
 static const HashTableValue JSSpeechSynthesisEventPrototypeTableValues[] =
 {
-    { 0, 0, NoIntrinsic, 0, 0 }
+    { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventConstructor), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "charIndex", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventCharIndex), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "elapsedTime", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventElapsedTime), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
+    { "name", DontDelete | ReadOnly | CustomAccessor, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSpeechSynthesisEventName), (intptr_t) static_cast<PutPropertySlot::PutValueFunc>(0) },
 };
 
-static const HashTable JSSpeechSynthesisEventPrototypeTable = { 1, 0, JSSpeechSynthesisEventPrototypeTableValues, 0 };
-const ClassInfo JSSpeechSynthesisEventPrototype::s_info = { "SpeechSynthesisEventPrototype", &Base::s_info, &JSSpeechSynthesisEventPrototypeTable, 0, CREATE_METHOD_TABLE(JSSpeechSynthesisEventPrototype) };
+const ClassInfo JSSpeechSynthesisEventPrototype::s_info = { "SpeechSynthesisEventPrototype", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSpeechSynthesisEventPrototype) };
 
-JSObject* JSSpeechSynthesisEventPrototype::self(VM& vm, JSGlobalObject* globalObject)
-{
-    return getDOMPrototype<JSSpeechSynthesisEvent>(vm, globalObject);
-}
-
-const ClassInfo JSSpeechSynthesisEvent::s_info = { "SpeechSynthesisEvent", &Base::s_info, &JSSpeechSynthesisEventTable, 0 , CREATE_METHOD_TABLE(JSSpeechSynthesisEvent) };
-
-JSSpeechSynthesisEvent::JSSpeechSynthesisEvent(Structure* structure, JSDOMGlobalObject* globalObject, PassRefPtr<SpeechSynthesisEvent> impl)
-    : JSEvent(structure, globalObject, impl)
-{
-}
-
-void JSSpeechSynthesisEvent::finishCreation(VM& vm)
+void JSSpeechSynthesisEventPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    reifyStaticProperties(vm, JSSpeechSynthesisEventPrototypeTableValues, *this);
+}
+
+const ClassInfo JSSpeechSynthesisEvent::s_info = { "SpeechSynthesisEvent", &Base::s_info, 0, CREATE_METHOD_TABLE(JSSpeechSynthesisEvent) };
+
+JSSpeechSynthesisEvent::JSSpeechSynthesisEvent(Structure* structure, JSDOMGlobalObject* globalObject, Ref<SpeechSynthesisEvent>&& impl)
+    : JSEvent(structure, globalObject, WTF::move(impl))
+{
 }
 
 JSObject* JSSpeechSynthesisEvent::createPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    return JSSpeechSynthesisEventPrototype::create(vm, globalObject, JSSpeechSynthesisEventPrototype::createStructure(vm, globalObject, JSEventPrototype::self(vm, globalObject)));
+    return JSSpeechSynthesisEventPrototype::create(vm, globalObject, JSSpeechSynthesisEventPrototype::createStructure(vm, globalObject, JSEvent::getPrototype(vm, globalObject)));
 }
 
-bool JSSpeechSynthesisEvent::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
+JSObject* JSSpeechSynthesisEvent::getPrototype(VM& vm, JSGlobalObject* globalObject)
 {
-    JSSpeechSynthesisEvent* thisObject = jsCast<JSSpeechSynthesisEvent*>(object);
-    ASSERT_GC_OBJECT_INHERITS(thisObject, info());
-    return getStaticValueSlot<JSSpeechSynthesisEvent, Base>(exec, JSSpeechSynthesisEventTable, thisObject, propertyName, slot);
+    return getDOMPrototype<JSSpeechSynthesisEvent>(vm, globalObject);
 }
 
-JSValue jsSpeechSynthesisEventCharIndex(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSpeechSynthesisEventCharIndex(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSpeechSynthesisEvent* castedThis = jsCast<JSSpeechSynthesisEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SpeechSynthesisEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSpeechSynthesisEvent* castedThis = jsDynamicCast<JSSpeechSynthesisEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSpeechSynthesisEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SpeechSynthesisEvent", "charIndex");
+        return throwGetterTypeError(*exec, "SpeechSynthesisEvent", "charIndex");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.charIndex());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSpeechSynthesisEventElapsedTime(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSpeechSynthesisEventElapsedTime(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSpeechSynthesisEvent* castedThis = jsCast<JSSpeechSynthesisEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SpeechSynthesisEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSpeechSynthesisEvent* castedThis = jsDynamicCast<JSSpeechSynthesisEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSpeechSynthesisEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SpeechSynthesisEvent", "elapsedTime");
+        return throwGetterTypeError(*exec, "SpeechSynthesisEvent", "elapsedTime");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsNumber(impl.elapsedTime());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSpeechSynthesisEventName(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSpeechSynthesisEventName(ExecState* exec, JSObject* slotBase, EncodedJSValue thisValue, PropertyName)
 {
-    JSSpeechSynthesisEvent* castedThis = jsCast<JSSpeechSynthesisEvent*>(asObject(slotBase));
     UNUSED_PARAM(exec);
-    SpeechSynthesisEvent& impl = castedThis->impl();
+    UNUSED_PARAM(slotBase);
+    UNUSED_PARAM(thisValue);
+    JSSpeechSynthesisEvent* castedThis = jsDynamicCast<JSSpeechSynthesisEvent*>(JSValue::decode(thisValue));
+    if (UNLIKELY(!castedThis)) {
+        if (jsDynamicCast<JSSpeechSynthesisEventPrototype*>(slotBase))
+            return reportDeprecatedGetterError(*exec, "SpeechSynthesisEvent", "name");
+        return throwGetterTypeError(*exec, "SpeechSynthesisEvent", "name");
+    }
+    auto& impl = castedThis->impl();
     JSValue result = jsStringWithCache(exec, impl.name());
-    return result;
+    return JSValue::encode(result);
 }
 
 
-JSValue jsSpeechSynthesisEventConstructor(ExecState* exec, JSValue slotBase, PropertyName)
+EncodedJSValue jsSpeechSynthesisEventConstructor(ExecState* exec, JSObject* baseValue, EncodedJSValue, PropertyName)
 {
-    JSSpeechSynthesisEvent* domObject = jsCast<JSSpeechSynthesisEvent*>(asObject(slotBase));
-    return JSSpeechSynthesisEvent::getConstructor(exec->vm(), domObject->globalObject());
+    JSSpeechSynthesisEventPrototype* domObject = jsDynamicCast<JSSpeechSynthesisEventPrototype*>(baseValue);
+    if (!domObject)
+        return throwVMTypeError(exec);
+    return JSValue::encode(JSSpeechSynthesisEvent::getConstructor(exec->vm(), domObject->globalObject()));
 }
 
 JSValue JSSpeechSynthesisEvent::getConstructor(VM& vm, JSGlobalObject* globalObject)

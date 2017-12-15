@@ -14,7 +14,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -31,8 +31,6 @@
 #include "TouchEvent.h"
 
 #include "EventDispatcher.h"
-#include "EventNames.h"
-#include "TouchList.h"
 #include <wtf/CurrentTime.h>
 
 namespace WebCore {
@@ -54,10 +52,6 @@ TouchEvent::TouchEvent(TouchList* touches, TouchList* targetTouches,
     , m_touches(touches)
     , m_targetTouches(targetTouches)
     , m_changedTouches(changedTouches)
-#if PLATFORM(BLACKBERRY)
-    , m_touchHold(false)
-    , m_doubleTap(false)
-#endif
 {
 }
 
@@ -84,11 +78,6 @@ void TouchEvent::initTouchEvent(TouchList* touches, TouchList* targetTouches,
     m_shiftKey = shiftKey;
     m_metaKey = metaKey;
     initCoordinates(IntPoint(clientX, clientY));
-#if PLATFORM(BLACKBERRY)
-    m_doubleTap = false;
-    m_touchHold = false;
-#endif
-
 }
 
 EventInterface TouchEvent::eventInterface() const
