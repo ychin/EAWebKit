@@ -4,7 +4,7 @@
  * Copyright (C) 2007 Holger Hans Peter Freyther
  * Copyright (C) 2007 Pioneer Research Center USA, Inc.
  * Copyright (C) 2010, 2011 Brent Fulgham <bfulgham@webkit.org>
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2016 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -83,6 +83,7 @@ typedef UInt32 ATSFontRef;
 #if PLATFORM(EA)
 #include "FontDescription.h"
 #include <internal/include/EAWebKitAssert.h>
+#include <internal/include/EAWebKitString.h>
 #include <EAWebkit/EAWebKitTextInterface.h>
 #include <wtf/HashFunctions.h>
 
@@ -223,9 +224,19 @@ public:
 	unsigned hash() const
     {
 		//+EAWebKitChange
-		//1/22/2014
+		//05/13/2016
+        //hash all fields used in the == operator, but include the name of the font from the private data too
 #if PLATFORM(EA)
-		return PtrHash<EA::WebKit::IFont*>::hash(m_privData->mpFont);
+			uintptr_t hashCodes[8];
+			hashCodes[0] = m_size;
+            hashCodes[1] = m_syntheticBold;
+            hashCodes[2] = m_syntheticOblique;
+            hashCodes[3] = m_isColorBitmapFont;
+            hashCodes[4] = m_isCompositeFontReference;
+            hashCodes[5] = m_orientation;
+            hashCodes[6] = m_widthVariant;
+			hashCodes[7] = StringHasher::computeHashAndMaskTop8Bits(font()->GetFamilyName(), EA::Internal::Strlen(font()->GetFamilyName()));
+			return StringHasher::hashMemory<sizeof(hashCodes)>(hashCodes);
 		//-EAWebKitChange
 #elif PLATFORM(WIN) && !USE(CAIRO)
         return m_font ? m_font->hash() : 0;

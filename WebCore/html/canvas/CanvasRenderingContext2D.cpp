@@ -1308,8 +1308,6 @@ void CanvasRenderingContext2D::drawImage(HTMLImageElement* image, const FloatRec
     if (!cachedImage)
         return;
 
-    checkOrigin(image);
-
     if (rectContainsCanvas(normalizedDstRect)) {
         c->drawImage(cachedImage->imageForRenderer(image->renderer()), ColorSpaceDeviceRGB, normalizedDstRect, normalizedSrcRect, op, blendMode, ImageOrientationDescription());
         didDrawEntireCanvas();
@@ -1324,6 +1322,8 @@ void CanvasRenderingContext2D::drawImage(HTMLImageElement* image, const FloatRec
         c->drawImage(cachedImage->imageForRenderer(image->renderer()), ColorSpaceDeviceRGB, normalizedDstRect, normalizedSrcRect, op, blendMode, ImageOrientationDescription());
         didDraw(normalizedDstRect);
     }
+
+    checkOrigin(image);
 }
 
 void CanvasRenderingContext2D::drawImage(HTMLCanvasElement* sourceCanvas, float x, float y, ExceptionCode& ec)
@@ -1703,6 +1703,14 @@ PassRefPtr<CanvasPattern> CanvasRenderingContext2D::createPattern(HTMLImageEleme
         return CanvasPattern::create(Image::nullImage(), repeatX, repeatY, true);
 
     bool originClean = isOriginClean(cachedImage, canvas()->securityOrigin());
+	// FIXME: SVG images with animations can switch between clean and dirty (leaking cross-origin 
+	// data). We should either: 
+	//   1) Take a fixed snapshot of an SVG image when creating a pattern and determine then whether 
+	//      the origin is clean. 
+	//   2) Dynamically verify the origin checks at draw time, and dirty the canvas accordingly. 
+	// To be on the safe side, taint the origin for all patterns containing SVG images for now. 
+	if (cachedImage->image()->isSVGImage())
+		originClean = false;
     return CanvasPattern::create(cachedImage->imageForRenderer(image->renderer()), repeatX, repeatY, originClean);
 }
 
@@ -2152,6 +2160,9 @@ PassRefPtr<TextMetrics> CanvasRenderingContext2D::measureText(const String& text
 
 void CanvasRenderingContext2D::drawTextInternal(const String& text, float x, float y, bool fill, float maxWidth, bool useMaxWidth)
 {
+	const Font& font = accessFont();
+	const FontMetrics& fontMetrics = font.fontMetrics();
+
     GraphicsContext* c = drawingContext();
     if (!c)
         return;
@@ -2172,9 +2183,6 @@ void CanvasRenderingContext2D::drawTextInternal(const String& text, float x, flo
         return;
 
     FontCachePurgePreventer fontCachePurgePreventer;
-
-    const Font& font = accessFont();
-    const FontMetrics& fontMetrics = font.fontMetrics();
 
     String normalizedText = text;
     normalizeSpaces(normalizedText);
@@ -2302,8 +2310,6 @@ void CanvasRenderingContext2D::inflateStrokeRect(FloatRect& rect) const
 
 const Font& CanvasRenderingContext2D::accessFont()
 {
-    canvas()->document().updateStyleIfNeeded();
-
     if (!state().m_realizedFont)
         setFont(state().m_unparsedFont);
     return state().m_font;

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -74,7 +75,10 @@ private:
     
 protected:
     enum MutationType { NoChanges, PropertyChanged };
-    virtual void willMutate() { }
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+    virtual bool willMutate() WARN_UNUSED_RETURN { return true; } 
+	//-EAWebKitChange
     virtual void didMutate(MutationType) { }
 
     MutableStylePropertySet* m_propertySet;
@@ -103,8 +107,10 @@ private:
     virtual CSSStyleSheet* parentStyleSheet() const OVERRIDE;
 
     virtual CSSRule* parentRule() const OVERRIDE { return m_parentRule;  }
-
-    virtual void willMutate() OVERRIDE;
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+    virtual bool willMutate() WARN_UNUSED_RETURN;
+	//-EAWebKitChange
     virtual void didMutate(MutationType) OVERRIDE;
 
     unsigned m_refCount;

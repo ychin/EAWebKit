@@ -1133,10 +1133,16 @@ void URL::parse(const char* url, const String* originalString)
         // Attempt to find an authority.
         // FIXME: Authority characters may be scanned twice, and it would be nice to be faster.
 
-        if (hierarchical)
+        if (hierarchical) {
             userStart++;
-        if (hasSecondSlash)
-            userStart++;
+            if (hasSecondSlash) {
+                userStart++;
+                if (isNonFileHierarchicalScheme(url, schemeEnd)) {
+                    while (url[userStart] == '/')
+                        userStart++;
+                }
+            }
+        }
         userEnd = userStart;
 
         int colonPos = 0;

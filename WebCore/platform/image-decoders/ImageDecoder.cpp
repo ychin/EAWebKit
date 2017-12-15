@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2008-2009 Torch Mobile, Inc.
  * Copyright (C) Research In Motion Limited 2009-2010. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,7 +32,10 @@
 #if USE(WEBP)
 #include "WEBPImageDecoder.h"
 #endif
-
+//+EAWebKitChange
+//5/21/2015
+#include "DDSImageDecoder.h"
+//-EAWebKitChange
 #include <algorithm>
 #include <cmath>
 
@@ -93,6 +97,13 @@ bool matchesCURSignature(char* contents)
     return !memcmp(contents, "\x00\x00\x02\x00", 4);
 }
 
+//+EAWebKitChange
+//5/21/2015
+bool matchesDDSSignature(char* contents)
+{
+    return !memcmp(contents, "\x44\x44\x53\x20", 4);
+}
+//-EAWebKitChange
 }
 
 ImageDecoder* ImageDecoder::create(const SharedBuffer& data, ImageSource::AlphaOption alphaOption, ImageSource::GammaAndColorProfileOption gammaAndColorProfileOption)
@@ -122,6 +133,12 @@ ImageDecoder* ImageDecoder::create(const SharedBuffer& data, ImageSource::AlphaO
 
     if (matchesBMPSignature(contents))
         return new BMPImageDecoder(alphaOption, gammaAndColorProfileOption);
+
+    //+EAWebKitChange
+    //5/21/2015
+    if (matchesDDSSignature(contents))
+        return new DDSImageDecoder(alphaOption, gammaAndColorProfileOption);
+    //-EAWebKitChange
 
     return 0;
 }
@@ -195,19 +212,28 @@ bool ImageFrame::copyBitmapData(const ImageFrame& other)
     return true;
 }
 
-bool ImageFrame::setSize(int newWidth, int newHeight)
+//+EAWebKitChange
+//5/21/2015 - Modified function to make storage allocation optional
+bool ImageFrame::setSize(int newWidth, int newHeight, bool allocateStorage)
 {
     ASSERT(!width() && !height());
-    size_t backingStoreSize = newWidth * newHeight;
-    if (!m_backingStore.tryReserveCapacity(backingStoreSize))
-        return false;
-    m_backingStore.resize(backingStoreSize);
-    m_bytes = m_backingStore.data();
+    if (allocateStorage)
+    {
+        size_t backingStoreSize = newWidth * newHeight;
+        if (!m_backingStore.tryReserveCapacity(backingStoreSize))
+            return false;
+        m_backingStore.resize(backingStoreSize);
+        m_bytes = m_backingStore.data();
+    }
     m_size = IntSize(newWidth, newHeight);
-
-    zeroFillPixelData();
+    m_hasAlpha = true;
+    if (allocateStorage)
+    {
+        zeroFillPixelData();
+    }
     return true;
 }
+//-EAWebKitChange
 
 bool ImageFrame::hasAlpha() const
 {

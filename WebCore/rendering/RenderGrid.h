@@ -116,8 +116,9 @@ private:
 
 #ifndef NDEBUG
     bool tracksAreWiderThanMinTrackBreadth(TrackSizingDirection, const Vector<GridTrack>&);
-    bool gridWasPopulated() const { return !m_grid.isEmpty() && !m_grid[0].isEmpty(); }
 #endif
+
+    bool gridWasPopulated() const { return !m_grid.isEmpty() && !m_grid[0].isEmpty(); }
 
     size_t gridColumnCount() const
     {

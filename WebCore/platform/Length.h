@@ -3,6 +3,7 @@
     Copyright (C) 2006, 2008 Apple Inc. All rights reserved.
     Copyright (C) 2011 Rik Cabanier (cabanier@adobe.com)
     Copyright (C) 2011 Adobe Systems Incorporated. All rights reserved.
+	Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -152,7 +153,11 @@ public:
         return getFloatValue();
     }
 
-    PassRefPtr<CalculationValue> calculationValue() const;
+	//+EAWebKitChange
+	//05/15/2015 - Change integrated from Blink patch : https://code.google.com/p/chromium/issues/detail?id=291498
+	// It fixes a memory leak in CSS calc, where proper de-referencing was not happening.
+    CalculationValue* calculationValue() const;
+	//-EAWebKitChange
 
     LengthType type() const { return static_cast<LengthType>(m_type); }
     bool quirk() const { return m_quirk; }

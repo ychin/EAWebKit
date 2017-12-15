@@ -46,6 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
     #include <stdio.h>
 
+#if defined(EA_PLATFORM_MICROSOFT)
     #pragma warning(push, 1)
     #include EAWEBKIT_PLATFORM_HEADER
     #include <direct.h>
@@ -54,10 +55,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	#pragma warning(pop)
 
 // EA_PLATFORM_UNIX is defined when EA_PLATFORM_OSX is defined.
+#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+	#include <stdio.h>
+	#include <errno.h>
+	#include <fcntl.h>
+	#include <unistd.h>
+	#include <sys/stat.h>
+	#include <sys/types.h>
+	#include <utime.h>		// Some versions may require <sys/utime.h>. Take this header out if not required on OS X.
+	#ifndef S_ISREG
+		#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+	#endif
 
+	#ifndef S_ISDIR
+		#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+	#endif
+#else
+	#error "The support for this platform's file system is missing."
+#endif
+
+#if defined(EA_PLATFORM_MICROSOFT)
 	#ifndef INVALID_FILE_ATTRIBUTES
 		#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 	#endif
+#endif
 
 
 namespace EA
@@ -293,8 +314,20 @@ bool FileSystemDefault::SetFileSize(FileObject fileObject, int64_t size)
     
     int status = 0;
 
+#if defined(EA_PLATFORM_MICROSOFT)
     status = fseek(pFileInfo->mpFile, (long) size, SEEK_SET); 
     SetEndOfFile(pFileInfo->mpFile);
+#else
+    #if defined(__CYGWIN__)
+        // Solution for this?
+        (void)size;
+    #else
+     (void) pFileInfo;
+     // Note: This needs a solution.
+     // Ideally, we would want to use ftruncate() but it does not have an equivalent via stdio.
+     // A possible work around is just to store the file needed to a buffer, zero out the file with open "w" and write back the saved buffer.
+    #endif
+ #endif
     
     return !status ? true : false;
 }
@@ -331,10 +364,19 @@ bool FileSystemDefault::FileExists(const char* path)
     // The following is copied from the EAIO package.
 	if(path && *path)
 	{
+#if defined(EA_PLATFORM_MICROSOFT)
 
 		const DWORD dwAttributes = ::GetFileAttributesA(path);
 		return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0));
 
+#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+
+		struct stat tempStat;
+		const int result = stat(path, &tempStat);
+
+		if(result == 0)
+			return S_ISREG(tempStat.st_mode) != 0;
+#endif
 	}
 
 	return false;
@@ -347,10 +389,19 @@ bool FileSystemDefault::DirectoryExists(const char* path)
 	
 	if(path && *path)
 	{
+		#if defined(EA_PLATFORM_MICROSOFT)
 	        
 			const DWORD dwAttributes = ::GetFileAttributesA(path);
 		    return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0));
 	
+		#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+			
+			struct stat tempStat;
+			const int result = stat(path, &tempStat);
+	
+			if(result == 0)
+				return S_ISDIR(tempStat.st_mode) != 0;
+		#endif
 	}
     return false;
 }
@@ -361,10 +412,16 @@ bool FileSystemDefault::RemoveFile(const char* path)
     // The following is copied from the EAIO package.
 	if(path && *path)
 	{
+    #if defined(EA_PLATFORM_MICROSOFT)
 
         const BOOL bResult = ::DeleteFileA(path);
         return (bResult != 0);
 
+    #elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+
+		const int result = unlink(path);
+		return (result == 0);
+    #endif
 	}
 
 	return false;
@@ -386,7 +443,11 @@ bool FileSystemDefault::DeleteDirectory(const char* path)
 
 		if((path[nStrlen - 1] != '/') && (path[nStrlen - 1] != '\\'))
 		{
+			#if defined(EA_PLATFORM_MICROSOFT)
 				return (RemoveDirectoryA(path) != 0);
+			#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+				return (rmdir(path) == 0);
+			#endif
 		}
 
 		// Else we need to remove the separator.
@@ -407,6 +468,7 @@ bool FileSystemDefault::GetFileSize(const char* path, int64_t& size)
     // The following is copied from the EAIO package.
 	if(path && *path)
 	{
+		#if defined(EA_PLATFORM_MICROSOFT) 
 
 			WIN32_FIND_DATAA win32FindDataA;
 			HANDLE hFindFile = FindFirstFileA(path, &win32FindDataA);
@@ -420,6 +482,20 @@ bool FileSystemDefault::GetFileSize(const char* path, int64_t& size)
 
 			return false;
 
+	  #elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+
+			struct stat tempStat;
+			const int result = stat(path, &tempStat);
+
+			if(result == 0)
+			{
+				size = tempStat.st_size;
+				return true;
+			}
+
+			return false;
+
+			#endif
 	}
 
 	return false;
@@ -431,9 +507,15 @@ bool FileSystemDefault::GetFileModificationTime(const char* path, time_t& result
     // The following is copied from the EAIO package.
 	if(path && *path) 
 	{
+		#if defined(EA_PLATFORM_MICROSOFT)
 
+			#if defined(EA_PLATFORM_WINDOWS)
 				struct _stat tempStat;
 				const int r = _stat(path, &tempStat);
+			#else
+				struct stat tempStat;
+				const int r = stat(path, &tempStat);
+			#endif
 	    
 			if(r == 0)
 			{
@@ -443,6 +525,20 @@ bool FileSystemDefault::GetFileModificationTime(const char* path, time_t& result
 
 			return false;
 
+		#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+
+			struct stat tempStat;
+			const int r = stat(path, &tempStat);
+
+			if(r == 0)
+			{
+				result = tempStat.st_mtime;
+				return true;
+			}
+
+			return false;
+
+		#endif
 	}
 
 	return false;
@@ -470,10 +566,16 @@ bool FileSystemDefault::MakeDirectoryInternal(const char* path)
 
 		if((path[nStrlen - 1] != '/') && (path[nStrlen - 1] != '\\'))
 		{
+#if defined(EA_PLATFORM_MICROSOFT)
 
 			const BOOL bResult = CreateDirectoryA(path, NULL);
 			return bResult || (GetLastError() == ERROR_ALREADY_EXISTS);
 
+#elif defined(EA_PLATFORM_UNIX) || defined(CS_UNDEFINED_STRING)
+
+			const int result = mkdir(path, 0777);
+			return ((result == 0) || (errno == EEXIST));
+#endif
 		}
 
 		// Else we need to remove the separator.
@@ -515,12 +617,15 @@ bool FileSystemDefault::MakeDirectory(const char* path)
 		char8_t* p    = path8;
 		char8_t* pEnd = path8 + nStrlen; 
 
+#if defined(EA_PLATFORM_WINDOWS) // Windows has the concept of UNC paths which begin with two back slashes \\server\dir\dir
 		if(IsDirectorySeparator(*p))
 		{
 			if(IsDirectorySeparator(*++p)) // Move past an initial path separator.
 				++p;
 		}
+#endif
 
+#if defined(EA_PLATFORM_MICROSOFT)
 		// 05/03/2011 - abaldeva: Fix a bug which could otherwise result in incorrect behavior on some platforms.
 		char* rootDrive = strchr(p, ':');
 		if(rootDrive)
@@ -533,6 +638,10 @@ bool FileSystemDefault::MakeDirectory(const char* path)
 		if(p[0] && (p[1] == ':') && IsDirectorySeparator(p[2])) // Move past an initial C:/
 			p += 3;
 		*/
+#else
+		if(IsDirectorySeparator(*p)) // Move past an initial path separator.
+			++p;
+#endif
 
 		if(IsDirectorySeparator(pEnd[-1])) // Remove a trailing path separator if present.
 			pEnd[-1] = 0;
@@ -572,9 +681,23 @@ bool FileSystemDefault::GetDataDirectory(char* path, size_t pathBufferCapacity)
 {
 	if(path)    
 	{
+		#if defined(EA_PLATFORM_WINDOWS)
 			strcpy(path, ".\\");
 			return true;
 
+		#elif defined(EA_PLATFORM_MICROSOFT)
+			strcpy(path, "E:\\");
+			return true;
+
+		#elif defined(EA_PLATFORM_UNIX)
+
+            getcwd(path,pathBufferCapacity-7); // 7 = 1 + 6(/data/)
+            strcat(path,"/data/");
+			return true;
+
+		#else
+            #error Unsupported Platform
+        #endif
 	}
 	return false;
 }
@@ -589,7 +712,19 @@ bool FileSystemDefault::GetTempDirectory(char8_t* path, size_t pathBufferCapacit
 		memset(baseDir, 0, EA::WebKit::FileSystem::kMaxPathLength);
 
 		//Base directory should be absolute path.
+#if defined(EA_PLATFORM_WINDOWS) 
 		strcpy(baseDir,"c:\\temp\\EAWebKit\\pc\\");
+#elif defined(EA_PLATFORM_MICROSOFT)
+		strcpy(baseDir,"e:\\temp\\EAWebKit\\microsoft\\");
+#elif defined(EA_PLATFORM_OSX)
+        getcwd(baseDir,EA::WebKit::FileSystem::kMaxPathLength-1);
+        strcat(baseDir,"/temp/osx/");
+#elif defined(EA_PLATFORM_UNIX)
+        getcwd(baseDir,EA::WebKit::FileSystem::kMaxPathLength-1);
+        strcat(baseDir,"/temp/unix/");
+#else
+        #error Unsupported Platfrom
+#endif
         
 		if(pathBufferCapacity > strlen(baseDir))
 		{

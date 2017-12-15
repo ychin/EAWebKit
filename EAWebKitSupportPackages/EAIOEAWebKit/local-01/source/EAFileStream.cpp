@@ -38,7 +38,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    #include "EABase/eabase.h"
 #endif
 
+#if defined(EA_PLATFORM_WINDOWS)
    #include "Win32/EAFileStreamWin32.cpp"
+#else
+   #include "StdC/EAFileStreamStdC.cpp"
+#endif
 
 
 namespace EA

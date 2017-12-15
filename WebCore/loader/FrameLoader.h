@@ -129,6 +129,7 @@ public:
     void retryAfterFailedCacheOnlyMainResourceLoad();
 
     static void reportLocalLoadFailed(Frame*, const String& url);
+	static void reportBlockedPortFailed(Frame*, const String& url);
 
     // FIXME: These are all functions which stop loads. We have too many.
     void stopAllLoaders(ClearProvisionalItemPolicy = ShouldClearProvisionalItem);
@@ -164,6 +165,7 @@ public:
     void handleFallbackContent();
 
     ResourceError cancelledError(const ResourceRequest&) const;
+	ResourceError blockedError(const ResourceRequest&) const;
 
     bool isHostedByObjectElement() const;
 

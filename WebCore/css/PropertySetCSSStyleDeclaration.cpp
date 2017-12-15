@@ -2,6 +2,7 @@
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2012 Apple Inc. All rights reserved.
  * Copyright (C) 2011 Research In Motion Limited. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -150,7 +151,11 @@ String PropertySetCSSStyleDeclaration::cssText() const
 void PropertySetCSSStyleDeclaration::setCssText(const String& text, ExceptionCode& ec)
 {
     StyleAttributeMutationScope mutationScope(this);
-    willMutate();
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+	if (!willMutate()) 
+		return; 
+	//-EAWebKitChange
 
     ec = 0;
     // FIXME: Detect syntax errors and set ec.
@@ -208,9 +213,13 @@ void PropertySetCSSStyleDeclaration::setProperty(const String& propertyName, con
     if (!propertyID)
         return;
 
-    bool important = priority.find("important", 0, false) != notFound;
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+	if (!willMutate()) 
+		return; 
+	//-EAWebKitChange
 
-    willMutate();
+    bool important = priority.find("important", 0, false) != notFound;
 
     ec = 0;
     bool changed = m_propertySet->setProperty(propertyID, value, important, contextStyleSheet());
@@ -231,7 +240,11 @@ String PropertySetCSSStyleDeclaration::removeProperty(const String& propertyName
     if (!propertyID)
         return String();
 
-    willMutate();
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+	if (!willMutate()) 
+		return String(); 
+	//-EAWebKitChange
 
     ec = 0;
     String result;
@@ -257,7 +270,11 @@ String PropertySetCSSStyleDeclaration::getPropertyValueInternal(CSSPropertyID pr
 void PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropertyID propertyID, const String& value, bool important, ExceptionCode& ec)
 { 
     StyleAttributeMutationScope mutationScope(this);
-    willMutate();
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+	if (!willMutate()) 
+		return; 
+	//-EAWebKitChange
 
     ec = 0;
     bool changed = m_propertySet->setProperty(propertyID, value, important, contextStyleSheet());
@@ -320,20 +337,30 @@ void StyleRuleCSSStyleDeclaration::deref()
         delete this;
 }
 
-void StyleRuleCSSStyleDeclaration::willMutate()
-{
-    if (m_parentRule && m_parentRule->parentStyleSheet())
-        m_parentRule->parentStyleSheet()->willMutateRules();
-}
+//+EAWebKitChange
+//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+bool StyleRuleCSSStyleDeclaration::willMutate() 
+{ 
+	if (!m_parentRule || !m_parentRule->parentStyleSheet()) 
+		return false; 
+	m_parentRule->parentStyleSheet()->willMutateRules(); 
+	return true; 
+} 
+//-EAWebKitChange
 
 void StyleRuleCSSStyleDeclaration::didMutate(MutationType type)
 {
+	//+EAWebKitChange
+	//12/10/2015 - Change integrated from http://trac.webkit.org/changeset/165821. The prime motive is to fix a security vulnerability - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-1303
+	ASSERT(m_parentRule); 
+	ASSERT(m_parentRule->parentStyleSheet()); 
+
     if (type == PropertyChanged)
         m_cssomCSSValueClones.clear();
 
     // Style sheet mutation needs to be signaled even if the change failed. willMutate*/didMutate* must pair.
-    if (m_parentRule && m_parentRule->parentStyleSheet())
-        m_parentRule->parentStyleSheet()->didMutateRuleFromCSSStyleDeclaration();
+	m_parentRule->parentStyleSheet()->didMutateRuleFromCSSStyleDeclaration(); 
+	//-EAWebKitChange
 }
 
 CSSStyleSheet* StyleRuleCSSStyleDeclaration::parentStyleSheet() const

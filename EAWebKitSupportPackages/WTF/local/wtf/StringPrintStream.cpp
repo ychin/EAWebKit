@@ -57,8 +57,12 @@ void StringPrintStream::vprintf(const char* format, va_list argList)
     va_list firstPassArgList;
 //+EAWebKitChange
 //3/11/2014
+#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
     firstPassArgList = argList;
+#else
+    va_copy(firstPassArgList, argList);
+#endif
     
     int numberOfBytesNotIncludingTerminatorThatWouldHaveBeenWritten =
         vsnprintf(m_buffer + m_next, m_size - m_next, format, firstPassArgList);

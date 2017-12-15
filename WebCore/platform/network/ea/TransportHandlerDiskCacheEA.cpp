@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -74,8 +74,6 @@ const char8_t*  kCacheLineEntry							= "Cache Entry:";      // Each line
 const char8_t*  kCacheChecksum							= "Cache Checksum:";   // Each line
 const char16_t* kCachedFileExtension					= EA_CHAR16(".cache");
 const char16_t* kSearchCachedFileExtension				= EA_CHAR16("*.cache");          // This should work on all platforms
-const int32_t   kMaxTransferLoops						= 100;                 // Just a timeout safety which would limit the read loops in a frame for a file    
-const double    kMaxTransferLoopTime					= (1.0/60.0);          // Timeout for large file read loops - ~16 ms. This is probably not the most appropriate value. 
 const uint32_t  kCacheDownloadBufferSize				= 1024 * 64;           // Shared download buffer size  
 const uint32_t  kCacheDownloadBufferAlign				= 16;                  // Shared download buffer alignment  
 const uint32_t	kOverHeadFileHandlesReqd				= 2;					// (1 FileCache.ini, 1 cache file write operation)						
@@ -708,83 +706,63 @@ bool TransportHandlerDiskCache::Transfer(TransportInfo* pTInfo, bool& bStateComp
             // pTInfo->mpTransportServer->HeadersReceived(pTInfo);
         }
 
-        // To consider: Enable async reading of the entire file.  For this to work, would need
-        // to directly download to the final data buffer and allow file IO asyn reads.
-        double startTime = EA::WebKit::GetTime();
-        bool loopFlag = false;  
-        int loopCount = kMaxTransferLoops;
-        do {
-            --loopCount;
-            loopFlag = false;  // Reset to not loop 
+        bool continueToRead = true;
+        while (continueToRead) 
+        {
             const int64_t size = pFS->ReadFileAsync(pFileInfo->mFileObject, pBuffer, kCacheDownloadBufferSize);
             if(size > 0) 
             {
                 pTInfo->mpTransportServer->DataReceived(pTInfo, pBuffer, size);
-              
                 pFileInfo->mCurChecksum = GetByteChecksum(pBuffer,size, pFileInfo->mCurChecksum);
-
-                // Check if we have enough time to keep on going
-                double curTime = EA::WebKit::GetTime();
-                double deltaTime = curTime - startTime;
-                if((deltaTime < kMaxTransferLoopTime) && (loopCount > 0))
-                {
-                    loopFlag = true;
-                }
-                else if((size < kCacheDownloadBufferSize) && (loopCount > 0))
-                {
-                    // We might have just finished so do a last loop so that we can speed things up.    
-                    // This is because we also want to close a file as fast as possible.   
-                    loopFlag = true;
-                    loopCount = 1;  // This will allow for just 1 more run.   
-                }
             }
-            else if(size == FileSystem::kReadStatusComplete)
+            else
             {
-                // Completed read
-                bStateComplete = true;
-                
-                // Verify that the checksum is ok
-                EA::WebKit::FixedString8_128 uri8;
-                EA::WebKit::ConvertToString8(*GetFixedString(pTInfo->mURI), uri8);
-                DataMap::iterator iter = mDataMap.find( uri8 );
-                if (iter != mDataMap.end() )
+                continueToRead = false;
+                if(size == FileSystem::kReadStatusComplete)
                 {
-                    const Info& cacheFileInfo = iter->second;
-                    if(pFileInfo->mCurChecksum == cacheFileInfo.mnChecksum)
+                    bStateComplete = true;
+
+                    // Verify that the checksum is ok
+                    EA::WebKit::FixedString8_128 uri8;
+                    EA::WebKit::ConvertToString8(*GetFixedString(pTInfo->mURI), uri8);
+                    DataMap::iterator iter = mDataMap.find( uri8 );
+                    if (iter != mDataMap.end() )
                     {
-                         bResult = true;    // No errors
+                        const Info& cacheFileInfo = iter->second;
+                        if(pFileInfo->mCurChecksum == cacheFileInfo.mnChecksum)
+                        {
+                             bResult = true;    // No errors
+                        }
+                        else
+                        {
+                             bResult = false;    // Errors - Might need a way to tell it to retry using http
+                             // Remove this file from cache since checksum was suspect
+                            InvalidateCachedDataIfRequired(pTInfo);
+                        }
                     }
                     else
                     {
-                         bResult = false;    // Errors - Might need a way to tell it to retry using http
-                        
-                         // Remove this file from cache since checksum was suspect
-                        InvalidateCachedDataIfRequired(pTInfo);
+                        // We would not expect this as if we are caching a file, we should have the 
+                        // cache info available.
+                        EAW_ASSERT(0);
+                        bResult = false;    // Errors                    
                     }
                 }
-                else
+                else if(size == FileSystem::kReadStatusDataNotReady)
                 {
-                    // We would not expect this as if we are caching a file, we should have the 
-                    // cache info available.
-                    EAW_ASSERT(0);
-                     bResult = false;    // Errors                    
+                    // Nothing to do here as default values are already good.
+				    //bStateComplete = false;
+                    //bResult        = true;
+				    EAW_ASSERT_MSG(!bStateComplete && bResult,"State not correct while waiting for pending data");
                 }
+			    else
+			    {
+				    // An error occurred
+				    bStateComplete = true;
+				    bResult        = false;
+			    }
             }
-            else if(size == FileSystem::kReadStatusDataNotReady)
-            {
-                // Nothing to do here as default values are already good.
-				//bStateComplete = false;
-                //bResult        = true;
-
-				EAW_ASSERT_MSG(!bStateComplete && bResult,"State not correct while waiting for pending data");
-            }
-			else
-			{
-				// An error occured
-				bStateComplete = true;
-				bResult        = false;
-			}
-        } while(loopFlag);
+        } // while (continueToRead)
 
     }
     else

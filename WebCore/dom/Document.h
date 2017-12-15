@@ -527,7 +527,11 @@ public:
     void recalcStyle(Style::Change = Style::NoChange);
     void updateStyleIfNeeded();
     void updateLayout();
-    void updateLayoutIgnorePendingStylesheets();
+    enum RunPostLayoutTasks {
+        RunPostLayoutTasksAsyhnchronously,
+        RunPostLayoutTasksSynchronously,
+    };
+    void updateLayoutIgnorePendingStylesheets(RunPostLayoutTasks = RunPostLayoutTasksAsyhnchronously);
     PassRefPtr<RenderStyle> styleForElementIgnoringPendingStylesheets(Element*);
 
     // Returns true if page box (margin boxes and page borders) is visible.

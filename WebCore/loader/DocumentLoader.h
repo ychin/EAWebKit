@@ -394,7 +394,8 @@ namespace WebCore {
         unsigned long m_identifierForLoadWithoutResourceLoader;
 
         DocumentLoaderTimer m_dataLoadTimer;
-        bool m_waitingForContentPolicy;
+        bool m_waitingForContentPolicy { false };
+        bool m_waitingForNavigationPolicy { false };
 
         RefPtr<IconLoadDecisionCallback> m_iconLoadDecisionCallback;
         RefPtr<IconDataCallback> m_iconDataCallback;

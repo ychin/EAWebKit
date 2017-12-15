@@ -31,7 +31,24 @@
  * "-maltivec -mabi=altivec", as gcc would try to save vector register
  * across function calls causing SIGILL on cpus without Altivec/vmx.
  */
-#if   defined (__OpenBSD__)
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+
+static pixman_bool_t
+pixman_have_vmx (void)
+{
+    int error, have_vmx;
+    size_t length = sizeof(have_vmx);
+
+    error = sysctlbyname ("hw.optional.altivec", &have_vmx, &length, NULL, 0);
+
+    if (error)
+	return FALSE;
+
+    return have_vmx;
+}
+
+#elif defined (__OpenBSD__)
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <machine/cpu.h>
@@ -90,7 +107,7 @@ pixman_have_vmx (void)
     return have_vmx;
 }
 
-#else /* !CS_UNDEFINED_STRING && !__OpenBSD__ && !__linux__ */
+#else /* !__APPLE__ && !__OpenBSD__ && !__linux__ */
 #include <signal.h>
 #include <setjmp.h>
 
@@ -123,7 +140,7 @@ pixman_have_vmx (void)
     return (jmp_result == 0);
 }
 
-#endif /* CS_UNDEFINED_STRING */
+#endif /* __APPLE__ */
 #endif /* USE_VMX */
 
 pixman_implementation_t *

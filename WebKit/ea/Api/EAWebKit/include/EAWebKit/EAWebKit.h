@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -114,6 +114,15 @@ struct RAMCacheUsageInfo
 
 };
 
+enum MemoryCacheClearFlags
+{
+    MemoryCacheClearScriptBit       = 1 << 0, // Clear compiled Script code that holds references to many other elements (meaning lot of memory can't be freed until this is cleared).
+    MemoryCacheClearResourcesBit    = 1 << 1, // Clear resources such as images, css etc. 
+    //...
+    // Any future entries go here
+    MemoryCacheClearAll		        = -1      // Clear everything.
+};
+
 struct DiskCacheInfo
 {
 	uint32_t		mDiskCacheSize;				// In bytes. No new files are cached once this limit is reached.
@@ -213,6 +222,7 @@ struct Parameters
 
     //Remote web inspector settings
     uint16_t   mRemoteWebInspectorPort;                   // Defaults to 0 (disabled)
+	const char8_t*      mpRemoteWebInspectorIp;           // Defaults to 0.0.0.0 listening on all ip
 
 	//Note by Arpit Baldeva: JavaScriptStackSize defaults to 128 KB. The core Webkit trunk allocates 0.5 MB by default (well, they don't allocate but assume that the platform has on-demand commit capability) at the time of writing. This is not suitable for consoles with limited amount of memory and without on-demand commit capability.
 	// The user can tweak this size and may be get around by using a smaller size that fits their need. If the size is too small, some JavaScript code may fail to execute. You will see a DebugLog similar to following.
@@ -330,7 +340,7 @@ struct CookieEx //Would like to call it Cookie or CookieInfo but they are alread
 typedef double	    (*EAWebKitTimerCallback)();
 typedef double	    (*EAWebKitMonotonicTimerCallback)();
 typedef void*   	(*EAWebKitStackBaseCallback)();
-typedef void        (*EAWebKitCryptographicallyRandomValueCallback)(unsigned char *buffer, size_t length);
+typedef bool		(*EAWebKitCryptographicallyRandomValueCallback)(unsigned char *buffer, size_t length);  // Returns true if no error, else false
 typedef void		(*EAWebKitGetCookiesCallback)(const char16_t* pUrl,EASTLFixedString16Wrapper& result,uint32_t flags);
 typedef bool		(*EAWebKitSetCookieCallback)(const CookieEx& cookie);
 
@@ -410,7 +420,7 @@ public:
     virtual void DestroyJavascriptValueArray(JavascriptValue *args);
 
 	// Misc. Runtime APIs
-	virtual void ClearMemoryCache();// Call this to Free up Cache if running low on memory. This clears up as much memory as possible including live decoded data for images.
+	virtual void ClearMemoryCache(MemoryCacheClearFlags flags = MemoryCacheClearAll); 
 	virtual void NetworkStateChanged(bool isOnline); //Call this to indicate any change in network status. 
 	virtual void RegisterURLSchemeAsCORSEnabled(const char16_t* pScheme);
     virtual bool IsURLSchemeCORSEnabled(const char16_t* pScheme);

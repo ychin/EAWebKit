@@ -46,6 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Not enabled by default as an integrator of the library may not give an allocator during the initial integration.
 //#define NO_DEFAULT_ALLOCATOR 1
 
+#if defined(EA_PLATFORM_WINDOWS) 
 #include <windows.h>
 namespace 
 {
@@ -56,7 +57,14 @@ inline DWORD protection(bool writable, bool executable)
 		(writable ? PAGE_READWRITE : PAGE_READONLY));
 }
 }
+#endif
 
+#if defined(EA_PLATFORM_OSX)
+#include <unistd.h>
+#include <sys/mman.h>
+#include <mach/mach_init.h>
+#include <mach/vm_map.h>
+#endif
 namespace EA
 {
 namespace WebKit
@@ -99,7 +107,13 @@ class DefaultAllocator : public Allocator
 		#if defined(_MSC_VER)
 			return _aligned_malloc(size, alignment);
 		#elif defined(__GNUC__) 
+            #if defined(EA_PLATFORM_OSX)
+            	void* mem;
+            	posix_memalign(&mem,alignment,size); 
+            	return mem;
+            #else
                 return memalign(alignment, size);
+            #endif
 		#endif
 	}
 
@@ -125,40 +139,95 @@ class DefaultAllocator : public Allocator
 	// OS memory management API.
 	bool SupportsOSMemoryManagement()
 	{
+#if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_OSX)
 		return true;
+#else
+		return false;
+#endif
 	}
 
 	size_t SystemPageSize()
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		size_t size = 0;
 		SYSTEM_INFO system_info;
 		GetSystemInfo(&system_info);
 		size = system_info.dwPageSize;
 		return size;
+#elif defined(EA_PLATFORM_OSX)
+        return (size_t)getpagesize();
+#else
+		return 4096;
+#endif
 	}
 
 	void* ReserveUncommitted(size_t bytes, bool writable, bool executable)
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		void* result = VirtualAlloc(0, bytes, MEM_RESERVE, protection(writable, executable));
  		EAW_ASSERT_MSG(result, "VirtualAlloc failed");
 		return result;
+#elif defined(EA_PLATFORM_OSX)
+        int protection = PROT_READ;
+        if (writable)
+            protection |= PROT_WRITE;
+        if (executable)
+            protection |= PROT_EXEC;
+        
+        int flags = MAP_PRIVATE | MAP_ANON;
+                
+        void* base = mmap(0, bytes, protection, flags, -1, 0);
+        if (base == MAP_FAILED)
+            base = 0;
+        return base;
+
+#else
+		EAW_ASSERT_MSG(false, "ReserveUncommitted not supported");
+		return 0;
+#endif
 	}
 	
 	
 	void* ReserveAndCommit(size_t bytes, bool writable, bool executable)
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		void* result = VirtualAlloc(0, bytes, MEM_RESERVE | MEM_COMMIT, protection(writable, executable));
 		EAW_ASSERT_MSG(result, "VirtualAlloc failed");
 		return result;
+#elif defined(EA_PLATFORM_OSX)
+        int protection = PROT_READ;
+        if (writable)
+            protection |= PROT_WRITE;
+        if (executable)
+            protection |= PROT_EXEC;
+        
+        int flags = MAP_PRIVATE | MAP_ANON;
+        
+        void* base = mmap(0, bytes, protection, flags, -1, 0);
+        if (base == MAP_FAILED)
+            base = 0;
+        return base;
+#else
+		EAW_ASSERT_MSG(false, "ReserveAndCommit not supported");
+		return 0;
+#endif
 	}
 	
 	void ReleaseDecommitted(void* address, size_t bytes)
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		// According to http://msdn.microsoft.com/en-us/library/aa366892(VS.85).aspx,
 		// dwSize must be 0 if dwFreeType is MEM_RELEASE.
 		bool result = VirtualFree(address, 0, MEM_RELEASE);
 		(void)result;
 		EAW_ASSERT_MSG(result, "VirtualFree failed");
+#elif defined(EA_PLATFORM_OSX)
+		int result = munmap(address, bytes);
+		(void)result;
+		EAW_ASSERT_MSG(result == 0, "munmap failed");
+#else
+		EAW_ASSERT_MSG(false, "releaseDecommitted not supported");
+#endif
 	}
 
 	virtual void* ReserveAndCommitAligned(size_t bytes, size_t alignment, void*& reserveBase, size_t& reserveSize, bool writable, bool executable)
@@ -166,6 +235,7 @@ class DefaultAllocator : public Allocator
 		size_t alignmentMask = alignment - 1;
 		(void)alignmentMask;
 
+#if defined(EA_PLATFORM_WINDOWS)
 		//VirtualAlloc does not take alignment so we reserve extra memory to be able to commit required amount of memory on alignment requested.
 		reserveSize = bytes + alignment; 
 		reserveBase = VirtualAlloc(0, reserveSize, MEM_RESERVE, protection(writable, executable));
@@ -178,30 +248,65 @@ class DefaultAllocator : public Allocator
 		bool isAligned = !(reinterpret_cast<intptr_t>(alignedBase) & (alignment - 1));
 		EAW_ASSERT_MSG(isAligned,"Not aligned");
 		return VirtualAlloc(alignedBase, bytes, MEM_COMMIT, protection(writable, executable));
+#elif defined(EA_PLATFORM_OSX)
+		int flags = VM_FLAGS_ANYWHERE;
+		int protection = PROT_READ;
+		if (writable)
+			protection |= PROT_WRITE;
+		if (executable)
+			protection |= PROT_EXEC;
+
+		vm_address_t address = 0;
+		vm_map(current_task(), &address, bytes, alignmentMask, flags, MEMORY_OBJECT_NULL, 0, FALSE, protection, PROT_READ | PROT_WRITE | PROT_EXEC, VM_INHERIT_DEFAULT);
+		reserveBase = reinterpret_cast<void*>(address);
+		reserveSize = bytes;
+		return reserveBase;
+#else
+		EAW_ASSERT_MSG(false, "ReserveAndCommitAligned not supported");
+		return 0;
+#endif
 
 	}
 
 	virtual void ReleaseDecommittedAligned(void* reserveBase, size_t reserveSize, size_t alignment)
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		// According to http://msdn.microsoft.com/en-us/library/aa366892(VS.85).aspx,
 		// dwSize must be 0 if dwFreeType is MEM_RELEASE.
 		bool result = VirtualFree(reserveBase, 0, MEM_RELEASE);
 		(void)result;
 		EAW_ASSERT_MSG(result, "VirtualFree failed");
+#elif defined(EA_PLATFORM_OSX)
+		vm_deallocate(current_task(), reinterpret_cast<vm_address_t>(reserveBase), reserveSize);
+#else
+		EAW_ASSERT_MSG(false, "ReleaseDecommittedAligned not supported");
+#endif
 	}
 
 	void Commit(void* address, size_t bytes, bool writable, bool executable)
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		void* result = VirtualAlloc(address, bytes, MEM_COMMIT, protection(writable, executable));
 		(void) result;
 		EAW_ASSERT_MSG(result, "VirtualAlloc failed");
+#elif defined(EA_PLATFORM_OSX)
+        // Nothing to do here. All the memory through mmap is already committed.
+#else
+		EAW_ASSERT_MSG(false, "commit not supported");
+#endif
 	}
 	
 	void Decommit(void* address, size_t bytes)
 	{
+#if defined(EA_PLATFORM_WINDOWS)
 		bool result = VirtualFree(address, bytes, MEM_DECOMMIT);
 		(void) result;
 		EAW_ASSERT_MSG(result, "VirtualFree failed");
+#elif defined(EA_PLATFORM_OSX)
+        // Nothing to do here. All the memory is decommitted through munmap.
+#else
+		EAW_ASSERT_MSG(false, "decommit not supported");
+#endif
 	}
 	
 	
@@ -428,11 +533,13 @@ long jpeg_mem_available(j_common_ptr /*cinfo*/, long /*min_bytes_needed*/, long 
 
 static void read_backing_store(j_common_ptr cinfo, backing_store_ptr info, void* buffer_address, long file_offset, long byte_count)
 {
+#if defined(EA_PLATFORM_WINDOWS) ||defined(EA_PLATFORM_UNIX) // Add other platforms as necessary.
 	if(fseek(info->temp_file, file_offset, SEEK_SET) == 0)
 	{
 		if(fread(buffer_address, 1, byte_count, info->temp_file) == (size_t)byte_count)
 			return; // success
 	}
+#endif
 
 	(void)cinfo; (void)info; (void)file_offset;
 	memset(buffer_address, 0, byte_count);
@@ -440,18 +547,24 @@ static void read_backing_store(j_common_ptr cinfo, backing_store_ptr info, void*
 
 static void write_backing_store(j_common_ptr cinfo, backing_store_ptr info, void* buffer_address, long file_offset, long byte_count)
 {
+#if defined(EA_PLATFORM_WINDOWS) ||defined(EA_PLATFORM_UNIX) // Add other platforms as necessary.
 	if(fseek(info->temp_file, file_offset, SEEK_SET) == 0)
 	{
 		if(fwrite(buffer_address, 1, byte_count, info->temp_file) == (size_t)byte_count)
 			return; // success
 	}
+#endif
 
 	(void)cinfo; (void)info; (void)buffer_address; (void)file_offset; (void)byte_count;
 }
 
 static void close_backing_store(j_common_ptr cinfo, backing_store_ptr info)
 {
+#if defined(EA_PLATFORM_WINDOWS) ||defined(EA_PLATFORM_UNIX) // Add other platforms as necessary.
 	fclose(info->temp_file);
+#else
+	// Do nothing.
+#endif
 }
 
 void jpeg_open_backing_store(j_common_ptr /*cinfo*/, backing_store_ptr info, long /*total_bytes_needed*/)

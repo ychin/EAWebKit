@@ -1,6 +1,6 @@
 /*
  * Copyright 2010, The Android Open Source Project
- * Copyright (C) 2011, 2012 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,12 +27,24 @@
 #include "config.h"
 #include "PlatformTouchEvent.h"
 
+#include <EAWebKit/EAWebKitInput.h>
+#include <wtf/CurrentTime.h>
 #if ENABLE(TOUCH_EVENTS)
 
 namespace WebCore {
 
-// Not implemented.  See Android version as ref.
-
+PlatformTouchEvent::PlatformTouchEvent(const EA::WebKit::TouchEvent* touchEvent)
+{
+	for (size_t i = 0; i < touchEvent->mNumPoints; i++)
+	{
+		PlatformTouchPoint touchPoint(touchEvent->mTouchPoints[i]);
+		m_touchPoints.append(touchPoint);
+	}
+	m_type = touchEvent->mType;
+	m_modifiers = touchEvent->mModifiers;
+	m_timestamp = WTF::currentTime();
+	
+}
 }
 
 

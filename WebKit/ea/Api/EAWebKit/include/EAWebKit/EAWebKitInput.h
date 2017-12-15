@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -40,7 +40,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAWebKit/EAWebKitConfig.h>
 #include <EABase/eabase.h>
 
-
 namespace EA
 {
 namespace WebKit
@@ -71,7 +70,6 @@ const uint32_t kMouseRight   = 2;
 const uint32_t kMouseX1      = 3;  // This is the button sometimes found on the left side of the mouse, used in web browsers to
 const uint32_t kMouseX2      = 4;  // go backward and forward through the page history.
 const uint32_t kMouseNoButton = 0xffffffff; // This matches with internal WebCore(name and value).
-
 
 struct MouseButtonEvent
 {
@@ -145,6 +143,63 @@ struct MouseWheelEvent
 	}
 };
 
+//Touch Types
+const uint32_t kTouchStart	 = 1;
+const uint32_t kTouchMove	 = 2;
+const uint32_t kTouchEnd	 = 3;
+const uint32_t kTouchCancel	 = 4;
+
+const uint32_t kMaxTouchPointsAllowed = 4; 
+enum TouchPointState
+{
+	TouchPointPressed = 0,
+	TouchPointMoved,
+	TouchPointReleased,
+	TouchPointStationary,
+	TouchPointCancelled
+};
+struct TouchPoint
+{
+	uint32_t    mTouchId;       /// This is the Id - an identifier for touch event, used as a GUID.
+	float_t     mX;             /// Current x position, relative to the View origin.
+    float_t     mY;             /// Current y position, relative to the View origin.
+	float_t     mGlobalX;       /// Current x position, Global(Top left corner of screen(computer monitor) is 0). Currently unused.
+	float_t     mGlobalY;       /// Current y position, Global(Top left corner of screen(computer monitor) is 0). Currently unused.
+	float_t		mStrength;		/// Mask indicating depressed modifier keys.
+	TouchPointState	mState;			/// states like touch pressed, released, etc
+
+	TouchPoint(uint32_t id = 0, bool bTouched = false
+				, float_t x = -1.0f, float_t y = -1.0f, float_t globalX = -1.0f, float_t globalY = -1.0f
+				, float_t strength = 0.0f)
+				: mTouchId(id)
+				, mX(x), mY(y), mGlobalX(globalX), mGlobalY(globalY)
+				, mStrength(strength)
+				, mState (TouchPointStationary)
+	{
+	}
+};
+
+struct TouchEvent
+{
+	uint32_t	mType;
+	TouchPoint	mTouchPoints[kMaxTouchPointsAllowed];
+	size_t		mNumPoints;
+	uint32_t	mModifiers;
+
+	TouchEvent() : mType (kTouchCancel), mNumPoints(0), mModifiers(0)
+	{
+		for (int i = 0; i < kMaxTouchPointsAllowed; i++)
+		{
+			mTouchPoints[i].mGlobalX = 0.0f;
+			mTouchPoints[i].mGlobalY = 0.0f;
+			mTouchPoints[i].mState = TouchPointStationary;
+			mTouchPoints[i].mStrength = 0.0f;
+			mTouchPoints[i].mTouchId = 0;
+			mTouchPoints[i].mX = 0.0f;
+			mTouchPoints[i].mY = 0.0f;
+		}
+	}
+};
 // We can extend following structs with more information as needed.
 struct ButtonEvent
 {

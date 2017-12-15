@@ -42,7 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internal/CollationData.inl"
 #include EA_ASSERT_HEADER
 
+#ifdef EA_PLATFORM_WINDOWS
     #include <Windows.h>
+#endif
 
 
 
@@ -69,7 +71,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // off of other config options.
 //
 #if EATEXT_OS_COLLATION_ENABLED
+    #if defined(EA_PLATFORM_WINDOWS)
         #define EATEXT_OS_COLLATION_AVAILABLE 1
+    #else
+        #define EATEXT_OS_COLLATION_AVAILABLE 0
+    #endif
 #else
     #define EATEXT_OS_COLLATION_AVAILABLE 0
 #endif
@@ -94,6 +100,7 @@ struct SortByCombiningClass // : public eastl::binary_function<Char, Char, bool>
 };
 
 
+#ifdef EA_PLATFORM_WINDOWS
 
     // This table is borrowed from the EALocale package.
     const char8_t* sOSLocaleTable[] = 
@@ -144,6 +151,7 @@ struct SortByCombiningClass // : public eastl::binary_function<Char, Char, bool>
         "tr-tr\0" "041f"       // Turkish     
     };
 
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3443,7 +3451,9 @@ Collator::Collator(bool /*bEnableCache*/, Allocator::ICoreAllocator* /*pAllocato
   , mbIgnoreCase(false)
   , mbLocaleFirst(false)
   , mbDigitsAsNumbers(false)
+  #ifdef EA_PLATFORM_WINDOWS
   , mLCID(LOCALE_USER_DEFAULT)
+  #endif
 {
     mLocale[0] = 0;
 }
@@ -3451,6 +3461,7 @@ Collator::Collator(bool /*bEnableCache*/, Allocator::ICoreAllocator* /*pAllocato
 
 void Collator::SetLocale(const char* pLocale)
 {
+    #ifdef EA_PLATFORM_WINDOWS
         //using namespace EA::StdC;
 
         mLCID = LOCALE_USER_DEFAULT;
@@ -3478,6 +3489,9 @@ void Collator::SetLocale(const char* pLocale)
                 }
             }
         }
+    #else
+        EA_UNUSED(pLocale);
+    #endif
 }
 
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -366,7 +366,7 @@ public:
 	virtual bool	SetSize(float fSize) = 0;
     virtual bool	GetFontMetrics(FontMetrics& fontMetrics) = 0;
     virtual bool	GetGlyphMetrics(GlyphId glyphId, GlyphMetrics& glyphMetrics) = 0;
-    
+    virtual char16_t* GetFamilyName() = 0;
     virtual uint32_t GetGlyphIds(const Char* pCharArray, uint32_t nCharArrayCount, GlyphId* pGlyphIdArray = NULL, 
                                         bool bUseReplacementGlyph = true, const uint32_t nGlyphIdStride = sizeof(GlyphId), bool bWriteInvalidGlyphs = false) = 0;
 	

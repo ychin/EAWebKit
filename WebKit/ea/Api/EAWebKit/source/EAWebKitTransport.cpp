@@ -319,34 +319,39 @@ bool TransportHandlerFileScheme::Transfer(TransportInfo* pTInfo, bool& bStateCom
                 // pTInfo->mpTransportServer->HeadersReceived(pTInfo);
             }
 
-            // To consider: Enable reading more than just one chunk at a time. However, by doing 
-            // so we could block the current thread for an undesirable period of time.
-
-            const int64_t size = pFS->ReadFileAsync(pFileInfo->mFileObject, pBuffer, kFileDownloadBufferSize);
-
-            if(size >= 0) // If no error...
+            // Read as much data as possible. The application can indicate the non availability of the data by returning kReadStatusDataNotReady.
+            bool continueToRead = true;
+            while (continueToRead)
             {
+                const int64_t size = pFS->ReadFileAsync(pFileInfo->mFileObject, pBuffer, kFileDownloadBufferSize);
                 if(size > 0)
+                {
                     pTInfo->mpTransportServer->DataReceived(pTInfo, pBuffer, size);
+                }
                 else
                 {
-                    bStateComplete = true;
-                    bResult        = true;
-                }
-            }
-			else if(size == FileSystem::kReadStatusDataNotReady)
-			{
-				// Nothing to do here as default values are already good.
-				//bStateComplete = false;
-				//bResult        = true;
+                    continueToRead = false;
+                    if (size == FileSystem::kReadStatusComplete)
+                    {
+                        bStateComplete = true;
+                        bResult        = true;
+                    }
+                    else if(size == FileSystem::kReadStatusDataNotReady)
+                    {
+                        // Nothing to do here as default values are already good.
+                        //bStateComplete = false;
+                        //bResult        = true;
 
-				EAW_ASSERT_MSG(!bStateComplete && bResult,"State not correct while waiting for pending data");
-			}
-            else
-            {
-                bStateComplete = true;
-                bResult        = false;
-            }
+                        EAW_ASSERT_MSG(!bStateComplete && bResult,"State not correct while waiting for pending data");
+                    }
+                    else
+                    {
+                        bStateComplete = true;
+                        bResult        = false;
+                    }
+                }
+            } // while (continueToRead)
+
         }
         else // Else we need to read a file from the TransportServer and write it to disk.
         {

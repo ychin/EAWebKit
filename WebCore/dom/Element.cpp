@@ -1521,7 +1521,11 @@ void Element::addShadowRoot(PassRefPtr<ShadowRoot> newShadowRoot)
     shadowRoot->setParentTreeScope(&treeScope());
     shadowRoot->distributor().didShadowBoundaryChange(this);
 
-    ChildNodeInsertionNotifier(*this).notify(*shadowRoot);
+    NodeVector postInsertionNotificationTargets;
+    ChildNodeInsertionNotifier(*this).notify(*shadowRoot, postInsertionNotificationTargets);
+
+    for (auto& target : postInsertionNotificationTargets)
+        target->didNotifySubtreeInsertions();
 
     resetNeedsNodeRenderingTraversalSlowPath();
 
@@ -2025,7 +2029,8 @@ void Element::updateFocusAppearanceAfterAttachIfNeeded()
 void Element::updateFocusAppearance(bool /*restorePreviousSelection*/)
 {
     if (isRootEditableElement()) {
-        Frame* frame = document().frame();
+        // Keep frame alive in this method, since setSelection() may release the last reference to |frame|.
+        RefPtr<Frame> frame = document().frame();
         if (!frame)
             return;
         
@@ -2380,10 +2385,17 @@ void Element::normalizeAttributes()
 {
     if (!hasAttributes())
         return;
-    for (unsigned i = 0; i < attributeCount(); ++i) {
-        if (RefPtr<Attr> attr = attrIfExists(attributeAt(i).name()))
-            attr->normalize();
-    }
+    
+    auto* attrNodeList = attrNodeListForElement(this);
+    if (!attrNodeList)
+        return;
+
+    // Copy the Attr Vector because Node::normalize() can fire synchronous JS
+    // events (e.g. DOMSubtreeModified) and a JS listener could add / remove
+    // attributes while we are iterating.
+    auto copyOfAttrNodeList = *attrNodeList;
+    for (auto& attrNode : copyOfAttrNodeList)
+        attrNode->normalize();
 }
 
 bool Element::updateExistingPseudoElement(PseudoElement* existingPseudoElement, Style::Change change)

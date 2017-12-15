@@ -38,6 +38,8 @@ class SVGImageElement FINAL : public SVGGraphicsElement,
 public:
     static PassRefPtr<SVGImageElement> create(const QualifiedName&, Document&);
 
+    bool hasSingleSecurityOrigin() const;
+
 private:
     SVGImageElement(const QualifiedName&, Document&);
     

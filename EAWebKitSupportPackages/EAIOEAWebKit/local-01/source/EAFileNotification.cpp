@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2007,2009-2010, 2013 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2007,2009-2010, 2013, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -351,7 +351,7 @@ bool FileChangeNotification::Start()
         if(pReadDirectoryChangesW) // If using ReadDirectoryChangesW...
         {
             if(!mhDirectory)
-                 mhDirectory = CreateFileW(mDirectoryPath,
+                 mhDirectory = CreateFileW(reinterpret_cast<LPCWSTR>(mDirectoryPath),
                                            FILE_LIST_DIRECTORY,
                                            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                                            NULL,
@@ -526,7 +526,7 @@ void FileChangeNotification::ThreadFunctionRDC(uint32_t dwNotifyFilter)
                 Path::Join(path16, pFileName);
                 Path::PathString16 longPath16;
                 longPath16.resize(kMaxPathLength); // Ensure that GetLongPathNameW has enough space
-                if (!GetLongPathNameW(path16.c_str(), &longPath16[0], kMaxPathLength))
+                if (!GetLongPathNameW(reinterpret_cast<LPCWSTR>(path16.c_str()), reinterpret_cast<LPWSTR>(&longPath16[0]), kMaxPathLength))
                     longPath16 = path16;
 
                 // Filter out undesired notifications
@@ -595,7 +595,7 @@ void FileChangeNotification::ThreadFunctionFFCN(uint32_t dwNotifyFilter, const c
     const bool      bStopAfterFirstNotification = (nOptionFlags & FileChangeNotification::kOptionFlagStopAfterFirstNotification) != 0;
     const BOOL      bWatchSubtree               = (nOptionFlags & FileChangeNotification::kOptionFlagWatchSubdirectories) ? 1 : 0;
 
-    mhEvents[0] = ::FindFirstChangeNotificationW(pWatchedDirectory, bWatchSubtree, dwNotifyFilter);
+    mhEvents[0] = ::FindFirstChangeNotificationW(reinterpret_cast<LPCWSTR>(pWatchedDirectory), bWatchSubtree, dwNotifyFilter);
 
     if(mhEvents[0] == INVALID_HANDLE_VALUE)
         return;
@@ -640,10 +640,12 @@ void FileChangeNotification::ThreadFunctionFFCN(uint32_t dwNotifyFilter, const c
 #include <EAIO/EAFileDirectory.h>
 #include <EAIO/EAFileUtil.h>
 
+#if   defined(EA_PLATFORM_WINDOWS)
     #ifndef WIN32_LEAN_AND_MEAN
         #define WIN32_LEAN_AND_MEAN
     #endif
     #include <windows.h>
+#endif
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4127) // conditional expression is constant
@@ -658,7 +660,11 @@ void FileChangeNotification::ThreadFunctionFFCN(uint32_t dwNotifyFilter, const c
 /// 
 static int GetCurrentFCNTime()
 {
+    #if defined(EA_PLATFORM_WINDOWS)
         return (int)GetTickCount();
+    #else
+        return 0; // Fill in others here as needed.
+    #endif
 }
 
 
@@ -1016,8 +1022,10 @@ intptr_t FileChangeNotification::Run(void* /*pContext*/)
 
         #if EAIO_THREAD_SAFETY_ENABLED
             EA::Thread::ThreadSleep(3000);
-        #else
+        #elif defined(EA_PLATFORM_WINDOWS)
             Sleep(3000);
+        #else
+            // To consider: Implement something.
         #endif
     }
 

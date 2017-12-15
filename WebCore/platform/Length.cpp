@@ -4,6 +4,7 @@
  *           (C) 2001 Dirk Mueller ( mueller@kde.org )
  * Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008 Apple Inc. All rights reserved.
  * Copyright (C) 2006 Andrew Wellington (proton@wiretapped.net)
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -184,11 +185,34 @@ public:
         m_map.remove(it);
     }
 
-    PassRefPtr<CalculationValue> get(int index)
+	//+EAWebKitChange
+	//05/15/2015 - Change integrated from Blink patch : https://code.google.com/p/chromium/issues/detail?id=291498
+	// It fixes a memory leak in CSS calc, where proper de-referencing was not happening.
+    CalculationValue* get(int index)
+	//-EAWebKitChange
     {
         ASSERT(m_map.contains(index));
         return m_map.get(index);
     }
+
+	//+EAWebKitChange
+	//05/15/2015 - Change integrated from Blink patch : https://code.google.com/p/chromium/issues/detail?id=291498
+	// It fixes a memory leak in CSS calc, where proper de-referencing was not happening.
+    void decrementRef(int index)
+	{
+        ASSERT(m_map.contains(index));
+        CalculationValue* value = m_map.get(index);
+        if (value->hasOneRef()) 
+		{
+			// Force the CalculationValue destructor early to avoid a potential recursive call inside HashMap remove().
+			m_map.set(index, (PassRefPtr<CalculationValue>)0);
+			m_map.remove(index);
+        } else 
+		{
+			value->deref();
+        }
+	}
+	//-EAWebKitChange
 
     HashMap<int, RefPtr<CalculationValue>>::iterator find(int index)
     {
@@ -226,12 +250,16 @@ Length Length::blendMixedTypes(const Length& from, double progress) const
     OwnPtr<CalcExpressionNode> blend = adoptPtr(new CalcExpressionBlendLength(from, *this, progress));
     return Length(CalculationValue::create(blend.release(), CalculationRangeAll));
 }
-          
-PassRefPtr<CalculationValue> Length::calculationValue() const
+
+//+EAWebKitChange
+//05/15/2015 - Change integrated from Blink patch : https://code.google.com/p/chromium/issues/detail?id=291498
+// It fixes a memory leak in CSS calc, where proper de-referencing was not happening.
+CalculationValue* Length::calculationValue() const
 {
     ASSERT(isCalculated());
     return calcHandles().get(calculationHandle());
 }
+//-EAWebKitChange
     
 void Length::incrementCalculatedRef() const
 {
@@ -241,10 +269,11 @@ void Length::incrementCalculatedRef() const
 
 void Length::decrementCalculatedRef() const
 {
-    ASSERT(isCalculated());
-    auto it = calcHandles().find(calculationHandle());
-    if (it->value->hasOneRef())
-        calcHandles().remove(it);
+	//+EAWebKitChange
+	//05/15/2015 - Change integrated from Blink patch : https://code.google.com/p/chromium/issues/detail?id=291498
+	// It fixes a memory leak in CSS calc, where proper de-referencing was not happening.
+    calcHandles().decrementRef(calculationHandle());
+	//-EAWebKitChange
 }
 
 float Length::nonNanCalculatedValue(int maxValue) const

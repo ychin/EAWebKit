@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2006, 2008 Apple Computer, Inc.  All rights reserved.
  * Copyright (C) 2007-2008 Torch Mobile, Inc.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -80,7 +80,8 @@ struct FontDescriptionFontDataCacheKey {
     {
 		//+EAWebKitChange
 		//2/11/2014 - Added smoothing attribute to be taken in account
-		return static_cast<unsigned>(description.fontSmoothing()) << 5
+		///05/06/2015 - Corrected the number of bits by which font-smoothing (2 bits) should be left shifted.
+		return static_cast<unsigned>(description.fontSmoothing()) << 6
 			//-EAWebKitChange
 			| static_cast<unsigned>(description.widthVariant()) << 4
             | static_cast<unsigned>(description.orientation()) << 3

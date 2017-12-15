@@ -73,7 +73,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "WebInspector.h"
 
 
-
 // Note by Arpit Baldeva:
 // We use SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended); in ALL the virtual functions (To keep guideline simple)
 // in EA::WebKit::View(). 
@@ -900,6 +899,36 @@ void View::OnMouseButtonEvent(const EA::WebKit::MouseButtonEvent&  ev)
             d->mMouseButtonPressedId = kMouseNoButton;  // Reset
 			d->page->handle()->mouseReleaseEvent(ev);
         }
+    }
+}
+
+void View::OnTouchEvent(const EA::WebKit::TouchEvent& ev)
+{
+    if (d->mBeingDebugged)
+    {
+        return;
+    }
+
+	SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);   
+	SET_AUTO_COLLECTOR_STACK_BASE();  
+    EAWEBKIT_THREAD_CHECK();
+    EAWWBKIT_INIT_CHECK(); 
+    EAW_ASSERT_MSG(d->mInitialized, "View must be initialized!"); 
+
+	if (d->page) 
+	{
+		switch (ev.mType)
+		{
+		case EA::WebKit::kTouchStart:
+			d->page->handle()->touchStartEvent(ev);
+			break;
+		case EA::WebKit::kTouchMove:
+			d->page->handle()->touchMoveEvent(ev);
+			break;
+		case EA::WebKit::kTouchEnd:
+			d->page->handle()->touchEndEvent(ev);
+			break;
+		}
     }
 }
 

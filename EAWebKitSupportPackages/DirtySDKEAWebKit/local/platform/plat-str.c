@@ -40,8 +40,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*** Defines **********************************************************************/
 
+#if (defined(EA_PLATFORM_WINDOWS)) || (defined(CS_UNDEFINED_STRING))
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
+#endif
 
 /*** Type Definitions *************************************************************/
 

@@ -3,7 +3,7 @@
     Copyright (C) 2008 Holger Hans Peter Freyther
     Copyright (C) 2006, 2008 Apple Inc. All rights reserved.
     Copyright (C) 2007 Nicholas Shanks <webkit@nickshanks.com>
-    Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+    Copyright (C) 2011, 2012, 2014, 2016 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -132,15 +132,79 @@ static EA::WebKit::IFont* createFont(const FontDescription& fontDescription, con
 		// So what we do here is build up that array.
 
 		const uint32_t familyNameArrayCapacity = pTextSystem->GetFamilyNameArrayCapacity();
-
+        const EA::WebKit::Parameters& params = EA::WebKit::GetParameters();
 		uint32_t i = 0;
-		if(!familyName.isEmpty()) //family name can be empty in some situations. Say using "^" character.
-		{
-			CopyFontFamilyName(textStyle.mFamilyNameArray[i],familyName);
-			++i;
-		}
+	
+	    // Here, we iterate through the list and copy the fonts to the destination array in the order of priority.
+	    // If we come across a generic font, we read it from the Params based on the generic family set in the description. 
+	    bool genericFontAdded = false;
+        AtomicString nextFamilyName = "";
+	    while((i < (fontDescription.familyCount() + 1)) && (i < familyNameArrayCapacity))
+	    {
+            // we do this so we can insert the first family name into the list and keep all the other logic to operate on it in the loop
+            if (i == 0)
+            { 
+                nextFamilyName = familyName;
+            }
+            else
+            {
+                nextFamilyName = fontDescription.familyAt(i - 1); //0 to fontDescription.familyCount() when all the math is done
+            }
 
-		if(i < familyNameArrayCapacity)
+		    if(nextFamilyName.startsWith("-webkit",true)) // A generic font family 
+		    {
+			    genericFontAdded = true;
+			    const char16_t* type = 0;
+
+                //note, not specifically handled pictographFamily
+                if (nextFamilyName == standardFamily)
+                {
+                    type = params.mFontFamilyStandard;
+                }
+                else if (nextFamilyName == serifFamily)
+                {
+                    type = params.mFontFamilySerif;
+                }
+                else if (nextFamilyName == sansSerifFamily)
+                {
+                    type = params.mFontFamilySansSerif;
+                }
+                else if (nextFamilyName == monospaceFamily)
+                {
+                    type = params.mFontFamilyMonospace;
+                }
+                else if (nextFamilyName == cursiveFamily)
+                {
+                    type = params.mFontFamilyCursive;
+                }
+                else if (nextFamilyName == fantasyFamily)
+                {
+                    type = params.mFontFamilyFantasy;
+                }
+                else  
+                {
+				    type = params.mFontFamilyStandard;
+			    }
+
+				EA::Internal::Strcpy(textStyle.mFamilyNameArray[i],type);
+				++i;
+		    }
+            else
+            { 
+                CopyFontFamilyName(textStyle.mFamilyNameArray[i], nextFamilyName);
+		        ++i;
+            }
+	    }
+	
+	    // If we went through all the fonts specified but a generic font was not added, we add the standard font as a fallback.
+	    // It is probably not a good practice to not specify a generic font family for any font but we deal with that situation here.
+	    if( i < familyNameArrayCapacity && !genericFontAdded)
+	    {
+		    EA::Internal::Strcpy(textStyle.mFamilyNameArray[i],params.mFontFamilyStandard);
+		    ++i;
+	    }
+
+        if(i < familyNameArrayCapacity)
 		{
 			*textStyle.mFamilyNameArray[i] = 0;
 		}

@@ -254,6 +254,10 @@
     || (defined(__HP_cc) && __HP_cc >= 111106) \
     || U_GNUC_UTF16_STRING
 #define U_DECLARE_UTF16(string) u ## string
+#elif (defined(__SUNPRO_CC) && __SUNPRO_CC >= 0x550)
+/* || (defined(__SUNPRO_C) && __SUNPRO_C >= 0x580) */
+/* Sun's C compiler has issues with this notation, and it's unreliable. */
+#define U_DECLARE_UTF16(string) U ## string
 #elif U_SIZEOF_WCHAR_T == 2 \
     && (U_CHARSET_FAMILY == 0 || ((defined(OS390) || defined(OS400)) && defined(__UCS2__)))
 #define U_DECLARE_UTF16(string) L ## string
@@ -294,6 +298,11 @@
 
 #if 1
 #define U_EXPORT __attribute__((visibility("default")))
+#elif (defined(__SUNPRO_CC) && __SUNPRO_CC >= 0x550) \
+   || (defined(__SUNPRO_C) && __SUNPRO_C >= 0x550) 
+#define U_EXPORT __global
+/*#elif defined(__HP_aCC) || defined(__HP_cc)
+#define U_EXPORT __declspec(dllexport)*/
 #else
 #define U_EXPORT
 #endif

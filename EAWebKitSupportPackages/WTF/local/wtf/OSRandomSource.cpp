@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Google Inc. All rights reserved.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,13 +24,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
+//+EAWebKitChange
+//06/06/2016 - Entire file updated based off changes from w-188436 for VS2015 compatibility
+//-EAWebKitChange
+
 #include "config.h"
 #include "OSRandomSource.h"
 
 #include <stdint.h>
 #include <stdlib.h>
 
-#if OS(UNIX)
+#if !OS(DARWIN) && OS(UNIX)
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #endif
@@ -44,38 +49,64 @@
 //2/28/2014
 #if PLATFORM(EA)
 namespace EA { namespace WebKit {
-    extern void (*gpCryptographicallyRandomValueCallback)(unsigned char *buffer, size_t length);
+    extern bool (*gpCryptographicallyRandomValueCallback)(unsigned char *buffer, size_t length);
 }}
 #endif
 //-EAWebKitChange
 
 namespace WTF {
 
+#if !OS(DARWIN) && OS(UNIX)
+NEVER_INLINE NO_RETURN_DUE_TO_CRASH static void crashUnableToOpenURandom()
+{
+    CRASH();
+}
+
+NEVER_INLINE NO_RETURN_DUE_TO_CRASH static void crashUnableToReadFromURandom()
+{
+    CRASH();
+}
+#endif
+    
 void cryptographicallyRandomValuesFromOS(unsigned char* buffer, size_t length)
 {
+#if OS(DARWIN)
+    return arc4random_buf(buffer, length);
 //+EAWebKitChange
 //2/28/2014
-#if PLATFORM(EA)
-    if (EA::WebKit::gpCryptographicallyRandomValueCallback)
+//5/04/2015
+#elif PLATFORM(EA)
+	bool bResult = true;
+	if (!EA::WebKit::gpCryptographicallyRandomValueCallback || !(bResult = EA::WebKit::gpCryptographicallyRandomValueCallback(buffer, length)))
     {
-        EA::WebKit::gpCryptographicallyRandomValueCallback(buffer, length);
+		if (bResult)
+			ASSERT_WITH_MESSAGE(false, "WARNING : Missing an application-supplied Crypto function!!");
+
+		ASSERT_WITH_MESSAGE(false, "Using a default Crypto Implementation");
+		for (size_t i = 0; i < length; ++i) {
+			buffer[i] = rand() % 255;
+		}
     }
-    else
-    {
-        for (size_t i = 0; i < length; ++i) {
-            buffer[i] = rand() % 255;
-        }
-    }
-#elif OS(UNIX)
 //-EAWebKitChange
+#elif OS(UNIX)
     int fd = open("/dev/urandom", O_RDONLY, 0);
     if (fd < 0)
-        CRASH(); // We need /dev/urandom for this API to work...
+        crashUnableToOpenURandom(); // We need /dev/urandom for this API to work...
 
-    if (read(fd, buffer, length) != static_cast<ssize_t>(length))
-        CRASH();
-
+    ssize_t amountRead = 0;
+    while (static_cast<size_t>(amountRead) < length) {
+        ssize_t currentRead = read(fd, buffer + amountRead, length - amountRead);
+        // We need to check for both EAGAIN and EINTR since on some systems /dev/urandom
+        // is blocking and on others it is non-blocking.
+        if (currentRead == -1) {
+            if (!(errno == EAGAIN || errno == EINTR))
+                crashUnableToReadFromURandom();
+        } else
+            amountRead += currentRead;
+    }
+    
     close(fd);
+
 #elif OS(WINDOWS)
     HCRYPTPROV hCryptProv = 0;
     if (!CryptAcquireContext(&hCryptProv, 0, MS_DEF_PROV, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))

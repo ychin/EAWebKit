@@ -56,6 +56,9 @@ HTMLFrameElementBase::HTMLFrameElementBase(const QualifiedName& tagName, Documen
 
 bool HTMLFrameElementBase::isURLAllowed() const
 {
+    if (document().page()->subframeCount() >= Page::maxNumberOfFrames)
+        return false;
+
     if (m_URL.isEmpty())
         return true;
 
@@ -150,7 +153,7 @@ Node::InsertionNotificationRequest HTMLFrameElementBase::insertedInto(ContainerN
     return InsertionDone;
 }
 
-void HTMLFrameElementBase::didNotifySubtreeInsertions(ContainerNode*)
+void HTMLFrameElementBase::didNotifySubtreeInsertions()
 {
     if (!inDocument())
         return;

@@ -245,6 +245,9 @@ namespace WebCore {
         bool m_hasRareData            : 1;
         bool m_isForPage              : 1;
         bool m_tagIsForNamespaceRule  : 1;
+#if !ASSERT_WITH_SECURITY_IMPLICATION_DISABLED
+		unsigned m_destructorHasBeenCalled : 1;
+#endif
 
         unsigned specificityForOneSelector() const;
         unsigned specificityForPage() const;
@@ -369,6 +372,9 @@ inline CSSSelector::CSSSelector()
     , m_hasRareData(false)
     , m_isForPage(false)
     , m_tagIsForNamespaceRule(false)
+#if !ASSERT_WITH_SECURITY_IMPLICATION_DISABLED
+	, m_destructorHasBeenCalled(false)
+#endif
 {
 }
 
@@ -382,6 +388,9 @@ inline CSSSelector::CSSSelector(const QualifiedName& tagQName, bool tagIsForName
     , m_hasRareData(false)
     , m_isForPage(false)
     , m_tagIsForNamespaceRule(tagIsForNamespaceRule)
+#if !ASSERT_WITH_SECURITY_IMPLICATION_DISABLED
+	, m_destructorHasBeenCalled(false)
+#endif
 {
     m_data.m_tagQName = tagQName.impl();
     m_data.m_tagQName->ref();
@@ -397,6 +406,9 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
     , m_hasRareData(o.m_hasRareData)
     , m_isForPage(o.m_isForPage)
     , m_tagIsForNamespaceRule(o.m_tagIsForNamespaceRule)
+#if !ASSERT_WITH_SECURITY_IMPLICATION_DISABLED
+	, m_destructorHasBeenCalled(false)
+#endif
 {
     if (o.m_match == Tag) {
         m_data.m_tagQName = o.m_data.m_tagQName;
@@ -412,12 +424,24 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
 
 inline CSSSelector::~CSSSelector()
 {
-    if (m_match == Tag)
-        m_data.m_tagQName->deref();
-    else if (m_hasRareData)
-        m_data.m_rareData->deref();
-    else if (m_data.m_value)
-        m_data.m_value->deref();
+	ASSERT_WITH_SECURITY_IMPLICATION(!m_destructorHasBeenCalled);
+#if !ASSERT_WITH_SECURITY_IMPLICATION_DISABLED
+	m_destructorHasBeenCalled = true;
+#endif
+	if (m_match == Tag) {
+		m_data.m_tagQName->deref();
+		m_data.m_tagQName = nullptr;
+		m_match = Unknown;
+	}
+	else if (m_hasRareData) {
+		m_data.m_rareData->deref();
+		m_data.m_rareData = nullptr;
+		m_hasRareData = false;
+	}
+	else if (m_data.m_value) {
+		m_data.m_value->deref();
+		m_data.m_value = nullptr;
+	}
 }
 
 inline const QualifiedName& CSSSelector::tagQName() const

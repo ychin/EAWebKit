@@ -30,7 +30,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define WTF_PlatformEA_h
 
 #include <EABase/eabase.h>
+#if !defined(EA_PLATFORM_WINDOWS)
+extern "C" char* getenv(const char*);
+#else
 #include <stdlib.h>
+#endif
 
 #define WTF_PLATFORM_EA 1
 
@@ -73,11 +77,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EA_CACHE_PREFETCH_128(addr) 
 #endif
 // Some of the defines below can be removed but we keep them just in case. 
+#if defined(EA_PLATFORM_MICROSOFT)
 #define HAVE_SYS_TIMEB_H 1
 #define HAVE_ALIGNED_MALLOC 1 //This does not seem to be used anywhere anymore
 #define HAVE_ISDEBUGGERPRESENT 0 // This is used in Assertions.cpp but we have that code compiled out anyway
 #define HAVE_VIRTUALALLOC 0 // This is used in TCSystemAlloc.h which we don't use
 #define HAVE_MMAP 0 // Used only on OS(UNIX) which we don't have.
 #define ENABLE_BINDING_INTEGRITY 0
+#elif defined(EA_PLATFORM_OSX)
+#include <unistd.h>
+#endif
 
 #endif //Header include guard

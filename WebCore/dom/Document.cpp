@@ -1821,10 +1821,10 @@ void Document::updateLayout()
 // stylesheets are loaded. Doing a layout ignoring the pending stylesheets
 // lets us get reasonable answers. The long term solution to this problem is
 // to instead suspend JavaScript execution.
-void Document::updateLayoutIgnorePendingStylesheets()
+void Document::updateLayoutIgnorePendingStylesheets(Document::RunPostLayoutTasks runPostLayoutTasks)
 {
     bool oldIgnore = m_ignorePendingStylesheets;
-    
+
     if (!haveStylesheetsLoaded()) {
         m_ignorePendingStylesheets = true;
         // FIXME: We are willing to attempt to suppress painting with outdated style info only once.  Our assumption is that it would be
@@ -1845,6 +1845,9 @@ void Document::updateLayoutIgnorePendingStylesheets()
     }
 
     updateLayout();
+
+    if (runPostLayoutTasks == RunPostLayoutTasksSynchronously && view())
+        view()->flushAnyPendingPostLayoutTasks();
 
     m_ignorePendingStylesheets = oldIgnore;
 }
@@ -2744,7 +2747,13 @@ void Document::didRemoveAllPendingStylesheet()
 {
     m_needsNotifyRemoveAllPendingStylesheet = false;
 
-    styleResolverChanged(RecalcStyleIfNeeded);
+    styleResolverChanged(DeferRecalcStyleIfNeeded);
+
+    if (m_pendingSheetLayout == DidLayoutWithPendingSheets) {
+        m_pendingSheetLayout = IgnoreLayoutWithPendingSheets;
+        if (renderView())
+            renderView()->repaintViewAndCompositedLayers();
+    }
 
     if (ScriptableDocumentParser* parser = scriptableDocumentParser())
         parser->executeScriptsWaitingForStylesheets();
@@ -3124,12 +3133,6 @@ void Document::styleResolverChanged(StyleResolverUpdateFlag updateFlag)
         if (stylesheetChangeRequiresStyleRecalc)
             scheduleForcedStyleRecalc();
         return;
-    }
-
-    if (didLayoutWithPendingStylesheets() && !m_styleSheetCollection.hasPendingSheets()) {
-        m_pendingSheetLayout = IgnoreLayoutWithPendingSheets;
-        if (renderView())
-            renderView()->repaintViewAndCompositedLayers();
     }
 
     if (!stylesheetChangeRequiresStyleRecalc)

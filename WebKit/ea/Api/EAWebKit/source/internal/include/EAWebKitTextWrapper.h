@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -68,6 +68,7 @@ public:
 
     bool GetFontMetrics(EA::WebKit::FontMetrics& fontMetricsInternal);
     bool GetGlyphMetrics(EA::WebKit::GlyphId glyphId, EA::WebKit::GlyphMetrics& glyphMetricsInternal);
+    char16_t* GetFamilyName();
     uint32_t GetGlyphIds(const EA::WebKit::Char* pCharArray, uint32_t nCharArrayCount, EA::WebKit::GlyphId* pGlyphIdArray = NULL, 
         bool bUseReplacementGlyph = true, const uint32_t nGlyphIdStride = sizeof(EA::WebKit::GlyphId), bool bWriteInvalidGlyphs = false);
 	bool GetKerning(EA::WebKit::GlyphId g1, EA::WebKit::GlyphId g2, EA::WebKit::Kerning& kerning, int direction, bool bHorizontalLayout = true);
@@ -90,8 +91,8 @@ private:
 	EA::WebKit::TextSystem* mpTextSystem;
 	EA::Text::Font* mpFont;
 
-    // The ref count of this instance and not the EA::Text::Font as EA::Text::Font could be used in the application elsewhere.
-	int mRefCount;  
+	char16_t mFamily[EA::Text::kFamilyNameCapacity];	//to store the font family name, ie "Arial", so we can safely return it from GetFamilyName();
+	int mRefCount;  // The ref count of this instance and not the EA::Text::Font as EA::Text::Font could be used in the application elsewhere.
 };
 
 

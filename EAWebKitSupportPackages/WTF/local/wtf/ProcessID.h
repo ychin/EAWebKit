@@ -30,15 +30,17 @@
 #include <wtf/Platform.h>
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
+#if OS(UNIX) || defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_OSX)
 //-EAWebKitChange
 #include <unistd.h>
 #endif
 
 //+EAWebKitChange
 //3/11/2014
+#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
 #include <windows.h>
+#endif
 
 namespace WTF {
 
@@ -46,8 +48,12 @@ inline int getCurrentProcessID()
 {
 //+EAWebKitChange
 //3/11/2014
+#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
     return GetCurrentProcessId();
+#else
+    return getpid();
+#endif
 }
 
 } // namespace WTF

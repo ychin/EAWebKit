@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2007,2009-2010, 2013 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2007,2009-2010, 2013, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -145,7 +145,7 @@ namespace EA
 
         inline size_t Strlen(const char16_t* pString)
         {
-            return wcslen(pString);
+            return wcslen(reinterpret_cast<const wchar_t *>(pString));
         }
 
 
@@ -156,7 +156,7 @@ namespace EA
 
         inline char16_t* Strcpy(char16_t* pDestination, const char16_t* pSource)
         {
-            return wcscpy(pDestination, pSource);
+            return reinterpret_cast<char16_t*>(wcscpy(reinterpret_cast<wchar_t *>(pDestination), reinterpret_cast<const wchar_t *>(pSource)));
         }
 
 
@@ -167,7 +167,7 @@ namespace EA
 
         inline char16_t* Strncpy(char16_t* pDestination, const char16_t* pSource, size_t n)
         {
-            return wcsncpy(pDestination, pSource, n);
+            return reinterpret_cast<char16_t*>(wcsncpy(reinterpret_cast<wchar_t *>(pDestination), reinterpret_cast<const wchar_t *>(pSource), n));
         }
 
 
@@ -178,7 +178,7 @@ namespace EA
 
         inline int Strcmp(const char16_t* pString1, const char16_t* pString2)
         {
-            return wcscmp(pString1, pString2);
+            return wcscmp(reinterpret_cast<const wchar_t *>(pString1), reinterpret_cast<const wchar_t *>(pString2));
         }
 
 
@@ -189,7 +189,7 @@ namespace EA
 
         inline char16_t* Strcat(char16_t* pDestination, const char16_t* pSource)
         {
-            return wcscat(pDestination, pSource);
+            return reinterpret_cast<char16_t *>(wcscat(reinterpret_cast<wchar_t *>(pDestination), reinterpret_cast<const wchar_t *>(pSource)));
         }
 
 
@@ -200,7 +200,7 @@ namespace EA
 
         inline const char16_t* Strchr(const char16_t* pString, char16_t c)
         {
-            return wcschr(pString, c);
+            return reinterpret_cast<const char16_t*>(wcschr(reinterpret_cast<const wchar_t*>(pString), (wchar_t)c));
         }
 
 

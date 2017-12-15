@@ -1,5 +1,6 @@
 /*
  Copyright (C) 2013 Nokia Corporation and/or its subsidiary(-ies)
+ Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -51,6 +52,10 @@ public:
 
 private:
     RefPtr<BitmapTexture> m_texture;
+    //+EAWebKitChange
+    //5/8/2015
+    WTF::String m_customTextureName;
+    //-EAWebKitChange
     FloatRect m_rect;
 };
 

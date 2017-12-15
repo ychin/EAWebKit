@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
+ * Copyright (C) 2016 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -45,14 +46,9 @@
 #define ASSERT_GC_OBJECT_INHERITS(object, classInfo) do { (void)object; (void)classInfo; } while (0)
 #endif
 
-#if COMPILER(CLANG)
+//+EAWebKitChange
+//06/06/2016 - Updated based off changes from w-188436 for VS2015 compatibility
 #define STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(klass) static_assert(std::is_trivially_destructible<klass>::value, #klass " must have a trivial destructor")
-#elif COMPILER(MSVC)
-// An earlier verison of the C++11 spec used to call this type trait std::has_trivial_destructor, and that's what MSVC uses.
-#define STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(klass) static_assert(std::has_trivial_destructor<klass>::value, #klass " must have a trivial destructor")
-#else
-// This is not enabled on GCC due to http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52702
-#define STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(klass)
-#endif
+//-EAWebKitChange
 
 #endif // GCAssertions_h

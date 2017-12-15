@@ -107,8 +107,13 @@ namespace WebKit
 
 // Having a STRINGWRAPPER_AVOID_HEAP_ALLOCATION define instead of platform defines makes it easy to enable/disable code on
 // new platforms or test existing platform.
+#if defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_OSX)
+#define STRINGWRAPPER_AVOID_HEAP_ALLOCATION 0
+#define USE_INDIRECT_VIRTUALCALL 1
+#else
 #define STRINGWRAPPER_AVOID_HEAP_ALLOCATION 1
 #define USE_INDIRECT_VIRTUALCALL 0
+#endif
 
 class EASTLFixedString8Wrapper
 {

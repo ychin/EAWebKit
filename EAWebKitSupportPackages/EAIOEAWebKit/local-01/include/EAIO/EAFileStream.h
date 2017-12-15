@@ -65,6 +65,26 @@ namespace EA
         /// These represent the most common file system errors. However, there are additional errors 
         /// which may be returned by the system APIs which are different from these. You should be 
         /// prepared to receive any value for an error code. 
+        #if  !defined(EA_PLATFORM_WINDOWS) && !defined(EA_PLATFORM_XBOXONE) && !defined(EA_PLATFORM_PS4)
+            enum IOResultCode
+            {
+                kFSErrorBase              =   0, /// Error code base for this module
+                kFSErrorGeneral           =  -1, /// Catchall for all other errors. This matches EA::IO::kStateError
+                kFSErrorNotOpen           =  -2, /// Attempt to read a stream that hasn't been opened. This matches EA::IO::kStateNotOpen
+                kFSErrorNoMemory          =  -3, /// Insufficient memory to perform operation
+                kFSErrorInvalidName       =  -4, /// Invalid file name
+                kFSErrorNameTooLong       =  -5, /// File name/path is too long
+                kFSErrorFileNotFound      =  -6, /// Attempt to open a nonexistent file for reading
+                kFSErrorPathNotFound      =  -7, /// Attempt to access a file in a non-existent directory
+                kFSErrorAccessDenied      =  -8, /// Insufficient privileges to open the file
+                kFSErrorWriteProtect      =  -9, /// Attempt to open a read-only file for writing
+                kFSErrorSharingViolation  = -10, /// Attempt to modify a file that is in use
+                kFSErrorDiskFull          = -11, /// Out of space on the device
+                kFSErrorFileAlreadyExists = -12, /// Attempt to create a new file with the same name as existing file
+                kFSErrorDeviceNotReady    = -13, /// Attempt to access a hardware device that isn't ready
+                kFSErrorDataCRCError      = -14  /// The data read off of the disk was corrupted in some way
+            };
+        #endif
 
         /// FileOperation
         /// Defines an operation that can be done on a file.
@@ -172,8 +192,12 @@ namespace EA
 } // namespace EA
 
 
+#if defined(EA_PLATFORM_WINDOWS)
    #include <EAIO/Win32/EAFileStreamWin32.h>
 
+#else
+   #include <EAIO/StdC/EAFileStreamStdC.h>
+#endif
 
 
 #endif // Header include guard

@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
- Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -116,7 +116,10 @@ PassRefPtr<BitmapTexture> BitmapTexturePool::acquireTexture(const IntSize& size,
     }
 
     if (!selectedEntry) {
-        m_textures.append(BitmapTexturePoolEntry(textureMapper->createTexture()));
+        //+EAWebKitChange
+        //4/28/2015
+        m_textures.append(BitmapTexturePoolEntry(textureMapper->createTexture(EA::WebKit::SurfaceTypeRenderTarget, 0, 0)));
+        //-EAWebKitChange
         selectedEntry = &m_textures.last();
     }
 

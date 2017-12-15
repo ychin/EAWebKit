@@ -41,7 +41,9 @@
 #include <EAWebKit/EAWebKitFileSystem.h>
 #include <internal/include/EAWebKitString.h>
 #include <EAIO/EAFileDirectory.h>
+#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
+#endif
 COMPILE_ASSERT(sizeof(WebCore::PlatformFileHandle) == sizeof(EA::WebKit::FileSystem::FileObject), PlatformFileHandleIsEAWebKitFileSystemFileObject);
 
 namespace {

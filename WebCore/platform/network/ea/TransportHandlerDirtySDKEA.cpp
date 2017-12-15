@@ -53,7 +53,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if (BUILDING_EAWEBKIT_DLL)
+#if defined(EA_PLATFORM_MICROSOFT)
 #include "winsock2.h"
+#endif
 #include "dirtyplatform.h"
 #include "dirtynet.h"
 #endif
@@ -893,11 +895,11 @@ namespace WebKit
 				{
 					EA::TransportHelper::TransportHeaderMap::mapped_type& sValueHost = itHost->second;
 					eastl_size_t sizeStr = sValueHost.size();
-					if(sValueHost.substr(sizeStr-3,sizeStr) == EA_CHAR16(":80")) //strlen ":80" = 3
+					if((sizeStr >= 3) && sValueHost.substr(sizeStr-3,sizeStr) == EA_CHAR16(":80")) //strlen ":80" = 3
 					{
 						sValueHost.erase(sizeStr-3);  // Remove the ":80", as some servers mistakenly fail when it's present for HTTP.
 					}
-					else if(sValueHost.substr(sizeStr-4,sizeStr) == EA_CHAR16(":443"))//strlen ":443" = 4
+					else if((sizeStr >= 4) && sValueHost.substr(sizeStr-4,sizeStr) == EA_CHAR16(":443"))//strlen ":443" = 4
 					{
 						sValueHost.erase(sizeStr-4);  // Remove the ":443", as some servers mistakenly fail when it's present for HTTPS.
 					}

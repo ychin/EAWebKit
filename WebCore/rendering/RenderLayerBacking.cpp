@@ -1682,7 +1682,7 @@ bool RenderLayerBacking::containsPaintedContent(bool isSimpleContainer) const
 // that require painting. Direct compositing saves backing store.
 bool RenderLayerBacking::isDirectlyCompositedImage() const
 {
-    if (!renderer().isImage() || m_owningLayer.hasBoxDecorationsOrBackground() || renderer().hasClip())
+    if (!renderer().isRenderImage() || m_owningLayer.hasBoxDecorationsOrBackground() || renderer().hasClip())
         return false;
 
     RenderImage& imageRenderer = toRenderImage(renderer());
@@ -1729,7 +1729,7 @@ void RenderLayerBacking::contentChanged(ContentChangeType changeType)
 
 void RenderLayerBacking::updateImageContents()
 {
-    ASSERT(renderer().isImage());
+    ASSERT(renderer().isRenderImage());
     RenderImage& imageRenderer = toRenderImage(renderer());
 
     CachedImage* cachedImage = imageRenderer.cachedImage();

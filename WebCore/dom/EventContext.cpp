@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Google Inc. All Rights Reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -117,9 +118,13 @@ void TouchEventContext::handleLocalEvents(Event& event) const
 #endif
     ASSERT(event.isTouchEvent());
     TouchEvent& touchEvent = toTouchEvent(event);
-    touchEvent.setTouches(m_touches);
-    touchEvent.setTargetTouches(m_targetTouches);
-    touchEvent.setChangedTouches(m_changedTouches);
+	//+EAWebKitChange
+	//03/15/2015
+	// This piece of code is messing up the touchlists of the input touch event. 
+    //touchEvent.setTouches(m_touches); 
+    //touchEvent.setTargetTouches(m_targetTouches);
+    //touchEvent.setChangedTouches(m_changedTouches);
+	//-EAWebKitChange
     EventContext::handleLocalEvents(event);
 }
 

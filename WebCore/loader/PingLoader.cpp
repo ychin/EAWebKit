@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Google Inc. All rights reserved.
+ * Copyright (C) 2016 Electronic Arts, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -114,6 +115,7 @@ void PingLoader::sendViolationReport(Frame* frame, const URL& reportURL, PassRef
     request.setHTTPMethod("POST");
     request.setHTTPContentType("application/json");
     request.setHTTPBody(report);
+	request.setAllowCookies(frame->document()->securityOrigin()->isSameSchemeHostPort(SecurityOrigin::create(reportURL).get()));
     frame->loader().addExtraFieldsToSubresourceRequest(request);
 
     String referrer = SecurityPolicy::generateReferrerHeader(frame->document()->referrerPolicy(), reportURL, frame->loader().outgoingReferrer());
@@ -148,7 +150,13 @@ PingLoader::PingLoader(Frame* frame, ResourceRequest& request)
 PingLoader::~PingLoader()
 {
     if (m_handle)
+    {
         m_handle->cancel();
+        //+EAWebKitChange
+        //02/26/2016 - Inform the handle the client has been deleted, this nulls its ptr
+        m_handle->setClient(nullptr);
+        //-EAWebKitChange
+    }
 }
 
 }

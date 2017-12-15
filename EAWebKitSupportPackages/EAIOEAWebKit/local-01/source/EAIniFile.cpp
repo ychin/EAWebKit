@@ -629,8 +629,10 @@ bool IniFile::Open(int nAccessFlags)
 
                     #if EAIO_THREAD_SAFETY_ENABLED
                         EA::Thread::ThreadSleep(nSleepTime);
-                    #else
+                    #elif defined(EA_PLATFORM_WINDOWS)
                         Sleep((DWORD)nSleepTime);
+                    #else
+                        // Possibly call a generic OS sleep function here.
                     #endif
                 }
             }

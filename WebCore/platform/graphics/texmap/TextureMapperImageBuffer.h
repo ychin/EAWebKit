@@ -1,5 +1,6 @@
 /*
  Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies)
+ Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -22,6 +23,11 @@
 
 #include "ImageBuffer.h"
 #include "TextureMapper.h"
+
+//+EAWebKitChange
+//4/28/2015
+#include <EAWebKit/EAWebKitHardwareRenderer.h>
+//-EAWebKitChange
 
 #if USE(TEXTURE_MAPPER)
 namespace WebCore {
@@ -62,7 +68,10 @@ public:
     virtual void endClip() OVERRIDE { graphicsContext()->restore(); }
     virtual IntRect clipBounds() OVERRIDE { return currentContext()->clipBounds(); }
     virtual IntSize maxTextureSize() const;
-    virtual PassRefPtr<BitmapTexture> createTexture() OVERRIDE { return BitmapTextureImageBuffer::create(); }
+    //+EAWebKitChange
+    //4/28/2015
+    virtual PassRefPtr<BitmapTexture> createTexture(EA::WebKit::SurfaceType type, const void* data = 0, size_t length = 0) OVERRIDE { return BitmapTextureImageBuffer::create(); }
+    //-EAWebKitChange
 
     inline GraphicsContext* currentContext()
     {

@@ -332,17 +332,17 @@ void RenderWidget::setOverlapTestResult(bool isOverlapped)
     toFrameView(m_widget.get())->setIsOverlapped(isOverlapped);
 }
 
-void RenderWidget::updateWidgetPosition()
+RenderWidget::ChildWidgetState RenderWidget::updateWidgetPosition()
 {
     if (!m_widget)
-        return;
+        return ChildWidgetState::ChildWidgetIsDestroyed;
 
     WeakPtr<RenderWidget> weakThis = createWeakPtr();
 
     bool boundsChanged = updateWidgetGeometry();
 
-    if (!weakThis)
-        return;
+    if (!weakThis || !m_widget)
+        return ChildWidgetState::ChildWidgetIsDestroyed;
 
     // if the frame bounds got changed, or if view needs layout (possibly indicating
     // content size is wrong) we have to do a layout to set the right widget size
@@ -352,6 +352,7 @@ void RenderWidget::updateWidgetPosition()
         if ((boundsChanged || frameView->needsLayout()) && frameView->frame().page())
             frameView->layout();
     }
+    return ChildWidgetState::ChildWidgetIsValid;
 }
 
 IntRect RenderWidget::windowClipRect() const

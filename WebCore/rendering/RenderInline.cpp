@@ -911,15 +911,17 @@ IntRect RenderInline::linesBoundingBox() const
 
 InlineBox* RenderInline::culledInlineFirstLineBox() const
 {
-    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
-        if (curr->isFloatingOrOutOfFlowPositioned())
-            continue;
-            
-        // We want to get the margin box in the inline direction, and then use our font ascent/descent in the block
-        // direction (aligned to the root box's baseline).
-        if (curr->isBox())
-            return toRenderBox(curr)->inlineBoxWrapper();
-        if (curr->isLineBreak()) {
+	for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
+		if (curr->isFloatingOrOutOfFlowPositioned())
+			continue;
+
+		// We want to get the margin box in the inline direction, and then use our font ascent/descent in the block
+		// direction (aligned to the root box's baseline).
+		if (curr->isBox()) {
+			RenderBox* renderBox = toRenderBox(curr);
+			if (renderBox->inlineBoxWrapper())
+				return renderBox->inlineBoxWrapper();
+		} else if (curr->isLineBreak()) {
             RenderLineBreak* renderBR = toRenderLineBreak(curr);
             if (renderBR->inlineBoxWrapper())
                 return renderBR->inlineBoxWrapper();
@@ -945,9 +947,11 @@ InlineBox* RenderInline::culledInlineLastLineBox() const
             
         // We want to get the margin box in the inline direction, and then use our font ascent/descent in the block
         // direction (aligned to the root box's baseline).
-        if (curr->isBox())
-            return toRenderBox(curr)->inlineBoxWrapper();
-        if (curr->isLineBreak()) {
+		if (curr->isBox()) {
+			RenderBox* renderBox = toRenderBox(curr);
+			if (renderBox->inlineBoxWrapper())
+				return toRenderBox(curr)->inlineBoxWrapper();
+		} else if (curr->isLineBreak()) {
             RenderLineBreak* renderBR = toRenderLineBreak(curr);
             if (renderBR->inlineBoxWrapper())
                 return renderBR->inlineBoxWrapper();

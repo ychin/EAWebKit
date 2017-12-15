@@ -262,6 +262,7 @@ public:
         case CalcOther:
             ASSERT_NOT_REACHED();
         }
+        ASSERT_NOT_REACHED();
         return nullptr;
     }
 
@@ -332,8 +333,8 @@ static CalculationCategory determineCategory(const CSSCalcExpressionNode& leftSi
     CalculationCategory leftCategory = leftSide.category();
     CalculationCategory rightCategory = rightSide.category();
 
-    if (leftCategory == CalcOther || rightCategory == CalcOther)
-        return CalcOther;
+    ASSERT(leftCategory < CalcOther);
+    ASSERT(rightCategory < CalcOther);
 
 #if ENABLE(CSS_VARIABLES)
     if (leftCategory == CalcVariable || rightCategory == CalcVariable)
@@ -343,7 +344,11 @@ static CalculationCategory determineCategory(const CSSCalcExpressionNode& leftSi
     switch (op) {
     case CalcAdd:
     case CalcSubtract:
-        return addSubtractResult[leftCategory][rightCategory];
+        if (leftCategory < CalcOther && rightCategory < CalcOther)
+            return addSubtractResult[leftCategory][rightCategory];
+        if (leftCategory == rightCategory)
+            return leftCategory;
+        return CalcOther;
     case CalcMultiply:
         if (leftCategory != CalcNumber && rightCategory != CalcNumber)
             return CalcOther;
@@ -370,7 +375,8 @@ class CSSCalcBinaryOperation : public CSSCalcExpressionNode {
 public:
     static PassRefPtr<CSSCalcExpressionNode> create(PassRefPtr<CSSCalcExpressionNode> leftSide, PassRefPtr<CSSCalcExpressionNode> rightSide, CalcOperator op)
     {
-        //ASSERT(leftSide->category() != CalcOther && rightSide->category() != CalcOther);
+        ASSERT(leftSide->category() < CalcOther);
+        ASSERT(rightSide->category() < CalcOther);
 
         CalculationCategory newCategory = determineCategory(*leftSide, *rightSide, op);
 
@@ -384,10 +390,8 @@ public:
     {
         CalculationCategory leftCategory = leftSide->category();
         CalculationCategory rightCategory = rightSide->category();
-		//+EAWebKitChange
-		//3/24/2014
-		//ASSERT(leftCategory != CalcOther && rightCategory != CalcOther);
-		//-EAWebKitChange
+        ASSERT(leftCategory < CalcOther);
+        ASSERT(rightCategory < CalcOther);
 
         bool isInteger = isIntegerResult(leftSide.get(), rightSide.get(), op);
 

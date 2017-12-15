@@ -61,7 +61,9 @@ namespace EA { namespace WebKit
 		SurfaceTypeMain,
 		SurfaceTypeTile,
 		SurfaceTypeTexture,
-		SurfaceTypeOverlay
+        SurfaceTypeRenderTarget,
+		SurfaceTypeOverlay,
+        SurfaceTypeCustom
 	};
 
 	// The css filter operation to apply on the surface/texture 
@@ -132,7 +134,8 @@ namespace EA { namespace WebKit
         // You should return a new instance of your Hardware ISurface implementation.
         // Note that there is no 'DestroySurface' call, so it's up to the ISurface to nuke itself
         // when ISurface::Release is called.
-        virtual EA::WebKit::ISurface *CreateSurface(EA::WebKit::SurfaceType surfaceType) = 0;
+        // The meaning of data and length depends on the surfaceType.
+        virtual EA::WebKit::ISurface *CreateSurface(EA::WebKit::SurfaceType surfaceType, const void* data = 0, size_t length = 0) = 0;
 
         // If target is null, render to screen(back buffer)
         // For non null target, render to the target surface(texture) 

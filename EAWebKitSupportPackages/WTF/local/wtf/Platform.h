@@ -348,6 +348,13 @@
 #endif
 
 /* OS(DARWIN) - Any Darwin-based OS, including Mac OS X and iPhone OS */
+#ifdef __APPLE__
+#define WTF_OS_DARWIN 1
+
+#include <Availability.h>
+#include <AvailabilityMacros.h>
+#include <TargetConditionals.h>
+#endif
 
 /* OS(IOS) - iOS */
 /* OS(MAC_OS_X) - Mac OS X (not including iOS) */
@@ -403,7 +410,7 @@
 #endif
 
 /* OS(SOLARIS) - Solaris */
-#if defined(sun) || defined(CS_UNDEFINED_STRING)
+#if defined(sun) || defined(__sun)
 #define WTF_OS_SOLARIS 1
 #endif
 

@@ -89,7 +89,7 @@ void DestroyJavascriptValue(JavascriptValue *v);
 JavascriptValue *CreateJavascriptValueArray(View *view, size_t count);
 void DestroyJavascriptValueArray(JavascriptValue *array);
 
-void ClearMemoryCache();
+void ClearMemoryCache(MemoryCacheClearFlags flags);
 
 void RegisterURLSchemeAsCORSEnabled(const char16_t* pScheme);
 bool IsURLSchemeCORSEnabled(const char16_t* PScheme);

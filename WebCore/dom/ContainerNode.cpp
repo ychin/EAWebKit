@@ -359,6 +359,11 @@ void ContainerNode::insertBeforeCommon(Node& nextChild, Node& newChild)
 
 void ContainerNode::notifyChildInserted(Node& child, ChildChangeSource source)
 {
+    ChildListMutationScope(*this).childAdded(child);
+
+    NodeVector postInsertionNotificationTargets;
+    ChildNodeInsertionNotifier(*this).notify(child, postInsertionNotificationTargets);
+
     ChildChange change;
     change.type = child.isElementNode() ? ElementInserted : child.isTextNode() ? TextInserted : NonContentsChildChanged;
     change.previousSiblingElement = ElementTraversal::previousSibling(&child);
@@ -366,10 +371,15 @@ void ContainerNode::notifyChildInserted(Node& child, ChildChangeSource source)
     change.source = source;
 
     childrenChanged(change);
+
+    for (auto& target : postInsertionNotificationTargets)
+        target->didNotifySubtreeInsertions();
 }
 
 void ContainerNode::notifyChildRemoved(Node& child, Node* previousSibling, Node* nextSibling, ChildChangeSource source)
 {
+    ChildNodeRemovalNotifier(*this).notify(child);
+
     ChildChange change;
     change.type = child.isElementNode() ? ElementRemoved : child.isTextNode() ? TextRemoved : NonContentsChildChanged;
     change.previousSiblingElement = (!previousSibling || previousSibling->isElementNode()) ? toElement(previousSibling) : ElementTraversal::previousSibling(previousSibling);
@@ -399,11 +409,7 @@ void ContainerNode::parserInsertBefore(PassRefPtr<Node> newChild, Node* nextChil
 
     newChild->updateAncestorConnectedSubframeCountForInsertion();
 
-    ChildListMutationScope(*this).childAdded(*newChild);
-
     notifyChildInserted(*newChild, ChildChangeSourceParser);
-
-    ChildNodeInsertionNotifier(*this).notify(*newChild);
 }
 
 bool ContainerNode::replaceChild(PassRefPtr<Node> newChild, Node* oldChild, ExceptionCode& ec, AttachBehavior attachBehavior)
@@ -510,8 +516,6 @@ static void willRemoveChildren(ContainerNode& container)
     NodeVector children;
     getChildNodes(container, children);
 
-    container.document().nodeChildrenWillBeRemoved(container);
-
     ChildListMutationScope mutation(container);
     for (auto it = children.begin(); it != children.end(); ++it) {
         Node& child = it->get();
@@ -521,6 +525,7 @@ static void willRemoveChildren(ContainerNode& container)
         // fire removed from document mutation events.
         dispatchChildRemovalEvents(child);
     }
+    container.document().nodeChildrenWillBeRemoved(container);
 
     ChildFrameDisconnector(container).disconnect(ChildFrameDisconnector::DescendantsOnly);
 }
@@ -583,8 +588,6 @@ bool ContainerNode::removeChild(Node* oldChild, ExceptionCode& ec)
         removeBetween(prev, next, child.get());
 
         notifyChildRemoved(child.get(), prev, next, ChildChangeSourceAPI);
-
-        ChildNodeRemovalNotifier(*this).notify(child.get());
     }
     dispatchSubtreeModifiedEvent();
 
@@ -633,8 +636,6 @@ void ContainerNode::parserRemoveChild(Node& oldChild)
     removeBetween(prev, next, oldChild);
 
     notifyChildRemoved(oldChild, prev, next, ChildChangeSourceParser);
-
-    ChildNodeRemovalNotifier(*this).notify(oldChild);
 }
 
 // this differs from other remove functions because it forcibly removes all the children,
@@ -658,23 +659,18 @@ void ContainerNode::removeChildren()
     // and remove... e.g. stop loading frames, fire unload events.
     willRemoveChildren(*this);
 
-    NodeVector removedChildren;
     {
         WidgetHierarchyUpdatesSuspensionScope suspendWidgetHierarchyUpdates;
         {
             NoEventDispatchAssertion assertNoEventDispatch;
-            removedChildren.reserveInitialCapacity(childNodeCount());
             while (RefPtr<Node> n = m_firstChild) {
-                removedChildren.append(*m_firstChild);
                 removeBetween(0, m_firstChild->nextSibling(), *m_firstChild);
+                ChildNodeRemovalNotifier(*this).notify(*n);
             }
         }
 
         ChildChange change = { AllChildrenRemoved, nullptr, nullptr, ChildChangeSourceAPI };
         childrenChanged(change);
-        
-        for (size_t i = 0; i < removedChildren.size(); ++i)
-            ChildNodeRemovalNotifier(*this).notify(removedChildren[i].get());
     }
 
     dispatchSubtreeModifiedEvent();
@@ -758,11 +754,7 @@ void ContainerNode::parserAppendChild(PassRefPtr<Node> newChild)
 
     newChild->updateAncestorConnectedSubframeCountForInsertion();
 
-    ChildListMutationScope(*this).childAdded(*newChild);
-
     notifyChildInserted(*newChild, ChildChangeSourceParser);
-
-    ChildNodeInsertionNotifier(*this).notify(*newChild);
 }
 
 void ContainerNode::suspendPostAttachCallbacks()
@@ -1075,11 +1067,7 @@ void ContainerNode::updateTreeAfterInsertion(Node& child, AttachBehavior attachB
 {
     ASSERT(child.refCount());
 
-    ChildListMutationScope(*this).childAdded(child);
-
     notifyChildInserted(child, ChildChangeSourceAPI);
-
-    ChildNodeInsertionNotifier(*this).notify(child);
 
     // FIXME: Attachment should be the first operation in this function, but some code
     // (for example, HTMLFormControlElement's autofocus support) requires this ordering.

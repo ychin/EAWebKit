@@ -12,7 +12,7 @@
  */
 #if defined (__GNUC__)
 #  define FUNC     ((const char*) (__PRETTY_FUNCTION__))
-#elif defined (CS_UNDEFINED_STRING) || (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#elif defined (__sun) || (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 #  define FUNC     ((const char*) (__func__))
 #else
 #  define FUNC     ((const char*) ("???"))

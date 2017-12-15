@@ -1615,6 +1615,7 @@ public:
     void setLastChildState() { setUnique(); noninherited_flags.lastChildState = true; }
 
     Color visitedDependentColor(int colorProperty) const;
+	bool backgroundColorEqualsToColorIgnoringVisited(const Color& color) const { return color == backgroundColor(); }
 
     void setHasExplicitlyInheritedProperties() { noninherited_flags.explicitInheritance = true; }
     bool hasExplicitlyInheritedProperties() const { return noninherited_flags.explicitInheritance; }

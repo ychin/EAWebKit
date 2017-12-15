@@ -1769,6 +1769,7 @@ void RenderBlockFlow::removeFloatingObject(RenderBox* floatBox)
                     logicalBottom = max(logicalBottom, logicalTop + 1);
                 }
                 if (floatingObject->originatingLine()) {
+                    floatingObject->originatingLine()->removeFloat(*floatBox);
                     if (!selfNeedsLayout()) {
                         ASSERT(&floatingObject->originatingLine()->renderer() == this);
                         floatingObject->originatingLine()->markDirty();
@@ -2189,20 +2190,18 @@ void RenderBlockFlow::markAllDescendantsWithFloatsForLayout(RenderBox* floatToRe
         removeFloatingObject(floatToRemove);
 
     // Iterate over our children and mark them as needed.
-    if (!childrenInline()) {
-        for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
-            if ((!floatToRemove && child->isFloatingOrOutOfFlowPositioned()) || !child->isRenderBlock())
-                continue;
-            if (!child->isRenderBlockFlow()) {
-                RenderBlock* childBlock = toRenderBlock(child);
-                if (childBlock->shrinkToAvoidFloats() && childBlock->everHadLayout())
-                    childBlock->setChildNeedsLayout(markParents);
-                continue;
-            }
-            RenderBlockFlow* childBlock = toRenderBlockFlow(child);
-            if ((floatToRemove ? childBlock->containsFloat(floatToRemove) : childBlock->containsFloats()) || childBlock->shrinkToAvoidFloats())
-                childBlock->markAllDescendantsWithFloatsForLayout(floatToRemove, inLayout);
+    for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
+        if ((!floatToRemove && child->isFloatingOrOutOfFlowPositioned()) || !child->isRenderBlock())
+            continue;
+        if (!child->isRenderBlockFlow()) {
+            RenderBlock* childBlock = toRenderBlock(child);
+            if (childBlock->shrinkToAvoidFloats() && childBlock->everHadLayout())
+                childBlock->setChildNeedsLayout(markParents);
+            continue;
         }
+        RenderBlockFlow* childBlock = toRenderBlockFlow(child);
+        if ((floatToRemove ? childBlock->containsFloat(floatToRemove) : childBlock->containsFloats()) || childBlock->shrinkToAvoidFloats())
+            childBlock->markAllDescendantsWithFloatsForLayout(floatToRemove, inLayout);
     }
 }
 
@@ -2215,7 +2214,7 @@ void RenderBlockFlow::markSiblingsWithFloatsForLayout(RenderBox* floatToRemove)
     auto end = floatingObjectSet.end();
 
     for (RenderObject* next = nextSibling(); next; next = next->nextSibling()) {
-        if (!next->isRenderBlockFlow() || next->isFloatingOrOutOfFlowPositioned() || toRenderBlock(next)->avoidsFloats())
+        if (!next->isRenderBlockFlow() || next->isFloatingOrOutOfFlowPositioned())
             continue;
 
         RenderBlockFlow* nextBlock = toRenderBlockFlow(next);

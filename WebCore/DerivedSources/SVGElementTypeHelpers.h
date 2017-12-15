@@ -295,6 +295,15 @@ inline bool isSVGImageElement(const Node& node) { return node.isElementNode() &&
 inline bool isSVGImageElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGImageElement(toElement(node)); }
 template <> inline bool isElementOfType<const SVGImageElement>(const Element& element) { return isSVGImageElement(element); }
 
+class SVGFEImageElement;
+void isSVGFEImageElement(const SVGFEImageElement&); // Catch unnecessary runtime check of type known at compile time.
+void isSVGFEImageElement(const SVGFEImageElement*); // Catch unnecessary runtime check of type known at compile time.
+inline bool isSVGFEImageElement(const Element& element) { return element.hasTagName(SVGNames::imageTag); }
+inline bool isSVGFEImageElement(const Element* element) { ASSERT(element); return isSVGFEImageElement(*element); }
+inline bool isSVGFEImageElement(const Node& node) { return node.isElementNode() && isSVGFEImageElement(toElement(node)); }
+inline bool isSVGFEImageElement(const Node* node) { ASSERT(node); return node->isElementNode() && isSVGFEImageElement(toElement(node)); }
+template <> inline bool isElementOfType<const SVGFEImageElement>(const Element& element) { return isSVGFEImageElement(element); }
+
 class SVGLineElement;
 void isSVGLineElement(const SVGLineElement&); // Catch unnecessary runtime check of type known at compile time.
 void isSVGLineElement(const SVGLineElement*); // Catch unnecessary runtime check of type known at compile time.

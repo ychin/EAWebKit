@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -34,6 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "WebSocketServerConnection.h"
 #include "SocketStreamHandle.h"
 #include "Logging.h"
+#include <wtf/text/CString.h>
 #include <internal/include/EAWebKit_p.h>
 
 using namespace WebCore;
@@ -69,7 +70,7 @@ bool WebSocketServer::platformListen(const String& bindAddress, unsigned short p
 {
     ASSERT(EA::WebKit::GetSocketTransportHandler() != NULL);
     ASSERT(mListenerSocketHandle == NULL);
-    mListenerSocketHandle = EA::WebKit::GetSocketTransportHandler()->Listen((const char *)bindAddress.charactersWithNullTermination().data(), port, this);
+    mListenerSocketHandle = EA::WebKit::GetSocketTransportHandler()->Listen(bindAddress.ascii().data(), port, this);
     
     if (mListenerSocketHandle != NULL)
     {

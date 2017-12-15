@@ -1,6 +1,7 @@
 /*
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2012, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -312,7 +313,11 @@ CSSPrimitiveValue::CSSPrimitiveValue(const Length& length, const RenderStyle* st
         m_value.num = adjustFloatForAbsoluteZoom(length.value(), style);
         return;
     case Calculated:
-        init(CSSCalcValue::create(length.calculationValue().get(), style));
+		//+EAWebKitChange
+		//05/15/2015 - Change integrated from Blink patch : https://code.google.com/p/chromium/issues/detail?id=291498
+		// It fixes a memory leak in CSS calc, where proper de-referencing was not happening.
+        init(CSSCalcValue::create(length.calculationValue(), style));
+		//-EAWebKitChange
         return;
     case Relative:
     case Undefined:

@@ -94,6 +94,12 @@ Change determineChange(const RenderStyle* s1, const RenderStyle* s2, Settings* s
     if (s1->regionThread() != s2->regionThread())
         return Detach;
 
+    // FIXME: Multicolumn regions not yet supported (http://dev.w3.org/csswg/css-regions/#multi-column-regions)
+    // When the node has region style and changed its multicol style, we have to prepare
+    // a separate render region object.
+    if (s1->hasStyleRegion() && (s1->specifiesColumns() != s2->specifiesColumns()))
+        return Detach;
+
     if (*s1 != *s2) {
         if (s1->inheritedNotEqual(s2))
             return Inherit;

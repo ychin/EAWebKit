@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008, 2013 Apple Inc. All rights reserved.
- * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -123,8 +123,9 @@ PassRefPtr<FontData> CSSSegmentedFontFace::getFontData(const FontDescription& fo
 	//+EAWebKitChange
 	//2/11/2014 - Added 2 bits for font smoothing. 14 bits remain for pixel size (instead of original 16) which should be more than sufficient.
 	// If we don't do this, we run into a bug due to which a smoothed font may end up being used instead of unsmoothed font or vice versa (if all other traits remain the same).
+	//05/06/2015 - Fixed a bug in implementation, which was overwriting computedPixelSize by 1 bit.
 	unsigned hashKey = ((fontDescription.computedPixelSize() + 1) << (FontTraitsMaskWidth + FontWidthVariantWidth + 1 + 2))
-		| ((fontDescription.fontSmoothing()) << (FontTraitsMaskWidth + FontWidthVariantWidth + 2))
+		| ((fontDescription.fontSmoothing() & 0x3) << (FontTraitsMaskWidth + FontWidthVariantWidth + 1))
 		| ((fontDescription.orientation() == Vertical ? 1 : 0) << (FontTraitsMaskWidth + FontWidthVariantWidth))
 		| fontDescription.widthVariant() << FontTraitsMaskWidth
 		| desiredTraitsMask;

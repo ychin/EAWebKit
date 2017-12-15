@@ -49,6 +49,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdarg.h>
 
+#if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
     #ifndef __int8_t_defined
         typedef signed char             int8_t;
         typedef signed short            int16_t;
@@ -79,6 +80,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         #endif
         #define _uintptr_t_defined
     #endif
+#else
+    #ifndef __uint32_t_defined
+        #include <stdint.h>
+    #endif
+#endif
 
 #include <time.h>
 

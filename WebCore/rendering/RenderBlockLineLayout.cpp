@@ -2332,7 +2332,7 @@ void LineBreaker::skipLeadingWhitespace(InlineBidiResolver& resolver, LineInfo& 
             m_block->setLogicalHeight(oldLogicalHeight + marginOffset);
             m_block->positionNewFloatOnLine(m_block->insertFloatingObject(toRenderBox(object)), lastFloatFromPreviousLine, lineInfo, width);
             m_block->setLogicalHeight(oldLogicalHeight);
-        } else if (object->isText() && object->style()->hasTextCombine() && object->isCombineText() && !toRenderCombineText(*object).isCombined()) {
+        } else if (object->style()->hasTextCombine() && object->isCombineText()) {
             toRenderCombineText(*object).combineText();
             if (toRenderCombineText(*object).isCombined())
                 continue;
@@ -2924,7 +2924,7 @@ InlineIterator LineBreaker::nextSegmentBreak(InlineBidiResolver& resolver, LineI
             if (autoWrap && !RenderStyle::autoWrap(lastWS) && ignoringSpaces)
                 commitLineBreakAtCurrentWidth(width, lBreak, current.m_obj);
 
-            if (t->style()->hasTextCombine() && current.m_obj->isCombineText() && !toRenderCombineText(*current.m_obj).isCombined()) {
+            if (t->style()->hasTextCombine() && current.m_obj->isCombineText()) {
                 RenderCombineText& combineRenderer = toRenderCombineText(*current.m_obj);
                 combineRenderer.combineText();
                 // The length of the renderer's text may have changed. Increment stale iterator positions

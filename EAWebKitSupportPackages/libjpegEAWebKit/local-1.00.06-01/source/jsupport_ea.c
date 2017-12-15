@@ -144,7 +144,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         /* and we'd have to redirect it to our own file IO functions. */
 
         /*
-        #if defined(EA_PLATFORM_WINDOWS) ||defined(CS_UNDEFINED_STRING) // Add other platforms as necessary.
+        #if defined(EA_PLATFORM_WINDOWS) ||defined(EA_PLATFORM_UNIX) // Add other platforms as necessary.
             if(fseek(info->temp_file, file_offset, SEEK_SET) == 0)
             {
                 if(fread(buffer_address, 1, byte_count, info->temp_file) == (size_t)byte_count)
@@ -164,7 +164,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         /* and we'd have to redirect it to our own file IO functions. */
 
         /*
-        #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING) // Add other platforms as necessary.
+        #if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX) // Add other platforms as necessary.
             if(fseek(info->temp_file, file_offset, SEEK_SET) == 0)
             {
                 if(fwrite(buffer_address, 1, byte_count, info->temp_file) == (size_t)byte_count)
@@ -179,7 +179,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         (void)cinfo; (void)info;
 
         /*
-        #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING) // Add other platforms as necessary.
+        #if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX) // Add other platforms as necessary.
             fclose(info->temp_file);
         #else
             // Do nothing.

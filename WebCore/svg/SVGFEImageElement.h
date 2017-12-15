@@ -43,6 +43,8 @@ public:
 
     virtual ~SVGFEImageElement();
 
+    bool hasSingleSecurityOrigin() const;
+
 private:
     SVGFEImageElement(const QualifiedName&, Document&);
 
@@ -69,6 +71,8 @@ private:
 
     CachedResourceHandle<CachedImage> m_cachedImage;
 };
+
+NODE_TYPE_CASTS(SVGFEImageElement)
 
 } // namespace WebCore
 

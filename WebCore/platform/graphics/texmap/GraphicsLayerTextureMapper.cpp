@@ -27,18 +27,12 @@
 #include "ImageBuffer.h"
 #include <wtf/CurrentTime.h>
 
-#if USE(TEXTURE_MAPPER)
-
 //+EAWebKitChange
-//1/16/2015
-namespace EA
-{
-	namespace WebKit
-	{
-        bool DoCssFilterInHardware();
-	}
-}
+//2/10/2015
+#include <internal/include/EAWebKit_p.h>
 //-EAWebKitChange
+
+#if USE(TEXTURE_MAPPER)
 
 namespace WebCore {
 
@@ -694,7 +688,7 @@ bool GraphicsLayerTextureMapper::setFilters(const FilterOperations& filters)
         return false;
     }
     // early out if the user has specified that css filters should be done in software
-    else if ((textureMapper == NULL) && (EA::WebKit::DoCssFilterInHardware() == false))
+    else if ((textureMapper == NULL) && (EA::WebKit::GetParameters().mDoCssFiltersInHardware == false))
     {
         return false;
     }

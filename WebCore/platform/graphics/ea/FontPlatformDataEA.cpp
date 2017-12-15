@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008 Holger Hans Peter Freyther
     Copyright (C) 2009 Torch Mobile Inc. http://www.torchmobile.com/
-	Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2013, 2014, 2016 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include "FontPlatformData.h"
+#include <internal/include/EAWebKitString.h>
 
 namespace WebCore {
 
@@ -87,7 +88,11 @@ bool FontPlatformData::platformIsEqual(const FontPlatformData& other) const
         || m_privData == hashTableDeletedFontValue() || other.m_privData == hashTableDeletedFontValue())
         return  false;
 
-    return m_privData->mpFont == other.m_privData->mpFont;
+	if (EA::Internal::Stricmp(font()->GetFamilyName(), other.font()->GetFamilyName()) == 0)
+	{ 
+		return true;
+	}
+    return false;
 }
 
 bool FontPlatformData::isFixedPitch() const

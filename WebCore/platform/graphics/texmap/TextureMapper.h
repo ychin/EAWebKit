@@ -1,5 +1,6 @@
 /*
  Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
+ Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -30,6 +31,11 @@
 #include "IntRect.h"
 #include "IntSize.h"
 #include "TransformationMatrix.h"
+
+//+EAWebKitChange
+//4/28/2015
+#include <EAWebKit/EAWebKitHardwareRenderer.h>
+//-EAWebKitChange
 
 /*
     TextureMapper is a mechanism that enables hardware acceleration of CSS animations (accelerated compositing) without
@@ -141,7 +147,10 @@ public:
     virtual void beginClip(const TransformationMatrix&, const FloatRect&) = 0;
     virtual void endClip() = 0;
     virtual IntRect clipBounds() = 0;
-    virtual PassRefPtr<BitmapTexture> createTexture() = 0;
+    //+EAWebKitChange
+    //4/28/2015
+    virtual PassRefPtr<BitmapTexture> createTexture(EA::WebKit::SurfaceType type, const void* data = 0, size_t length = 0) = 0;
+    //-EAWebKitChange
 
     void setImageInterpolationQuality(InterpolationQuality quality) { m_interpolationQuality = quality; }
     void setTextDrawingMode(TextDrawingModeFlags mode) { m_textDrawingMode = mode; }

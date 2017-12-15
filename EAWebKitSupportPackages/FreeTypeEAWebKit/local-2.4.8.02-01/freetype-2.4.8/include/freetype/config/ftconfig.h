@@ -121,7 +121,7 @@ FT_BEGIN_HEADER
   /*   This is the only necessary change, so it is defined here instead    */
   /*   providing a new configuration file.                                 */
   /*                                                                       */
-#if ( defined( CS_UNDEFINED_STRING ) && !defined( DARWIN_NO_CARBON ) ) || \
+#if ( defined( __APPLE__ ) && !defined( DARWIN_NO_CARBON ) ) || \
     ( defined( CS_UNDEFINED_STRING ) && defined( macintosh )        )
   /* no Carbon frameworks for 64bit 10.4.x */
   /* AvailabilityMacros.h is available since Mac OS X 10.2,        */

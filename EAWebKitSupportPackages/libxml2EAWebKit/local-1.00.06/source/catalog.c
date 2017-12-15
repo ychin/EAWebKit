@@ -86,6 +86,10 @@
         /* Windows CE don't have a A variant */
         #define GetModuleHandleA   GetModuleHandle
         #define GetModuleFileNameA GetModuleFileName
+    #elif defined(_XBOX)
+        /* XBox 360 doesn't implement GetModuleFileName */
+        void* __stdcall         GetModuleHandleA(const char*);
+        unsigned long           GetModuleFileNameA(void* module, char* pFileName, unsigned long capacity) { pFileName[0] = 0; return 0; }
     #else
         void* __stdcall         GetModuleHandleA(const char*);
         unsigned long __stdcall GetModuleFileNameA(void*, char*, unsigned long);

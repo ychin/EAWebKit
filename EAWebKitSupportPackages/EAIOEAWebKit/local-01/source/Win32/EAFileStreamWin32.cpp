@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009, 2013 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2009, 2013, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -43,10 +43,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef EAIO_EAFILESTREAM_H
     #include <EAIO/EAFileStream.h>
 #endif
+#if   defined(EA_PLATFORM_WINDOWS)
     #ifndef WIN32_LEAN_AND_MEAN
         #define WIN32_LEAN_AND_MEAN
     #endif
     #include <windows.h>
+#endif
 
 
 namespace EA
@@ -152,7 +154,7 @@ void FileStream::SetPath(const char8_t* pPath8)
     using namespace FileStreamLocal;
 
     if((mhFile == kFileHandleInvalid) && pPath8)
-        MultiByteToWideChar(CP_UTF8, 0, pPath8, -1, mpPath16, kMaxPathLength); // Convert UTF8 to UTF16.
+        MultiByteToWideChar(CP_UTF8, 0, pPath8, -1, reinterpret_cast<LPWSTR>(mpPath16), kMaxPathLength); // Convert UTF8 to UTF16.
 }
 
 
@@ -161,7 +163,7 @@ void FileStream::SetPath(const char16_t* pPath16)
     using namespace FileStreamLocal;
 
     if((mhFile == kFileHandleInvalid) && pPath16)
-        wcsncpy(mpPath16, pPath16, kMaxPathLength);
+        wcsncpy(reinterpret_cast<wchar_t *>(mpPath16), reinterpret_cast<const wchar_t *>(pPath16), kMaxPathLength);
 }
 
 
@@ -169,7 +171,7 @@ size_t FileStream::GetPath(char8_t* pPath8, size_t nPathLength)
 {
     // Convert from UTF16 to UTF8.
     if(pPath8 && nPathLength)
-        return (size_t)WideCharToMultiByte(CP_UTF8, 0, mpPath16, -1, pPath8, (int)nPathLength, NULL, NULL) - 1; // WideCharToMultiByte() - 1 because we don't want to include the terminating null in the returned count. 
+        return (size_t)WideCharToMultiByte(CP_UTF8, 0, reinterpret_cast<LPCWCH>(mpPath16), -1, pPath8, (int)nPathLength, NULL, NULL) - 1; // WideCharToMultiByte() - 1 because we don't want to include the terminating null in the returned count. 
 
     // In this case the user wants just the length of the return value.
     char8_t pathTemp[kMaxPathLength];
@@ -181,11 +183,11 @@ size_t FileStream::GetPath(char16_t* pPath16, size_t nPathLength)
 {
     if(pPath16 && nPathLength)
     {
-        wcsncpy(pPath16, mpPath16, nPathLength);
+        wcsncpy(reinterpret_cast<wchar_t *>(pPath16), reinterpret_cast<const wchar_t *>(mpPath16), nPathLength);
         pPath16[nPathLength - 1] = 0;
     }
 
-    return wcslen(mpPath16);
+    return wcslen(reinterpret_cast<const wchar_t *>(mpPath16));
 }
 
 
@@ -244,7 +246,7 @@ bool FileStream::Open(int nAccessFlags, int nCreationDisposition, int nSharing, 
         else if(nUsageHints & kUsageHintRandom)
             dwFlagsAndAttributes |= FILE_FLAG_RANDOM_ACCESS;
 
-            mhFile = CreateFileW(mpPath16, nAccess, nShare, NULL, nCreate, dwFlagsAndAttributes, NULL);
+            mhFile = CreateFileW(reinterpret_cast<LPCWSTR>(mpPath16), nAccess, nShare, NULL, nCreate, dwFlagsAndAttributes, NULL);
 
         if(mhFile == INVALID_HANDLE_VALUE) // If it failed...
         {

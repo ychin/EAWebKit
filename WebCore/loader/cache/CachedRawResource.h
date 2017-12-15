@@ -45,6 +45,7 @@ public:
     unsigned long identifier() const { return m_identifier; }
 
     void clear();
+	bool wasRedirected() const { return !m_redirectChain.isEmpty(); };
 
 private:
     virtual void didAddClient(CachedResourceClient*) OVERRIDE;

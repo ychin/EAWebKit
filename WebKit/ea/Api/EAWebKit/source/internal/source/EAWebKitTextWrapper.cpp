@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -718,6 +718,18 @@ bool FontImpl::GetFontMetrics(EA::WebKit::FontMetrics& fontMetricsWebKit)
     return returnFlag;
 }
 
+char16_t* FontImpl::GetFamilyName()
+{
+	if (mpFont)
+    {
+		EA::Text::FontDescription fd;
+		mpFont->GetFontDescription(fd);
+		memcpy(mFamily, fd.mFamily, sizeof(mFamily));
+		return mFamily;
+	}
+	return NULL;
+}
+
 bool FontImpl::GetGlyphMetrics(EA::WebKit::GlyphId glyphId, EA::WebKit::GlyphMetrics& glyphMetricsWebKit)
 {
     EA_ASSERT(mpFont);
@@ -897,35 +909,59 @@ bool TextSystem::Shutdown(void)
 
 EA::WebKit::IFont* TextSystem::GetFont(const EA::WebKit::TextStyle& textStyle, EA::WebKit::Char sampleChar)
 {
-	EA_COMPILETIME_ASSERT(EA::Text::kCharInvalid == EA::WebKit::kCharInvalid);
-	EA::WebKit::IFont* pIFont = NULL;
-	if (mpFontServer)
-	{
-		EA::Text::TextStyle textStyleEA;     
-		ConvertToEAText_TextStyle(textStyle, textStyleEA);
-		bool didChangeFontServerOption = false;
-		int32_t saveSetOption = EA::Text::FontServer::kMatchOptionNone;
+    EA_COMPILETIME_ASSERT(EA::Text::kCharInvalid == EA::WebKit::kCharInvalid);
+    EA::WebKit::IFont* pIFont = NULL;
+    if (mpFontServer)
+    {
+        EA::Text::TextStyle textStyleEA;
+        ConvertToEAText_TextStyle(textStyle, textStyleEA);
+        bool didChangekOptionRequireFontFamilyMatch = false;
+        bool didChangekOptionSmartFallback = false;
+        int32_t savedkOptionRequireFontFamilyMatch = EA::Text::FontServer::kMatchOptionNone;
+        bool savedkOptionSmartFallback = false;
 
-		if (sampleChar == EA::WebKit::kCharInvalid) 
-		{
-			// By default, the EA Text system (EAText) returns a fallback font in case matching font is not available. Here, we want to set it to return null font in case the matching font is not found. 
-			// This is done by : 1. Saving current font server OptionRequireFontFamilyMatch value
-			//2. setting the font server option OptionRequireFontFamilyMatch to kMatchOptionFail before we ask the text system to get font
-			//3. After text system returns a font (or null if matching font is not available), set back the font server option to the saved one
-			didChangeFontServerOption = true;
-			saveSetOption = mpFontServer->GetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch);
-			mpFontServer->SetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch,  EA::Text::FontServer::kMatchOptionFail); 
-		}
+        //allow some more flexibility in finding a font
+        savedkOptionSmartFallback = mpFontServer->GetOption(EA::Text::FontServer::kOptionSmartFallback);
+        if (savedkOptionSmartFallback != true)
+        {
+            didChangekOptionSmartFallback = true;
+            mpFontServer->SetOption(EA::Text::FontServer::kOptionSmartFallback, true);
+        }
 
+        if (sampleChar == EA::WebKit::kCharInvalid)
+        {
+            // By default, the EA Text system (EAText) returns a fallback font in case matching font is not available. Here, we want to set it to return null font in case the matching font is not found. 
+            // This is done by : 1. Saving current font server OptionRequireFontFamilyMatch value
+            //2. setting the font server option OptionRequireFontFamilyMatch to kMatchOptionFail before we ask the text system to get font
+            //3. After text system returns a font (or null if matching font is not available), set back the font server option to the saved one
+            savedkOptionRequireFontFamilyMatch = mpFontServer->GetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch);
+            if (savedkOptionRequireFontFamilyMatch != EA::Text::FontServer::kMatchOptionFail)
+            {
+                didChangekOptionRequireFontFamilyMatch = true;
+                mpFontServer->SetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch, EA::Text::FontServer::kMatchOptionFail);
+            }
 
-		if (EA::Text::Font* pFont = mpFontServer->GetFont(&textStyleEA, NULL, 0, static_cast<EA::Text::Char>(sampleChar)))
-			pIFont = CreateFontImpl(pFont);
+            // clear out all but the first option in this case, else downlaodable fonts will not work
+            // yes this feels like a huge hack, but getting webkit and eatext to work together on this isnt simple
+            // eatext would just always select one of the other fonts, this is the best available compramise at this point
+            for (uint32_t i = 1; i < EA::Text::kFamilyNameArrayCapacity; ++i)
+            {
+                textStyleEA.mFamilyNameArray[i][0] = 0;
+            }
+        }
 
-		if (didChangeFontServerOption)
-			mpFontServer->SetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch,  saveSetOption);
-	}
-	return  pIFont; 
+        if (EA::Text::Font* pFont = mpFontServer->GetFont(&textStyleEA, NULL, 0, static_cast<EA::Text::Char>(sampleChar)))
+            pIFont = CreateFontImpl(pFont);
+
+        if (didChangekOptionRequireFontFamilyMatch)
+            mpFontServer->SetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch, savedkOptionRequireFontFamilyMatch);
+
+        if (didChangekOptionSmartFallback)
+            mpFontServer->SetOption(EA::Text::FontServer::kOptionSmartFallback, savedkOptionSmartFallback);
+    }
+    return  pIFont;
 }
+
 
 FontImpl* TextSystem::CreateFontImpl(EA::Text::Font* pFont)
 { 
@@ -1644,7 +1680,7 @@ void InitFontSystem(void)
 
         if(!spGlyphCache)
         {
-            const EA::Text::TextureFormat format = EA::Text::kTextureFormatARGB; // 32 bit
+            const EA::Text::TextureFormat format = EA::Text::kTextureFormat8Bpp; // 8 bit
         	
             spGlyphCache = new EA::Text::GlyphCache_Memory(format);
             EA_ASSERT_MSG(spGlyphCache, "FontSystem: Failed to create the glyph cache.");  
@@ -1663,14 +1699,13 @@ void InitFontSystem(void)
         
         if(!spFontServer)
         {
-            // Set up the FontServer.
-            spFontServer = new EA::Text::FontServer;
-            EA_ASSERT_MSG(spFontServer, "FontSystem: Failed to create the font server.");     
-            if (!spFontServer)
-                return;
-
+			spFontServer = new EA::Text::FontServer;
+			EA_ASSERT_MSG(spFontServer, "FontSystem: Failed to create the font server.");     
+			if (!spFontServer)
+				return;
+			spFontServer->SetDefaultGlyphCache(spGlyphCache);
+			spFontServer->Init();
 			EA::Text::SetFontServer(spFontServer);
-            spFontServer->SetDefaultGlyphCache(spGlyphCache);
         }
 
         spTextSystem = new TextSystem(spFontServer, spGlyphCache);
@@ -1686,23 +1721,24 @@ void ShutdownFontSystem(void)
 {
     if(sFontSystemHasInit)
     {
-        if(spTextSystem)
+		if(spFontServer)
+		{
+			spFontServer->Shutdown();
+			delete spFontServer; 
+			spFontServer = 0;
+		}
+		
+		if(spGlyphCache)
+		{
+			spGlyphCache->Shutdown(); 
+			delete spGlyphCache; 
+			spGlyphCache = 0;
+		}
+		
+		if(spTextSystem)
         {
             delete spTextSystem;
             spTextSystem = 0;
-        }
-
-        if(spFontServer)
-        {
-           delete spFontServer; 
-           spFontServer = 0;
-        }
-
-        if(spGlyphCache)
-        {
-           spGlyphCache->Shutdown(); 
-           delete spGlyphCache; 
-           spGlyphCache = 0;
         }
 
         EA::Text::Shutdown();  

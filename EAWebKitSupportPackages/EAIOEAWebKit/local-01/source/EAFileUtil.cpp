@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2007,2009, 2011, 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2007,2009, 2011, 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -47,6 +47,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <time.h>
 #include EA_ASSERT_HEADER
 
+#if defined(EA_PLATFORM_WINDOWS)
     #ifndef _WIN32_WINNT 
         #define _WIN32_WINNT 0x0500 // We use GetVolumePathName, which is a Windows 2000 API.
     #endif
@@ -62,6 +63,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		#pragma comment(lib, "shell32.lib") // Required for SHGetFolderPath, etc.
     #endif
 
+#endif
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4127) // conditional expression is constant
@@ -137,7 +139,13 @@ char16_t gpTempDirectory[kTempDirectoryLength]  = { 0 };
 // of it and cannot use it. It can only be of use if the user intervenes and 
 // reads this value before calling system file io functions.
 //
+#if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
     // Define nothing, as the system supports this.
+#else
+    const uint32_t kCWDLength                       = kMaxDirectoryLength + 1;
+    char16_t gpCurrentWorkingDirectory[kCWDLength]  = { 0 };
+    bool     gbCurrentWorkingDirectoryInitialized   = false;
+#endif
 
 
 
@@ -168,7 +176,9 @@ DriveInfo8::DriveInfo8(const char8_t* pName, DriveType driveType)
 //
 EAIO_API bool File::Create(const char16_t* pPath, bool bTruncate)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
 
             SECURITY_ATTRIBUTES tempSECURITY_ATTRIBUTES;
             tempSECURITY_ATTRIBUTES.nLength              = sizeof(tempSECURITY_ATTRIBUTES);
@@ -179,9 +189,22 @@ EAIO_API bool File::Create(const char16_t* pPath, bool bTruncate)
             // entity but in write mode with no ability for us to read the file.
             // In this case we will probably want to change this code to try to test
             // for the existence of the file before trying to create it.
-            HANDLE hFile = CreateFileW(pPath, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 
+            HANDLE hFile = CreateFileW(reinterpret_cast<LPCWSTR>(pPath), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                                         &tempSECURITY_ATTRIBUTES, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
+        #else 
+
+            char8_t path8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+            // We have a problem here if the given file exists and is open by another 
+            // entity but in write mode with no ability for us to read the file.
+            // In this case we will probably want to change this code to try to test
+            // for the existence of the file before trying to create it.
+            HANDLE hFile = ::CreateFileA(path8, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 
+                                            NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+        #endif
 
         if(hFile != INVALID_HANDLE_VALUE)
         {
@@ -197,13 +220,23 @@ EAIO_API bool File::Create(const char16_t* pPath, bool bTruncate)
 
         return false;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath; (void)bTruncate;        
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::Create(const char8_t* pPath, bool bTruncate)
 {
     using namespace Path;
 
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
             PathString16 path16;
             ConvertPathUTF8ToUTF16(path16, pPath);
 
@@ -216,9 +249,19 @@ EAIO_API bool File::Create(const char8_t* pPath, bool bTruncate)
             // entity but in write mode with no ability for us to read the file.
             // In this case we will probably want to change this code to try to test
             // for the existence of the file before trying to create it.
-            HANDLE hFile = CreateFileW(path16.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 
+            HANDLE hFile = CreateFileW(reinterpret_cast<LPCWSTR>(path16.c_str()), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                                         &tempSECURITY_ATTRIBUTES, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
+        #else 
+
+            // We have a problem here if the given file exists and is open by another 
+            // entity but in write mode with no ability for us to read the file.
+            // In this case we will probably want to change this code to try to test
+            // for the existence of the file before trying to create it.
+            HANDLE hFile = ::CreateFileA(pPath, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 
+                                          NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+        #endif
 
         if(hFile != INVALID_HANDLE_VALUE)
         {
@@ -234,6 +277,14 @@ EAIO_API bool File::Create(const char8_t* pPath, bool bTruncate)
 
         return false;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath; (void)bTruncate;        
+        return false;
+
+    #endif
 }
 
 
@@ -244,10 +295,15 @@ EAIO_API bool File::Exists(const char16_t* pPath)
 {
     if(pPath && *pPath)
     {
+        #if defined(EA_PLATFORM_WINDOWS)
 
-            const DWORD dwAttributes = ::GetFileAttributesW(pPath);
+            const DWORD dwAttributes = ::GetFileAttributesW(reinterpret_cast<LPCWSTR>(pPath));
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0));
 
+        #else
+            EA_FAIL_M("Unimplemented");
+            // Bug Paul Pedriana to finish this for the given platform.
+        #endif
     }
 
     return false;
@@ -259,13 +315,18 @@ EAIO_API bool File::Exists(const char8_t* pPath)
 
     if(pPath && *pPath)
     {
+        #if defined(EA_PLATFORM_WINDOWS)
 
             PathString16 path16;
             ConvertPathUTF8ToUTF16(path16, pPath);
 
-            const DWORD dwAttributes = ::GetFileAttributesW(path16.c_str());
+            const DWORD dwAttributes = ::GetFileAttributesW(reinterpret_cast<LPCWSTR>(path16.c_str()));
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0));
 
+        #else
+            EA_FAIL_M("Unimplemented");
+            // Bug Paul Pedriana to finish this for the given platform.
+        #endif
     }
 
     return false;
@@ -332,24 +393,42 @@ EAIO_API bool File::IsWritable(const char8_t* pPath)
 //
 EAIO_API bool File::Remove(const char16_t* pPath)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
 
-        const BOOL bResult = ::DeleteFileW(pPath);
+        const BOOL bResult = ::DeleteFileW(reinterpret_cast<LPCWSTR>(pPath));
         // Possibly save off an error value here.
         return (bResult != 0);
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath;
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::Remove(const char8_t* pPath)
 {
     using namespace Path;
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
         PathString16 path16;
         ConvertPathUTF8ToUTF16(path16, pPath);
 
-        const BOOL bResult = ::DeleteFileW(path16.c_str());
+        const BOOL bResult = ::DeleteFileW(reinterpret_cast<LPCWSTR>(path16.c_str()));
         return (bResult != 0); // Possibly save off an error value here.
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath;
+        return false;
+
+    #endif
 }
 
 
@@ -360,17 +439,27 @@ EAIO_API bool File::Move(const char16_t* pPathSource, const char16_t* pPathDesti
 {
     using namespace EA::IO::Path;
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
         if(bOverwriteIfPresent || !Exists(pPathDestination))
-            return (::MoveFileExW(pPathSource, pPathDestination, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) != 0);
+            return (::MoveFileExW(reinterpret_cast<LPCWSTR>(pPathSource), reinterpret_cast<LPCWSTR>(pPathDestination), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) != 0);
         return false;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+         (void)pPathSource; (void)pPathDestination; (void)bOverwriteIfPresent;
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::Move(const char8_t* pPathSource, const char8_t* pPathDestination, bool bOverwriteIfPresent)
 {
     using namespace Path;
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
         PathString16 pathSource16;
         ConvertPathUTF8ToUTF16(pathSource16, pPathSource);
@@ -379,10 +468,18 @@ EAIO_API bool File::Move(const char8_t* pPathSource, const char8_t* pPathDestina
         ConvertPathUTF8ToUTF16(pathDest16, pPathDestination);
 
         if(bOverwriteIfPresent || !Exists(pathDest16.c_str()))
-            return (::MoveFileExW(pathSource16.c_str(), pathDest16.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) != 0);
+            return (::MoveFileExW(reinterpret_cast<LPCWSTR>(pathSource16.c_str()), reinterpret_cast<LPCWSTR>(pathDest16.c_str()), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) != 0);
 
         return false;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+         (void)pPathSource; (void)pPathDestination; (void)bOverwriteIfPresent;
+        return false;
+
+    #endif
 }
 
 
@@ -392,16 +489,34 @@ EAIO_API bool File::Move(const char8_t* pPathSource, const char8_t* pPathDestina
 //
 EAIO_API bool File::Copy(const char16_t* pPathSource, const char16_t* pPathDestination, bool bOverwriteIfPresent)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
 
-        return ::CopyFileW(pPathSource, pPathDestination, !bOverwriteIfPresent) != 0;
+        return ::CopyFileW(reinterpret_cast<LPCWSTR>(pPathSource), reinterpret_cast<LPCWSTR>(pPathDestination), !bOverwriteIfPresent) != 0;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPathSource; (void)pPathDestination; (void)bOverwriteIfPresent;
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::Copy(const char8_t* pPathSource, const char8_t* pPathDestination, bool bOverwriteIfPresent)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
 
         return ::CopyFileA(pPathSource, pPathDestination, !bOverwriteIfPresent) != 0;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPathSource; (void)pPathDestination; (void)bOverwriteIfPresent;
+        return false;
+
+    #endif
 }
 
 
@@ -415,6 +530,7 @@ EAIO_API size_type File::GetSize(const char16_t* pPath)
 {
     size_type nReturnValue = kSizeTypeError;
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
         #ifdef _MSC_VER
             #pragma warning(push)
@@ -422,7 +538,7 @@ EAIO_API size_type File::GetSize(const char16_t* pPath)
         #endif
 
         WIN32_FIND_DATAW win32FindDataW;
-        const HANDLE hFindFile = FindFirstFileW(pPath, &win32FindDataW);
+        const HANDLE hFindFile = FindFirstFileW(reinterpret_cast<LPCWSTR>(pPath), &win32FindDataW);
 
         if(hFindFile != INVALID_HANDLE_VALUE)
         {
@@ -436,6 +552,13 @@ EAIO_API size_type File::GetSize(const char16_t* pPath)
             #pragma warning(pop)
         #endif
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath;
+
+    #endif
 
     return nReturnValue;
 }
@@ -462,12 +585,25 @@ EAIO_API int File::GetAttributes(const char16_t* pPath)
 {
     int nAttributes = 0;
 
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
 
-            const DWORD dwCurrentAttributes = GetFileAttributesW(pPath);
+            const DWORD dwCurrentAttributes = GetFileAttributesW(reinterpret_cast<LPCWSTR>(pPath));
             if (dwCurrentAttributes == INVALID_FILE_ATTRIBUTES)
                 return 0;
 
+        #else 
+
+            char8_t path8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+            const DWORD dwCurrentAttributes = GetFileAttributesA(path8);
+            // XBox/Xenon don't define INVALID_FILE_ATTRIBUTES.
+            if (dwCurrentAttributes == 0xFFFFFFFF)
+               return 0;
+
+        #endif
 
         // Under Win32, all files effectively have the 'readable' flag set.
         // As such, we do nothing here as this test can never fail.
@@ -494,6 +630,13 @@ EAIO_API int File::GetAttributes(const char16_t* pPath)
         if(dwCurrentAttributes & FILE_ATTRIBUTE_SYSTEM)
             nAttributes |= kAttributeSystem;
     
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath;
+
+    #endif
 
     return nAttributes;
 }
@@ -504,14 +647,24 @@ EAIO_API int File::GetAttributes(const char8_t* pPath)
 
     int nAttributes = 0;
 
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
             PathString16 path16;
             ConvertPathUTF8ToUTF16(path16, pPath);
 
-            const DWORD dwCurrentAttributes = GetFileAttributesW(path16.c_str());
+            const DWORD dwCurrentAttributes = GetFileAttributesW(reinterpret_cast<LPCWSTR>(path16.c_str()));
             if (dwCurrentAttributes == INVALID_FILE_ATTRIBUTES)
                 return 0;
 
+        #else 
+
+            const DWORD dwCurrentAttributes = GetFileAttributesA(pPath);
+            // XBox/Xenon don't define INVALID_FILE_ATTRIBUTES.
+            if (dwCurrentAttributes == 0xFFFFFFFF)
+               return 0;
+
+        #endif
 
         // Under Win32, all files effectively have the 'readable' flag set.
         // As such, we do nothing here as this test can never fail.
@@ -538,6 +691,13 @@ EAIO_API int File::GetAttributes(const char8_t* pPath)
         if(dwCurrentAttributes & FILE_ATTRIBUTE_SYSTEM)
             nAttributes |= kAttributeSystem;
     
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath;
+
+    #endif
 
     return nAttributes;
 }
@@ -549,10 +709,20 @@ EAIO_API int File::GetAttributes(const char8_t* pPath)
 //
 EAIO_API bool File::SetAttributes(const char16_t* pPath, int nAttributeMask, bool bEnable)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
 
-            const DWORD dwCurrentAttributes = GetFileAttributesW(pPath);
+            const DWORD dwCurrentAttributes = GetFileAttributesW(reinterpret_cast<LPCWSTR>(pPath));
 
+        #else 
+
+            char8_t path8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+            const DWORD dwCurrentAttributes = GetFileAttributesA(path8);
+
+        #endif
 
         DWORD dwNewAttributes = dwCurrentAttributes;
 
@@ -614,22 +784,43 @@ EAIO_API bool File::SetAttributes(const char16_t* pPath, int nAttributeMask, boo
             return true;
 
 
+        #if defined(EA_PLATFORM_WINDOWS)
 
-            return (SetFileAttributesW(pPath, dwNewAttributes) != 0);
+            return (SetFileAttributesW(reinterpret_cast<LPCWSTR>(pPath), dwNewAttributes) != 0);
 
+        #else 
 
+            return (::SetFileAttributesA(path8, dwNewAttributes) != 0);
+
+        #endif
+
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath; (void)nAttributeMask; (void)bEnable;
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::SetAttributes(const char8_t* pPath, int nAttributeMask, bool bEnable)
 {
     using namespace Path;
 
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
             PathString16 path16;
             ConvertPathUTF8ToUTF16(path16, pPath);
 
-            const DWORD dwCurrentAttributes = GetFileAttributesW(path16.c_str());
+            const DWORD dwCurrentAttributes = GetFileAttributesW(reinterpret_cast<LPCWSTR>(path16.c_str()));
 
+        #else 
+
+            const DWORD dwCurrentAttributes = GetFileAttributesA(pPath);
+
+        #endif
 
         DWORD dwNewAttributes = dwCurrentAttributes;
 
@@ -691,10 +882,24 @@ EAIO_API bool File::SetAttributes(const char8_t* pPath, int nAttributeMask, bool
             return true;
 
 
+        #if defined(EA_PLATFORM_WINDOWS)
 
-            return (SetFileAttributesW(path16.c_str(), dwNewAttributes) != 0);
+            return (SetFileAttributesW(reinterpret_cast<LPCWSTR>(path16.c_str()), dwNewAttributes) != 0);
 
+        #else 
 
+            return (::SetFileAttributesA(pPath, dwNewAttributes) != 0);
+
+        #endif
+
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        (void)pPath; (void)nAttributeMask; (void)bEnable;
+        return false;
+
+    #endif
 }
 
 
@@ -705,9 +910,18 @@ EAIO_API bool File::SetAttributes(const char8_t* pPath, int nAttributeMask, bool
 //
 EAIO_API time_t File::GetTime(const char16_t* pPath, FileTimeType timeType)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
             struct _stat tempStat;
-            const int result = _wstat(pPath, &tempStat);
+            const int result = _wstat(reinterpret_cast<const wchar_t *>(pPath), &tempStat);
+        #else
+            char8_t path8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+            struct stat tempStat;
+            const int result = stat(path8, &tempStat);
+        #endif
     
         if(result == 0)
         {
@@ -721,13 +935,28 @@ EAIO_API time_t File::GetTime(const char16_t* pPath, FileTimeType timeType)
 
         return 0;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // No way to get the file time for the given platform.
+        // Or possibly the platform isn't supported yet.
+        (void)pPath; (void)timeType;
+        return 0;
+
+    #endif
 }
 
 EAIO_API time_t File::GetTime(const char8_t* pPath, FileTimeType timeType)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
 
+        #if defined(EA_PLATFORM_WINDOWS)
             struct _stat tempStat;
             const int result = _stat(pPath, &tempStat);
+        #else
+            struct stat tempStat;
+            const int result = stat(pPath, &tempStat);
+        #endif
     
         if(result == 0)
         {
@@ -741,6 +970,15 @@ EAIO_API time_t File::GetTime(const char8_t* pPath, FileTimeType timeType)
 
         return 0;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // No way to get the file time for the given platform.
+        // Or possibly the platform isn't supported yet.
+        (void)pPath; (void)timeType;
+        return 0;
+
+    #endif
 }
 
 
@@ -751,8 +989,13 @@ EAIO_API time_t File::GetTime(const char8_t* pPath, FileTimeType timeType)
 //
 EAIO_API bool File::SetTime(const char16_t* pPath, int nFileTimeTypeFlags, time_t nTime)
 {
+    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
 
+        #if defined(EA_PLATFORM_WINDOWS)
             _utimbuf timbuf;
+        #else
+             utimbuf timbuf;
+        #endif
     
         // Not supported by most platforms:
         //if(nFileTimeTypeFlags & kFileTimeTypeCreation)
@@ -770,14 +1013,33 @@ EAIO_API bool File::SetTime(const char16_t* pPath, int nFileTimeTypeFlags, time_
         else
             timbuf.actime = File::GetTime(pPath, kFileTimeTypeLastAccess);
     
-            return (_wutime(pPath, &timbuf) == 0);
+        #if defined(EA_PLATFORM_WINDOWS)
+            return (_wutime(reinterpret_cast<const wchar_t *const>(pPath), &timbuf) == 0);
+        #else
+            char8_t path8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
 
+            return (utime(path8, &timbuf) == 0);
+        #endif
+
+    #else
+
+        // Other platforms are not known to support this functionality.
+        (void)pPath; (void)nFileTimeTypeFlags; (void)nTime;
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::SetTime(const char8_t* pPath, int nFileTimeTypeFlags, time_t nTime)
 {
+    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
 
+        #if defined(EA_PLATFORM_WINDOWS)
             _utimbuf timbuf;
+        #else
+             utimbuf timbuf;
+        #endif
     
         // Not supported by most platforms:
         //if(nFileTimeTypeFlags & kFileTimeTypeCreation)
@@ -795,8 +1057,19 @@ EAIO_API bool File::SetTime(const char8_t* pPath, int nFileTimeTypeFlags, time_t
         else
             timbuf.actime = File::GetTime(pPath, kFileTimeTypeLastAccess);
     
+        #if defined(EA_PLATFORM_WINDOWS)
             return (_utime(pPath, &timbuf) == 0);
+        #else
+            return ( utime(pPath, &timbuf) == 0);
+        #endif
 
+    #else
+
+        // Other platforms are not known to support this functionality.
+        (void)pPath; (void)nFileTimeTypeFlags; (void)nTime;
+        return false;
+
+    #endif
 }
 
 
@@ -812,6 +1085,7 @@ EAIO_API File::ResolveAliasResult File::ResolveAlias(const char16_t* pPathSource
     if(pPathDestination && (pPathSource != pPathDestination))
         pPathDestination[0] = 0;
 
+    #ifdef EA_PLATFORM_WINDOWS
         // Try to ignore these typedefs. They come from Microsoft's 'objbase.h' header.
         typedef HRESULT(STDAPICALLTYPE *CoInitializeFunctionType)(LPVOID);
         typedef void   (STDAPICALLTYPE *CoUninitializeFunctionType)(void);
@@ -827,7 +1101,7 @@ EAIO_API File::ResolveAliasResult File::ResolveAlias(const char16_t* pPathSource
             {
                 if(pPathSource[posExt] == '.')
                 {
-                    if(!StrEq16(pPathSource + posExt, L".lnk"))
+                    if(!StrEq16(pPathSource + posExt, EA_CHAR16(".lnk")))
                         posExt = 0;
                     break;
                 }
@@ -880,7 +1154,7 @@ EAIO_API File::ResolveAliasResult File::ResolveAlias(const char16_t* pPathSource
                                             if(hResult == S_OK)
                                             {
                                                 // Copy to destination
-                                                if(EAIOStrlen16(szPathW) < kMaxPathLength)
+                                                if(EAIOStrlen16(reinterpret_cast<const char16_t *>(szPathW)) < kMaxPathLength)
                                                 {
                                                     EAIOStrlcpy16(pPathDestination, (char16_t*)szPathW, nDestLength);
                                                     result = kRARAlias;
@@ -901,6 +1175,7 @@ EAIO_API File::ResolveAliasResult File::ResolveAlias(const char16_t* pPathSource
                 }
             }
         }
+    #endif // EA_PLATFORM_WINDOWS
 
     if(pPathDestination && (pPathSource != pPathDestination))
         EAIOStrlcpy16(pPathDestination, pPathSource, nDestLength);
@@ -937,6 +1212,7 @@ EAIO_API bool File::CreateAlias(const char16_t* pDestinationPath, const char16_t
 {
     using namespace EA::IO::Path;
 
+    #ifdef EA_PLATFORM_WINDOWS
 
         HRESULT      hResult;
         IShellLinkW* pShellLink;
@@ -951,13 +1227,13 @@ EAIO_API bool File::CreateAlias(const char16_t* pDestinationPath, const char16_t
             if(SUCCEEDED(hResult))
             {
                 // Set the shortcut parameters
-                pShellLink->SetPath(pDestinationPath);
+                pShellLink->SetPath(reinterpret_cast<LPCWSTR>(pDestinationPath));
 
                 if(pShortcutDescription && pShortcutDescription[0])
-                    pShellLink->SetDescription(pShortcutDescription);
+                    pShellLink->SetDescription(reinterpret_cast<LPCWSTR>(pShortcutDescription));
 
                 if(pShortcutArguments && pShortcutArguments[0])
-                    pShellLink->SetArguments(pShortcutArguments);
+                    pShellLink->SetArguments(reinterpret_cast<LPCWSTR>(pShortcutArguments));
 
                 // Query IShellLink for the IPersistFile interface for saving the
                 // shortcut in persistent storage.
@@ -969,14 +1245,14 @@ EAIO_API bool File::CreateAlias(const char16_t* pDestinationPath, const char16_t
                     PathString16 path16(pShortcutPath);
 
                     // Make sure the shortcut ends with .lnk. It won't work unless it has this extension.
-                    if (!StrEq16(Path::GetFileExtension(path16), L".lnk"))
-                        Path::Join(path16, L".lnk");
+                    if (!StrEq16(Path::GetFileExtension(path16), EA_CHAR16(".lnk")))
+                        Path::Join(path16, EA_CHAR16(".lnk"));
 
                     // Remove the file if it exists.
                     File::Remove(path16.c_str());
 
                     // Save the link by calling IPersistFile::Save.
-                    hResult = pPersistFile->Save(path16.c_str(), TRUE);
+                    hResult = pPersistFile->Save(reinterpret_cast<LPCOLESTR>(path16.c_str()), TRUE);
                     pPersistFile->Release();
                 }
 
@@ -988,6 +1264,16 @@ EAIO_API bool File::CreateAlias(const char16_t* pDestinationPath, const char16_t
 
         return SUCCEEDED(hResult);
 
+    #else
+
+        (void)pDestinationPath;
+        (void)pShortcutPath;
+        (void)pShortcutDescription;
+        (void)pShortcutArguments;
+
+        return false;
+
+    #endif
 }
 
 EAIO_API bool File::CreateAlias(const char8_t* /*pDestinationPath*/,     const char8_t* /*pShortcutPath*/, 
@@ -1157,18 +1443,27 @@ EAIO_API int GetTempDirectory(char16_t* pDirectory, uint32_t nMaxPermittedLength
         return (int)EAIOStrlen16(pDirectory);
     }
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
-        DWORD dwResult = GetTempPathW(kMaxDirectoryLength, pDirectory);
+        DWORD dwResult = GetTempPathW(kMaxDirectoryLength, reinterpret_cast<LPWSTR>(pDirectory));
         if(dwResult) // If succeeded...
         {
             // According to the docs, these arguments can overlap like this.
-            dwResult = GetLongPathNameW(pDirectory, pDirectory, nMaxPermittedLength-1);
+            dwResult = GetLongPathNameW(reinterpret_cast<LPCWSTR>(pDirectory), reinterpret_cast<LPWSTR>(pDirectory), nMaxPermittedLength-1);
             if(Path::EnsureTrailingSeparator(pDirectory, kMaxDirectoryLength))
                 dwResult++;
             return (int)dwResult;
         }
         return -1;
 
+    #else
+        EA_FAIL_M("Unimplemented");
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        pDirectory[0] = 0;
+        return 0;
+
+    #endif
 }
 
 EAIO_API int GetTempDirectory(char8_t* pDirectory, uint32_t nMaxPermittedLength)
@@ -1182,19 +1477,26 @@ EAIO_API int GetTempDirectory(char8_t* pDirectory, uint32_t nMaxPermittedLength)
     if(gpTempDirectory[0])
         return (int)(unsigned)StrlcpyUTF16ToUTF8(pDirectory, nMaxPermittedLength, gpTempDirectory);
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
         char16_t pPath16[kMaxPathLength];
         
-        DWORD dwResult = GetTempPathW(kMaxDirectoryLength, pPath16);
+        DWORD dwResult = GetTempPathW(kMaxDirectoryLength, reinterpret_cast<LPWSTR>(pPath16));
         if(dwResult) // If succeeded...
         {
             // According to the docs, these arguments can overlap like this.
-            GetLongPathNameW(pPath16, pPath16, kMaxDirectoryLength);
+            GetLongPathNameW(reinterpret_cast<LPCWSTR>(pPath16), reinterpret_cast<LPWSTR>(pPath16), kMaxDirectoryLength);
             return (int)(unsigned)StrlcpyUTF16ToUTF8(pDirectory, kMaxDirectoryLength, pPath16);
         }
 
         return -1;
 
+     #else
+
+        // Bug Paul Pedriana to finish this for the given platform.
+        return -1;
+
+    #endif
 }
 
 
@@ -1245,6 +1547,7 @@ EAIO_API bool SetTempDirectory(const char8_t* pDirectory)
 //
 EAIO_API uint64_t GetDriveFreeSpace(const char16_t* pPath)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
         char16_t pPathResult[kMaxDriveLength];
 
         // Convert "vol:\abc\def\ghi" to "vol:\"
@@ -1257,6 +1560,7 @@ EAIO_API uint64_t GetDriveFreeSpace(const char16_t* pPath)
         *p0++ = kFilePathSeparator16;
         *p0   = 0;
 
+        #if defined(EA_PLATFORM_WINDOWS)
             ULARGE_INTEGER freeBytesAvailableToCaller;
             ULARGE_INTEGER totalBytes;
             ULARGE_INTEGER totalFreeBytes;
@@ -1264,11 +1568,18 @@ EAIO_API uint64_t GetDriveFreeSpace(const char16_t* pPath)
             // Windows requires there to be a trailing path separator if the path is a UNC path.
             Path::EnsureTrailingSeparator(pPathResult, kMaxDriveLength);
 
-            if(GetDiskFreeSpaceExW(pPathResult, &freeBytesAvailableToCaller, &totalBytes, &totalFreeBytes))
+            if(GetDiskFreeSpaceExW(reinterpret_cast<LPCWSTR>(pPathResult), &freeBytesAvailableToCaller, &totalBytes, &totalFreeBytes))
                 return freeBytesAvailableToCaller.QuadPart;
             // Fall through
 
+        #endif
     
+    #else
+        EA_FAIL_M("Unimplemented");
+        // Bug Paul Pedriana for this when you need it.
+        (void)pPath;
+
+    #endif
 
     return UINT64_C(0xffffffffffffffff);
 }
@@ -1291,6 +1602,7 @@ EAIO_API int GetDriveName(const char16_t* pPath, char16_t* pName)
 {
     EA_ASSERT(*pPath); // Assert that the input is non-empty.
 
+    #if defined(EA_PLATFORM_WINDOWS)
         WCHAR root[kMaxPathLength];
 
         if(GetVolumePathNameW((const WCHAR*)pPath, root, kMaxPathLength))
@@ -1304,6 +1616,14 @@ EAIO_API int GetDriveName(const char16_t* pPath, char16_t* pName)
         pName[0] = 0;
         return -1;
 
+    #else
+        // Bug Paul Pedriana for this if you need it.
+        // Perhaps for mountable file systems we can get the file system name.
+        // This might work on Unix systems.
+        (void)pPath;
+        pName[0] = 0;
+        return -1;
+    #endif
 }
 
 EAIO_API int GetDriveName(const char8_t* /*pPath*/, char8_t* /*pName*/)
@@ -1320,6 +1640,7 @@ EAIO_API int GetDriveName(const char8_t* /*pPath*/, char8_t* /*pName*/)
 //
 EAIO_API int GetDriveSerialNumber(const char16_t* pPath, char16_t* pSerialNumber)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
         WCHAR root[kMaxPathLength];
 
         if (GetVolumePathNameW((const WCHAR*)pPath, root, kMaxPathLength))
@@ -1329,7 +1650,7 @@ EAIO_API int GetDriveSerialNumber(const char16_t* pPath, char16_t* pSerialNumber
 
             if (GetVolumeInformationW(root, NULL, 0, &dwSerialNumber, NULL, &fsFlags, NULL, 0))
             {
-                wsprintfW(pSerialNumber, L"%04X-%04X", dwSerialNumber >> 16, dwSerialNumber & 0xffff);
+                wsprintfW(reinterpret_cast<LPWSTR>(pSerialNumber), L"%04X-%04X", dwSerialNumber >> 16, dwSerialNumber & 0xffff);
                 return 10;
             }
         }
@@ -1337,6 +1658,12 @@ EAIO_API int GetDriveSerialNumber(const char16_t* pPath, char16_t* pSerialNumber
         pSerialNumber[0] = 0;
         return 0;
 
+    #else
+        // Bug Paul Pedriana for this if you need it.
+        (void)pPath;
+        pSerialNumber[0] = 0;
+        return 0;
+    #endif
 }
 
 EAIO_API int GetDriveSerialNumber(const char8_t* pPath, char8_t* pSerialNumber)
@@ -1358,8 +1685,9 @@ EAIO_API int GetDriveSerialNumber(const char8_t* pPath, char8_t* pSerialNumber)
 //
 EAIO_API DriveType GetDriveTypeValue(const char16_t* pPath)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
 
-        const uint32_t nDriveType = GetDriveTypeW(pPath);
+        const uint32_t nDriveType = GetDriveTypeW(reinterpret_cast<LPCWSTR>(pPath));
 
         switch (nDriveType)
         {
@@ -1372,6 +1700,11 @@ EAIO_API DriveType GetDriveTypeValue(const char16_t* pPath)
 
         return kDriveTypeUnknown;
 
+    #else
+        (void)pPath; // Prevent possible compiler warnings related to disuse.
+        return kDriveTypeUnknown;
+
+    #endif
 }
 
 EAIO_API DriveType GetDriveTypeValue(const char8_t* pPath)
@@ -1396,10 +1729,15 @@ EAIO_API bool Directory::Exists(const char16_t* pDirectory)
 {
     if(pDirectory && *pDirectory)
     {
+        #if defined(EA_PLATFORM_WINDOWS)
 
-            const DWORD dwAttributes = ::GetFileAttributesW(pDirectory);
+            const DWORD dwAttributes = ::GetFileAttributesW(reinterpret_cast<LPCWSTR>(pDirectory));
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0));
 
+        #else
+            EA_FAIL_M("Unimplemented");
+            // Bug Paul Pedriana to finish this for the given platform.
+        #endif
     }
 
     return false;
@@ -1409,10 +1747,14 @@ EAIO_API bool Directory::Exists(const char8_t* pDirectory)
 {
     if(pDirectory && *pDirectory)
     {
+        #if defined(EA_PLATFORM_WINDOWS)
 
             const DWORD dwAttributes = ::GetFileAttributesA(pDirectory);
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0));
 
+        #else
+            // Bug Paul Pedriana to finish this for the given platform.
+        #endif
     }
 
     return false;
@@ -1476,6 +1818,7 @@ namespace
     {
         // To consider: Perhaps this function should not worry about trailing separators -- 
         // it is currently called only from from Create and Create is taking care of them.
+        #if defined(EA_PLATFORM_WINDOWS)
             if(pDirectory[0]) // Our code below requires at least one char in the string.
             {
                 char16_t path[kMaxPathLength];
@@ -1490,12 +1833,18 @@ namespace
                     pDirectory = path;
                 }
 
-                const BOOL bResult = CreateDirectoryW(pDirectory, NULL);
+                const BOOL bResult = CreateDirectoryW(reinterpret_cast<LPCWSTR>(pDirectory), NULL);
                 return bResult || (GetLastError() == ERROR_ALREADY_EXISTS);
             }
 
             return false;
 
+        #else
+            EA_FAIL_M("Unimplemented");
+            // Bug Paul Pedriana for this when you need it.
+            (void)pDirectory;
+            return false;
+        #endif
     }
 }
 
@@ -1647,18 +1996,24 @@ EAIO_API bool Directory::Remove(const char16_t* pDirectory, bool bAllowRecursive
     }
     else // Non-recursive 
     {
+        #if defined(EA_PLATFORM_WINDOWS)
             // Windows doesn't like it when the directory path ends with a 
             // separator (e.g. '\') character, so we correct for this if needed.
             const size_t nStrlen = EAIOStrlen16(pDirectory);
 
             if(!IsFilePathSeparator(pDirectory[nStrlen - 1]))
-                return 0 != RemoveDirectoryW(pDirectory);
+                return 0 != RemoveDirectoryW(reinterpret_cast<LPCWSTR>(pDirectory));
 
             // Else we need to remove the separator.
             char16_t path[kMaxPathLength];
             EAIOStrlcpy16(path, pDirectory, nStrlen); // Force NULL terminator in place of directory separator
-            return 0 != RemoveDirectoryW(pDirectory);
+            return 0 != RemoveDirectoryW(reinterpret_cast<LPCWSTR>(pDirectory));
 
+        #else
+            EA_FAIL_M("Unimplemented");
+            // Bug Paul Pedriana for this when you need it.
+            return false;
+        #endif
     }
 }
 
@@ -1677,10 +2032,21 @@ EAIO_API bool Directory::Remove(const char8_t* pDirectory, bool bAllowRecursiveR
 //
 EAIO_API bool Directory::Rename(const char16_t* pDirectoryOld, const char16_t* pDirectoryNew)
 {
+    #if defined(EA_PLATFORM_WINDOWS) 
 
         // Under Win32 you can rename a directory by using the file move API.
         return (File::Move(pDirectoryOld, pDirectoryNew) != 0);
 
+    #else
+        EA_FAIL_M("Unimplemented");
+        // Bug Paul Pedriana for this when you need it.
+        // This isn't necessarily supported on all platforms.
+        // On the other hand, a brute force version which copies contents
+        // to a new location then deletes the old location may be possible.
+        
+        (void)pDirectoryOld; (void)pDirectoryNew;
+        return false;
+    #endif
 }
 
 EAIO_API bool Directory::Rename(const char8_t* pDirectoryOld, const char8_t* pDirectoryNew)
@@ -1852,19 +2218,33 @@ EAIO_API bool Directory::SetTime(const char8_t* pPath, int nFileTimeTypeFlags, t
 //
 EAIO_API int Directory::GetCurrentWorkingDirectory(char16_t* pDirectory, uint32_t nMaxPermittedLength)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
         // Windows has a GetCurrentDirectory function, but for symmetry with 
         // our SetCurrentWorkingDirectory function, we use _wgetcwd().
-        const wchar_t* const pResult = _wgetcwd(pDirectory, kMaxDirectoryLength - 1); // '- 1' so that a '/' can possibly be appended.
+        const wchar_t* const pResult = _wgetcwd(reinterpret_cast<wchar_t *>(pDirectory), kMaxDirectoryLength - 1); // '- 1' so that a '/' can possibly be appended.
 
         if(pResult)
         {
             Path::EnsureTrailingSeparator(pDirectory, nMaxPermittedLength);
-            return (int)wcslen(pDirectory);
+            return (int)wcslen(reinterpret_cast<const wchar_t *>(pDirectory));
         }
 
         pDirectory[0] = 0;
         return 0;
 
+    #else
+
+        if(!gbCurrentWorkingDirectoryInitialized) // If we haven't set the default value of the current working directory...
+        {
+            // We set the value to be the application directory.
+            gbCurrentWorkingDirectoryInitialized = true;
+
+                // To do: Other platforms here.
+        }
+
+        return EAIOStrlcpy16(pDirectory, gpCurrentWorkingDirectory, nMaxPermittedLength);
+
+    #endif
 }
 
 EAIO_API int Directory::GetCurrentWorkingDirectory(char8_t* pDirectory, uint32_t nMaxPermittedLength)
@@ -1883,10 +2263,39 @@ EAIO_API int Directory::GetCurrentWorkingDirectory(char8_t* pDirectory, uint32_t
 //
 EAIO_API bool Directory::SetCurrentWorkingDirectory(const char16_t* pDirectory)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
         // Windows has a SetCurrentDirectory function, but it doesn't change any settings
         // in the C runtime. _wchdir calls the OS SetCurrentDirectory and sets the C runtime values.
-        return _wchdir(pDirectory) == 0;
+        return _wchdir(reinterpret_cast<const wchar_t *>(pDirectory)) == 0;
 
+    #else
+        bool bResult = false;
+
+        size_t nDirectoryLength = EAIOStrlen16(pDirectory);
+
+        // We use +2 because we need room for trailing nul char and for a possible appending
+        // of a path separator. Strictly speaking, we should make the code a little smarter
+        // about the required length and the trailing path separator, but we are simple for now.
+
+        if((nDirectoryLength + 2) < (sizeof(gpCurrentWorkingDirectory) / sizeof(gpCurrentWorkingDirectory[0])))
+        {
+            bResult = true;
+
+            if(pDirectory[0])
+            {
+                nDirectoryLength = EAIOStrlcpy16(gpCurrentWorkingDirectory, pDirectory, kCWDLength);
+                Path::StripTrailingSeparator(gpCurrentWorkingDirectory, nDirectoryLength);
+
+                if(!Directory::Exists(gpCurrentWorkingDirectory))
+                    bResult = Directory::Create(gpCurrentWorkingDirectory);
+            }
+            else
+                gpCurrentWorkingDirectory[0] = 0;
+       }
+
+        return bResult;
+
+    #endif
 }
 
 EAIO_API bool Directory::SetCurrentWorkingDirectory(const char8_t* pDirectory)
@@ -1925,6 +2334,7 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
 {
     pDirectory[0] = 0;
 
+    #if defined(EA_PLATFORM_WINDOWS)
 
         static const int kFolderTable[][2] = {
             0,                              0,                              // kSpecialDirectoryNone
@@ -1954,13 +2364,13 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
         switch(specialDirectory)
         {
             case kSpecialDirectoryTemp:
-                success = (GetTempPathW(nMaxPermittedLength, pDirectory) != 0);
+                success = (GetTempPathW(nMaxPermittedLength, reinterpret_cast<LPWSTR>(pDirectory)) != 0);
                 if(success)
                     Path::EnsureTrailingSeparator(pDirectory, nMaxPermittedLength);
                 break;
 
             case kSpecialDirectoryOperatingSystem:
-                success = (GetWindowsDirectoryW(pDirectory, nMaxPermittedLength) != 0);
+                success = (GetWindowsDirectoryW(reinterpret_cast<LPWSTR>(pDirectory), nMaxPermittedLength) != 0);
                 if(success)
                     Path::EnsureTrailingSeparator(pDirectory, nMaxPermittedLength);
                 break;
@@ -1969,12 +2379,12 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
             {
                 char16_t filename[MAX_PATH];
 
-                if(GetModuleFileNameW(GetModuleHandle(NULL), filename, MAX_PATH))
+                if(GetModuleFileNameW(GetModuleHandle(NULL), reinterpret_cast<LPWSTR>(filename), MAX_PATH))
                 {
                     LPWSTR pFilePart;
 
                     // GetFullPathNameW memsets pDirectory with nMaxPermittedLength chars.
-                    if(GetFullPathNameW(filename, nMaxPermittedLength, pDirectory, &pFilePart))
+                    if(GetFullPathNameW(reinterpret_cast<LPCWSTR>(filename), nMaxPermittedLength, reinterpret_cast<LPWSTR>(pDirectory), &pFilePart))
                     {
                         *pFilePart = 0;
                         success = true;
@@ -2002,19 +2412,19 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
                 const int idFlags   = bEnsureDirectoryExistence ? CSIDL_FLAG_CREATE : 0;
                 int       id        = kFolderTable[specialDirectory][0];
 
-                if(id && SUCCEEDED(SHGetFolderPathW(NULL, id | idFlags, NULL, typeFlags, pDirectory)))
+                if(id && SUCCEEDED(SHGetFolderPathW(NULL, id | idFlags, NULL, typeFlags, reinterpret_cast<LPWSTR>(pDirectory))))
                     success = true;
                 else
                 {
                     id = kFolderTable[specialDirectory][1];
 
-                    if(id && SUCCEEDED(SHGetFolderPathW(NULL, id | idFlags, NULL, typeFlags, pDirectory)))
+                    if(id && SUCCEEDED(SHGetFolderPathW(NULL, id | idFlags, NULL, typeFlags, reinterpret_cast<LPWSTR>(pDirectory))))
                         success = true;
                 }
 
                 if(success)
                 {
-                    const size_t len = wcslen(pDirectory);
+                    const size_t len = wcslen(reinterpret_cast<const wchar_t *>(pDirectory));
 
                     // Check if the path ends in a separator and add it if not.
                     if(len && !IsFilePathSeparator(pDirectory[len - 1]))
@@ -2041,6 +2451,20 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
             return (int)EAIOStrlen16(pDirectory);
         return -1;
 
+    #else
+
+        // Bug Paul Pedriana for this when you need it for another platform.
+        // Much of this functionality is not possible on console platforms but 
+        // is possible on desktop platforms such as Windows, MacOS, Linux.
+        // We can possibly allow the user to set these directories and then this
+        // function could return what the user set.
+        (void)specialDirectory;
+        (void)bEnsureDirectoryExistence;
+        (void)nMaxPermittedLength;
+
+        return GetTempDirectory(pDirectory);
+
+    #endif
 }
 
 EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char8_t* pDirectory, 
@@ -2234,15 +2658,23 @@ bool IsFilePathStringValid(const char16_t* pPath, FileSystem fileSystemType)
 	const char16_t      pReservedCharactersWin32[] = EA_CHAR16("<>:\"|*?"); // We don't include '/' and '\' because we deal with them separately.
 
     // Do path length tests
+    #if defined(EA_PLATFORM_WINDOWS)
         if(sPath.length() < 3)                  // A length less than 3 chars cannot be a full path, as Windows requires at least a drive or UNC prefix.
             return false;
 
-        if(sPath.find(L"\\\\?\\UNC\\") == 0)    // Under Windows, if a path is prefixed with `\\?\UNC\` then it has no length limit.
+        if(sPath.find(EA_CHAR16("\\\\?\\UNC\\")) == 0)    // Under Windows, if a path is prefixed with `\\?\UNC\` then it has no length limit.
             sPath.erase(2, 6);                  // Convert (e.g.) `\\?\UNC\server\volume\Temp\temp.txt` to `\\server\volume\Temp\temp.txt`.
-        else if(sPath.find(L"\\\\?\\") == 0)    // Under Windows, if a path is prefixed with `\\?\` then it has no length limit.
+        else if(sPath.find(EA_CHAR16("\\\\?\\")) == 0)    // Under Windows, if a path is prefixed with `\\?\` then it has no length limit.
             sPath.erase(0, 4);                  // Convert (e.g.) `\\?\C:\Temp\temp.txt` to `C:\Temp\temp.txt`.
         else if(sPath.length() > kMaxPathLength)
             return false;
+    #else
+        if(sPath.length() < 1)                  // We treat a path of "/" as valid, as it is a valid directory path.
+            return false;
+
+        if(sPath.length() > (eastl_size_t)kMaxPathLength)     // Strictly speaking, some Unix systems allow more than this many characters.
+            return false;
+    #endif
 
 
     // Break up the path into separate components.

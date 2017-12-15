@@ -2,7 +2,7 @@
  * This file is part of the WebKit project.
  *
  * Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,11 +24,40 @@
 #include "config.h"
 #include "PlatformTouchPoint.h"
 
+#include <EAWebKit/EAWebKitInput.h>
+
 #if ENABLE(TOUCH_EVENTS)
 
 namespace WebCore {
 
+	PlatformTouchPoint::PlatformTouchPoint(const EA::WebKit::TouchPoint touchPoint)
+	{
+		using namespace EA::WebKit;
+		IntPoint point((int)touchPoint.mX, (int)touchPoint.mY);
+		m_pos = point;
+		m_force = touchPoint.mStrength;
+		m_id = touchPoint.mTouchId;
 
+		switch (touchPoint.mState)
+		{
+		case TouchPointState::TouchPointPressed:
+			m_state = State::TouchPressed;
+			break;
+		case TouchPointState::TouchPointMoved:
+			m_state = State::TouchMoved;
+			break;
+		case TouchPointState::TouchPointReleased:
+			m_state = State::TouchReleased;
+			break;
+		case TouchPointState::TouchPointCancelled:
+			m_state = State::TouchCancelled;
+			break;
+		case TouchPointState::TouchPointStationary:
+			m_state = State::TouchStationary;
+			break;
+		default:
+			ASSERT_NOT_REACHED();
+		}
+	}
 }
-
 #endif

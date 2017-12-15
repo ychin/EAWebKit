@@ -25,6 +25,11 @@
 /* Added by EA to work around broken Apple glibc versions */
 /* http://old.nabble.com/Re%3A--sourceforge---18747%3A-libpng-1.5.2-compile-errors-on-AIX-pngread-pngwrite-td31373457.html */
 
+#if defined(__APPLE__) // It would be better to use this if we can know what GLIBC value to check against: (defined(__APPLE__) && (__GLIBC__ < ____))
+#  ifndef PNG_PTR_NORETURN
+#    define PNG_PTR_NORETURN
+#  endif
+#endif
 
 #ifndef PNG_BUILDING_SYMBOL_TABLE
 /* PNG_NO_LIMITS_H may be used to turn off the use of the standard C

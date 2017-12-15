@@ -273,6 +273,8 @@ public:
 
     void startTrackingRepaints(Document*, ExceptionCode&);
     void stopTrackingRepaints(Document*, ExceptionCode&);
+    void updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(ExceptionCode&);
+    void updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(Node*, ExceptionCode&);
 
     PassRefPtr<ArrayBuffer> serializeObject(PassRefPtr<SerializedScriptValue>) const;
     PassRefPtr<SerializedScriptValue> deserializeBuffer(PassRefPtr<ArrayBuffer>) const;

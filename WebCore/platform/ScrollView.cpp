@@ -504,10 +504,12 @@ void ScrollView::updateScrollbars(const IntSize& desiredOffset)
     if (m_inUpdateScrollbars || prohibitsScrolling() || platformWidget())
         return;
 
+    bool hasOverlayScrollbars = (!m_horizontalScrollbar || m_horizontalScrollbar->isOverlayScrollbar()) && (!m_verticalScrollbar || m_verticalScrollbar->isOverlayScrollbar());
+
     // If we came in here with the view already needing a layout, then go ahead and do that
     // first.  (This will be the common case, e.g., when the page changes due to window resizing for example).
     // This layout will not re-enter updateScrollbars and does not count towards our max layout pass total.
-    if (!m_scrollbarsSuppressed) {
+    if (!m_scrollbarsSuppressed && !hasOverlayScrollbars) {
         m_inUpdateScrollbars = true;
         visibleContentsResized();
         m_inUpdateScrollbars = false;
@@ -547,23 +549,30 @@ void ScrollView::updateScrollbars(const IntSize& desiredOffset)
         IntSize docSize = totalContentsSize();
         IntSize fullVisibleSize = visibleContentRect(IncludeScrollbars).size();
 
-        if (hScroll == ScrollbarAuto) {
+        if (hScroll == ScrollbarAuto)
             newHasHorizontalScrollbar = docSize.width() > visibleWidth();
-            if (newHasHorizontalScrollbar && !m_updateScrollbarsPass && docSize.width() <= fullVisibleSize.width() && docSize.height() <= fullVisibleSize.height())
-                newHasHorizontalScrollbar = false;
-        }
-        if (vScroll == ScrollbarAuto) {
+        if (vScroll == ScrollbarAuto)
             newHasVerticalScrollbar = docSize.height() > visibleHeight();
-            if (newHasVerticalScrollbar && !m_updateScrollbarsPass && docSize.width() <= fullVisibleSize.width() && docSize.height() <= fullVisibleSize.height())
-                newHasVerticalScrollbar = false;
-        }
 
-        // If we ever turn one scrollbar off, always turn the other one off too.  Never ever
-        // try to both gain/lose a scrollbar in the same pass.
-        if (!newHasHorizontalScrollbar && hasHorizontalScrollbar && vScroll != ScrollbarAlwaysOn)
-            newHasVerticalScrollbar = false;
-        if (!newHasVerticalScrollbar && hasVerticalScrollbar && hScroll != ScrollbarAlwaysOn)
-            newHasHorizontalScrollbar = false;
+        bool needAnotherPass = false;
+        if (!hasOverlayScrollbars) {
+            // If we ever turn one scrollbar off, always turn the other one off too.  Never ever
+            // try to both gain/lose a scrollbar in the same pass.
+            if (!m_updateScrollbarsPass && docSize.width() <= fullVisibleSize.width() && docSize.height() <= fullVisibleSize.height()) {
+                if (hScroll == ScrollbarAuto)
+                    newHasHorizontalScrollbar = false;
+                if (vScroll == ScrollbarAuto)
+                    newHasVerticalScrollbar = false;
+            }
+            if (!newHasHorizontalScrollbar && hasHorizontalScrollbar && vScroll != ScrollbarAlwaysOn) {
+                newHasVerticalScrollbar = false;
+                needAnotherPass = true;
+            }
+            if (!newHasVerticalScrollbar && hasVerticalScrollbar && hScroll != ScrollbarAlwaysOn) {
+                newHasHorizontalScrollbar = false;
+                needAnotherPass = true;
+            }
+        }
 
         if (hasHorizontalScrollbar != newHasHorizontalScrollbar && (hasHorizontalScrollbar || !avoidScrollbarCreation())) {
             if (scrollOrigin().y() && !newHasHorizontalScrollbar)
@@ -591,7 +600,7 @@ void ScrollView::updateScrollbars(const IntSize& desiredOffset)
             }
         }
 
-        if (sendContentResizedNotification && m_updateScrollbarsPass < cMaxUpdateScrollbarsPass) {
+        if ((sendContentResizedNotification || needAnotherPass) && m_updateScrollbarsPass < cMaxUpdateScrollbarsPass) {
             m_updateScrollbarsPass++;
             contentsResized();
             visibleContentsResized();
@@ -923,6 +932,7 @@ void ScrollView::setScrollbarOverlayStyle(ScrollbarOverlayStyle overlayStyle)
 
 void ScrollView::setFrameRect(const IntRect& newRect)
 {
+    Ref<ScrollView> protect(*this);
     IntRect oldRect = frameRect();
     
     if (newRect == oldRect)
@@ -1156,6 +1166,7 @@ void ScrollView::paint(GraphicsContext* context, const IntRect& rect)
         scrollViewDirtyRect.intersect(visibleAreaWithScrollbars);
         context->translate(x(), y());
         scrollViewDirtyRect.moveBy(-location());
+        context->clip(IntRect(IntPoint(), visibleAreaWithScrollbars.size()));
 
         paintScrollbars(context, scrollViewDirtyRect);
     }

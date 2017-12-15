@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2009, 2010, 2012, 2013 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2004, 2009, 2010, 2012, 2013, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -55,9 +55,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
+#if defined(EA_PLATFORM_WINDOWS)
     #pragma warning(push, 0)
     #include <Windows.h>
     #pragma warning(pop)
+#endif
 
 #if EATEXT_USE_FREETYPE
     #include <ft2build.h>
@@ -88,8 +90,9 @@ namespace Text
 
 EATEXT_API uint32_t GetSystemFontDirectory(FilePathChar* pFontDirectory, uint32_t nFontDirectoryCapacity)
 {
+    #if defined(EA_PLATFORM_WINDOWS)
         FilePathChar        pFontDirectoryTemp[EA::IO::kMaxPathLength];
-        UINT                nStrlen = GetWindowsDirectoryW(pFontDirectoryTemp, (UINT)_MAX_PATH); // GetWindowsDirectoryW: If the function fails, the return value is zero. To get extended error information, call GetLastError. 
+        UINT                nStrlen = GetWindowsDirectoryW(reinterpret_cast<LPWSTR>(pFontDirectoryTemp), (UINT)_MAX_PATH); // GetWindowsDirectoryW: If the function fails, the return value is zero. To get extended error information, call GetLastError. 
         const FilePathChar* pFonts = EA_CHAR16("Fonts\\");
         const uint32_t      kFontsLength = 6;
 
@@ -98,15 +101,22 @@ EATEXT_API uint32_t GetSystemFontDirectory(FilePathChar* pFontDirectory, uint32_
             // Build the path
             if((pFontDirectoryTemp[nStrlen - 1] != '\\') && (pFontDirectoryTemp[nStrlen - 1] != '/'))
                 pFontDirectoryTemp[nStrlen++] = '\\';
-            wcscpy(pFontDirectoryTemp + nStrlen, pFonts);
+            wcscpy(reinterpret_cast<wchar_t *>(pFontDirectoryTemp + nStrlen), reinterpret_cast<const wchar_t *>(pFonts));
             nStrlen += kFontsLength;
 
             // Possibly copy the path
             if(pFontDirectory && (nFontDirectoryCapacity > nStrlen))
-                wcscpy(pFontDirectory, pFontDirectoryTemp);
+                wcscpy(reinterpret_cast<wchar_t *>(pFontDirectory), reinterpret_cast<const wchar_t *>(pFontDirectoryTemp));
         }
 
         return (uint32_t)nStrlen;
+    #else
+        // To consider: Pick a directory to use for the given platform.
+        EA_UNUSED(nFontDirectoryCapacity);
+        if(pFontDirectory)
+            pFontDirectory[0] = 0;
+        return 0;
+    #endif
 }
 
 

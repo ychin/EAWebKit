@@ -70,6 +70,30 @@ detect_cpu_features (void)
     return features;
 }
 
+#elif defined(__APPLE__) && defined(TARGET_OS_IPHONE) /* iOS */
+
+#include "TargetConditionals.h"
+
+static arm_cpu_features_t
+detect_cpu_features (void)
+{
+    arm_cpu_features_t features = 0;
+
+    features |= ARM_V6;
+
+    /* Detection of ARM NEON on iOS is fairly simple because iOS binaries
+     * contain separate executable images for each processor architecture.
+     * So all we have to do is detect the armv7 architecture build. The
+     * operating system automatically runs the armv7 binary for armv7 devices
+     * and the armv6 binary for armv6 devices.
+     */
+#if defined(__ARM_NEON__)
+    features |= ARM_NEON;
+#endif
+
+    return features;
+}
+
 #elif defined(CS_UNDEFINED_STRING) || defined(ANDROID) /* Android */
 
 #include <cpu-features.h>

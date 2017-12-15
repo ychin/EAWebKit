@@ -415,10 +415,18 @@ void EditorClientEA::handleKeyboardEvent(KeyboardEvent* event)
                 frame.editor().insertText(kevent->text(), event);
             } 
 			else if (
+#if defined(EA_PLATFORM_OSX)
+				kevent->metaKey()
+#else
 				kevent->ctrlKey()
+#endif
 				) 
 			{
+#if defined(EA_PLATFORM_OSX)
+                int modifierFilter = PlatformKeyboardEvent::MetaKey;
+#else
                 int modifierFilter = PlatformKeyboardEvent::CtrlKey;
+#endif
 
                 switch (kevent->windowsVirtualKeyCode()) {
 				case EA::WebKit::kLetterA:
@@ -540,8 +548,10 @@ void EditorClientEA::setInputMethodState(bool active)
 	EA::WebKit::View* pView = m_page->view();
 #if defined(EA_PLATFORM_CONSOLE)
 	bool onConsole = true;
-#else
+#elif defined(EA_PLATFORM_WINDOWS)
 	bool onConsole = pView->IsEmulatingConsoleOnPC();
+#elif defined(EA_PLATFORM_OSX)
+	bool onConsole = false;
 #endif
 	
 	if(onConsole && !pView->AllowJSTextInputStateNotificationOnConsole())

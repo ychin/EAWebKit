@@ -1,5 +1,6 @@
 /*
  Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
+ Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -335,12 +336,38 @@ void TextureMapperLayer::paintUsingOverlapRegions(const TextureMapperPaintOption
         return;
     }
 
-    // Having both overlap and non-overlap regions carries some overhead. Avoid it if the overlap area
-    // is big anyway.
-    if (overlapRegion.bounds().size().area() > nonOverlapRegion.bounds().size().area()) {
-        overlapRegion.unite(nonOverlapRegion);
-        nonOverlapRegion = Region();
-    }
+	//+EAWebKitChange
+	//2/13/2015
+	/*
+	// Having both overlap and non-overlap regions carries some overhead. Avoid it if the overlap area
+	// is big anyway.
+	if (overlapRegion.bounds().size().area() > nonOverlapRegion.bounds().size().area()) {
+	overlapRegion.unite(nonOverlapRegion);
+	nonOverlapRegion = Region();
+	}
+	*/
+	/* 
+	There is a bug in the above calculation. It takes area of the bounding box which means that heuristic is ineffective if you have a inner region that is say just 1 pixel
+	smaller. We correct that below. In addition, for texture size up to 256, we avoid breaking down in separate regions as it is more efficient to do draw extra pixels instead of
+	multiple draw calls. The number 256 is arbitrarily chosen to avoid ending up with large textures for small  overlaps. For example, we don't want to allocate a 1024x1024
+	texture to avoid multiple draws if the overlapping region happens to be a small rect. 
+	*/
+	const int kTextureSizeThreshold = 256;
+	float overlapArea = overlapRegion.totalArea();
+	float nonoverlapArea = nonOverlapRegion.totalArea();
+	bool uniteRegions = false;
+	if (overlapArea > nonoverlapArea) { //If we are dealing with large overlap area
+		uniteRegions = true;
+	}// If overlap is not large but we are dealing with a reasonably small texture.
+	else if(nonOverlapRegion.bounds().size().width() <= kTextureSizeThreshold && nonOverlapRegion.bounds().size().height() <= kTextureSizeThreshold){
+		uniteRegions = true;
+	} 
+
+	if(uniteRegions){
+		overlapRegion.unite(nonOverlapRegion);
+		nonOverlapRegion = Region();
+	}
+	//-EAWebKitChange
 
     nonOverlapRegion.translate(options.offset);
     Vector<IntRect> rects = nonOverlapRegion.rects();

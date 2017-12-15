@@ -118,7 +118,6 @@ DocumentLoader::DocumentLoader(const ResourceRequest& req, const SubstituteData&
     , m_timeOfLastDataReceived(0.0)
     , m_identifierForLoadWithoutResourceLoader(0)
     , m_dataLoadTimer(this, &DocumentLoader::handleSubstituteDataLoadNow)
-    , m_waitingForContentPolicy(false)
     , m_applicationCacheHost(adoptPtr(new ApplicationCacheHost(this)))
 {
 }
@@ -138,6 +137,7 @@ ResourceLoader* DocumentLoader::mainResourceLoader() const
 DocumentLoader::~DocumentLoader()
 {
     ASSERT(!m_frame || frameLoader()->activeDocumentLoader() != this || !isLoading());
+	ASSERT_WITH_MESSAGE(!m_waitingForNavigationPolicy, "The navigation policy callback should never outlive its DocumentLoader.");
     if (m_iconLoadDecisionCallback)
         m_iconLoadDecisionCallback->invalidate();
     if (m_iconDataCallback)
@@ -490,6 +490,11 @@ void DocumentLoader::willSendRequest(ResourceRequest& newRequest, const Resource
             cancelMainResourceLoad(frameLoader()->cancelledError(newRequest));
             return;
         }
+		if (!portAllowed(newRequest.url())) {
+			FrameLoader::reportBlockedPortFailed(m_frame, newRequest.url().string());
+			cancelMainResourceLoad(frameLoader()->blockedError(newRequest));
+			return;
+		}
         timing()->addRedirect(redirectResponse.url(), newRequest.url());
     }
 
@@ -527,8 +532,11 @@ void DocumentLoader::willSendRequest(ResourceRequest& newRequest, const Resource
     // listener. But there's no way to do that in practice. So instead we cancel later if the
     // listener tells us to. In practice that means the navigation policy needs to be decided
     // synchronously for these redirect cases.
-    if (!redirectResponse.isNull())
-        frameLoader()->policyChecker().checkNavigationPolicy(newRequest, callContinueAfterNavigationPolicy, this);
+	if (!redirectResponse.isNull()) {
+		ASSERT(!m_waitingForNavigationPolicy);
+		m_waitingForNavigationPolicy = true;
+		frameLoader()->policyChecker().checkNavigationPolicy(newRequest, callContinueAfterNavigationPolicy, this);
+	}
 }
 
 void DocumentLoader::callContinueAfterNavigationPolicy(void* argument, const ResourceRequest& request, PassRefPtr<FormState>, bool shouldContinue)
@@ -538,6 +546,8 @@ void DocumentLoader::callContinueAfterNavigationPolicy(void* argument, const Res
 
 void DocumentLoader::continueAfterNavigationPolicy(const ResourceRequest&, bool shouldContinue)
 {
+	ASSERT(m_waitingForNavigationPolicy);
+	m_waitingForNavigationPolicy = false;
     if (!shouldContinue)
         stopLoadingForPolicyChange();
     else if (m_substituteData.isValid()) {
@@ -612,6 +622,10 @@ void DocumentLoader::responseReceived(CachedResource* resource, const ResourceRe
     m_response = response;
 
     if (m_identifierForLoadWithoutResourceLoader) {
+        if (m_mainResource && m_mainResource->wasRedirected()) {
+            ASSERT(m_mainResource->status() == CachedResource::Status::Cached);
+            frameLoader()->client().dispatchDidReceiveServerRedirectForProvisionalLoad();
+        }
         addResponse(m_response);
         frameLoader()->notifier().dispatchDidReceiveResponse(this, m_identifierForLoadWithoutResourceLoader, m_response, 0);
     }
@@ -1422,10 +1436,11 @@ void DocumentLoader::cancelMainResourceLoad(const ResourceError& resourceError)
     ResourceError error = resourceError.isNull() ? frameLoader()->cancelledError(m_request) : resourceError;
 
     m_dataLoadTimer.stop();
-    if (m_waitingForContentPolicy) {
+    if (m_waitingForContentPolicy || m_waitingForNavigationPolicy) {
         frameLoader()->policyChecker().cancelCheck();
         ASSERT(m_waitingForContentPolicy);
         m_waitingForContentPolicy = false;
+		m_waitingForNavigationPolicy = false;
     }
 
     if (mainResourceLoader())

@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
-    Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+    Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -239,6 +239,10 @@ void MediaPlayerPrivateEA::load(const String& url)
     GetFixedString(info.mURI)->assign(escapedUrl.characters(), escapedUrl.length());
     ClientUpdate(MediaUpdateInfo::kLoad);
     
+	if (!info.mReturnBool && info.mReturnMediaState == MediaUpdateInfo::kError) {
+		cancelLoad();
+		return; // Failed media loading. Return gracefully. 
+	}
     // Set info up to play
     setMuted(mpWebCorePlayer->muted());
     setVolume(mpWebCorePlayer->volume());

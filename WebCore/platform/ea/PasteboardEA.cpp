@@ -114,7 +114,7 @@ void Pasteboard::writePlainText(const String& text, SmartReplaceOption)
 
 void Pasteboard::writeImage(Element& element, const URL&, const String&)
 {
-    ASSERT(element.renderer() && element.renderer()->isImage());
+    ASSERT(element.renderer() && element.renderer()->isRenderImage());
 }
 
 bool Pasteboard::hasData()

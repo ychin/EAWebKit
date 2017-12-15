@@ -129,10 +129,12 @@ void TextureMapperLayerClientEA::renderCompositedLayers(GraphicsContext* context
         m_rootGraphicsLayer->flushCompositingStateForThisLayerOnly();
     //}
     m_textureMapper->beginPainting();
-    m_textureMapper->beginClip(matrix, clip);
+    if(m_frame->page()->view()->GetHardwareRenderer()->UseCustomClip())
+		m_textureMapper->beginClip(matrix, clip);
     m_rootTextureMapperLayer->paint();
     m_fpsCounter.updateFPSAndDisplay(m_textureMapper.get(), IntPoint::zero(), matrix);
-    m_textureMapper->endClip();
+	if(m_frame->page()->view()->GetHardwareRenderer()->UseCustomClip())
+		m_textureMapper->endClip();
     m_textureMapper->endPainting();
 
 }

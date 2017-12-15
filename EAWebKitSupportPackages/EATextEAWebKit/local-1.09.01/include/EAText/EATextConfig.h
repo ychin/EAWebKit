@@ -463,7 +463,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Specifies the number of family names a FontStyle can hold.
 //
 #ifndef EATEXT_FAMILY_NAME_ARRAY_CAPACITY
+    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
         #define EATEXT_FAMILY_NAME_ARRAY_CAPACITY 8
+    #else
+        #define EATEXT_FAMILY_NAME_ARRAY_CAPACITY 4
+    #endif
 #endif
 
 
@@ -625,7 +629,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // cost of some memory usage.
 //
 #ifndef EATEXT_GLYPH_PIXEL_FIXING_ENABLED
+    #ifdef EA_PLATFORM_WINDOWS
         #define EATEXT_GLYPH_PIXEL_FIXING_ENABLED 1
+    #else
+        #define EATEXT_GLYPH_PIXEL_FIXING_ENABLED 0
+    #endif
 #endif
 
 
@@ -651,7 +659,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Defines which version of DirectX to target in DirectX for Windows.
 //
 #ifndef EATEXT_DIRECTX_VERSION
+    #ifdef EA_PLATFORM_WINDOWS
         #define EATEXT_DIRECTX_VERSION 9
+    #else
+        #define EATEXT_DIRECTX_VERSION 0
+    #endif
 #endif
 
 
@@ -699,7 +711,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // know what kind of font faces it will be working with at compile time.
 //
 #ifndef EATEXT_FAMILY_SUBSTITUTION_ENABLED
+    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
         #define EATEXT_FAMILY_SUBSTITUTION_ENABLED 1
+    #else
+        #define EATEXT_FAMILY_SUBSTITUTION_ENABLED 0
+    #endif
 #endif
 
 

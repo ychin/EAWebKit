@@ -65,7 +65,7 @@ public:
 	virtual void endClip() OVERRIDE; 
 	virtual IntRect clipBounds() OVERRIDE;
 	virtual IntSize maxTextureSize() const;
-	virtual PassRefPtr<BitmapTexture> createTexture() OVERRIDE;
+	virtual PassRefPtr<BitmapTexture> createTexture(EA::WebKit::SurfaceType type, const void* data = 0, size_t length = 0) OVERRIDE;
 	virtual void beginPainting(PaintFlags = 0) OVERRIDE;
 	virtual void endPainting() OVERRIDE;
 
@@ -81,6 +81,11 @@ private:
 			: scissorBox(scissors)
 			, stencilIndex(stencil)
 		{ }
+
+		bool equals(const ClipState& other)
+		{
+			return scissorBox == other.scissorBox && stencilIndex == other.stencilIndex;
+		}
 	};
 
 	class ClipStack {
@@ -108,6 +113,7 @@ private:
 
 	private:
 		ClipState clipState;
+		ClipState lastApplied;
 		Vector<ClipState> clipStack;
 		bool clipStateDirty;
 		IntSize size;
@@ -125,9 +131,9 @@ private:
 	EA::WebKit::IHardwareRenderer* mRenderer;
 	ClipStack m_clipStack;
 	bool m_didModifyStencil;
+	bool m_useCustomClip;
 
 };
-
 
 
 class BitmapTextureEA : public BitmapTexture {

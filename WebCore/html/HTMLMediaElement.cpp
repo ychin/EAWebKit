@@ -387,8 +387,10 @@ HTMLMediaElement::~HTMLMediaElement()
     }
 #endif
 
-    if (m_mediaController)
+    if (m_mediaController) {
         m_mediaController->removeMediaElement(this);
+        m_mediaController = 0;
+    }
 
 #if ENABLE(MEDIA_SOURCE)
     closeMediaSource();
@@ -4709,13 +4711,13 @@ bool HTMLMediaElement::createMediaControls()
 void HTMLMediaElement::configureMediaControls()
 {
 #if ENABLE(MEDIA_CONTROLS_SCRIPT)
-    if (!controls() || !inDocument())
+    if (!controls() || !inDocument() || !inActiveDocument())
         return;
 
     ensureUserAgentShadowRoot();
     return;
 #elif !ENABLE(PLUGIN_PROXY_FOR_VIDEO)
-    if (!controls() || !inDocument()) {
+    if (!controls() || !inDocument() || !inActiveDocument()) {
         if (hasMediaControls())
             mediaControls()->hide();
         return;

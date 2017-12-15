@@ -35,6 +35,8 @@
 #include "CachedResourceRequest.h"
 #include "CachedScript.h"
 #include "CachedXSLStyleSheet.h"
+#include "Chrome.h"
+#include "ChromeClient.h"
 #include "Console.h"
 #include "ContentSecurityPolicy.h"
 #include "DOMWindow.h"
@@ -48,6 +50,7 @@
 #include "LoaderStrategy.h"
 #include "Logging.h"
 #include "MemoryCache.h"
+#include "Page.h"
 #include "PingLoader.h"
 #include "PlatformStrategies.h"
 #include "RenderElement.h"
@@ -407,6 +410,12 @@ bool CachedResourceLoader::canRequest(CachedResource::Type type, const URL& url,
 #endif
     }
 
+    // SVG Images have unique security rules that prevent all subresource requests except for data urls.
+    if (type != CachedResource::MainResource && frame() && frame()->page()) {
+        if (frame()->page()->chrome().client().isSVGImageChromeClient() && !url.protocolIsData())
+            return false;
+    }
+
     // Last of all, check for insecure content. We do this last so that when
     // folks block insecure content with a CSP policy, they don't get a warning.
     // They'll still get a warning in the console about CSP blocking the load.
@@ -466,7 +475,7 @@ CachedResourceHandle<CachedResource> CachedResourceLoader::requestResource(Cache
 
     resource = memoryCache()->resourceForRequest(request.resourceRequest());
 
-    const RevalidationPolicy policy = determineRevalidationPolicy(type, request.mutableResourceRequest(), request.forPreload(), resource.get(), request.defer());
+	const RevalidationPolicy policy = determineRevalidationPolicy(type, request, resource.get());
     switch (policy) {
     case Reload:
         memoryCache()->remove(resource.get());
@@ -566,13 +575,15 @@ void CachedResourceLoader::storeResourceTimingInitiatorInformation(const CachedR
 }
 #endif // ENABLE(RESOURCE_TIMING)
 
-CachedResourceLoader::RevalidationPolicy CachedResourceLoader::determineRevalidationPolicy(CachedResource::Type type, ResourceRequest& request, bool forPreload, CachedResource* existingResource, CachedResourceRequest::DeferOption defer) const
+CachedResourceLoader::RevalidationPolicy CachedResourceLoader::determineRevalidationPolicy(CachedResource::Type type, CachedResourceRequest& cachedResourceRequest, CachedResource* existingResource) const
 {
+	auto& request = cachedResourceRequest.resourceRequest();
+
     if (!existingResource)
         return Load;
 
     // We already have a preload going for this URL.
-    if (forPreload && existingResource->isPreloaded())
+	if (cachedResourceRequest.forPreload() && existingResource->isPreloaded())
         return Use;
 
     // If the same URL has been loaded as a different type, we need to reload.
@@ -580,6 +591,9 @@ CachedResourceLoader::RevalidationPolicy CachedResourceLoader::determineRevalida
         LOG(ResourceLoading, "CachedResourceLoader::determineRevalidationPolicy reloading due to type mismatch.");
         return Reload;
     }
+
+	if (existingResource->encoding() != TextEncoding(cachedResourceRequest.charset()))
+		return Reload;
 
     if (!existingResource->canReuse(request))
         return Reload;
@@ -592,7 +606,7 @@ CachedResourceLoader::RevalidationPolicy CachedResourceLoader::determineRevalida
 
     // Do not load from cache if images are not enabled. The load for this image will be blocked
     // in CachedImage::load.
-    if (CachedResourceRequest::DeferredByClient == defer)
+	if (cachedResourceRequest.defer() == CachedResourceRequest::DeferredByClient)
         return Reload;
     
     // Don't reload resources while pasting.

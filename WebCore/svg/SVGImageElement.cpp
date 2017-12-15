@@ -72,6 +72,15 @@ PassRefPtr<SVGImageElement> SVGImageElement::create(const QualifiedName& tagName
     return adoptRef(new SVGImageElement(tagName, document));
 }
 
+bool SVGImageElement::hasSingleSecurityOrigin() const
+{
+    WebCore::RenderSVGImage* renderer = toRenderSVGImage(this->renderer());
+    if (!renderer || !(renderer->imageResource()->hasImage()))
+        return true;
+    auto* image = renderer->imageResource()->cachedImage()->image();
+    return !image || image->hasSingleSecurityOrigin();
+}
+
 bool SVGImageElement::isSupportedAttribute(const QualifiedName& attrName)
 {
     DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, supportedAttributes, ());

@@ -183,8 +183,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifndef PPM_THREAD_SAFETY_SUPPORTED
+    #if defined(EA_CONFIG_MULTITHREADED)  || defined(EA_PLATFORM_WINDOWS)  || defined(CS_UNDEFINED_STRING)         || defined(CS_UNDEFINED_STRING)      
 
         #define PPM_THREAD_SAFETY_SUPPORTED 1
+    #else // This value is defined as zero for any platforms where code isn't possible or isn't yet complete.
+        #define PPM_THREAD_SAFETY_SUPPORTED 0
+    #endif
 #endif
 
 
@@ -214,7 +218,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifndef PPM_MALLOC_AS_COREALLOC
+    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING) 
         #define PPM_MALLOC_AS_COREALLOC 0
+    #else // Console platforms.
+        #define PPM_MALLOC_AS_COREALLOC 1
+    #endif
 #endif
 
 
@@ -224,7 +232,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifndef PPM_MMAP_CLEARS
+    #if defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_WINDOWS) 
         #define PPM_MMAP_CLEARS 1
+    #else
+        #define PPM_MMAP_CLEARS 0
+    #endif
 #endif
 
 
@@ -256,12 +268,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifndef PPM_DEBUG_CALLSTACK_AVAILABLE
+    #if defined(EA_PLATFORM_WINDOWS)  || (defined(__GNUC__) && (defined(EA_PROCESSOR_X86) || defined(EA_PROCESSOR_X86_64)))
         #define PPM_DEBUG_CALLSTACK_AVAILABLE 1
+    #else
+        #define PPM_DEBUG_CALLSTACK_AVAILABLE 0 // Adjust this setting as we obtain code for additional platforms.
+    #endif
 #endif
 
 
 #ifndef PPM_NEW_CORE_SIZE_DEFAULT
+    #if defined(EA_PLATFORM_WINDOWS)
         #define PPM_NEW_CORE_SIZE_DEFAULT        (16 * 1024 * 1024) // 16 Mebibytes. Same as 256 * 65536, with 65536 being default Win32 region size.
+    #else
+        #define PPM_NEW_CORE_SIZE_DEFAULT        ( 4 * 1024 * 1024)
+    #endif
 #endif
 
 

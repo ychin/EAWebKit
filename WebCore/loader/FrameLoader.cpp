@@ -264,6 +264,8 @@ void FrameLoader::init()
     setPolicyDocumentLoader(m_client.createDocumentLoader(ResourceRequest(URL(ParsedURLString, emptyString())), SubstituteData()).get());
     setProvisionalDocumentLoader(m_policyDocumentLoader.get());
     m_provisionalDocumentLoader->startLoadingMainResource();
+    
+    Ref<Frame> protect(m_frame);
     m_frame.document()->cancelParsing();
     m_stateMachine.advanceTo(FrameLoaderStateMachine::DisplayingInitialEmptyDocument);
 
@@ -1205,6 +1207,8 @@ void FrameLoader::loadURL(const URL& newURL, const String& referrer, const Strin
     if (m_inStopAllLoaders)
         return;
 
+    Ref<Frame> protect(m_frame);
+
     RefPtr<FormState> formState = prpFormState;
     bool isFormSubmission = formState;
     
@@ -1431,6 +1435,15 @@ void FrameLoader::reportLocalLoadFailed(Frame* frame, const String& url)
         return;
 
     frame->document()->addConsoleMessage(SecurityMessageSource, ErrorMessageLevel, "Not allowed to load local resource: " + url);
+}
+
+void FrameLoader::reportBlockedPortFailed(Frame* frame, const String& url)
+{
+	ASSERT(!url.isEmpty());
+	if (!frame)
+		return;
+
+	frame->document()->addConsoleMessage(SecurityMessageSource, ErrorMessageLevel, "Not allowed to use restricted network port: " + url);
 }
 
 const ResourceRequest& FrameLoader::initialRequest() const
@@ -3234,6 +3247,13 @@ ResourceError FrameLoader::cancelledError(const ResourceRequest& request) const
     ResourceError error = m_client.cancelledError(request);
     error.setIsCancellation(true);
     return error;
+}
+
+ResourceError FrameLoader::blockedError(const ResourceRequest& request) const
+{
+	ResourceError error = m_client.blockedError(request);
+	error.setIsCancellation(true);
+	return error;
 }
 
 String FrameLoader::referrer() const

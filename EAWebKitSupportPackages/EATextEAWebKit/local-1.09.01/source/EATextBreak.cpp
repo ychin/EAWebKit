@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2009, 2010, 2012 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2004, 2009, 2010, 2012, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -54,9 +54,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 #ifndef EATEXT_UNISCRIBE_ENABLED
     // Under Windows, we use Uniscribe (usp10.dll) for Thai word/line breaking services.
+    #ifdef EA_PLATFORM_WINDOWS
         #define EATEXT_UNISCRIBE_ENABLED 1
         #include <usp10.h>
         #pragma comment(lib, "usp10")
+    #else
+        #define EATEXT_UNISCRIBE_ENABLED 0
+    #endif
 #endif
 
 
@@ -1131,7 +1135,7 @@ LineBreakType LineBreakIterator::GetNextSoutheastAsianLineBreak(Char& cCurrent, 
             {
                 const String& sWord = *it;
                 const Char*   pW    = sWord.data();
-                const Char*   pT    = text;
+                const Char*   pT    = reinterpret_cast<EA::Text::Char *>(text);
 
                 while(*pW && (*pW == *pT))
                 {

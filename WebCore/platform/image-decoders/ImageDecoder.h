@@ -3,7 +3,7 @@
  * Copyright (C) 2008-2009 Torch Mobile, Inc.
  * Copyright (C) Research In Motion Limited 2009-2010. All rights reserved.
  * Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -110,7 +110,10 @@ namespace WebCore {
         // Allocates space for the pixel data.  Must be called before any pixels
         // are written.  Must only be called once.  Returns whether allocation
         // succeeded.
-        bool setSize(int newWidth, int newHeight);
+        //+EAWebKitChange
+        //5/21/2015 - Added a bool so that we can optionally disallow the storage allocation (for example, when providing storage externally)
+        bool setSize(int newWidth, int newHeight, bool allocateStorage = true);
+        //-EAWebKitChange
 
         // Returns a caller-owned pointer to the underlying native image data.
         // (Actual use: This pointer will be owned by BitmapImage and freed in
@@ -209,7 +212,12 @@ namespace WebCore {
         }
 
         Vector<PixelData> m_backingStore;
+        //+EAWebKitChange
+        //5/21/2015 - Made m_bytes public so that the pointer can be fixed up externally
+    public:
         PixelData* m_bytes; // The memory is backed by m_backingStore.
+    private:
+        //-EAWebKitChange
         IntSize m_size;
         // FIXME: Do we need m_colorProfile anymore?
         ColorProfile m_colorProfile;

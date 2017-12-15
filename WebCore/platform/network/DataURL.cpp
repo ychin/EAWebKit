@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2007 Alp Toker <alp@atoker.com>
  * Copyright (C) 2010 Patrick Gansterer <paroga@paroga.com>
+ * Copyright (C) 2016 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -74,23 +75,41 @@ void handleDataURL(ResourceHandle* handle)
         data = decodeURLEscapeSequences(data);
         handle->client()->didReceiveResponse(handle, response);
 
-        Vector<char> out;
-        if (base64Decode(data, out, Base64IgnoreWhitespace) && out.size() > 0) {
-            response.setExpectedContentLength(out.size());
-            handle->client()->didReceiveData(handle, out.data(), out.size(), 0);
+        //+EAWebKitChange
+        //02/26/2016 - Its possible that didReceiveResponse deletes the client as is the case for a PingHandle
+        if (handle->client())
+        //-EAWebKitChange
+        {
+            Vector<char> out;
+            if (base64Decode(data, out, Base64IgnoreWhitespace) && out.size() > 0) {
+                response.setExpectedContentLength(out.size());
+                handle->client()->didReceiveData(handle, out.data(), out.size(), 0);
+            }
         }
     } else {
         TextEncoding encoding(charset);
         data = decodeURLEscapeSequences(data, encoding);
         handle->client()->didReceiveResponse(handle, response);
 
-        CString encodedData = encoding.encode(data.characters(), data.length(), URLEncodedEntitiesForUnencodables);
-        response.setExpectedContentLength(encodedData.length());
-        if (encodedData.length())
-            handle->client()->didReceiveData(handle, encodedData.data(), encodedData.length(), 0);
+        //+EAWebKitChange
+        //02/26/2016 - Its possible that didReceiveResponse deletes the client as is the case for a PingHandle
+        if (handle->client())
+        //-EAWebKitChange
+        {
+            CString encodedData = encoding.encode(data.characters(), data.length(), URLEncodedEntitiesForUnencodables);
+            response.setExpectedContentLength(encodedData.length());
+            if (encodedData.length())
+                handle->client()->didReceiveData(handle, encodedData.data(), encodedData.length(), 0);
+        }
     }
 
-    handle->client()->didFinishLoading(handle, 0);
+    //+EAWebKitChange
+    //02/26/2016 - Its possible that didReceiveResponse deletes the client as is the case for a PingHandle
+    if (handle->client())
+    //-EAWebKitChange
+    {
+        handle->client()->didFinishLoading(handle, 0);
+    }
 }
 
 } // namespace WebCore

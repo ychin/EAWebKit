@@ -110,7 +110,9 @@ EA_COMPILETIME_ASSERT((int)EA::WebKit::eSockErrCount == (int)eSockErrCount);
 #include <sqlite3.h>
 #endif
 
+#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
+#endif
 
 // abaldeva: General note. 05/22/2012
 // For the time being, we need to avoid calling wchar_t related functions in EAWebKit to keep it cross-platform.
@@ -147,7 +149,7 @@ static void StartupRemoteWebInspector()
 {
     if ((GetParameters().mRemoteWebInspectorPort != 0) && (::WebKit::WebInspectorServer::shared().serverState() != ::WebKit::WebInspectorServer::Listening))
     {
-        String bindAddress = ASCIILiteral("127.0.0.1");
+        String bindAddress = GetParameters().mpRemoteWebInspectorIp;
         const int32_t iPortRange = 10;
 
         for (int32_t iPortOffset = 0; iPortOffset < iPortRange; iPortOffset++)
@@ -406,12 +408,12 @@ void EAWebKitLib::DestroyJavascriptValueArray(JavascriptValue *array)
 	EA::WebKit::DestroyJavascriptValueArray(array);
 }
 
-void EAWebKitLib::ClearMemoryCache()
+void EAWebKitLib::ClearMemoryCache(MemoryCacheClearFlags flags)
 {
 	SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);
     EAWEBKIT_THREAD_CHECK();
     EAWWBKIT_INIT_CHECK(); 
-	EA::WebKit::ClearMemoryCache();
+	EA::WebKit::ClearMemoryCache(flags);
 }
 
 void EAWebKitLib::RegisterURLSchemeAsCORSEnabled(const char16_t* pScheme)
@@ -1053,28 +1055,37 @@ void DestroyJavascriptValueArray(JavascriptValue *array)
     delete[] array;
 }
 
-void ClearMemoryCache()
+void ClearMemoryCache(MemoryCacheClearFlags flags)
 {
-	WebCore::fontCache()->purgeInactiveFontData(); //https://lists.macosforge.org/pipermail/webkit-dev/2008-October/005395.html 
+	// + We always clear these caches. We can expose the flags in the future if desired.
+    WebCore::fontCache()->purgeInactiveFontData(); //https://lists.macosforge.org/pipermail/webkit-dev/2008-October/005395.html 
 	WebCore::CrossOriginPreflightResultCache::shared().empty();
 
 	WebCore::cssValuePool().drain();
+    // -
 
-	WebCore::gcController().discardAllCompiledCode();
-	WebCore::JSDOMWindow::commonVM()->releaseExecutableMemory();
-	WebCore::gcController().garbageCollectSoon();
+    if (flags & EA::WebKit::MemoryCacheClearScriptBit)
+    {
+        WebCore::gcController().discardAllCompiledCode();
+        WebCore::JSDOMWindow::commonVM()->releaseExecutableMemory();
+        WebCore::gcController().garbageCollectSoon();
+    }
+
 	// abaldeva - We set the WebCore::MemoryCache capacity to be 0 here so that it prunes any decoded data for live images as well. This 
 	// claims back the as much memory as possible. We save the user preference before doing that and then restore it.
 
-	EA::WebKit::RAMCacheInfo clearRamCache,restoreUserPref;
-	clearRamCache.mTotalBytes = clearRamCache.mMaxDeadBytes = 0;
-	restoreUserPref = ramCacheUserPref; 
-	SetRAMCacheUsage(clearRamCache); 
-	SetRAMCacheUsage(restoreUserPref);
+    if (flags & EA::WebKit::MemoryCacheClearResourcesBit)
+    {
+        EA::WebKit::RAMCacheInfo clearRamCache,restoreUserPref;
+        clearRamCache.mTotalBytes = clearRamCache.mMaxDeadBytes = 0;
+        restoreUserPref = ramCacheUserPref; 
+        SetRAMCacheUsage(clearRamCache); 
+        SetRAMCacheUsage(restoreUserPref);
 	
-	int pageCapacity = WebCore::pageCache()->capacity();
-	(void)pageCapacity;
-	EAW_ASSERT_MSG(pageCapacity == 0, "We should not use page cache");
+	    int pageCapacity = WebCore::pageCache()->capacity();
+	    (void)pageCapacity;
+	    EAW_ASSERT_MSG(pageCapacity == 0, "We should not use page cache");
+    }
 }
 
 void RegisterURLSchemeAsCORSEnabled(const char16_t* pScheme)
@@ -1222,6 +1233,7 @@ Parameters::Parameters()
 	, mSystemFontBold(false)
     , mPasswordMaskCharacter(0x2022) // Bullet
     , mRemoteWebInspectorPort(0)
+	, mpRemoteWebInspectorIp(NULL)
 	, mJavaScriptStackSize(128 * 1024)  // 128 K
 	, mJavaScriptHeapWatermark (1 * 1024 * 1024) // 1 MB
 	, mSmoothFontSize(18)
@@ -1250,6 +1262,7 @@ Parameters::Parameters()
 struct ParametersEx : public Parameters
 {
     FixedString8_32  msLocale;
+    FixedString8_32  msRemoteInspectoIp;
 	FixedString8_32  msAcceptLanguageHttpHeaderValue;
     FixedString8_32  msApplicationName;
     FixedString8_128 msUserAgent;
@@ -1259,6 +1272,7 @@ struct ParametersEx : public Parameters
     void Shutdown()
     {
         msLocale.set_capacity(0);
+        msRemoteInspectoIp.set_capacity(0);
         msAcceptLanguageHttpHeaderValue.set_capacity(0);
         msApplicationName.set_capacity(0);
         msUserAgent.set_capacity(0);
@@ -1296,16 +1310,6 @@ bool CanDoJSCallstack()
 {
     EA::WebKit::EAWebKitClient *pClient = EA::WebKit::GetEAWebKitClient();
     if ((pClient != NULL) && EA::WebKit::GetParameters().mReportJSExceptionCallstacks)
-    {
-        return true;
-    }
-    return false;
-}
-
-bool DoCssFilterInHardware()
-{
-    EA::WebKit::EAWebKitClient *pClient = EA::WebKit::GetEAWebKitClient();
-    if ((pClient != NULL) && EA::WebKit::GetParameters().mDoCssFiltersInHardware)
     {
         return true;
     }
@@ -1354,6 +1358,11 @@ void SetParameters(const Parameters& parameters)
         sParametersEx().msUserAgent.clear();
     sParametersEx().mpUserAgent = sParametersEx().msUserAgent.c_str();
 
+    if(parameters.mpRemoteWebInspectorIp)
+        sParametersEx().msRemoteInspectoIp = parameters.mpRemoteWebInspectorIp;
+    else
+		sParametersEx().msRemoteInspectoIp = ASCIILiteral("0.0.0.0");
+    sParametersEx().mpRemoteWebInspectorIp = sParametersEx().msRemoteInspectoIp.c_str();
 
 	WebCore::ResourceHandleManager::sharedInstance()->SetParams(parameters);
 
@@ -1497,3 +1506,10 @@ void ClearSurfaceToColor(ISurface *surface, WebCore::Color color)
 } // WebKit
 } // EA
 
+#if !defined(EA_PLATFORM_WINDOWS)
+extern "C" char* getenv(const char* param)
+{
+    (void)param;
+    return NULL;
+}
+#endif

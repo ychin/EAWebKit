@@ -31,23 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GraphicsLayer.h"
 #include "FloatQuad.h"
 #include "NotImplemented.h" 
+#include <internal/include/EAWebKit_p.h>
 
 // portions of the code are based on the TextureMapperGL implementation
 
 // Following is expected to remain 1 all the time as scissors based clipping is much more efficient compared to stencil based
 // clipping. The reason for this define is to test stencil clipping path exclusively by turning it off as most of test pages we have get optimized
 // by scissor clipping path. 
-
-//+EAWebKitChange
-//1/16/2014
-namespace EA
-{
-	namespace WebKit
-	{
-        bool DoCssFilterInHardware();
-	}
-}
-//-EAWebKitChange
 
 #define ENABLE_SCISSOR_CLIP 1
  
@@ -217,9 +207,9 @@ IntSize TextureMapperEA::maxTextureSize() const
 	return IntSize(maxTextureSize, maxTextureSize);
 }
 
-PassRefPtr<BitmapTexture> TextureMapperEA::createTexture(void) 
+PassRefPtr<BitmapTexture> TextureMapperEA::createTexture(EA::WebKit::SurfaceType type, const void* data /* = 0 */, size_t length /* = 0 */)
 {
-	EA::WebKit::ISurface *surface = mRenderer->CreateSurface(EA::WebKit::SurfaceTypeTexture);
+	EA::WebKit::ISurface *surface = mRenderer->CreateSurface(type, data, length);
 	return adoptRef(new BitmapTextureEA(surface,mView));
 }
 
@@ -244,7 +234,7 @@ bool TextureMapperEA::beginScissorClip(const TransformationMatrix& modelViewMatr
 
 void TextureMapperEA::beginClip(const TransformationMatrix& transform, const FloatRect& rect)
 {
-	if(mRenderer->UseCustomClip())
+	if(m_useCustomClip)
 	{
 		EA::WebKit::TransformationMatrix eaMatrix(transform);
 		EA::WebKit::FloatRect eaTarget(rect);
@@ -272,7 +262,7 @@ void TextureMapperEA::beginClip(const TransformationMatrix& transform, const Flo
 
 void TextureMapperEA::endClip()
 {
-	if(mRenderer->UseCustomClip())
+	if(m_useCustomClip)
 	{
 		mRenderer->EndClip();
 	}
@@ -285,7 +275,7 @@ void TextureMapperEA::endClip()
 
 IntRect TextureMapperEA::clipBounds()
 {
-	if(mRenderer->UseCustomClip())
+	if(m_useCustomClip)
 		return mRenderer->CurrentClipBound();
 	else
 		return clipStack().current().scissorBox;
@@ -433,7 +423,7 @@ static void setupFilterInfo(const FilterOperation& source, EA::WebKit::FilterInf
 PassRefPtr<BitmapTexture> BitmapTextureEA::applyFilters(TextureMapper* textureMapper, const FilterOperations& filters)
 {   
     // early out if filters aren't being done in hardware OR if there are no filters
-    if (!EA::WebKit::DoCssFilterInHardware() || (filters.size() == 0))
+    if (!EA::WebKit::GetParameters().mDoCssFiltersInHardware || (filters.size() == 0))
     {
         return this;
     }
@@ -477,10 +467,11 @@ void BitmapTextureEA::initializeStencil()
 }
 
 TextureMapperEA::TextureMapperEA(EA::WebKit::View* view)
-    : TextureMapper(EA::WebKit::DoCssFilterInHardware() ? OpenGLMode : SoftwareMode) //We fake as OpenGLMode in order to avoid touching multiple webcore files
+    : TextureMapper(EA::WebKit::GetParameters().mDoCssFiltersInHardware ? OpenGLMode : SoftwareMode) //We fake as OpenGLMode in order to avoid touching multiple webcore files
 	, mView(view)
 	, mRenderer(view->GetHardwareRenderer())
 	, m_didModifyStencil(false)
+	, m_useCustomClip(mRenderer->UseCustomClip())
 { }
 
 
@@ -490,6 +481,7 @@ void TextureMapperEA::ClipStack::reset(const IntRect& rect)
 	size = rect.size();
 		
 	clipState = TextureMapperEA::ClipState(rect);
+	lastApplied = TextureMapperEA::ClipState();
 	clipStateDirty = true;
 }
 
@@ -526,14 +518,21 @@ void TextureMapperEA::ClipStack::apply(EA::WebKit::IHardwareRenderer* renderer)
 	
 	if (clipState.scissorBox.isEmpty())
 		return;
+
+	if(!lastApplied.equals(clipState))
+	{
 #if ENABLE_SCISSOR_CLIP	
-	EA::WebKit::IntRect scissorRect(clipState.scissorBox.x(), clipState.scissorBox.y(),
-									clipState.scissorBox.width(), clipState.scissorBox.height());
-		
-	renderer->ScissorClip(scissorRect);
+		EA::WebKit::IntRect scissorRect(clipState.scissorBox.x(), clipState.scissorBox.y(),
+			clipState.scissorBox.width(), clipState.scissorBox.height());
+
+		renderer->ScissorClip(scissorRect);
 #endif
 
-	renderer->ClipAgainstStencil(clipState.stencilIndex);
+		renderer->ClipAgainstStencil(clipState.stencilIndex);
+
+		lastApplied = clipState;
+	}
+
 }
 
 void TextureMapperEA::ClipStack::applyIfNeeded(EA::WebKit::IHardwareRenderer* renderer)
@@ -573,7 +572,8 @@ void TextureMapperEA::beginPainting(PaintFlags flags)
 {
 	m_didModifyStencil = false;
 	m_clipStack.reset(IntRect(IntPoint(0, 0), WebCore::IntSize(mView->GetSize())));
-	bindSurface(0); 
+	// Following binding is not necessary as the m_rootTextureMapperLayer->paint() right after this binds the default surface.
+	// bindSurface(0); 
 }
 
 void TextureMapperEA::endPainting()

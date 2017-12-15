@@ -2,7 +2,7 @@
     Copyright (C) 2008, 2009 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2007 Staikos Computing Services Inc.
     Copyright (C) 2007 Apple Inc.
-	Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -294,6 +294,7 @@ WebPagePrivate::WebPagePrivate(WebPage *wPage)
 , m_bytesReceived()
 , mouseCausedEventActive(false)
 , clickCausedFocus(false)
+, mNewTouch(true)
 , forwardUnsupportedContent(false)
 , smartInsertDeleteEnabled(true)
 , selectTrailingWhitespaceEnabled(false)
@@ -529,6 +530,91 @@ bool WebPagePrivate::mouseReleaseEvent(const EA::WebKit::MouseButtonEvent& ev)
 	return accepted;
 }
 
+bool WebPagePrivate::touchStartEvent(const EA::WebKit::TouchEvent& ev)
+{
+	WebCore::Frame* frame = WebFramePrivate::core(mainFrame);
+	if (!frame->view())
+		return false;
+
+	RefPtr<WebCore::Node> oldNode;
+	WebCore::Frame* focusedFrame = page->focusController().focusedFrame();
+	if (WebCore::Document* focusedDocument = focusedFrame ? focusedFrame->document() : 0)
+		oldNode = focusedDocument->focusedElement();
+
+	bool accepted = false;
+
+	WebCore::PlatformTouchEvent tev(&ev);
+
+	accepted = frame->eventHandler().handleTouchEvent(tev);
+
+	RefPtr<WebCore::Node> newNode;
+	focusedFrame = page->focusController().focusedFrame();
+	if (WebCore::Document* focusedDocument = focusedFrame ? focusedFrame->document() : 0)
+		newNode = focusedDocument->focusedElement();
+
+	if (newNode && oldNode != newNode)
+		clickCausedFocus = true; 
+
+	mNewTouch = true; // A new touch starts here
+	return accepted;
+}
+
+bool WebPagePrivate::touchMoveEvent(const EA::WebKit::TouchEvent& ev)
+{
+	bool accepted = false;
+	WebCore::Frame* frame = WebFramePrivate::core(mainFrame);
+	WebCore::ScrollDirection direction;
+    WebCore::ScrollGranularity granularity = WebCore::ScrollByLine;
+
+	static float_t currX = 0;
+	static float_t currY = 0;
+	float_t prevX = currX;
+	float_t prevY = currY;
+	if (mNewTouch) // In case of a newly touched move, don't consider the prev coordinates, which will prevent scrolling on every tap
+	{
+		prevX = ev.mTouchPoints[0].mX;
+		prevY = ev.mTouchPoints[0].mY;
+	}
+	currX = ev.mTouchPoints[0].mX;
+	currY = ev.mTouchPoints[0].mY;
+	
+	float_t deltaX = abs(currX - prevX);
+	float_t deltaY = abs(currY - prevY);
+	if (deltaX > 5 || deltaY > 5 ) // We give a room of 5 px to every touch, if it is more than 5px, then consider scroll
+	{
+		if (deltaX > deltaY) //Horizontal Scrolling
+		{
+			if (currX < prevX) // Swipe in left direction = scroll right
+				direction = WebCore::ScrollRight;
+			else
+				direction = WebCore::ScrollLeft;
+		}
+		else //Vertical Direction scrolling
+		{
+			if (currY > prevY) //swipe down = scroll up
+				direction = WebCore::ScrollUp;
+			else
+				direction = WebCore::ScrollDown;
+		
+		}
+		accepted = frame->eventHandler().scrollRecursively(direction, granularity);
+	}
+
+	accepted = frame->eventHandler().handleTouchEvent(WebCore::PlatformTouchEvent(&ev));
+
+	mNewTouch = false; //After the first touch move, its not longer a new touch
+	return accepted;
+}
+
+bool WebPagePrivate::touchEndEvent(const EA::WebKit::TouchEvent& ev)
+{
+	WebCore::Frame* frame = WebFramePrivate::core(mainFrame);
+	if (!frame->view())
+		return false;
+	
+	return frame->eventHandler().handleTouchEvent(WebCore::PlatformTouchEvent(&ev));
+}
+
 bool WebPagePrivate::wheelEvent(const EA::WebKit::MouseWheelEvent& ev)
 {
 	WebCore::Frame* frame = WebFramePrivate::core(mainFrame);
@@ -562,7 +648,13 @@ WebAction WebPagePrivate::editorActionForKeyEvent(const EA::WebKit::KeyboardEven
  		return EA::WebKit::NoWebAction;
 
 	const uint32_t UnknownKeyMagicNumber = 9999999;
+#if defined(EA_PLATFORM_OSX)
+	// OS X has both Ctrl and OS key. The normal shortcuts driven on Windows through Ctrl key are attached to the OS key on Mac. So we make an exception for 
+	// this case.
+	const uint32_t actionModifierKey = EA::WebKit::kModifierMaskOS;
+#else
 	const uint32_t actionModifierKey = EA::WebKit::kModifierMaskControl;
+#endif
 	static struct {
 		uint32_t keyId;
 		uint32_t modifiers;

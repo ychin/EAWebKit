@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies)
+	Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,7 +25,6 @@
 #include <wtf/Vector.h>
 
 #if ENABLE(TOUCH_EVENTS)
-
 #if PLATFORM(BLACKBERRY)
 namespace BlackBerry {
 namespace Platform {
@@ -32,7 +32,19 @@ class TouchPoint;
 };
 };
 #endif
-
+//+EAWebKitChange
+//02/11/2015
+#if PLATFORM(EA)
+namespace EA
+{
+	namespace WebKit
+	{
+		struct TouchEvent;
+		struct TouchPoint;
+	}
+}
+#endif
+//-EAWebKitChange
 namespace WebCore {
 
 class PlatformTouchEvent;
@@ -58,6 +70,12 @@ public:
     {
     }
 
+//+EAWebKitChange
+//02/11/2015
+#if PLATFORM(EA)
+	PlatformTouchPoint(const EA::WebKit::TouchPoint touchPoints);
+#endif
+//-EAWebKitChange
 #if PLATFORM(BLACKBERRY)
     PlatformTouchPoint(const BlackBerry::Platform::TouchPoint&);
 #endif

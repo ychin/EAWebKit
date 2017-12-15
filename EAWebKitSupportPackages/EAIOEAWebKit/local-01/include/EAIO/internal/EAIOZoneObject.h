@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009-2010 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2009-2010, 2016 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -60,7 +60,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #ifdef PPM_MIN_ALIGN
         #define ZONE_OBJECT_MIN_ALIGN PPM_MIN_ALIGN
     #else
-        #define ZONE_OBJECT_MIN_ALIGN 8
+//+EAWebKitChange
+//1/14/2016 - Updated min alignment from 8 to 16, along the lines of recent changes in EAIO package (2.21.00), which fixes the invalid alignment errors during allocations.
+// This is a practical universal minimum, and matches what we have in the CoreAllocator package.
+        #define ZONE_OBJECT_MIN_ALIGN 16
+//-EAWebKitChange
     #endif
 #endif
 

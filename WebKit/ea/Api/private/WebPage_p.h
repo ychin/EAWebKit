@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008, 2009 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2008 Holger Hans Peter Freyther
-	Copyright (C) 2011, 2012, 2014 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -96,8 +96,11 @@ public:
 	bool mouseMoveEvent(const EA::WebKit::MouseMoveEvent& ev);
 	bool mousePressEvent(const EA::WebKit::MouseButtonEvent& ev);
 	bool mouseReleaseEvent(const EA::WebKit::MouseButtonEvent& ev);
-
 	bool wheelEvent(const EA::WebKit::MouseWheelEvent& ev);
+
+	bool touchStartEvent(const EA::WebKit::TouchEvent& ev);
+	bool touchMoveEvent(const EA::WebKit::TouchEvent& ev);
+	bool touchEndEvent(const EA::WebKit::TouchEvent& ev);
 	
 	void keyPressEvent(const EA::WebKit::KeyboardEvent& ev);
 	void keyReleaseEvent(const EA::WebKit::KeyboardEvent& ev);
@@ -126,6 +129,7 @@ public:
 
 	bool mouseCausedEventActive;
 	bool clickCausedFocus;
+	bool mNewTouch; /// True if, for touch move, its a new touch, else if the same touch is moving, it is false
 
 	bool acceptNavigationRequest(WebFrame* frame, const WebCore::ResourceRequest& request, WebPage::NavigationType type);
 
