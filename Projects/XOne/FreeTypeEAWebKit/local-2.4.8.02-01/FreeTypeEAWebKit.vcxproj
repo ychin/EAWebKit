@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-dev-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-dev-debug|Durango">
+      <Configuration>capilano-vc-dev-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-dev-opt|Durango">
+      <Configuration>capilano-vc-dev-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2B72415D-9DAD-0B07-6A83-FC7612921224}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>FreeTypeEAWebKit</ProjectName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoXdkInstallPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\</DurangoXdkInstallPath>
+    <DurangoXdkKitPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\</DurangoXdkKitPath>
+    <XdkEditionTarget>160305</XdkEditionTarget>
+    <TargetPlatformSdkPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\</TargetPlatformSdkPath>
+    <XdkEditionRootVS2012>C:\work\15.1.1.1.0\Build\XOne\framework_tmp\CapilanoSDK-10.0.10586.1215\MSBuild\Microsoft.Cpp\v4.0\V110\Platforms\Durango\</XdkEditionRootVS2012>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\shared";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\um";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\winrt";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /Zc:inline /favor:AMD64 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\lib\amd64";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4701; 4255; 4244; 4242; 4946; 4702; 4264; 4263; 4628; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4574; 4571; 4819; 4826; 4692; 4996; 4350; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=1;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</NantUnescapedPreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=1;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\XOne\FreeTypeEAWebKit\local-2.4.8.02-01\capilano-vc-dev-debug\lib\FreeTypeEAWebKit.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\XOne\FreeTypeEAWebKit\local-2.4.8.02-01\capilano-vc-dev-debug\lib/FreeTypeEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-debug\lib" mkdir "capilano-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-debug\build\FreeTypeEAWebKit" mkdir "capilano-vc-dev-debug\build\FreeTypeEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <OutDir>capilano-vc-dev-debug\lib\</OutDir>
+    <IntDir>capilano-vc-dev-debug\build\FreeTypeEAWebKit\vstmp\</IntDir>
+    <TargetName>FreeTypeEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\shared";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\um";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\winrt";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /Zc:inline /favor:AMD64 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\lib\amd64";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4701; 4255; 4244; 4242; 4946; 4702; 4264; 4263; 4628; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4574; 4571; 4819; 4826; 4692; 4996; 4350; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;FT2_BUILD_LIBRARY;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</NantUnescapedPreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;FT2_BUILD_LIBRARY;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\XOne\FreeTypeEAWebKit\local-2.4.8.02-01\capilano-vc-dev-opt\lib\FreeTypeEAWebKit.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\XOne\FreeTypeEAWebKit\local-2.4.8.02-01\capilano-vc-dev-opt\lib/FreeTypeEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-opt\lib" mkdir "capilano-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-opt\build\FreeTypeEAWebKit" mkdir "capilano-vc-dev-opt\build\FreeTypeEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <OutDir>capilano-vc-dev-opt\lib\</OutDir>
+    <IntDir>capilano-vc-dev-opt\build\FreeTypeEAWebKit\vstmp\</IntDir>
+    <TargetName>FreeTypeEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\autofit\autofit.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbase.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbbox.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftbitmap.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftdebug.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftfstype.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftgasp.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftglyph.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftinit.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftmm.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftpfr.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftstroke.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftsynth.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftsystem.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\fttype1.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\base\ftwinfnt.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\bdf\bdf.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cache\ftcache.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cff\cff.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\cid\type1cid.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\gzip\ftgzip.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\lzw\ftlzw.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pcf\pcf.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pfr\pfr.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\psaux\psaux.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\pshinter\pshinter.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\psnames\psnames.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\raster\raster.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\sfnt\sfnt.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\smooth\smooth.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\truetype\truetype.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\type1\type1.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\type42\type42.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\FreeTypeEAWebKit\local-2.4.8.02-01\freetype-2.4.8\src\winfonts\winfnt.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_capilano-vc-dev-debug_Durango="vc" vc-compiler="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\cl.exe" vc-compiler_clang="" vc-asm="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\ml64.exe" vc-librarian="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\lib.exe" platform_capilano-vc-dev-opt_Durango="vc" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

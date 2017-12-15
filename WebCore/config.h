@@ -50,9 +50,6 @@
 
 #include <runtime/JSExportMacros.h>
 
-#ifdef __APPLE__
-#define HAVE_FUNC_USLEEP 1
-#endif /* __APPLE__ */
 
 #if OS(WINDOWS)
 

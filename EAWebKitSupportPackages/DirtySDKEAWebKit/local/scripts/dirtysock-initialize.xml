@@ -1,0 +1,14 @@
+<project>
+
+    <property name="package.DirtySDKEAWebKit.includedirs">
+      ${package.DirtySDKEAWebKit.dir}/platform
+      ${package.DirtySDKEAWebKit.dir}/core/include
+      ${package.DirtySDKEAWebKit.dir}/core/include/${config-system}
+    </property>
+
+    <!-- convenience names -->
+    <property name="dirtysock_modulename"         value="dirtysockEAWebKit"/>
+
+    <property name="package.DirtySDKEAWebKit.libs" value="${property.value};dirtysockEAWebKit" />
+    
+</project>

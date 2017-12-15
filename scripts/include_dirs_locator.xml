@@ -1,0 +1,14 @@
+<project>
+  
+  <createtask name="find-webkit-includedirs">
+    <parameters>
+      <option name="platform"  value="Required" />
+    </parameters>
+
+    <code>
+      <dependent name="WebKit" />
+      <property name="WebKit.PlatformIncludeDirs" value="${package.WebKit.dir}/include/${find-webkit-includedirs.platform}WebKit"/>
+    </code>
+  </createtask>
+
+</project>

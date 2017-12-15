@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-dev-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
+      <Configuration>pc-vc-dev-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
+      <Configuration>pc-vc-dev-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>WTF</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\icu";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\threads";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996; 4275; 4986; 4987; 4574; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4571; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4987; 4482; 4819; 4826; 4692; 4746; 4350; 4371; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__STD_C;_CHAR16T;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=1;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX=1;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</NantUnescapedPreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__STD_C;_CHAR16T;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=1;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EA_DEBUG;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NOMINMAX=1;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win\WTF\local\pc-vc-dev-debug\lib\WTF.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win\WTF\local\pc-vc-dev-debug\lib\WTF.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-debug\build\WTF" mkdir "pc-vc-dev-debug\build\WTF" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <OutDir>pc-vc-dev-debug\lib\</OutDir>
+    <IntDir>pc-vc-dev-debug\build\WTF\vstmp\</IntDir>
+    <TargetName>WTF</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\icu";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\threads";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-d2Zi+ </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996; 4275; 4986; 4987; 4574; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4571; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4987; 4482; 4819; 4826; 4692; 4746; 4350; 4371; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__STD_C;_CHAR16T;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=0;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX=1;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</NantUnescapedPreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__STD_C;_CHAR16T;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_NO_WARNINGS;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_LIB;_SECURE_SCL=0;_UNICODE;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;_WINDOWS;BUILDING_EA__;BUILDING_EA__=1;BUILDING_WTF;EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;;JS_NO_EXPORT;NDEBUG;NOMINMAX=1;WIN32;WINVER=0x0601;WTF_USE_DIRTYSDK=0;WTF_USE_EATEXT=0</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win\WTF\local\pc-vc-dev-opt\lib\WTF.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win\WTF\local\pc-vc-dev-opt\lib\WTF.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-opt\build\WTF" mkdir "pc-vc-dev-opt\build\WTF" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <OutDir>pc-vc-dev-opt\lib\</OutDir>
+    <IntDir>pc-vc-dev-opt\build\WTF\vstmp\</IntDir>
+    <TargetName>WTF</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="C:\work\15.1.1.1.0\Build\Win\EABaseEAWebKit\local-2.00.35-01\EABaseEAWebKit.vcxproj">
+      <Project>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</Project>
+      <Private>False</Private>
+      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ASCIICType.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Assertions.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Assertions.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Atomics.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\AutodrainedPool.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\AVLTree.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BitArray.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Bitmap.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BitVector.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BitVector.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BlockStack.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BloomFilter.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BoundsCheckedPointer.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\BumpPointerAllocator.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ByteOrder.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ByteSpinLock.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CheckedArithmetic.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CheckedBoolean.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CommaPrinter.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CompilationThread.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CompilationThread.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Compiler.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Compression.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Compression.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CryptographicallyRandomNumber.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CryptographicallyRandomNumber.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CurrentTime.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\CurrentTime.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DataLog.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DataLog.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DateMath.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DateMath.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DecimalNumber.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DecimalNumber.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Decoder.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DeferrableRefCounted.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Deque.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DisallowCType.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DoublyLinkedList.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DynamicAnnotations.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\DynamicAnnotations.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Encoder.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\EnumClass.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ExportMacros.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FastBitVector.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FastMalloc.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FeatureDefines.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FilePrintStream.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FilePrintStream.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FixedArray.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FlipBytes.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Forward.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Functional.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FunctionDispatcher.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\FunctionDispatcher.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\GetPtr.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\GregorianDateTime.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\GregorianDateTime.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashCountedSet.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashFunctions.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashIterators.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashMap.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashSet.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashTable.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashTable.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HashTraits.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\HexNumber.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\InlineASM.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Insertion.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ListDump.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ListHashSet.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Locker.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MainThread.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MainThread.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MallocPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MathExtras.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MD5.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MD5.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MediaTime.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MediaTime.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MessageQueue.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MetaAllocator.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MetaAllocator.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\MetaAllocatorHandle.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\NeverDestroyed.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\NoLock.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Noncopyable.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\NumberOfCores.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\NumberOfCores.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ObjcRuntimeExtras.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\OSAllocator.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\OSRandomSource.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\OSRandomSource.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\OwnPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\OwnPtrCommon.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PackedIntVector.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PageAllocation.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PageAllocationAligned.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PageAllocationAligned.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PageBlock.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PageBlock.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PageReservation.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobs.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsGeneric.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsGeneric.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsLibdispatch.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ParallelJobsOpenMP.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PassOwnPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PassRefPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Platform.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PossiblyNull.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PrintStream.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\PrintStream.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ProcessID.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RAMSize.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RAMSize.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RandomNumber.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RandomNumber.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RandomNumberSeed.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RawPointer.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RedBlackTree.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Ref.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RefCounted.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RefCountedArray.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RefCountedLeakCounter.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RefCountedLeakCounter.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RefPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RefPtrHashMap.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RetainPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\RunLoopTimer.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SaturatedArithmetic.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SchedulePair.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SegmentedVector.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SentinelLinkedList.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SHA1.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SHA1.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SimpleStats.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SinglyLinkedList.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SixCharacterHash.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SixCharacterHash.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\SizeLimits.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Spectrum.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StackBounds.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StackBounds.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StackStats.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StaticConstructors.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StdLibExtras.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StreamBuffer.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StringExtras.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StringHashDumpContext.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StringHasher.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StringPrintStream.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\StringPrintStream.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\TCPackedCache.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\TCPageMap.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\TCSpinLock.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\TCSystemAlloc.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\TemporaryChange.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ThreadFunctionInvocation.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ThreadIdentifierDataPthreads.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Threading.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Threading.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ThreadingPrimitives.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ThreadRestrictionVerifier.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ThreadSafeRefCounted.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ThreadSpecific.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\TriState.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\UnionFind.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\UniStdExtras.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ValueCheck.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\Vector.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\VectorTraits.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\VMTags.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\WeakPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\WindowsExtras.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\WTFThreadData.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\WTFThreadData.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum-dtoa.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\bignum-dtoa.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\cached-powers.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\cached-powers.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\diy-fp.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\diy-fp.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\double.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\double-conversion.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\double-conversion.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fast-dtoa.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fast-dtoa.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fixed-dtoa.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\fixed-dtoa.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\strtod.cc" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\strtod.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\dtoa\utils.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea\FeatureDefinesEA.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea\MainThreadEA.cpp" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea\OSAllocatorEA.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea\PlatformEA.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ea\ThreadingEA.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\efl\RefPtrEfl.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\gobject\GlibUtilities.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\gobject\GMutexLocker.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\gobject\GOwnPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\gobject\GRefPtr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\gobject\GTypedefs.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\ios\WebCoreThread.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\nix\FeatureDefinesNix.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\nix\PlatformNix.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\ASCIIFastPath.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicString.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicString.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringHash.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringImpl.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringTable.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\AtomicStringTable.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\Base64.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\Base64.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\ConversionMode.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\CString.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\CString.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\IntegerToStringConversion.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringBuffer.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringBuilder.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringBuilder.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringConcatenate.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringHash.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringImpl.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringImpl.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringOperators.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\StringStatics.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\TextPosition.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\WTFString.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\text\WTFString.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\threads\BinarySemaphore.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\CharacterNames.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\Collator.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\ScriptCodesFromICU.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\Unicode.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\UnicodeMacrosFromICU.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\UTF8.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\UTF8.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\ea\CollatorEA.cpp" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\ea\UnicodeEA.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\icu\UnicodeIcu.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\unicode\wchar\UnicodeWchar.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\WTF\local\wtf\win\GDIObject.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_pc-vc-dev-debug_Win32="vc" vc-compiler="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\cl.exe" vc-compiler_clang="" vc-asm="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\ml.exe" vc-librarian="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\lib.exe" platform_pc-vc-dev-opt_Win32="vc" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

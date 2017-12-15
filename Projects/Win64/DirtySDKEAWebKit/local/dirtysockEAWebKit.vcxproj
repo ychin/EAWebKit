@@ -44,14 +44,9 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
     <Midl />
-    <Masm>
-      <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
-      <WarningLevel>2</WarningLevel>
-    </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\pc64";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-bigobj </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\pc64";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -67,7 +62,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;DIRTYCODE_PLATFORM=3;DS_PLATFORM;EA_DEBUG;WIN32;WINSOCK_API_LINKAGE=;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-debug\lib\dirtysockEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win64\DirtySDKEAWebKit\local\pc64-vc-dev-debug\lib\dirtysockEAWebKit.pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
@@ -76,7 +71,7 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-debug\lib\dirtysockEAWebKit.lib</OutputFile>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win64\DirtySDKEAWebKit\local\pc64-vc-dev-debug\lib\dirtysockEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
@@ -102,14 +97,10 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
     <Midl />
-    <Masm>
-      <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
-      <WarningLevel>2</WarningLevel>
-    </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\pc64";"..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-d2Zi+ -bigobj </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\include\pc64";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\voip";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-d2Zi+ </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -125,7 +116,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;DIRTYCODE_PLATFORM=3;DS_PLATFORM;NDEBUG;WIN32;WINSOCK_API_LINKAGE=;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-opt\lib\dirtysockEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win64\DirtySDKEAWebKit\local\pc64-vc-dev-opt\lib\dirtysockEAWebKit.pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
@@ -134,7 +125,7 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-opt\lib\dirtysockEAWebKit.lib</OutputFile>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win64\DirtySDKEAWebKit\local\pc64-vc-dev-opt\lib\dirtysockEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
@@ -155,23 +146,23 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptarc4.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd2.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd5.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptrsa.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptsha1.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtylib.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtymem.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtynet.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\platformsocketapi.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\pc\dirtylibwin.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\pc\dirtynetwin.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttp.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttpmanager.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protossl.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\util\lobbybase64.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-str.c" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-time.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptarc4.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd2.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd5.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptrsa.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptsha1.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtylib.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtymem.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtynet.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\platformsocketapi.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\pc\dirtylibwin.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\pc\dirtynetwin.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttp.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttpmanager.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protossl.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\util\lobbybase64.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-str.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-time.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -179,7 +170,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="$(VSInstallDir)\VC\BIN\x86_amd64\cl.exe" vc64-compiler_clang="" vc64-asm="$(VSInstallDir)\VC\BIN\x86_amd64\ml64.exe" vc64-librarian="$(VSInstallDir)\VC\BIN\x86_amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="$(VSInstallDir)\VC\BIN;$(VSInstallDir)\Common7\IDE"></UserProperties>
+      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\x86_amd64\cl.exe" vc64-compiler_clang="" vc64-asm="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\x86_amd64\ml64.exe" vc64-librarian="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\x86_amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

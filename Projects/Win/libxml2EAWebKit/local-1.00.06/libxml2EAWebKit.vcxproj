@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-dev-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
+      <Configuration>pc-vc-dev-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
+      <Configuration>pc-vc-dev-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>libxml2EAWebKit</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4047; 4013; 4996; 4706; 4702; 4701; 4700; 4311; 4312; 4306; 4305; 4296; 4295; 4267; 4255; 4245; 4244; 4242; 4189; 4152; 4132; 4131; 4127; 4115; 4057; 4005; 4986; 4987; 4574; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4571; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4987; 4482; 4819; 4826; 4692; 4746; 4350; 4371; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;HAVE_CONFIG_H;LIBXML_STATIC;NOLIBTOOL;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;HAVE_CONFIG_H;LIBXML_STATIC;NOLIBTOOL;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win\libxml2EAWebKit\local-1.00.06\pc-vc-dev-debug\lib\libxml2EAWebKit.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win\libxml2EAWebKit\local-1.00.06\pc-vc-dev-debug\lib\libxml2EAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-debug\build\libxml2EAWebKit" mkdir "pc-vc-dev-debug\build\libxml2EAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <OutDir>pc-vc-dev-debug\lib\</OutDir>
+    <IntDir>pc-vc-dev-debug\build\libxml2EAWebKit\vstmp\</IntDir>
+    <TargetName>libxml2EAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-d2Zi+ </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4047; 4013; 4996; 4706; 4702; 4701; 4700; 4311; 4312; 4306; 4305; 4296; 4295; 4267; 4255; 4245; 4244; 4242; 4189; 4152; 4132; 4131; 4127; 4115; 4057; 4005; 4986; 4987; 4574; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4571; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4987; 4482; 4819; 4826; 4692; 4746; 4350; 4371; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;HAVE_CONFIG_H;LIBXML_STATIC;NDEBUG;NOLIBTOOL;WIN32;WINVER=0x0601</NantUnescapedPreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;HAVE_CONFIG_H;LIBXML_STATIC;NDEBUG;NOLIBTOOL;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win\libxml2EAWebKit\local-1.00.06\pc-vc-dev-opt\lib\libxml2EAWebKit.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win\libxml2EAWebKit\local-1.00.06\pc-vc-dev-opt\lib\libxml2EAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-opt\build\libxml2EAWebKit" mkdir "pc-vc-dev-opt\build\libxml2EAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <OutDir>pc-vc-dev-opt\lib\</OutDir>
+    <IntDir>pc-vc-dev-opt\build\libxml2EAWebKit\vstmp\</IntDir>
+    <TargetName>libxml2EAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\win32config.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\wsockcompat.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\c14n.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\catalog.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\chvalid.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\debugXML.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\dict.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\DOCBparser.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\encoding.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\entities.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\globals.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\hash.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\HTMLparser.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\HTMLtree.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\list.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\nanoftp.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\nanohttp.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\parser.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\parserInternals.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\pattern.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\relaxng.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\SAX.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\SAX2.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\schemasInternals.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\schematron.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\threads.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\tree.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\uri.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\valid.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xinclude.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xlink.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlautomata.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlerror.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlexports.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlIO.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlmemory.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlmodule.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlreader.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlregexp.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlsave.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlschemas.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlschemastypes.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlstring.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlunicode.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlversion.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xmlwriter.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xpath.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xpathInternals.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\include\libxml\xpointer.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\c14n.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\catalog.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\chvalid.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\debugXML.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\dict.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\DOCBparser.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\encoding.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\entities.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\error.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\globals.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\hash.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\HTMLparser.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\HTMLtree.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\legacy.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\list.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\parser.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\parserInternals.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\pattern.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\relaxng.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\SAX.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\SAX2.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\threads.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\tree.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\trio.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\trionan.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\triostr.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\uri.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\valid.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xinclude.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xlink.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlIO.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlmemory.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlmodule.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlreader.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlregexp.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlsave.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlschemas.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlschemastypes.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlstring.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xmlunicode.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xpath.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libxml2EAWebKit\local-1.00.06\source\xpointer.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_pc-vc-dev-debug_Win32="vc" vc-compiler="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\cl.exe" vc-compiler_clang="" vc-asm="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\ml.exe" vc-librarian="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\lib.exe" platform_pc-vc-dev-opt_Win32="vc" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

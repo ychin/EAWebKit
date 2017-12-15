@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+
+	<summary>EATextEAWebKit</summary>
+
+	<description>
+		EAText is a professional-level text characterization and layout engine
+		suitable for use in text display and editing GUIs for multiple locales,
+		including locales of complex script and bidirectional text. EAText includes
+		an associated Font engine that supports TrueType, bitmapped, and 
+		polygonal (3D) fonts. EAText follows the CSS 3 and Unicode standards and 
+		when combined with packages such as XHTML can display styled text as per
+		the XHTML, CSS3, and Unicode standards. 
+	</description>
+
+	<status>Official</status>
+	<statusComment></statusComment>
+
+	<frameworkVersion>2</frameworkVersion>
+
+	<buildable>true</buildable>
+
+</package>
+

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2012, 2014 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -70,8 +70,10 @@ public:
 	// including the ISurface itself.
 	virtual void Release(void) = 0;
 	// Is the backing storage for the surface allocated?
+	// 12/08/2014 - IsAllocated is now deprecated and will be removed in a TBD future release.
     virtual bool IsAllocated(void) const = 0;
     // Clear the surface to transparent black.
+	// 12/08/2014 - Reset is now deprecated and will be removed in a TBD future release.
     virtual void Reset(void) = 0;
     // Get the current content dimensions
 	void GetContentDimensions(int *widthOut, int *heightOut) const

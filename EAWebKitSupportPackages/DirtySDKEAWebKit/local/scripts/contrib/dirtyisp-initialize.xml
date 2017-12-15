@@ -1,0 +1,14 @@
+<!-- note - contrib initialize files must be separate from build files to allow external inclusion -->
+<project>
+
+    <!-- add any dirtyisp specific include directories -->
+    <property name="package.DirtySDK.includedirs">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/${config-system}isp/include
+        ${package.DirtySDK.dir}/contrib/${config-system}isp/include/${config-system}
+    </property>
+
+    <!-- add the library to the list of dirtysock libraries -->
+    <property name="package.DirtySDK.libs" value="${property.value};${config-system}isp" />
+
+</project>

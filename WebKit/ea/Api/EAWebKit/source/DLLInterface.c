@@ -41,9 +41,7 @@ int platform_dll_stop_func(void);
 #pragma warning(disable: 4255)
 #endif //_MSC_VER
 
-#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
-#endif
 
 #if defined(_MSC_VER)
 #pragma warning(pop)

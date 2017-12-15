@@ -8,7 +8,7 @@
  * Copyright (C) 2008, 2009, 2011, 2012 Google Inc. All rights reserved.
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) Research In Motion Limited 2010-2011. All rights reserved.
- * Copyright (C) 2012 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2012, 2014 Electronic Arts, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -3189,10 +3189,13 @@ void Document::removeFocusedNodeOfSubtree(Node* node, bool amongChildrenOnly)
     
     if (nodeInSubtree)
 	{
-        // If the editable element has been destroyed, the focused element no longer exists, hence input state needs to change.
-		m_frame->page()->editorClient()->setInputMethodState(false);
-
-        setFocusedElement(nullptr);
+		//+EAWebKitChange 
+		//11/06/2014
+		//EAWebKit Note: If the editable element has been destroyed while in focus, the focused element no longer exists, hence input state needs to change.
+		if (isHTMLInputElement(node) || isHTMLTextAreaElement(node))
+		    m_frame->page()->editorClient()->setInputMethodState(false);
+        //-EAWebKitChange
+		setFocusedElement(nullptr);
 	}
 }
 

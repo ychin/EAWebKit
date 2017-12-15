@@ -44,6 +44,23 @@ class TextBreakIterator
 {
 public:
 	void* mpBreakIterator;
+    void* mUCharBuffer;
+
+    TextBreakIterator()
+        : mpBreakIterator(NULL)
+        , mUCharBuffer(NULL)
+    {
+
+    }
+
+    ~TextBreakIterator()
+    {
+        if (mUCharBuffer)
+        {
+            delete[] mUCharBuffer;
+            mUCharBuffer = NULL;
+        }
+    }
 };
 
 static TextBreakIterator swordBreakIterator;
@@ -126,14 +143,32 @@ bool isWordTextBreak(TextBreakIterator* pIterator)
 
 TextBreakIterator* acquireLineBreakIterator(const UChar* pText, int length, const AtomicString& locale, const UChar* priorContext, unsigned priorContextLength)
 { 
-	
+    (void)locale;
+    
+    TextBreakIterator *newIterator = new TextBreakIterator();
 
-	(void)locale;
-	(void)priorContext;
-	(void)priorContextLength;
-	
-	TextBreakIterator *newIterator = new TextBreakIterator();
-	newIterator->mpBreakIterator = EA::WebKit::GetTextSystem()->AcquireLineBreakIterator((EA::WebKit::Char *)pText, length);
+    UChar* totalString = const_cast<UChar*>(pText);
+    int totalLength = length;
+    if (priorContextLength > 0)
+    {
+        totalLength += priorContextLength;
+
+        UChar* totalString = new UChar[totalLength];
+
+        for (int i = 0; i <priorContextLength; ++i)
+        {
+            totalString[i] = priorContext[i];
+        }
+
+        for (int i = 0; i <length; ++i)
+        {
+            totalString[i + priorContextLength] = pText[i];
+        }
+
+        newIterator->mUCharBuffer = totalString;
+    }
+   
+	newIterator->mpBreakIterator = EA::WebKit::GetTextSystem()->AcquireLineBreakIterator((EA::WebKit::Char *)totalString, totalLength);
 	return newIterator;
 }
 

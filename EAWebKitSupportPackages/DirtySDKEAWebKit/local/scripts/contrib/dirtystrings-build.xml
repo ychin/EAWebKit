@@ -1,0 +1,55 @@
+<project>
+
+    <!-- add any specific include directories -->
+    <property name="package.DirtySDK.includedirs">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/dirtystrings/include
+        ${package.DirtySDK.dir}/contrib/dirtystrings/include/${config-system}
+    </property>
+
+    <!-- add the library to the list of dirtysock libraries -->
+    <property name="package.DirtySDK.libs" value="${property.value};dirtystrings" />
+
+    <!-- add this module to the list of modules to build -->
+    <property name="runtime.buildmodules">
+        ${property.value}
+        dirtystrings
+    </property>
+
+    <!-- declare the type of module to build -->
+    <property name="runtime.dirtystrings.buildtype" value="CLibrary" />
+
+    <!-- add this module's includes to the general includes -->
+    <property name="runtime.dirtystrings.includedirs">
+        ${property.value}
+        ${package.DirtySDK.includedirs}
+    </property>
+    <property name="runtime.dirtystrings.includedirs.ps2">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/dirtyisp/include/ps2
+    </property>
+    <property name="runtime.dirtystrings.includedirs.xbox">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/dirtyisp/include/xbox
+    </property>
+    <property name="runtime.dirtystrings.includedirs.xenon">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/dirtyisp/include/xbox
+    </property>
+
+    <!-- inherit warning suppression from dirtysock -->
+	<property name="runtime.dirtystrings.warningsuppression">
+		${runtime.${dirtysock_modulename}.warningsuppression}
+	</property>    
+	
+	<!-- inherit defines from dirtysock -->
+	<property name="runtime.dirtystrings.defines">
+	    ${runtime.${dirtysock_modulename}.defines}
+	</property>    
+        
+    <!-- now bring in the list of files to build into this module -->
+   	<fileset basedir="${package.DirtySDK.dir}" name="runtime.dirtystrings.sourcefiles">
+        <includes fromfile="${package.DirtySDK.dir}/contrib/dirtystrings/project/${config-system}/source.txt" />
+    </fileset>
+    
+</project>

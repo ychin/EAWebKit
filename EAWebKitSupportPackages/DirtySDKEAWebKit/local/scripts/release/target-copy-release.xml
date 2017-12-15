@@ -1,0 +1,11 @@
+<project>
+
+	<target name="dirtysdk-copy-release" description="Copy the release client's directory to the package version directory" hidden="true">
+		<copy todir="${package.dir}\..\${dirtysdk-version}">
+			<fileset basedir="${dirtysdk-release-clientdir}">
+				<includes name="**" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>

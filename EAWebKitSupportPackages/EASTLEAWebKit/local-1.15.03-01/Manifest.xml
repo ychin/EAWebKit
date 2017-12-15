@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+
+	<summary>EA Standard Template Library</summary>
+
+	<description>
+		This package contains a custom template library that is much like
+		the C++ STL but that is more efficient, easier to read/debug, and
+		runs with consistent and good behavior on game development platforms.
+	</description>
+
+	<status>Official</status>
+	<statusComment></statusComment>
+
+	<frameworkVersion>2</frameworkVersion>
+
+	<buildable>true</buildable>
+
+</package>
+

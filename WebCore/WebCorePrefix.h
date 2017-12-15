@@ -29,13 +29,6 @@
 
 #include <wtf/Platform.h>
 
-#if defined(__APPLE__)
-#ifdef __cplusplus
-#define NULL __null
-#else
-#define NULL ((void *)0)
-#endif
-#endif
 
 #if OS(WINDOWS)
 
@@ -61,9 +54,6 @@
 
 #include <sys/types.h>
 #include <fcntl.h>
-#if defined(__APPLE__)
-#include <regex.h>
-#endif
 
 #include <setjmp.h>
 
@@ -74,9 +64,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#if defined(__APPLE__)
-#include <unistd.h>
-#endif
 
 #ifdef __cplusplus
 
@@ -112,14 +99,7 @@ _LIBCPP_END_NAMESPACE_STD
 
 #endif
 
-#if defined(__APPLE__)
-#include <sys/param.h>
-#endif
 #include <sys/stat.h>
-#if defined(__APPLE__)
-#include <sys/time.h>
-#include <sys/resource.h>
-#endif
 
 #include <CoreFoundation/CoreFoundation.h>
 #if PLATFORM(WIN_CAIRO)

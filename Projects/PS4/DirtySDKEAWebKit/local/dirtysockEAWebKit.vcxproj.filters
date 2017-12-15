@@ -24,55 +24,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptarc4.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptarc4.c">
       <Filter>core\crypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd2.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd2.c">
       <Filter>core\crypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd5.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptmd5.c">
       <Filter>core\crypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptrsa.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptrsa.c">
       <Filter>core\crypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptsha1.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\crypt\cryptsha1.c">
       <Filter>core\crypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtylib.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtylib.c">
       <Filter>core\dirtysock</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtymem.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtymem.c">
       <Filter>core\dirtysock</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtynet.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\dirtynet.c">
       <Filter>core\dirtysock</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\platformsocketapi.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\platformsocketapi.c">
       <Filter>core\dirtysock</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtylibkettle.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtylibkettle.c">
       <Filter>core\dirtysock\kettle</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtynetkettle.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\dirtysock\kettle\dirtynetkettle.c">
       <Filter>core\dirtysock\kettle</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttp.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttp.c">
       <Filter>core\proto</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttpmanager.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protohttpmanager.c">
       <Filter>core\proto</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protossl.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\proto\protossl.c">
       <Filter>core\proto</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\util\lobbybase64.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\core\source\util\lobbybase64.c">
       <Filter>core\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-str.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-str.c">
       <Filter>platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-time.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\DirtySDKEAWebKit\local\platform\plat-time.c">
       <Filter>platform</Filter>
     </ClCompile>
   </ItemGroup>

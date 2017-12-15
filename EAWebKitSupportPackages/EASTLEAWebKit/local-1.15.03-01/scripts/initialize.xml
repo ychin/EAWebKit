@@ -1,0 +1,15 @@
+<project>
+
+    <!-- EASTLEAWebKit header files location. -->
+    <property name="package.EASTLEAWebKit.includedirs">
+        ${package.EASTLEAWebKit.dir}/include
+    </property>
+
+    <!-- EASTLEAWebKit libraries location. -->
+    <fileset name="package.EASTLEAWebKit.libs">
+        <includes name="${package.EASTLEAWebKit.builddir}/${config}/lib/${lib-prefix}EASTLEAWebKit${lib-suffix}" />
+    </fileset>
+
+    
+
+</project>

@@ -1,0 +1,15 @@
+<project>
+    <!-- Enforce usage of compile flag -Xc+=c99 as it is required with ps3sdk=250.001 -->
+    <optionset name='CLibrary'>
+        <option name="cc.options" if="${config-system} == 'ps3' and ${config-compiler} == 'sn'" >
+            @{OptionSetGetValue('CLibrary', 'cc.options')}
+            -Xc+=c99					<!-- Enable support for C99 features -->
+        </option>
+    </optionset>
+    <optionset name='CProgram'>
+        <option name="cc.options" if="${config-system} == 'ps3' and ${config-compiler} == 'sn'" >
+            @{OptionSetGetValue('CProgram', 'cc.options')}
+            -Xc+=c99					<!-- Enable support for C99 features -->
+        </option>
+    </optionset>
+</project>

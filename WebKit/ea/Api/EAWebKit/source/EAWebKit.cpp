@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -110,9 +110,7 @@ EA_COMPILETIME_ASSERT((int)EA::WebKit::eSockErrCount == (int)eSockErrCount);
 #include <sqlite3.h>
 #endif
 
-#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
-#endif
 
 // abaldeva: General note. 05/22/2012
 // For the time being, we need to avoid calling wchar_t related functions in EAWebKit to keep it cross-platform.
@@ -698,6 +696,7 @@ bool Init(AppCallbacks* appCallbacks, AppSystems* appSystems)
 			SetSetCookieCallback(appCallbacks->setCookie);
 	}
 
+	SET_AUTO_COLLECTOR_STACK_BASE();
 	WebCore::initializeWebCoreEA();
 
 #if ENABLE(EATEXT_IN_DLL)
@@ -788,23 +787,30 @@ void Tick()
 	EAWEBKIT_THREAD_CHECK();
 	EAWWBKIT_INIT_CHECK(); 
 
-
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeDispatchFunctions, EA::WebKit::kVProcessStatusStarted, 0);
 	WTF::dispatchFunctionsFromMainThread(); // This is required for any children threads to work, for example, web workers.    
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeDispatchFunctions, EA::WebKit::kVProcessStatusEnded, 0);
 
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeTickDownload, EA::WebKit::kVProcessStatusStarted, 0);
 	WebCore::ResourceHandleManager::sharedInstance()->TickDownload();
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeTickDownload, EA::WebKit::kVProcessStatusEnded, 0);
 	
 	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeTransportTick, EA::WebKit::kVProcessStatusStarted, 0);
 	WebCore::ResourceHandleManager::sharedInstance()->TickTransportHandlers();
 	if(SocketTransportHandler* pSocketTxHandler = EA::WebKit::GetSocketTransportHandler())
 		pSocketTxHandler->Tick();
 	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeTransportTick, EA::WebKit::kVProcessStatusEnded, 0);
-
+	
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeFireTimer, EA::WebKit::kVProcessStatusStarted, 0);
 	WebCore::fireTimerIfNeeded();
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeFireTimer, EA::WebKit::kVProcessStatusEnded, 0);
 
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypePruneMemCache, EA::WebKit::kVProcessStatusStarted, 0);
 	RAMCacheUsageInfo currentUsage;
 	GetRAMCacheUsage(currentUsage);
 	if(currentUsage.mImagesBytes+currentUsage.mScriptsBytes+currentUsage.mFontsBytes+currentUsage.mCssStyleSheetsBytes > ramCacheUserPref.mTotalBytes)
 		WebCore::memoryCache()->prune();
+	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypePruneMemCache, EA::WebKit::kVProcessStatusEnded, 0);
 
 	NOTIFY_PROCESS_STATUS(EA::WebKit::kVProcessTypeLibTick, EA::WebKit::kVProcessStatusEnded, 0);
 }
@@ -1223,6 +1229,7 @@ Parameters::Parameters()
 	, mEnableFontAlphaFilter(false)
     , mDefaultToolTipEnabled(true)   
     , mReportJSExceptionCallstacks(false)
+    , mDoCssFiltersInHardware(false)
 	, mEnableProfiling(false)
     , mEnableImageCompression(false)
 	, mIgnoreGammaAndColorProfile(false)
@@ -1289,6 +1296,16 @@ bool CanDoJSCallstack()
 {
     EA::WebKit::EAWebKitClient *pClient = EA::WebKit::GetEAWebKitClient();
     if ((pClient != NULL) && EA::WebKit::GetParameters().mReportJSExceptionCallstacks)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool DoCssFilterInHardware()
+{
+    EA::WebKit::EAWebKitClient *pClient = EA::WebKit::GetEAWebKitClient();
+    if ((pClient != NULL) && EA::WebKit::GetParameters().mDoCssFiltersInHardware)
     {
         return true;
     }
@@ -1480,10 +1497,3 @@ void ClearSurfaceToColor(ISurface *surface, WebCore::Color color)
 } // WebKit
 } // EA
 
-#if !defined(EA_PLATFORM_WINDOWS)
-extern "C" char* getenv(const char* param)
-{
-    (void)param;
-    return NULL;
-}
-#endif

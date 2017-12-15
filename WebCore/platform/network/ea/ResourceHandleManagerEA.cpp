@@ -95,7 +95,6 @@ static void GetSystemPathFromFileURL(const WebCore::URL& kurl, EA::WebKit::Fixed
 	EA::WebKit::FixedString16_128 sPath16(sURLPath.characters(), sURLPath.length());
 
 	// Look for Microsoft-style paths (e.g. "/C|/windows/test.html", to convert to "C:\windows\test.html")
-#if defined(EA_PLATFORM_MICROSOFT)
     if((sPath16[0] == '/') &&
         sPath16[1] &&
         (sPath16[2] == ':' || sPath16[2] == '|'))
@@ -109,7 +108,6 @@ static void GetSystemPathFromFileURL(const WebCore::URL& kurl, EA::WebKit::Fixed
 		if(sPath16[i] == '/')
 			sPath16[i] = '\\';
 	}
-#endif
 
     EA::WebKit::ConvertToString8(sPath16, sPath);
 }

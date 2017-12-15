@@ -39,10 +39,8 @@ const char8_t* GetLocale();
 }
 }
 
-#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
 #define strdup _strdup
-#endif
 
 namespace WTF {
 
@@ -108,7 +106,6 @@ Collator::Result Collator::collate(const UChar* lhs, size_t lhsLength, const UCh
 	
 	// In our implementation, A.localeCompare(a) returns 1 on Windows while returns -1 on Consoles. There is no easy way to fix this behavior consistently
 	// across all locales. In practice, it is probably not that important for our usage.
-	#if defined(EA_PLATFORM_WINDOWS)
 		// The reason to subtract 2 is documented at http://msdn.microsoft.com/en-us/library/dd317761%28v=vs.85%29.aspx 
 		//
 		// Returns one of the following values if successful. To maintain the C runtime convention of comparing strings, the value 2 can be subtracted from a 
@@ -116,24 +113,6 @@ Collator::Result Collator::collate(const UChar* lhs, size_t lhsLength, const UCh
 		//
 		int result = CompareStringW(LOCALE_USER_DEFAULT, 0, lhs, (int)lhsLength, rhs, (int)rhsLength) - 2;
 		return (Collator::Result)result;
-	#else
-		// Following does not conform to Unicode so it may be incorrect for some locales. Ported from CollatorDefault.cpp.
-		int lmin = lhsLength < rhsLength ? lhsLength : rhsLength;
-		int l = 0;
-		while (l < lmin && *lhs == *rhs) {
-			lhs++;
-			rhs++;
-			l++;
-		}
-
-		if (l < lmin)
-			return (*lhs > *rhs) ? Greater : Less;
-
-		if (lhsLength == rhsLength)
-			return Equal;
-
-		return (lhsLength > rhsLength) ? Greater : Less;
-	#endif
 #endif
 
 }

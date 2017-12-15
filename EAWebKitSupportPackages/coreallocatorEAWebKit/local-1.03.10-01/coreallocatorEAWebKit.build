@@ -1,0 +1,12 @@
+﻿<project default="package">
+
+    <optionset name="config.targetoverrides">
+        <option name="test-build" value="include" />
+        <option name="test-run" value="include" />
+    </optionset>
+
+    <property name="currDir"  value="@{PathGetFullPath('.')}"/>
+    <property name="currVer"  value="@{PathGetFileName('${currDir}')}"/>
+    <package name="coreallocatorEAWebKit" targetversion="${currVer}"/>
+    <include file="test/test.xml"/>
+</project>

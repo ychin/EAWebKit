@@ -74,18 +74,18 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="$(VSInstallDir)\VC\BIN;$(VSInstallDir)\Common7\IDE"></UserProperties>
+      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

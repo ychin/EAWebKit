@@ -1,0 +1,48 @@
+<project>
+
+	<target name="dirtysdk-update-html" hidden="true">
+		<script language="C#">
+			<code><![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					String htdocs = project.Properties["dirtysdk-htdocs-clientdir"];
+					String version = project.Properties["dirtysdk-version"];
+					String date = Convert.ToDateTime(project.Properties["dirtysdk-date"]).ToString("yyyy-MM-dd");
+
+					UpdateHtml(htdocs + "/news/index.html", project.Properties["package.builddir"] + "/index.html", version, date);
+				}
+
+				static void UpdateHtml(String inputfile, String outputfile, String version, String date)
+				{
+					StreamReader SR = new StreamReader(inputfile);
+					StreamWriter SW = new StreamWriter(outputfile);
+
+					String line = SR.ReadLine();
+
+					while (line != null)
+					{
+						if (line.IndexOf("heading>DirtySDK") != -1)
+						{
+							String[] pieces = line.Split();
+							pieces[3] = version;
+							line = String.Join(" ", pieces);
+
+							SW.WriteLine(line);
+							line = SR.ReadLine();
+
+							String olddate = line.Substring(line.IndexOf(">") + 1, 10);
+							line = line.Replace(olddate, date);
+						}
+
+						SW.WriteLine(line);
+						line = SR.ReadLine();
+					}
+
+					SR.Close();
+					SW.Close();
+				}
+			]]></code>
+		</script>
+	</target> 
+
+</project>

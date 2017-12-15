@@ -1,0 +1,59 @@
+<project>
+
+    <property name="modulename" value="voipaux" />
+
+    <!-- build dependencies -->
+    <property name="${modulename}.builddependencies.pc">
+        Speex
+    </property>
+
+    <!-- build dependencies -->
+    <property name="${modulename}.builddependencies.pc64">
+      Speex
+    </property>
+
+  <!-- include the build dependency for the platform we're buildling -->
+    <property name="runtime.${modulename}.builddependencies">
+        ${${modulename}.builddependencies.${config-system}}
+    </property>
+
+    <!-- add any specific include directories -->
+    <property name="package.DirtySDK.includedirs">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/voipaux/include
+    </property>
+
+    <!-- add the library to the list of dirtysock libraries -->
+    <property name="package.DirtySDK.libs" value="${property.value};voipaux" />
+
+    <!-- add this module to the list of modules to build -->
+    <property name="runtime.buildmodules">
+        ${property.value}
+        voipaux
+    </property>
+
+    <!-- declare the type of module to build -->
+    <property name="runtime.voipaux.buildtype" value="CLibrary" />
+
+    <!-- add this module's includes to the general includes -->
+    <property name="runtime.voipaux.includedirs">
+        ${property.value}
+        ${package.DirtySDK.includedirs}
+    </property>
+
+    <!-- inherit warning suppression from dirtysock -->
+	<property name="runtime.voipaux.warningsuppression">
+		${runtime.${dirtysock_modulename}.warningsuppression}
+	</property>    
+	
+	<!-- inherit defines from dirtysock -->
+	<property name="runtime.voipaux.defines">
+	    ${runtime.${dirtysock_modulename}.defines}
+	</property>    
+        
+    <!-- now bring in the list of files to build into this module -->
+   	<fileset basedir="${package.DirtySDK.dir}" name="runtime.voipaux.sourcefiles">
+        <includes fromfile="${package.DirtySDK.dir}/contrib/voipaux/project/${config-system}/source.txt" />
+    </fileset>
+    
+</project>

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -50,9 +50,75 @@ namespace EA { namespace WebKit
 	enum ClearFlags
 	{
 		ClearColorBit		= 1 << 0,
-		ClearDepthBit		= 1 << 1,
-		ClearStencilBit		= 1 << 2
+		ClearDepthBit		= 1 << 1, // Currently unused
+		ClearStencilBit		= 1 << 2  // Only used if interface implements the scissor+stencil based clipping. Not used if using custom clipping. See below for more details.
 	};
+
+	// SurfaceType is exposed to help integrators implement any possible optimization. If the surface type is either Tile or Texture, the allocation and lock/unlock operations on it are within
+	// View::Paint().
+	enum SurfaceType
+	{
+		SurfaceTypeMain,
+		SurfaceTypeTile,
+		SurfaceTypeTexture,
+		SurfaceTypeOverlay
+	};
+
+	// The css filter operation to apply on the surface/texture 
+	enum FilterType 
+	{
+		FilterTypeNone,
+        FilterTypeGrayscale,
+		FilterTypeSepia,
+		FilterTypeSaturate,
+		FilterTypeHueRotate,
+		FilterTypeInvert,
+		FilterTypeOpacity,
+		FilterTypeBrightness,
+		FilterTypeContrast,
+		FilterTypeBlur,
+		FilterTypeDropShadow,
+	};
+	
+	// The parameters for the filter operation. Not all fields may be required for all operations. 
+	struct FilterInfo
+	{
+		FilterType filterType;
+		float amount;
+        uint32_t color;
+        IntPoint location;
+		
+        FilterInfo()
+			: filterType(EA::WebKit::FilterType::FilterTypeNone)
+			, amount(0.0f)
+            , color(0)
+            , location(0,0)
+		{
+
+		}
+	};
+
+    class Filters
+    {
+    public:
+        Filters()
+            : mIndex(0)
+        {
+
+        }
+
+        FilterInfo Get(uint32_t index) const { if (mIndex < kMaxFilters) { return mFilterList[index]; } return FilterInfo(); }
+        void Add(FilterInfo info) { if (mIndex < kMaxFilters) {mFilterList[mIndex] = info;  mIndex++;} }
+        void Reset() {mIndex = 0;}  //doesn't actually clear the data but sets the count back to 0
+        uint32_t Count() const { return mIndex; }
+        uint32_t CountMax() const { return kMaxFilters; }
+    
+    private:
+        static const uint32_t kMaxFilters = 16;
+        uint32_t mIndex;
+        FilterInfo mFilterList[kMaxFilters];
+    };
+
     // Implement this class and pass it through the view's initialization
     // parameters to enable GPU compositing.
     // You will also need to implement a version of the ISurface class that can work with the 
@@ -66,17 +132,18 @@ namespace EA { namespace WebKit
         // You should return a new instance of your Hardware ISurface implementation.
         // Note that there is no 'DestroySurface' call, so it's up to the ISurface to nuke itself
         // when ISurface::Release is called.
-        virtual EA::WebKit::ISurface *CreateSurface(void) = 0;
+        virtual EA::WebKit::ISurface *CreateSurface(EA::WebKit::SurfaceType surfaceType) = 0;
 
         // If target is null, render to screen(back buffer)
         // For non null target, render to the target surface(texture) 
         virtual void SetRenderTarget(EA::WebKit::ISurface *target) = 0;
 
 		// Render the surface on to currently bound render target.
-		// target specifies the part of the surface that needs to be renderer. 
-		// matrix specifies the location and orientation of the surface to be rendered in the containing view coordinates. It is possible
-		// that the location is beyond the viewport size in which case the surface is not visually rendered.
-        virtual void RenderSurface(EA::WebKit::ISurface *surface, EA::WebKit::FloatRect &target, EA::WebKit::TransformationMatrix &matrix, float opacity, EA::WebKit::CompositOperator op, EA::WebKit::TextureWrapMode wrap) = 0;
+		// target specifies the location and size of the surface to be rendered. We always draw full texture so target.size is same as surface.size. 
+		// matrix specifies any additional translation and rotation of the surface to be rendered in the containing view coordinates. The translation
+		// may cause the part of/full surface to get clipped.
+        virtual void RenderSurface(EA::WebKit::ISurface *surface, EA::WebKit::FloatRect &target, EA::WebKit::TransformationMatrix &matrix, 
+									float opacity, EA::WebKit::CompositOperator op, EA::WebKit::TextureWrapMode wrap, Filters &filters) = 0;
 		// Fill the color on to the currently bound render target. Note that the color value has alpha pre-multiplied.
 		virtual void FillColor(uint32_t premultiplied_rgba32, EA::WebKit::FloatRect &target, EA::WebKit::TransformationMatrix &matrix, EA::WebKit::CompositOperator op) = 0;
 		// Draw the outline on to the currently bound render target. Note that the color value has alpha pre-multiplied.
@@ -101,7 +168,9 @@ namespace EA { namespace WebKit
 		virtual void ScissorClip(EA::WebKit::IntRect axisAlignedRect) = 0;
 		// Draw at the currently bound stencil buffer at index specified by stencilIndex. This will serve as the region to clip against. 
 		virtual void DrawStencil(EA::WebKit::TransformationMatrix &matrix, EA::WebKit::FloatRect &target, uint32_t stencilIndex) = 0;
-		// Actually clip against the previously drawn stencil. Clip against all bit planes that were drawn previously. 
+		// Actually clip against the previously drawn stencil. Clip against all bit planes that were drawn previously.
+		// Note that this call just prepares the stencilIndex to be used. If there is not DrawStencil call as a follow up, the buffer at
+		// the new stencilIndex is not used at all(meaning stencil based clipping is not kicked in/required). 
 		virtual void ClipAgainstStencil(uint32_t stencilIndex) = 0;
 
 		// 2. If you'd rather implement clipping yourself, indicate so by returning true for UseCustomClip API.
@@ -110,8 +179,6 @@ namespace EA { namespace WebKit
 		virtual bool UseCustomClip() = 0;
 		virtual void BeginClip(EA::WebKit::TransformationMatrix &matrix, EA::WebKit::FloatRect &target) = 0;
 		virtual void EndClip(void) = 0;
-		// CurrentClipBound is an optimization. If you are unable to compute it (for example, you use stencil exclusively),
-		// just return full screen here. 
 		virtual EA::WebKit::IntRect CurrentClipBound() = 0;
 
 		//-ClippingAPI

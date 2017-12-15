@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build">
+
+  <property name="currDir" value="@{PathGetFullPath('.')}"/>
+  <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+  <package name="JavaScriptCore" targetversion="${currVer}" />
+
+  <property name="OpenSourceDll" value="false" unless="@{PropertyExists('OpenSourceDll')}"/>
+  <property name="EAWebKit.ENABLE_LEAN_AND_MEAN" value="false" unless="@{PropertyExists('EAWebKit.ENABLE_LEAN_AND_MEAN')}"/>
+
+  <!--abaldeva - There isn't a way to avoid setting a property to false first and then set it to true based on predicate result.
+  This has been verified from the Framework2 mailing list.  -->
+  <!-- Set some useful properties to avoid clutter in the build file. -->
+  <property name="ConfigIsDebug"  value="false"/>
+  <property name="ConfigIsOpt"    value="false"/>
+  <property name="ConfigIsFinal"  value="false"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+
+  <property name="OsIsWin"      value="false"/>
+  <property name="OsIsOSX"      value="false"/>
+  <property name="OsIsXboxOne" value="false"/>
+  <property name="OsIsPS4"   value="false"/>
+
+  <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
+  <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
+  <property name="OsIsXboxOne" value="true" if="${config-system} == capilano"/>
+  <property name="OsIsPS4"   value="true" if="${config-system} == kettle"/>
+
+  <property name="EAWebKit.DisableJIT" value="false" unless="@{PropertyExists('EAWebKit.DisableJIT')}"/>
+  <!-- If desired, disable JIT on supported platforms. -->
+
+  <!-- ********************* -->
+  <!-- Runtime configuration -->
+  <!-- ********************* -->
+  <optionset name="customized-config-options-library" fromoptionset="config-options-library">
+    <option name="buildset.name" value="CustomizedLibrary"/>
+
+  </optionset>
+  <task name="GenerateBuildOptionset" configsetname="customized-config-options-library" />
+
+  <do if="${config-compiler} == 'vc'">
+    <optionset name="CustomizedLibrary">
+      <!-- Disable the warnings as lot of them are generated. -->
+      <option name="cc.options">@{StrReplace(${option.value}, '-W4', '-W0')}</option>
+      <option name="cc.options">@{StrReplace(${option.value}, '-Wall', ' ')}</option>
+      <option name="cc.options">@{StrReplace(${option.value}, '-WX', ' ')}</option>
+      <!--EAWebKitTODO: Investigate /fp:except- and /TP -->
+      <option name="cc.options">
+        ${option.value}
+        /fp:precise
+        /fp:except-
+        /TP
+      </option>
+
+      
+
+      <!-- EAWebKitTODO: Investigate if we want to do this for platforms now. For JavaScriptCore, we want to generate faster code.-->
+
+      <option name="cc.options" if="!${ConfigIsDebug}">
+        @{StrReplace(${option.value}, '-Os', '-Ot')}
+      </option>
+    </optionset>
+  </do>
+  <do if="${config-compiler} == 'clang' and ${OsIsOSX}">
+    <optionset name="CustomizedLibrary">
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-ffast-math', ' ')}
+      </option>
+    </optionset>
+  </do>
+  
+  <property name="runtime.buildtype" value="CustomizedLibrary" />
+
+  
+  <property name="runtime.outputname" value="JavaScriptCore"/>
+
+  <property name="runtime.defines">
+    ${property.value}
+    UNICODE <!-- EAWebKitTODO: Investigate this define-->
+    BUILDING_EA__=1
+    BUILDING_EA__
+    BUILDING_JavaScriptCore
+    JS_NO_EXPORT
+    _UNICODE
+    _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1
+    _HAS_EXCEPTIONS=0
+  </property>
+
+  <property name="runtime.defines" if="${EAWebKit.ENABLE_LEAN_AND_MEAN}">
+    ${property.value}
+    ENABLE_SVG=0
+  </property>
+
+  <property name="runtime.defines" if="!${OpenSourceDll}">
+    ${property.value}
+    WTF_USE_DIRTYSDK=0
+    WTF_USE_EATEXT=0
+  </property>
+  
+  <property name="runtime.defines" if="${EAWebKit.DisableJIT}">
+    ${property.value}
+    ENABLE_JIT=0
+  </property>
+ 
+  <property name="runtime.defines" if="${OsIsWin}">
+    ${property.value}
+    WIN32 <!-- defined for both Win32 and Win 64 http://msdn.microsoft.com/en-us/library/b0084kay -->
+    _WINDOWS
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin} or ${OsIsXboxOne}">
+    ${property.value}
+    NOMINMAX
+  </property>
+
+  <!-- For a config other than debug, define following. This is so that you are not accidentally shipping a configuration with debug information.
+  FWIW, the use of macros such as NDEBUG for defining release like configurations is discouraged in EA but it is very common in lot of frameworks. 
+  -->
+  <property name="runtime.defines" if="!${ConfigIsDebug}">
+    ${property.value}
+    NDEBUG
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin} or ${OsIsXboxOne}">
+    ${property.value}
+    EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;
+  </property>
+
+  <property name="runtime.includedirs">
+    ${property.value}
+    ${package.dir}/JavaScriptCore/../
+    ${package.dir}/JavaScriptCore/generated
+    ${package.dir}/JavaScriptCore/
+    ${package.dir}/JavaScriptCore/API
+    ${package.dir}/JavaScriptCore/ForwardingHeaders/
+    ${package.dir}/JavaScriptCore/ForwardingHeaders/JavaScriptCore
+    ${package.dir}/JavaScriptCore/assembler
+    ${package.dir}/JavaScriptCore/bytecode
+    ${package.dir}/JavaScriptCore/bytecompiler
+    ${package.dir}/JavaScriptCore/debugger
+    ${package.dir}/JavaScriptCore/dfg
+    ${package.dir}/JavaScriptCore/disassembler
+    ${package.dir}/JavaScriptCore/ftl
+    ${package.dir}/JavaScriptCore/heap
+    ${package.dir}/JavaScriptCore/interpreter
+    ${package.dir}/JavaScriptCore/jit
+    ${package.dir}/JavaScriptCore/llint
+    ${package.dir}/JavaScriptCore/parser
+    ${package.dir}/JavaScriptCore/profiler
+    ${package.dir}/JavaScriptCore/runtime
+    ${package.dir}/JavaScriptCore/tools
+    ${package.dir}/JavaScriptCore/yarr
+  </property>
+
+  <property name="runtime.includedirs" if="${OsIsWin}">
+    ${property.value}
+    ${package.dir}/JavaScriptCore/generated/${config-system}/${config-name}
+  </property>
+
+  <property name="runtime.includedirs" if="${OsIsXboxOne}">
+    ${property.value}
+    ${package.dir}/JavaScriptCore/generated/xboxone/${config-name}
+  </property>
+
+  <property name="runtime.includedirs" if="${OsIsPS4}">
+    ${property.value}
+    ${package.dir}/JavaScriptCore/generated/ps4/${config-name}
+  </property>
+
+  <!--EAWebKitTODO: Change to use dependency type-->
+  <property name="runtime.builddependencies">
+    EABaseEAWebKit
+    EASTLEAWebKit
+    WTF
+  </property>
+
+  <property name="runtime.usedependencies">
+    ${property.value}
+  </property>
+
+  <fileset name="runtime.sourcefiles">
+    <includes name="JavaScriptCore/API/*.cpp" />
+    <excludes name="JavaScriptCore/API/JSProfilerPrivate.cpp" />
+    <excludes name="JavaScriptCore/API/JSStringRefBSTR.cpp" />
+    <excludes name="JavaScriptCore/API/JSStringRefCF.cpp" />
+    <includes name="JavaScriptCore/assembler/LinkBuffer.cpp" />
+    <includes name="JavaScriptCore/assembler/MacroAssembler.cpp" />
+    <includes name="JavaScriptCore/assembler/MacroAssemblerX86Common.cpp" />
+    <includes name="JavaScriptCore/bytecode/*.cpp" />
+    <excludes name="JavaScriptCore/bytecode/DFGExitProfile.cpp" />
+    <excludes name="JavaScriptCore/bytecode/PreciseJumpTargets.cpp" />
+    <excludes name="JavaScriptCore/bytecode/SamplingTool.cpp" />
+    <includes name="JavaScriptCore/bytecompiler/*.cpp" />
+    <includes name="JavaScriptCore/debugger/*.cpp" />
+    <includes name="JavaScriptCore/dfg/DFGCompilationKey.cpp" />
+    <includes name="JavaScriptCore/dfg/DFGCompilationMode.cpp" />
+    <includes name="JavaScriptCore/dfg/DFGDriver.cpp" />
+    <includes name="JavaScriptCore/disassembler/Disassembler.cpp" />
+    <includes name="JavaScriptCore/heap/*.cpp" />
+    <includes name="JavaScriptCore/interpreter/*.cpp" />
+    <includes name="JavaScriptCore/jit/*.cpp" />
+    <excludes name="JavaScriptCore/jit/ExecutableAllocatorFixedVMPool.cpp" />
+    <includes name="JavaScriptCore/llint/*.cpp" />
+    <excludes name="JavaScriptCore/llint/LLIntOffsetsExtractor.cpp" />
+    <includes name="JavaScriptCore/parser/*.cpp" />
+    <includes name="JavaScriptCore/profiler/*.cpp" />
+    <includes name="JavaScriptCore/runtime/*.cpp" />
+    <excludes name="JavaScriptCore/runtime/CompilationResult.cpp" />
+    <excludes name="JavaScriptCore/runtime/DumpContext.cpp" />
+    <excludes name="JavaScriptCore/runtime/FunctionExecutableDump.cpp" />
+    <excludes name="JavaScriptCore/runtime/GCActivityCallbackBlackBerry.cpp" />
+    <excludes name="JavaScriptCore/runtime/JSChunk.cpp" />
+    <excludes name="JavaScriptCore/runtime/JSStaticScopeObject.cpp" />
+    <excludes name="JavaScriptCore/runtime/MemoryStatistics.cpp" />
+    <excludes name="JavaScriptCore/runtime/WatchdogMac.cpp" />
+    <includes name="JavaScriptCore/tools/*.cpp" />
+    <includes name="JavaScriptCore/yarr/*.cpp" />
+  </fileset>
+
+  <!--We include all the header files as it is easiest to do. 
+  Note that even if included in vcproj, we don't run the risk of including the wrong platform header since we don't include the "platform include directories" in the
+  include step.
+  -->
+  <fileset name="runtime.headerfiles">
+    <includes name="JavaScriptCore/**/*.h" />
+  </fileset>
+
+  <!-- Even though, all the warnings are disabled, this one somehow makes it through on VS 2010-->
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+    ${property.value}
+    -wd4275
+    -wd4996
+  </property>
+
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'clang'">
+    ${property.value}
+    -Wno-narrowing <!-- non-constant-expression cannot be narrowed from type -->
+    -Wno-invalid-noreturn
+    -Wno-unused-function
+    -Wno-tautological-compare
+    -Wno-unused-variable
+  </property>
+  
+</project>

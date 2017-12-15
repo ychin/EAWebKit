@@ -120,8 +120,7 @@ WebCore::InspectorFrontendChannel*  InspectorClientEA::openInspectorFrontend(Web
 void InspectorClientEA::closeInspectorFrontend()
 {
 	if (mInspectorPageClient)
-		mInspectorPageClient->inspectorClientDestroyed();
-
+		mInspectorPageClient->closeWindow();
 }
 
 
@@ -279,7 +278,7 @@ void InspectorFrontendClientEA::destroyInspectorView(bool notifyInspectorControl
         mInspectedWebPage->DestroyInspector();
     }
 
-    if (notifyInspectorController)
+    if (notifyInspectorController && (mInspectedWebPage))
         mInspectedWebPage->d->page->inspectorController()->disconnectFrontend();
 
     if (mInspectorClient)

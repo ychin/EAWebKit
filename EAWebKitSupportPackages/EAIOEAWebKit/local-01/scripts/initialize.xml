@@ -1,0 +1,20 @@
+<project>
+
+	<!-- EAIOEAWebKit header files location. -->
+	<property name="package.EAIOEAWebKit.includedirs">
+		${package.EAIOEAWebKit.dir}/include
+		${package.EAIOEAWebKit.dir}/include/EAIO/Wii
+	</property>
+
+	<!-- EAIOEAWebKit libraries location. -->
+	<do if="@{PropertyExists('config')}">
+		<do if="@{PropertyExists('lib-prefix')}">
+			<do if="@{PropertyExists('lib-suffix')}">
+				<fileset name="package.EAIOEAWebKit.libs">
+					<includes name="${package.EAIOEAWebKit.builddir}/${config}/lib/${lib-prefix}EAIOEAWebKit${lib-suffix}" />
+				</fileset>
+			</do>
+		</do>
+	</do>
+
+</project>

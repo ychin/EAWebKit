@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<!--This NAnt build file contains ten tasks that:
+(1) runs Doxygen 
+(2) writes the output HTML to the Webserver
+(3) parses the table of contents file-->
+
+<project>
+
+	<!-- define chm and exe locations -->
+	<property name="dirtysdk-chm-dir" value="${package.dir}\doc\chm" />
+	<property name="dirtysdk-doxygen-dir" value="${dirtysdk-driveletter}:\packages\Doxygen\1.5.4\installed\bin" />
+	<property name="dirtysdk-dot-dir" value="${dirtysdk-driveletter}:\packages\GraphViz\2.6.0\installed\bin" />
+	<property name="dirtysdk-hhc-dir" value="${dirtysdk-framework-driveletter}:\packages\Framework\${package.Framework.version}\source\UserDoc\bin" />
+
+	<!-- define optionsets for dot files and platforms -->
+	<optionset name="DotFiles">
+		<option name="dirtysdk.dot" value="dirtysdk.png" />
+		<option name="comm.dot" value="comm.png" />
+		<option name="crypt.dot" value="crypt.png" />
+		<option name="dirtysock.dot" value="dirtysock.png" />
+		<option name="lobby.dot" value="lobby.png" />
+		<option name="buddy.dot" value="buddy.png" />
+		<option name="netgame.dot" value="netgame.png" />
+		<option name="pogo.dot" value="pogo.png" />
+		<option name="proto.dot" value="proto.png" />
+		<option name="xml.dot" value="xml.png" />
+	</optionset>
+
+	<!-- Build documentation for a platform -->
+	<target name="dirtysdk-doc" hidden="true">       
+		<!-- Run Doxygen -->
+		<exec program="${dirtysdk-doxygen-dir}\doxygen.exe" commandline="DirtySock.dxy" output="buildlog.xml" stdout="false" workingdir="${dirtysdk-chm-dir}\${platform}" >
+        		<env>
+        			<option name="PATH" value="${dirtysdk-dot-dir}" />
+        		</env>
+		</exec>
+
+		<!-- Run Dot conversions -->
+		<foreach item="OptionSet" in="DotFiles" property="file">
+			<exec program="${dirtysdk-dot-dir}\dot.exe" commandline="-Tpng ..\dotfiles\${file.name} -o html\${file.value}" workingdir="${dirtysdk-chm-dir}\${platform}" />
+		</foreach>
+
+		<!-- Create .chm file -->
+		<exec program="${dirtysdk-hhc-dir}\hhc.exe" commandline="html\index.hhp" stdout="false" workingdir="${dirtysdk-chm-dir}\${platform}" failonerror="false" />
+
+		<!-- Parse .hhc file in staging folder, apply regexs -->
+		<script language="C#">
+			<code><![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					string filedir = project.Properties["dirtysdk-chm-dir"] + "\\" + project.Properties["platform"] + "\\html";
+
+					string pattern1 = @"<LI>.*?value=""(.*?)"".*?value=""(.*?)"".*?value=""1""></OBJECT>";
+					string pattern2 = @"<LI>.*?value=""(.*?)"".*?value=""(.*?)"".*?value=""11""></OBJECT>";
+					string pattern3 = @"(\s+)</UL>";
+					Regex Rgx1 = new Regex(pattern1);
+					Regex Rgx2 = new Regex(pattern2);
+					Regex Rgx3 = new Regex(pattern3);
+
+					StreamReader reader = new StreamReader(filedir + "\\index.hhc");
+					StreamWriter writer = new StreamWriter(filedir + "\\whtdata0.xml");
+
+					writer.WriteLine("<?xml version='1.0' encoding='windows-1252' ?>");
+					writer.WriteLine("<tocdata>");
+
+					string line = reader.ReadLine();
+
+					while(line != null)
+					{
+						if (Rgx1.IsMatch(line))
+						{
+							line = Rgx1.Replace(line, "<book name=\"$1\" url=\"$2\">");
+							writer.WriteLine(line); 
+						}
+						else if (Rgx2.IsMatch(line))
+						{
+							line = Rgx2.Replace(line, "<item name=\"$1\" url=\"$2\" />");
+							writer.WriteLine(line);
+						}
+						else if (Rgx3.IsMatch(line))
+						{
+							line = Rgx3.Replace(line, "$1</book>");
+							writer.WriteLine(line); 
+						}
+						
+						line = reader.ReadLine();
+					}
+
+					writer.WriteLine("</tocdata>");
+		
+					reader.Close();
+					writer.Close();
+				}
+			]]></code>
+		</script>
+
+		<!-- Overwrite the old chm file with the new one -->
+		<move file="${dirtysdk-chm-dir}\${platform}\html\index.chm" tofile="${dirtysdk-chm-dir}\${platform}\DirtySock.chm" clobber="true" />
+	</target>
+
+	<target name="dirtysdk-doc-clean" hidden="true">
+		<delete dir="${dirtysdk-chm-dir}\${platform}\html" />
+		<delete file="${dirtysdk-chm-dir}\${platform}\buildlog.xml" />
+		<delete file="${dirtysdk-chm-dir}\${platform}\warnings.xml" />
+	</target>
+
+	<target name="dirtysdk-builddoc" description="Builds the chm file for the currently selected configuration's platform" hidden="true">
+		<property name="platform" value="@{StrSubstring(${config}, '0', @{StrIndexOf(${config}, '-')})}" />
+		<call target="dirtysdk-doc" />
+	</target>
+
+	<target name="dirtysdk-builddoc-all" description="Builds the chm files for all platforms" hidden="true">
+		<foreach item="String" in="pc psp xenon" property="platform">
+			<call target="dirtysdk-doc" />
+		</foreach>
+	</target>
+
+	<target name="dirtysdk-builddoc-clean" description="Removes the extra files created by builddoc for the currently selected configuration's platform" hidden="true">
+		<property name="platform" value="@{StrSubstring(${config}, '0', @{StrIndexOf(${config}, '-')})}" />
+		<call target="dirtysdk-doc-clean" />
+	</target>
+
+	<target name="dirtysdk-builddoc-cleanall" description="Removes the extra files created by builddoc for all platforms" hidden="true">
+		<foreach item="String" in="pc psp xenon" property="platform">
+			<call target="dirtysdk-doc-clean" />
+		</foreach>
+	</target>
+
+</project>

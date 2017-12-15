@@ -1,0 +1,19 @@
+<project>
+
+	<!-- libxml2EAWebKit header files location. -->
+	<property name="package.libxml2EAWebKit.includedirs">
+		${package.libxml2EAWebKit.dir}/include
+	</property>
+
+	<!-- libxml2EAWebKit libraries location. -->
+	<do if="@{PropertyExists('config')}">
+		<do if="@{PropertyExists('lib-prefix')}">
+			<do if="@{PropertyExists('lib-suffix')}">
+				<fileset name="package.libxml2EAWebKit.libs">
+					<includes name="${package.libxml2EAWebKit.builddir}/${config}/lib/${lib-prefix}libxml2EAWebKit${lib-suffix}" />
+				</fileset>
+			</do>
+		</do>
+	</do>
+
+</project>

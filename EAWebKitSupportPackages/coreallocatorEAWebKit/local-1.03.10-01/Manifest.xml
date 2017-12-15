@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+
+	<summary>coreallocatorEAWebKit</summary>
+
+	<description>
+		ICoreAllocator defines an abstract interface for dynamic memory
+		allocation.  It consists of two variations of alloc and one free
+		function.  Specialized versions of operator new and new[] are
+		also provided.  This interface will be used by Next Generation
+		Ignition technologies.
+
+		No implementation of the interface is provided in this package;
+		users are expected to supply their own.  We encourage the use
+		of the PPMalloc allocator.
+	</description>
+
+	<changes>
+		Added frameworkVersion and buildable tags to the manifest file.  There are no code changes.
+	</changes>
+
+	<frameworkVersion>2</frameworkVersion>
+	<buildable>false</buildable>
+</package>

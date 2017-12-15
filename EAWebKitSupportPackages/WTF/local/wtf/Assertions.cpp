@@ -69,11 +69,7 @@
 #include <crtdbg.h>
 #endif
 
-#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
-#elif OS(WINDOWS)
-#include <windows.h>
-#endif
 
 #if OS(DARWIN) || (OS(LINUX) && !defined(__UCLIBC__))
 #include <cxxabi.h>

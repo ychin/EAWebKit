@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package>
+
+	<summary> PPMallocEAWebKit </summary>
+
+	<homePageUrl></homePageUrl>
+
+	<status>Development</status>
+	<statusComment></statusComment>
+
+	<frameworkVersion>2</frameworkVersion>
+	<buildable>true</buildable>
+
+</package>

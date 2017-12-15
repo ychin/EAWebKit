@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+
+<!--This NAnt build file contains tasks that:
+(1) creates the mapparse output files
+(2) parses the output file to generate a summary -->
+
+<project>
+
+	<!-- define dir locations -->
+	<property name="dirtysdk-mapparse-dir" value="${package.dir}\util\pc" />
+	<property name="dirtysdk-mpsrc-dir" value="${package.dir}\core\project" />
+	<property name="dirtysdk-targ-dir" value="dev-debug" />
+    <property name="dirtysdk-xenon-pdb-dir" value="build\DirtySDK\dev" />
+
+	<!-- Build mapparse report for a platform -->
+	<target name="dirtysdk-mapparse" hidden="true">
+        <choose>
+            <!-- Perform DS -->
+            <do if="@{StrIndexOf('${platform}', 'ds')} != -1">
+                <!-- Copy old libstat.txt file before creating the new one -->
+                <do unless="{${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt} == -1">
+                    <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" tofile="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt" overwrite="true" >
+                    </copy>
+                </do>
+
+		        <!-- Run mapparse -->
+                <exec program="${dirtysdk-mapparse-dir}\mapparse.exe" commandline="${platform} ${package.builddir}\${dirtysdk-config}-${dirtysdk-targ-dir}\build\libstat\libstat.${ext} ${dirtysdk-mpsrc-dir}\source.txt ${dirtysdk-mpsrc-dir}\${platform}\source.txt" output="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" stdout="false" failonerror="false"> 
+		        </exec>
+
+                <!-- Create the summary report -->
+                <do unless="{${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt} == -1">
+                    <exec program="${dirtysdk-mapparse-dir}\mpsummary.exe" commandline="${platform} ${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt ${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" output="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" stdout="false" failonerror="false"> 
+                    </exec>
+                </do>
+            </do>
+
+            <!-- Perform Xenon -->
+            <do if="${platform} == 'xenon'">
+                <do if="${dirtysdk-targ-dir} == 'dev-debug'">
+	                <property name="dirtysdk-targ-dir" value="dev-debug" />
+                    <!-- Copy old xxx-memory.txt file before creating the new one -->
+                    <!-- Comment out until fixed
+                    <do unless="{${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt} == -1">
+                        <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" tofile="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt" overwrite="true" >
+                        </copy>
+                    </do>
+                    -->
+
+		            <!-- Run mapparse -->
+                    <!-- Comment out until fixed
+                    <exec program="${dirtysdk-mapparse-dir}\mapparse.exe" commandline="${platform} ${dirtysdk-package-clientdir}\${dirtysdk-xenon-pdb-dir}\${dirtysdk-config}-${dirtysdk-targ-dir}\bin\libstat.${ext} ${dirtysdk-mpsrc-dir}\source.txt ${dirtysdk-mpsrc-dir}\${platform}\source.txt" output="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" stdout="false" failonerror="false"> 
+		            </exec>
+                    -->
+
+                    <!-- Create the summary report -->
+                    <!-- Comment out until fixed
+                    <do unless="{${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt} == -1">
+                        <exec program="${dirtysdk-mapparse-dir}\mpsummary.exe" commandline="${platform} ${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt ${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" output="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" stdout="false" failonerror="false"> 
+                        </exec>
+                    </do>
+                    -->
+                </do>
+            </do>
+
+            <!-- Perform all other platforms -->
+            <do>
+                <!-- Copy old libstat.txt file before creating the new one -->
+                <do unless="{${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt} == -1">
+                    <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" tofile="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt" overwrite="true" >
+                    </copy>
+                </do>
+
+		        <!-- Run mapparse -->
+                <exec program="${dirtysdk-mapparse-dir}\mapparse.exe" commandline="${platform} ${package.builddir}\${dirtysdk-config}-${dirtysdk-targ-dir}\bin\libstat.${ext} ${dirtysdk-mpsrc-dir}\source.txt ${dirtysdk-mpsrc-dir}\${platform}\source.txt" output="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" stdout="false" failonerror="false"> 
+		        </exec>
+
+                <!-- Create the summary report -->
+                <do unless="{${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt} == -1">
+                    <exec program="${dirtysdk-mapparse-dir}\mpsummary.exe" commandline="${platform} ${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.old.txt ${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" output="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" stdout="false" failonerror="false"> 
+                    </exec>
+                </do>
+            </do>
+        </choose>
+	</target>
+
+	<target name="dirtysdk-runmapparse" description="Builds the txt file for the currently selected configuration's platform" hidden="true">
+		<property name="platform" value="@{StrSubstring(${config}, '0', @{StrIndexOf(${config}, '-')})}" />
+        <do unless="@{StrIndexOf('${platform}', 'ps3')} == -1">
+            <property name="platform" value="ps3" />
+            <property name="dirtysdk-config" value="ps3-gcc" />
+            <property name="ext" value="map" />
+        </do>
+        <do unless="@{StrIndexOf('${platform}', 'ds')} == -1">
+            <property name="platform" value="ds" />
+            <property name="dirtysdk-config" value="ds-mw" />
+            <property name="ext" value="nef.xMAP" />
+        </do>
+        <!--
+        <do unless="@{StrIndexOf('${platform}', 'rev')} == -1">
+            <property name="platform" value="rev" />
+            <property name="dirtysdk-config" value="rev-mw" />
+            <property name="ext" value="map" />
+        </do>
+        -->
+        <do unless="@{StrIndexOf('${platform}', 'xenon')} == -1">
+            <property name="platform" value="xenon" />
+            <property name="dirtysdk-config" value="xenon-vc" />
+            <property name="ext" value="pdb" />
+        </do>
+		<call target="dirtysdk-mapparse" />
+	</target>
+
+	<target name="dirtysdk-runmapparse-all" description="Builds the txt files for all platforms" hidden="true">
+            <foreach item="String" in="ps3-gcc ds-mw xenon-vc" property="dirtysdk-config">
+            <property name="platform" value="@{StrSubstring(${dirtysdk-config}, '0', @{StrIndexOf(${dirtysdk-config}, '-')})}" />
+                <do unless="@{StrIndexOf('${platform}', 'ps3')} == -1">
+                    <property name="ext" value="map" />
+                </do>
+                <do unless="@{StrIndexOf('${platform}', 'ds')} == -1">
+                    <property name="ext" value="nef.xMAP" />
+                </do>
+                <do unless="@{StrIndexOf('${platform}', 'rev')} == -1">
+                    <property name="ext" value="map" />
+                </do>
+                <do unless="@{StrIndexOf('${platform}', 'xenon')} == -1">
+                    <property name="ext" value="pdb" />
+                </do>
+			<call target="dirtysdk-mapparse" />
+		</foreach>
+	</target>
+
+</project>

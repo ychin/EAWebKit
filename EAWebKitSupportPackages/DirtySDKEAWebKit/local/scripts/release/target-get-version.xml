@@ -1,0 +1,29 @@
+<project>
+
+	<target name="dirtysdk-get-version" description="Get the release version and date from changelog.txt" hidden="true">
+		<script language="C#">
+			<code><![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					string changelog = project.Properties["dirtysdk-release-clientdir"] + "/changelog.txt";
+					GetVersion(project, changelog);
+				}
+
+				static void GetVersion(Project project, string filename)
+				{
+					StreamReader SR = new StreamReader(filename);
+
+					String line = SR.ReadLine();
+					String version = line.Split()[2];
+					String date = line.Substring(line.IndexOf("-") + 2);
+
+					project.Properties.Add("dirtysdk-version", version);
+					project.Properties.Add("dirtysdk-date", date);
+
+					SR.Close();
+				}
+			]]></code>
+		</script>
+	</target> 
+
+</project>

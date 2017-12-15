@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<project name="libxml2EAWebKit" default="build">
+
+    <property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+
+    <!-- Properties -->
+    <property name="currDir" value="@{PathGetFullPath('.')}"/>
+    <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+
+    <!-- Package declaration -->
+    <package  name="libxml2EAWebKit" targetversion="${currVer}"/>
+
+
+    <!-- Create extra build types which modifies the build -->
+    <optionset name="config-options-library-mod" fromoptionset="config-options-library-c">
+        <option name="buildset.name" value="CLibraryMod"/>
+        <option name="warnings" value="off"/>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-library-mod" />
+    <optionset name="CLibraryMod">
+        <option name="cc.options" if="${config-compiler} == 'vc' and @{StrIndexOf('${config-name}', '-opt')} != -1">
+            <!-- Use /O1 (minimize size) instead of /O2 (maximize speed) -->
+            @{StrReplace(@{OptionSetGetValue('buildsettings', 'cc.options')}, '-O2', '-O1')}
+        </option>
+        <option name="cc.options" if="${config-compiler} == 'sn'">          
+            -Xc=cp-rtti-exceptions+bool+array_nd+wchar_t+tmplname+gnu_ext
+        </option>
+    </optionset>
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <property name="runtime.buildmodules" value="libxml2EAWebKit"/>
+    <property name="runtime.libxml2EAWebKit.buildtype" value="CLibrary"/>
+
+    <property name="runtime.libxml2EAWebKit.defines" if="${config-compiler} == 'vc'">
+        ${property.value}
+        WIN32                   <!-- Needed for any Microsoft platform, not just Windows. -->
+        _CRT_SECURE_NO_WARNINGS <!-- http://msdn.microsoft.com/en-us/library/8ef0s5kh%28v=VS.100%29.aspx -->
+    </property>
+
+    <!-- libxml builds as a DLL by default on platforms that it supports as a DLL. There's nothing to define to enable it. -->
+    <!--
+    <property name="runtime.libxml2EAWebKit.defines" if="${Dll} != false">
+        ${property.value}
+        Nothing to do. Need to make sure NOLIBTOOL is not defined.
+    </property>
+    -->
+
+    <property name="runtime.libxml2EAWebKit.defines" if="${Dll} == false">
+        ${property.value}
+        HAVE_CONFIG_H
+        NOLIBTOOL       <!-- This is defined because libxml has some screwy #define using code that we need to disable. -->
+        LIBXML_STATIC
+    </property>
+
+    <do if="@{PropertyExists('libxml2EAWebKit.DynamicLibraryStaticLinkage')}">
+        <property name="runtime.libxml2EAWebKit.defines" if="${libxml2EAWebKit.DynamicLibraryStaticLinkage}">
+            ${property.value}
+            LIBXML_STATIC_FOR_DLL
+        </property>
+    </do>
+
+    <property name="runtime.libxml2EAWebKit.warningsuppression" value=""/>
+
+    <property name="runtime.libxml2EAWebKit.warningsuppression" if="${config-compiler} == 'gcc'">
+        -w
+    </property>
+
+    <property name="runtime.libxml2EAWebKit.warningsuppression" if="${config-compiler} == 'clang'">
+        -w
+    </property>
+
+    <property name="runtime.libxml2EAWebKit.warningsuppression" if="${config-compiler} == 'vc'">
+        -wd4005		<!-- Disable warning: 'floorl' : macro redefinition -->
+        -wd4057		<!-- Disable warning: 'function' : 'const xmlChar *' differs in indirection to slightly different base types from 'char [256]' -->
+        -wd4115     <!-- Disable warning: 'stat' : named type definition in parentheses -->
+        -wd4127		<!-- Disable warning: conditional expression is constant -->
+        -wd4131		<!-- Disable warning: uses old style declarator -->
+        -wd4132		<!-- Disable warning: const object should be initialized -->
+        -wd4152		<!-- Disable warning: nonstandard extension, function/data pointer conversion in expression -->
+        -wd4189		<!-- Disable warning: 'i' : local variable is initialized but not referenced -->
+        -wd4242		<!-- Disable warning: conversion from ' ' to ' ', possible loss of data -->
+        -wd4244		<!-- Disable warning: conversion from ' ' to ' ', possible loss of data -->
+        -wd4245		<!-- Disable warning: '=' : conversion from 'int' to 'unsigned int', signed/unsigned mismatch -->
+        -wd4255		<!-- Disable warning: no function prototype given -->
+        -wd4267		<!-- Disable warning: '=' : conversion from 'size_t' to 'int', possible loss of data -->
+        -wd4295     <!-- Disable warning: array is too small to include a terminating null character -->
+        -wd4296		<!-- Disable warning: '>=' : expression is always true -->
+        -wd4305		<!-- Disable warning: 'type cast' : truncation from 'void *' to 'long' -->
+        -wd4306		<!-- Disable warning: 'type cast' : conversion from 'long' to 'void *' of greater size -->
+        -wd4312     <!-- Disable warning: 'type cast' : conversion from 'int' to 'const char *' of greater size --> 
+        -wd4311     <!-- Disable warning: 'type cast' : pointer truncation from 'void *' to 'long' -->
+        -wd4700		<!-- Disable warning: uninitialized local variable 'copy' used -->
+        -wd4701		<!-- Disable warning: potentially uninitialized local variable 'l' used -->
+        -wd4702		<!-- Disable warning: unreachable code -->
+        -wd4706		<!-- Disable warning: assignment within conditional expression -->
+        -wd4996     <!-- Disable warning: 'strcmpi': The POSIX name for this item is deprecated. -->
+
+        <!-- xenon-specific warnings -->
+        -wd4013		<!-- Disable warning: 'getcwd' undefined; assuming extern returning int -->
+        -wd4047		<!-- Disable warning: '!=' : 'int' differs in levels of indirection from 'void *' -->
+    </property>
+
+    <property name="runtime.libxml2EAWebKit.warningsuppression" if="${config-compiler} == 'mw'">
+        -w off        <!-- disable all warnings. We do this only because CodeWarrior doesn't document how to disable some individual warnings -->
+    </property>
+
+    <property name="runtime.libxml2EAWebKit.warningsuppression" if="${config-compiler} == 'sn'">
+        --diag_suppress=1669  <!--  Potential uninitialized reference to "X" in function "Y". -->
+        --diag_suppress=224   <!--  function "X" declared implicitly. -->
+        --diag_suppress=178   <!--  variable "X" was declared but never referenced. -->
+        --diag_suppress=552
+        --diag_suppress=189
+        --diag_suppress=1787
+        --diag_suppress=1786
+        --diag_suppress=112
+        --diag_suppress=237
+        --diag_suppress=112
+        --diag_suppress=551
+        --diag_suppress=1628
+        --diag_suppress=68
+        --diag_suppress=187
+        --diag_suppress=515
+    </property>
+
+    <property name="runtime.libxml2EAWebKit.includedirs">
+        ${package.dir}/include
+    </property>
+
+    <fileset name="runtime.libxml2EAWebKit.sourcefiles">
+        <includes name="${package.dir}/source/c14n.c"/>
+        <includes name="${package.dir}/source/catalog.c"/>
+        <includes name="${package.dir}/source/chvalid.c"/>
+        <includes name="${package.dir}/source/debugXML.c"/>
+        <includes name="${package.dir}/source/dict.c"/>
+        <includes name="${package.dir}/source/DOCBparser.c"/>
+        <includes name="${package.dir}/source/encoding.c"/>
+        <includes name="${package.dir}/source/entities.c"/>
+        <includes name="${package.dir}/source/error.c"/>
+        <includes name="${package.dir}/source/globals.c"/>
+        <includes name="${package.dir}/source/hash.c"/>
+        <includes name="${package.dir}/source/HTMLparser.c"/>
+        <includes name="${package.dir}/source/HTMLtree.c"/>
+        <includes name="${package.dir}/source/legacy.c"/>
+        <includes name="${package.dir}/source/list.c"/>
+        <includes name="${package.dir}/source/parser.c"/>
+        <includes name="${package.dir}/source/parserInternals.c"/>
+        <includes name="${package.dir}/source/pattern.c"/>
+        <includes name="${package.dir}/source/relaxng.c"/>
+        <includes name="${package.dir}/source/SAX.c"/>
+        <includes name="${package.dir}/source/SAX2.c"/>
+        <includes name="${package.dir}/source/threads.c"/>
+        <includes name="${package.dir}/source/tree.c"/>
+        <includes name="${package.dir}/source/trio.c"/>
+        <includes name="${package.dir}/source/trionan.c"/>
+        <includes name="${package.dir}/source/triostr.c"/>
+        <includes name="${package.dir}/source/uri.c"/>
+        <includes name="${package.dir}/source/valid.c"/>
+        <includes name="${package.dir}/source/xinclude.c"/>
+        <includes name="${package.dir}/source/xlink.c"/>
+        <includes name="${package.dir}/source/xmlIO.c"/>
+        <includes name="${package.dir}/source/xmlmemory.c"/>
+        <includes name="${package.dir}/source/xmlmodule.c"/>
+        <includes name="${package.dir}/source/xmlreader.c"/>
+        <includes name="${package.dir}/source/xmlregexp.c"/>
+        <includes name="${package.dir}/source/xmlsave.c"/>
+        <includes name="${package.dir}/source/xmlschemas.c"/>
+        <includes name="${package.dir}/source/xmlschemastypes.c"/>
+        <includes name="${package.dir}/source/xmlstring.c"/>
+        <includes name="${package.dir}/source/xmlunicode.c"/>
+        <includes name="${package.dir}/source/xpath.c"/>
+        <includes name="${package.dir}/source/xpointer.c"/>
+
+    </fileset>
+
+    <property name="runtime.libxml2EAWebKit.usedependencies">
+        EABaseEAWebKit
+    </property>
+</project>
+
+
+
+
+
+

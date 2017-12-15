@@ -711,17 +711,17 @@ bool TransportHandlerDiskCache::Transfer(TransportInfo* pTInfo, bool& bStateComp
         // To consider: Enable async reading of the entire file.  For this to work, would need
         // to directly download to the final data buffer and allow file IO asyn reads.
         double startTime = EA::WebKit::GetTime();
-        bool loopFlag;  
+        bool loopFlag = false;  
         int loopCount = kMaxTransferLoops;
         do {
             --loopCount;
             loopFlag = false;  // Reset to not loop 
-            const int64_t size = pFS->ReadFile(pFileInfo->mFileObject, pBuffer, kCacheDownloadBufferSize);
+            const int64_t size = pFS->ReadFileAsync(pFileInfo->mFileObject, pBuffer, kCacheDownloadBufferSize);
             if(size > 0) 
             {
                 pTInfo->mpTransportServer->DataReceived(pTInfo, pBuffer, size);
               
-                pFileInfo->mCurChecksum =GetByteChecksum(pBuffer,size, pFileInfo->mCurChecksum);
+                pFileInfo->mCurChecksum = GetByteChecksum(pBuffer,size, pFileInfo->mCurChecksum);
 
                 // Check if we have enough time to keep on going
                 double curTime = EA::WebKit::GetTime();
@@ -738,7 +738,7 @@ bool TransportHandlerDiskCache::Transfer(TransportInfo* pTInfo, bool& bStateComp
                     loopCount = 1;  // This will allow for just 1 more run.   
                 }
             }
-            else if(size == 0)
+            else if(size == FileSystem::kReadStatusComplete)
             {
                 // Completed read
                 bStateComplete = true;
@@ -770,12 +770,20 @@ bool TransportHandlerDiskCache::Transfer(TransportInfo* pTInfo, bool& bStateComp
                      bResult = false;    // Errors                    
                 }
             }
-            else
+            else if(size == FileSystem::kReadStatusDataNotReady)
             {
-                // An error occured
-                bStateComplete = true;
-                bResult        = false;
+                // Nothing to do here as default values are already good.
+				//bStateComplete = false;
+                //bResult        = true;
+
+				EAW_ASSERT_MSG(!bStateComplete && bResult,"State not correct while waiting for pending data");
             }
+			else
+			{
+				// An error occured
+				bStateComplete = true;
+				bResult        = false;
+			}
         } while(loopFlag);
 
     }

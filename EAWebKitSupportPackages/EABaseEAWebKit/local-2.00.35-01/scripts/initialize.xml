@@ -1,0 +1,17 @@
+<project>
+
+  <!--
+		Dependent packages may use ${package.EABaseEAWebKit.includedirs} in their 
+		includedirs element of build tasks.
+	-->
+
+  <property name="package.EABaseEAWebKit.includedirs">
+    ${package.EABaseEAWebKit.dir}/include/Common
+
+  </property>
+
+
+  <property name="package.EABaseEAWebKit.includedirs.spu">
+    ${package.EABaseEAWebKit.dir}/include/Common
+  </property>
+</project>

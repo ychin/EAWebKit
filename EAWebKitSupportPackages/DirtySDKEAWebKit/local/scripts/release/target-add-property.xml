@@ -1,0 +1,51 @@
+<project>
+
+	<target name="dirtysdk-add-property" description="Add the dirtysdk-prebuilt-libs property to the DirtySDK Initialize.xml file" hidden="true">
+		<script language="C#">
+			<code><![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					String version = project.Properties["dirtysdk-version"];
+				
+                    AddProperty("scripts/Initialize.xml");
+				}
+
+				static void AddProperty(String filename)
+				{
+					StreamReader SR = new StreamReader(filename);
+					StreamWriter SW = new StreamWriter(filename + ".new");
+
+                    String propertycomment = "    <!-- define dirtysdk-prebuilt-libs -->";
+					String property = "    <property name =\"dirtysdk-prebuilt-libs\" value=\"true\" />";
+
+					String line = SR.ReadLine();
+
+					while (line != null)
+					{
+						if (line.IndexOf(property) != -1)
+						{ 
+							throw new BuildException("Build is not clean");
+						}
+                        else if (line.IndexOf("<!-- build the library directory name -->") != -1)
+                        {
+                            SW.WriteLine(propertycomment);
+							SW.WriteLine(property);
+							SW.WriteLine("");
+						}
+
+						SW.WriteLine(line);
+
+						line = SR.ReadLine();
+					}
+
+					SR.Close();
+					SW.Close();
+
+					System.IO.File.Delete(filename);
+					System.IO.File.Move(filename + ".new", filename);
+				}
+			]]></code>
+		</script>
+	</target> 
+
+</project>

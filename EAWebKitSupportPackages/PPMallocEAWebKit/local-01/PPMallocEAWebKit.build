@@ -1,0 +1,321 @@
+﻿<project name="PPMallocEAWebKit" default="build">
+
+    <property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+    <property name="codewizardconfig.standards" value="EacCodingStandards" />
+
+    <optionset name="config.targetoverrides">
+        <option name="test-build"    value="include" />
+        <option name="test-buildall" value="include" />
+    </optionset>
+
+    <!-- Package declaration -->
+    <!-- Get the version number from current directory -->
+    <property name="currDir"  value="@{PathGetFullPath('.')}"/>
+    <property name="currVer"  value="@{PathGetFileName('${currDir}')}"/>
+    <package  name="PPMallocEAWebKit" targetversion="${currVer}"/>
+
+
+
+    <!-- Create extra build types which simply add some additional compiler arguments -->
+    <optionset name="config-options-library-extra" fromoptionset="config-options-library">
+        <option name="buildset.name"       value="LibraryExtra"/>
+        <option name="buildset.cc.options" if="${config-compiler} == 'gcc'">
+            <!-- Enable strict aliasing and warnings for strict aliasing -->
+            @{StrReplace(${option.value}, '-fno-strict-aliasing', '-fstrict-aliasing')}
+        </option>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-library-extra" />
+
+    <optionset name="config-options-dynamiclibrary-extra" fromoptionset="config-options-dynamiclibrary" if="${config-compiler} == 'vc'">
+        <option name="buildset.name"       value="DynamicLibraryExtra"/>
+        <option name="buildset.cc.options" if="${config-compiler} == 'gcc'">
+            <!-- Enable strict aliasing and warnings for strict aliasing -->
+            @{StrReplace(${option.value}, '-fno-strict-aliasing', '-fstrict-aliasing')}
+        </option>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-dynamiclibrary-extra" if="${config-compiler} == 'vc'"/>
+
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <property name="runtime.buildtype" value="LibraryExtra" />
+    <property name="runtime.buildtype" value="DynamicLibraryExtra" if="${Dll}"/>
+
+    <property name="runtime.usedependencies">
+      EABaseEAWebKit
+    </property>
+
+    <property name="runtime.defines" unless="${Dll}">
+        PPM_HIGH_SUPPORTED
+    </property>
+
+    <property name="runtime.defines" if="${Dll}">
+        PPM_HIGH_SUPPORTED
+        PPM_API=__declspec(dllexport)
+        PPM_TEMPLATE_API=__declspec(dllexport)
+    </property>
+
+    <fileset name="runtime.sourcefiles">
+        <group>
+            <includes name="${package.dir}/source/cmn/*.cpp"/>
+            <excludes name="${package.dir}/source/cmn/eanewdelete.cpp"/>
+            <excludes name="${package.dir}/source/cmn/eaallocatorinterface.cpp"/>
+        </group>
+        <!-- <includes name="${package.dir}/extras/EASmallBlockAllocator.cpp" unless="${Dll}"/> -->     <!-- It's a pain to make this work in a DLL, so just skip it. -->
+      <!-- <includes name="${package.dir}/extras/EASmallBlockAllocatorPool.cpp" unless="${Dll}"/>  -->
+        <!-- It's a pain to make this work in a DLL, so just skip it. -->
+      <!-- <includes name="${package.dir}/extras/EAAllocInfo.cpp" unless="${Dll}"/> -->               <!-- It's a pain to make this work in a DLL, so just skip it. -->
+        <includes name="${package.dir}/source/${config-system}/*.cpp"/>
+        <includes name="${package.dir}/source/gc/*.cpp" if="${config-system} == 'rev'"/>
+        <includes name="${package.dir}/source/win64/*.cpp" if="${config-system} == 'pc64'"/>
+    </fileset>
+
+    <fileset name="runtime.bulkbuild.sourcefiles" fromfileset="runtime.sourcefiles"/>
+
+    <property name="runtime.warningsuppression" if="${config-compiler} == 'gcc'">
+        -Wstrict-aliasing=3
+    </property>
+
+
+
+
+    <!-- ********************* -->
+    <!-- Test configuration    -->
+    <!-- ********************* -->
+
+    <property name="test.buildmodules" value="PPMallocTest PPMallocTestExtra PPMallocTestNoThreading"/>
+
+    <property name="test.PPMallocTest.buildtype" value="Program"/>
+
+    <property name="test.PPMallocTest.usedependencies">
+        EABase
+    </property>
+
+    <property name="test.PPMallocTest.runtime.moduledependencies">
+        PPMalloc
+    </property>
+
+    <property name="test.PPMallocTest.defines">
+        ${property.value}
+        PPM_HIGH_SUPPORTED=1
+        UTF_USE_EAASSERT=1
+        EA_MEMORY_LEAK_TRACE_ENABLED=1
+    </property>
+
+    <property name="test.PPMallocTest.warningsuppression" if="${config-compiler} == 'vc'">
+        -wd4217     <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+        -wd4530     <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+        -wd4619     <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+        -wd4548     <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+        -wd4365     <!-- disable warning: "'argument' : conversion from 'x' to 'y', signed/unsigned mismatch" -->
+        -wd4351     <!-- disable warning: elements of array <name> will be initialized -->
+    </property>
+
+    <property name="test.PPMallocTest.warningsuppression" if="${config-compiler} == 'mw'">
+        -w off      <!-- disable all warnings. We do this only because CodeWarrior doesn't document how to disable some individual warnings -->
+    </property>
+
+    <property name="test.PPMallocTest.warningsuppression" if="${config-compiler} == 'gcc'">
+        -Wstrict-aliasing=3
+    </property>
+
+    <property name="test.PPMallocTest.includedirs">
+        ${package.dir}/test/include
+        ${package.dir}/include
+    </property>
+
+    <fileset name="test.PPMallocTest.sourcefiles">
+        <includes name="${package.dir}/test/source/*.cpp"/>
+        <includes name="${package.dir}/extras/TestSmallBlockAllocator.cpp" unless="${Dll}"/> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+    </fileset>
+
+    <fileset name="test.PPMallocTest.libs" >
+        <includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+    </fileset>
+
+    <fileset name="test.PPMallocTest.libs" if="${config-system} == 'ps3' and @{PropertyExists('package.PlayStation3GCC.appdir')}">
+        <includes name="${package.PlayStation3GCC.appdir}/target/ppu/lib/libsn.a" />
+    </fileset>
+
+    <fileset name="test.PPMallocTest.libs" if="${config-system} == 'ps3' and @{PropertyExists('package.ps3sdk.appdir')}">
+        <includes name="${package.ps3sdk.appdir}/target/ppu/lib/libsn.a" />
+    </fileset>
+
+    <fileset name="test.PPMallocTest.libs" if="${config-system} == 'ps2'">
+        <includes name="${package.PlayStation2SN.appdir}/sce/ee/lib/libsn.a" />
+    </fileset>
+
+
+
+    <!-- ******************************************************** -->
+    <!-- Test Extra configuration                                 -->
+    <!--                                                          -->
+    <!-- We test some of the PPM options that are non-default.    -->
+    <!--                                                          -->
+    <!-- What we are doing here is a little unusual and doesn't   -->
+    <!-- seem to work under CodeWarrior in in DLL builds, so we   -->
+    <!-- disable what we are doing under these conditions.        -->
+    <!-- ******************************************************** -->
+
+    <property name="test.PPMallocTestExtra.buildtype" value="Program"/>
+
+    <property name="test.PPMallocTestExtra.usedependencies">
+        EABase
+    </property>
+
+    <property name="test.PPMallocTestExtra.defines">
+        ${test.PPMallocTest.defines}
+    </property>
+
+    <property name="test.PPMallocTestExtra.runtime.moduledependencies">
+        PPMalloc
+    </property>
+
+    <!-- We add some additional defines. Note that for some reason the CodeWarrior compiler doesn't seem to like the way we are constructing this configuration so we disable it under CodeWarrior. -->
+    <property name="test.PPMallocTestExtra.defines" if="${config-compiler} != 'mw' and !${Dll}">
+        ${property.value}
+        PPM_MIN_ALIGN=16
+        PPM_DEBUG=2
+    </property>
+
+    <property name="test.PPMallocTestExtra.warningsuppression" if="@{PropertyExists('test.PPMallocTest.warningsuppression')}">
+        ${test.PPMallocTest.warningsuppression}
+    </property>
+
+    <property name="test.PPMallocTestExtra.includedirs">
+        ${test.PPMallocTest.includedirs}
+    </property>
+
+    <!-- Note that CodeWarrior doesn't like what we are doing and so we disable it for CodeWarrior. -->
+    <fileset name="test.PPMallocTestExtra.sourcefiles" if="${config-compiler} != 'mw' and !${Dll}">
+        <!-- We compile the runtime source files here instead of as part of a separate library. -->
+        <group>
+            <includes name="${package.dir}/source/cmn/*.cpp"/>
+            <excludes name="${package.dir}/source/cmn/eanewdelete.cpp"/>
+            <excludes name="${package.dir}/source/cmn/eaallocatorinterface.cpp"/>
+        </group>
+        <includes name="${package.dir}/source/${config-system}/*.cpp"/>
+        <includes name="${package.dir}/source/gc/*.cpp" if="${config-system} == 'rev'"/>
+        <includes name="${package.dir}/source/win64/*.cpp" if="${config-system} == 'pc64'"/>
+        <includes name="${package.dir}/test/source/*.cpp"/>
+        <includes name="${package.dir}/extras/*.cpp" unless="${Dll}"/> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+    </fileset>
+
+    <fileset name="test.PPMallocTestExtra.sourcefiles" if="${config-compiler} == 'mw' or ${Dll}">
+        <includes name="${package.dir}/test/source/*.cpp"/>
+        <includes name="${package.dir}/extras/TestSmallBlockAllocator.cpp" unless="${Dll}"/> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+    </fileset>
+
+    <!-- Don't link any libs (unless using CodeWarrior) -->
+    <fileset name="test.PPMallocTestExtra.libs" if="${config-compiler} == 'mw' or ${Dll}">
+        <includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+    </fileset>
+
+    <fileset name="test.PPMallocTestExtra.libs" if="${config-system} == 'ps3' and @{PropertyExists('package.PlayStation3GCC.appdir')}">
+        <includes name="${package.PlayStation3GCC.appdir}/target/ppu/lib/libsn.a" />
+    </fileset>
+
+    <fileset name="test.PPMallocTestExtra.libs" if="${config-system} == 'ps3' and @{PropertyExists('package.ps3sdk.appdir')}">
+        <includes name="${package.ps3sdk.appdir}/target/ppu/lib/libsn.a" />
+    </fileset>
+
+    <fileset name="test.PPMallocTestExtra.libs" if="${config-system} == 'ps2'">
+        <includes name="${package.PlayStation2SN.appdir}/sce/ee/lib/libsn.a" />
+    </fileset>
+
+
+
+    <!-- ******************************************************** -->
+    <!-- PPMallocTestNoThreading configuration                    -->
+    <!--                                                          -->
+    <!-- We test some of the PPM options that are non-default.    -->
+    <!--                                                          -->
+    <!-- What we are doing here is a little unusual and doesn't   -->
+    <!-- seem to work under CodeWarrior in in DLL builds, so we   -->
+    <!-- disable what we are doing under these conditions.        -->
+    <!-- ******************************************************** -->
+
+    <property name="test.PPMallocTestNoThreading.buildtype" value="Program"/>
+
+    <property name="test.PPMallocTestNoThreading.usedependencies">
+        EABase
+    </property>
+
+    <property name="test.PPMallocTestNoThreading.runtime.moduledependencies">
+        PPMalloc
+    </property>
+
+    <property name="test.PPMallocTestNoThreading.defines">
+        ${test.PPMallocTest.defines}
+    </property>
+
+    <!-- We add some additional defines. Note that for some reason the CodeWarrior compiler doesn't seem to like the way we are constructing this configuration so we disable it under CodeWarrior. -->
+    <property name="test.PPMallocTestNoThreading.defines" if="${config-compiler} != 'mw' and !${Dll}">
+        ${property.value}
+        PPM_THREAD_SAFETY_SUPPORTED=0
+    </property>
+
+    <property name="test.PPMallocTestNoThreading.warningsuppression" if="@{PropertyExists('test.PPMallocTest.warningsuppression')}">
+        ${test.PPMallocTest.warningsuppression}
+    </property>
+
+    <property name="test.PPMallocTestNoThreading.includedirs">
+        ${test.PPMallocTest.includedirs}
+    </property>
+
+    <!-- Note that CodeWarrior doesn't like what we are doing and so we disable it for CodeWarrior. -->
+    <fileset name="test.PPMallocTestNoThreading.sourcefiles" if="${config-compiler} != 'mw' and !${Dll}">
+        <!-- We compile the runtime source files here instead of as part of a separate library. -->
+        <group>
+            <includes name="${package.dir}/source/cmn/*.cpp"/>
+            <excludes name="${package.dir}/source/cmn/eanewdelete.cpp"/>
+            <excludes name="${package.dir}/source/cmn/eaallocatorinterface.cpp"/>
+        </group>
+        <includes name="${package.dir}/source/${config-system}/*.cpp"/>
+        <includes name="${package.dir}/source/gc/*.cpp" if="${config-system} == 'rev'"/>
+        <includes name="${package.dir}/source/win64/*.cpp" if="${config-system} == 'pc64'"/>
+        <includes name="${package.dir}/test/source/*.cpp"/>
+        <includes name="${package.dir}/extras/*.cpp" unless="${Dll}"/> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+    </fileset>
+
+    <fileset name="test.PPMallocTestNoThreading.sourcefiles" if="${config-compiler} == 'mw' or ${Dll}">
+        <includes name="${package.dir}/test/source/*.cpp"/>
+        <includes name="${package.dir}/extras/TestSmallBlockAllocator.cpp" unless="${Dll}"/> <!-- It's a pain to make this work in a DLL, so just skip it. -->
+    </fileset>
+
+    <!-- Don't link any libs (unless using CodeWarrior) -->
+    <fileset name="test.PPMallocTestNoThreading.libs" if="${config-compiler} == 'mw' or ${Dll}">
+        <includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+    </fileset>
+
+    <fileset name="test.PPMallocTestNoThreading.libs" if="${config-system} == 'ps3' and @{PropertyExists('package.PlayStation3GCC.appdir')}">
+        <includes name="${package.PlayStation3GCC.appdir}/target/ppu/lib/libsn.a" />
+    </fileset>
+
+    <fileset name="test.PPMallocTestNoThreading.libs" if="${config-system} == 'ps3' and @{PropertyExists('package.ps3sdk.appdir')}">
+        <includes name="${package.ps3sdk.appdir}/target/ppu/lib/libsn.a" />
+    </fileset>
+
+    <fileset name="test.PPMallocTestNoThreading.libs" if="${config-system} == 'ps2'">
+        <includes name="${package.PlayStation2SN.appdir}/sce/ee/lib/libsn.a" />
+    </fileset>
+
+
+
+
+
+    <!-- ********************* -->
+    <!-- Document generation   -->
+    <!-- ********************* -->
+
+    <property name="doc.type" value="Doxygen" />
+
+    <fileset name="package.doxygenfiles">
+        <includes name="${package.dir}/doc/doxygen/ppmalloc.doxygen.config"/>
+    </fileset>
+
+</project>

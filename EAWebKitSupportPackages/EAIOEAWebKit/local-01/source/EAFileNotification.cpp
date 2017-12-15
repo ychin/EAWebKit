@@ -640,12 +640,10 @@ void FileChangeNotification::ThreadFunctionFFCN(uint32_t dwNotifyFilter, const c
 #include <EAIO/EAFileDirectory.h>
 #include <EAIO/EAFileUtil.h>
 
-#if   defined(EA_PLATFORM_WINDOWS)
     #ifndef WIN32_LEAN_AND_MEAN
         #define WIN32_LEAN_AND_MEAN
     #endif
     #include <windows.h>
-#endif
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4127) // conditional expression is constant
@@ -660,11 +658,7 @@ void FileChangeNotification::ThreadFunctionFFCN(uint32_t dwNotifyFilter, const c
 /// 
 static int GetCurrentFCNTime()
 {
-    #if defined(EA_PLATFORM_WINDOWS)
         return (int)GetTickCount();
-    #else
-        return 0; // Fill in others here as needed.
-    #endif
 }
 
 
@@ -1022,10 +1016,8 @@ intptr_t FileChangeNotification::Run(void* /*pContext*/)
 
         #if EAIO_THREAD_SAFETY_ENABLED
             EA::Thread::ThreadSleep(3000);
-        #elif defined(EA_PLATFORM_WINDOWS)
-            Sleep(3000);
         #else
-            // To consider: Implement something.
+            Sleep(3000);
         #endif
     }
 

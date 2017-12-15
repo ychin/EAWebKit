@@ -38,7 +38,7 @@
 #include <wtf/Atomics.h>
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(EA_PLATFORM_SONY) || defined(EA_PLATFORM_OSX)
+#if OS(UNIX) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
 //-EAWebKitChange
 #include <sched.h>
 #endif
@@ -80,12 +80,8 @@ static void TCMalloc_SlowLock(unsigned* lockword) {
   do {
 //+EAWebKitChange
 //3/11/2014
-#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
     Sleep(0);
-#else
-    sched_yield();
-#endif
   } while (!WTF::weakCompareAndSwap(lockword, 0, 1));
 }
 

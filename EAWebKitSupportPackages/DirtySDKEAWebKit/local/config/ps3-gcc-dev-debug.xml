@@ -1,0 +1,16 @@
+<project>
+    <dependent name="eaconfig" />
+    
+	<include file="${package.eaconfig.dir}/config/global/init.xml" />
+	<include file="${package.eaconfig.dir}/config/platform/ps3-gcc.xml" />
+
+  <do if="@{PropertyExists('dirtysdk-force-stripped')}">
+    <include file="configset/dev-debug-stripped.xml" />
+  </do>
+  <do unless="@{PropertyExists('dirtysdk-force-stripped')}">
+    <include file="${package.eaconfig.dir}/config/configset/dev-debug.xml" />
+  </do>
+
+  <include file="${package.eaconfig.dir}/config/global/combine.xml" />
+	<include file="${package.eaconfig.dir}/config/targets/target-init.xml" />
+</project>

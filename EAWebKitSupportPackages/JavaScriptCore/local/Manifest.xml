@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+	<summary>Open Source JavaScriptCore engine.</summary>
+
+	<changes>
+		Changes are detailed in the package doc/Release Notes.html file.
+	</changes>
+
+	<status>Official</status>
+	<statusComment></statusComment>
+
+	<license>LGPL 2.1</license>
+
+	<frameworkVersion>2</frameworkVersion>
+
+	<buildable>true</buildable>
+
+</package>
+

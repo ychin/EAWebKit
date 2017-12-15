@@ -1,0 +1,125 @@
+<project>
+
+    <!-- define default values -->
+    <property name="dirtysdk-driveletter" value="C" />
+    <property name="dirtysdk-framework-driveletter" value="C" />
+    <property name="dirtysdk-doc-root" value="${dirtysdk-driveletter}:\dirty" />
+    <property name="dirtysdk-label-view" value="//depot/packages/DirtySDKEAWebKit/dev/..." />
+    <property name="dirtysdk-majorversion" value="7" />
+    <property name="dirtysdk-version" value="7.5.3" />
+    <property name="dirtysdk-date" value="June 23, 2009" />
+    <property name="dirtysdk-package-clientdir" value="C:\packages\DirtySDKEAWebKit\dev" />
+    <property name="dirtysdk-htdocs-clientdir" value="${dirtysdk-doc-root}\doc\web\htdocs" />
+    <property name="dirtysdk-release-clientdir" value="${dirtysdk-driveletter}:\dirty${dirtysdk-majorversion}\packages\${package.name}\dev" />
+    <property name="dirtysdk-source-zipname" value="${package.name}-${package.version}.zip" />
+
+    <!-- include custom release files -->
+    <include file="release\target-addedit-release.xml" />
+    <include file="release\target-add-property.xml" />
+    <include file="release\target-builddoc.xml" />
+    <include file="release\target-change-version.xml" />
+    <include file="release\target-clean-sync.xml" />
+    <include file="release\target-copy-release.xml" />
+    <include file="release\target-get-version.xml" />
+    <include file="release\target-label-release.xml" />
+    <include file="release\target-mapparse.xml" />
+    <include file="release\target-update-html.xml" />
+
+    <target name="help" description="Describe the usage of the release targets" hidden="true">
+        <echo message="" />
+        <echo message="Usage:" />
+        <echo message="  nant dirtysdk-release" />
+        <echo message="             --OR--" />
+        <echo message="  nant dirtysdk-release-submit" />
+        <echo message="" />
+        <echo message="" />
+        <echo message="Options:" />
+        <echo message="  dirtysdk-doc-root     - Specifies the location of the doc" />
+        <echo message="                          directory in the user's default client" />
+        <echo message="                          specification." />
+        <echo message="                          [Default=C:\dirty]" />
+        <echo message="" />
+        <echo message="Please make sure changelog.txt has been updated in perforce before" />
+        <echo message="running either release-target." />
+        <echo message="" />
+        <echo message="" />
+    </target>
+
+    <target name="dirtysdk-buildforge-setup" description="Gets the version for the release and creates the directory" hidden="true">
+        <property name="dirtysdk-release-clientdir" value="${package.dir}" />
+        <call target="dirtysdk-get-version" />
+        <call target="dirtysdk-copy-release" />
+        <call target="dirtysdk-change-version" />
+    </target>
+
+    <target name="dirtysdk-release-local" description="Run a local release from the current directory" hidden="true">
+        <call target="buildallexternal" />
+        <call target="dirtysdk-source-package" />
+        <call target="dirtysdk-add-property" />
+        <p4change desc="DirtySDKEAWebKit-${package.version} --- Added source package zip." />
+        <call target="dirtysdk-add-package" />
+    </target>
+
+    <target name="dirtysdk-release" description="Run the automated release build" hidden="true">
+        <call target="dirtysdk-clean-sync" />
+        <do unless="@{PropertyExists('dirtysdk-date')}">
+            <call target="dirtysdk-get-version" />
+        </do>
+        <call target="dirtysdk-copy-release" />
+        <call target="dirtysdk-change-version" />
+        <exec program="${nant.location}\nant.exe" workingdir="${package.dir}\..\${dirtysdk-version}" commandline="dirtysdk-setup-release -D:dirtysdk-force-stripped=true dirtysdk-submit-release -D:dirtysdk-nosubmit=true -masterconfigfile:${package.dir}\..\${dirtysdk-version}\masterconfig.xml" />
+    </target>
+
+    <target name="dirtysdk-release-fast" description="Run the automated release build, without builddoc and runmap" hidden="true">
+        <call target="dirtysdk-clean-sync" />
+        <do unless="@{PropertyExists('dirtysdk-date')}">
+            <call target="dirtysdk-get-version" />
+        </do>
+        <call target="dirtysdk-copy-release" />
+        <call target="dirtysdk-change-version" />
+        <exec program="${nant.location}\nant.exe" workingdir="${package.dir}\..\${dirtysdk-version}" commandline="dirtysdk-setup-release-fast -D:dirtysdk-force-stripped=true dirtysdk-submit-release -D:dirtysdk-nosubmit=true -masterconfigfile:${package.dir}\..\${dirtysdk-version}\masterconfig.xml -D:dirtysdk-fast=true" />
+    </target>
+
+    <target name="dirtysdk-release-submit" description="Run the automated release build, submit the files, and create the label at the end" hidden="true">
+        <call target="dirtysdk-clean-sync" />
+        <call target="dirtysdk-get-version" />
+        <call target="dirtysdk-copy-release" />
+        <call target="dirtysdk-change-version" />
+      	<exec program="${nant.location}\nant.exe" workingdir="${package.dir}\..\${dirtysdk-version}" commandline="dirtysdk-setup-release -D:dirtysdk-force-stripped=true dirtysdk-submit-release -masterconfigfile:${package.dir}\..\${dirtysdk-version}\masterconfig.xml" />
+    </target>
+
+    <target name="dirtysdk-setup-release" description="Build the chm files and create the packages for the release" hidden="true">
+        <call target="dirtysdk-builddoc-all" />
+        <call target="dirtysdk-builddoc-cleanall" />
+        <call target="buildallexternal" />
+        <foreach item="String" in="dev-debug dev-opt" property="dirtysdk-targ-dir">
+            <call target="dirtysdk-runmapparse-all" />
+        </foreach>
+        <call target="dirtysdk-source-package" />
+        <call target="dirtysdk-add-property" />
+        <call target="dirtysdk-update-html" />
+    </target>
+
+    <target name="dirtysdk-setup-release-fast" description="Build the chm files and create the packages for the release" hidden="true">
+        <call target="buildallexternal" />
+        <call target="dirtysdk-source-package" />
+        <call target="dirtysdk-add-property" />
+        <call target="dirtysdk-update-html" />
+    </target>
+
+    <target name="dirtysdk-submit-release" description="Adds the package zips and updated chm docs/version files to a perforce changelist and, if dirtysdk-nosubmit is not defined, submits it and creates the version label" hidden="true">
+        <p4change desc="DirtySDK-${dirtysdk-version} --- Updated version.txt, dirtyvers.h, the DirtySock.chm files for all required platforms, and index.html and added source package zip." />
+        <call target="dirtysdk-add-package" />
+        <do unless="@{PropertyExists('dirtysdk-fast')}">
+            <call target="dirtysdk-edit-chmdocs" />
+            <call target="dirtysdk-edit-mapparse" />
+        </do>
+        <call target="dirtysdk-edit-newshtml" />
+        <call target="dirtysdk-edit-versionfiles" />
+        <do unless="@{PropertyExists('dirtysdk-nosubmit')}">
+            <p4submit change="${p4.change}" />
+            <call target="dirtysdk-label-release" />
+        </do>
+    </target>
+
+</project>

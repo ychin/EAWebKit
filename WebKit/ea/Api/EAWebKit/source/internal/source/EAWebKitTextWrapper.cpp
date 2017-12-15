@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -74,9 +74,13 @@ static EA::Allocator::ICoreAllocator* GetAllocator_Helper(void)
     return pAllocator;
 }
 
+EA_COMPILETIME_ASSERT(static_cast<int>(EA::Text::kPitchVariable) == static_cast<int>(EA::WebKit::kPitchVariable));
+EA_COMPILETIME_ASSERT(static_cast<int>(EA::Text::kPitchFixed) == static_cast<int>(EA::WebKit::kPitchFixed));
+EA_COMPILETIME_ASSERT(static_cast<int>(EA::Text::kPitchDefault) == static_cast<int>(EA::WebKit::kPitchDefault));
+
 static void ConvertToWebKit_GlyphMetrics(const EA::Text::GlyphMetrics& in, EA::WebKit::GlyphMetrics& out)
 {
-    memset(&out,0, sizeof(EA::WebKit::GlyphMetrics));  // We fill for it does not have a constructor            
+    memset(&out,0, sizeof(EA::WebKit::GlyphMetrics));  
     
     out.mfSizeX = in.mfSizeX;           
     out.mfSizeY = in.mfSizeY;            
@@ -85,48 +89,10 @@ static void ConvertToWebKit_GlyphMetrics(const EA::Text::GlyphMetrics& in, EA::W
     out.mfHAdvanceX = in.mfHAdvanceX;     
 }
 
-static EA::WebKit::Pitch GetWebKit_Pitch(const EA::Text::Pitch pitchEAText)
-{
-    EA::WebKit::Pitch pitchWebKit;
-    switch (pitchEAText)
-    {
-        case EA::Text::kPitchVariable:
-         pitchWebKit = EA::WebKit::kPitchVariable;
-            break;
-        case EA::Text::kPitchFixed:
-           pitchWebKit = EA::WebKit::kPitchFixed;
-           break;
-        default:    
-            EA_ASSERT_MSG(false, "TextWrapper: Warning: Unknown Pitch Value.");
-            pitchWebKit = EA::WebKit::kPitchVariable;
-            break;
-    }
-    return pitchWebKit;
-}
-
-static EA::Text::Pitch GetEAText_Pitch(const EA::WebKit::Pitch pitchWebKit)
-{
-    EA::Text::Pitch pitchEAText;
-    switch (pitchWebKit)
-    {
-        case EA::WebKit::kPitchVariable:
-         pitchEAText = EA::Text::kPitchVariable;
-            break;
-        case EA::WebKit::kPitchFixed:
-           pitchEAText = EA::Text::kPitchFixed;
-           break;
-        default:    
-            EA_ASSERT_MSG(false, "TextWrapper: Warning: Unknown Pitch Value.");
-            pitchEAText = EA::Text::kPitchVariable;
-            break;
-    }
-    return pitchEAText;
-}
-
 static void ConvertToWebKit_FontMetrics(const EA::Text::FontMetrics& in, EA::WebKit::FontMetrics& out)
 {
     out.mfSize                  = in.mfSize;                  
-    out.mPitch                  = GetWebKit_Pitch(in.mPitch);                   
+    out.mPitch                  = static_cast<EA::WebKit::Pitch>(in.mPitch);                 
     out.mfHAdvanceXMax          = in.mfHAdvanceXMax;           
     out.mfVAdvanceYMax          = in.mfVAdvanceYMax;           
     out.mfAscent                = in.mfAscent;                 
@@ -488,12 +454,6 @@ static EA::Text::Style GetEAText_Style(const EA::WebKit::Style typeWebKit)
     return typeEAText;
 }
 
-static inline EA::Text::Char GetEAText_Char(EA::WebKit::Char c)
-{
-    // This is just a typdef char16_t 
-    return static_cast<EA::Text::Char> (c);
-}
-
 static inline EA::WebKit::Char GetWebKit_Char(EA::Text::Char c)
 {
     // This is just a typdef char16_t 
@@ -527,29 +487,14 @@ static void ConvertToEAText_TextStyle(const EA::WebKit::TextStyle& in, EA::Text:
 	{
 		for (uint32_t j = 0; j < jMax; ++j)
 		{
-			out.mFamilyNameArray[i][j] =  GetEAText_Char(in.mFamilyNameArray[i][j]);
+			out.mFamilyNameArray[i][j] =  static_cast<EA::Text::Char>(in.mFamilyNameArray[i][j]);
 		}
 	}
 
-	// Seems the EAText version does not copy everything over in the default copy as not all info is needed to match a font but 
-	// better be safe in case it ends up being used differently.
-	/*
-	for(uint32_t i=0; i < EA::Text::kFamilyNameArrayCapacity; ++i)
-    {
-         if(i >= EA::WebKit::kFamilyNameArrayCapacity)
-                break;
-        for(uint32_t j=0; j < EA::Text::kFamilyNameCapacity; ++j)
-        {
-            if(j >= EA::WebKit::kFamilyNameCapacity)
-                break;
-            out.mFamilyNameArray[i][j] =  GetEAText_Char(in.mFamilyNameArray[i][j]);
-        }
-    }
-	*/
-    out.mfSize              = in.mfSize;     
+	out.mfSize              = in.mfSize;     
     out.mStyle              = GetEAText_Style(in.mStyle);                       
     out.mfWeight            = in.mfWeight;
-    out.mPitch              = GetEAText_Pitch(in.mPitch);  
+    out.mPitch              = static_cast<EA::Text::Pitch>(in.mPitch);  
     out.mVariant            = GetEAText_Variant(in.mVariant);
     out.mSmooth             = GetEAText_Smooth(in.mSmooth);
     out.mfLetterSpacing     = in.mfLetterSpacing;
@@ -819,7 +764,7 @@ bool FontImpl::IsCharSupported(EA::WebKit::Char c, EA::WebKit::Script scriptWebK
     if (mpFont)
     {
         EA::Text::Script scriptEAText = GetEAText_Script(scriptWebKit);
-        EA::Text::Char cEAText = GetEAText_Char(c);
+		EA::Text::Char cEAText = static_cast<EA::Text::Char>(c);
         returnFlag = mpFont->IsCharSupported( cEAText, scriptEAText);
     }
     return returnFlag;
@@ -950,18 +895,34 @@ bool TextSystem::Shutdown(void)
 	return !mActiveFonts.size();
 }
 
-EA::WebKit::IFont* TextSystem::GetFont(const EA::WebKit::TextStyle& textStyle, EA::WebKit::Char c)
+EA::WebKit::IFont* TextSystem::GetFont(const EA::WebKit::TextStyle& textStyle, EA::WebKit::Char sampleChar)
 {
+	EA_COMPILETIME_ASSERT(EA::Text::kCharInvalid == EA::WebKit::kCharInvalid);
 	EA::WebKit::IFont* pIFont = NULL;
 	if (mpFontServer)
 	{
 		EA::Text::TextStyle textStyleEA;     
 		ConvertToEAText_TextStyle(textStyle, textStyleEA);
-		EA::Text::Char sampleCharEA = GetEAText_Char(c);
-        
-         EA::Text::Font* pFont = mpFontServer->GetFont(&textStyleEA, NULL, 0, sampleCharEA);
-		if (pFont)
+		bool didChangeFontServerOption = false;
+		int32_t saveSetOption = EA::Text::FontServer::kMatchOptionNone;
+
+		if (sampleChar == EA::WebKit::kCharInvalid) 
+		{
+			// By default, the EA Text system (EAText) returns a fallback font in case matching font is not available. Here, we want to set it to return null font in case the matching font is not found. 
+			// This is done by : 1. Saving current font server OptionRequireFontFamilyMatch value
+			//2. setting the font server option OptionRequireFontFamilyMatch to kMatchOptionFail before we ask the text system to get font
+			//3. After text system returns a font (or null if matching font is not available), set back the font server option to the saved one
+			didChangeFontServerOption = true;
+			saveSetOption = mpFontServer->GetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch);
+			mpFontServer->SetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch,  EA::Text::FontServer::kMatchOptionFail); 
+		}
+
+
+		if (EA::Text::Font* pFont = mpFontServer->GetFont(&textStyleEA, NULL, 0, static_cast<EA::Text::Char>(sampleChar)))
 			pIFont = CreateFontImpl(pFont);
+
+		if (didChangeFontServerOption)
+			mpFontServer->SetOption(EA::Text::FontServer::kOptionRequireFontFamilyMatch,  saveSetOption);
 	}
 	return  pIFont; 
 }
@@ -1082,6 +1043,7 @@ bool TextSystem::GetCachedGlyph(EA::Text::Font* pFontEA, EA::WebKit::GlyphId g, 
     EA::Text::GlyphId gEA = GetEAText_GlyphId(g);
     
     bool returnFlag = mpGlyphCache->GetGlyphTextureInfo(pFontEA, gEA, gtiEA);
+    bool endUpdateNeeded = false;  //MB: defer the endUpdate() to the end of this method
     if (!returnFlag)
     {
         // Draw the glyph
@@ -1092,8 +1054,8 @@ bool TextSystem::GetCachedGlyph(EA::Text::Font* pFontEA, EA::WebKit::GlyphId g, 
             if (mpGlyphCache->AddGlyphTexture(pFontEA, gEA, pGlyphBitmap->mpData, pGlyphBitmap->mnWidth, pGlyphBitmap->mnHeight, 
                                                    pGlyphBitmap->mnStride, (uint32_t) pGlyphBitmap->mBitmapFormat, gtiEA))
             {
-                mpGlyphCache->EndUpdate(gtiEA.mpTextureInfo);
                 returnFlag = true;
+                endUpdateNeeded = true;
             }
             else
             {
@@ -1112,19 +1074,23 @@ bool TextSystem::GetCachedGlyph(EA::Text::Font* pFontEA, EA::WebKit::GlyphId g, 
         ConvertToWebKit_GlyphTextureInfo(gtiEA,gdi);    
     else
         gdi.mpData = 0;
+
+    if (endUpdateNeeded)
+    {
+        mpGlyphCache->EndUpdate(gtiEA.mpTextureInfo);
+    }
     
     return returnFlag;
 }
 
-uint32_t TextSystem::AddFace(IO::IStream* pStream)
+uint32_t TextSystem::AddFace(void* data, size_t dataSize)
 {
-    uint32_t returnValue =0;
-    EA_ASSERT(mpFontServer);   
-    if (mpFontServer)    
-    {
-        returnValue = mpFontServer->AddFace(pStream, EA::Text::kFontTypeOutline);
-    }
-    return returnValue;
+	EA::IO::MemoryStream* pFontMemoryStream  = new EA::IO::MemoryStream(data, dataSize, true, false);
+	pFontMemoryStream->AddRef();
+	uint32_t numFontsAdded = mpFontServer->AddFace(pFontMemoryStream,EA::Text::kFontTypeOutline);
+	EAW_ASSERT_MSG(numFontsAdded > 0,"No font face in the data");
+	pFontMemoryStream->Release();
+	return numFontsAdded;
 }
 
 bool TextSystem::AddSubstitution(const char16_t* pFamily, const char16_t* pFamilySubstitution)
@@ -1391,28 +1357,28 @@ void TextSystem::FindWordBoundary(EA::WebKit::Char* chars, int len, int position
 // Access to some general unicode interface functions
 int32_t TextSystem::GetCombiningClass(EA::WebKit::Char c)
 {
-    EA::Text::Char cEAText = GetEAText_Char(c);
+	EA::Text::Char cEAText = static_cast<EA::Text::Char>(c);
     
     return EA::Text::GetCombiningClass(cEAText);            
 }
 
 EA::WebKit::Char TextSystem::GetMirrorChar(EA::WebKit::Char c)
 {
-    EA::Text::Char cEAText = GetEAText_Char(c);
+	EA::Text::Char cEAText = static_cast<EA::Text::Char>(c);
     
     return GetWebKit_Char(EA::Text::GetMirrorChar(cEAText));                 
 }
 
 EA::WebKit::CharCategory TextSystem::GetCharCategory(EA::WebKit::Char c)
 {
-    EA::Text::Char cEAText = GetEAText_Char(c);
+	EA::Text::Char cEAText = static_cast<EA::Text::Char>(c);
     EA::Text::CharCategory catEAText = EA::Text::GetCharCategory(cEAText);            
     return GetWebKit_CharCategory(catEAText);
 }
 
 EA::WebKit::BidiClass TextSystem::GetBidiClass(EA::WebKit::Char c)
 {
-    EA::Text::Char cEAText = GetEAText_Char(c);
+	EA::Text::Char cEAText = static_cast<EA::Text::Char>(c);
     EA::Text::BidiClass bidiEAText = EA::Text::GetBidiClass(cEAText);
     return GetWebKit_BidiClass(bidiEAText);
 }
@@ -1702,8 +1668,8 @@ void InitFontSystem(void)
             EA_ASSERT_MSG(spFontServer, "FontSystem: Failed to create the font server.");     
             if (!spFontServer)
                 return;
-           
-            EA::Text::SetFontServer(spFontServer);
+
+			EA::Text::SetFontServer(spFontServer);
             spFontServer->SetDefaultGlyphCache(spGlyphCache);
         }
 

@@ -9,25 +9,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h">
       <Filter>EABase</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h">
       <Filter>EABase</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h">
       <Filter>EABase</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h">
       <Filter>EABase</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h">
       <Filter>EABase\config</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h">
       <Filter>EABase\config</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h">
       <Filter>EABase\config</Filter>
     </ClInclude>
   </ItemGroup>

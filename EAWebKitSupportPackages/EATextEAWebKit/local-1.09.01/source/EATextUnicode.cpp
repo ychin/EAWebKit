@@ -40,11 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include EA_ASSERT_HEADER
 
-#if defined(EA_PLATFORM_WINDOWS)
     #pragma warning(push, 0)
     #include <Windows.h>
     #pragma warning(pop)
-#endif
 
 #ifdef _MSC_VER
     #pragma warning(push)
@@ -163,7 +161,6 @@ EATEXT_API bool IsSpace(Char c, int spaceTypeFlags, bool bRequireAllFlags)
 ///////////////////////////////////////////////////////////////////////////////
 // GetCharName
 //
-#if defined(EA_PLATFORM_WINDOWS)
     EATEXT_API uint32_t GetCharName(Char c, Char* pName, uint32_t nNameCapacity)
     {
         // A list of all such characters can (as of this writing) be found at:
@@ -189,46 +186,6 @@ EATEXT_API bool IsSpace(Char c, int spaceTypeFlags, bool bRequireAllFlags)
             return (uint32_t)pGetUName(c, pName);
         return 0;
     }
-#else
-    EATEXT_API uint32_t GetCharName(Char c, Char* pName, uint32_t nameCapacity)
-    {
-        // We could implement this via data form the Unicode Standard.
-        // Under Linux and OS X (and possibly some others), we could 
-        // attempt to dynamically link libicu or similar.
-        //
-        // Currently we just print the hex value as a string.
-        //
-        // Feel free to provide an implementation or solution to this 
-        // on other platforms as-needed, keeping in mind that we are 
-        // trying to avoid large amounts of memory usage due to this 
-        // being used in high-performance memory hogging games.
-
-        if(nameCapacity >= 7) // "0xHHHH"
-        {
-            char buffer[32]; // sprintf as 8 bit, because some systems don't support 16 bit string libraries or wide string libraries at all.
-
-            #if (EATEXT_CHAR_TYPE_SIZE == 2)
-                sprintf(buffer, "0x%04x", (unsigned)c);
-
-                for(int i = 0; i < 6; i++)
-                    pName[i] = (uint8_t)buffer[i];
-                pName[6] = 0;
-
-                return 6; // Return value is the Strlen of the returned string.
-            #else
-                sprintf(buffer, "0x%08x", (unsigned)c);
-
-                for(int i = 0; i < 10; i++)
-                    pName[i] = (uint8_t)buffer[i];
-                pName[10] = 0;
-
-                return 10; // Return value is the Strlen of the returned string.
-            #endif
-        }
-
-        return 0;
-    }
-#endif
 
 
 

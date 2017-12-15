@@ -30,9 +30,7 @@
 
 #include <WTF/assertions.h>
 #include <EABase/eabase.h>
-#if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
-#endif
 
 namespace EA
 {

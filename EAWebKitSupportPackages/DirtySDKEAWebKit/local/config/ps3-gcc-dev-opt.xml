@@ -1,0 +1,16 @@
+<project>
+	<dependent name="eaconfig" />
+    
+	<include file="${package.eaconfig.dir}/config/global/init.xml" />
+	<include file="${package.eaconfig.dir}/config/platform/ps3-gcc.xml" />
+
+	<include file="${package.eaconfig.dir}/config/configset/dev-opt.xml" />
+
+	<!-- turn off debug symbols as required for package release -->
+	<optionset name="config-options-common">
+		<option name="debugsymbols"     value="off" />
+	</optionset>
+
+	<include file="${package.eaconfig.dir}/config/global/combine.xml" />
+	<include file="${package.eaconfig.dir}/config/targets/target-init.xml" />
+</project>

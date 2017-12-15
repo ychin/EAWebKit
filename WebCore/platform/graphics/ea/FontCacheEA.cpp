@@ -140,68 +140,6 @@ static EA::WebKit::IFont* createFont(const FontDescription& fontDescription, con
 			++i;
 		}
 
-		const EA::WebKit::Parameters& params = EA::WebKit::GetParameters();
-
-		// Here, we iterate through the list and copy the fonts to the destination array in the order of priority.
-		// If we come across a generic font, we read it from the Params based on the generic family set in the description. 
-		bool genericFontAdded = false;
-		for(int familyIdx = 0; familyIdx < fontDescription.familyCount() && i < familyNameArrayCapacity; familyIdx++)
-		{
-			if(!fontDescription.familyAt(familyIdx).startsWith("-webkit",true)) // A generic font family 
-			{
-				if(!fontDescription.familyAt(familyIdx).isEmpty())
-				{
-					CopyFontFamilyName(textStyle.mFamilyNameArray[i], fontDescription.familyAt(familyIdx));
-					++i;
-				}
-			}
-			else
-			{
-				const char16_t* type = 0;
-				switch(fontDescription.genericFamily())
-				{
-				case FontDescription::SerifFamily:
-					type = params.mFontFamilySerif;
-					break;
-
-				case FontDescription::SansSerifFamily:
-					type = params.mFontFamilySansSerif;
-					break;
-
-				case FontDescription::MonospaceFamily:
-					type = params.mFontFamilyMonospace;
-					break;
-
-				case FontDescription::CursiveFamily:
-					type = params.mFontFamilyCursive;
-					break;
-
-				case FontDescription::FantasyFamily:
-					type = params.mFontFamilyFantasy;
-					break;
-
-				default:
-				case FontDescription::NoFamily:
-				case FontDescription::StandardFamily:
-					type = params.mFontFamilyStandard;
-					break;
-				}
-
-				if(type)
-				{
-					genericFontAdded = true;
-					EA::Internal::Strcpy(textStyle.mFamilyNameArray[i],type);
-					++i;
-				}
-			}
-		}
-
-		if( i < familyNameArrayCapacity && !genericFontAdded)
-		{
-			EA::Internal::Strcpy(textStyle.mFamilyNameArray[i],params.mFontFamilyStandard);
-			++i;
-		}
-
 		if(i < familyNameArrayCapacity)
 		{
 			*textStyle.mFamilyNameArray[i] = 0;

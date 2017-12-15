@@ -1,0 +1,13 @@
+<project>
+	<dependent name="eaconfig" />
+    
+	<include file="${package.eaconfig.dir}/config/global/init.xml" />
+	<include file="${package.eaconfig.dir}/config/platform/pc-vc.xml" />
+
+	<include file="${package.eaconfig.dir}/config/configset/dll-dev-debug-opt.xml" />
+
+	<include file="${package.eaconfig.dir}/config/global/combine.xml" />
+	<include file="${package.eaconfig.dir}/config/targets/target-init.xml" />
+    
+    <include file="overrides/pc-vc-dev.xml" />
+</project>

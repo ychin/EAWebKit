@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="libpngEAWebKit" default="build">
+
+    <property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+
+    <!-- Properties -->
+    <property name="currDir" value="@{PathGetFullPath('.')}"/>
+    <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+
+    <!-- Package declaration -->
+    <package  name="libpngEAWebKit" targetversion="${currVer}"/>
+
+
+    <!-- Supported global properties.   -->
+    <!-- Example usage                  -->
+    <!--   <globalproperties>           -->
+    <!--       EA_USE_XCEEDZIP=0        -->
+    <!--   </globalproperties>          -->
+    <property name="EA_USE_XCEEDZIP"            value="0" unless="@{PropertyExists('EA_USE_XCEEDZIP')}" />
+    <property name="EATECH_WARNINGSASERRORS"    value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+    <property name="LIBPNG_ARM_NEON_SUPPORT"    value="0" unless="@{PropertyExists('LIBPNG_ARM_NEON_SUPPORT')}" />
+
+
+
+    <!-- Create extra build types which modifies the build -->
+    <optionset name="config-options-library-mod" fromoptionset="config-options-library-c">
+        <option name="buildset.name" value="CLibraryMod"/>
+        <option name="warnings" value="off"/>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-library-mod" />
+    <optionset name="CLibraryMod">
+        <option name="cc.options" if="${config-compiler} == 'vc' and @{StrIndexOf('${config-name}', '-opt')} != -1">
+            <!-- Use /O1 (minimize size) instead of /O2 (maximize speed) -->
+            @{StrReplace(@{OptionSetGetValue('buildsettings', 'cc.options')}, '-O2', '-O1')}
+        </option>
+    </optionset>
+
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <property name="runtime.buildmodules"     value="libpngEAWebKit"/>
+    <property name="runtime.libpngEAWebKit.buildtype" value="CLibraryMod"/>
+
+    <property name="runtime.libpngEAWebKit.usedependencies">
+	    EABaseEAWebKit
+    </property>
+
+    
+    <property name="runtime.libpngEAWebKit.usedependencies" if="${EA_USE_XCEEDZIP} == 0">
+	    ${property.value}
+      zlibEAWebKit
+    </property>
+
+    <do if="${config-system}==iphone || ${config-system}==android">
+      <property name="runtime.libpng.defines" if="${LIBPNG_ARM_NEON_SUPPORT} == 1">
+        ${property.value}
+        PNG_ARM_NEON=1
+      </property>
+    </do>
+
+    <property name="runtime.libpngEAWebKit.defines">
+        ${property.value}
+        PNG_NO_MMX_CODE
+        _CRT_SECURE_NO_WARNINGS
+        EA_USE_XCEEDZIP=${EA_USE_XCEEDZIP}
+    </property>
+    <property name="runtime.libpngEAWebKit.defines" if="${Dll}">
+        ${property.value}
+        PNG_BUILD_DLL
+        ZLIB_DLL
+    </property>
+
+    <do if="@{PropertyExists('libpng.DynamicLibraryStaticLinkage')}">
+      <property name="runtime.libpngEAWebKit.defines" if="${libpng.DynamicLibraryStaticLinkage}">
+        ${property.value}
+        PNG_IMPEXP=
+      </property>
+    </do>
+  
+    <property name="runtime.libpngEAWebKit.warningsuppression"/>
+    <property name="runtime.libpngEAWebKit.warningsuppression.ps3" if="${config-compiler} == 'sn'">
+        --diag_suppress=515     <!-- a value of type "int" cannot be assigned to an entity of type "FILE *" -->
+        --diag_suppress=1669    <!-- potential uninitialized reference to "X" in function "Y". -->
+    </property>
+
+    <property name="runtime.libpngEAWebKit.usedependencies">
+        ${property.value}
+    </property>
+
+    <property name="runtime.libpngEAWebKit.includedirs">
+        ${package.dir}/include/libpng
+    </property>
+
+    <fileset name="runtime.libpngEAWebKit.sourcefiles">
+        <includes name="${package.dir}/source/*.c"/>
+    </fileset>
+
+
+      <fileset name="runtime.libpngEAWebKit.asmsourcefiles" if="${LIBPNG_ARM_NEON_SUPPORT} == 1">
+          <includes name="${package.dir}/source/arm/${config-system}/*.S"/>
+      </fileset>
+ 
+    
+</project>
+
+
+
+
+
+

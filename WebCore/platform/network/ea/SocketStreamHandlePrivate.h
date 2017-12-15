@@ -33,6 +33,7 @@
 #define SocketStreamHandlePrivate_h
 
 #include "SocketStreamHandleBase.h"
+#include "Timer.h"
 
 #include <EAWebKit/EAWebKitTransport.h>
 namespace WebCore 
@@ -53,9 +54,12 @@ public:
 	void Close();
 
 private:
+	void timerFired(WebCore::Timer<SocketStreamHandlePrivate>*);
+	
 	SocketStreamHandle* m_streamHandle;
 	EA::WebKit::SocketHandle m_socketHandle;
 	EA::WebKit::SocketHandle m_CleanupTansportHandlerSocketHandle; // same as m_socketHandle, but when we set our m_socketHandle to NULL then we can't actually change the TransportHandler for it anymore, so we keep track of it and retain the original logic
+	WebCore::Timer<SocketStreamHandlePrivate>   mPendingDataTimer;    // Timer to trigger send operation for pending data.    
 };
 
 }

@@ -131,7 +131,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	#define FALSE 0 
 #endif
 
-#if defined(_WIN32) || defined(_WIN64) 
+#if   defined(_WIN32) || defined(_WIN64) 
 
 #define PLATFORM_DLL_MODULE(name,attr,major,minor) 
 
@@ -167,43 +167,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define PLATFORM_DLL_EXPORT_FUNC(funcname, libname)
 #define PLATFORM_DLL_EXPORT_VAR(variable, libname)   
-
-#elif defined(__APPLE__) 
-
-#define PLATFORM_DLL_MODULE(name,attr,major,minor) 
-
-#if defined(__cplusplus)
-#define PLATFORM_DLL_START(funcname) extern "C" void __attribute__ ((constructor)) platform_dll_start_func(void){funcname(0,0);}	
-#else
-#define PLATFORM_DLL_START(funcname) void __attribute__ ((constructor)) platform_dll_start_func(void){funcname(0,0);}	
-#endif
-#define PLATFORM_DLL_START_SUCCESS                      1
-#define PLATFORM_DLL_START_FAILURE                      0
-
-#if defined(__cplusplus)
-#define PLATFORM_DLL_STOP(funcname)	extern "C" void __attribute__ ((destructor)) platform_dll_stop_func(void){funcname(0,0);}	
-#else
-#define PLATFORM_DLL_STOP(funcname)	void __attribute__ ((destructor)) platform_dll_stop_func(void){funcname(0,0);}	
-#endif
-#define PLATFORM_DLL_STOP_SUCCESS                       1
-#define PLATFORM_DLL_STOP_FAILURE                       0
-
-#define PLATFORM_DLL_LIB(libname,attr)
-#define PLATFORM_DLL_LIB_ATTR_REGISTER					0x0001
-#define PLATFORM_DLL_LIB_ATTR_OVERRIDE					0x0002
-#define PLATFORM_DLL_LIB_ATTR_DEPENDENT_LOAD			0x0008
-
-#define PLATFORM_DLL_EXPORT_INTERFACE __attribute__ ((visibility ("default")))
-#define PLATFORM_DLL_IMPORT_INTERFACE __attribute__ ((visibility ("default")))
-
-#if defined(__cplusplus)
-#define PLATFORM_DLL_EXPORT_FUNC_DECLARE(funcname,rettype,interfacetype) extern "C" interfacetype rettype funcname(); 
-#else
-#define PLATFORM_DLL_EXPORT_FUNC_DECLARE(funcname,rettype,interfacetype) interfacetype rettype funcname(); 
-#endif
-
-#define PLATFORM_DLL_EXPORT_FUNC(funcname, libname)
-#define PLATFORM_DLL_EXPORT_VAR(variable, libname)  
 
 #endif 
 #endif // DllInterface_h

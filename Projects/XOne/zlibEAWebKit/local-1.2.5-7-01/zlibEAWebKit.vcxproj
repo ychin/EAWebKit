@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-dev-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-dev-debug|Durango">
+      <Configuration>capilano-vc-dev-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-dev-opt|Durango">
+      <Configuration>capilano-vc-dev-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{03994ABE-57B1-4D7C-896F-62AEE8658914}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>zlibEAWebKit</ProjectName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoXdkInstallPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\</DurangoXdkInstallPath>
+    <DurangoXdkKitPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\</DurangoXdkKitPath>
+    <XdkEditionTarget>160305</XdkEditionTarget>
+    <TargetPlatformSdkPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\</TargetPlatformSdkPath>
+    <XdkEditionRootVS2012>C:\work\15.1.1.1.0\Build\XOne\framework_tmp\CapilanoSDK-10.0.10586.1215\MSBuild\Microsoft.Cpp\v4.0\V110\Platforms\Durango\</XdkEditionRootVS2012>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\shared";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\um";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\winrt";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /Zc:inline /favor:AMD64 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\lib\amd64";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4210; 4244; 4255; 4242; 4127; 4131; 4946; 4702; 4264; 4263; 4628; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4574; 4571; 4819; 4826; 4692; 4996; 4350; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=1;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;MY_ZCALLOC;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</NantUnescapedPreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=1;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;MY_ZCALLOC;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\XOne\zlibEAWebKit\local-1.2.5-7-01\capilano-vc-dev-debug\lib\zlibEAWebKit.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\XOne\zlibEAWebKit\local-1.2.5-7-01\capilano-vc-dev-debug\lib/zlibEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-debug\lib" mkdir "capilano-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-debug\build\zlibEAWebKit" mkdir "capilano-vc-dev-debug\build\zlibEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <OutDir>capilano-vc-dev-debug\lib\</OutDir>
+    <IntDir>capilano-vc-dev-debug\build\zlibEAWebKit\vstmp\</IntDir>
+    <TargetName>zlibEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\shared";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\um";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\winrt";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /Zc:inline /favor:AMD64 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\lib\amd64";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4210; 4244; 4255; 4242; 4127; 4131; 4946; 4702; 4264; 4263; 4628; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4574; 4571; 4819; 4826; 4692; 4996; 4350; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;MY_ZCALLOC;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</NantUnescapedPreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;MY_ZCALLOC;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\XOne\zlibEAWebKit\local-1.2.5-7-01\capilano-vc-dev-opt\lib\zlibEAWebKit.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\XOne\zlibEAWebKit\local-1.2.5-7-01\capilano-vc-dev-opt\lib/zlibEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-opt\lib" mkdir "capilano-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-opt\build\zlibEAWebKit" mkdir "capilano-vc-dev-opt\build\zlibEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <OutDir>capilano-vc-dev-opt\lib\</OutDir>
+    <IntDir>capilano-vc-dev-opt\build\zlibEAWebKit\vstmp\</IntDir>
+    <TargetName>zlibEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zconf.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zlib.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\version.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zconf.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zlib.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\adler32.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\compress.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\crc32.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\deflate.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\infback.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inffast.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inflate.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inftrees.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\trees.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\uncompr.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_capilano-vc-dev-debug_Durango="vc" vc-compiler="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\cl.exe" vc-compiler_clang="" vc-asm="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\ml64.exe" vc-librarian="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\lib.exe" platform_capilano-vc-dev-opt_Durango="vc" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

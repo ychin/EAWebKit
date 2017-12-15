@@ -18,75 +18,75 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\png.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\png.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngconf.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngconf.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngdebug.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngdebug.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnginfo.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnginfo.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnglibconf.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnglibconf.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngpriv.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngpriv.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngstruct.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngstruct.h">
       <Filter>include\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\contrib\visupng\cexcept.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\contrib\visupng\cexcept.h">
       <Filter>include\libpng\contrib\visupng</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\png.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\png.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngerror.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngerror.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngget.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngget.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngmem.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngmem.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngpread.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngpread.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngread.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngread.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrio.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrio.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrtran.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrtran.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrutil.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrutil.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngset.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngset.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngtrans.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngtrans.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwio.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwio.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwrite.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwrite.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwtran.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwtran.c">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwutil.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwutil.c">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

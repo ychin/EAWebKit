@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2003, 2004, 2005, 2006, 2009, 2013 Apple Inc. All rights reserved.
+ * Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -193,7 +194,11 @@ bool GraphicsContext::hasBlurredShadow() const
 bool GraphicsContext::mustUseShadowBlur() const
 {
     // We can't avoid ShadowBlur if the shadow has blur.
-    if (hasBlurredShadow())
+    
+    //+EAWebKitChange
+    //12/23/2014 - Fixed bug where original code was hasBlurredShadow() but it doesn't allow rendering a box shadow with no blur
+    if (hasShadow()) 
+    //-EAWebKitChange
         return true;
     // We can avoid ShadowBlur and optimize, since we're not drawing on a
     // canvas and box shadows are affected by the transformation matrix.

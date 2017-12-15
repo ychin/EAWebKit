@@ -1,0 +1,109 @@
+﻿<project default="build">
+
+    <!-- Package declaration -->
+    <!-- Get the version number from current directory -->
+    <property name="currDir"  value="@{PathGetFullPath('.')}"/>
+    <property name="currVer"  value="@{PathGetFileName('${currDir}')}"/>
+    <package  name="FreeTypeEAWebKit" targetversion="${currVer}"/>
+
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <property name="runtime.buildmodules" value="FreeTypeEAWebKit" />
+    <property name="runtime.FreeTypeEAWebKit.buildtype" value="CLibrary" />
+
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" value=""/>
+
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-compiler} == vc">
+        ${property.value}
+        -wd4242         <!-- disable warning: conversion .. -->
+        -wd4244         <!-- disable warning: conversion .. -->
+        -wd4255         <!-- disable warning: "no function prototype given: converting '()' to '(void)'" -->
+    </property>
+ 
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-compiler} == vc">
+        ${property.value}
+        -wd4701         <!-- disable warning: potentially uninitialized local variable 'levels' used   -->
+    </property>
+ 
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-compiler} == vc and ${config-system} == pc64">
+        ${property.value}
+        -wd4306         <!-- disable warning: conversion from 'int' to 'FT_Pointer' of greater size    -->
+        -wd4305         <!-- disable warning: truncation from 'void *' to 'unsigned long'              -->
+        -wd4267         <!-- disable warning: conversion from 'size_t' to 'int', possible loss of data -->
+    </property>
+
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-compiler} == 'mw'">
+        -w noimplicit   <!-- Disable warnings related to implicit conversions. These warnings can sometimes be impractical to work around. -->
+    </property>
+
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-compiler} == 'sn'">
+        --diag_suppress=1669  <!--  Potential uninitialized reference to "X" in function "Y". -->
+        --diag_suppress=1786  <!--  Cast of address from "X" to "Y" violates strict-aliasing rules. -->
+    </property>
+
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-compiler} == 'gcc'">
+        -fno-strict-aliasing
+        -Wextra
+    </property>
+    <property name="runtime.FreeTypeEAWebKit.warningsuppression" if="${config-system} == 'iphone' or ${config-system} == 'iphonesim' or ${config-system} == 'ipad' or ${config-system} == 'ipadsim'">
+        ${property.value}
+        -fno-tree-vectorize
+    </property>
+
+    <property name="runtime.FreeTypeEAWebKit.defines">
+        ${property.value}
+        FT2_BUILD_LIBRARY
+    </property>
+
+    <property name="runtime.FreeTypeEAWebKit.defines" if="@{OptionSetGetValue('config-options-common','debugflags')} == on and @{OptionSetGetValue('config-options-common','optimization')} == off">
+        ${property.value}
+        FT_DEBUG_LEVEL_ERROR
+        FT_DEBUG_LEVEL_TRACE
+    </property>
+
+    <property name="runtime.FreeTypeEAWebKit.includedirs">
+        ${package.dir}/freetype-2.4.8/include
+    </property>
+
+    <fileset name="runtime.FreeTypeEAWebKit.sourcefiles">
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftbase.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftbitmap.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftdebug.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftfstype.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftgasp.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftglyph.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftinit.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftstroke.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftsystem.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftbbox.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftmm.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftpfr.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftsynth.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/fttype1.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/base/ftwinfnt.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/autofit/autofit.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/bdf/bdf.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/cff/cff.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/cache/ftcache.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/gzip/ftgzip.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/lzw/ftlzw.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/smooth/smooth.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/pcf/pcf.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/pfr/pfr.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/psaux/psaux.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/pshinter/pshinter.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/psnames/psnames.c"/> <!-- or should we compile psmodule.c ? -->
+        <includes name="${package.dir}/freetype-2.4.8/src/raster/raster.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/sfnt/sfnt.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/truetype/truetype.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/type1/type1.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/cid/type1cid.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/type42/type42.c"/>
+        <includes name="${package.dir}/freetype-2.4.8/src/winfonts/winfnt.c"/>
+    </fileset>
+
+</project>

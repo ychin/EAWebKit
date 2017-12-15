@@ -53,9 +53,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if (BUILDING_EAWEBKIT_DLL)
-#if defined(EA_PLATFORM_MICROSOFT)
 #include "winsock2.h"
-#endif
 #include "dirtyplatform.h"
 #include "dirtynet.h"
 #endif

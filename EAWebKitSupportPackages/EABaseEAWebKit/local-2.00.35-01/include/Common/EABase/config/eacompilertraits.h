@@ -1363,7 +1363,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             #else
                 #define EA_SSE 0
             #endif
-        #elif EA_SSE3 || defined EA_PLATFORM_CAPILANO
+        #elif EA_SSE3 || defined CS_UNDEFINED_STRING
             #define EA_SSE 3
         #elif EA_SSE2
             #define EA_SSE 2
@@ -1403,35 +1403,35 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         #endif
     #endif
     #ifndef EA_SSSE3
-        #if defined __SSSE3__ || defined EA_PLATFORM_CAPILANO
+        #if defined __SSSE3__ || defined CS_UNDEFINED_STRING
             #define EA_SSSE3 1
         #else
             #define EA_SSSE3 0
         #endif
     #endif
     #ifndef EA_SSE4_1
-        #if defined __SSE4_1__ || defined EA_PLATFORM_CAPILANO
+        #if defined __SSE4_1__ || defined CS_UNDEFINED_STRING
             #define EA_SSE4_1 1
         #else
             #define EA_SSE4_1 0
         #endif
     #endif
     #ifndef EA_SSE4_2
-        #if defined __SSE4_2__ || defined EA_PLATFORM_CAPILANO
+        #if defined __SSE4_2__ || defined CS_UNDEFINED_STRING
             #define EA_SSE4_2 1
         #else
             #define EA_SSE4_2 0
         #endif
     #endif
     #ifndef EA_SSE4A
-        #if defined __SSE4A__ || defined EA_PLATFORM_CAPILANO
+        #if defined __SSE4A__ || defined CS_UNDEFINED_STRING
             #define EA_SSE4A 1
         #else
             #define EA_SSE4A 0
         #endif
     #endif
     #ifndef EA_AVX
-        #if defined __AVX__ || defined EA_PLATFORM_CAPILANO
+        #if defined __AVX__ || defined CS_UNDEFINED_STRING
             #define EA_AVX 1
         #else
             #define EA_AVX 0

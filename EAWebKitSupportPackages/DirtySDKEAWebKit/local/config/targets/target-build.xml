@@ -1,0 +1,55 @@
+<!--
+===============================================================================
+Copyright 2005 Electronic Arts Inc
+
+target-build.xml
+===============================================================================
+-->
+
+<project>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<target name="DirtySDKConfig-buildallexternal-caller" hidden="true" >
+    <foreach item="String" in="${package.configs}" property="build-config-name">
+			<nant buildfile="${package.dir}/${package.name}.build" target="${DirtySDKConfig.buildallexternal.target}" if="@{StrEndsWith(${build-config-name}, 'dev-opt')}">
+    			<echo message="target (${build-config-name})" />
+				<property name="config" value="${build-config-name}"/>
+        <property name="dirtysdk-force-stripped" value="${dirtysdk-force-stripped}"/>
+			</nant>
+			<nant buildfile="${package.dir}/${package.name}.build" target="${DirtySDKConfig.buildallexternal.target}" if="@{StrEndsWith(${build-config-name}, 'dev-debug')}">
+    			<echo message="target (${build-config-name})" />
+				<property name="config" value="${build-config-name}"/>
+        <property name="dirtysdk-force-stripped" value="${dirtysdk-force-stripped}"/>
+      </nant>
+		</foreach>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<do unless="'@{OptionSetGetValue('DirtySDKConfig.targets', 'buildexternal')}' == 'exclude'">
+		<target name="buildallexternal" description="Build all external configurations">
+			<property name="DirtySDKConfig.buildallexternal.target" value="build" />
+			<call target="DirtySDKConfig-buildallexternal-caller" force="true" />
+		</target>
+	</do>
+    
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<target name="DirtySDKConfig-buildalldebug-caller" hidden="true" >
+		<foreach item="String" in="${package.configs}" property="build-config-name">
+			<nant buildfile="${package.dir}/${package.name}.build" target="${DirtySDKConfig.buildalldebug.target}" if="@{StrEndsWith(${build-config-name}, 'dev-debug')}">
+    			<echo message="target (${build-config-name})" />
+				<property name="config" value="${build-config-name}"/>
+        <property name="dirtysdk-force-stripped" value="${dirtysdk-force-stripped}"/>
+			</nant>
+		</foreach>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<do unless="'@{OptionSetGetValue('DirtySDKConfig.targets', 'builddebug')}' == 'exclude'">
+		<target name="buildalldebug" description="Build all debug configurations">
+			<property name="DirtySDKConfig.buildalldebug.target" value="build" />
+			<call target="DirtySDKConfig-buildalldebug-caller" force="true" />
+		</target>
+	</do>
+    
+
+</project>

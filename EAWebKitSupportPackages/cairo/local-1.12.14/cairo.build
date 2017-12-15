@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="cairo" default="build">
+  <!-- Properties -->
+  <property name="currDir" value="@{PathGetFullPath('.')}"/>
+  <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+  <!-- Package declaration -->
+  <package  name="cairo" targetversion="${currVer}"/>
+  <include file="scripts/initialize.xml" />
+
+  <!-- Set some useful properties to avoid clutter in the build file. -->
+  <property name="ConfigIsDebug"  value="false"/>
+  <property name="ConfigIsOpt"    value="false"/>
+  <property name="ConfigIsFinal"  value="false"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+
+  <property name="OsIsWin"      value="false"/>
+  <property name="OsIsOSX"      value="false"/>
+  <property name="OsIsXboxOne" value="false"/>
+  <property name="OsIsPS4"   value="false"/>
+  
+  <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
+  <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
+  <property name="OsIsXboxOne" value="true" if="${config-system} == capilano"/>
+  <property name="OsIsPS4"   value="true" if="${config-system} == kettle"/>
+
+  <optionset name="customized-config-options-library-c" fromoptionset="config-options-library-c">
+    <option name="buildset.name" value="CustomizedLibraryC"/>
+  </optionset>
+  <task name="GenerateBuildOptionset" configsetname="customized-config-options-library-c" />
+
+  <do if="${config-compiler} == 'vc'">
+    <optionset name="CustomizedLibraryC">
+      <option name="cc.options">
+        ${option.value}
+        /fp:precise
+      </option>
+    </optionset>
+  </do>
+  <do if="${config-compiler} == 'clang'">
+    <optionset name="CustomizedLibraryC">
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-ffast-math', ' ')}
+      </option>
+    </optionset>
+  </do>
+
+  <property name="runtime.buildtype" value="CustomizedLibraryC" />
+
+  <property name="runtime.defines">
+    ${property.value}
+    CAIRO_NO_MUTEX=1
+    CAIRO_DISABLE_TMPFILE
+    cairo_public=
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin}">
+    ${property.value}
+    WIN32
+    _WINDOWS
+  </property>
+  
+  <property name="runtime.defines" if="!${OsIsWin}">
+    ${property.value}
+    HAVE_STDINT_H
+  </property>
+
+  <property name="runtime.defines" if="${OsIsPS4} or ${OsIsXboxOne} or ${OsIsOSX}">
+    ${property.value}
+    HAVE_UINT64_T=1
+  </property>
+  
+  <property name="runtime.warningsuppression" />
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+    ${property.value}
+    -wd4245
+    -wd4146
+    -wd4132
+    -wd4204
+    -wd4702
+    -wd4127
+    -wd4244
+    -wd4242
+    -wd4267
+    -wd4706
+    -wd4701
+    -wd4306
+    -wd4221
+    -wd4200
+    -wd4034
+    -wd4305
+    -wd4311
+    -wd4312
+  </property>
+
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+    ${property.value}
+    -Wno-multichar<!-- disable warning: "error: multi-character character constant" -->
+    -Wno-uninitialized
+    -Wno-unused-function
+    -Wno-conversion
+    -Wno-unused-variable
+    -Wno-switch
+    -Wno-parentheses-equality
+  </property>
+
+  <property name="runtime.builddependencies"> 
+    ${property.value}
+    zlibEAWebKit
+    libpngEAWebKit
+    pixman
+  </property>
+  
+  <property name="runtime.includedirs">
+    ${package.dir}/include/cairo
+    ${package.dir}/include/
+  </property>
+  
+  <fileset name="runtime.headerfiles">
+    <includes name="${package.dir}/include/**/*.h"/>
+    <includes name="${package.dir}/include/*.h"/>
+    <includes name="${package.dir}/source/*.h"/>
+  </fileset>
+
+  <fileset name="runtime.sourcefiles">
+    <includes name="${package.dir}/source/*.c"/>
+    <excludes name="${package.dir}/source/cairo-win32-*.c"/>
+  </fileset>
+</project>

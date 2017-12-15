@@ -54,13 +54,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 #ifndef EATEXT_UNISCRIBE_ENABLED
     // Under Windows, we use Uniscribe (usp10.dll) for Thai word/line breaking services.
-    #ifdef EA_PLATFORM_WINDOWS
         #define EATEXT_UNISCRIBE_ENABLED 1
         #include <usp10.h>
         #pragma comment(lib, "usp10")
-    #else
-        #define EATEXT_UNISCRIBE_ENABLED 0
-    #endif
 #endif
 
 

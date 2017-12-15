@@ -1075,17 +1075,18 @@ bool RenderThemeEA::paintMediaSliderTrack(RenderObject* o, const PaintInfo& i, c
     if (pMediaElement)
     {
         MediaPlayer* pPlayer = pMediaElement->player();
-        EAW_ASSERT(pPlayer);
-        
-        const float min = pPlayer->currentTime(); 
-        const float max = pPlayer->duration();    
+        if(pPlayer)
+		{
+			const float min = pPlayer->currentTime(); 
+			const float max = pPlayer->duration();    
 
-        if (max > 0.f)  
-        {
-            ratio =  min / max;
-            if(ratio > 1.0f)
-                ratio = 1.0f;    
-        }
+			if (max > 0.f)  
+			{
+				ratio =  min / max;
+				if(ratio > 1.0f)
+					ratio = 1.0f;    
+			}
+		}
     }
 
     FillRectWithSolidBorder(i, r);

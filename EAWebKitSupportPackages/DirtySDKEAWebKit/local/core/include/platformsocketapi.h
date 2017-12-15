@@ -40,33 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stddef.h> //for size_t
 
 #include "dirtyplatform.h"
-#if defined(EA_PLATFORM_KETTLE) 
-	#include <sys/socket.h> //for socklen_t
-	//typedef unsigned int socklen_t;
-	typedef size_t platform_ssize_t;
-#if defined(__ORBIS__)
-	//we add some definitions manually to keep this API cross-platform
-	struct hostent {
-		char *h_name;
-		char **h_aliases;
-		int h_addrtype;
-		int h_length;
-		char **h_addr_list;
-	};
-
-	struct pollfd {
-		int fd;
-		short events;
-		short revents;
-	};
-
-#define POLLIN		0x0001
-#define POLLPRI		0x0002
-#define POLLOUT		0x0004
-#define POLLERR		0x0008		
-#endif
-
-#elif defined(_WIN32) || defined(EA_PLATFORM_CAPILANO)
+#if   defined(_WIN32) || defined(CS_UNDEFINED_STRING)
 	//http://msdn.microsoft.com/en-us/library/ms741394(VS.85).aspx 
 	typedef int socklen_t;
 	typedef int platform_ssize_t;

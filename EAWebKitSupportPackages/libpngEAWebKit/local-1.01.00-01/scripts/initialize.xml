@@ -1,0 +1,19 @@
+<project>
+
+	<!-- libpngEAWebKit header files location. -->
+	<property name="package.libpngEAWebKit.includedirs">
+		${package.libpngEAWebKit.dir}/include/libpng
+	</property>
+
+	<!-- libpngEAWebKit libraries location. -->
+	<do if="@{PropertyExists('config')}">
+		<do if="@{PropertyExists('lib-prefix')}">
+			<do if="@{PropertyExists('lib-suffix')}">
+				<fileset name="package.libpngEAWebKit.libs">
+					<includes name="${package.libpngEAWebKit.builddir}/${config}/lib/${lib-prefix}libpngEAWebKit${lib-suffix}" />
+				</fileset>
+			</do>
+		</do>
+	</do>
+
+</project>

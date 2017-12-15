@@ -45,9 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include EA_ASSERT_HEADER
 
-#if   defined(EA_PLATFORM_WINDOWS)
     #include <windows.h>
-#endif
 
 
 namespace EA
@@ -272,7 +270,6 @@ size_t DirectoryIterator::ReadRecursive(const char16_t* pBaseDirectory, EntryLis
 ////////////////////////////////////////////////////////////////////////////
 // EntryFindFirst / EntryFindNext / EntryFindFinish
 //
-#if defined(EA_PLATFORM_WINDOWS) 
 
     EAIO_API EntryFindData* EntryFindFirst(const char16_t* pDirectoryPath, const char16_t* pFilterPattern, EntryFindData* pEntryFindData)
     {
@@ -290,7 +287,6 @@ size_t DirectoryIterator::ReadRecursive(const char16_t* pBaseDirectory, EntryLis
             pEntryFindData->mbIsAllocated = true;
         }
 
-        #if defined(EA_PLATFORM_WINDOWS) // If wide character functions are supported...
             WIN32_FIND_DATAW win32FindDataW;
             HANDLE hFindFile = FindFirstFileW(pPathSpecification.c_str(), &win32FindDataW);
 
@@ -316,39 +312,6 @@ size_t DirectoryIterator::ReadRecursive(const char16_t* pBaseDirectory, EntryLis
 
                 return pEntryFindData;
             }
-        #else
-            Path::PathString8 directory8;
-            // Measure how many UTF-8 chars we'll need (EASTL factors-in a hidden + 1 for NULL terminator)
-            size_t nCharsNeeded = StrlcpyUTF16ToUTF8(NULL, 0, pPathSpecification.c_str());
-            directory8.resize(nCharsNeeded);
-            StrlcpyUTF16ToUTF8(&directory8[0], nCharsNeeded + 1, pPathSpecification.c_str());
-            
-            WIN32_FIND_DATAA win32FindDataA;
-            HANDLE hFindFile = FindFirstFileA(directory8.c_str(), &win32FindDataA);
-
-            if(hFindFile != INVALID_HANDLE_VALUE)
-            {
-                StrlcpyUTF8ToUTF16(pEntryFindData->mName, kMaxPathLength, win32FindDataA.cFileName);
-
-                pEntryFindData->mbIsDirectory = (win32FindDataA.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-                if(pEntryFindData->mbIsDirectory)
-                    Path::EnsureTrailingSeparator(pEntryFindData->mName, kMaxPathLength);
-
-                if(pDirectoryPath)
-                    EAIOStrlcpy16(pEntryFindData->mDirectoryPath, pDirectoryPath, kMaxPathLength);
-                else
-                    pEntryFindData->mDirectoryPath[0] = 0;
-
-                if(pFilterPattern)
-                    EAIOStrlcpy16(pEntryFindData->mEntryFilterPattern, pFilterPattern, kMaxPathLength);
-                else
-                    pEntryFindData->mEntryFilterPattern[0] = 0;
-
-                pEntryFindData->mPlatformHandle = (uintptr_t)hFindFile;
-
-                return pEntryFindData;
-            }
-        #endif
 
         if (pEntryFindData->mbIsAllocated)
             Free(EA::IO::GetAllocator(), pEntryFindData);
@@ -363,7 +326,6 @@ size_t DirectoryIterator::ReadRecursive(const char16_t* pBaseDirectory, EntryLis
         {
             HANDLE hFindFile = (HANDLE)pEntryFindData->mPlatformHandle;
 
-            #if defined(EA_PLATFORM_WINDOWS) // If wide character functions are supported...
                 WIN32_FIND_DATAW win32FindDataW;
 
                 if(FindNextFileW(hFindFile, &win32FindDataW))
@@ -376,24 +338,6 @@ size_t DirectoryIterator::ReadRecursive(const char16_t* pBaseDirectory, EntryLis
 
                     return pEntryFindData;
                 }
-            #else
-                WIN32_FIND_DATAA win32FindDataA;
-
-                if(FindNextFileA(hFindFile, &win32FindDataA))
-                {
-                    StrlcpyUTF8ToUTF16(pEntryFindData->mName, kMaxPathLength, win32FindDataA.cFileName);
-
-                    pEntryFindData->mbIsDirectory = (win32FindDataA.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-                    if(pEntryFindData->mbIsDirectory)
-                        Path::EnsureTrailingSeparator(pEntryFindData->mName, kMaxPathLength);
-
-                    return pEntryFindData;
-                }
-
-                // Problem: Not all platforms always return "./" and "../" directories.
-                // We need to provide those if they aren't present and if they are
-                // appropriate ("../" shouldn't be present for root directories).
-            #endif
         }
         return NULL;
     }
@@ -416,30 +360,6 @@ size_t DirectoryIterator::ReadRecursive(const char16_t* pBaseDirectory, EntryLis
     }
 
 
-#else
-
-    // If it doesn't have anything built-in; you need to implement 
-    // your own enumeration mechanism, such as by putting a file in each 
-    // directory listing the directory's contents.
-
-    EAIO_API EntryFindData* EntryFindFirst(const char16_t* /*pDirectoryPath*/, const char16_t* /*pFilterPattern*/, EntryFindData* /*pEntryFindData*/)
-    {
-        // To do.
-        return NULL;
-    }
-
-    EAIO_API EntryFindData* EntryFindNext(EntryFindData* /*pEntryFindData*/)
-    {
-        // To do.
-        return nullptr;
-    }
-
-    EAIO_API void EntryFindFinish(EntryFindData* /*pEntryFindData*/)
-    {
-        // To do.
-    }
-
-#endif // defined(<platform>)
 
 
 

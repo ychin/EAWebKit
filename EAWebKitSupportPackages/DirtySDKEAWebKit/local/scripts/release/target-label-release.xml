@@ -1,0 +1,8 @@
+<project>
+
+	<target name="dirtysdk-label-release" description="Creates a label for the release" hidden="true">
+		<p4 command="tag -l DirtySDK_${dirtysdk-version} ${dirtysdk-label-view}" />
+		<p4label label="DirtySDK_${dirtysdk-version}" description="DirtySDK ${dirtysdk-version} / ${dirtysdk-date}" lock="true" files="${dirtysdk-label-view}" />
+	</target>
+
+</project>

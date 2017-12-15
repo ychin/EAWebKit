@@ -41,9 +41,6 @@
 #define WEBKIT_VERSION_4_0    0x0400
 #define WEBKIT_VERSION_LATEST 0x9999
 
-#ifdef __APPLE__
-#include <AvailabilityMacros.h>
-#else
 /*
  * For non-Mac platforms, require the newest version.
  */
@@ -55,7 +52,6 @@
     #define DEPRECATED_ATTRIBUTE __attribute__((deprecated))
 #else
     #define DEPRECATED_ATTRIBUTE
-#endif
 #endif
 
 /* The versions of GCC that shipped with Xcode prior to 3.0 (GCC build number < 5400) did not support attributes on methods.

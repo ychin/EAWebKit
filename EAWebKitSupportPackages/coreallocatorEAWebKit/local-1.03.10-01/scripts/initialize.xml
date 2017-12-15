@@ -1,0 +1,11 @@
+<project>
+
+	<!--
+		Dependent packages may use ${package.coreallocatorEAWebKit.includedirs} in their 
+		includedirs element of build tasks.
+	-->
+	<property name="package.coreallocatorEAWebKit.includedirs">
+		${package.coreallocatorEAWebKit.dir}/include
+	</property>
+
+</project>

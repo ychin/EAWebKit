@@ -1,0 +1,16 @@
+<project>
+    <property name="package.EAAssertEAWebKit.includedirs">
+      ${package.EAAssertEAWebKit.dir}/include
+    </property>
+
+    <property name="package.EAAssertEAWebKit.includedirs.spu">
+      ${package.EAAssertEAWebKit.dir}/include
+    </property>
+
+    <property name="package.EAAssertEAWebKit.libdir" value="${package.EAAssertEAWebKit.builddir}/${config}/lib"/>
+
+    <fileset name="package.EAAssertEAWebKit.libs">
+        <includes name="${package.EAAssertEAWebKit.libdir}/${lib-prefix}EAAssertEAWebKit${lib-suffix}"/>
+    </fileset>
+
+</project>

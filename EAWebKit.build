@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build">
+
+  <property name="currDir" value="@{PathGetFullPath('.')}"/>
+  <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+  <package name="EAWebKit" targetversion="${currVer}" />
+  <!-- Turn this on if you are generating Open Source standalone EAWebKit solution -->
+  <property name="OpenSourceDll" value="false" unless="@{PropertyExists('OpenSourceDll')}"/>
+  <property name="EAWebKit.ENABLE_LEAN_AND_MEAN" value="false" unless="@{PropertyExists('EAWebKit.ENABLE_LEAN_AND_MEAN')}"/>
+
+  <!--abaldeva - I am not sure if there is a way to avoid setting to false first and then set it to true based on predicate result.-->
+  <!-- Set some useful properties to avoid clutter in the build file. -->
+  <property name="ConfigIsDebug"  value="false"/>
+  <property name="ConfigIsOpt"    value="false"/>
+  <property name="ConfigIsFinal"  value="false"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+
+  <property name="OsIsWin"      value="false"/>
+  <property name="OsIsOSX"      value="false"/>
+  <property name="OsIsXboxOne"  value="false"/>
+  <property name="OsIsPS4"      value="false"/>
+
+  <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
+  <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
+  <property name="OsIsXboxOne"  value="true" if="${config-system} == capilano"/>
+  <property name="OsIsPS4"      value="true" if="${config-system} == kettle"/>
+
+  <property name="eaconfig.usemultithreadeddynamiclib" value="false" if="${OsIsWin}"/>
+
+  <property name="package.sln.startupproject" value="EAWebKit" if="${OpenSourceDll}"/>
+
+  <property name="EnableHardwareRenderingGlobal" value="1" />
+
+  <!-- If desired, disable JIT on supported platforms. -->
+  <property name="EAWebKit.DisableJIT" value="false" unless="@{PropertyExists('EAWebKit.DisableJIT')}"/>
+
+  <!-- Enable default systems here. -->
+  <property name="WebKit.ENABLE_DIRTYSDK_IN_DLL"          value="1" /> 
+  <property name="WebKit.ENABLE_EATEXT_IN_DLL"            value="1" />
+
+  <property name="VisualStudioExists" value="false"/>
+  <do if="@{PropertyExists('package.VisualStudio.version')}">
+    <property name="VisualStudioExists" value="true"/>
+  </do>
+
+  <!-- ********************* -->
+  <!-- Runtime configuration -->
+  <!-- ********************* -->
+  <property name="file.def" value="${package.dir}/EAWebkit_Windows.def" if="${OsIsWin}"/>
+  <property name="file.def" value="${package.dir}/EAWebKit_XboxOne.def" if="${OsIsXboxOne}"/>
+  <property name="file.def" value="${package.dir}/EAWebkit_OSX.def" if="${OsIsOSX}"/>
+
+  <optionset name="customized-options-dynamiclibrary-static-linkage" fromoptionset="options-dynamiclibrary-static-linkage">
+    <option name="buildset.name" value="CustomizedDynamicLibraryStaticLinkage"/>
+  </optionset>
+  <task name="GenerateBuildOptionset" configsetname="customized-options-dynamiclibrary-static-linkage" />
+
+  <!-- The default build options are not exactly suitable for us so we modify them here. -->
+  <do if="${config-compiler} == 'vc'">
+    <optionset name="CustomizedDynamicLibraryStaticLinkage">
+      <!-- Disable the warnings as lot of them are generated. -->
+      <option name="cc.options">@{StrReplace(${option.value}, '-W4', '-W0')}</option>
+      <option name="cc.options">@{StrReplace(${option.value}, '-Wall', ' ')}</option>
+      <option name="cc.options">@{StrReplace(${option.value}, '-WX', ' ')}</option>
+      <option name="cc.options">
+        ${option.value}
+        /fp:precise
+      </option>
+
+      <!-- Take advantage of any compiler generated SSE2 instructions. This is default in VS 2010.
+      Enabling this option explicitly is not required on pc64 as all processors have it and VS complains about unknown option.
+      -->
+      <option name="cc.options" if="${config-system} == pc">
+        ${option.value}
+        /arch:SSE2
+      </option>
+
+      <!-- Gets around obj file size limitations in VS 2012 -->
+      <option name="cc.options" if="${config-system} == pc64">
+        ${option.value}
+        /bigobj
+      </option>
+
+      <!-- On Qt, incremental link is disabled for both debug and release.
+      On EA,
+      Release builds are not built incrementally as you may ship bloated code accidentally.
+      In debug builds, we want the incremental linking enabled(Already set by default in eaconfig). However, since WebKit codebase is huge,
+      it fails. However, if we disable SVG, we are able to link incrementally as code size is reduced significantly. 
+      LINK : fatal error LNK1210: exceeded internal ILK size limit; link with /INCREMENTAL:NO
+      For details, http://connect.microsoft.com/VisualStudio/feedback/details/283665/increase-linker-memory-to-avoid-linker-error-lnk1210-exceeded-internal-ilk-size-limit  
+      -->
+      <!--  Following needs lowercase to work.-->
+      <!-- EAWebKitTODO: We may not need this anymore
+      <option name="link.options" if="${EnableSVGGlobal}==1 and ${ConfigIsDebug}">
+        @{StrReplace(${option.value}, '-incremental', '-incremental:no')}
+      </option>
+      -->
+
+      <!-- Minimize size on platform other than PC in config other than debug. -->
+      <option name="cc.options" if="!${ConfigIsDebug} and !${OsIsWin}">
+        @{StrReplace(${option.value}, '-O2', '-O1')}
+      </option>
+      <!-- We disable LTCG as it results in horrific link times.
+      EAWebKitTODO: Figure out the size difference with and without LTCG. It was deemed as not saving much intially but things may have
+      changed now with dll config. -->
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-GL', ' ')}
+      </option>
+      <option name="link.options">
+        @{StrReplace(${option.value}, '-LTCG', ' ')}
+      </option>
+
+      <!-- The list of export functions from dll.-->
+      <option name="link.options" >
+        ${option.value}
+        /DEF:"${file.def}"
+      </option>
+    </optionset>
+  </do>
+
+  <do if="${config-compiler} == 'clang' and ${OsIsPS4}">
+    <optionset name="CustomizedDynamicLibraryStaticLinkage">
+      <!-- We don't use fast-math because it has a bug when working with NaN. This breaks JavaScriptCore.-->
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-ffast-math', ' ')}
+      </option>
+      <!-- The debug information is now available in prx. See the note from the Sony.
+      Using SDK 0.915 you can debug your PRXs, the debugger just needs to know where to find them. To tell the debugger this information, use the standard Visual Studio Symbol file locations dialog (tools -> options -> Debugging -> Symbols), 
+      the debugger will look for symbols in the locations you specify. With this setup when you step into a function inside a prx you should see the symbols.
+      
+      I'm informed that in the future work will be done (e.g specifying the path to the prx in in the debug info) which will help reduce the need for symbol paths to be specified (when debugging on the same machine that built it).
+      -->
+      <!--Disable the debug info in the non-debug config as generated prx is about half a Gig. -->
+      <option name="cc.options" if="!${ConfigIsDebug}">
+        @{StrReplace(${option.value}, '-g', ' ')}
+      </option>
+
+      <option name="link.options">
+        ${option.value}
+        -Wl,-strip-unused-data
+        -Wl,-strip-duplicates
+      </option>
+    </optionset>
+  </do>
+
+  <do if="${config-compiler} == 'clang' and ${OsIsOSX}">
+    <optionset name="CustomizedDynamicLibraryStaticLinkage">
+      <!-- We don't use fast-math because it has a bug when working with NaN. This breaks JavaScriptCore.-->
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-ffast-math', ' ')}
+      </option>
+
+      <option name="link.options">
+        ${option.value}
+        -stdlib=libc++ 
+        -mmacosx-version-min=10.7 
+        -exported_symbols_list ${file.def}
+      </option>
+
+      <option name="link.options" if="!${ConfigIsDebug}">
+        ${option.value}
+        -ffunction-sections 
+        -fdata-sections
+        -s <!-- Enable strip all symbols option . osx_config diables it to use with xcode 5.1-->
+      </option>
+    </optionset>
+
+    <property name="link.userelativepaths" value="true" />
+
+  </do>
+
+
+
+  <property name="runtime.buildtype" value="CustomizedDynamicLibraryStaticLinkage" />
+
+  <property name="eawebkit.dll.suffix" value=""/>
+  <property name="eawebkit.dll.suffix" value="d" if="${ConfigIsDebug}"/>
+  <!-- Fill in different suffixes here if we start to do release/final etc. -->
+  <property name="runtime.outputname" value="EAWebKit${eawebkit.dll.suffix}"/>
+
+  <!-- determine the directory given the selected config-system-->
+  <property name="eawebkit-platform-directory-name" value="${config-system}" />
+  <!-- For the 2 platforms below, we rename the directory name as we have been asked to adopt to official names. However, config packages have no plan to do so at the moment.-->
+  <property name="eawebkit-platform-directory-name" value="xboxone" if="${OsIsXboxOne}"/>
+  <property name="eawebkit-platform-directory-name" value="ps4"     if="${OsIsPS4}"/>
+  
+  <choose>
+    <do if="${OsIsWin}">
+      <do if="${VisualStudioExists}">
+        <property name="WebKit-JitFolder"    value="jit" />
+        <property name="WebKit-JitFolder"    value="non-jit" if="${EAWebKit.DisableJIT} or ${config-system} == pc64"/>
+        <property name="WebKit-RuntimeFolder" value="static_runtime" />
+        <property name="WebKit-DistributionDir" value="${package.dir}/Distribution/${eawebkit-platform-directory-name}/${package.VisualStudio.version}/${WebKit-RuntimeFolder}/${WebKit-JitFolder}/${config-name}"/>
+      </do>
+      <property name="eawebkit.dll.extension" value="dll"/>
+    </do>
+
+    <do if="${OsIsXboxOne}">
+      <property name="WebKit-DistributionDir" value="${package.dir}/Distribution/${eawebkit-platform-directory-name}/${package.CapilanoSDK.version}/${config-name}"/>
+      <!-- Currently, we are using proxy SDK since non-proxy SDK is Work in Progress. -->
+      <property name="WebKit-DistributionDir" value="@{StrReplace(${WebKit-DistributionDir}, '-proxy', '')}" />
+      <property name="eawebkit.dll.extension" value="dll"/>
+    </do>
+
+    <do if="${OsIsPS4}">
+      <property name="WebKit-DistributionDir" value="${package.dir}/Distribution/${eawebkit-platform-directory-name}/${package.kettlesdk.version}/${config-name}"/>
+      <!-- Currently, we are using proxy SDK since non-proxy SDK is Work in Progress. -->
+      <property name="WebKit-DistributionDir" value="@{StrReplace(${WebKit-DistributionDir}, '-proxy', '')}" />
+      <property name="eawebkit.dll.extension" value="prx"/>
+    </do>
+
+    <do if="${OsIsOSX}">
+      <!-- config-processor property not set in 32-bit and is 64 in 64-bit. So we write following 3 lines to work around a future issue if Framework decides to define config-processor for 32-bit
+      in future.-->
+      <property name="config-processor" value="" unless="@{PropertyExists('config-processor')}"/>
+      <property name="eawebkit-osx-config-system-suffix" value=""/>
+      <property name="eawebkit-osx-config-system-suffix" value="64" if="${config-processor}==x64"/>
+
+      <property name="WebKit-DistributionDir" value="${package.dir}/Distribution/${eawebkit-platform-directory-name}${eawebkit-osx-config-system-suffix}/${config-compiler}/${config-name}"/>
+      <property name="eawebkit.dll.extension" value="so"/>
+    </do>
+
+  </choose>
+
+  <mkdir dir="${WebKit-DistributionDir}" />
+  <mkdir dir="${WebKit-DistributionDir}/bin" />
+  <mkdir dir="${WebKit-DistributionDir}/lib" if="${OsIsPS4}"/>
+
+  <!--Seems like due to a bug in current Framework, this directory is not created. So we do it manually here. Otherwise, the build would fail on PS4 where a stub lib is generated.-->
+  <mkdir dir="${package.configlibdir}" />
+
+
+  <property name="WebKit-dllname"             value="${runtime.outputname}.${eawebkit.dll.extension}"/>
+  <choose>
+    <do if="${OsIsPS4}">
+      <property name="WebKit-libname"             value="EAWebKit${eawebkit.dll.suffix}_stub_weak.a"/>
+    </do>
+    <do>
+      <property name="WebKit-libname"             value=""/>
+    </do>
+  </choose>
+  <property name="WebKit-dll-copyfrom"        value="${package.configbindir}/${WebKit-dllname}" />
+  <property name="WebKit-lib-copyfrom"        value="${package.configlibdir}/${WebKit-libname}" />
+  <property name="WebKit-dll-copytopath"      value="${WebKit-DistributionDir}/bin" />
+  <property name="WebKit-lib-copytopath"      value="${WebKit-DistributionDir}/lib" />
+
+  <!-- Disable post build copy as the paths here get converted to absolute paths which is not portable across machines-->
+  <do if="!${OpenSourceDll}">
+    <!-- All supported platforms other than OS X are currently developed on Windows machine so we use xcopy directly-->
+    <property name="runtime.vcproj.post-build-step" unless="${OsIsOSX}">
+      ${property.value}
+      if exist "${WebKit-dll-copyfrom}" (%SystemRoot%\system32\xcopy "${WebKit-dll-copyfrom}" "${WebKit-dll-copytopath}" /f /y) else ( echo ${WebKit-dll-copyfrom} is missing.)
+    </property>
+
+    <property name="runtime.vcproj.post-build-step" if="${OsIsPS4}">
+      ${property.value}
+      if exist "${WebKit-lib-copyfrom}" (%SystemRoot%\system32\xcopy "${WebKit-lib-copyfrom}" "${WebKit-lib-copytopath}" /f /y) else ( echo ${WebKit-lib-copyfrom} is missing.)
+    </property>
+
+    <!-- For Open source XCode project, we use post-build-step which evaluates the bash script below.
+  Disabled code for reference 
+  <property name="runtime.vcproj.post-build-step" if="${OsIsOSX} and ${OpenSourceDll}">
+    ${property.value}
+    cp -afv "${WebKit-dll-copyfrom}" "${WebKit-dll-copytopath}" 
+  </property>
+  -->
+    <!-- For regular NAnt or XCode project builds, we use the NAnt target as it will work for both NAnt or XCode build-->
+
+    <target name="OSXDllCopy">
+      <echo message="Copying dll to Distribution folder..."/>
+      <copy file="${WebKit-dll-copyfrom}" todir="${WebKit-dll-copytopath}" overwrite="true" clobber="true"/>
+      <echo message="Done."/>
+    </target>
+    <property name="runtime.postbuildtarget" value="OSXDllCopy" if="${OsIsOSX}"/>
+  </do>
+
+  <property name="runtime.defines">
+    ${property.value}
+    UNICODE
+    USE_SYSTEM_MALLOC=1
+    BUILDING_EA__=1
+    BUILDING_EA__
+    BUILDING_WebCore
+    BUILDING_WebKit
+    JS_NO_EXPORT 
+    EASTL_NOMINMAX=0
+    BUILDING_EAWEBKIT_DLL=1
+    cairo_public=
+    UTF_USE_EAASSERT=1
+    PNG_IMPEXP=
+    <!--EAWebKitTODO : Find a better place for SQLite defines. May be EAWebKitConfig.h? -->
+    SQLITE_CORE
+    SQLITE_OMIT_LOAD_EXTENSION
+    SQLITE_OMIT_COMPLETE
+    SQLITE_OS_OTHER
+
+    <!--EAWebKitTODO : Find a better place for SQLite defines. May be EAWebKitConfig.h? -->
+    LIBXML_STATIC
+    LIBXML_STATIC_FOR_DLL
+
+    ENABLE_DIRTYSDK_IN_DLL=${WebKit.ENABLE_DIRTYSDK_IN_DLL}
+    ENABLE_EATEXT_IN_DLL=${WebKit.ENABLE_EATEXT_IN_DLL}
+    
+    EATEXT_USE_FREETYPE <!--EAWebKitTODO - Remove this -->
+  </property>
+
+  <property name="runtime.defines" if="${EAWebKit.ENABLE_LEAN_AND_MEAN}">
+    ${property.value}
+    ENABLE_SVG=0
+  </property>
+
+  <property name="runtime.defines" if="${EAWebKit.DisableJIT}">
+    ${property.value}
+    ENABLE_JIT=0
+  </property>
+  <property name="runtime.defines" if="${OsIsWin} or ${OsIsXboxOne}">
+    ${property.value}
+    EAWEBKIT_PLATFORM_HEADER=&lt;windows.h&gt;
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin}">
+    ${property.value}
+    WIN32
+    _WINDOWS
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin} or ${OsIsXboxOne}">
+    ${property.value}
+    NOMINMAX=1
+  </property>
+
+  <!-- For a config other than debug, define following. This is so that you are not accidentally shipping a configuration with debug information.
+  FWIW, the use of macros such as NDEBUG for defining release like configurations is discouraged in EA but it is very common in lot of frameworks. 
+  -->
+  <property name="runtime.defines" if="!${ConfigIsDebug}">
+    ${property.value}
+    NDEBUG
+  </property>
+
+  <property name="runtime.includedirs">
+    ${property.value}
+    ${package.dir}/WebCore/bridge/ea
+    ${package.dir}/WebCore/page/ea
+    ${package.dir}/WebCore/platform/graphics/cairo/
+    ${package.dir}/WebCore/platform/graphics/ea/
+    ${package.dir}/WebCore/platform/image-decoders/gif
+    ${package.dir}/WebCore/platform/image-decoders/jpeg
+    ${package.dir}/WebCore/platform/image-decoders/png
+    ${package.dir}/WebCore/platform/image-decoders/webp
+
+    <!--
+    ${package.dir}/WebCore/platform/network/curl
+    -->
+
+    ${package.dir}/WebCore/platform/network/ea
+    ${package.dir}/WebCore/platform/ea
+
+    ${package.dir}/WebKit/ea/Api/EAWebKit/include
+    ${package.dir}/WebKit/ea/Api/EAWebKit/source
+    ${package.dir}/WebKit/ea/Api/private
+    ${package.dir}/WebKit/ea/WebCoreSupport
+    ${package.dir}/WebKit/ea/WebCoreSupport/InspectorServer
+    
+    <!--${package.dir}/3rdparty/sqlite-->
+  </property>
+
+  <property name="runtime.includedirs">
+    ${property.value}
+
+    <!--WebCore Include directories-->
+    ${package.dir}/WebCore
+    ${package.dir}/WebCore/DerivedSources
+
+    <!-- EAWebKitTODO: this probably shouldn't be necessary -->
+    ${package.dir}/WebCore/WebKit.vcxproj/WebKit/
+
+    ${property.value}/WebCore/
+    ${package.dir}/WebCore/platform
+    ${package.dir}/WebCore/platform/graphics
+    ${package.dir}/WebCore/platform/graphics/cpu/arm/filters
+    ${package.dir}/WebCore/platform/graphics/cairo
+    ${package.dir}/WebCore/platform/graphics/texmap
+    ${package.dir}/WebCore/platform/graphics/transforms
+    ${package.dir}/WebCore/platform/graphics/filters
+
+    ${package.dir}/WebCore/platform/text
+    ${package.dir}/WebCore/fileapi
+    ${package.dir}/WebCore/WebCore
+    ${package.dir}/WebCore/DerivedSources
+    ${package.dir}/WebCore/dom
+    ${package.dir}/WebCore/css
+    ${package.dir}/WebCore/acccessibility
+    ${package.dir}/WebCore/rendering
+    ${package.dir}/WebCore/rendering/mathml
+    ${package.dir}/WebCore/html
+    ${package.dir}/WebCore/html/forms
+    ${package.dir}/WebCore/html/canvas
+    ${package.dir}/WebCore/Modules/indexeddb
+    ${package.dir}/WebCore/Modules/speech
+
+    ${package.dir}/WebCore/Modules/battery
+    ${package.dir}/WebCore/Modules/gamepad
+    ${package.dir}/WebCore/Modules/indexeddb
+    ${package.dir}/WebCore/Modules/mediacontrols
+    ${package.dir}/WebCore/Modules/mediastream
+    ${package.dir}/WebCore/Modules/networkinfo
+    ${package.dir}/WebCore/Modules/proximity
+    ${package.dir}/WebCore/Modules/speech
+    ${package.dir}/WebCore/Modules/webaudio
+    ${package.dir}/WebCore/Modules/websockets
+    ${package.dir}/WebCore/Modules/encryptedmedia
+    ${package.dir}/WebCore/Modules/geolocation
+    ${package.dir}/WebCore/Modules/indieui
+    ${package.dir}/WebCore/Modules/mediasource
+    ${package.dir}/WebCore/Modules/navigatorcontentutils
+    ${package.dir}/WebCore/Modules/notifications
+    ${package.dir}/WebCore/Modules/quota
+    ${package.dir}/WebCore/Modules/vibration
+    ${package.dir}/WebCore/Modules/webdatabase
+
+    ${package.dir}/WebCore/WebCore
+    ${package.dir}/WebCore/accessibility
+    ${package.dir}/WebCore/bindings
+    ${package.dir}/WebCore/bindings/generic
+    ${package.dir}/WebCore/bridge
+    ${package.dir}/WebCore/crypto
+    ${package.dir}/WebCore/css
+    ${package.dir}/WebCore/dom
+    ${package.dir}/WebCore/dom/default
+    ${package.dir}/WebCore/editing
+    ${package.dir}/WebCore/fileapi
+    ${package.dir}/WebCore/history
+    ${package.dir}/WebCore/html
+    ${package.dir}/WebCore/html/canvas
+    ${package.dir}/WebCore/html/parser
+    ${package.dir}/WebCore/html/shadow
+    ${package.dir}/WebCore/html/track
+    ${package.dir}/WebCore/inspector
+    ${package.dir}/WebCore/loader
+    ${package.dir}/WebCore/loader/appcache
+    ${package.dir}/WebCore/loader/archive
+    ${package.dir}/WebCore/loader/cache
+    ${package.dir}/WebCore/loader/icon
+    ${package.dir}/WebCore/mathml
+    ${package.dir}/WebCore/notifications
+    ${package.dir}/WebCore/page
+    ${package.dir}/WebCore/page/animation
+    ${package.dir}/WebCore/page/scrolling
+    ${package.dir}/WebCore/page/scrolling/coordinatedgraphics
+    ${package.dir}/WebCore/platform
+    ${package.dir}/WebCore/platform/animation
+    ${package.dir}/WebCore/platform/image-decoders
+    ${package.dir}/WebCore/platform/image-decoders
+    ${package.dir}/WebCore/platform/image-decoders/bmp
+    ${package.dir}/WebCore/platform/image-decoders/cairo
+    ${package.dir}/WebCore/platform/image-decoders/gif
+    ${package.dir}/WebCore/platform/image-decoders/ico
+    ${package.dir}/WebCore/platform/image-decoders/jpeg
+    ${package.dir}/WebCore/platform/image-decoders/png
+    ${package.dir}/WebCore/platform/image-decoders/webp
+    ${package.dir}/WebCore/platform/leveldb
+    ${package.dir}/WebCore/platform/mock
+    ${package.dir}/WebCore/platform/network
+    ${package.dir}/WebCore/platform/sql
+    ${package.dir}/WebCore/platform/text
+    ${package.dir}/WebCore/platform/text/transcoder
+    ${package.dir}/WebCore/plugins
+    ${package.dir}/WebCore/rendering
+    ${package.dir}/WebCore/rendering/style
+    ${package.dir}/WebCore/rendering/svg
+    ${package.dir}/WebCore/storage
+    ${package.dir}/WebCore/svg
+    ${package.dir}/WebCore/svg/animation
+    ${package.dir}/WebCore/svg/graphics
+    ${package.dir}/WebCore/svg/graphics/filters
+    ${package.dir}/WebCore/svg/properties
+    ${package.dir}/WebCore/webaudio
+    ${package.dir}/WebCore/websockets
+    ${package.dir}/WebCore/workers
+    ${package.dir}/WebCore/xml
+    ${package.dir}/WebCore/xml/parser
+    ${package.dir}/WebCore/style
+
+
+    <!-- WebCore JavaScript related directories-->
+    ${package.dir}/WebCore/bridge/jsc
+    ${package.dir}/WebCore/bindings/js
+    ${package.dir}/WebCore/bindings/js/specialization
+  </property>
+
+  <property name="runtime.includedirs">
+    ${property.value}
+    <!-- WebKit API include path-->
+    ${package.dir}/include/EAWebKit
+  </property>
+
+  <!-- EAWebKitTODO
+  <property name="runtime.usedependencies">
+    ${property.value}
+    EABaseEAWebKit
+    coreallocatorEAWebKit
+  </property>
+  -->
+
+  <property name="runtime.builddependencies">
+    ${property.value}
+    EABaseEAWebKit
+    EASTLEAWebKit
+    EAIOEAWebKit
+    EAAssertEAWebKit
+    cairo
+    pixman
+    WTF
+    JavaScriptCore
+    coreallocatorEAWebKit
+    libpngEAWebKit
+    libjpegEAWebKit
+    zlibEAWebKit
+    libxml2EAWebKit
+    SQLiteEAWebKit
+  </property>
+
+  <property name="runtime.builddependencies" if="${WebKit.ENABLE_DIRTYSDK_IN_DLL}==1">
+    ${property.value}
+    DirtySDKEAWebKit
+  </property>
+
+  <property name="runtime.builddependencies" if="${WebKit.ENABLE_EATEXT_IN_DLL}==1">
+    ${property.value}
+    EATextEAWebKit
+    FreeTypeEAWebKit
+    PPMallocEAWebKit
+  </property>
+
+  <!--
+  Earlier, we have used wild card based matching for the source files and excluded the ones not necessary. This is a departure from the earlier behavior for
+  two main reasons.
+   1) WebKit does not have a uniform way of identifying port specific files. Lot of code files are guarded by the #if macros depending on a certain platform or 
+   not. There is no uniformity as to if the files live in a separate directory or are just prefixed in the same directory. There is also the case that Qt can include *win.cpp file.
+   2) The list of Qt specific files are available in the *.pro/*. files and can be copied with little efforts. This avoids all sorts of compile/linker errors.
+  -->
+
+  <!-- Note that we can still use the wild card matching in our layer and it is used for the /generated directory below.-->
+
+  <fileset name="runtime.sourcefiles">
+    <includes name="WebKit/ea/WebCoreSupport/**/*.cpp" />
+
+    <!-- EAWebKitTODO: off for now -->
+    <excludes name="WebCore/bindings/js/ScriptControllerEA.cpp" />
+    <excludes name="WebCore/accessibility/ea/AccessibilityObjectEA.cpp" />
+    <excludes name="WebCore/editing/ea/EditorEA.cpp" />
+	  <excludes name="WebCore/platform/image-decoders/ea/RGBA32BufferEA.cpp" />
+
+	  <excludes name="WebCore/platform/cairo/WidgetBackingStoreCairo.cpp" />
+    
+    
+
+    <includes name="WebCore/DerivedSources.cpp" />
+    <includes name="WebCore/accessibility/AccessibilityAllInOne.cpp" />
+    <includes name="WebCore/accessibility/AccessibilityMenuList.cpp" />
+    <includes name="WebCore/accessibility/AccessibilityMenuListOption.cpp" />
+    <includes name="WebCore/accessibility/AccessibilityMenuListPopup.cpp" />
+    <includes name="WebCore/accessibility/AccessibilityMockObject.cpp" />
+    <includes name="WebCore/accessibility/AccessibilitySpinButton.cpp" />
+    <includes name="WebCore/bindings/generic/*.cpp" />
+    <includes name="WebCore/bindings/js/JSBindingsAllInOne.cpp" />
+    <includes name="WebCore/bindings/js/JSFileReaderCustom.cpp" />
+    <includes name="WebCore/bindings/js/ScriptObject.cpp" />
+    <includes name="WebCore/bindings/js/ScriptProfile.cpp" />
+    <includes name="WebCore/bindings/js/ScriptValue.cpp" />
+    
+    <includes name="WebCore/bridge/*.cpp" />
+    <includes name="WebCore/bridge/ea/*.cpp" />
+    <includes name="WebCore/bridge/jsc/*.cpp" />
+    <excludes name="WebCore/bridge/test*.cpp" />
+    
+    <includes name="WebCore/css/BasicShapeFunctions.cpp" />
+    <includes name="WebCore/css/CSSAllInOne.cpp" />
+    <includes name="WebCore/css/CSSCalculationValue.cpp" />
+    <includes name="WebCore/css/CSSFontFeatureValue.cpp" />
+    <includes name="WebCore/css/CSSFontValue.cpp" />
+    <includes name="WebCore/css/CSSGridTemplateValue.cpp" />
+    <includes name="WebCore/css/CSSPrimitiveValue.cpp" />
+    <includes name="WebCore/css/CSSProperty.cpp" />
+    <includes name="WebCore/css/CSSShadowValue.cpp" />
+    <includes name="WebCore/css/CSSToStyleMap.cpp" />
+    <includes name="WebCore/css/FontLoader.cpp" />
+    <includes name="WebCore/css/LengthFunctions.cpp" />
+    <!-- Use of AllInOne file results in a cryptic compile error on PS4 so just disable it for now.
+    <includes name="WebCore/css/MediaAllInOne.cpp" />
+    -->
+    <includes name="WebCore/css/MediaFeatureNames.cpp" />
+    <includes name="WebCore/css/MediaList.cpp" />
+    <includes name="WebCore/css/MediaQuery.cpp" />
+    <includes name="WebCore/css/MediaQueryEvaluator.cpp" />
+    <includes name="WebCore/css/MediaQueryExp.cpp" />
+    <includes name="WebCore/css/MediaQueryList.cpp" />
+    <includes name="WebCore/css/MediaQueryMatcher.cpp" />
+
+    <includes name="WebCore/css/PropertySetCSSStyleDeclaration.cpp" />
+    <includes name="WebCore/css/RGBColor.cpp" />
+    <includes name="WebCore/css/SelectorChecker.cpp" />
+    <includes name="WebCore/css/StyleInvalidationAnalysis.cpp" />
+    <includes name="WebCore/css/StyleMedia.cpp" />
+    <includes name="WebCore/css/StyleRule.cpp" />
+    <includes name="WebCore/css/StyleRuleImport.cpp" />
+    <includes name="WebCore/css/StyleSheet.cpp" />
+    <includes name="WebCore/css/StyleSheetContents.cpp" />
+    <includes name="WebCore/css/StyleSheetList.cpp" />
+    <includes name="WebCore/css/SVGCSSComputedStyleDeclaration.cpp" />
+    <includes name="WebCore/css/SVGCSSParser.cpp" />
+    <includes name="WebCore/css/SVGCSSStyleSelector.cpp" />
+    <includes name="WebCore/css/TransformFunctions.cpp" />
+    <includes name="WebCore/css/ViewportStyleResolver.cpp" />
+    <includes name="WebCore/css/WebKitCSSArrayFunctionValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSFilterValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSKeyframeRule.cpp" />
+    <includes name="WebCore/css/WebKitCSSKeyframesRule.cpp" />
+    <includes name="WebCore/css/WebKitCSSMatFunctionValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSMatrix.cpp" />
+    <includes name="WebCore/css/WebKitCSSMixFunctionValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSRegionRule.cpp" />
+    <includes name="WebCore/css/WebKitCSSShaderValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSSVGDocumentValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSTransformValue.cpp" />
+    <includes name="WebCore/css/WebKitCSSViewportRule.cpp" />
+    <includes name="WebCore/DerivedSources/ColorData.cpp" />
+    <includes name="WebCore/DerivedSources/CSSGrammar.cpp" />
+    <includes name="WebCore/DerivedSources/CSSPropertyNames.cpp" />
+    <includes name="WebCore/DerivedSources/CSSValueKeywords.cpp" />
+    <includes name="WebCore/DerivedSources/EventFactory.cpp" />
+    <includes name="WebCore/DerivedSources/ExceptionCodeDescription.cpp" />
+    <includes name="WebCore/DerivedSources/HTMLNames.cpp" />
+    <includes name="WebCore/DerivedSources/InspectorBackendDispatcher.cpp" />
+    <includes name="WebCore/DerivedSources/InspectorFrontend.cpp" />
+    <includes name="WebCore/DerivedSources/InspectorTypeBuilder.cpp" />
+    <includes name="WebCore/DerivedSources/JSFileException.cpp" />
+    <includes name="WebCore/DerivedSources/JSFileReaderSync.cpp" />
+    <includes name="WebCore/DerivedSources/JSStorageErrorCallback.cpp" />
+    <includes name="WebCore/DerivedSources/JSStorageInfo.cpp" />
+    <includes name="WebCore/DerivedSources/JSStorageQuota.cpp" />
+    <includes name="WebCore/DerivedSources/JSStorageQuotaCallback.cpp" />
+    <includes name="WebCore/DerivedSources/JSStorageUsageCallback.cpp" />
+    <includes name="WebCore/DerivedSources/JSSVGElementWrapperFactory.cpp" />
+    <includes name="WebCore/DerivedSources/MathMLElementFactory.cpp" />
+    <includes name="WebCore/DerivedSources/MathMLNames.cpp" />
+    <includes name="WebCore/DerivedSources/SVGElementFactory.cpp" />
+    <includes name="WebCore/DerivedSources/SVGNames.cpp" />
+    <includes name="WebCore/DerivedSources/UserAgentScriptsData.cpp" />
+    <includes name="WebCore/DerivedSources/WebKitFontFamilyNames.cpp" />
+    <includes name="WebCore/DerivedSources/XLinkNames.cpp" />
+    <includes name="WebCore/DerivedSources/XMLNames.cpp" />
+    <includes name="WebCore/DerivedSources/XMLNSNames.cpp" />
+    <includes name="WebCore/DerivedSources/XPathGrammar.cpp" />
+    <includes name="WebCore/dom/DocumentStyleSheetCollection.cpp" />
+    <includes name="WebCore/dom/DOMAllInOne.cpp" />
+    <includes name="WebCore/dom/ElementData.cpp" />
+    <includes name="WebCore/dom/ElementRareData.cpp" />
+    <includes name="WebCore/dom/GenericEventQueue.cpp" />
+    <includes name="WebCore/dom/NamedNodeMap.cpp" />
+    <includes name="WebCore/dom/Node.cpp" />
+    <includes name="WebCore/dom/NodeRareData.cpp" />
+    <includes name="WebCore/dom/NodeTraversal.cpp" />
+    <includes name="WebCore/dom/QualifiedName.cpp" />
+    <includes name="WebCore/dom/ScriptedAnimationController.cpp" />
+    <includes name="WebCore/dom/default/*.cpp" />
+    <includes name="WebCore/editing/EditingAllInOne.cpp" />
+    <includes name="WebCore/fileapi/*.cpp" />
+    <includes name="WebCore/history/*.cpp" />
+    <includes name="WebCore/html/BaseButtonInputType.cpp" />
+    <includes name="WebCore/html/BaseCheckableInputType.cpp" />
+    <includes name="WebCore/html/BaseClickableWithKeyInputType.cpp" />
+    <includes name="WebCore/html/BaseDateAndTimeInputType.cpp" />
+    <includes name="WebCore/html/BaseTextInputType.cpp" />
+    <includes name="WebCore/html/ButtonInputType.cpp" />
+    <includes name="WebCore/html/CheckboxInputType.cpp" />
+    <includes name="WebCore/html/ClassList.cpp" />
+    <includes name="WebCore/html/ColorInputType.cpp" />
+    <includes name="WebCore/html/DateInputType.cpp" />
+    <includes name="WebCore/html/DateTimeInputType.cpp" />
+    <includes name="WebCore/html/DateTimeLocalInputType.cpp" />
+    <includes name="WebCore/html/DOMFormData.cpp" />
+    <includes name="WebCore/html/DOMSettableTokenList.cpp" />
+    <includes name="WebCore/html/DOMTokenList.cpp" />
+    <includes name="WebCore/html/DOMURL.cpp" />
+    <includes name="WebCore/html/EmailInputType.cpp" />
+    <includes name="WebCore/html/FileInputType.cpp" />
+    <includes name="WebCore/html/FormAssociatedElement.cpp" />
+    <includes name="WebCore/html/FormController.cpp" />
+    <includes name="WebCore/html/FormDataList.cpp" />
+    <includes name="WebCore/html/HiddenInputType.cpp" />
+    <includes name="WebCore/html/HTMLAllCollection.cpp" />
+    <includes name="WebCore/html/HTMLCollection.cpp" />
+    <includes name="WebCore/html/HTMLDocument.cpp" />
+    <includes name="WebCore/html/HTMLElementsAllInOne.cpp" />
+    <includes name="WebCore/html/HTMLFormControlsCollection.cpp" />
+    <includes name="WebCore/html/HTMLImageLoader.cpp" />
+    <includes name="WebCore/html/HTMLNameCollection.cpp" />
+    <includes name="WebCore/html/HTMLOptionsCollection.cpp" />
+    <includes name="WebCore/html/HTMLOutputElement.cpp" />
+    <includes name="WebCore/html/HTMLParserErrorCodes.cpp" />
+    <includes name="WebCore/html/HTMLTableRowsCollection.cpp" />
+    <includes name="WebCore/html/HTMLViewSourceDocument.cpp" />
+    <includes name="WebCore/html/ImageData.cpp" />
+    <includes name="WebCore/html/ImageDocument.cpp" />
+    <includes name="WebCore/html/ImageInputType.cpp" />
+    <includes name="WebCore/html/InputType.cpp" />
+    <includes name="WebCore/html/InputTypeNames.cpp" />
+    <includes name="WebCore/html/LabelableElement.cpp" />
+    <includes name="WebCore/html/LabelsNodeList.cpp" />
+    <includes name="WebCore/html/LinkRelAttribute.cpp" />
+    <includes name="WebCore/html/MediaController.cpp" />
+    <includes name="WebCore/html/MediaDocument.cpp" />
+    <includes name="WebCore/html/MediaFragmentURIParser.cpp" />
+    <includes name="WebCore/html/MonthInputType.cpp" />
+    <includes name="WebCore/html/NumberInputType.cpp" />
+    <includes name="WebCore/html/PasswordInputType.cpp" />
+    <includes name="WebCore/html/PluginDocument.cpp" />
+    <includes name="WebCore/html/RadioInputType.cpp" />
+    <includes name="WebCore/html/RadioNodeList.cpp" />
+    <includes name="WebCore/html/RangeInputType.cpp" />
+    <includes name="WebCore/html/ResetInputType.cpp" />
+    <includes name="WebCore/html/SearchInputType.cpp" />
+    <includes name="WebCore/html/StepRange.cpp" />
+    <includes name="WebCore/html/SubmitInputType.cpp" />
+    <includes name="WebCore/html/TelephoneInputType.cpp" />
+    <includes name="WebCore/html/TextDocument.cpp" />
+    <includes name="WebCore/html/TextFieldInputType.cpp" />
+    <includes name="WebCore/html/TextInputType.cpp" />
+    <includes name="WebCore/html/TimeInputType.cpp" />
+    <includes name="WebCore/html/TimeRanges.cpp" />
+    <includes name="WebCore/html/TypeAhead.cpp" />
+    <includes name="WebCore/html/URLInputType.cpp" />
+    <includes name="WebCore/html/ValidationMessage.cpp" />
+    <includes name="WebCore/html/WeekInputType.cpp" />
+    <includes name="WebCore/html/canvas/CanvasContextAttributes.cpp" />
+    <includes name="WebCore/html/canvas/CanvasGradient.cpp" />
+    <includes name="WebCore/html/canvas/CanvasPathMethods.cpp" />
+    <includes name="WebCore/html/canvas/CanvasPattern.cpp" />
+    <includes name="WebCore/html/canvas/CanvasRenderingContext.cpp" />
+    <includes name="WebCore/html/canvas/CanvasRenderingContext2D.cpp" />
+    <includes name="WebCore/html/canvas/CanvasStyle.cpp" />
+    <includes name="WebCore/html/canvas/EXTDrawBuffers.cpp" />
+    <includes name="WebCore/html/canvas/EXTTextureFilterAnisotropic.cpp" />
+    <includes name="WebCore/html/canvas/OESElementIndexUint.cpp" />
+    <includes name="WebCore/html/canvas/OESStandardDerivatives.cpp" />
+    <includes name="WebCore/html/canvas/OESTextureFloat.cpp" />
+    <includes name="WebCore/html/canvas/OESTextureHalfFloat.cpp" />
+    <includes name="WebCore/html/canvas/OESVertexArrayObject.cpp" />
+    <includes name="WebCore/html/forms/*.cpp" />
+    <includes name="WebCore/html/parser/*.cpp" />
+    <excludes name="WebCore/html/parser/HTMLTreeBuilderSimulator.cpp" />
+    <includes name="WebCore/html/shadow/*.cpp" />
+    <excludes name="WebCore/html/shadow/MediaControlsApple.cpp" />
+    <excludes name="WebCore/html/shadow/MediaControlsBlackBerry.cpp" />
+    <excludes name="WebCore/html/shadow/MediaControlsGtk.cpp" />
+    <includes name="WebCore/html/track/*.cpp" />
+    <excludes name="WebCore/html/track/TextTrackRegion.cpp" />
+    <excludes name="WebCore/html/track/TextTrackRegionList.cpp" />
+    <includes name="WebCore/inspector/InspectorAllInOne.cpp" />
+    <includes name="WebCore/loader/*.cpp" />
+    <excludes name="WebCore/loader/FTPDirectoryParser.cpp" />
+    <includes name="WebCore/loader/appcache/ApplicationCacheAllInOne.cpp" />
+    <includes name="WebCore/loader/appcache/DOMApplicationCache.cpp" />
+    <includes name="WebCore/loader/appcache/ManifestParser.cpp" />
+    <includes name="WebCore/loader/archive/*.cpp" />
+    <includes name="WebCore/loader/archive/mhtml/*.cpp" />
+    <includes name="WebCore/loader/cache/*.cpp" />
+    <includes name="WebCore/loader/icon/*.cpp" />
+    <includes name="WebCore/mathml/MathMLAllInOne.cpp" />
+    <includes name="WebCore/Modules/geolocation/Coordinates.cpp" />
+    <includes name="WebCore/Modules/geolocation/NavigatorGeolocation.cpp" />
+    <includes name="WebCore/Modules/indexeddb/*.cpp" />
+    <includes name="WebCore/Modules/indexeddb/leveldb/IDBCursorBackendLevelDB.cpp" />
+    <includes name="WebCore/Modules/indexeddb/leveldb/IDBDatabaseBackendLevelDB.cpp" />
+    <includes name="WebCore/Modules/indexeddb/leveldb/IDBFactoryBackendLevelDB.cpp" />
+    <includes name="WebCore/Modules/indexeddb/leveldb/IDBObjectStoreBackendLevelDB.cpp" />
+    <includes name="WebCore/Modules/mediacontrols/*.cpp" />
+    <includes name="WebCore/Modules/mediasource/MediaSource.cpp" />
+    <includes name="WebCore/Modules/mediasource/MediaSourceRegistry.cpp" />
+    <includes name="WebCore/Modules/mediasource/SourceBuffer.cpp" />
+    <includes name="WebCore/Modules/mediasource/SourceBufferList.cpp" />
+    <includes name="WebCore/Modules/navigatorcontentutils/*.cpp" />
+    <includes name="WebCore/Modules/notifications/*.cpp" />
+    <includes name="WebCore/Modules/proximity/*.cpp" />
+    <includes name="WebCore/Modules/quota/*.cpp" />
+    <excludes name="WebCore/Modules/quota/WorkerNavigatorStorageQuota.cpp" />
+    <includes name="WebCore/Modules/speech/DOMWindowSpeechSynthesis.cpp" />
+    <includes name="WebCore/Modules/speech/SpeechSynthesis.cpp" />
+    <includes name="WebCore/Modules/speech/SpeechSynthesisEvent.cpp" />
+    <includes name="WebCore/Modules/speech/SpeechSynthesisUtterance.cpp" />
+    <includes name="WebCore/Modules/speech/SpeechSynthesisVoice.cpp" />
+    <includes name="WebCore/Modules/webdatabase/*.cpp" />
+    <includes name="WebCore/Modules/websockets/*.cpp" />
+    <includes name="WebCore/page/*.cpp" />
+    <excludes name="WebCore/page/CaptionUserPreferencesMediaAF.cpp" />
+    <excludes name="WebCore/page/DOMSecurityPolicy.cpp" />
+    <excludes name="WebCore/page/GestureTapHighlighter.cpp" />
+    <excludes name="WebCore/page/PerformanceUserTiming.cpp" />
+    <excludes name="WebCore/page/PointerLockController.cpp" />
+    <excludes name="WebCore/page/SpeechInputEvent.cpp" />
+    <excludes name="WebCore/page/SpeechInputResult.cpp" />
+    <excludes name="WebCore/page/SpeechInputResultList.cpp" />
+    <excludes name="WebCore/page/TouchAdjustment.cpp" />
+    <includes name="WebCore/page/animation/*.cpp" />
+    <includes name="WebCore/page/ea/*.cpp" />
+    <includes name="WebCore/page/scrolling/ScrollingConstraints.cpp" />
+    <includes name="WebCore/page/scrolling/ScrollingCoordinator.cpp" />
+    <includes name="WebCore/platform/*.cpp" />
+    <excludes name="WebCore/platform/ContextMenuItemNone.cpp" />
+    <excludes name="WebCore/platform/ContextMenuNone.cpp" />
+    <excludes name="WebCore/platform/PlatformSpeechSynthesisUtterance.cpp" />
+    <excludes name="WebCore/platform/PlatformSpeechSynthesisVoice.cpp" />
+    <excludes name="WebCore/platform/PlatformSpeechSynthesizer.cpp" />
+    <excludes name="WebCore/platform/Theme.cpp" />
+    <includes name="WebCore/platform/animation/*.cpp" />
+    <includes name="WebCore/platform/ea/*.cpp" />
+    
+    <includes name="WebCore/platform/graphics/*.cpp" />
+    <excludes name="WebCore/platform/graphics/DisplayRefreshMonitor.cpp" />
+    <excludes name="WebCore/platform/graphics/GLContext.cpp" />
+    <excludes name="WebCore/platform/graphics/GraphicsContext3D.cpp" />
+    
+    <includes name="WebCore/platform/graphics/cairo/*.cpp" />
+    <excludes name="WebCore/platform/graphics/cairo/FontCairo.cpp" />
+    <excludes name="WebCore/platform/graphics/cairo/FontCairoHarfbuzzNG.cpp" />
+    
+    <includes name="WebCore/platform/graphics/ea/*.cpp" />
+    <includes name="WebCore/platform/graphics/filters/*.cpp" />
+    <includes name="WebCore/platform/graphics/transforms/*.cpp" />
+    
+    <includes name="WebCore/platform/graphics/texmap/*.cpp" />
+    <excludes name="WebCore/platform/graphics/texmap/TextureMapperGL.cpp" />
+    <excludes name="WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp" />
+
+    <excludes name="WebCore/platform/graphics/opentype/OpenTypeSanitizer.cpp" />
+
+    <includes name="WebCore/platform/image-decoders/*.cpp" />
+    <includes name="WebCore/platform/image-decoders/bmp/*.cpp" />
+    <includes name="WebCore/platform/image-decoders/cairo/*.cpp" />
+    <includes name="WebCore/platform/image-decoders/gif/*.cpp" />
+    <includes name="WebCore/platform/image-decoders/ico/*.cpp" />
+    <includes name="WebCore/platform/image-decoders/jpeg/*.cpp" />
+    <includes name="WebCore/platform/image-decoders/png/*.cpp" />
+    <includes name="WebCore/platform/leveldb/*.cpp" />
+    <includes name="WebCore/platform/mock/DeviceOrientationClientMock.cpp" />
+    <includes name="WebCore/platform/mock/GeolocationClientMock.cpp" />
+    <includes name="WebCore/platform/mock/ScrollbarThemeMock.cpp" />
+    <includes name="WebCore/platform/network/*.cpp" />
+    <excludes name="WebCore/platform/network/BlobRegistry.cpp" />
+    <excludes name="WebCore/platform/network/MIMESniffing.cpp" />
+    <includes name="WebCore/platform/network/ea/*.cpp" />
+    <includes name="WebCore/platform/sql/*.cpp" />
+    <includes name="WebCore/platform/text/BidiContext.cpp" />
+    <includes name="WebCore/platform/text/DateTimeFormat.cpp" />
+    <includes name="WebCore/platform/text/Hyphenation.cpp" />
+    <includes name="WebCore/platform/text/LineEnding.cpp" />
+    <includes name="WebCore/platform/text/LocaleNone.cpp" />
+    <includes name="WebCore/platform/text/LocaleToScriptMappingDefault.cpp" />
+    <includes name="WebCore/platform/text/PlatformLocale.cpp" />
+    <includes name="WebCore/platform/text/QuotedPrintable.cpp" />
+    <includes name="WebCore/platform/text/RegularExpression.cpp" />
+    <includes name="WebCore/platform/text/SegmentedString.cpp" />
+    <includes name="WebCore/platform/text/TextAllInOne.cpp" />
+    <includes name="WebCore/platform/text/UnicodeRange.cpp" />
+    <includes name="WebCore/platform/text/ea/*.cpp" />
+    <includes name="WebCore/plugins/*.cpp" />
+    <excludes name="WebCore/plugins/npapi.cpp" />
+    <excludes name="WebCore/plugins/PluginDataNone.cpp" />
+    <excludes name="WebCore/plugins/PluginDebug.cpp" />
+    <excludes name="WebCore/plugins/PluginStream.cpp" />
+    <excludes name="WebCore/plugins/PluginView.cpp" />
+    <excludes name="WebCore/plugins/PluginViewNone.cpp" />
+    <includes name="WebCore/rendering/FloatingObjects.cpp" />
+    <includes name="WebCore/rendering/FlowThreadController.cpp" />
+    <includes name="WebCore/rendering/LineWidth.cpp" />
+    <includes name="WebCore/rendering/RenderFlexibleBox.cpp" />
+    <includes name="WebCore/rendering/RenderFlowThread.cpp" />
+    <includes name="WebCore/rendering/RenderFullScreen.cpp" />
+    <includes name="WebCore/rendering/RenderGeometryMap.cpp" />
+    <includes name="WebCore/rendering/RenderGrid.cpp" />
+    <includes name="WebCore/rendering/RenderingAllInOne.cpp" />
+    <includes name="WebCore/rendering/RenderLayerBacking.cpp" />
+    <includes name="WebCore/rendering/RenderLayerFilterInfo.cpp" />
+    <includes name="WebCore/rendering/RenderLayerModelObject.cpp" />
+    <includes name="WebCore/rendering/RenderNamedFlowThread.cpp" />
+    <includes name="WebCore/rendering/RenderRegion.cpp" />
+    <includes name="WebCore/rendering/RenderRegionSet.cpp" />
+    <includes name="WebCore/rendering/TextPaintStyle.cpp" />
+    <includes name="WebCore/rendering/mathml/*.cpp" />
+    <includes name="WebCore/rendering/shapes/*.cpp" />
+    <includes name="WebCore/rendering/style/StyleAllInOne.cpp" />
+    <includes name="WebCore/rendering/svg/RenderSVGAllInOne.cpp" />
+    <includes name="WebCore/storage/*.cpp" />
+    <includes name="WebCore/style/*.cpp" />
+    <includes name="WebCore/svg/SVGAllInOne.cpp" />
+    <includes name="WebCore/svg/animation/*.cpp" />
+    <includes name="WebCore/svg/graphics/*.cpp" />
+    <includes name="WebCore/svg/graphics/filters/*.cpp" />
+    <includes name="WebCore/svg/properties/*.cpp" />
+    <includes name="WebCore/workers/*.cpp" />
+    <includes name="WebCore/xml/*.cpp" />
+    <excludes name="WebCore/xml/XSLTExtensions.cpp" />
+    <excludes name="WebCore/xml/XSLTProcessor.cpp" />
+    <excludes name="WebCore/xml/XSLTProcessorLibxslt.cpp" />
+    <excludes name="WebCore/xml/XSLTUnicodeSort.cpp" />
+    <includes name="WebCore/xml/parser/XMLDocumentParserLibxml2.cpp" />
+
+    <!-- WebCore generated files-->
+    <!-- excluded because it is directly included in CSSParser.cpp-->
+    <excludes name="WebCore/generated/tokenizer.cpp" />
+
+    <includes name="WebKit/ea/Api/**/*.cpp" />
+  </fileset>
+
+  <!-- For EAWebKit PC, include version info properties. -->
+  <fileset name="runtime.resourcefiles" if="${OsIsWin} and ${VisualStudioExists}">
+    <includes name="WebKit/ea/Api/EAWebKit/source/win32/EAWebKit.rc" />
+  </fileset>
+
+  <!-- There is no clean way to identify the headers that are part of the port. Qt tries but the list
+  is not up to date/correct. So what we do below is simply include all the header files so that searching
+  in the solution is easy.
+  1. It does not compromise build validity because directories are not included.
+  2. It is incredibly hard/cumbersome to manually figure out the headers involved. May be a tool exists or we can write a script
+  that figures out the headers included.
+  -->
+
+  <fileset name="runtime.headerfiles">
+    <includes name="WebCore/**/*.h" />
+    <includes name="WebKit/ea/**/*.h" />
+  </fileset>
+
+  <!-- Even though, all the warnings are disabled, this one somehow makes it through on VS 2010-->
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+    ${property.value}
+    -wd4275
+    -wd4996
+  </property>
+
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'clang'">
+    ${property.value}
+    -Wno-narrowing <!-- non-constant-expression cannot be narrowed from type -->
+    -Wno-invalid-noreturn
+    -Wno-unused-function
+    -Wno-tautological-compare
+  </property>
+
+  <do if="${OsIsOSX}">
+    <taskdef assembly="${nant.project.temproot}/webkit/webkitdynlibtask.dll">
+      <sources>
+        <includes name="scripts/dynlib-postprocess.cs"/>
+      </sources>
+    </taskdef>
+
+    <property name="runtime.postprocess" value="dynlib-postprocess"/>
+  </do>
+
+
+  <fileset name="runtime.libs">
+    <group if="${OsIsWin}">
+      <!-- I have like 5 winmm.lib on my local machine and there is one in the /packages/WindowsSDK directory too. Hopefully one in the packages
+      is used. Something to verify later.-->
+      <includes name="winmm.lib"    asis="true"/>
+      <includes name="gdi32.lib"    asis="true"/>
+      <includes name="ole32.lib"    asis="true"/>
+      <includes name="user32.lib"   asis="true"/>
+      <includes name="advapi32.lib" asis="true"/>
+      <includes name="shell32.lib"  asis="true"/>
+      <includes name="shlwapi.lib"  asis="true"/>
+      <includes name="version.lib"  asis="true"/>
+      <includes name="ws2_32.lib"   asis="true" />
+      <includes name="Iphlpapi.lib" asis="true" />
+    </group>
+
+    <group if="${OsIsXboxOne}" >
+      <includes name="ws2_32.lib" asis="true"/>
+    </group>
+
+    <group if="${OsIsPS4}">
+    </group>
+  </fileset>
+</project>

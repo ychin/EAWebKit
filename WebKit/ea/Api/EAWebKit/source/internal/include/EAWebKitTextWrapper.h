@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -110,11 +110,12 @@ public:
     virtual bool                GetGlyphs(EA::WebKit::IFont* pFont, const EA::WebKit::GlyphId* gIdArray, int glyphCount, EA::WebKit::GlyphDrawInfo* outGDI);
     virtual EA::WebKit::IFont*	GetFont(const EA::WebKit::TextStyle& textStyle, EA::WebKit::Char c);
     virtual EA::WebKit::IFont*	CreateNewFont(EA::WebKit::FontType fontType, const void* pSourceData, uint32_t nSourceSize, int nFaceIndex = 0);
-    virtual uint32_t			AddFace(IO::IStream* pStream);
+    virtual uint32_t			AddFace(void* data, size_t dataSize);
     virtual bool				AddSubstitution(const char16_t* pFamily, const char16_t* pFamilySubstitution);
 	virtual bool				SupportsFormat(EA::WebKit::FontFormat format);
     virtual bool                GetDrawInfoForComplexText(EA::WebKit::IFont* pFont, const EA::WebKit::Char* textRun, int textRunCount, float clipLeft, float clipRight, EA::WebKit::TextDrawInfo& outDrawInfo);
     virtual float               GetWidthForComplexText(EA::WebKit::IFont* pFont, const EA::WebKit::Char* run, int runCount);
+
 	// Text Layout Support
 	virtual void*	CharacterBreakIterator(EA::WebKit::Char* pText, int length);
 	virtual void*	CursorBreakIterator(EA::WebKit::Char* pText, int length);

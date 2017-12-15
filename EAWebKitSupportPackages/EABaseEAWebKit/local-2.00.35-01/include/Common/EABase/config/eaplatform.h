@@ -110,16 +110,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #define EA_PLATFORM_DESKTOP 1
 #endif
 
-#if defined(EA_PLATFORM_KETTLE) || defined(EA_PLATFORM_PS4)
+#if defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_PS4)
 	#undef  EA_PLATFORM_PS4
-	#undef  EA_PLATFORM_KETTLE
+	#undef  CS_UNDEFINED_STRING
 	#define EA_PLATFORM_PS4 1
-	#define EA_PLATFORM_KETTLE 1
+	#define CS_UNDEFINED_STRING 1
     #define EA_PLATFORM_NAME "PS4"
     #define EA_SYSTEM_LITTLE_ENDIAN 1
     #define EA_PLATFORM_DESCRIPTION "PS4 on x64"
     #define EA_PLATFORM_CONSOLE 1
-    #define EA_PLATFORM_SONY 1
+    #define CS_UNDEFINED_STRING 1
     #define EA_PLATFORM_POSIX 1
     #define EA_POSIX_THREADS_AVAILABLE 1
     #define EA_PROCESSOR_X86_64 1
@@ -127,11 +127,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         #define EA_ASM_STYLE_ATT 1
     #endif
 
-#elif defined(EA_PLATFORM_CAPILANO) || defined(EA_PLATFORM_XBOXONE)
+#elif defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_XBOXONE)
     #undef  EA_PLATFORM_XBOXONE
-	#undef  EA_PLATFORM_CAPILANO
+	#undef  CS_UNDEFINED_STRING
 	#define EA_PLATFORM_XBOXONE 1
-	#define EA_PLATFORM_CAPILANO 1
+	#define CS_UNDEFINED_STRING 1
 	
 	#define EA_PLATFORM_NAME "Xbox One"
     //#define EA_PROCESSOR_X86  Currently our policy is that we don't define this, even though x64 is something of a superset of x86.
@@ -211,7 +211,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #endif
     #define EA_PLATFORM_DESKTOP 1
 
-#elif (defined(EA_PLATFORM_WINDOWS) || (defined(_WIN32) || defined(__WIN32__) || defined(_WIN64) || (defined(CS_UNDEFINED_STRING) && defined(_X86_)))) 
+#else
     #undef  EA_PLATFORM_WINDOWS
     #define EA_PLATFORM_WINDOWS 1
     #define EA_PLATFORM_NAME "Windows"
@@ -276,10 +276,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     #define EA_WINAPI_FAMILY_PARTITION(Partition)   ((EA_WINAPI_FAMILY & Partition) == Partition)
 
-#else
-    #error Unknown platform
-    #error Unknown processor
-    #error Unknown endianness
 #endif
 
 

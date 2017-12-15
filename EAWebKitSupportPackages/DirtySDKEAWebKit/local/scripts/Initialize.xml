@@ -1,0 +1,32 @@
+<project>
+
+    <!-- initialize the dirtysock SDK build -->
+    <include file="dirtysock-initialize.xml"/> 
+
+    <!-- decide which contribs to include 
+    <include file="select-contribs.xml"/>
+    -->
+    <!-- decide which samples to include 
+    <include file="select-samples.xml"/>
+-->
+    <!-- build the library directory name -->
+    <property name="package.DirtySDKEAWebKit.libdirname" value="${config-name}"/>
+
+    <!-- now attach the rest of what we need, including the rest of the path and the wildcard for the libraries -->
+    <do if="@{PropertyExists('dirtysdk-prebuilt-libs')}">
+        <property name="package.DirtySDKEAWebKit.libdirname" value="${package.DirtySDKEAWebKit.dir}/build/DirtySDKEAWebKit/${package.DirtySDKEAWebKit.version}/${config-platform}-${property.value}/lib/*${lib-suffix}"/>
+    </do>
+    <do unless="@{PropertyExists('dirtysdk-prebuilt-libs')}">
+        <property name="package.DirtySDKEAWebKit.libdirname" value="${package.DirtySDKEAWebKit.builddir}/${config-platform}-${property.value}/lib/*${lib-suffix}"/>
+    </do>
+
+    <!-- now specify include directories and library directory -->
+    <task name="ScriptInit" PackageName="DirtySDKEAWebKit">
+        <IncludeDirs>
+          ${package.DirtySDKEAWebKit.includedirs}
+        </IncludeDirs>
+        <Libs>
+          ${package.DirtySDKEAWebKit.libdirname}
+        </Libs>
+    </task>
+</project>

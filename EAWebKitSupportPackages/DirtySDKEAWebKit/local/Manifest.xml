@@ -1,0 +1,10 @@
+<package>
+    <summary>Client networking library</summary>        <!-- Library summary -->
+    <description>                                       <!-- Library description -->
+        <p> DirtySock is a cross-platform client network.  DirtySock is intended primarily for
+            shipping titles.  Please see the included documenation for more information.
+        </p>
+    </description>
+    <frameworkVersion>2</frameworkVersion>	<!-- Buildable Framework 2 package -->
+    <buildable>true</buildable>
+</package>

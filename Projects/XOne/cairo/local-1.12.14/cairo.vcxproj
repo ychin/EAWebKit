@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-dev-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-dev-debug|Durango">
+      <Configuration>capilano-vc-dev-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-dev-opt|Durango">
+      <Configuration>capilano-vc-dev-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>cairo</ProjectName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoXdkInstallPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\</DurangoXdkInstallPath>
+    <DurangoXdkKitPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\</DurangoXdkKitPath>
+    <XdkEditionTarget>160305</XdkEditionTarget>
+    <TargetPlatformSdkPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\</TargetPlatformSdkPath>
+    <XdkEditionRootVS2012>C:\work\15.1.1.1.0\Build\XOne\framework_tmp\CapilanoSDK-10.0.10586.1215\MSBuild\Microsoft.Cpp\v4.0\V110\Platforms\Durango\</XdkEditionRootVS2012>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\pixman\local-0.28.2\include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\shared";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\um";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\winrt";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /Zc:inline /favor:AMD64 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\lib\amd64";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4312; 4311; 4305; 4034; 4200; 4221; 4306; 4701; 4706; 4267; 4242; 4244; 4127; 4702; 4204; 4132; 4146; 4245; 4946; 4702; 4264; 4263; 4628; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4574; 4571; 4819; 4826; 4692; 4996; 4350; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=1;_UITHREADCTXT_SUPPORT=0;_UNICODE;CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;HAVE_STDINT_H;HAVE_UINT64_T=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</NantUnescapedPreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=1;_UITHREADCTXT_SUPPORT=0;_UNICODE;CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;HAVE_STDINT_H;HAVE_UINT64_T=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\XOne\cairo\local-1.12.14\capilano-vc-dev-debug\lib\cairo.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\XOne\cairo\local-1.12.14\capilano-vc-dev-debug\lib/cairo.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-debug\lib" mkdir "capilano-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-debug\build\cairo" mkdir "capilano-vc-dev-debug\build\cairo" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <OutDir>capilano-vc-dev-debug\lib\</OutDir>
+    <IntDir>capilano-vc-dev-debug\build\cairo\vstmp\</IntDir>
+    <TargetName>cairo</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <Midl />
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\pixman\local-0.28.2\include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\shared";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\um";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\Include\winrt";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /Zc:inline /favor:AMD64 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\xdk\lib\amd64";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\crt\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4312; 4311; 4305; 4034; 4200; 4221; 4306; 4701; 4706; 4267; 4242; 4244; 4127; 4702; 4204; 4132; 4146; 4245; 4946; 4702; 4264; 4263; 4628; 4365; 4061; 4062; 4100; 4324; 4619; 4514; 4640; 4668; 4710; 4711; 4738; 4820; 4826; 4574; 4571; 4819; 4826; 4692; 4996; 4350; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NantUnescapedPreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;HAVE_STDINT_H;HAVE_UINT64_T=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</NantUnescapedPreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CHAR16T;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_HAS_CPP0X=1;_SECURE_SCL=0;_UITHREADCTXT_SUPPORT=0;_UNICODE;CAIRO_DISABLE_TMPFILE;CAIRO_NO_MUTEX=1;cairo_public=;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;HAVE_STDINT_H;HAVE_UINT64_T=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\XOne\cairo\local-1.12.14\capilano-vc-dev-opt\lib\cairo.pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\work\15.1.1.1.0\Build\XOne\cairo\local-1.12.14\capilano-vc-dev-opt\lib/cairo.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-opt\lib" mkdir "capilano-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-opt\build\cairo" mkdir "capilano-vc-dev-opt\build\cairo" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <OutDir>capilano-vc-dev-opt\lib\</OutDir>
+    <IntDir>capilano-vc-dev-opt\build\cairo\vstmp\</IntDir>
+    <TargetName>cairo</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="C:\work\15.1.1.1.0\Build\XOne\libpngEAWebKit\local-1.01.00-01\libpngEAWebKit.vcxproj">
+      <Project>{C77E27F0-AA71-6169-241E-0184FBD0F95B}</Project>
+      <Private>False</Private>
+      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="C:\work\15.1.1.1.0\Build\XOne\pixman\local-0.28.2\pixman.vcxproj">
+      <Project>{E0C359C8-17A5-C1EE-D97F-86677C6226DA}</Project>
+      <Private>False</Private>
+      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="C:\work\15.1.1.1.0\Build\XOne\zlibEAWebKit\local-1.2.5-7-01\zlibEAWebKit.vcxproj">
+      <Project>{03994ABE-57B1-4D7C-896F-62AEE8658914}</Project>
+      <Private>False</Private>
+      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo-version.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo\cairo.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo\cairo-deprecated.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo\cairo-features.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\include\cairo\cairo-malloc.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-analysis-surface.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-analysis-surface-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-arc.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-arc-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-array.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-array-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-atomic.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-atomic-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-backend-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-base85-stream.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-bentley-ottmann.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-bentley-ottmann-rectangular.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-bentley-ottmann-rectilinear.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-boxes.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-boxes-intersect.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-boxes-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-box-inline.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-cache.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-cache-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-cff-subset.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-boxes.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-inline.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-polygon.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-region.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-surface.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-clip-tor-scan-converter.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-color.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-combsort-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-compiler-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-composite-rectangles.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-composite-rectangles-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-compositor.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-compositor-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-contour.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-contour-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-contour-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-damage.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-damage-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-debug.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-default-context.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-default-context-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-device.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-device-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-error.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-error-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fallback-compositor.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fixed.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fixed-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-fixed-type-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-face.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-face-twin.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-face-twin-data.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-font-options.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freed-pool-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freelist.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freelist-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-freelist-type-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-gstate.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-gstate-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-hash.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-hash-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-hull.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-compositor.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-info.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-info-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-source.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-surface.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-surface-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-image-surface-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairoint.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-list-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-list-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-lzw.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-malloc-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mask-compositor.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-matrix.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mesh-pattern-rasterizer.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-misc.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mono-scan-converter.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-impl-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-list-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-mutex-type-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-no-compositor.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-observer.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-output-stream.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-output-stream-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-paginated-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-paginated-surface.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-paginated-surface-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-bounds.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-fill.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-fixed.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-fixed-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-in-fill.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-boxes.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-polygon.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-traps.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-path-stroke-tristrip.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pattern.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pattern-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pattern-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-pen.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-png.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-polygon.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-polygon-intersect.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-polygon-reduce.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-raster-source-pattern.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-recording-surface.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-recording-surface-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-recording-surface-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-rectangle.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-rectangular-scan-converter.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-reference-count-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-region.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-region-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font-subsets.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-scaled-font-subsets-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-shape-mask-compositor.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-slope.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-slope-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans-compositor.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans-compositor-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spans-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-spline.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-stroke-dash.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-stroke-dash-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-stroke-style.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-backend-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-clipper.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-clipper-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-fallback.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-fallback-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-observer-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-offset.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-offset-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-snapshot.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-snapshot-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-snapshot-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-subsurface.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-subsurface-inline.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-subsurface-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-wrapper.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-surface-wrapper-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tee-surface-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-time-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tor22-scan-converter.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tor-scan-converter.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-toy-font-face.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-traps.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-traps-compositor.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-traps-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tristrip.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-tristrip-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-truetype-subset.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-truetype-subset-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-fallback.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-glyph-names.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-type1-subset.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-types-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-unicode.c" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-user-font.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-user-font-private.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-version.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-version.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-wideint.c" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-wideint-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-wideint-type-private.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-win32.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\cairo\local-1.12.14\source\cairo-win32-private.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_capilano-vc-dev-debug_Durango="vc" vc-compiler="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\cl.exe" vc-compiler_clang="" vc-asm="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\ml64.exe" vc-librarian="C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\Compilers\dev11.1\VC\bin\amd64\lib.exe" platform_capilano-vc-dev-opt_Durango="vc" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

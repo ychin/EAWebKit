@@ -1,0 +1,130 @@
+<project>
+  <!-- For example usage, please see EAWebKitDemoUTFWin.build. -->
+  <!-- This task defines the following properties:
+       eawebkit-distribution-directory - the directory containing some directories used for EAWebKit,
+           including the bin and lib directories containing the EAWebKit dll and PS3 lib
+       eawebkit-dll-filename - the file name inside that directory of the DLL
+       eawebkit-dll - the full path to the DLL
+       eawebkit-kettle-stub-lib - the full path to EAWebKitPrx stub lib (Kettle only)
+       -->
+  
+  <createtask name="find-eawebkit-binaries">
+    <parameters>
+      <!-- We ask the team for the sdk-version in use instead of us directly using ${package.VisualStudio.version}
+      or ${package.xenonsdk.version} or ${package.ps3sdk.version}. This is done for various reasons.
+      1. Normally, we don't distribute pre-built dlls with multiple SDKs unless requested in advance by a team. So if a team's local sdk version 
+      is not distributed, they can still do a quick test without needing to build the dll themselves.
+      2. The naming conventions for the sdk packages on Framework is not uniform w.r.t. proxy vs non-proxy packages, visual studio versions, "lite"
+      sdk version on PS3, same SDK released multiple times with "Framework only bug fixes(xml scripts etc.)". In most of those cases, we try below
+      to "fix" the path and adjust it to the directory structure of EAWebKit Distribution directory.
+      -->
+      <option name="sdk-version"  value="Required" />
+      <!-- We don't use ${config-name} in this xml file as the team may have config names different from ours.
+        Our config names are dev-debug and dev-opt. A game may have mygame-debug, mygame-profile. So we instead ask the team
+        to specify the config. In addition, this is optional so if not provided, we use the opt dlls by default as they are distributed with package.-->
+      <option name="use-dll-config"   value="dev-opt"/>
+      <option name="use-non-jit-dll" value="false"/><!--optional and false by default. Only applicable on Win32.-->
+    </parameters>
+
+    <code>
+      <dependent name="EAWebKit" /> 
+      <choose>
+        <do if="${find-eawebkit-binaries.use-dll-config} == 'dev-debug'">
+          <property name="eawebkit-dll-suffix" value="d"/>
+        </do>
+        <do>
+          <property name="eawebkit-dll-suffix" value=""/>
+        </do>
+      </choose>
+      <property name="eawebkit-dll-filename" value="EAWebkit${eawebkit-dll-suffix}.dll"      if ="${config-system}==pc or ${config-system} == pc64"/>
+      <property name="eawebkit-dll-filename" value="EAWebkit${eawebkit-dll-suffix}.dll"      if ="${config-system} == 'capilano'"/>
+      <property name="eawebkit-dll-filename" value="EAWebkit${eawebkit-dll-suffix}.prx"      if ="${config-system} == 'kettle'"/>
+      <property name="eawebkit-dll-filename" value="EAWebkit${eawebkit-dll-suffix}.so"       if ="${config-system} == 'osx'"/>
+      <property name="eawebkit-map-filename" value="EAWebkit${eawebkit-dll-suffix}.map"/>
+      <property name="eawebkit-pdb-filename" value="EAWebkit${eawebkit-dll-suffix}.pdb"/>
+  
+      <!-- determine the directory given the selected config-system-->
+      <property name="eawebkit-platform-directory-name" value="${config-system}" />
+      <!-- For the 2 platforms below, we rename the directory name as we have been asked to adopt to official names. However, config packages have no plan to do so at the moment.-->
+      <property name="eawebkit-platform-directory-name" value="xboxone" if="${config-system} == 'capilano'"/>
+      <property name="eawebkit-platform-directory-name" value="ps4"     if="${config-system} == 'kettle'"/>
+
+      <property name="eawebkit-platform-directory" value="@{PathCombine(@{PathCombine(${package.EAWebKit.dir}, 'Distribution')}, ${eawebkit-platform-directory-name})}"/> 
+      <!-- can't move this code to the osx specific block below as this needs to merge with the platform name-->
+      <do if="${config-system}==osx">
+          <property name="config-processor" value="" unless="@{PropertyExists('config-processor')}"/> 
+          <property name="eawebkit-osx-config-system-suffix" value=""/>
+          <property name="eawebkit-osx-config-system-suffix" value="64" if="${config-processor}==x64"/>
+          
+          <property name="eawebkit-platform-directory" value="${eawebkit-platform-directory}${eawebkit-osx-config-system-suffix}"/>
+       </do>   
+
+      <choose>
+        <do if="${config-system}==capilano">
+          <property name="absolute-sdk-version"   value="@{StrReplace(${find-eawebkit-binaries.sdk-version}, '-proxy', '')}" />
+          <property name="eawebkit-dll-folder"    value="@{PathCombine('${absolute-sdk-version}', '${find-eawebkit-binaries.use-dll-config}')}"/>
+        </do>
+        <do if="${config-system}==kettle">
+          <property name="absolute-sdk-version"   value="@{StrReplace(${find-eawebkit-binaries.sdk-version}, '-proxy', '')}" />
+          <property name="eawebkit-dll-folder"    value="@{PathCombine('${absolute-sdk-version}', '${find-eawebkit-binaries.use-dll-config}')}"/>
+        </do>
+        <do if="${config-system}==pc or ${config-system} == pc64">
+          <!-- On PC, the situation for determining the pre-built binary location is tricky. For Visual studio, VS2005 packages have –proxy appended for proxy packages and 
+          packages with only version number are non-proxy however for VS2008, the convention is to add –non-proxy and a package with only version number means a proxy package. 
+          So this is directly opposite between two visual studio packages distributed on the package server.
+          Similar problem exists for VS  2010 and VS 2012.
+          What we do below, is to remove both -non-proxy and -proxy from the sdk-version passed by the team and construct the path again to point to the correct location
+          based on EAWebKit package distribution directory layout.
+          We intentionally don't try and fix various patch versions of the same visual studio package as it may be error prone and not exactly what the team may want.
+          -->
+          <property name="absolute-sdk-version" value="@{StrReplace(@{StrReplace(${find-eawebkit-binaries.sdk-version}, '-non-proxy', '')},'-proxy', '')}" />
+          <choose>
+            <do if="@{StrStartsWith('${absolute-sdk-version}', '8.0')} or @{StrStartsWith('${absolute-sdk-version}', '11.0')}">
+              <property name="eawebkit-dll-sdk-version"   value="@{StrConcat('${absolute-sdk-version}','-proxy')}" />
+            </do>
+            <do>
+               <property name="eawebkit-dll-sdk-version"  value="${absolute-sdk-version}" />
+            </do>
+          </choose>
+          <property name="eawebkit-dll-folder"    value="@{PathCombine('jit',     '${find-eawebkit-binaries.use-dll-config}')}" if="!${find-eawebkit-binaries.use-non-jit-dll}"/>
+          <property name="eawebkit-dll-folder"    value="@{PathCombine('non-jit', '${find-eawebkit-binaries.use-dll-config}')}" if="${find-eawebkit-binaries.use-non-jit-dll} or ${config-system} == pc64"/>
+          <property name="eawebkit-dll-folder"    value="@{PathCombine('static_runtime', '${eawebkit-dll-folder}')}" /> <!--we'll need to use a condition here if we want to support both static and dynamic runtime in future-->
+          <property name="eawebkit-dll-folder"    value="@{PathCombine(${eawebkit-dll-sdk-version}, '${eawebkit-dll-folder}')}"/>
+        </do>
+          
+          <do if="${config-system}==osx">
+              <property name="absolute-sdk-version"   value="@{StrReplace(${find-eawebkit-binaries.sdk-version}, '-proxy', '')}" />
+              <property name="eawebkit-dll-folder"    value="@{PathCombine('${absolute-sdk-version}', '${find-eawebkit-binaries.use-dll-config}')}"/>
+          </do>
+          
+          <do>
+          <fail message="Unsupported platform &quot;${config-system}&quot;"/>
+        </do>
+      </choose>
+
+      <!-- Create a single property that points directly at the dll itself -->
+      <property name="eawebkit-distribution-directory" value="@{PathCombine(${eawebkit-platform-directory}, ${eawebkit-dll-folder})}"/>
+      <property name="eawebkit-dll" value="@{PathCombine(@{PathCombine(${eawebkit-distribution-directory}, 'bin')}, ${eawebkit-dll-filename})}" />
+      <property name="eawebkit-map" value="@{PathCombine(@{PathCombine(${eawebkit-distribution-directory}, 'bin')}, ${eawebkit-map-filename})}" />
+      <property name="eawebkit-pdb" value="@{PathCombine(@{PathCombine(${eawebkit-distribution-directory}, 'bin')}, ${eawebkit-pdb-filename})}" />
+
+      <!-- We only fail if we are missing an opt dll because they are pre-built and distributed with the package and exist in the perforce. Otherwise, we may break
+      solution generation of a team's debug config with following message. -->
+       
+      <do if="${find-eawebkit-binaries.use-dll-config} == 'dev-opt'">
+        <!--
+        <fail unless="@{FileExists(${eawebkit-dll})}" 
+              message="The EAWebKit DLL could not be found. We checked here:&#10;${eawebkit-dll}. If the problem exists due to
+        different SDK versions, you may want to build dll with your local version for testing or you can change the sdk version passed in this task to be the one that
+        is pre-built and distributed with the package. You may also inform EAWebKit Team for the SDK version required by your team." />
+        -->
+      </do>
+      
+       <!-- On kettle, we also want the stub library file -->
+      <do if="${config-system}==kettle">
+        <property name="eawebkit-ps4-stub-lib" value="@{PathCombine(@{PathCombine(${eawebkit-distribution-directory}, 'lib')}, 'EAWebKit${eawebkit-dll-suffix}_stub_weak.a')}"/>
+      </do>
+    </code>
+  </createtask>
+
+</project>

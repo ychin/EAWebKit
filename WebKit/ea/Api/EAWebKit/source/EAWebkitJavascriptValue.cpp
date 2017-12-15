@@ -89,13 +89,7 @@ JSC::JSFunction *ValueToFunction(JSC::JSValue* jsValue)
 
 EA_COMPILETIME_ASSERT(JavascriptValue::kJSValueSize == sizeof(JSC::JSValue));
 
-#if defined(EA_PLATFORM_OSX) && (EA_PLATFORM_PTR_SIZE != 8)
-// JSC::JSValue has 4 bytes alignment on OS X 32 bit. Since the buffer on which we do "in-place" construction is 8 byte aligned (meaning that it is definitely 4 byte aligned),
-// it is safe to compare the alignment check against 4 byte for this class on OS X 32 bit.
-EA_COMPILETIME_ASSERT(4 == EA_ALIGN_OF(JSC::JSValue));
-#else
 EA_COMPILETIME_ASSERT(8 == EA_ALIGN_OF(JSC::JSValue));
-#endif
 
 
 void JavascriptValue::SetNull(void) 

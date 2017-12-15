@@ -1,0 +1,8 @@
+<project>
+    
+	<target name="dirtysdk-clean-sync" description="Clean the release directory and force sync" hidden="true">
+		<delete dir="${dirtysdk-release-clientdir}" />
+		<p4sync force="true" client="dirty-release-v${dirtysdk-majorversion}" />
+	</target>
+
+</project>

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -303,10 +303,12 @@ void View::Paint()
 						}
 						
 						
+						NOTIFY_PROCESS_STATUS(kVProcessTypeFrameRender, EA::WebKit::kVProcessStatusStarted, this);
 						if(IsUsingTiledBackingStore())
 							frame->renderTiled(d->mHardwareRenderer, d->mDisplaySurface, d->mDirtyRegions); //Simply copy the tiles on the d->mDisplaySurface
 						else
-							frame->renderNonTiled(d->mHardwareRenderer, d->mDisplaySurface, d->mDirtyRegions); //Actually render the content on the d->mDisplaySurface
+							frame->renderNonTiled(d->mHardwareRenderer, d->mDisplaySurface, d->mDirtyRegions); //Actually render the content on the d->mDisplaySurface				
+						NOTIFY_PROCESS_STATUS(kVProcessTypeFrameRender, EA::WebKit::kVProcessStatusEnded, this);
 
 						if(d->mHardwareRenderer)
 						{
@@ -317,12 +319,15 @@ void View::Paint()
 							{
 								EA::WebKit::FloatRect eaRect(iter->mRect.x(), iter->mRect.y(), iter->mRect.width(), iter->mRect.height());
 								EA::WebKit::TransformationMatrix identity;
-								d->mHardwareRenderer->RenderSurface(iter->mpSurface, eaRect, identity, 1.0f, EA::WebKit::CompositeSourceOver, EA::WebKit::ClampToEdge);
+                                EA::WebKit::Filters filters;
+								d->mHardwareRenderer->RenderSurface(iter->mpSurface, eaRect, identity, 1.0f, EA::WebKit::CompositeSourceOver, EA::WebKit::ClampToEdge, filters);
 							}
 						}
 						else
 						{
+							NOTIFY_PROCESS_STATUS(kVProcessTypePaintOverlays, EA::WebKit::kVProcessStatusStarted, this);
 							PaintOverlays(); //Composite Overlays on top of the main drawing surface
+							NOTIFY_PROCESS_STATUS(kVProcessTypePaintOverlays, EA::WebKit::kVProcessStatusEnded, this);
 						}
 
 						if(d->mHardwareRenderer)
@@ -451,7 +456,7 @@ bool View::InitView(const ViewParameters& vp)
 			{
 				if(vp.mHardwareRenderer)
 				{
-					displaySurface = vp.mHardwareRenderer->CreateSurface();
+					displaySurface = vp.mHardwareRenderer->CreateSurface(EA::WebKit::SurfaceTypeMain);
 				}
 				else
 				{
@@ -1474,7 +1479,7 @@ ISurface* View::CreateOverlaySurface(int x, int y, int width, int height)
     ISurface* pSurface = NULL;
     if (HardwareAccelerated())
 	{
-        pSurface = d->mHardwareRenderer->CreateSurface();
+        pSurface = d->mHardwareRenderer->CreateSurface(EA::WebKit::SurfaceTypeOverlay);
     }
     else
     {

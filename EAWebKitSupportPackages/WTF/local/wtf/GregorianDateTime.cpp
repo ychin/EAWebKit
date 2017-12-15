@@ -71,13 +71,7 @@ void GregorianDateTime::setToCurrentLocalTime()
     time_t localTime = time(0);
 //+EAWebKitChange
 //3/12/2014
-#if defined(EA_PLATFORM_MICROSOFT)
     localtime_s(&localTM, &localTime);
-#elif defined(EA_PLATFORM_SONY)
-    localtime_s(&localTime, &localTM);
-#else
-    localtime_r(&localTime, &localTM);
-#endif
 //-EAWebKitChange
 
     m_year = localTM.tm_year + 1900;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -35,8 +35,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // portions of the code are based on the TextureMapperGL implementation
 
 // Following is expected to remain 1 all the time as scissors based clipping is much more efficient compared to stencil based
-// clipping. The reason for this define is to test stencil clipping path as all the test pages we have get optimized
+// clipping. The reason for this define is to test stencil clipping path exclusively by turning it off as most of test pages we have get optimized
 // by scissor clipping path. 
+
+//+EAWebKitChange
+//1/16/2014
+namespace EA
+{
+	namespace WebKit
+	{
+        bool DoCssFilterInHardware();
+	}
+}
+//-EAWebKitChange
 
 #define ENABLE_SCISSOR_CLIP 1
  
@@ -133,6 +144,9 @@ BitmapTextureEA::BitmapTextureEA(EA::WebKit::ISurface *surface, EA::WebKit::View
 	, m_shouldClear(true)
 	, m_boundFirstTime(true)
 	, m_clearedStencil(false)
+#if ENABLE(CSS_FILTERS)
+    , mFilterList(NULL)
+#endif
 {
 	mView->AddTexture(this);
 }
@@ -144,6 +158,15 @@ BitmapTextureEA::~BitmapTextureEA(void)
 		mSurface->Release();
 		mSurface = NULL;
 	}
+    
+#if ENABLE(CSS_FILTERS)
+    if (mFilterList)
+    {
+        delete mFilterList;
+        mFilterList = NULL;
+    }
+#endif
+
 	mView->RemoveTexture(this);
 }
 
@@ -167,7 +190,8 @@ bool BitmapTextureEA::isValid(void) const
 
 bool BitmapTextureEA::canReuseWith(const IntSize& contentsSize, Flags /* = 0 */)
 {
-	return false;//EAWebKitTODO - Investigate optimization here contentsSize == m_contentSize
+	// We ignore flags as all our surfaces have alpha channel.
+	return contentsSize == m_contentSize;
 }
 void BitmapTextureEA::didReset()
 {
@@ -195,7 +219,7 @@ IntSize TextureMapperEA::maxTextureSize() const
 
 PassRefPtr<BitmapTexture> TextureMapperEA::createTexture(void) 
 {
-	EA::WebKit::ISurface *surface = mRenderer->CreateSurface();
+	EA::WebKit::ISurface *surface = mRenderer->CreateSurface(EA::WebKit::SurfaceTypeTexture);
 	return adoptRef(new BitmapTextureEA(surface,mView));
 }
 
@@ -298,14 +322,26 @@ void TextureMapperEA::drawTexture(const BitmapTexture& texture, const FloatRect&
 		return;
 		
 	const BitmapTextureEA& textureEA = static_cast<const BitmapTextureEA&>(texture);
+    EA::WebKit::Filters filters;
+
+#if ENABLE(CSS_FILTERS)
+    if (textureEA.GetFilters() != NULL)
+    {
+        filters = *textureEA.GetFilters();
+    }
+#endif
+
 	EA::WebKit::TransformationMatrix eaMatrix(matrix);
 	EA::WebKit::FloatRect eaTarget(targetRect);
+
+	EAW_ASSERT_MSG(targetRect.size().width() == texture.size().width() && targetRect.size().height() == texture.size().height(), "We expect to draw full texture always !");
 	mRenderer->RenderSurface(textureEA.GetSurface(), 
 							eaTarget, 
 							eaMatrix, 
 							opacity, 
 							isInMaskMode() ? EA::WebKit::CompositeDestinationIn : EA::WebKit::CompositeSourceOver, 
-							(wrapMode() == WebCore::TextureMapper::RepeatWrap ? EA::WebKit::Repeat : EA::WebKit::ClampToEdge));
+							wrapMode() == WebCore::TextureMapper::RepeatWrap ? EA::WebKit::Repeat : EA::WebKit::ClampToEdge,
+							filters);
 }
 
 void TextureMapperEA::drawSolidColor(const FloatRect& rect, const TransformationMatrix& matrix, const Color& color)
@@ -331,10 +367,103 @@ void TextureMapperEA::drawNumber(int /* number */, const Color&, const FloatPoin
 }
 
 #if ENABLE(CSS_FILTERS)
-PassRefPtr<BitmapTexture> BitmapTextureEA::applyFilters(TextureMapper*, const FilterOperations& filters)
+static void setupFilterInfo(const FilterOperation& source, EA::WebKit::FilterInfo *target)
 {
-	ASSERT(!filters.size());
-	return this;
+	EA::WebKit::FilterType filterType = EA::WebKit::FilterTypeNone;
+    float amount = 0.0f;
+    IntPoint location;
+    uint32_t color = 0;
+
+    switch (source.getOperationType())
+    {
+    case FilterOperation::GRAYSCALE:
+	    filterType = EA::WebKit::FilterTypeGrayscale;
+        amount = (static_cast<const BasicColorMatrixFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::SEPIA:
+        filterType = EA::WebKit::FilterTypeSepia;
+        amount = (static_cast<const BasicColorMatrixFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::SATURATE:
+        filterType = EA::WebKit::FilterTypeSaturate;
+        amount = (static_cast<const BasicColorMatrixFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::HUE_ROTATE:
+	    filterType = EA::WebKit::FilterTypeHueRotate;
+        amount = (static_cast<const BasicColorMatrixFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::INVERT:
+        filterType = EA::WebKit::FilterTypeInvert;
+        amount = (static_cast<const BasicComponentTransferFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::OPACITY:
+	    filterType = EA::WebKit::FilterTypeOpacity;
+        amount = (static_cast<const BasicComponentTransferFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::BRIGHTNESS:
+	    filterType = EA::WebKit::FilterTypeBrightness;
+        amount = (static_cast<const BasicComponentTransferFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::CONTRAST:
+        filterType = EA::WebKit::FilterTypeContrast;
+        amount = (static_cast<const BasicComponentTransferFilterOperation&>(source)).amount();
+	    break;
+    case FilterOperation::BLUR:
+	    filterType = EA::WebKit::FilterTypeBlur;
+        amount = (static_cast<const BlurFilterOperation&>(source)).stdDeviation().getFloatValue();
+	    break;
+    case FilterOperation::DROP_SHADOW:
+	    filterType = EA::WebKit::FilterTypeDropShadow;
+        amount = (static_cast<const DropShadowFilterOperation&>(source)).stdDeviation();  //blur size
+        color = premultipliedARGBFromColor((static_cast<const DropShadowFilterOperation&>(source)).color());
+        location = (static_cast<const DropShadowFilterOperation&>(source)).location();
+	    break;
+    case FilterOperation::NONE: 
+        filterType = EA::WebKit::FilterTypeNone;
+	    break;
+    default:
+	    EAW_ASSERT_FORMATTED(false, "Unsupported Filter type - %d", source.getOperationType());
+    }
+    target->filterType = filterType;
+    target->amount = amount;
+    target->color = color;
+    target->location = location;
+}
+
+PassRefPtr<BitmapTexture> BitmapTextureEA::applyFilters(TextureMapper* textureMapper, const FilterOperations& filters)
+{   
+    // early out if filters aren't being done in hardware OR if there are no filters
+    if (!EA::WebKit::DoCssFilterInHardware() || (filters.size() == 0))
+    {
+        return this;
+    }
+
+    //do we need to make a new filter list?
+    if (mFilterList == NULL)
+    {
+        mFilterList = new EA::WebKit::Filters();
+    }
+    else
+    {
+        mFilterList->Reset();     //reset the list if we are re-using it from a previous call
+    }
+
+    EAW_ASSERT_MSG(filters.size() < mFilterList->CountMax(),"Not enough space in mFilterList to hold all filters.");
+    // early out if the assert would have failed, "Not enough space in mFilterList to hold all filters".
+    if (filters.size() > mFilterList->CountMax())
+    {
+        return this;
+    }
+
+    for (size_t i = 0; (i < filters.size()) && (i < mFilterList->CountMax()); ++i)
+    {
+        RefPtr<FilterOperation> filter = filters.operations()[i];   
+        EA::WebKit::FilterInfo info;
+        setupFilterInfo(*filter, &info);
+        mFilterList->Add(info);
+	}
+
+    return this;
 }
 #endif
 
@@ -348,7 +477,7 @@ void BitmapTextureEA::initializeStencil()
 }
 
 TextureMapperEA::TextureMapperEA(EA::WebKit::View* view)
-	: TextureMapper(SoftwareMode)//OpenGLMode)//EAWebKitTODO - only affects 3-D
+    : TextureMapper(EA::WebKit::DoCssFilterInHardware() ? OpenGLMode : SoftwareMode) //We fake as OpenGLMode in order to avoid touching multiple webcore files
 	, mView(view)
 	, mRenderer(view->GetHardwareRenderer())
 	, m_didModifyStencil(false)
@@ -392,6 +521,9 @@ void TextureMapperEA::ClipStack::pop()
 }
 void TextureMapperEA::ClipStack::apply(EA::WebKit::IHardwareRenderer* renderer)
 {
+	if(renderer->UseCustomClip())
+		return;
+	
 	if (clipState.scissorBox.isEmpty())
 		return;
 #if ENABLE_SCISSOR_CLIP	
@@ -406,6 +538,9 @@ void TextureMapperEA::ClipStack::apply(EA::WebKit::IHardwareRenderer* renderer)
 
 void TextureMapperEA::ClipStack::applyIfNeeded(EA::WebKit::IHardwareRenderer* renderer)
 {
+	if(renderer->UseCustomClip())
+		return;
+	
 	if (!clipStateDirty)
 		return;
 

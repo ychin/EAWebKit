@@ -283,11 +283,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // value FCN_POLL_ENABLED is set to.
 //
 #ifndef FCN_POLL_ENABLED
-    #if defined(EA_PLATFORM_WINDOWS)
         #define FCN_POLL_ENABLED 0
-    #else
-        #define FCN_POLL_ENABLED 1
-    #endif
 #endif
 
 

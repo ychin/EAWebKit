@@ -1,0 +1,30 @@
+<project>
+
+    <!-- include custom package files -->
+	<include file="..\config\targets\target-build.xml" />
+	<include file="..\config\targets\target-package.xml" />
+
+    <!-- define target for source package and its exclusions -->
+    <target name="dirtysdk-source-package" hidden="true">
+        <property name="package.packageexclusions">
+            **\*~
+            **\*.bat
+            **\*.dxy
+            **\*.err
+            **\*.exe
+            **\*.sln
+            **\*.vcproj
+            **\build**
+            **\contrib\winsake\project\pc\WinSake**
+            **\doc\chm\dotfiles**
+            **\sample\common\tester2\tester2_todo.html
+            **\sample\pc\accedit**
+            **\sample\pc\sysop**
+            **\sample\ps2\dnasping**
+            **\sample\ps2\libstat**
+            **\scripts\release\buildlog.xml
+        </property>
+        <call target="dirtysdk-package" />
+    </target>
+	
+</project>

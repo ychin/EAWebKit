@@ -3,5 +3,5 @@ C:\packages\kettle_config\1.05.00\config\options\ProcessSteps.cs
 C:\packages\kettle_config\1.05.00\config\options\VisualStudioExtension.cs
 C:\packages\kettle_config\1.05.00\config\tasks\Run.cs
 
-C:\packages\Framework\3.34.00\bin\NAnt.Core.dll
-C:\packages\Framework\3.34.00\bin\EA.Tasks.dll
+C:\packages\Framework\3.27.00\bin\NAnt.Core.dll
+C:\packages\Framework\3.27.00\bin\EA.Tasks.dll

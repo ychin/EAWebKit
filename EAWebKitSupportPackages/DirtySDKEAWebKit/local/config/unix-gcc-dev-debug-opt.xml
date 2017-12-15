@@ -1,0 +1,4 @@
+<project>
+	<dependent name="eaconfig" />
+	<include file="${package.eaconfig.dir}/config/unix-gcc-dev-debug-opt.xml" />
+</project>

@@ -1,0 +1,270 @@
+<project>
+
+    <property name="runtime.buildmodules">
+        ${property.value}
+        ${dirtysock_modulename}
+    </property>
+    
+    <!-- set the final output type to a library which other apps will include -->
+    <property name="runtime.${dirtysock_modulename}.buildtype" value="CLibrary"/>
+
+    <!-- include usedependencies -->
+    <property name="runtime.${dirtysock_modulename}.usedependencies.psp">
+        PlayStationPortableSN
+    </property>
+    
+    <property name="runtime.${dirtysock_modulename}.usedependencies.rev">
+        RevolutionEX
+        RevolutionDWC_DL
+    </property>
+
+    <!-- Bring in the set of files used to build -->
+ 	    <fileset basedir="${package.DirtySDKEAWebKit.dir}" name="runtime.${dirtysock_modulename}.sourcefiles">
+          <includes fromfile="${package.DirtySDKEAWebKit.dir}/core/project/${config-system}/source.txt" if="@{FileExists('${package.DirtySDKEAWebKit.dir}/core/project/${config-system}/source.txt')}"/>
+          <includes fromfile="${package.DirtySDKEAWebKit.dir}/core/project/source.txt" if="@{FileExists('${package.DirtySDKEAWebKit.dir}/core/project/source.txt')}"/>
+      </fileset>
+    
+    <!-- set some basic include directories -->
+    <property name="runtime.${dirtysock_modulename}.includedirs">
+      ${package.DirtySDKEAWebKit.dir}/platform
+      ${package.DirtySDKEAWebKit.dir}/core/include
+      ${package.DirtySDKEAWebKit.dir}/core/include/${config-system}
+      ${package.DirtySDKEAWebKit.dir}/core/source/voip
+    </property>    
+    
+    <!-- all platforms must have these defines -->
+    <property name="runtime.${dirtysock_modulename}.defines">
+        ${property.value}
+    	DS_PLATFORM
+    </property>
+
+    <!-- set the visual studio path for build.xml files -->
+    <do if="${config-system} == 'pc'">
+        <do if="'${package.VisualStudio.version}' gte '8.0.0'">
+          <property name="vsxmlpath" value="VC"/>
+        </do>
+        <do if="'${package.VisualStudio.version}' lt '8.0.0'">
+          <property name="vsxmlpath" value="Vc7"/>
+        </do>
+    </do>
+
+    <!-- =================  DS =============== -->
+    <do if="${config-system} == 'ds'">
+        <property name="runtime.${dirtysock_modulename}.includedirs">
+            ${property.value}
+            ${package.dscodewarrior.dir}\nitrodwc\include
+            ${package.dscodewarrior.dir}\nitrodwc\include\gs
+            ${package.dscodewarrior.dir}\nitrowifi\include
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+            _NITRO  <!-- jlb: required for include of nonport.h (gamespy/dwc) -->
+    	</property>
+        <do unless="@{PropertyExists('dirtysdk-nds-noinet')}">
+    	    <property name="runtime.${dirtysock_modulename}.defines">
+    		    ${property.value}
+                DIRTYSOCK_DS_INET
+    	    </property>
+        </do>
+        <do unless="@{PropertyExists('dirtysdk-nds-noadhoc')}">
+    	    <property name="runtime.${dirtysock_modulename}.defines">
+    		    ${property.value}
+                DIRTYSOCK_DS_ADHOC
+    	    </property>
+        </do>
+    	<property name="runtime.${dirtysock_modulename}.warningsuppression">
+            -w nopedantic                        
+            -w nounusedarg
+            -w nounusedexpr
+            -w noextracomma
+            -w noimplicitconv
+    	</property>
+    </do>
+
+    <!-- =================  PC  =================== -->
+    <do if="${config-system} == 'pc'">
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+    		DIRTYCODE_PLATFORM=3
+            WINSOCK_API_LINKAGE=
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.warningsuppression">
+        -wd4055
+        -wd4057
+        -wd4061
+        -wd4062
+        -wd4127
+        -wd4152
+        -wd4189
+        -wd4191
+        -wd4217
+        -wd4242
+        -wd4244
+        -wd4245
+        -wd4255
+        -wd4265
+        -wd4295
+        -wd4296
+        -wd4310
+        -wd4511
+        -wd4530
+        -wd4619
+        -wd4701
+        -wd4702
+        -wd4706
+        -wd4512
+      </property>
+    </do>
+
+  <!-- =================  PC64  =================== -->
+  <do if="${config-system} == 'pc64'">
+    <property name="runtime.${dirtysock_modulename}.defines">
+      ${property.value}
+      DIRTYCODE_PLATFORM=3
+      WINSOCK_API_LINKAGE=
+    </property>
+    <property name="runtime.${dirtysock_modulename}.warningsuppression">
+      -wd4055
+      -wd4057
+      -wd4061
+      -wd4062
+      -wd4127
+      -wd4152
+      -wd4189
+      -wd4191
+      -wd4217
+      -wd4242
+      -wd4244
+      -wd4245
+      -wd4255
+      -wd4265
+      -wd4295
+      -wd4296
+      -wd4310
+      -wd4511
+      -wd4530
+      -wd4619
+      -wd4701
+      -wd4702
+      -wd4706
+      -wd4512
+    </property>
+  </do>
+
+  <!-- =================  PS3  =================== -->
+    <do if="${config-system} == 'ps3'">
+        <property name="runtime.${dirtysock_modulename}.includedirs">
+            ${property.value}
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+    	</property>
+    </do>
+    <do if="${config-platform} == 'ps3-gcc'">
+        <property name="runtime.${dirtysock_modulename}.warningsuppression">
+    		${property.value}
+            -Wall
+            -Wno-multichar 
+            -Wformat 
+            -Wno-pointer-sign
+            -Wimplicit-int 
+            -Wsign-compare
+            -Wshadow
+            -Wstrict-prototypes
+            -Wmissing-prototypes            
+        </property>
+    </do>
+    <do if="${config-platform} == 'ps3-sn'">
+        <property name="runtime.${dirtysock_modulename}.warningsuppression">
+    		${property.value}
+            --diag_suppress=68
+            --diag_suppress=145
+            --diag_suppress=189
+            --diag_suppress=515
+            --diag_suppress=552
+            --diag_suppress=1421
+            --diag_suppress=1437
+            --diag_suppress=1628
+        </property>
+    </do>
+    
+    <!-- =================  PSP  =================== -->
+    <do if="${config-system} == 'psp'">
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.warningsuppression">
+    		${property.value}
+            --diag_suppress=68
+            --diag_suppress=121
+            --diag_suppress=145
+            --diag_suppress=189
+            --diag_suppress=515
+            --diag_suppress=552
+            --diag_suppress=1296
+    	</property>
+    </do>
+
+    <!-- =================  Revolution ============== -->
+    <do if="${config-system} == 'rev'">
+        <property name="runtime.${dirtysock_modulename}.includedirs">
+            ${property.value}
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+            _RVL
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.warningsuppression">
+            -w nopedantic                        
+            -w nounusedarg
+            -w nounusedexpr
+            -w noextracomma
+            -w noimplicitconv
+    	</property>
+    </do>
+    
+    <!-- =================  UNIX  =================== -->
+    <do if="${config-system} == 'linux'">
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+    		DIRTYCODE_PLATFORM=11
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.warningsuppression">
+    	</property>
+    </do>    
+    
+    <!-- =================  XENON  =================== -->
+    <do if="${config-system} == 'xenon'">
+    	<property name="runtime.${dirtysock_modulename}.defines">
+    		${property.value}
+    		DIRTYCODE_PLATFORM=10
+    		_XENON
+    		_XBOX
+    	</property>
+    	<property name="runtime.${dirtysock_modulename}.warningsuppression">
+        -wd4055
+        -wd4057
+        -wd4061
+        -wd4062
+        -wd4127
+        -wd4152
+        -wd4189
+        -wd4191
+        -wd4214
+        -wd4218
+        -wd4242
+        -wd4244
+        -wd4245
+        -wd4255
+        -wd4295
+        -wd4296
+        -wd4310
+        -wd4365
+        -wd4619
+        -wd4701
+        -wd4702
+        -wd4836
+      </property>
+    </do>
+
+</project>

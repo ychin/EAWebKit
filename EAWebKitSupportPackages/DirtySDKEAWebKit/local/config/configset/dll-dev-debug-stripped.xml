@@ -1,0 +1,25 @@
+<project>
+    <property name="config-type" value="deprecated-d"/>
+    <property name="config-name" value="dll-dev-debug"/>
+
+  <property name="Dll" value="true" />
+
+	<optionset name="config-options-common">
+		<option name="debugflags"							value="on" />
+		<option name="debugsymbols"							value="off" />
+		<option name="optimization"							value="on" />
+		<option name="usedebuglibs"							value="on" />
+		<option name="runtimeerrorchecking"					value="off" />
+	</optionset>
+	
+	<!-- Per James Tan's request, define EA_DLL for programs with DLL configs -->
+	<optionset name="config-options-program" append="true">
+		<option name="buildset.cc.defines" value="EA_DLL" />
+	</optionset>
+	<optionset name="config-options-windowsprogram" append="true">
+		<option name="buildset.cc.defines" value="EA_DLL" />
+	</optionset>
+	<optionset name="config-options-managedcppassembly" append="true">
+		<option name="buildset.cc.defines" value="EA_DLL" />
+	</optionset>
+</project>

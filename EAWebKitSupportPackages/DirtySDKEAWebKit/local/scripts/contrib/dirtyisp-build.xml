@@ -1,0 +1,57 @@
+<project>
+
+    <!-- add any dirtyisp specific include directories -->
+    <property name="package.DirtySDK.includedirs">
+        ${property.value}
+        ${package.DirtySDK.dir}/contrib/${config-system}isp/include
+        ${package.DirtySDK.dir}/contrib/${config-system}isp/include/${config-system}
+    </property>
+
+    <!-- add the library to the list of dirtysock libraries -->
+    <property name="package.DirtySDK.libs" value="${property.value};${config-system}isp" />
+
+    <!-- convenience names -->
+    <property name="modulename"         value="${config-system}isp"                                                />
+    <property name="module.src"         value="${package.DirtySDK.dir}/contrib/${modulename}/project/${config-system}/source.txt"   />
+    <property name="module.asm"         value="${package.DirtySDK.dir}/contrib/${modulename}/project/${config-system}/assembly.txt" />
+
+    <!-- add this module to the list of modules to build -->
+    <property name="runtime.buildmodules">
+        ${property.value}
+        ${modulename}
+    </property>
+
+    <!-- if we're running PS2, we need DirtyDNAS and DirtyELF -->
+    <property name="runtime.${modulename}.builddependencies.ps2">
+        DirtyElf
+        DirtyDNAS
+    </property>
+
+    <!-- declare the type of module to build -->
+    <property name="runtime.${modulename}.buildtype" value="Library" />
+
+    <!-- add this module's includes to the general includes -->
+    <property name="runtime.${modulename}.includedirs">
+        ${package.DirtySDK.includedirs}
+    </property>
+    
+    <fileset name="runtime.${modulename}.libs" append="true">
+        <includes name="${package.configlibdir}/*${lib-suffix}"/>
+	</fileset>
+
+    <!-- inherit warning suppression from dirtysock -->
+	<property name="runtime.${modulename}.warningsuppression">
+		${runtime.${dirtysock_modulename}.warningsuppression}
+	</property>    
+	
+	<!-- inherit defines from dirtysock -->
+	<property name="runtime.${modulename}.defines">
+	    ${runtime.${dirtysock_modulename}.defines}
+	</property>    
+        
+    <!-- now bring in the list of files to build into this module -->
+   	<fileset basedir="${package.DirtySDK.dir}" name="runtime.${modulename}.sourcefiles">
+   	    <includes fromfile="${module.src}" />
+    </fileset>
+    
+</project>

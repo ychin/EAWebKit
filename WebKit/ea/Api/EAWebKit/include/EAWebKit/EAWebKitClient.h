@@ -463,7 +463,16 @@ enum VProcessType
     kVProcessTypeBeginViewUpdate,
 	kVProcessTypeEndViewUpdate,
     kVProcessTypeAnimation,
-
+	kVProcessTypePaintOverlays,
+	kVProcessTypeFrameRender,
+	kVProcessTypeClearSurface,
+	kVProcessTypeDirtyRectsRender,
+	kVProcessTypeDrawDebug,
+	kVProcessTypeRenderCompLayers,
+	kVProcessTypePruneMemCache,
+	kVProcessTypeDispatchFunctions,
+	kVProcessTypeTickDownload,
+	kVProcessTypeFireTimer,
 
 	//****************************************************************//
 	//Add any new process types above this line//

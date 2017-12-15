@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="EABaseEAWebKit">
+
+    
+
+    <!-- Package declaration -->
+    <!-- Get the version number from current directory -->
+    <property name="currDir"  value="@{PathGetFullPath('.')}"/>
+    <property name="currVer"  value="@{PathGetFileName('${currDir}')}"/>
+    <package  name="EABaseEAWebKit" targetversion="${currVer}"/>
+
+    
+
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <property name="runtime.buildmodules" value="EABaseEAWebKit" />
+    <property name="runtime.EABaseEAWebKit.buildtype" value="Utility"/>
+
+
+
+
+    
+
+
+</project>

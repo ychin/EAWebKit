@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -31,14 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "EAWebKitConfig.h"
 #include <string.h> //For memset
-
-namespace EA
-{
-namespace IO
-{
-class IStream;
-}
-}
 
 namespace EA
 {
@@ -397,7 +389,7 @@ public:
     virtual bool                GetGlyphs(IFont* pFont, const GlyphId* gIdArray, int glyphCount, GlyphDrawInfo* outGDI) = 0;
     virtual EA::WebKit::IFont*	GetFont(const EA::WebKit::TextStyle& textStyle, Char c = kCharInvalid) = 0;
     virtual EA::WebKit::IFont*	CreateNewFont(EA::WebKit::FontType fontType, const void* pSourceData, uint32_t nSourceSize, int nFaceIndex = 0) = 0;
-    virtual uint32_t			AddFace(EA::IO::IStream* pStream) =0;
+    virtual uint32_t			AddFace(void* data, size_t dataSize) = 0;
     virtual bool				AddSubstitution(const char16_t* pFamily, const char16_t* pFamilySubstitution) = 0;
 	virtual bool				SupportsFormat(EA::WebKit::FontFormat format) = 0;
     virtual bool                GetDrawInfoForComplexText(EA::WebKit::IFont* pFont, const EA::WebKit::Char* textRun, int textRunCount, float clipLeft, float clipRight, EA::WebKit::TextDrawInfo& outDrawInfo) = 0;

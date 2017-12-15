@@ -1,7 +1,7 @@
 /*
     Copyright (C) 2008,2009 Nokia Corporation and/or its subsidiary(-ies)
     Copyright (C) 2007 Staikos Computing Services Inc.
-	Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -509,12 +509,15 @@ void WebFrame::renderNonTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface 
 
 	if (d->mClearDisplaySurface)
     {
+		NOTIFY_PROCESS_STATUS(kVProcessTypeClearSurface, EA::WebKit::kVProcessStatusStarted, d->page->view());
         EA::WebKit::ClearSurfaceToColor(surface,d->mClearDisplayColor);
         d->mClearDisplaySurface = false;
+		NOTIFY_PROCESS_STATUS(kVProcessTypeClearSurface, EA::WebKit::kVProcessStatusEnded, d->page->view());
     }
 
     WebCore::FrameView *view = d->frame->view();
-    for (unsigned i = 0; i < dirtyRegions.size(); ++i) 
+	NOTIFY_PROCESS_STATUS(kVProcessTypeDirtyRectsRender, EA::WebKit::kVProcessStatusStarted, d->page->view());
+	for (unsigned i = 0; i < dirtyRegions.size(); ++i) 
 	{
         ISurface::SurfaceDescriptor surfaceDescriptor = {0};
         
@@ -537,6 +540,7 @@ void WebFrame::renderNonTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface 
 
         if(d->page->view()->ShouldDrawDebugVisuals())
 		{
+			NOTIFY_PROCESS_STATUS(kVProcessTypeDrawDebug, EA::WebKit::kVProcessStatusStarted, d->page->view());
 			graphicsContext.save();
 			
 			graphicsContext.setStrokeStyle(WebCore::SolidStroke);
@@ -544,13 +548,17 @@ void WebFrame::renderNonTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface 
 			graphicsContext.strokeRect(WebCore::FloatRect(eaRect.mLocation.mX,eaRect.mLocation.mY,eaRect.mSize.mWidth,eaRect.mSize.mHeight),2.0f); 
 
 			graphicsContext.restore();
+			NOTIFY_PROCESS_STATUS(kVProcessTypeDrawDebug, EA::WebKit::kVProcessStatusEnded, d->page->view());
 		}
 
         surface->Unlock();
     }
+	NOTIFY_PROCESS_STATUS(kVProcessTypeDirtyRectsRender, EA::WebKit::kVProcessStatusEnded, d->page->view());
 
-	
+	NOTIFY_PROCESS_STATUS(kVProcessTypeRenderCompLayers, EA::WebKit::kVProcessStatusStarted, d->page->view());
 	renderCompositedLayers(renderer, surface);
+	NOTIFY_PROCESS_STATUS(kVProcessTypeRenderCompLayers, EA::WebKit::kVProcessStatusEnded, d->page->view());
+
 	drawHighlightedNodeFromInspector(surface);
 }
 
@@ -565,7 +573,6 @@ void WebFrame::renderTiled(EA::WebKit::IHardwareRenderer* renderer, ISurface* su
 
 	if(!d->page->view()->HardwareAccelerated())//Don't need to copy the tiled rects to main surface in GPU compositing path
 	{
-		WebCore::FrameView *view = d->frame->view();
 		for (unsigned i = 0; i < dirtyRegions.size(); ++i) 
 		{
 			ISurface::SurfaceDescriptor surfaceDescriptor = {0};
@@ -665,7 +672,8 @@ void WebFrame::renderCompositedLayers(EA::WebKit::IHardwareRenderer* renderer, I
 		{
 			EA::WebKit::TransformationMatrix identity;
 			EA::WebKit::FloatRect fullScreen(0.0f, 0.0f, d->page->view()->GetSize().mWidth, d->page->view()->GetSize().mHeight);
-			renderer->RenderSurface(d->page->view()->GetDisplaySurface(), fullScreen, identity, 1.0f, EA::WebKit::CompositeSourceOver, EA::WebKit::ClampToEdge);
+            EA::WebKit::Filters filters;
+			renderer->RenderSurface(d->page->view()->GetDisplaySurface(), fullScreen, identity, 1.0f, EA::WebKit::CompositeSourceOver, EA::WebKit::ClampToEdge, filters);
 		}
 	}
 
@@ -716,7 +724,7 @@ void WebFrame::renderScrollHelper(WebCore::Scrollbar *bar, WebCore::FrameView *v
 	bool needsPaint = false;
 	if (!*surface)
 	{
-		*surface = renderer->CreateSurface();
+		*surface = renderer->CreateSurface(EA::WebKit::SurfaceTypeOverlay);
 		needsPaint = true;
 	}
 
@@ -753,7 +761,8 @@ void WebFrame::renderScrollHelper(WebCore::Scrollbar *bar, WebCore::FrameView *v
 
 	EA::WebKit::TransformationMatrix identity;
 	EA::WebKit::FloatRect boundsRectFloat(boundsRect.x(), boundsRect.y(), boundsRect.width(), boundsRect.height());
-	renderer->RenderSurface(*surface, boundsRectFloat, identity, 1.0f, EA::WebKit::CompositeSourceOver,EA::WebKit::ClampToEdge);
+    EA::WebKit::Filters filters;
+	renderer->RenderSurface(*surface, boundsRectFloat, identity, 1.0f, EA::WebKit::CompositeSourceOver, EA::WebKit::ClampToEdge, filters);
 }
 void WebFrame::renderScrollCorner(WebCore::FrameView *view, IHardwareRenderer *renderer, ISurface **surface, const eastl::vector<WebCore::IntRect> &dirtyRegions)
 {

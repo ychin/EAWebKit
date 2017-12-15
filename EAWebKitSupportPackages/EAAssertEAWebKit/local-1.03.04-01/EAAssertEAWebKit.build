@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build">
+
+    <property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+    <optionset name="config.targetoverrides">
+        <option name="test-build" value="include" />
+        <option name="test-buildall" value="include" />
+        <option name="test-run" value="include" />
+        <option name="test-runall" value="include" />
+    </optionset>
+
+    <package name="EAAssertEAWebKit" targetversion="1.03.04" />
+
+    <property name="runtime.buildmodules" value="EAAssertEAWebKit" />
+
+    <property name="runtime.EAAssertEAWebKit.buildtype" value="Library" />
+    <property name="runtime.EAAssertEAWebKit.buildtype" value="DynamicLibrary" if="${Dll}" />
+
+    <fileset name="runtime.EAAssertEAWebKit.sourcefiles">
+        <includes name="source/*.cpp" />
+    </fileset>
+
+    <property name="runtime.EAAssertEAWebKit.usedependencies">
+        EABaseEAWebKit
+    </property>
+
+    <property name="runtime.EAAssertEAWebKit.includedirs">
+        ${package.dir}/include
+    </property>
+
+    <property name="runtime.EAAssertEAWebKit.defines" if="${Dll} and ${config-compiler} == 'vc'">
+        EA_ASSERT_API=__declspec(dllexport)
+    </property>
+
+    <include file="scripts/initialize.xml" />
+
+  
+
+</project>

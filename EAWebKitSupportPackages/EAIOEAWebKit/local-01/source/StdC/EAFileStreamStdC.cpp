@@ -43,9 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
-#if defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_KETTLE)
-    #include <unistd.h>
-#elif defined(_MSC_VER)
+#if   defined(_MSC_VER)
     #include <io.h>
 #endif
 

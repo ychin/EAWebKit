@@ -1,0 +1,133 @@
+<project>
+
+	<target name="dirtysdk-change-version" description="Change the version information in all the required files (look in ScriptMain for filenames)" hidden="true">
+		<script language="C#">
+			<code><![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					String driveletter = project.Properties["dirtysdk-driveletter"];
+					String docroot = project.Properties["dirtysdk-doc-root"];
+					String version = project.Properties["dirtysdk-version"];
+					String date = project.Properties["dirtysdk-date"];
+					String packagedir = project.Properties["package.dir"];
+
+					ChangeFile("../" + version + "/DirtySDK.build", version, "build");
+					ChangeFile("../" + version + "/masterconfig.xml", version, "build");
+					ChangeFile("../" + version + "/core/include/dirtyvers.h", version, "header");
+					ChangeReleaseXML("../" + version + "/scripts/release-targets.xml", driveletter, docroot, version, date, packagedir);
+					ChangeVersion("../" + version + "/version.txt", version, date);
+				}
+
+				static void ChangeFile(String filename, String version, String type)
+				{
+					StreamReader SR = new StreamReader(filename);
+					StreamWriter SW = new StreamWriter(filename + ".new");
+
+					String line = SR.ReadLine();
+
+					if (String.Compare(type, "build") == 0)
+					{
+						while (line != null)
+						{
+							if (line.IndexOf("package name=\"DirtySDK\"") != -1)
+							{
+								line = line.Replace("dev", version);
+							}
+
+							SW.WriteLine(line);
+							line = SR.ReadLine();
+						}
+					}
+					else
+					{
+						while (line != null)
+						{
+							if (line.IndexOf("#define DIRTYVERS") != -1)
+							{
+								line = "#define DIRTYVERS (0x" + GetHexVersion(version) + ")";
+							}
+
+							SW.WriteLine(line);
+							line = SR.ReadLine();
+						}
+					}
+
+					SR.Close();
+					SW.Close();
+
+					System.IO.File.Delete(filename);
+					System.IO.File.Move(filename + ".new", filename);
+				}
+
+				static String GetHexVersion(String version)
+				{
+					String[] versions = version.Split('.');
+					String hexvers = "";
+
+					foreach (String v in versions)
+					{
+						Int32 versnum = Int32.Parse(v);
+
+						hexvers += versnum.ToString("X").PadLeft(2).Replace(" ", "0");
+					}
+
+					hexvers = hexvers.PadRight(8).Replace(" ", "0");
+
+					return hexvers;
+				}
+
+				static void ChangeReleaseXML(String filename, String driveletter, String docroot, String version, String date, String packagedir)
+				{
+					StreamReader SR = new StreamReader(filename);
+					StreamWriter SW = new StreamWriter(filename + ".new");
+
+					String line = SR.ReadLine();
+
+					while (line != null)
+					{
+					        if (line.IndexOf("name=\"dirtysdk-driveletter\"") != -1)
+						{
+							line = line.Replace("C", driveletter);
+						}
+						else if (line.IndexOf("name=\"dirtysdk-version\"") != -1)
+						{
+							line = line.Replace("dev", version);
+
+							SW.WriteLine(line);
+
+							line = "    <property name=\"dirtysdk-date\" value=\"" + date + "\" />";
+
+							SW.WriteLine(line);
+
+							line = "    <property name=\"dirtysdk-package-clientdir\" value=\"" + packagedir + "\" />";
+						}
+
+						SW.WriteLine(line);
+						line = SR.ReadLine();
+					}
+
+					SR.Close();
+					SW.Close();
+
+					System.IO.File.Delete(filename);
+					System.IO.File.Move(filename + ".new", filename);
+				}
+
+				static void ChangeVersion(String filename, String version, String date)
+				{
+					StreamWriter SW = new StreamWriter(filename + ".new");
+
+					SW.WriteLine("Dirtysock SDK");
+					SW.WriteLine("Version " + version);
+					SW.WriteLine(date);
+
+					SW.Close();
+
+					System.IO.File.Delete(filename);
+					System.IO.File.Move(filename + ".new", filename);
+				}
+			]]></code>
+		</script>
+	</target> 
+
+</project>

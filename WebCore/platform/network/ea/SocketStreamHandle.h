@@ -57,6 +57,7 @@ namespace WebCore {
 
         virtual ~SocketStreamHandle();
 
+		void writeReady(); //Call this method if the network socket is ready to consume data.
     protected:
         virtual int platformSend(const char* data, int length);
         virtual void platformClose();

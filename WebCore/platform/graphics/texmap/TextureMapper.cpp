@@ -1,5 +1,6 @@
 /*
  Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
+ Copyright (C) 2014 Electronic Arts, Inc. All rights reserved.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -72,10 +73,13 @@ BitmapTexturePool::BitmapTexturePool()
 
 void BitmapTexturePool::scheduleReleaseUnusedTextures()
 {
-    if (m_releaseUnusedTexturesTimer.isActive())
-        m_releaseUnusedTexturesTimer.stop();
-
-    m_releaseUnusedTexturesTimer.startOneShot(s_releaseUnusedTexturesTimerInterval);
+    //+EAWebKitChange
+    //12/04/2014 - Fixed bug where textures would not be freed if a new one was created at least every s_releaseUnusedTexturesTimerInterval because the timer would reset.
+    if (!m_releaseUnusedTexturesTimer.isActive())
+    {
+        m_releaseUnusedTexturesTimer.startOneShot(s_releaseUnusedTexturesTimerInterval);
+    }
+    //-EAWebKitChange
 }
 
 void BitmapTexturePool::releaseUnusedTexturesTimerFired(Timer<BitmapTexturePool>*)

@@ -316,9 +316,7 @@ namespace EA
             bool              mbLocaleFirst;
             bool              mbDigitsAsNumbers;
 
-            #ifdef EA_PLATFORM_WINDOWS
                 unsigned long mLCID;
-            #endif
 
             // Cache data
             // To to: Make sort keys use machine words instead of bytes.

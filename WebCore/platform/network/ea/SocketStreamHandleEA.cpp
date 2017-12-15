@@ -51,6 +51,7 @@ SocketStreamHandlePrivate::SocketStreamHandlePrivate(SocketStreamHandle* streamH
 : m_streamHandle(streamHandle)
 , m_socketHandle(NULL)
 , m_CleanupTansportHandlerSocketHandle(NULL)
+, mPendingDataTimer(this, &SocketStreamHandlePrivate::timerFired)
 {
 	ASSERT(WTF::isMainThread());
 
@@ -74,6 +75,7 @@ SocketStreamHandlePrivate::SocketStreamHandlePrivate(SocketStreamHandle* streamH
 : m_streamHandle(streamHandle)
 , m_socketHandle(socketHandle)
 , m_CleanupTansportHandlerSocketHandle(socketHandle)
+, mPendingDataTimer(this, &SocketStreamHandlePrivate::timerFired)
 {
 	ASSERT(WTF::isMainThread());
 	ASSERT(m_streamHandle);
@@ -83,13 +85,17 @@ SocketStreamHandlePrivate::SocketStreamHandlePrivate(SocketStreamHandle* streamH
     //make a socket stream out of an existing socket handle, such as when we are a server that accepts a connection
     //need to set the EA::WebKit::SocketHandleClient* sockInfo->socketHandleClient, so the streamer gets the notifications
     EA::WebKit::GetSocketTransportHandler()->SetSocketHandleClient(m_socketHandle, this);
-    //an accpeted connection is already open
+    //an accepted connection is already open
     m_streamHandle->m_state = SocketStreamHandleBase::SocketStreamState::Open;
 }
 
 SocketStreamHandlePrivate::~SocketStreamHandlePrivate()
 {
 	ASSERT(m_socketHandle == NULL);
+
+	if (mPendingDataTimer.isActive())
+		mPendingDataTimer.stop();
+
     //if we are getting destroyed we need to be sure the Tansport handler isn't expecitng to be able to notify us of anything
     if(EA::WebKit::SocketTransportHandler* pSocketTxHandler = EA::WebKit::GetSocketTransportHandler())
 	{
@@ -152,8 +158,17 @@ int32_t SocketStreamHandlePrivate::Send(const char8_t* data, int32_t length)
 	if(EA::WebKit::SocketTransportHandler* pSocketTxHandler = EA::WebKit::GetSocketTransportHandler())
 	{
 		sentSize = pSocketTxHandler->SendData(m_socketHandle,data, length);
+
+		if(sentSize < length)
+			mPendingDataTimer.startOneShot(0); //Try next frame if some data remains
 	}
 	return sentSize;
+}
+
+void SocketStreamHandlePrivate::timerFired(WebCore::Timer<SocketStreamHandlePrivate>*)
+{
+	if(m_streamHandle)
+		m_streamHandle->writeReady();
 }
 
 void SocketStreamHandlePrivate::Close()
@@ -199,6 +214,11 @@ int SocketStreamHandle::platformSend(const char* data, int len)
     return m_p->Send(data, len);
 }
 
+void SocketStreamHandle::writeReady()
+{
+	if(bufferedAmount())
+		sendPendingData();
+}
 void SocketStreamHandle::platformClose()
 {
 	ASSERT(WTF::isMainThread());

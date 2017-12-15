@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -199,7 +199,7 @@ struct Parameters
 	uint32_t   mDefaultMonospaceFontSize;  // Defaults to 13.
 	uint32_t   mMinimumFontSize;           // Defaults to 1.
 	uint32_t   mMinimumLogicalFontSize;    // Defaults to 8.
-	char16_t   mFontFamilyStandard[kFontNameCapacity];    // Defaults to "Times New Roman". These should be set to a font you have installed with the EAText FontServer.
+	char16_t   mFontFamilyStandard[kFontNameCapacity];    // Defaults to "Times New Roman". This will be the font used if none of the fonts specified for the text could be found or no font was specified for the text. This should be set to a font you have installed with the FontServer.
 	char16_t   mFontFamilySerif[kFontNameCapacity];       // Defaults to "Times New Roman".
 	char16_t   mFontFamilySansSerif[kFontNameCapacity];   // Defaults to "Arial".
 	char16_t   mFontFamilyMonospace[kFontNameCapacity];   // Defaults to "Courier New".
@@ -229,6 +229,7 @@ struct Parameters
 
 	
     bool mReportJSExceptionCallstacks;			// Defaults to false.
+    bool mDoCssFiltersInHardware;               // Defaults to false, to enable you must implement a hardware shader for each of EA::WebKit::FilterType*
 	bool mEnableProfiling;						// Disabled by default. If enabled, EAWebKitClient::ViewProcessStatus is called with profiling info.
 	bool mEnableImageCompression;               // Defaults to false.  If enabled, it will compress decoded images saving runtime memory at the expense of decoding processing.
 	bool mIgnoreGammaAndColorProfile;			// Defaults to false. If enabled, the gamma correction and color profile for images is skipped resulting in faster decoding.

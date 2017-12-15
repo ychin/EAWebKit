@@ -1,0 +1,220 @@
+﻿<project name="EATextEAWebKit" default="build">
+
+    <property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+    <optionset name="config.targetoverrides">
+        <option name="test-build"    value="include" />
+        <option name="test-buildall" value="include" />
+    </optionset>
+
+
+    <!-- Package declaration -->
+    <!-- Get the version number from current directory -->
+    <property name="currDir"  value="@{PathGetFullPath('.')}"/>
+    <property name="currVer"  value="@{PathGetFileName('${currDir}')}"/>
+    <package  name="EATextEAWebKit" targetversion="${currVer}"/>
+
+
+
+    <!-- Back end definition -->
+    <!-- EAText has some GlyphCache back-ends in its source/<back-end> directories.            -->
+    <!-- By default these are disabled and they are usable for reference purposes.             -->
+    <!-- However, the user can define one of the properties below to enable any of these       -->
+    <!-- back-ends or can find some other way to compile them if useful.                       -->
+    <!-- Note that if you want to use an RNA, RenderEngine, Sage, etc. back-end then           -->
+    <!-- you really want to just use the EATextRNA, EATextRenderEngine, etc. packages          -->
+    <!-- and can think of the back-ends present in EAText as being useful only as a reference. -->
+    <!-- To enable these put (e.g.) <globalproperties>EATextXenonBackEnd</globalproperties>    -->
+    <!-- in your masterconfig file or use -D:EATextXenonBackEnd=1 on the nant command line.    -->
+
+    <property name="EATextXenonBackEnd"  value="1" unless="@{PropertyExists('EATextXenonBackEnd')}"/>
+    <property name="EATextD3DBackEnd"    value="1" unless="@{PropertyExists('EATextD3DBackEnd')}"/>
+    <property name="EATextGCMBackEnd"    value="0" unless="@{PropertyExists('EATextGCMBackEnd')}"/>
+    <property name="EATextPSGLBackEnd"   value="0" unless="@{PropertyExists('EATextPSGLBackEnd')}"/>
+    <property name="EATextWiiBackEnd"    value="0" unless="@{PropertyExists('EATextWiiBackEnd')}"/>
+    <property name="EATextOpenGLBackEnd" value="1" unless="@{PropertyExists('EATextOpenGLBackEnd')}"/>
+
+
+    <!-- The EAText.EATEXT_XXX values here directly correspond to EAText config #defines. -->
+    <property name="EAText.EATEXT_BITMAP_USE_EAGIMEX" value="0" unless="@{PropertyExists('EAText.EATEXT_BITMAP_USE_EAGIMEX')}"/>
+    <property name="EAText.EATEXT_USE_FREETYPE"       value="1" unless="@{PropertyExists('EAText.EATEXT_USE_FREETYPE')}"/>
+
+    <!-- The following don't have default values.
+        EAText.EATEXT_THREAD_SAFETY_ENABLED
+        EAText.EATEXT_DPI
+        EAText.EATEXT_EFFECTS_ENABLED
+        EAText.EATEXT_BITMAP_GLYPHS_ENABLED
+        EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED
+        EAText.EATEXT_FONT_SERVER_ENABLED
+        EAText.EATEXT_STYLE_MANAGER_ENABLED
+        EAText.EATEXT_PS3_RGBA_COMPAT
+        EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED
+        EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED
+        EAText.EATEXT_THAI_SCRIPT_SUPPORTED
+        EAText.EATEXT_OPENTYPE_ENABLED
+        EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED
+    -->
+
+
+    <!-- Create extra build types which simply add some additional compiler arguments -->
+    <optionset name="config-options-library-extra" fromoptionset="config-options-library">
+        <option name="buildset.name" value="LibraryExtra"/>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-library-extra" />
+    <optionset name="LibraryExtra">
+        <option name="cc.options" if="${config-compiler} == 'gcc'">          
+            @{StrReplace(${option.value}, '-fno-strict-aliasing', '-fstrict-aliasing')}
+        </option>
+        <option name="cc.options" if="${config-compiler} == 'mw'">
+            @{StrReplace(@{StrReplace(${option.value}, '-w nofilecaps', '-w filecaps')}, '-w nosysfilecaps', '-w sysfilecaps')}
+        </option>
+    </optionset>
+
+
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <!-- Properties for the runtime targets  -->
+    <property name="runtime.buildtype" value="LibraryExtra" />
+    <property name="runtime.buildtype" value="DynamicLibrary" if="${Dll}"/>
+
+    <property name="runtime.usedependencies">
+      EABaseEAWebKit
+      coreallocatorEAWebKit
+      EASTLEAWebKit
+      PPMallocEAWebKit
+      EAAssertEAWebKit
+      EAIOEAWebKit
+    </property>
+
+    <!-- EATextCache native backends -->
+    <property name="runtime.usedependencies" if="${config-system} == 'pc'">
+        ${property.value}
+        DirectX
+    </property>
+
+    <!-- FreeType vs. Font Fusion -->
+    <property name="runtime.usedependencies" if="${EAText.EATEXT_USE_FREETYPE} != 0">
+      ${property.value}
+      FreeTypeEAWebKit
+    </property>
+
+    <!-- Dll Builds need some things built as it 'links' the dll. -->
+    <property name="runtime.builddependencies" if="${Dll}">
+        ${runtime.usedependencies}
+    </property>
+
+    <!-- Defines -->
+    <property name="runtime.defines">
+        ${property.value}
+        UTF_USE_EAASSERT=1
+        ENABLE_NON_RAM_STREAM=1  <!-- Needed by FontFusion. -->
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_USE_FREETYPE')}">
+        ${property.value}
+        EATEXT_USE_FREETYPE=${EAText.EATEXT_USE_FREETYPE}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_BITMAP_USE_EAGIMEX')}">
+        ${property.value}
+        EATEXT_BITMAP_USE_EAGIMEX=${EAText.EATEXT_BITMAP_USE_EAGIMEX}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_THREAD_SAFETY_ENABLED')}">
+        ${property.value}
+        EATEXT_THREAD_SAFETY_ENABLED=${EAText.EATEXT_THREAD_SAFETY_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_DPI')}">
+        ${property.value}
+        EATEXT_DPI=${EAText.EATEXT_DPI}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_EFFECTS_ENABLED')}">
+        ${property.value}
+        EATEXT_EFFECTS_ENABLED=${EAText.EATEXT_EFFECTS_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_BITMAP_GLYPHS_ENABLED')}">
+        ${property.value}
+        EATEXT_BITMAP_GLYPHS_ENABLED=${EAText.EATEXT_BITMAP_GLYPHS_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED')}">
+        ${property.value}
+        EATEXT_POLYGONAL_GLYPHS_ENABLED=${EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_FONT_SERVER_ENABLED')}">
+        ${property.value}
+        EATEXT_FONT_SERVER_ENABLED=${EAText.EATEXT_FONT_SERVER_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_STYLE_MANAGER_ENABLED')}">
+        ${property.value}
+        EATEXT_STYLE_MANAGER_ENABLED=${EAText.EATEXT_STYLE_MANAGER_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_PS3_RGBA_COMPAT')}">
+        ${property.value}
+        EATEXT_PS3_RGBA_COMPAT=${EAText.EATEXT_PS3_RGBA_COMPAT}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED')}">
+        ${property.value}
+        EATEXT_ARABIC_SCRIPT_SUPPORTED=${EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED')}">
+        ${property.value}
+        EATEXT_DEVANAGARI_SCRIPT_SUPPORTED=${EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_THAI_SCRIPT_SUPPORTED')}">
+        ${property.value}
+        EATEXT_THAI_SCRIPT_SUPPORTED=${EAText.EATEXT_THAI_SCRIPT_SUPPORTED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_OPENTYPE_ENABLED')}">
+        ${property.value}
+        EATEXT_OPENTYPE_ENABLED=${EAText.EATEXT_OPENTYPE_ENABLED}
+    </property>
+    <property name="runtime.defines" if="@{PropertyExists('EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED')}">
+        ${property.value}
+        EATEXT_EMBEDDED_BACKUP_FONT_ENABLED=${EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED}
+    </property>
+
+
+    <!-- Source files -->
+    <fileset name="runtime.sourcefiles">    
+        <includes name="${package.dir}/source/*.cpp"/>
+        <includes name="${package.dir}/source/internal/*.cpp"/>
+    </fileset>
+
+    <!-- Bulkbuild Setup -->
+    <fileset name="runtime.bulkbuild.sourcefiles" fromfileset="runtime.sourcefiles"/>
+
+    <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+        -wd4005        <!-- disable warning: "macro redefinition" -->
+        -wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+        -wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+        -wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+        -wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+        -wd4365        <!-- disable warning: "conversion from x to y, signed/unsigned mismatch" -->
+    </property>
+
+    <property name="runtime.warningsuppression" if="${config-compiler} == sn">
+      --diag_suppress=68,112,175,178,237,552
+    </property>
+    <!--
+    warning 68: integer conversion resulted in a change of sign
+    warning 112: statement is unreachable
+    warning 175: expression has no effect
+    warning 178: function was declared but never referenced
+    warning 237: controlling expression is constant
+    warning 552: variable was set but never used
+    -->
+  
+    <property name="runtime.warningsuppression" if="${config-compiler} == 'mw'">
+        -w off        <!-- disable all warnings. We do this only because CodeWarrior doesn't document how to disable some individual warnings -->
+    </property>
+
+    <property name="runtime.warningsuppression" if="${config-compiler} == 'gcc'">
+        -Wstrict-aliasing=3
+        -Wextra
+        -Wno-unused-parameter  <!-- Needed for the time being because EASTL has a bug in a header (fixed in most recent version) that are exposed to. Remove this line around June of 2010. -->
+    </property>
+
+</project>
+
+
+

@@ -1,0 +1,75 @@
+<project>
+
+	<createtask name="DirtySDKPackageExclude">
+		<parameters>
+			<option name="FileSet" value="Required"/>
+			<option name="ExternalPackage"/>
+		</parameters>
+		<code>
+			<do if="@{PropertyExists('package.packageexclusions')}">
+				<!-- Exclude items specified in package.packageexclusions -->
+				<foreach item="String" in="${package.packageexclusions}" property="exclude" delim=" ">
+					<fileset name="${DirtySDKPackageExclude.FileSet}" append="true">
+                        <excludes name="${package.DirtySDK.dir}\${exclude}"/>
+					</fileset>
+				</foreach>
+			</do>
+			<choose>
+				<do if="@{PropertyExists('nant.project.buildroot')}">
+					<task name="ExcludeDir" Fileset="${DirtySDKPackageExclude.FileSet}" Directory="${nant.project.buildroot}" />
+				</do>
+				<do>
+					<!-- If buildroot isn't specified, exclude config folders in package.dir-->
+					<foreach item="String" in="${package.configs}" property="package-config-name">
+						<do if="@{DirectoryExists('${package.dir}\${package-config-name}')}">
+							<fileset name="${DirtySDKPackageExclude.FileSet}" append="true">
+								<excludes name="${package.dir}\${package-config-name}\**"/>
+							</fileset>
+						</do>
+					</foreach>
+				</do>
+			</choose>
+			<do if="@{PropertyExists('nant.project.packageroots')} and !@{StrIsEmpty(${DirtySDKPackageExclude.ExternalPackage})}">
+				<!--
+				Packages like Apt may have a sub-folder Contribs and list it as a package root. package-external should
+				not include Contribs.
+				-->
+				<foreach item="String" in="${nant.project.packageroots}" property="root">
+					<do if="@{StrStartsWith(${root}, ${package.dir})}">
+						<fileset name="${DirtySDKPackageExclude.FileSet}" append="true">
+							<excludes name="${root}\**"/>
+						</fileset>
+					</do>
+				</foreach>
+			</do>
+		</code>
+	</createtask>
+		
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<do unless="'@{OptionSetGetValue('DirtySDKConfig.targets', 'package')}' == 'exclude'">
+		<target name='dirtysdk-package' description='Create a package archive for distribution' hidden="true">
+
+			<!-- Create intial fileset for the package -->
+			<fileset name="packagefiles" append="true" basedir="${package.dir}">
+				<!-- includes -->
+				<includes name='**'/>
+
+				<!-- excludes -->
+				<excludes name='*.vcproj'/>
+				<excludes name='*.sln'/>
+				<excludes name='*.suo'/>
+				<excludes name='*.ncb'/>
+			</fileset>
+
+			<task name="DirtySDKPackageExclude" FileSet="packagefiles"/>
+
+			<!-- Create the package zip with the fileset created -->
+			<zip zipfile='${package.builddir}/${package.name}-${package.targetversion}.zip' zipentrydir='${package.name}\${package.targetversion}' usemodtime='true'>
+				<fileset basedir='${package.dir}'>
+					<includes fromfileset="packagefiles" />
+				</fileset>
+			</zip>
+		</target>
+	</do>
+
+</project>

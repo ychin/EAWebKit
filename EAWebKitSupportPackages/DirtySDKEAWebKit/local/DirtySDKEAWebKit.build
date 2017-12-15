@@ -1,0 +1,40 @@
+
+<project default="build">
+  
+  <do unless="@{PropertyExists('dirtysdk-samples')}">
+    <property name="dirtysdk-samples" value="false"/>
+  </do>
+
+  <package name="DirtySDKEAWebKit" targetversion="7.5.3" />
+  <dependent name="Framework" />
+	<!-- bring in the init and build files for dirtysock -->
+	<include file="scripts/dirtysock-initialize.xml" />
+	<include file="scripts/dirtysock-build.xml" />
+
+	<!-- determine which contribs to use/build 
+	<include file="scripts/select-contribs.xml" />
+	-->
+	<!-- determine which samples to use/build 
+	<include file="scripts/select-samples.xml" />
+-->
+	<!-- define targets for DirtySDK packages -->
+	<include file="scripts/package-targets.xml" />
+
+	<!-- define release targets for DirtySDK -->
+	<do if="@{FileExists('scripts/release-targets.xml')}" >
+		<include file="scripts/release-targets.xml" />
+	</do>
+
+  <do if="@{PropertyTrue('dirtysdk-samples')}">
+    <!-- bring in the build files for the contribs -->
+    <foreach item="String" property="package.DirtySDKEAWebKit.forloop.contrib" in="${package.DirtySDKEAWebKit.contribs.selected}">
+        <include file="scripts/contrib/${package.DirtySDK.forloop.contrib}-build.xml" />
+    </foreach>
+    
+    <!-- bring in the build files for the samples -->
+    <foreach item="String" property="package.DirtySDKEAWebKit.forloop.sample" in="${package.DirtySDKEAWebKit.samples.selected}">
+        <include file="scripts/sample/${package.DirtySDKEAWebKit.forloop.sample}-build.xml" />
+    </foreach>
+  </do>
+
+</project>

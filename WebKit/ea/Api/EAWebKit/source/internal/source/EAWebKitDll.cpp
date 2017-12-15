@@ -37,12 +37,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #include <EAWebKit/EAWebKitDll.h>
 #include <EAWebKit/EAWebKit.h>
-#if defined(EA_PLATFORM_MICROSOFT)
 #pragma warning(push)
 #pragma warning(disable: 4255)
 #include EAWEBKIT_PLATFORM_HEADER
 #pragma warning(pop)
-#endif 
 
 #if BUILDING_EAWEBKIT_DLL
 
@@ -74,7 +72,6 @@ PLATFORM_DLL_START(EAWebKitDllStart);
 PLATFORM_DLL_STOP(EAWebKitDllStop);
 
 
-#if defined(EA_PLATFORM_MICROSOFT)
 
 BOOL APIENTRY DllMain( HANDLE hModule,
 	DWORD ul_reason_for_call,
@@ -107,6 +104,5 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	return returnValue;
 }
 
-#endif 
 
 #endif //BUILDING_EAWEBKIT_DLL

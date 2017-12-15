@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="SQLiteEAWebKit" default="build">
+  <!-- Properties -->
+  <property name="currDir" value="@{PathGetFullPath('.')}"/>
+  <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+  <!-- Package declaration -->
+  <package  name="SQLiteEAWebKit" targetversion="${currVer}"/>
+  <include file="scripts/initialize.xml" />
+
+  <!-- Set some useful properties to avoid clutter in the build file. -->
+  <property name="ConfigIsDebug"  value="false"/>
+  <property name="ConfigIsOpt"    value="false"/>
+  <property name="ConfigIsFinal"  value="false"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+
+  <property name="OsIsWin"      value="false"/>
+  <property name="OsIsOSX"      value="false"/>
+  <property name="OsIsCapilano" value="false"/>
+  <property name="OsIsKettle"   value="false"/>
+  
+  <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
+  <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
+  <property name="OsIsCapilano" value="true" if="${config-system} == capilano"/>
+  <property name="OsIsKettle"   value="true" if="${config-system} == kettle"/>
+  
+
+  <optionset name="customized-config-options-library" fromoptionset="config-options-library-c">
+    <option name="buildset.name" value="CustomizedLibraryC"/>
+  </optionset>
+  <task name="GenerateBuildOptionset" configsetname="customized-config-options-library" />
+
+  <do if="${config-compiler} == 'vc'">
+    <optionset name="CustomizedLibraryC">
+    </optionset>
+  </do>
+  <do if="${config-compiler} == 'clang'">
+    <optionset name="CustomizedLibraryC">
+      <option name="cc.options">
+        @{StrReplace(${option.value}, '-ffast-math', ' ')}
+      </option>
+    </optionset>
+  </do>
+
+  <property name="runtime.buildtype" value="CustomizedLibraryC" />
+
+  <property name="runtime.defines">
+    ${property.value}
+    SQLITE_ENABLE_MEMORY_MANAGEMENT
+  </property>
+
+  <!-- 11/21/2011 - abaldeva
+  Disabled following as it causes an assert to trigger from the SQLite. The particular assert it is triggering indicates that
+  a mutex reference count is 0 when it is expected to be non zero. I am not entirely sure if the calling code in WebCore is at fault
+  or sqlite has a bug.
+  
+  Verified that if this define is enabled in the Qt solution, same issue is observed. I have not observed any side effects when 
+  testing HTML5 database example sites.
+  <property name="runtime.defines" if="${ConfigIsDebug}">
+    ${property.value}
+    SQLITE_DEBUG
+  </property>
+  -->
+  <do if="${OsIsCapilano} or ${OsIsKettle} or ${OsIsWin} or ${OsIsOSX}">
+    <property name="sqlite.platform.suffix" value="CAPILANO"  if="${OsIsCapilano}"/>
+    <property name="sqlite.platform.suffix" value="KETTLE"    if="${OsIsKettle}"/>
+    <property name="sqlite.platform.suffix" value="MYWIN"    if="${OsIsWin}"/>
+    <property name="sqlite.platform.suffix" value="MYOSX"    if="${OsIsOSX}"/>
+
+    <property name="runtime.defines">
+      ${property.value}
+      SQLITE_OS_OTHER
+      SQLITE_OS_${sqlite.platform.suffix}
+    </property>
+
+  </do>
+  <property name="runtime.warningsuppression" />
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+    -wd4625
+    -wd4626
+    -wd4127
+    -wd4255
+    -wd4242
+    -wd4244
+    -wd4706
+    -wd4701
+    -wd4245
+    -wd4206
+    -wd4306
+  </property>
+
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'gcc'">
+    -Wno-multichar<!-- disable warning: "error: multi-character character constant" -->
+  </property>
+
+  <property name="runtime.includedirs">
+    ${package.dir}/include
+  </property>
+
+  <fileset name="runtime.headerfiles">
+    <includes name="${package.dir}/include/**/*.h"/>
+  </fileset>
+
+  <fileset name="runtime.sourcefiles">
+    <includes name="${package.dir}/source/sqlite3.c"/>
+  </fileset>
+</project>
+    
+    

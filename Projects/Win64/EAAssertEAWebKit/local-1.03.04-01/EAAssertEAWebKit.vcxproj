@@ -44,14 +44,9 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' ">
     <Midl />
-    <Masm>
-      <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
-      <WarningLevel>2</WarningLevel>
-    </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-bigobj </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -67,7 +62,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=1;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;EA_DEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-debug\lib\EAAssertEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win64\EAAssertEAWebKit\local-1.03.04-01\pc64-vc-dev-debug\lib\EAAssertEAWebKit.pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
@@ -76,7 +71,7 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-debug\lib\EAAssertEAWebKit.lib</OutputFile>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win64\EAAssertEAWebKit\local-1.03.04-01\pc64-vc-dev-debug\lib\EAAssertEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
@@ -102,14 +97,10 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' ">
     <Midl />
-    <Masm>
-      <TreatWarningsAsErrors>TRUE</TreatWarningsAsErrors>
-      <WarningLevel>2</WarningLevel>
-    </Masm>
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include";"..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"$(VSInstallDir)\VC\ATLMFC\INCLUDE";"$(VSInstallDir)\VC\INCLUDE";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt";"..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-d2Zi+ -bigobj </AdditionalOptions>
-      <AdditionalUsingDirectories>"..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include";"C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\shared";"C:\packages\WindowsSDK\8.0.50727-5\installed\Include\um";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\ATLMFC\INCLUDE";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\INCLUDE";"C:\packages\WindowsSDK\8.0.50727-5\installed\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\SDK\v2.0\include";"C:\Program Files (x86)\Microsoft Visual Studio 11.0\INCLUDE"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-d2Zi+ </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\8.0.50727-5\installed\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -125,7 +116,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_CHAR16T;_CRT_SECURE_NO_WARNINGS;_HAS_CPP0X=1;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;_WIN32_IE=0x0601;_WIN32_WINNT=0x0601;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>pc64-vc-dev-opt\lib\EAAssertEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\work\15.1.1.1.0\Build\Win64\EAAssertEAWebKit\local-1.03.04-01\pc64-vc-dev-opt\lib\EAAssertEAWebKit.pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
       <SDLCheck>FALSE</SDLCheck>
@@ -134,7 +125,7 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>pc64-vc-dev-opt\lib\EAAssertEAWebKit.lib</OutputFile>
+      <OutputFile>C:\work\15.1.1.1.0\Build\Win64\EAAssertEAWebKit\local-1.03.04-01\pc64-vc-dev-opt\lib\EAAssertEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
@@ -155,8 +146,8 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include\EAAssert\eaassert.h" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\source\eaassert.cpp" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include\EAAssert\eaassert.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\source\eaassert.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -164,7 +155,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="$(VSInstallDir)\VC\BIN\x86_amd64\cl.exe" vc64-compiler_clang="" vc64-asm="$(VSInstallDir)\VC\BIN\x86_amd64\ml64.exe" vc64-librarian="$(VSInstallDir)\VC\BIN\x86_amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="$(VSInstallDir)\VC\BIN;$(VSInstallDir)\Common7\IDE"></UserProperties>
+      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\x86_amd64\cl.exe" vc64-compiler_clang="" vc64-asm="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\x86_amd64\ml64.exe" vc64-librarian="C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\BIN\x86_amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

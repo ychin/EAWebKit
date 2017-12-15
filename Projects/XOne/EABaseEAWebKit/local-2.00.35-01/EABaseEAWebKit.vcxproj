@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-dev-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-dev-debug|Durango">
+      <Configuration>capilano-vc-dev-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-dev-opt|Durango">
+      <Configuration>capilano-vc-dev-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>EABaseEAWebKit</ProjectName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <DurangoXdkInstallPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\</DurangoXdkInstallPath>
+    <DurangoXdkKitPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\160305\</DurangoXdkKitPath>
+    <XdkEditionTarget>160305</XdkEditionTarget>
+    <TargetPlatformSdkPath>C:\packages\CapilanoSDK\10.0.10586.1215\installed\Durango.160305\v8.0\</TargetPlatformSdkPath>
+    <XdkEditionRootVS2012>C:\work\15.1.1.1.0\Build\XOne\framework_tmp\CapilanoSDK-10.0.10586.1215\MSBuild\Microsoft.Cpp\v4.0\V110\Platforms\Durango\</XdkEditionRootVS2012>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <LayoutDir>$(Platform)\Layout\</LayoutDir>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <LayoutDir>$(Platform)\Layout\</LayoutDir>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <Midl />
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <OutDir>capilano-vc-dev-debug\build\EABaseEAWebKit\</OutDir>
+    <IntDir>capilano-vc-dev-debug\build\EABaseEAWebKit\vstmp\</IntDir>
+    <TargetName>EABaseEAWebKit</TargetName>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <Midl />
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <OutDir>capilano-vc-dev-opt\build\EABaseEAWebKit\</OutDir>
+    <IntDir>capilano-vc-dev-opt\build\EABaseEAWebKit\vstmp\</IntDir>
+    <TargetName>EABaseEAWebKit</TargetName>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="_DurangoDeploy" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " />
+  <Target Name="_DurangoDeploy" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties platform_capilano-vc-dev-debug_Durango="vc" platform_capilano-vc-dev-opt_Durango="vc" build.env.PATH="C:\Program Files (x86)\Microsoft Visual Studio 11.0\\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 11.0\\Common7\IDE"></UserProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

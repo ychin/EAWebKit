@@ -1,0 +1,5 @@
+<project>
+  <property name="package.EAWebKit.includedirs">
+    ${package.EAWebKit.dir}/WebKit/ea/Api/EAWebKit/include
+  </property>
+</project>

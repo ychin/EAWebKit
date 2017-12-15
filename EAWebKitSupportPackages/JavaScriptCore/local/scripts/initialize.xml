@@ -1,0 +1,55 @@
+<project>
+
+  <!-- JavaScriptCore header files location. WebKit style of header inclusion is crap and that is why we have such a big list here. It could be very simple
+  if they use a base reference path "javascriptcore/interpreter/callframe.h" instead of simple "callframe.h" style. This will enable linking of JavaScriptCore
+  to other packages easy.-->
+  <property name="package.JavaScriptCore.includedirs">
+    ${package.JavaScriptCore.dir}/JavaScriptCore
+    ${package.JavaScriptCore.dir}/JavaScriptCore/API
+    ${package.JavaScriptCore.dir}/JavaScriptCore/..
+    ${package.JavaScriptCore.dir}/JavaScriptCore/assembler
+    ${package.JavaScriptCore.dir}/JavaScriptCore/bytecode
+    ${package.JavaScriptCore.dir}/JavaScriptCore/bytecompiler
+    ${package.JavaScriptCore.dir}/JavaScriptCore/debugger
+    ${package.JavaScriptCore.dir}/JavaScriptCore/dfg
+    ${package.JavaScriptCore.dir}/JavaScriptCore/heap
+    ${package.JavaScriptCore.dir}/JavaScriptCore/interpreter
+    ${package.JavaScriptCore.dir}/JavaScriptCore/disassembler
+    ${package.JavaScriptCore.dir}/JavaScriptCore/llint
+    ${package.JavaScriptCore.dir}/JavaScriptCore/jit
+    ${package.JavaScriptCore.dir}/JavaScriptCore/parser
+    ${package.JavaScriptCore.dir}/JavaScriptCore/profiler
+    ${package.JavaScriptCore.dir}/JavaScriptCore/runtime
+    ${package.JavaScriptCore.dir}/JavaScriptCore/yarr
+    ${package.JavaScriptCore.dir}/JavaScriptCore/ForwardingHeaders
+    <!-- Following is generated from the original WebKit/QtWebKit build system. We simply check them in.-->
+    ${package.JavaScriptCore.dir}/JavaScriptCore/generated
+  </property>
+
+  <property name="package.JavaScriptCore.includedirs" if="${config-system} == pc or ${config-system} == pc64">
+    ${property.value}
+    ${package.JavaScriptCore.dir}/JavaScriptCore/generated/${config-system}/${config-name}
+  </property>
+
+  <property name="package.JavaScriptCore.includedirs" if="${config-system} == capilano">
+    ${property.value}
+    ${package.JavaScriptCore.dir}/JavaScriptCore/generated/xboxone/${config-name}
+  </property>
+
+  <property name="package.JavaScriptCore.includedirs" if="${config-system} == kettle">
+    ${property.value}
+    ${package.JavaScriptCore.dir}/JavaScriptCore/generated/ps4/${config-name}
+  </property>
+
+  <!-- JavaScriptCore library location. -->
+  <do if="@{PropertyExists('config')}">
+    <do if="@{PropertyExists('lib-prefix')}">
+      <do if="@{PropertyExists('lib-suffix')}">
+        <fileset name="package.JavaScriptCore.libs">
+          <includes name="${package.JavaScriptCore.builddir}/${config}/lib/${lib-prefix}JavaScriptCore${lib-suffix}" />
+        </fileset>
+      </do>
+    </do>
+  </do>
+
+</project>

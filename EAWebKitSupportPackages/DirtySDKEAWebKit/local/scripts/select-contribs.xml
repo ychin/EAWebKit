@@ -1,0 +1,84 @@
+<project>
+
+    <!-- Create a list of contrib libraries to use, based on the platform in question -->
+    
+    <!-- =================  DS =============== -->
+    <property if="${config-system} == 'ds'" name="package.DirtySDK.contribs.available">
+        dirtystrings
+    </property>
+
+    <!-- =================  PC  =================== -->
+    <property if="${config-system} == 'pc'" name="package.DirtySDK.contribs.available">
+        dirtyisp
+        dirtystrings
+        voipaux
+    </property>
+
+  <!-- =================  PC64  =================== -->
+  <property if="${config-system} == 'pc64'" name="package.DirtySDK.contribs.available">
+  </property>
+
+  <!-- =================  PS3  =================== -->
+    <property if="${config-system} == 'ps3'" name="package.DirtySDK.contribs.available">
+        dirtystrings
+    </property>
+
+    <!-- =================  PSP  =================== -->
+    <property if="${config-system} == 'psp'" name="package.DirtySDK.contribs.available">
+        dirtystrings
+    </property>
+
+    <!-- =================  Revolution  ============ -->
+    <property if="${config-system} == 'rev'" name="package.DirtySDK.contribs.available">
+        dirtystrings
+    </property>
+
+    <!-- =================  UNIX  =================== -->
+    <!-- skipping the UNIX build for now -->
+
+    <!-- =================  XENON  =================== -->
+    <property if="${config-system} == 'xenon'" name="package.DirtySDK.contribs.available">
+        atgframework
+    </property>
+    
+    <!-- clear out the selected extensions and then add in the extenstions as requested -->
+    <property name="package.DirtySDK.contribs.selected"/>
+
+    <foreach property="package.DirtySDK.forloop.contrib" item="String" in="${package.DirtySDK.contribs.available}">
+
+        <!-- If we are building DirtySDK and we don't have a parent project, then DirtySDK is being built by itself, 
+             so build all contribs. -->
+
+        <!-- do if="@{PropertyExists('package.DirtySDK.inbuild')}" -->
+                <property name="package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib}" value="1"/>
+        <!-- /do -->
+
+        <!-- If the property for the contrib wasn't provided, then assume they don't want the contrib! -->
+        <do unless="@{PropertyExists('package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib}')}" >
+            <!-- echo message="Disabling ${package.DirtySDK.forloop.contrib} since the property package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib} wasn't provided." / -->
+            <property name="package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib}" value="0"/>
+        </do>
+
+        <do if="${package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib}} == '1'">
+            <!-- Don't echo the message, but leave in the functionality...
+            <echo message="DirtySDK [platform ${config-system}] contrib ${package.DirtySDK.forloop.contrib} enabled.  To disable contrib, set property package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib} to 0." />
+            -->
+            <property name="package.DirtySDK.contribs.selected">
+                ${property.value}
+                ${package.DirtySDK.forloop.contrib}
+            </property>
+        </do>
+
+        <!-- Don't echo this message either.
+        <do unless="${package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib}} == '1'">
+            <echo message="DirtySDK [platform ${config-system}] contrib ${package.DirtySDK.forloop.contrib} disabled.  To enable contrib, set property package.DirtySDK.contrib.${package.DirtySDK.forloop.contrib} to 1." />
+        </do>
+        -->
+    </foreach>
+
+    <!-- now do something useful with the contrib list - like adding the include directories for each -->
+    <foreach property="package.DirtySDK.forloop.contrib" item="String" in="${package.DirtySDK.contribs.available}">
+        <include file="contrib/${package.DirtySDK.forloop.contrib}-initialize.xml"/>
+    </foreach>
+
+</project>

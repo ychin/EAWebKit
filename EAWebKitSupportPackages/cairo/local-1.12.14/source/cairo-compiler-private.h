@@ -83,7 +83,7 @@
  * don't need to be hidden and re-exported using the slim hidden
  * macros.
  */
-#if __GNUC__ >= 3 && defined(__ELF__) && !defined(__sun)
+#if __GNUC__ >= 3 && defined(__ELF__) && !defined(CS_UNDEFINED_STRING)
 # define slim_hidden_proto(name)		slim_hidden_proto1(name, slim_hidden_int_name(name)) cairo_private
 # define slim_hidden_proto_no_warn(name)	slim_hidden_proto1(name, slim_hidden_int_name(name)) cairo_private_no_warn
 # define slim_hidden_def(name)			slim_hidden_def1(name, slim_hidden_int_name(name))
@@ -115,8 +115,8 @@
 /* slim_internal.h */
 #define CAIRO_HAS_HIDDEN_SYMBOLS 1
 #if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) && \
-    (defined(__ELF__) || defined(__APPLE__)) &&			\
-    !defined(__sun)
+    (defined(__ELF__) || defined(CS_UNDEFINED_STRING)) &&			\
+    !defined(CS_UNDEFINED_STRING)
 #define cairo_private_no_warn	__attribute__((__visibility__("hidden")))
 #elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 #define cairo_private_no_warn	__hidden

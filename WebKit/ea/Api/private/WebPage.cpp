@@ -562,13 +562,7 @@ WebAction WebPagePrivate::editorActionForKeyEvent(const EA::WebKit::KeyboardEven
  		return EA::WebKit::NoWebAction;
 
 	const uint32_t UnknownKeyMagicNumber = 9999999;
-#if defined(EA_PLATFORM_OSX)
-	// OS X has both Ctrl and OS key. The normal shortcuts driven on Windows through Ctrl key are attached to the OS key on Mac. So we make an exception for 
-	// this case.
-	const uint32_t actionModifierKey = EA::WebKit::kModifierMaskOS;
-#else
 	const uint32_t actionModifierKey = EA::WebKit::kModifierMaskControl;
-#endif
 	static struct {
 		uint32_t keyId;
 		uint32_t modifiers;

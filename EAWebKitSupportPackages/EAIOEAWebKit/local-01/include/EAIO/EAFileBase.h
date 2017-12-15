@@ -168,11 +168,7 @@ namespace EA
             kFileSystemUDF,        /// Universal Disk Format, used by modern CD and DVD systems. Specs are defined by http://www.osta.org/specs/
             kFileSystemUDFX,       /// Universal Disk Format for XBox, used by modern CD and DVD systems. Specs are defined by http://www.osta.org/specs/
 
-            #if defined(EA_PLATFORM_WINDOWS)
                 kFileSystemDefault = kFileSystemFAT32  /// Used to refer to whatever the default least-common demoninator file system for the platform is.
-            #else
-                kFileSystemDefault = kFileSystemFAT32  /// Used to refer to whatever the default least-common demoninator file system for the platform is.
-            #endif
         };
 
 
@@ -275,19 +271,11 @@ namespace EA
         // Functions which recognize current and parent directories use them as defined here.
         // Functions which return current and parent directories return them as defined here.
 
-        #if defined(_MSC_VER) || defined(EA_PLATFORM_WINDOWS) 
             #define EA_DIRECTORY_CURRENT_8    ".\\"
             #define EA_DIRECTORY_CURRENT_16  L".\\"
 
             #define EA_DIRECTORY_PARENT_8    "..\\"
             #define EA_DIRECTORY_PARENT_16  L"..\\"
-        #else
-            #define EA_DIRECTORY_CURRENT_8    "./"
-			#define EA_DIRECTORY_CURRENT_16  EA_CHAR16("./")
-
-            #define EA_DIRECTORY_PARENT_8    "../"
-            #define EA_DIRECTORY_PARENT_16  EA_CHAR16("../")
-        #endif
 
 
         // Line end definitions
@@ -349,7 +337,6 @@ namespace EA
         // to work with directories and makes the specification of what a directory 
         // path is be more concise.
         //
-        #if defined(_MSC_VER) || defined(EA_PLATFORM_WINDOWS) 
             #define                EA_FILE_PATH_SEPARATOR_TYPE_WINDOWS    1
             #define                EA_FILE_PATH_SEPARATOR_8               '\\'
             #define                EA_FILE_PATH_SEPARATOR_STRING_8        "\\"
@@ -394,116 +381,6 @@ namespace EA
             inline bool IsFilePathSeparator(int c)
                 { return ((c == (int)kFilePathSeparator8) || (c == (int)kFilePathSeparatorAlt8)) || (c == (int)kFilePathDriveSeparator8); }
 
-        #elif defined(EA_PLATFORM_PS4)
-            #define                EA_FILE_PATH_SEPARATOR_TYPE_UNIX       1
-            #define                EA_FILE_PATH_SEPARATOR_8               '/'
-            #define                EA_FILE_PATH_SEPARATOR_STRING_8        "/"
-            #define                EA_FILE_PATH_SEPARATOR_ALT_8           '/'
-            #define                EA_FILE_PATH_SEPARATOR_STRING_ALT_8    "/"
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_8         '\0'
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_STRING_8  "\0"
-
-            #define                EA_FILE_PATH_SEPARATOR_16              EA_CHAR16('/')
-            #define                EA_FILE_PATH_SEPARATOR_STRING_16       EA_CHAR16("/")
-            #define                EA_FILE_PATH_SEPARATOR_ALT_16          EA_CHAR16('/')
-            #define                EA_FILE_PATH_SEPARATOR_STRING_ALT_16   EA_CHAR16("/")
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_16        EA_CHAR16('\0')
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_STRING_16 EA_CHAR16("\0")
-
-            // The following const-based definitions are generally less desirable, due to the 
-            // way compilers work. We may want to deprecate them in favor of the above macros.
-            const char             kFilePathSeparator8               = '/';
-            const char*      const kFilePathSeparatorString8         = "/";
-            const char             kFilePathSeparatorAlt8            = '/';
-            const char*      const kFilePathSeparatorAltString8      = "/";
-            const char             kFilePathDriveSeparator8          = '\0'; 
-            const char*      const kFilePathDriveSeparatorString8    = "\0";
-
-            #if (EA_WCHAR_SIZE == 2) // If we can use the L string prefix for 16 bit strings..
-            const char16_t         kFilePathSeparator16              = '/';
-            const char16_t*  const kFilePathSeparatorString16        = EA_CHAR16("/");
-            const char16_t         kFilePathSeparatorAlt16           = '/';
-            const char16_t*  const kFilePathSeparatorAltString16     = EA_CHAR16("/");
-            const char16_t         kFilePathDriveSeparator16         = '\0';
-            const char16_t*  const kFilePathDriveSeparatorString16   = EA_CHAR16("\0");
-            #else
-            const char16_t         kFilePathSeparator16              = '/';
-            const char16_t         kFilePathSeparatorString16[]      = { '/', 0 };
-            const char16_t         kFilePathSeparatorAlt16           = '/';
-            const char16_t*  const kFilePathSeparatorAltString16     = kFilePathSeparatorString16;
-            const char16_t         kFilePathDriveSeparator16         = '\0';
-            const char16_t         kFilePathDriveSeparatorString16[] = { 0 };
-            #endif
-
-            const int              kMaxPathLength                    = 256; 
-            const int              kMaxDriveLength                   =   8; 
-            const int              kMaxDirectoryLength               = 255; 
-            const int              kMaxFileNameLength                = 255; 
-            const int              kMaxDirectoryNameLength           = 255; 
-            const int              kMaxExtensionLength               = 255;
-
-            const int              kMaxVolumeNameLength              = 255;  
-            const int              kMaxVolumeSerialNumberLength      = 255;  
-
-            inline bool IsFilePathSeparator(int c)
-                { return (c == (int)kFilePathSeparator8); }
-
-
-        #else // defined(CS_UNDEFINED_STRING) // Includes Linux, BSD, AIX, Solaris.
-            #define                EA_FILE_PATH_SEPARATOR_TYPE_UNIX       1
-            #define                EA_FILE_PATH_SEPARATOR_8               '/'
-            #define                EA_FILE_PATH_SEPARATOR_STRING_8        "/"
-            #define                EA_FILE_PATH_SEPARATOR_ALT_8           '/'
-            #define                EA_FILE_PATH_SEPARATOR_STRING_ALT_8    "/"
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_8         '\0'
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_STRING_8  "\0"
-
-            #define                EA_FILE_PATH_SEPARATOR_16              L'/'
-            #define                EA_FILE_PATH_SEPARATOR_STRING_16       L"/"
-            #define                EA_FILE_PATH_SEPARATOR_ALT_16          L'/'
-            #define                EA_FILE_PATH_SEPARATOR_STRING_ALT_16   L"/"
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_16        L'\0'
-            #define                EA_FILE_PATH_DRIVE_SEPARATOR_STRING_16 L"\0"
-
-            // The following const-based definitions are generally less desirable, due to the 
-            // way compilers work. We may want to deprecate them in favor of the above macros.
-            const char             kFilePathSeparator8               = '/';
-            const char*      const kFilePathSeparatorString8         = "/";
-            const char             kFilePathSeparatorAlt8            = '/';
-            const char*      const kFilePathSeparatorAltString8      = "/";
-            const char             kFilePathDriveSeparator8          = '\0';  // Unix doesn't support the concept of drives.
-            const char*      const kFilePathDriveSeparatorString8    = "\0";
-
-            #if (EA_WCHAR_SIZE == 2) // If we can use the L string prefix for 16 bit strings..
-            const char16_t         kFilePathSeparator16              = '/';
-            const char16_t*  const kFilePathSeparatorString16        = EA_CHAR16("/");
-            const char16_t         kFilePathSeparatorAlt16           = '/';
-            const char16_t*  const kFilePathSeparatorAltString16     = EA_CHAR16("/");
-            const char16_t         kFilePathDriveSeparator16         = '\0';
-            const char16_t*  const kFilePathDriveSeparatorString16   = EA_CHAR16("\0");
-            #else
-            const char16_t         kFilePathSeparator16              = '/';
-            const char16_t         kFilePathSeparatorString16[]      = { '/', 0 };
-            const char16_t         kFilePathSeparatorAlt16           = '/';
-            const char16_t*  const kFilePathSeparatorAltString16     = kFilePathSeparatorString16;
-            const char16_t         kFilePathDriveSeparator16         = '\0';
-            const char16_t         kFilePathDriveSeparatorString16[] = { 0 };
-            #endif
-
-            const int              kMaxPathLength                    = 1024;  // This is actually dependent on the file system in place. 1024 is long enough for us.
-            const int              kMaxDriveLength                   =    0;  // Unix doesn't support the concept of drives.
-            const int              kMaxDirectoryLength               = 1024;  // 
-            const int              kMaxFileNameLength                = 1024;  // 
-            const int              kMaxDirectoryNameLength           = 1024;  // 
-            const int              kMaxExtensionLength               = 1024;  // 
-
-            const int              kMaxVolumeNameLength              = 256;  
-            const int              kMaxVolumeSerialNumberLength      = 256;  
-
-            inline bool IsFilePathSeparator(int c)
-                { return (c == (int)kFilePathSeparator8); }
-
-        #endif
 
 
         /// FilePathBuffer

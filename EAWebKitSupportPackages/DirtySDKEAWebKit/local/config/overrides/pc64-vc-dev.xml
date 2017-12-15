@@ -1,0 +1,53 @@
+<project>
+    <!-- replace pdb debug option (-Zi) with c7 debug option (-Z7) for build types we care about -->
+    <optionset name='CLibrary'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('CLibrary', 'cc.options')}, '-Zi', '-Z7')}
+        </option>
+    </optionset>
+    <optionset name='CProgram'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('CProgram', 'cc.options')}, '-Zi', '-Z7')}
+        </option>
+    </optionset>
+    <optionset name='StdLibrary'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('StdLibrary', 'cc.options')}, '-Zi', '-Z7')}
+        </option>
+    </optionset>
+    <optionset name='StdProgram'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('StdProgram', 'cc.options')}, '-Zi', '-Z7')}
+        </option>
+    </optionset>
+    <optionset name='WindowsProgram'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('WindowsProgram', 'cc.options')}, '-Zi', '-Z7')}
+        </option>
+    </optionset>
+    
+    <!-- clear -GL option (Link Time Code Generation) from library builds because it generates hugely bloated libraries -->
+    <optionset name='CLibrary'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('CLibrary', 'cc.options')}, '-GL', '')}
+        </option>
+    </optionset>
+    <optionset name='StdLibrary'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('StdLibrary', 'cc.options')}, '-GL', '')}
+        </option>
+    </optionset>
+
+    <!-- clear -Gy option (separate functions for linker) from library builds because it also bloats the libraries -->
+    <optionset name='CLibrary'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('CLibrary', 'cc.options')}, '-Gy', '')}
+        </option>
+    </optionset>
+    <optionset name='StdLibrary'>
+        <option name='cc.options'>
+            @{StrReplace(@{OptionSetGetValue('StdLibrary', 'cc.options')}, '-Gy', '')}
+        </option>
+    </optionset>
+    
+</project>

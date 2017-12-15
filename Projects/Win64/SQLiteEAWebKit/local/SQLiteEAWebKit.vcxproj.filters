@@ -9,15 +9,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\SQLiteEAWebKit\local\include\sqlite3.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\SQLiteEAWebKit\local\include\sqlite3.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\SQLiteEAWebKit\local\include\sqlite3ext.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\SQLiteEAWebKit\local\include\sqlite3ext.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\SQLiteEAWebKit\local\source\sqlite3.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\SQLiteEAWebKit\local\source\sqlite3.c">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

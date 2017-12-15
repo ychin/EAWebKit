@@ -36,14 +36,13 @@
 
 //+EAWebKitChange
 //3/10/2014
-#if OS(UNIX) || defined(EA_PLATFORM_SONY)
+#if OS(UNIX) || defined(CS_UNDEFINED_STRING)
 //-EAWebKitChange
 #include <arpa/inet.h>
 #endif
 
 //+EAWebKitChange
 //3/12/2014
-#if OS(WINDOWS) || defined(EA_PLATFORM_MICROSOFT)
 //-EAWebKitChange
 
 namespace WTF {
@@ -69,6 +68,5 @@ inline uint32_t ntohl(uint32_t x) { return WTF::bswap32(x); }
 inline uint32_t htonl(uint32_t x) { return WTF::bswap32(x); }
 #endif
 
-#endif // OS(WINDOWS)
 
 #endif // WTF_ByteOrder_h

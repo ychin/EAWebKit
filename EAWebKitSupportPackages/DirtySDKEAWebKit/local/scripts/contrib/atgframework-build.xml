@@ -1,0 +1,121 @@
+<project>
+    
+    <!-- convenience names -->
+    <property name="modulename"         value="atgframework"                                                   />
+    <property name="module.src"         value="${package.DirtySDK.dir}/contrib/atgframework/project/${config-system}/source.txt"      />
+
+    <!-- add this module to the list of modules to build -->
+    <property name="runtime.buildmodules">
+        ${property.value}
+        ${modulename}
+    </property>
+
+    <!-- define build dependencies for each platform -->
+    <property name="runtime.${modulename}.builddependencies.xenon">
+        xenonsdk
+    </property>
+
+    <!-- declare the type of module to build -->
+    <property name="runtime.${modulename}.buildtype" value="Library" />
+
+    <!-- add this module's includes to the general includes -->
+    <property name="runtime.${modulename}.includedirs">
+        ${package.DirtySDK.includedirs}
+        ${package.DirtySDK.dir}/contrib/include/${config-system}
+    </property>
+    
+    <!-- inherit warning suppression from dirtysock -->
+    <!-- All of these are for Xenon, as this is a Xenon-only library -->
+	<property name="runtime.${modulename}.warningsuppression">
+		${runtime.${dirtysock_modulename}.warningsuppression}
+		-wd4555
+		-wd4265
+		-wd4264
+		-wd4263
+		-wd4347
+		-wd4548
+	</property>    
+	
+	<!-- inherit defines from dirtysock -->
+	<property name="runtime.${modulename}.defines">
+	    ${runtime.${dirtysock_modulename}.defines}
+	</property>
+	
+    <!-- now bring in the list of files to build into this module -->
+   	<fileset basedir="${package.DirtySDK.dir}" name="runtime.${modulename}.sourcefiles">
+        <includes fromfile="${module.src}" />
+    </fileset>
+
+    <fileset name="runtime.${modulename}.libs" append="true">
+        <includes name="${package.configlibdir}/*${lib-suffix}"/>
+    </fileset>
+
+    <!-- xenon deploy for sln -->
+    <property name="runtime.${modulename}.vcproj.post-build-step" value="${nant.location}\nant.exe runtime.${modulename}.postbuildtarget -buildfile:${nant.project.buildfile} -buildroot:${nant.project.buildroot} -masterconfigfile:${nant.project.masterconfigfile} -D:config=${config}"/>
+    <do if="@{PropertyExists('Xenon-Dest-Dir')}">
+        <property name="runtime.${modulename}.vcproj.post-build-step" value="${property.value} -D:Xenon-Dest-Dir=${Xenon-Dest-Dir}"/>    
+    </do>
+    <do if="@{PropertyExists('TargetXenon')}">
+        <property name="runtime.${modulename}.vcproj.post-build-step" value="${property.value} -D:TargetXenon=${TargetXenon}"/>    
+    </do>
+  
+  <target name="runtime.atgframework.postbuildtarget" hidden="true">
+        <echo message="RUNNING atgframework postbuild target" />
+        
+        <!-- create the fonts directory -->
+        <mkdir dir="${package.builddir}\${config}\bin\media\fonts" />
+        
+        <!-- create the help directory -->
+        <mkdir dir="${package.builddir}\${config}\bin\media\help" />
+
+        <!-- Convert the font file to an xpr file -->
+		<exec program="${package.xenonsdk.appdir}\bin\win32\bundler.exe" workingdir="${package.builddir}\${config}\build">
+		    <arg value="${package.DirtySDK.dir}\sample\xenon\xdksamples\media\fonts\Arial_16.rdf"/>
+		    <arg value="-o ${package.builddir}\${config}\bin\media\fonts\Arial_16.xpr"/>
+		</exec>
+
+        <!-- Convert the help file to an xpr file -->
+		<exec program="${package.xenonsdk.appdir}\bin\win32\bundler.exe" workingdir="${package.builddir}\${config}\build">
+		    <arg value="${package.DirtySDK.dir}\sample\xenon\xdksamples\media\help\Help.rdf"/>
+		    <arg value="-o ${package.builddir}\${config}\bin\media\help\Help.xpr"/>
+		</exec>
+
+        <!-- copy the media directory to the xbox 360 -->
+		<!-- It's important to use back-slashes ("\") instead of forward slashes when calling xbcp. -->		
+		<!-- setting "failonerror" to false means the build will continue with the target xbox 360 off -->
+            <choose>
+                <!-- Deploy to the targets -->
+                <do if="@{PropertyExists('TargetXenon')}">
+                    <foreach item="String" in="${TargetXenon}" property="DeployTarg">
+                        <exec program="${package.xenonsdk.appdir}\bin\win32\xbcp.exe" failonerror="false">
+                            <arg value="/y /t /f /r /s /X:${DeployTarg}"/>
+                            <arg value="${package.builddir}\${config}\bin\media"/>
+                            <arg value="xe:\${Xenon-Dest-Dir}\media"/>
+                        </exec>
+                    </foreach>
+                </do>
+                <!-- This is a build, or the Target List was empty. Only deploy to default. -->
+                <do>
+                    <choose>
+                        <!-- BuildStudio -->
+                        <do if="@{PropertyExists('Xenon-Dest-Dir')}">
+                            <exec program="${package.xenonsdk.appdir}\bin\win32\xbcp.exe" failonerror="false">
+                                <arg value="/y /t /f /r /s "/>
+                                <arg value="${package.builddir}\${config}\bin\media"/>
+                                <arg value="xe:\${Xenon-Dest-Dir}\media"/>
+                            </exec>
+                        </do>
+                        <!-- Continuous build -->
+                        <do>
+                            <exec program="${package.xenonsdk.appdir}\bin\win32\xbcp.exe" failonerror="false">
+                                <arg value="/y /t /f /r /s "/>
+                                <arg value="${package.builddir}\${config}\bin\media"/>
+                                <arg value="xe:\${package.name}\media"/>
+                            </exec>
+                        </do>
+                    </choose>
+                </do>
+            </choose>
+    </target>        
+
+</project>

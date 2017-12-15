@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package>
+  <versionName>15.1.1.1.0</versionName> 
+  <contactName>EAWebKit Team</contactName>
+  <contactEmail>EAWebKitSupport@ea.com</contactEmail>
+  <summary>EAWebKit is an embeddable web browser library for EA gaming platforms. It is a port 
+  of the open source WebKit engine (used in browsers such as Chrome and Safari)to gaming platforms 
+  and is maintained by EADP. It is available for use by all of EA as well as EA's publishing partners.</summary>
+  <homePageUrl>http://online.ea.com/documentation/display/eawebkit/EA+WebKit+Customer+Portal</homePageUrl>
+  <community>
+    <a href="mailto:EAWebKit@ea.com">Post</a> / <a href="http://easites.ea.com/eawebkit/Lists/EAWebKit/AllItems.aspx">Subscribe</a> to EAWebKit Forum
+  </community>
+  <support><a href="mailto:EAWebKitSupport@ea.com">Email Support</a></support>
+  <changes>
+		Changes are detailed in the /doc/Release Notes.html file.
+	</changes>
+
+  <status>Official</status>
+  <statusComment></statusComment>
+  <tags>browser, eawebkit, webkit</tags>
+
+  <manifestVersion>2</manifestVersion>
+  <frameworkVersion>2</frameworkVersion>
+
+	<buildable>true</buildable>
+
+  <relationship>
+    <builds>
+      <build name="solution" supported="true" />
+      <build name="nant" supported="true" targets="build" />
+    </builds>
+    <platforms>
+      <platform name="pc" build="Supported" test="NotSupported" configs="pc-vc-dev-*" />
+      <platform name="pc64" build="Supported" test="NotSupported" configs="pc64-vc-dev-*" />
+      <platform name="xenon" build="Supported" test="NotSupported"/>
+      <platform name="ps3" build="Supported" test="NotSupported"/>
+      <platform name="osx" build="Supported" test="NotSupported"/>
+    </platforms>
+  </relationship>
+</package>
+

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <manifestVersion>2</manifestVersion>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <contactEmail>EATechCoreTeam@ea.com</contactEmail>
+  <contactName>EATech</contactName>
+  <owningTeam>Core</owningTeam>
+  <tags>eatech</tags>
+  <licenseDetails />
+  <sourceLocation>//EAOS/UTF/DL/UTFKernel/EAAssert/dev</sourceLocation>
+  <driftVersion>dev</driftVersion>
+  <relationship>
+    <builds>
+      <build name="solution" supported="true" />
+      <build name="nant" supported="true" targets="build test-build example-build" />
+      <build name="test" supported="true" targets="test-run-fast" />
+    </builds>
+    <platforms>
+      <platform name="pc" build="Supported" test="Supported" configs="pc-vc-dev pc-vc-dll-dev" />
+      <platform name="pc64" build="Supported" test="Supported" configs="pc64-vc-dev pc64-vc-dll-dev" />
+      <platform name="xenon" build="Supported" test="Supported" />
+      <platform name="ps3" build="Supported" test="Supported" />
+      <platform name="rev" build="Supported" test="NotSupported" />
+      <platform name="freebox" build="Supported" test="Supported" />
+      <platform name="unix" build="Supported" test="Supported" />
+      <platform name="unix64" build="Supported" test="Supported" />
+      <platform name="osx" build="Supported" test="Supported" />
+      <platform name="iphone" build="Supported" test="Supported" />
+      <platform name="iphonesim" build="Supported" test="NotSupported" />
+      <platform name="android" build="Supported" test="Supported" />
+      <platform name="marmalade" build="Supported" test="NotSupported" />
+      <platform name="palm" build="Supported" test="Supported" />
+      <platform name="playbook" build="Supported" test="Supported" />
+      <platform name="ctr" build="Supported" test="NotSupported" />
+      <platform name="psp2" build="Supported" test="Supported" />
+      <platform name="capilano" build="Supported" test="Supported" />
+      <platform name="winrt" build="Supported" test="Supported" />
+      <platform name="winprt" build="Supported" test="Supported" />
+      <platform name="kettle" build="Supported" test="Supported" />
+      <platform name="cafe" build="Supported" test="Supported" />
+    </platforms>
+  </relationship>
+  <automation>
+    <targets>
+      <target name="Solution" type="build" defaultSupported="true" defaultTarget="slngroupall visualstudio" />
+      <target name="Build" type="build" defaultSupported="true" defaultTarget="build test-build example-build" />
+      <target name="Test" type="test" defaultSupported="true" defaultTarget="test-run-fast" />
+    </targets>
+    <defaultConfigSupport>
+      <config config="pc" supported="true" />
+      <config config="pc64" supported="true" />
+      <config config="xenon" supported="true" />
+      <config config="ps3" supported="true" />
+      <config config="rev" supported="true" />
+      <config config="freebox" supported="true" />
+      <config config="unix" supported="true" />
+      <config config="unix64" supported="true" />
+      <config config="osx" supported="true" />
+      <config config="iphone" supported="true" />
+      <config config="iphonesim" supported="true" />
+      <config config="android" supported="true" />
+      <config config="marmalade" supported="true" />
+      <config config="palm" supported="true" />
+      <config config="playbook" supported="true" />
+      <config config="ctr" supported="true" />
+      <config config="psp2" supported="true" />
+      <config config="capilano" supported="true" />
+      <config config="winrt" supported="true" />
+      <config config="winprt" supported="true" />
+      <config config="kettle" supported="true" />
+      <config config="cafe" supported="true" />
+    </defaultConfigSupport>
+  </automation>
+</package>

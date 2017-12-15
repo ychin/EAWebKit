@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+
+	<summary>Base types, compiler, and platform definitions.</summary>
+
+	<description>
+		This package contains the worldwide approved set of headers for base types,
+		compiler defines, and platform defines.
+	</description>
+
+
+	<changes>
+		This release is the second worldwide approved release of the EABase package.
+		Please see the included changelog.txt for a list of changes.
+	</changes>
+
+	<status>Official</status>
+	<statusComment></statusComment>
+
+	<frameworkVersion>2</frameworkVersion>
+	<buildable>true</buildable>
+
+</package>

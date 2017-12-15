@@ -1,0 +1,163 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAWebKit", ".\EAWebKit.vcxproj", "{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919} = {4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}
+		{70A7E147-26B6-CFEF-F3E0-8DD9725246EA} = {70A7E147-26B6-CFEF-F3E0-8DD9725246EA}
+		{D0659AA8-5555-132C-4EF1-6B1F46177BC9} = {D0659AA8-5555-132C-4EF1-6B1F46177BC9}
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1} = {FD434ECD-B181-BEE2-D179-BE208FE93BD1}
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2} = {95087B53-A8A4-43EA-FA54-1B64A1E188F2}
+		{78409D29-B35B-AA23-A876-C2A40BC812AD} = {78409D29-B35B-AA23-A876-C2A40BC812AD}
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76} = {1A31188D-0E51-00B9-8D5B-017215BB9F76}
+		{2B72415D-9DAD-0B07-6A83-FC7612921224} = {2B72415D-9DAD-0B07-6A83-FC7612921224}
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1} = {545B2B54-2E05-D685-49DA-280D6D6A90D1}
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5} = {9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B} = {C77E27F0-AA71-6169-241E-0184FBD0F95B}
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90} = {40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA} = {E0C359C8-17A5-C1EE-D97F-86677C6226DA}
+		{C89D6CA2-A103-E6EF-1436-277FDCB9757B} = {C89D6CA2-A103-E6EF-1436-277FDCB9757B}
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E} = {82EEA8B8-0FA4-E15D-A58C-8139C44C547E}
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083} = {20E5DCAA-0CE2-9928-F4CE-D228A79A3083}
+		{03994ABE-57B1-4D7C-896F-62AEE8658914} = {03994ABE-57B1-4D7C-896F-62AEE8658914}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", ".\..\..\cairo\local-1.12.14\cairo.vcxproj", "{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B} = {C77E27F0-AA71-6169-241E-0184FBD0F95B}
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA} = {E0C359C8-17A5-C1EE-D97F-86677C6226DA}
+		{03994ABE-57B1-4D7C-896F-62AEE8658914} = {03994ABE-57B1-4D7C-896F-62AEE8658914}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dirtysockEAWebKit", ".\..\..\DirtySDKEAWebKit\local\dirtysockEAWebKit.vcxproj", "{70A7E147-26B6-CFEF-F3E0-8DD9725246EA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAAssertEAWebKit", ".\..\..\EAAssertEAWebKit\local-1.03.04-01\EAAssertEAWebKit.vcxproj", "{D0659AA8-5555-132C-4EF1-6B1F46177BC9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EABaseEAWebKit", ".\..\..\EABaseEAWebKit\local-2.00.35-01\EABaseEAWebKit.vcxproj", "{FD434ECD-B181-BEE2-D179-BE208FE93BD1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAIOEAWebKit", ".\..\..\EAIOEAWebKit\local-01\EAIOEAWebKit.vcxproj", "{95087B53-A8A4-43EA-FA54-1B64A1E188F2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EASTLEAWebKit", ".\..\..\EASTLEAWebKit\local-1.15.03-01\EASTLEAWebKit.vcxproj", "{78409D29-B35B-AA23-A876-C2A40BC812AD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EATextEAWebKit", ".\..\..\EATextEAWebKit\local-1.09.01\EATextEAWebKit.vcxproj", "{1A31188D-0E51-00B9-8D5B-017215BB9F76}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeEAWebKit", ".\..\..\FreeTypeEAWebKit\local-2.4.8.02-01\FreeTypeEAWebKit.vcxproj", "{2B72415D-9DAD-0B07-6A83-FC7612921224}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JavaScriptCore", ".\..\..\JavaScriptCore\local\JavaScriptCore.vcxproj", "{545B2B54-2E05-D685-49DA-280D6D6A90D1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1} = {FD434ECD-B181-BEE2-D179-BE208FE93BD1}
+		{78409D29-B35B-AA23-A876-C2A40BC812AD} = {78409D29-B35B-AA23-A876-C2A40BC812AD}
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083} = {20E5DCAA-0CE2-9928-F4CE-D228A79A3083}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpegEAWebKit", ".\..\..\libjpegEAWebKit\local-1.00.06-01\libjpegEAWebKit.vcxproj", "{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpngEAWebKit", ".\..\..\libpngEAWebKit\local-1.01.00-01\libpngEAWebKit.vcxproj", "{C77E27F0-AA71-6169-241E-0184FBD0F95B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2EAWebKit", ".\..\..\libxml2EAWebKit\local-1.00.06\libxml2EAWebKit.vcxproj", "{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixman", ".\..\..\pixman\local-0.28.2\pixman.vcxproj", "{E0C359C8-17A5-C1EE-D97F-86677C6226DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPMallocEAWebKit", ".\..\..\PPMallocEAWebKit\local-01\PPMallocEAWebKit.vcxproj", "{C89D6CA2-A103-E6EF-1436-277FDCB9757B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQLiteEAWebKit", ".\..\..\SQLiteEAWebKit\local\SQLiteEAWebKit.vcxproj", "{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WTF", ".\..\..\WTF\local\WTF.vcxproj", "{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1} = {FD434ECD-B181-BEE2-D179-BE208FE93BD1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibEAWebKit", ".\..\..\zlibEAWebKit\local-1.2.5-7-01\zlibEAWebKit.vcxproj", "{03994ABE-57B1-4D7C-896F-62AEE8658914}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		pc-vc-dev-debug|Win32 = pc-vc-dev-debug|Win32
+		pc-vc-dev-opt|Win32 = pc-vc-dev-opt|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{70A7E147-26B6-CFEF-F3E0-8DD9725246EA}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{70A7E147-26B6-CFEF-F3E0-8DD9725246EA}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{70A7E147-26B6-CFEF-F3E0-8DD9725246EA}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{70A7E147-26B6-CFEF-F3E0-8DD9725246EA}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{78409D29-B35B-AA23-A876-C2A40BC812AD}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{78409D29-B35B-AA23-A876-C2A40BC812AD}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{78409D29-B35B-AA23-A876-C2A40BC812AD}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{78409D29-B35B-AA23-A876-C2A40BC812AD}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{C89D6CA2-A103-E6EF-1436-277FDCB9757B}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{C89D6CA2-A103-E6EF-1436-277FDCB9757B}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{C89D6CA2-A103-E6EF-1436-277FDCB9757B}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{C89D6CA2-A103-E6EF-1436-277FDCB9757B}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{D0659AA8-5555-132C-4EF1-6B1F46177BC9}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{D0659AA8-5555-132C-4EF1-6B1F46177BC9}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{D0659AA8-5555-132C-4EF1-6B1F46177BC9}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{D0659AA8-5555-132C-4EF1-6B1F46177BC9}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1}.pc-vc-dev-debug|Win32.ActiveCfg = pc-vc-dev-debug|Win32
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1}.pc-vc-dev-debug|Win32.Build.0 = pc-vc-dev-debug|Win32
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1}.pc-vc-dev-opt|Win32.ActiveCfg = pc-vc-dev-opt|Win32
+		{FD434ECD-B181-BEE2-D179-BE208FE93BD1}.pc-vc-dev-opt|Win32.Build.0 = pc-vc-dev-opt|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		arguments = 
+		maxcpus = 40
+		jobs = 32
+		profile = C:\packages\vstomaketools\2.06.01\config\profile.xml
+		vstomakefile = C:\packages\vstomaketools\2.06.01\bin\vsToMakefile.exe
+		nant-command-line = "C:\packages\Framework\3.27.00\bin\nant.exe"   "-masterconfigfile:.\masterconfig.xml" "-buildfile:.\EAWebKit.build" -D:package.configs="pc-vc-dev-debug pc-vc-dev-opt"  "-buildroot:.\Build\Win"  "slnruntime"
+		nant-current-directory = C:\work\15.1.1.1.0
+		framework-bin-dir = C:\packages\Framework\3.27.00\bin
+	EndGlobalSection
+EndGlobal

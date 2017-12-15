@@ -1,0 +1,86 @@
+<project>
+  <buildroot>build</buildroot>
+
+  <masterversions>
+
+    <package name="JavaScriptCore"          version="local"/>
+    <package name="cairo"                   version="local-1.12.14"/>
+    <package name="pixman"                  version="local-0.28.2"/>
+    <package name="EABaseEAWebKit"          version="local-2.00.35-01"/>
+    <package name="EAAssertEAWebKit"        version="local-1.03.04-01"/>
+    <package name="EASTLEAWebKit"           version="local-1.15.03-01"/>
+    <package name="EAIOEAWebKit"            version="local-01"/>
+    <package name="EATextEAWebKit"          version="local-1.09.01"/>
+    <package name="PPMallocEAWebKit"        version="local-01"/>
+    <package name="coreallocatorEAWebKit"   version="local-1.03.10-01"/>
+    <package name="DirtySDKEAWebKit"        version="local"/>
+    <package name="zlibEAWebKit"            version="local-1.2.5-7-01"/>
+    <package name="libjpegEAWebKit"         version="local-1.00.06-01"/>
+    <package name="libpngEAWebKit"          version="local-1.01.00-01"/>
+    <package name="UTFXmlEAWebKit"          version="local-3.08.01-01"/>
+    <package name="SQLiteEAWebKit"          version="local"/>
+    <package name="FreeTypeEAWebKit"        version="local-2.4.8.02-01"/>
+    <package name="libxml2EAWebKit"         version="local-1.00.06"/>
+    
+    <package name="WTF"                     version="local" />
+
+    <!-- Platform SDKs -->
+    <package name="VisualStudio" version="11.0.50727-2-proxy" />
+      
+    <package name="CapilanoSDK"             version="10.0.10586.1215"/>
+    <package name="kettlesdk"               version="3.508.211"/>
+    <!-- Required by DirtySDK -->
+
+    <package name="DirectX"                 version="9.0c.2010.06-proxy"/>
+    <package name="WindowsSDK"              version="8.0.50727-5"/>
+    <package name="XcodeProjectizer"        version="2.07.07"/>
+    <!-- Tools -->
+    <package name="Framework" version="2.15.18" >
+      <exception propertyname="nant.framework3">
+        <condition value="true" version="3.27.00" />
+      </exception>
+    </package>
+    <package name="eaconfig" version="1.34.08" >
+      <exception propertyname="nant.framework3">
+        <condition value="true" version="2.21.01" />
+      </exception>
+    </package>
+    <package name="osx_config"              version="1.10.03"/>
+    <package name="capilano_config"         version="1.03.02"/>
+    <package name="kettle_config"           version="1.05.00" />
+    <package name="snvsi"                   version="2.1.7.3-proxy"/>
+    <package name="IncrediBuild"            version="4.51.1376"/>
+    <package name="vstomaketools"           version="2.06.01"/>
+    
+    
+  </masterversions>
+
+  <packageroots>
+    <packageroot>..\..</packageroot>
+    <packageroot>${nant.location}\..\..\..\</packageroot>
+    <packageroot>.\EAWebKitSupportPackages</packageroot>
+  </packageroots>
+
+<!--
+ eaconfig.generate-portable-solution=true
+ OpenSourceDll=true
+ -->
+  <!-- builk builds are false at the moment because of the auto-generated cpp files have hardcoded paths and that makes visual studio solution not portable. -->
+  <globalproperties>
+    osx-base-sdk-version=10.7
+    bulkbuild=false
+    eaconfig.usemultithreadeddynamiclib
+    eaconfig.build-MP=8
+    EATextPSGLBackEnd=1
+    dirtysdk-samples=false
+    EAIO.EAIO_FILEPATH_ENABLED=1
+    LIBJPEG_EA_SUPPORT_ENABLED=1
+    libpng.DynamicLibraryStaticLinkage=true
+    EAWebKit.generatePRXDebugInfoInRelease=false
+    eaconfig.warningsaserrors=false
+    EAText.EATEXT_USE_FREETYPE=1
+    Dirtysdk_debug_enable=1
+  </globalproperties>
+  <ondemand>true</ondemand>
+  <config package="eaconfig" default="pc-vc-dev-debug" includes="pc-* pc64-* osx-*"/>
+</project>

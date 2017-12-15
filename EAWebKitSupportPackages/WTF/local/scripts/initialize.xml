@@ -1,0 +1,13 @@
+<project>
+
+    <property name="package.WTF.includedirs">
+      ${package.WTF.dir}
+      ${package.WTF.dir}/icu
+      ${package.WTF.dir}/wtf/ea
+    </property>
+
+  <fileset name="package.WTF.libs">
+    <includes name="${package.WTF.builddir}/${config}/lib/${lib-prefix}WTF${lib-suffix}" />
+  </fileset>
+ 
+</project>

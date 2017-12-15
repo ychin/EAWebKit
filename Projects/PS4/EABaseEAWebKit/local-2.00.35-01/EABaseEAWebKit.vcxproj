@@ -18,6 +18,7 @@
     <ProjectGuid>{FD434ECD-B181-BEE2-D179-BE208FE93BD1}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>EABaseEAWebKit</ProjectName>
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\3.508.211\installed</SCE_ORBIS_SDK_DIR>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
@@ -72,18 +73,20 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eabase.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\eahave.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\earesult.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\nullptr.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompiler.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eacompilertraits.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EABaseEAWebKit\local-2.00.35-01\include\Common\EABase\config\eaplatform.h" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\3.508.211\installed</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\3.508.211\installed</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,0 +1,49 @@
+<project>
+
+	<target name="dirtysdk-add-package" description="Add the package zip to its release folder" hidden="true">
+		<copy file="${package.builddir}\${dirtysdk-source-zipname}" todir="${dirtysdk-htdocs-clientdir}\releases\DirtySock${dirtysdk-majorversion}" />
+		<p4add files="${dirtysdk-htdocs-clientdir}\releases\DirtySock${dirtysdk-majorversion}\${dirtysdk-source-zipname}" change="${p4.change}" />
+	</target>
+
+	<target name="dirtysdk-edit-chmdocs" description="Open the chm files for edit and overwrites them with the newly generated chm files of the release" hidden="true">
+		<foreach item="String" in="pc psp xenon" property="platform">
+			<p4edit files="${dirtysdk-package-clientdir}\doc\chm\${platform}\DirtySock.chm" change="${p4.change}" />
+			<copy file="${dirtysdk-chm-dir}\${platform}\DirtySock.chm" tofile="${dirtysdk-package-clientdir}\doc\chm\${platform}\DirtySock.chm" clobber="true" />
+		</foreach>
+	</target>
+
+	<target name="dirtysdk-edit-newshtml" description="Open the index.html file for edit and overwrite it with the updated version" hidden="true">
+		<p4edit files="${dirtysdk-htdocs-clientdir}\news\index.html" change="${p4.change}" />
+		<copy file="${package.builddir}\index.html" todir="${dirtysdk-htdocs-clientdir}\news" clobber="true" />
+	</target>
+
+	<target name="dirtysdk-edit-versionfiles" description="Open version.txt and dirtyvers.h files for edit and overwrite them with the updated files" hidden="true">
+		<p4edit files="${dirtysdk-package-clientdir}\version.txt" change="${p4.change}" />
+		<copy file="${package.dir}\version.txt" todir="${dirtysdk-package-clientdir}" clobber="true" />
+		<p4edit files="${dirtysdk-package-clientdir}\core\include\dirtyvers.h" change="${p4.change}" />
+		<copy file="${package.dir}\core\include\dirtyvers.h" todir="${dirtysdk-package-clientdir}\core\include" clobber="true" />
+	</target>
+
+	<target name="dirtysdk-edit-mapparse" description="Open memory.txt and summary.txt files for edit and overwrite them with the updated files" hidden="true">
+        <!-- Move memory usage and summary reports for PSx and DS -->
+        <foreach item="String" in="ps3-gcc ds-mw" property="dirtysdk-config">
+            <property name="platform" value="@{StrSubstring(${dirtysdk-config}, '0', @{StrIndexOf(${dirtysdk-config}, '-')})}" />
+            <foreach item="String" in="dev-debug dev-opt" property="dirtysdk-targ-dir">
+                <p4edit files="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" change="${p4.change}" />
+                <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" tofile="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" clobber="true" />
+                <p4edit files="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" change="${p4.change}" />
+                <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" tofile="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" clobber="true" />
+            </foreach>
+        </foreach>
+
+        <!-- Move memory usage and summary reports for Xbox and Xenon -->
+        <foreach item="String" in="xenon-vc" property="dirtysdk-config">
+            <property name="platform" value="@{StrSubstring(${dirtysdk-config}, '0', @{StrIndexOf(${dirtysdk-config}, '-')})}" />
+            <property name="dirtysdk-targ-dir" value="dev-debug" />
+            <p4edit files="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" change="${p4.change}" />
+            <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" tofile="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-memory.txt" clobber="true" />
+            <p4edit files="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" change="${p4.change}" />
+            <copy file="${package.dir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" tofile="${dirtysdk-package-clientdir}\doc\codesize\${platform}\${platform}-${dirtysdk-targ-dir}-summary.txt" clobber="true" />
+        </foreach>
+	</target>
+</project>

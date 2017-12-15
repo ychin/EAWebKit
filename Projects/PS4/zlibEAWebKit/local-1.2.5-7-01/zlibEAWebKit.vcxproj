@@ -18,6 +18,7 @@
     <ProjectGuid>{03994ABE-57B1-4D7C-896F-62AEE8658914}</ProjectGuid>
     <Keyword>ORBISProj</Keyword>
     <ProjectName>zlibEAWebKit</ProjectName>
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\3.508.211\installed</SCE_ORBIS_SDK_DIR>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
@@ -39,10 +40,9 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
     <Midl />
-    <Masm />
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem ..\..\..\..\..\..\..\Program -isystem Files -isystem (x86)\SCE\ORBIS -isystem SDKs\3.000\host_tools\lib\clang\include -isystem ..\..\..\..\..\..\..\Program -isystem Files -isystem (x86)\SCE\ORBIS -isystem SDKs\3.000\target\include -isystem ..\..\..\..\..\..\..\Program -isystem Files -isystem (x86)\SCE\ORBIS -isystem SDKs\3.000\target\include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install"</AdditionalIncludeDirectories>
+      <AdditionalOptions> -isystem C:/packages/kettlesdk/3.508.211/installed/host_tools/lib/clang/include -isystem C:/packages/kettlesdk/3.508.211/installed/target/include -isystem C:/packages/kettlesdk/3.508.211/installed/target/include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC</AdditionalOptions>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -57,7 +57,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-debug\lib\libzlibEAWebKit.a</OutputFile>
+      <OutputFile>C:\work\15.1.1.1.0\Build\PS4\zlibEAWebKit\local-1.2.5-7-01\kettle-clang-dev-debug\lib\libzlibEAWebKit.a</OutputFile>
     </Lib>
     <PreBuildEvent>
       <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
@@ -82,10 +82,9 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
     <Midl />
-    <Masm />
     <ClCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-isystem ..\..\..\..\..\..\..\Program -isystem Files -isystem (x86)\SCE\ORBIS -isystem SDKs\3.000\host_tools\lib\clang\include -isystem ..\..\..\..\..\..\..\Program -isystem Files -isystem (x86)\SCE\ORBIS -isystem SDKs\3.000\target\include -isystem ..\..\..\..\..\..\..\Program -isystem Files -isystem (x86)\SCE\ORBIS -isystem SDKs\3.000\target\include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC </AdditionalOptions>
+      <AdditionalIncludeDirectories>"C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install"</AdditionalIncludeDirectories>
+      <AdditionalOptions> -isystem C:/packages/kettlesdk/3.508.211/installed/host_tools/lib/clang/include -isystem C:/packages/kettlesdk/3.508.211/installed/target/include -isystem C:/packages/kettlesdk/3.508.211/installed/target/include_common -Wno-format -Wno-unneeded-internal-declaration -fPIC</AdditionalOptions>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -101,7 +100,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>kettle-clang-dev-opt\lib\libzlibEAWebKit.a</OutputFile>
+      <OutputFile>C:\work\15.1.1.1.0\Build\PS4\zlibEAWebKit\local-1.2.5-7-01\kettle-clang-dev-opt\lib\libzlibEAWebKit.a</OutputFile>
     </Lib>
     <PreBuildEvent>
       <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
@@ -121,66 +120,68 @@
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zconf.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zlib.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\version.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zconf.h" />
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zlib.h" />
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\adler32.c">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zconf.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zlib.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\version.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zconf.h" />
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zlib.h" />
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\adler32.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\adler32.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\adler32.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\compress.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\compress.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\compress.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\compress.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\crc32.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\crc32.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\crc32.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\crc32.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\deflate.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\deflate.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\deflate.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\deflate.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\infback.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\infback.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\infback.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\infback.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inffast.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inffast.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\inffast.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\inffast.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inflate.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inflate.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\inflate.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\inflate.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inftrees.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inftrees.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\inftrees.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\inftrees.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\trees.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\trees.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\trees.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\trees.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\uncompr.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\uncompr.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\uncompr.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\uncompr.c.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c">
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\zlibEAWebKit\zutil.c.obj</ObjectFileName>
       <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\zlibEAWebKit\zutil.c.obj</ObjectFileName>
     </ClCompile>
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\3.508.211\installed</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\3.508.211\installed</SCE_ORBIS_SDK_DIR>
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-clang.exe" clang-asm="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-as.exe" clang-librarian="$(SCE_ORBIS_SDK_DIR)\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.05.00\config\data\options_vstomake.xml"></UserProperties>
+      <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" clang-compiler="C:\packages\kettlesdk\3.508.211\installed\host_tools\bin\orbis-clang++.exe" clang-compiler_clang="C:\packages\kettlesdk\3.508.211\installed\host_tools\bin\orbis-clang.exe" clang-asm="C:\packages\kettlesdk\3.508.211\installed\host_tools\bin\orbis-as.exe" clang-librarian="C:\packages\kettlesdk\3.508.211\installed\host_tools\bin\orbis-ar.exe" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.05.00\config\data\options_vstomake.xml"></UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

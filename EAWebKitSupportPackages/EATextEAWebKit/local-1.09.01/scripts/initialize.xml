@@ -1,0 +1,19 @@
+<project>
+
+	<!-- EATextEAWebKit header files location. -->
+	<property name="package.EATextEAWebKit.includedirs">
+		${package.EATextEAWebKit.dir}/include
+	</property>
+
+	<!-- EATextEAWebKit libraries location. -->
+	<do if="@{PropertyExists('config')}">
+		<do if="@{PropertyExists('lib-prefix')}">
+			<do if="@{PropertyExists('lib-suffix')}">
+				<fileset name="package.EATextEAWebKit.libs">
+					<includes name="${package.EATextEAWebKit.builddir}/${config}/lib/${lib-prefix}EATextEAWebKit${lib-suffix}" />
+				</fileset>
+			</do>
+		</do>
+	</do>
+
+</project>

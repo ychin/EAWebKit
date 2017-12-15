@@ -2,7 +2,7 @@
  * Copyright (C) 2006 Zack Rusin <zack@kde.org>
  * Copyright (C) 2006 Apple Computer, Inc.  All rights reserved.
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (C) 2011, 2012, 2013, 2014 Electronic Arts, Inc. All rights reserved.
+ * Copyright (C) 2011, 2012, 2013, 2014, 2015 Electronic Arts, Inc. All rights reserved.
  *
  * All rights reserved.
  *
@@ -77,6 +77,17 @@
 #include <internal/include/EAWebKit_p.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <internal/include/EAWebkitEASTLHelpers.h>
+
+//+EAWebKitChange
+//1/16/2015
+namespace EA
+{
+	namespace WebKit
+	{
+        bool DoCssFilterInHardware();
+	}
+}
+//-EAWebKitChange
 
 // Note by Arpit Baldeva: 
 // Most of the functionality in this file is related to the window object in the JavaScript API. For example, window.open()/window.close().
@@ -644,10 +655,14 @@ void ChromeClientEA::scheduleCompositingLayerFlush()
 
 ChromeClient::CompositingTriggerFlags ChromeClientEA::allowedCompositingTriggers() const
 {
+	ChromeClient::CompositingTriggerFlags flags = 0;
 	if (allowsAcceleratedCompositing())
-		return ThreeDTransformTrigger | CanvasTrigger | AnimationTrigger | AnimatedOpacityTrigger;
+		flags |= ThreeDTransformTrigger | CanvasTrigger | AnimationTrigger | AnimatedOpacityTrigger;
 
-	return 0;
+    if(m_webPage->view()->GetHardwareRenderer() && EA::WebKit::DoCssFilterInHardware())
+		flags |= FilterTrigger;
+
+	return flags;
 }
 
 bool ChromeClientEA::allowsAcceleratedCompositing() const

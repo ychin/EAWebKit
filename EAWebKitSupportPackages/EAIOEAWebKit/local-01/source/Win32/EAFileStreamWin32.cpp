@@ -43,12 +43,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef EAIO_EAFILESTREAM_H
     #include <EAIO/EAFileStream.h>
 #endif
-#if   defined(EA_PLATFORM_WINDOWS)
     #ifndef WIN32_LEAN_AND_MEAN
         #define WIN32_LEAN_AND_MEAN
     #endif
     #include <windows.h>
-#endif
 
 
 namespace EA

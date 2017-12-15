@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012, 2014 Electronic Arts, Inc.  All rights reserved.
+Copyright (C) 2012, 2014, 2015 Electronic Arts, Inc.  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -30,6 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TEXTUREMAPPER_EA_H
 
 #include "TextureMapper.h"
+#include "FilterOperation.h"
 
 #if USE(TEXTURE_MAPPER)
 
@@ -40,6 +41,8 @@ namespace WebKit
 	class View;
 	class ISurface;
 	class IHardwareRenderer;
+    struct FilterInfo;
+    class Filters;
 }
 }
 
@@ -65,6 +68,11 @@ public:
 	virtual PassRefPtr<BitmapTexture> createTexture() OVERRIDE;
 	virtual void beginPainting(PaintFlags = 0) OVERRIDE;
 	virtual void endPainting() OVERRIDE;
+
+#if ENABLE(CSS_FILTERS)
+    void setupFilterInfo(const FilterOperation& source, EA::WebKit::FilterInfo *target);
+#endif
+
 private:
 	struct ClipState {
 		IntRect scissorBox;
@@ -134,7 +142,8 @@ public:
 	virtual void updateContents(TextureMapper*, GraphicsLayer*, const IntRect& target, const IntPoint& offset, UpdateContentsFlag) OVERRIDE;
 	virtual void updateContents(const void*, const IntRect& target, const IntPoint& sourceOffset, int bytesPerLine, UpdateContentsFlag) OVERRIDE;
 #if ENABLE(CSS_FILTERS)
-	PassRefPtr<BitmapTexture> applyFilters(TextureMapper*, const FilterOperations&) OVERRIDE;
+	virtual PassRefPtr<BitmapTexture> applyFilters(TextureMapper*, const FilterOperations&) OVERRIDE;
+	EA::WebKit::Filters *GetFilters(void) const {return mFilterList;}
 #endif
 	void bind(TextureMapperEA*);
 	void initializeStencil();
@@ -159,6 +168,10 @@ private:
 	bool m_shouldClear;
 	bool m_boundFirstTime;
 	bool m_clearedStencil;
+
+#if ENABLE(CSS_FILTERS)
+	EA::WebKit::Filters *mFilterList;
+#endif
 	
 };
 

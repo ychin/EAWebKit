@@ -12,12 +12,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include\EAAssert\eaassert.h">
+    <ClInclude Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\include\EAAssert\eaassert.h">
       <Filter>include\EAAssert</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\source\eaassert.cpp">
+    <ClCompile Include="C:\work\15.1.1.1.0\EAWebKitSupportPackages\EAAssertEAWebKit\local-1.03.04-01\source\eaassert.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

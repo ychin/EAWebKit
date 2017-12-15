@@ -1,0 +1,13 @@
+<project>
+    <property name="config-type" value="deprecated-d"/>
+    <property name="config-name" value="dev-debug"/>
+
+  <optionset name="config-options-common">
+		<option name="debugflags"							value="on" />
+		<option name="debugsymbols"							value="off" />
+		<option name="optimization"							value="on" />
+		<option name="usedebuglibs"							value="on" />
+		<option name="runtimeerrorchecking"					value="off" />
+	</optionset>
+
+</project>

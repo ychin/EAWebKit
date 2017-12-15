@@ -1,0 +1,246 @@
+﻿<project name="EAIOEAWebKit" default="build">
+
+	<property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+	<optionset name="config.targetoverrides">
+		<option name="test-build" value="include" />
+		<option name="test-buildall" value="include" />
+	</optionset>
+
+    <!-- Package declaration -->
+	<!-- Get the version number from current directory -->
+ 	<property name="currDir"  value="@{PathGetFullPath('.')}"/>
+	<property name="currVer"  value="@{PathGetFileName('${currDir}')}"/>
+	<package  name="EAIOEAWebKit" targetversion="${currVer}"/>
+
+
+    <do if="${config-system} == unix">
+        <dependent name="UnixGCC"/>
+        <property name="config-system" value="${package.UnixGCC.platform}"/>
+    </do>
+
+
+
+    <!-- Options -->
+    <!-- To enable options put (e.g.) <globalproperties>EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED=1</globalproperties> -->
+    <!-- in your masterconfig file or use -D:EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED=1 on the nant command line.     -->
+    <!-- The EAIO.EAIO_XXX values here directly correspond to EAIO config #defines.                              --> 
+    <property name="EATECH_WARNINGSASERRORS"    value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}"    />
+    <property name="EAIO.EAIO_FILEPATH_ENABLED" value="0" unless="@{PropertyExists('EAIO.EAIO_FILEPATH_ENABLED')}" />
+
+    <!--
+        EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED
+        EAIO.EAIO_INIFILE_ENABLED
+        EAIO.EAIO_64_BIT_SIZE_ENABLED
+        EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING
+        EAIO.EAIO_BACKWARDS_COMPATIBILITY
+    -->
+
+
+    <!-- Create extra build types which simply add some additional compiler arguments -->
+    <optionset name="config-options-library-extra" fromoptionset="config-options-library">
+        <option name="buildset.name" value="LibraryExtra"/>
+        <option name="warningsaserrors" value="off" unless="${EATECH_WARNINGSASERRORS} == 1"/>
+    </optionset>
+    <task name="GenerateBuildOptionset" configsetname="config-options-library-extra" />
+    <optionset name="LibraryExtra">
+        <option name="cc.options" if="${config-compiler} == 'gcc_disabled'">  <!-- Disabled because GCC 4.4 __may_alias__ is broken and generates bogus warnings. -->
+            @{StrReplace(${option.value}, '-fno-strict-aliasing', '-fstrict-aliasing')}
+        </option>
+        <option name="cc.options" if="${config-compiler} == 'mw'">
+            @{StrReplace(@{StrReplace(${option.value}, '-w nofilecaps', '-w filecaps')}, '-w nosysfilecaps', '-w sysfilecaps')}
+        </option>
+        <option name="cc.options" if="${EATECH_WARNINGSASERRORS} == 1 and ${config-compiler} == 'sn' and ${config-system} == 'ps3'">
+            ${option.value}
+            -Xdiag=2             <!-- Enable compiler remarks in addition to errors and warnings. -->
+            -Xquit=2             <!-- Set it so that even remarks are considered errors. -->
+
+            --diag_error=68      <!-- turn on 'change of sign' (68) warning.  -->
+            --diag_suppress=341  <!-- value copied to temporary, reference to temporary used. -->
+            --diag_suppress=403  <!-- destructor for base class is not virtual. -->
+            --diag_suppress=481  <!-- function redeclared "inline" after being called -->
+            --diag_suppress=1779 <!-- identifier (with leading underscore) is non-standard. [SN mistakenly flags this even when compiling compiler headers.] -->
+            --diag_suppress=1772 <!-- argument of type "X" is implicitly converted to parameter of type "Y" -->
+            --diag_suppress=833  <!-- support for placement delete is disabled. -->
+        </option>
+        <option name="cc.options" if="${EATECH_WARNINGSASERRORS} == 1 and ${config-compiler} == 'sn' and ${config-system} == 'ps3'">
+            @{StrReplace(${option.value}, '-Xquit=1', '')} <!-- Remove any -Xquit=1 present, as we already have -Xquit=2 -->
+        </option>
+    </optionset>
+
+
+
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+
+    <property name="runtime.buildmodules" value="EAIOEAWebKit"/>
+    <property name="runtime.EAIOEAWebKit.buildtype" value="LibraryExtra" />
+    <property name="runtime.EAIOEAWebKit.buildtype" value="DynamicLibrary" if="${Dll}"/>
+
+    <property name="runtime.EAIOEAWebKit.usedependencies">
+    ${property.value}
+    EABaseEAWebKit
+    coreallocatorEAWebKit
+  </property>
+
+    <property name="runtime.EAIOEAWebKit.usedependencies" unless="${Dll}">
+    ${property.value}
+    EASTLEAWebKit
+    EAAssertEAWebKit
+  </property>
+
+    <property name="runtime.EAIOEAWebKit.builddependencies" if="${Dll}">
+    ${property.value}
+    EASTLEAWebKit
+    EAAssertEAWebKit
+  </property>
+
+    <property name="runtime.EAIOEAWebKit.includedirs">
+		${package.dir}/include
+	</property>
+
+    <fileset name="runtime.EAIOEAWebKit.sourcefiles">    
+		<includes name="${package.dir}/source/*.cpp"/>
+        <includes name="${package.dir}/source/internal/*.cpp"/>
+        <!-- <includes name="${package.dir}/source/compat/EAFilePath.cpp"       if="${EAIO.EAIO_FILEPATH_ENABLED} == 1"/>-->
+	</fileset>
+
+    <fileset name="runtime.EAIOEAWebKit.headerfiles">    
+		<includes name="${package.dir}/include/EAIO/*.h"/>
+		<includes name="${package.dir}/include/EAIO/*/*.h"/>
+	</fileset>
+  <!--
+    <fileset name="runtime.EAIOEAWebKit.bulkbuild.sourcefiles" fromfileset="runtime.EAIOEAWebKit.sourcefiles"/>
+-->
+	<!-- Defines -->
+	<!-- The user may want to define DVDETH for the Wii platform here, at least for debug builds. -->
+    <property name="runtime.EAIOEAWebKit.defines">
+		${property.value}
+		UTF_USE_EAASSERT=1
+	</property>
+
+    <property name="runtime.EAIOEAWebKit.defines" if="${Dll} and ${config-compiler} == 'vc'">
+	    ${property.value}
+		EAIO_API=__declspec(dllexport)
+		EAIO_TEMPLATE_API=__declspec(dllexport)
+	</property>
+
+  <!--  
+  <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EAIO.EAIO_FILEPATH_ENABLED')}">
+        ${property.value}
+        EAIO_FILEPATH_ENABLED=${EAIO.EAIO_FILEPATH_ENABLED}
+    </property>
+    -->
+    <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED')}">
+        ${property.value}
+        EAIO_DEFAULT_ALLOCATOR_ENABLED=${EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED}
+    </property>
+    <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EAIO.EAIO_INIFILE_ENABLED')}">
+        ${property.value}
+        EAIO_INIFILE_ENABLED=${EAIO.EAIO_INIFILE_ENABLED}
+    </property>
+    <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EAIO.EAIO_64_BIT_SIZE_ENABLED')}">
+        ${property.value}
+        EAIO_64_BIT_SIZE_ENABLED=${EAIO.EAIO_64_BIT_SIZE_ENABLED}
+    </property>
+    <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING')}">
+        ${property.value}
+        EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING=${EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING}
+    </property>
+    <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EAIO.EAIO_BACKWARDS_COMPATIBILITY')}">
+        ${property.value}
+        EAIO_BACKWARDS_COMPATIBILITY=${EAIO.EAIO_BACKWARDS_COMPATIBILITY}
+    </property>
+    <property name="runtime.EAIOEAWebKit.defines" if="@{PropertyExists('EA_XBDM_ENABLED')}">
+        ${property.value}
+        EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+    </property>
+
+
+    <property name="runtime.EAIOEAWebKit.warningsuppression" if="${config-compiler} == 'vc'">
+        -wd4917        <!-- disable warning: "OLE_HANDLE: a GUID can only be associated with a class, interface or namespace -->
+        -wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+        -wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+        -wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+        -wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+        -wd4365        <!-- disable warning: "conversion from x to y, signed/unsigned mismatch" -->
+    </property>
+
+    <property name="runtime.EAIOEAWebKit.warningsuppression" if="${config-compiler} == 'mw'">
+        -w off        <!-- disable all warnings. We do this only because CodeWarrior doesn't document how to disable some individual warnings -->
+    </property>
+
+    <property name="runtime.EAIOEAWebKit.warningsuppression" if="${config-compiler} == 'gcc'">
+        <!-- -Wstrict-aliasing=3 Disabled because GCC 4.4's __may_alias__ is broken. --> 
+        -Wextra
+    </property>
+
+
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+
+    <property name="test.buildmodules" value="EAIOTest"/>
+    <property name="test.EAIOTest.buildtype" value="Program"/>
+	<property name="test.EAIOTest.usedependencies">
+		EABase
+		coreallocator
+	</property>
+
+	<property name="test.EAIOTest.builddependencies">
+		EASTL
+		EAStdC
+		EACOM
+		MemoryMan
+		PPMalloc
+		EAAssert
+		EAThread
+	</property>
+
+	<!-- Defines -->
+	<!-- The user may want to define DVDETH for the Wii platform here, at least for debug builds. -->
+	<property name="test.EAIOTest.defines">
+		${property.value}
+		UTF_USE_EAASSERT=1
+     EA_MEMORY_LEAK_TRACE_ENABLED=1
+	</property>
+
+	<!-- Test configuration -->
+	<property name="test.EAIOTest.buildtype" value="Program"/>
+	
+	<property name="test.EAIOTest.warningsuppression" if="${config-compiler} == 'vc'">
+		-wd4217		<!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+		-wd4530		<!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+		-wd4619		<!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+		-wd4548		<!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+	</property>
+
+	<property name="test.EAIOTest.includedirs">
+		${package.dir}/include
+		${package.dir}/test/include
+	</property>
+	
+	<fileset name="test.EAIOTest.sourcefiles">	
+		<includes name="${package.dir}/test/source/*.cpp"/>
+	</fileset>
+	
+	<fileset name="test.EAIOTest.libs">
+		<includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+	</fileset>
+
+	<fileset name="test.EAIOTest.libs" if="${config-system} == 'rev'">
+		<includes name="${package.RevolutionSDK.appdir}\RVL\lib\dvd.a"/>
+		<includes name="${package.RevolutionSDK.appdir}\HW2\lib\ip.a"/>
+		<includes name="${package.RevolutionSDK.appdir}\HW2\lib\eth.a"/>
+		<includes name="${package.RevolutionSDK.appdir}\HW2\lib\dvdeth.a"/>
+	</fileset>
+
+
+</project>
+
+
+
+

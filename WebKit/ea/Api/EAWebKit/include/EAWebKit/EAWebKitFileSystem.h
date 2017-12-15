@@ -96,6 +96,12 @@ public:
         kCDOOpenAlways       = 4,      /// Never fails, creates if doesn't exist, keeps contents.
     };
 
+	enum ReadStatus
+	{
+		kReadStatusComplete		= 0,
+		kReadStatusError		= -1,		/// Something went wrong with the file read
+		kReadStatusDataNotReady	= -2		/// Unable to return requested data but retry in future (used to make file read completely async
+	};
 
     // A FileObject can hold a pointer or an integer.
     typedef uintptr_t FileObject;
@@ -110,8 +116,16 @@ public:
     // Given a prefix, create a temp file and provide the full path name to buffer pointed by pDestPath
 	virtual FileObject	OpenTempFile(const utf8_t* prefix, utf8_t* pDestPath) = 0;
     virtual void		CloseFile(FileObject fileObject) = 0;
-    // Returns (int64_t)(-1) in case of an error
+    // Returns (int64_t)(ReadStatus::kReadError) in case of an error that is not recoverable
+	// if Returns > 0, the total number of bytes read.
+	// if Returns ReadStatus::kReadComplete, the file read is complete and no more data to read.
 	virtual int64_t		ReadFile(FileObject fileObject, void* buffer, int64_t size) = 0;
+	// Same as ReadFile with following added capability.
+	// Returns (int64_t)(ReadStatus::KReadDataNotReady) in case of data may be available in future
+	virtual int64_t		ReadFileAsync(FileObject fileObject, void* buffer, int64_t size)
+	{
+		return ReadFile(fileObject,buffer,size);
+	}
     virtual bool		WriteFile(FileObject fileObject, const void* buffer, int64_t size) = 0;
     virtual int64_t		GetFileSize(FileObject fileObject) = 0;
     virtual bool        SetFileSize(FileObject fileObject, int64_t size) = 0;
@@ -153,6 +167,7 @@ public:
     FileObject OpenTempFile(const utf8_t* prefix, utf8_t* path);
     void       CloseFile(FileObject);
     int64_t    ReadFile(FileObject, void* buffer, int64_t size);
+	int64_t	   ReadFileAsync(FileObject fileObject, void* buffer, int64_t size);
     bool       WriteFile(FileObject, const void* buffer, int64_t size);
     int64_t    GetFileSize(FileObject fileObject);
     bool       SetFileSize(FileObject fileObject, int64_t size);

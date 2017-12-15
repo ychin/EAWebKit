@@ -55,11 +55,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
-#if defined(EA_PLATFORM_WINDOWS)
     #pragma warning(push, 0)
     #include <Windows.h>
     #pragma warning(pop)
-#endif
 
 #if EATEXT_USE_FREETYPE
     #include <ft2build.h>
@@ -90,7 +88,6 @@ namespace Text
 
 EATEXT_API uint32_t GetSystemFontDirectory(FilePathChar* pFontDirectory, uint32_t nFontDirectoryCapacity)
 {
-    #if defined(EA_PLATFORM_WINDOWS)
         FilePathChar        pFontDirectoryTemp[EA::IO::kMaxPathLength];
         UINT                nStrlen = GetWindowsDirectoryW(pFontDirectoryTemp, (UINT)_MAX_PATH); // GetWindowsDirectoryW: If the function fails, the return value is zero. To get extended error information, call GetLastError. 
         const FilePathChar* pFonts = EA_CHAR16("Fonts\\");
@@ -110,13 +107,6 @@ EATEXT_API uint32_t GetSystemFontDirectory(FilePathChar* pFontDirectory, uint32_
         }
 
         return (uint32_t)nStrlen;
-    #else
-        // To consider: Pick a directory to use for the given platform.
-        EA_UNUSED(nFontDirectoryCapacity);
-        if(pFontDirectory)
-            pFontDirectory[0] = 0;
-        return 0;
-    #endif
 }
 
 

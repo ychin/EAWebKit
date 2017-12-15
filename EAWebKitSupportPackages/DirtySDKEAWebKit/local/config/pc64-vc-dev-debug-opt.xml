@@ -1,0 +1,5 @@
+<project>
+	<dependent name="eaconfig" />
+	<include file="${package.eaconfig.dir}/config/pc64-vc-dev-debug-opt.xml" />
+    <include file="overrides/pc64-vc-dev.xml" />
+</project>

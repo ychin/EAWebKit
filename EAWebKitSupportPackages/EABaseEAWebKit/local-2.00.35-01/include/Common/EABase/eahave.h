@@ -169,11 +169,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_INTTYPES_H) && !defined(EA_NO_HAVE_INTTYPES_H)
-    #if !defined(EA_PLATFORM_MICROSOFT) 
-        #define EA_HAVE_INTTYPES_H 1
-    #else
         #define EA_NO_HAVE_INTTYPES_H 1
-    #endif
 #endif
 
 #if !defined(EA_HAVE_UNISTD_H) && !defined(EA_NO_HAVE_UNISTD_H)
@@ -181,11 +177,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_SYS_TIME_H) && !defined(EA_NO_HAVE_SYS_TIME_H)
-    #if !defined(EA_PLATFORM_MICROSOFT) && !defined(CS_UNDEFINED_STRING) && !defined(_YVALS) /* Yvals indicates Dinkumware. */
-        #define EA_HAVE_SYS_TIME_H 1 /* defines struct timeval */
-    #else
         #define EA_NO_HAVE_SYS_TIME_H 1
-    #endif
 #endif
 
 #if !defined(EA_HAVE_SYS_PTRACE_H) && !defined(EA_NO_HAVE_SYS_PTRACE_H)
@@ -193,7 +185,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_SYS_STAT_H) && !defined(EA_NO_HAVE_SYS_STAT_H)
-    #if (defined(CS_UNDEFINED_STRING) && !(defined(EA_PLATFORM_SONY) && defined(EA_PLATFORM_CONSOLE))) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
+    #if (defined(CS_UNDEFINED_STRING) && !(defined(CS_UNDEFINED_STRING) && defined(EA_PLATFORM_CONSOLE))) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
         #define EA_HAVE_SYS_STAT_H 1 /* declares the stat struct and function */
     #else
         #define EA_NO_HAVE_SYS_STAT_H 1
@@ -217,11 +209,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_PTHREAD_H) && !defined(EA_NO_HAVE_PTHREAD_H)
-    #if !defined(EA_PLATFORM_MICROSOFT) && !defined(CS_UNDEFINED_STRING)
-        #define EA_HAVE_PTHREAD_H 1 /* It can be had under Microsoft/Windows with the http://sourceware.org/pthreads-win32/ library */
-    #else
         #define EA_NO_HAVE_PTHREAD_H 1
-    #endif
 #endif
 
 #if !defined(EA_HAVE_WCHAR_H) && !defined(EA_NO_HAVE_WCHAR_H)
@@ -284,13 +272,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_strcasecmp_DECL) && !defined(EA_NO_HAVE_strcasecmp_DECL)
-    #if !defined(EA_PLATFORM_MICROSOFT) && !defined(CS_UNDEFINED_STRING)
-        #define EA_HAVE_strcasecmp_DECL  1     /* This is found as stricmp when not found as strcasecmp */
-        #define EA_HAVE_strncasecmp_DECL 1
-    #else
         #define EA_HAVE_stricmp_DECL  1
         #define EA_HAVE_strnicmp_DECL 1
-    #endif
 #endif
 
 #if !defined(EA_HAVE_mmap_DECL) && !defined(EA_NO_HAVE_mmap_DECL)
@@ -306,19 +289,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_ISNAN) && !defined(EA_NO_HAVE_ISNAN)
-    #if defined(EA_PLATFORM_MICROSOFT)
         #define EA_HAVE_ISNAN(x)  _isnan(x)          /* declared in <math.h> */
         #define EA_HAVE_ISINF(x)  !_finite(x)
-    #elif defined(EA_PLATFORM_APPLE)
-        #define EA_HAVE_ISNAN(x)  std::isnan(x)      /* declared in <cmath> */
-        #define EA_HAVE_ISINF(x)  std::isinf(x)
-    #elif defined(__GNUC__) && defined(__CYGWIN__)
-        #define EA_HAVE_ISNAN(x)  __isnand(x)        /* declared nowhere, it seems. */
-        #define EA_HAVE_ISINF(x)  __isinfd(x)
-    #else /* Most GCC, EDG, and Dinkumware. */
-        #define EA_HAVE_ISNAN(x)  isnan(x)           /* declared in <math.h> */
-        #define EA_HAVE_ISINF(x)  isinf(x)
-    #endif
 #endif
 
 #if !defined(EA_HAVE_itoa_DECL) && !defined(EA_NO_HAVE_itoa_DECL)
@@ -330,7 +302,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_nanosleep_DECL) && !defined(EA_NO_HAVE_nanosleep_DECL)
-    #if (defined(CS_UNDEFINED_STRING) && !defined(EA_PLATFORM_SONY)) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_KETTLE)
+    #if (defined(CS_UNDEFINED_STRING) && !defined(CS_UNDEFINED_STRING)) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING) || defined(CS_UNDEFINED_STRING)
         #define EA_HAVE_nanosleep_DECL 1
     #else
         #define EA_NO_HAVE_nanosleep_DECL 1
@@ -338,11 +310,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #if !defined(EA_HAVE_utime_DECL) && !defined(EA_NO_HAVE_utime_DECL)
-    #if defined(EA_PLATFORM_MICROSOFT)
         #define EA_HAVE_utime_DECL _utime
-    #else
-        #define EA_NO_HAVE_utime_DECL 1
-    #endif
 #endif
 
 #if !defined(EA_HAVE_ftruncate_DECL) && !defined(EA_NO_HAVE_ftruncate_DECL)

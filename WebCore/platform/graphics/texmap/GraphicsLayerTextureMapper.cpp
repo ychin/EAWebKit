@@ -1,6 +1,7 @@
 /*
     Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies)
-
+    Copyright (C) 2015 Electronic Arts, Inc. All rights reserved.
+    
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -27,6 +28,17 @@
 #include <wtf/CurrentTime.h>
 
 #if USE(TEXTURE_MAPPER)
+
+//+EAWebKitChange
+//1/16/2015
+namespace EA
+{
+	namespace WebKit
+	{
+        bool DoCssFilterInHardware();
+	}
+}
+//-EAWebKitChange
 
 namespace WebCore {
 
@@ -668,11 +680,29 @@ void GraphicsLayerTextureMapper::removeAnimation(const String& animationName)
 bool GraphicsLayerTextureMapper::setFilters(const FilterOperations& filters)
 {
     TextureMapper* textureMapper = m_layer->textureMapper();
-    // TextureMapperImageBuffer does not support CSS filters.
-    if (!textureMapper || textureMapper->accelerationMode() == TextureMapper::SoftwareMode)
+    //+EAWebKitChange
+    //01/16/2015 - Fixed bug where sometimes software filter mode would be run when not intended.
+
+    // does the TextureMapperImageBuffer support CSS filters?
+    // there appears to be a bug here in WebCore, testing has shown that early in page load sometimes
+    // the textureMapper pointer is null, this originally had the effect of disabling hardware rendering 
+    // by returning false, but we would like to let the users configuration make the final call.
+    
+    // early out it we know for sure we are doing software mode (this isn't a normal flow in EAWebkit)
+    if ((textureMapper != NULL) && textureMapper->accelerationMode() == TextureMapper::SoftwareMode)
+    {
         return false;
+    }
+    // early out if the user has specified that css filters should be done in software
+    else if ((textureMapper == NULL) && (EA::WebKit::DoCssFilterInHardware() == false))
+    {
+        return false;
+    }
+
+    // hardware mode is on 
     notifyChange(FilterChange);
-    return GraphicsLayer::setFilters(filters);
+    return GraphicsLayer::setFilters(filters);  //always returns true
+    //-EAWebKitChange
 }
 #endif
 
