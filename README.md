@@ -10,4 +10,4 @@ EAWebKit is open-sourced by Electronic Arts and the official source code can be 
 Please see [licenses](licenses) for the different licenses for EAWebKit.
 
 ## To Build
-Checked out [README-BUILD.txt](README-BUILD.txt).
+Please see [README-BUILD.txt](README-BUILD.txt).
