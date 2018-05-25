@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
     <Configuration>pc64-vc-dev-debug</Configuration>
     <Platform>x64</Platform>
@@ -18,10 +18,10 @@
     <ProjectGuid>{03994ABE-57B1-4D7C-896F-62AEE8658914}</ProjectGuid>
     <Keyword>x64Proj</Keyword>
     <ProjectName>zlibEAWebKit</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
-    <UCRTContentRoot>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</UCRTContentRoot>
-    <UniversalCRTSdkDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</UniversalCRTSdkDir>
-    <WindowsSdkDir_10>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10</WindowsSdkDir_10>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <UCRTContentRoot>C:\Program Files (x86)\Windows Kits\10\</UCRTContentRoot>
+    <UniversalCRTSdkDir>C:\Program Files (x86)\Windows Kits\10\</UniversalCRTSdkDir>
+    <WindowsSdkDir_10>C:\Program Files (x86)\Windows Kits\10\</WindowsSdkDir_10>
     <NETFXKitsDir>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\NETFXSDK\4.6</NETFXKitsDir>
     <NETFXSDKDir>$(WindowsSDKDir)</NETFXSDKDir>
   </PropertyGroup>
@@ -32,14 +32,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-debug|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc64-vc-dev-opt|x64' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>False</UseDebugLibraries>
   </PropertyGroup>
@@ -174,14 +174,15 @@
     <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
-  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
+  <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />-->
+  <!--<Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />-->
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="$(VSInstallDir)\VC\BIN\amd64\cl.exe" vc64-compiler_clang="" vc64-librarian="$(VSInstallDir)\VC\BIN\amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="$(VSInstallDir)\VC\BIN;$(VSInstallDir)\Common7\IDE"></UserProperties>
+      <UserProperties platform_pc64-vc-dev-debug_x64="vc64" vc64-compiler="$(VSInstallDir)\VC\BIN\amd64\cl.exe" vc64-compiler_clang="" vc64-librarian="$(VSInstallDir)\VC\BIN\amd64\lib.exe" platform_pc64-vc-dev-opt_x64="vc64" build.env.PATH="$(VSInstallDir)\VC\BIN;$(VSInstallDir)\Common7\IDE">
+      </UserProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>

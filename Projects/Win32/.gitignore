@@ -1,0 +1,6 @@
+**/*.sdf
+**/*.suo
+**/*.vcxproj.user
+**/pc-vc-dev-debug/**
+**/pc-vc-dev-opt/**
+**/.vs/**
