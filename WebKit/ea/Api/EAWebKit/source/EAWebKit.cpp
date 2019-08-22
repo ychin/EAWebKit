@@ -985,7 +985,7 @@ void SetRAMCacheUsage(const RAMCacheInfo& ramCacheInfo)
 {
     ramCacheUserPref = ramCacheInfo;
 	WebCore::MemoryCache::singleton().setCapacities(0, ramCacheInfo.mMaxDeadBytes, ramCacheInfo.mTotalBytes);
-	WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds::duration((long) ramCacheInfo.mDeadDecodedDataDeletionInterval * 1000)); //Our API takes the value in seconds
+	WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds((long) ramCacheInfo.mDeadDecodedDataDeletionInterval * 1000)); //Our API takes the value in seconds
 }
 
 void GetRAMCacheUsage(RAMCacheUsageInfo& ramCacheUsageInfo)

@@ -88,7 +88,7 @@ void initializeWebCoreEA()
     PlatformStrategiesEA::initialize();
 
     if (!WebCore::MemoryCache::singleton().disabled())
-        WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds::duration(60 * 1000));
+        WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds(60 * 1000));
 
 #if !ENABLE(JIT)
 	JSC::Options::useJIT() = false;

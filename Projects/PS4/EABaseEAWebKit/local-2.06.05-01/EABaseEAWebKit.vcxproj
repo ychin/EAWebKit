@@ -42,6 +42,10 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
     <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>if not exist ..\..\..\..\WebCore\DerivedSources\ps4 md ..\..\..\..\WebCore\DerivedSources\ps4
+if not exist ..\..\..\..\WebCore\DerivedSources\ps4\dev-debug mklink /D ..\..\..\..\WebCore\DerivedSources\ps4\dev-debug ..</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
     <OutDir>kettle-clang-dev-debug\build\EABaseEAWebKit\</OutDir>
@@ -60,6 +64,10 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
     <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>if not exist ..\..\..\..\WebCore\DerivedSources\ps4 md ..\..\..\..\WebCore\DerivedSources\ps4
+if not exist ..\..\..\..\WebCore\DerivedSources\ps4\dev-opt mklink /D ..\..\..\..\WebCore\DerivedSources\ps4\dev-opt ..</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
     <OutDir>kettle-clang-dev-opt\build\EABaseEAWebKit\</OutDir>
@@ -83,8 +91,6 @@
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eacompilertraits.h" />
     <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EABaseEAWebKit\local-2.06.05-01\include\Common\EABase\config\eaplatform.h" />
   </ItemGroup>
-  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " />
-  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
@@ -92,8 +98,6 @@
     <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.props" />
-  <Import Project="..\..\..\..\..\..\Framework\7.04.01\data\FrameworkMsbuild.tasks" />
   <ProjectExtensions>
     <VisualStudio>
       <UserProperties platform_kettle-clang-dev-debug_ORBIS="clang" platform_kettle-clang-dev-opt_ORBIS="clang" build.env.PATH="" ORBIS-Clang-options_vstomake_map="C:\packages\kettle_config\1.15.00\config\data\options_vstomake.xml"></UserProperties>
