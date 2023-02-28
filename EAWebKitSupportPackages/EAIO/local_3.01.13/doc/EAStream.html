@@ -1,0 +1,458 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAStream</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+    <style type="text/css">
+<!--
+.style1 {color: #0033CC}
+-->
+    </style>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAStream</h1>
+
+<h2>Introduction</h2>
+<p>EAStream is the core IO interface for all of UTF. It consists of typedefs, enumerations, and the IStream interface class. </p>
+<p>The IStream class looks like this: </p>
+<pre class="code-example">class IStream
+{
+public:
+    virtual          ~IStream();
+    virtual int       AddRef() = 0;
+    virtual int       Release() = 0;
+    virtual uint32_t  GetType() const = 0;
+    virtual int       GetAccessFlags() const = 0;
+    virtual int       GetState() const = 0;
+    virtual bool      Close() = 0;
+    virtual size_type GetSize() const = 0;
+    virtual bool      SetSize(size_type size) = 0;
+    virtual off_type  GetPosition(PositionType positionType) const = 0;
+    virtual bool      SetPosition(off_type position, PositionType positionType) = 0;
+    virtual size_type GetAvailable() const = 0;
+    virtual size_type Read(void* pData, size_type nSize) = 0;
+    virtual bool      Flush() = 0;
+    virtual bool      Write(const void* pData, size_type nSize) = 0;
+};</pre>
+<p>Most of this document will revolve around the discussion of the IStream class. </p>
+<h2>Design considerations</h2>
+<p>The following are class-wide design considerations. Per-function issues are discussed in the function documentation itself.</p>
+<ul>
+  <li>The I in IStream means C++ <em>interface</em> and doesn't mean <em>input</em>; it's a common pattern in C++ interface design to prefix interface classes with an I like this. </li>
+  <li>The intent behind IStream is to provide a single interface for all fundamental IO operations.</li>
+  <li>Basic IStream implementations such as FileStream and MemoryStream are provided by the UTF. </li>
+  <li>Implementors can write custom implementations of the IStream interface for their subsystems.</li>
+  <li>IStreams can be <a href="EAStreamAdapter.html">adapters</a> for other IStreams. By this we mean, for example, that a utility class can dynamically wrap around an IStream interface (through ownership, not inheritance) and filter the IO request to do something useful such as endian swapping. </li>
+  <li>The design is based more of the C FILE library than on the C++ iostream library.
+    <ul>
+      <li>The C++ iostream library is a tedious hierarchy of templated classes based on what data type you are working with. This is not how IO is done in practice. </li>
+    </ul>
+  </li>
+  <ul>
+    <li>Separating input from ouput (like the C++ istream and ostream classes) has been tried in the past and it just makes things messy.</li>
+  </ul>
+  <li> EAStream uses the size_type and off_type data types instead of directly using  built-in C++ data types in order to provide portability to 64 bit IO systems within 32 addressing systems. </li>
+  <li>IStreams do not guarantee thread-safety. Unless a particular subclass explicitly guarantees thread safety, access to an IStream object from multiple threads must be coordinated by the user at a higher level, usually with a Mutex. </li>
+  <li>IStreams are reference counted. This allows them to be passed around and shared, which in practice often happens, particularly when <a href="EAStreamAdapter.html">adapater streams</a> are in use.</li>
+  <li>IStreams are not currently EACOM objects, though there might be some advantage to having them be so. Primarily, they would get an AsInterface function which would provide for dynamic type identification. </li>
+  <li>The IStream interface includes SetSize and SetPosition functions, even though the underlying stream may not have random access. This is done because the simplicity of having a single interace for all stream IO is deemed to outweigh other considerations. A stream without random access is advised to simply return false with these two functions and to document that it is not random access and thus cannot be used in such situations. </li>
+  <li>There is a Close function, but no Open function. It is deemed that all streams are universally closable, but not universally openable. Specific IStream implementations can provide an Open function if that's a useful thing. </li>
+</ul>
+<h2>Best Practices</h2>
+<p>We list some best practices regarding stream usage.</p>
+<ul>
+  <li>Systems should agree on how ownership of streams is managed. It's often best if the entity that opens a stream also closes it. </li>
+  <li>If you want to declare a stream object on the stack, consider AddRefing it before passing it to others who might AddRef/Release it.</li>
+</ul>
+<p></p>
+<h2>Subclassing IStream </h2>
+<p> We will discuss two ways of extending the IStream interface: subclassing and adapting. In this section we cover subclassing, and in the next we cover adapting. </p>
+<p>Subclassing an IStream is probably best described by example. In the class below we have a <a href="EAFileStream.html">FileStream</a>, which implements the IStream interface for disk files. The code that's highlighed in <span class="style1">blue</span> is the new code added by the FileStream class on top of what already exists in IStream. </p>
+<pre class="code-example">class FileStream : public IStream
+{
+public:
+<span class="style1">    enum Type
+    { 
+        kTypeFileStream = 0x34722300
+    };
+ 
+    enum Share
+    {
+        kShareNone   = 0x00,     /// No sharing.
+        kShareRead   = 0x01,     /// Allow sharing for reading.
+        kShareWrite  = 0x02,     /// Allow sharing for writing.
+        kShareDelete = 0x04      /// Allow sharing for deletion.
+    };
+ 
+    enum UsageHints
+    {
+        kUsageHintNone       = 0x00,
+        kUsageHintSequential = 0x01,
+        kUsageHintRandom     = 0x02
+    };
+</span> 
+public:
+<span class="style1">    FileStream(const char* pPath8 = NULL);
+    FileStream(const char16_t* pPath16);
+</span> 
+<span class="style1">    // FileStream
+    // Does not copy information related to an open file, such as the file handle.
+    FileStream(const FileStream& fs);
+</span>
+    virtual ~FileStream();
+
+<span class="style1">    // operator=
+    // Does not copy information related to an open file, such as the file handle.
+    FileStream& operator=(const FileStream& fs);
+</span>
+    virtual int       AddRef();
+    virtual int       Release();
+
+<span class="style1">    virtual void      SetPath(const char* pPath8);
+    virtual void      SetPath(const char16_t* pPath16);
+    virtual size_t    GetPath(char* pPath8, size_t nPathLength);
+    virtual size_t    GetPath(char16_t* pPath16, size_t nPathLength);
+
+    virtual bool      Open(int nAccessFlags = kAccessFlagRead, int nCreationDisposition = kCDDefault,
+                           int nSharing = kShareRead, int nUsageHints = kUsageHintNone); 
+</span>    virtual bool      Close();
+    virtual uint32_t  GetType() const { return kTypeFileStream; }
+    virtual int       GetAccessFlags() const;
+    virtual int       GetState() const;
+
+    virtual size_type GetSize() const;
+    virtual bool      SetSize(size_type size);
+
+    virtual off_type  GetPosition(PositionType positionType = kPositionTypeBegin) const;
+    virtual bool      SetPosition(off_type position, PositionType positionType = kPositionTypeBegin);
+
+    virtual size_type GetAvailable() const;
+
+    virtual size_type Read(void* pData, size_type nSize);
+    virtual bool      Write(const void* pData, size_type nSize);
+    virtual bool      Flush();
+};</pre>
+<p>The UTF provides a formal <a href="EAFileStream.html">FileStream</a> class like the one above. Other subclasses of IStream are implemented in the UTF, including a few in the ResourceMan module. Also of note is <a href="EAStreamMemory.html">MemoryStream</a>, which turns an arbitrary block of memory into an IStream. </p>
+<h2>Adapting IStream </h2>
+<p> Another way to extend IStreams is to <em>adapt</em> them. By this we mean write a wrapper around them instead of subclass them. The strength of adapters is that they can be bound to a stream dynamically and thus impart their functionality onto any other stream, including other stream adapters. We discuss two types of adapaters here: class-based adapters and function-based adapters.</p>
+<p>Here is an example of an adapter found in <a href="EAStreamChild.html">EAStreamChild</a>. Note the code in <span class="style1">blue</span>, which is related to the StreamChild adapting another stream: </p>
+<pre class="code-example"><span class="code-example-comment">/// StreamChild
+///
+/// Implements a fixed-size read-only stream which is a 'child' of a parent
+/// stream. This is useful if you have a system whereby a single large file
+/// consists of smaller files or a single large database record consists of
+/// multiple sub-records and you want each sub-record to look like a standalone
+/// stream to the user.
+</span> 
+class StreamChild : public IStream
+{
+public:
+    enum { kTypeStreamChild = 0x3472233a };
+
+    StreamChild(<span class="style1">IStream* pStreamParent = NULL</span>, size_type nPosition = 0, size_type nSize = 0);
+   ~StreamChild();
+
+    int       AddRef();
+    int       Release();
+    <span class="style1">bool      Open(IStream* pStreamParent, size_type nPosition, size_type nSize);</span>
+    bool      Close();
+    uint32_t  GetType() const { return kTypeStreamChild; }
+    int       GetAccessFlags() const;
+    int       GetState() const;
+    size_type GetSize() const;
+    bool      SetSize(size_type);
+    off_type  GetPosition(PositionType positionType = kPositionTypeBegin) const;
+    bool      SetPosition(off_type position, PositionType positionType = kPositionTypeBegin);
+
+    size_type GetAvailable() const;
+    size_type Read(void* pData, size_type nSize);
+
+    bool      Flush();
+    bool      Write(const void* pData, size_type nSize);
+
+protected:
+    int         mnRefCount;
+    int         mnAccessFlags;
+    <span class="style1">IStream*    mpStreamParent;</span>
+    size_type   mnPositionParent;                
+    size_type   mnPosition;
+    size_type   mnSize;
+};</pre>
+<p>Other class adapters provided by the UTF include:</p>
+<ul>
+  <li><a href="EACompression.html">CompressionStream</a>  -- Makes a unique stream out of a segment within another stream.</li>
+  <li><a href="EAStreamEncoding.html">EncodingStream</a> -- Encodes and decodes text formats to and from another stream. </li>
+  <li><a href="EAStreamBuffer.html">BufferedStream</a> -- Provides smart stream buffering (better than what you get with the C/C++ standard libraries).</li>
+</ul>
+<p>Here is an example of some of the function adapters found in <a href="EAStreamAdapter.html">EAStreamAdapter</a>:</p>
+<pre class="code-example"><span class="code-example-comment">// Read a uint32_t and converts it from big endian to whatever local endian is.
+</span>bool ReadUint32(IStream* pIS, uint32_t* value, size_type count, Endian endianSource = kEndianBig);
+ 
+<span class="code-example-comment">// Read a line of text and move the stream to the beginning of the next line.
+</span>size_type ReadLine(IStream* pIS, char16_t* pLine, size_type nMaxCount, Endian endianSource = kEndianBig);
+ 
+<span class="code-example-comment">// Read a uint64_t from a stream.
+</span>EA::IO::IStream&amp; operator&gt;&gt;(EA::IO::IStream&amp; s, uint64_t&amp; val);
+
+<span class="code-example-comment">// Write a nul-terminated C string to a stream.
+</span>inline EA::IO::IStream&amp; operator&lt;&lt;(EA::IO::IStream&amp; s, const char16_t* str);</pre>
+<h2>Example usage </h2>
+<p>Here we provide an example of writing to a stream.</p>
+<pre class="code-example">bool SaveGame(const char16_t* pFilePath)
+{
+    bool result = false;
+ 
+    AutoRefCount&lt;FileStream&gt; pStream = new FileStream(pFilePath);
+ 
+    if(pStream-&gt;Open(kAccessFlagReadWrite, kCDOpenAlways))
+    {
+        result = gAI.Save(pStream);
+ 
+        if(result)
+            result = gSimulation.Save(pStream);
+ 
+        if(result)
+            result = gSceneManager.Save(pStream);
+ 
+        pStream-&gt;Close();
+    }
+ 
+    return result;
+}</pre>
+  <p>Here we provide an example of reading from a stream. </p>
+  <pre class="code-example">#include &lt;Foundation/EAStreamAdapter.h&gt;
+ 
+bool AI::Load(IStream* pStream)
+{
+    bool result = false;
+  
+    mDepth = ReadFloat(pStream);
+    mWidth = ReadFloat(pStream);
+
+    pStream-&gt;SetPosition(64, kPositionTypeCurrent); <span class="code-example-comment">// Skip 64 bytes.</span>
+ 
+    mTimer = ReadUint32(pStream);
+    mTaper = ReadUint16(pStream);
+
+    return result;
+}</pre>
+  <h2>Interface</h2>
+<p>Typedefs:</p>
+<pre class="code-example"><span class="code-example-comment">/// off_type
+/// Used to denote data position offsets. This value must be signed.
+/// We define this so that we can smoothly migrate to 64 bit data.
+</span>typedef &lt;platform-specific&gt; off_type;   
+ 
+<span class="code-example-comment">/// size_type
+/// Used to denote data position values. This value must be unsigned. 
+/// sizeof(off_type) should equal sizeof(size_type).</span>
+typedef &lt;platform-specific&gt; size_type;
+
+<span class="code-example-comment">/// kSizeTypeError
+/// Used to designate an error condition for many functions that return size_type.
+</span>const size_type kSizeTypeError = (size_type)-1;
+</pre>
+<p>Enumerations:</p>
+<pre class="code-example"><span class="code-example-comment">/// enum AccessFlags
+/// Defines stream access flags, much like file access flags.
+</span>enum AccessFlags
+{
+    kAccessFlagNone      = 0x00,  <span class="code-example-comment">/// No specified flags. Also used to indicate that a given IO stream is closed.</span>
+    kAccessFlagRead      = 0x01,  <span class="code-example-comment">/// Used for identifying read access to an entity.</span>
+    kAccessFlagWrite     = 0x02,  <span class="code-example-comment">/// Used for identifying write access to an entity.</span>
+    kAccessFlagReadWrite = 0x03   <span class="code-example-comment">/// Used for identifying both read and write access to an entity.</span>
+};
+ 
+<span class="code-example-comment">/// enum CD (creation disposition)
+/// Specifies aspects of how to create or not create a file during opening of it.
+</span>enum CD
+{
+    kCDCreateNew        = 1,      <span class="code-example-comment">/// Fails if file already exists.</span>
+    kCDCreateAlways     = 2,      <span class="code-example-comment">/// Never fails, always opens or creates and truncates to 0.</span>
+    kCDOpenExisting     = 3,      <span class="code-example-comment">/// Fails if file doesn't exist, keeps contents.</span>
+    kCDOpenAlways       = 4,      <span class="code-example-comment">/// Never fails, creates if doesn't exist, keeps contents.</span>
+    kCDTruncateExisting = 5,      <span class="code-example-comment">/// Fails if file doesn't exist, but truncates to 0 if it does.</span>
+    kCDDefault          = 6       <span class="code-example-comment">/// Default (implementation-specific) disposition</span>
+};
+ 
+<span class="code-example-comment">/// enum PositionType
+/// Defines the positional basis for a user GetPosition or SetPosition action.
+</span>enum PositionType
+{
+    kPositionTypeBegin   = 0,    <span class="code-example-comment">/// For GetPosition refers to absolute index of next byte to read; always positive. For SetPosition, refers to absolute index of next byte to be written; always positive.</span>
+    kPositionTypeCurrent = 1,    <span class="code-example-comment">/// For GetPosition always returns zero. For SetPosition, refers to position relative to current position; can be positive or negative.</span>
+    kPositionTypeEnd     = 2     <span class="code-example-comment">/// For GetPosition returns to position relative to end (i.e. the negative of bytes left to read); always negative. For SetPosition, refers to position relative to end; can be positive or negative.</span>
+};
+ 
+<span class="code-example-comment">/// enum LineEnd
+/// Defines textual line ending property types.
+</span>enum LineEnd
+{
+    kLineEndNone    = 0,     <span class="code-example-comment">/// Refers to no line termination. When writing, it means to append nothing.</span>
+    kLineEndAuto    = 1,     <span class="code-example-comment">/// Refers to automatic line termination. When writing, it means to append kLineTerminationNewline if there isn't one already.</span>
+    kLineEndNewline = 2,     <span class="code-example-comment">/// Refers to "\n" line termination. When writing, it means to append a newline always.</span>
+    kLineEndUnix    = 2,     <span class="code-example-comment">/// Same as kLineEndNewline.</span>
+    kLineEndWindows = 3      <span class="code-example-comment">/// Refers to "\r\n" line termination. When writing, it means to append a newline always.</span>
+};
+ 
+<span class="code-example-comment">/// enum State
+/// Defines state values or function return values. Zero means success and non-zero means failure in general.
+/// Note that various stream types may define their own errors in addition to these generic errors.
+</span>enum State
+{
+    kStateSuccess =  0,
+    kStateError   = -1,
+    kStateNotOpen = -2
+};
+ 
+<span class="code-example-comment">/// enum Endian
+/// Defines endian-ness. This is appropriate for working with binary numerical data. 
+</span>enum Endian
+{
+    kEndianBig,     <span class="code-example-comment">/// Big endian.</span>
+    kEndianLittle,  <span class="code-example-comment">/// Little endian.</span>
+    kEndianLocal    <span class="code-example-comment">/// Whatever endian is native to the machine.</span>
+};
+</pre>
+<p> IStream:</p>
+<pre class="code-example">class IStream
+{
+public:
+<span class="code-example-comment">    /// ~IStream
+    /// Virtual destructor. Having this destructor allows us to delete an IStream pointer
+    /// without knowing its base class. Due to the C++ language design, you cannot have
+    /// a pure virtual destructor but instead must implement it, at the least with { }.
+</span>    virtual ~IStream();
+
+<span class="code-example-comment">    /// AddRef
+    /// Returns the new reference count. Implementations of the IStream interface are not 
+    /// normally required to make their AddRef implementation thread-safe, as the sharing 
+    /// of streams between threads is something that must be coordinated at a higher level.
+    ///
+    /// It often happens that users of streams would like to reference-count them so that
+    /// streams can be handed off from a creator to an owner or can be shared between owners.
+    ///
+    /// Note that the use of reference counting by a system is optional and is determined 
+    /// by the system and ideally documented as such by the system or the stream creator.
+    /// A call to AddRef commits a system to using AddRef/Release to maintain the lifetime
+    /// of the object thereafter.
+</span>    virtual int AddRef() = 0;
+
+<span class="code-example-comment">    /// Release
+    /// Returns the new reference count, may be 0, in which case the object has been destroyed.
+    /// Every call to AddRef must be matched by a call to Release.
+</span>    virtual int Release() = 0;
+
+<span class="code-example-comment">    /// GetType
+    /// Returns the type of the stream, which is different for each Stream subclass.
+    /// This function can be used for run-time type identification. A type of zero means
+    /// the type is unknown or invalid.
+</span>    virtual uint32_t GetType() const = 0;
+
+<span class="code-example-comment">    /// AccessFlags
+    /// Returns one of enum AccessFlags.
+    /// This function also tells you if the stream is open, as a return value 
+    /// of zero means the stream is not open. It is not allowed that a stream  
+    /// be open with no type of access.
+</span>    virtual int GetAccessFlags() const = 0;
+
+<span class="code-example-comment">    /// GetState
+    /// Returns the error state of the stream.
+    /// Returns kStateSuccess if OK, else an error code.
+    /// This function is similar to 'errno' or a 'get last error' facility.
+</span>    virtual int GetState() const = 0;
+
+<span class="code-example-comment">    /// Close
+    /// Closes the stream and releases resouces associated with it.
+    /// Returns true upon success, else false.
+    /// If the return value is false, GetState will give the error code.
+    /// If an IStream encounters an error during operations on an open
+    /// stream, it is guaranteed that you can safely call the Close function 
+    /// on the stream.
+</span>    virtual bool Close() = 0;
+
+<span class="code-example-comment">    /// GetSize
+    /// Returns the size of the stream, which is not the same as the size
+    /// of bytes remaining to be read from the stream. Returns (size_type)-2 
+    /// if the stream is of indeterminate size. Returns (size_type)-1 
+    /// (a.k.a. kSizeTypeError) upon error.
+</span>    virtual size_type GetSize() const = 0;
+
+<span class="code-example-comment">    /// SetSize
+    /// Sets the size of the stream, if possible. It is debatable whether this
+    /// function should be present in IStream or only in suclasses of 
+    /// StreamBase which are writable. For consistency with GetSize, we put 
+    /// the function here. But also consider that a SetSize function is not 
+    /// necessarily a data writing function, depending on the stream implementation.
+</span>    virtual bool SetSize(size_type size) = 0;
+
+<span class="code-example-comment">    /// GetPosition
+    /// Gets the current read/write position within the stream. The read and 
+    /// write positions of a stream must be the same value; you cannot have a
+    /// read position that is different from a write position. However, a 
+    /// Stream subclass can provide such functionality if needed. 
+    /// Returns (size_type)-1 (a.k.a. kSizeTypeError) upon error.
+</span>    virtual off_type GetPosition(PositionType positionType = kPositionTypeBegin) const = 0;
+
+<span class="code-example-comment">    /// SetPosition
+    /// Sets the read/write position of the stream. If the specified position is 
+    /// beyond the size of a fixed stream, the position is set to the end of the stream.
+    /// A writable stream subclass may provide a policy whereby setting the position
+    /// beyond the end of the stream results in an increase in the stream size.
+</span>    virtual bool SetPosition(off_type position, PositionType positionType = kPositionTypeBegin) = 0;
+
+<span class="code-example-comment">    /// GetAvailable
+    /// Returns the number of bytes available for reading.
+    /// Returns (size_type)-1 (a.k.a. kSizeTypeError) upon error.
+    /// This function is non-blocking; it should return immediately.
+</span>    virtual size_type GetAvailable() const = 0;
+
+<span class="code-example-comment">    /// Read
+    /// Reads bytes from the stream given by the input count 'nSize'.
+    /// If less then nSize bytes are available, then those bytes will be read.
+    /// Returns the number of bytes read. A return value of zero means that there
+    /// were no bytes to be read or no bytes were requested to be read. 
+    /// Returns (size_type)-1 (a.k.a. kSizeTypeError) if there was an error. 
+    /// You can use this return value or IStream::GetState to determine the error.
+    /// Input size values equal to (size_type)-1 (a.k.a. kSizeTypeError) are not valid input.
+    /// Upon error, the stream pointer is at the position it was upon the error occurrence.
+</span>    virtual size_type Read(void* pData, size_type nSize) = 0;
+
+<span class="code-example-comment">    /// Flush
+    /// Flush any non-empty stream write buffers. 
+    /// If the return value is false, GetState will give the error code.
+    /// This function implements the flushing as per the underlying file system.
+    /// The behavior of the Flush function varies with the underlying platform.
+    ///
+    /// A common use of Flush is write a file to disk immediately in order to prevent
+    /// the file from being corrupted if the application crashes before the file
+    /// is closed. However, on desktop platforms such as Windows this strategy is
+    /// unnecesary, as the Windows OS file flush doesn't write the file to disk as 
+    /// might be expected. This actually is not a problem, because the Windows OS
+    /// manages files outside the process and if your process crashes the OS will 
+    /// take care of safely closing the files. Only if the machine power is lost or
+    /// if certain kinds of kernel-level crashes occur may you lose file data.            
+</span>    virtual bool Flush() = 0;
+
+<span class="code-example-comment">    /// Write
+    /// Writes bytes to the stream. 
+    /// If false is returned, you can use IStream::GetState to determine the error.
+    /// Upon error, the stream pointer is at the position it was upon the error occurrence.
+</span>    virtual bool Write(const void* pData, size_type nSize) = 0;</pre>
+<p></p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p> </p>
+</body>
+</html>
+
+
+

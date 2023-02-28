@@ -1,0 +1,183 @@
+<project>
+    <fileset name="dirtybuild-fileset-c" basedir="${package.dir}">
+        <includes fromfile="${package.dir}/scripts/project/${dirtyplat}/source.txt" unless="${dirtysdk-novoip??false} and @{FileExists('${package.dir}/scripts/project/${dirtyplat}/source-novoip.txt')}"/>
+        <includes fromfile="${package.dir}/scripts/project/${dirtyplat}/source-novoip.txt" if="${dirtysdk-novoip??false} and @{FileExists('${package.dir}/scripts/project/${dirtyplat}/source-novoip.txt')}"/>
+        <includes fromfile="${package.dir}/scripts/project/source.txt"/>
+    </fileset>
+
+    <fileset name="dirtybuild-fileset-cpp" basedir="${package.dir}">
+        <includes fromfile="${package.dir}/scripts/project/sourcecpp.txt"/>
+        <includes fromfile="${package.dir}/scripts/project/${dirtyplat}/sourcecpp.txt" if="@{FileExists('${package.dir}/scripts/project/${dirtyplat}/sourcecpp.txt')}"/>
+    </fileset>
+
+    <fileset name="dirtybuild-fileset-c-optimized" basedir="${package.dir}">
+        <includes fromfile="${package.dir}/scripts/project/sourceopt.txt"/>
+    </fileset>
+
+    <fileset name="dirtybuild-fileset-objc" basedir="${package.dir}">
+        <includes fromfile="${package.dir}/scripts/project/${dirtyplat}/sourceobjc.txt" if="@{FileExists('${package.dir}/scripts/project/${dirtyplat}/sourceobjc.txt')}"/>
+    </fileset>
+
+    <Library name="dirtysock" frompartial="DSLibrary">
+        <sourcefiles basedir="${package.dir}">
+            <do if="${config-system} == 'capilano' and ${gdk.enabled??false} == false">
+                <includes fromfileset="dirtybuild-fileset-cpp" unless="${Dll??false}" optionset="WinRTCppLibrary"/>
+                <includes fromfileset="dirtybuild-fileset-cpp" if="${Dll??false}" optionset="WinRTRuntimeComponent"/>
+            </do>
+            <do unless="${config-system} == 'capilano' and ${gdk.enabled??false} == false">
+                <includes fromfileset="dirtybuild-fileset-cpp" unless="${Dll??false}" optionset="Library"/>
+                <includes fromfileset="dirtybuild-fileset-cpp" if="${Dll??false}" optionset="DynamicLibrary"/>
+            </do>
+
+            <includes fromfileset="dirtybuild-fileset-c"/>
+            <includes fromfileset="dirtybuild-fileset-c-optimized" optionset="dirtysock.optimizedclibrary"/>
+            <includes fromfileset="dirtybuild-fileset-objc" optionset="dirtysock.objectiveclibrary"/>
+        </sourcefiles>
+
+        <includedirs>
+            <!-- public include directories -->
+            ${package.dir}/include
+
+            <!-- private include directories -->
+            ${package.dir}/source/crypt
+            ${package.dir}/source/dirtysock
+            ${package.dir}/source/misc
+            ${package.dir}/source/voip
+
+            <do if="${config-system} == 'capilano' and ${gdk.enabled??false} == false">
+                ${package.CapilanoSDK.extensionsdkdir}/Xbox.Game.Chat.2.Cpp.API/8.0/DesignTime/CommonConfiguration/Neutral/Include
+            </do>
+        </includedirs>
+
+        <headerfiles>
+            <includes name="${package.dir}/include/DirtySDK/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/comm/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/crypt/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/dirtysock/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/dirtysock/${dirtyplat}/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/game/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/graph/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/misc/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/misc/${dirtyplat}/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/proto/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/util/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/voip/*.h"/>
+            <includes name="${package.dir}/include/DirtySDK/xml/*.h"/>
+            <includes name="${package.dir}/source/*/*.h"/>
+            <includes name="${package.dir}/source/**/${dirtyplat}/*.h"/>
+        </headerfiles>
+
+        <sdkreferences if="${config-system} == 'capilano' and ${gdk.enabled??false} == false">
+            Xbox Services API, Version=8.0
+        </sdkreferences>
+
+        <dependencies>
+            <auto>
+                EABase
+                EAThread
+
+                <!-- shared kettle (ps4) / capilano (xboxone) dependencies -->
+                <do if="${config-system} == 'kettle' or ${config-system} == 'capilano' or ${config-system} == 'xbsx' or ${config-system} == 'nx' or ${config-system} == 'ps5' or ${config-system} == 'stadia'">
+                    coreallocator
+                    EASTL
+                    EAUser
+                </do>
+
+                <!-- ps4 dependencies -->
+                <do if="${config-system} == 'kettle'">
+                    EAAssert
+                    EAMessage
+                    EASystemEventMessageDispatcher
+                    PlayStation4AudioInEx
+                    PlayStation4AppContentEx
+                </do>
+
+                <!-- ps5 dependencies -->
+                <do if="${config-system} == 'ps5'">
+                    <!-- bring in pft library if requested -->
+                    <do if="${dirtysdk-playfirsttrial??false}">
+                        Ps5NpEntitlementAccessEx
+                    </do>
+                </do>
+                <do if="${gdk.enabled??false}"> 
+                    GDK/GDK.extension.Xbox.Services.API.C
+                    GDK/GDK.extension.Xbox.Game.Chat.2.Cpp.API
+                </do>
+
+            </auto>
+        </dependencies>
+
+        <libraries if="${Dll??false}" append="true">
+            <do if="${config-system} == 'pc' or ${config-system} == 'pc64'">
+                <includes name="iphlpapi.lib" asis="true"/>
+                <includes name="ws2_32.lib" asis="true"/>
+            </do>
+
+            <do if="${config-system} == 'pc' or ${config-system} == 'pc64' or ${config-system} == 'capilano'">
+                <includes name="bcrypt.lib" asis="true"/>
+            </do>
+
+            <do if="${config-system} == 'capilano' or ${config-system} == 'xbsx'">
+                <includes name="xaudio2.lib" asis="true"/>
+                <includes name="${package.CapilanoSDK.extensionsdkdir}/Xbox.Game.Chat.2.Cpp.API/8.0/DesignTime/CommonConfiguration/Neutral/Lib/GameChat2.lib" asis="true" unless="${gdk.enabled??false}"/>
+                <includes name="XGamePlatform.lib" asis="true" if="${gdk.enabled??false}"/>
+            </do>
+        </libraries>
+
+        <config>
+            <defines>
+                <do if="${dirtysdk_debug_enable??false}">
+                    DIRTYCODE_LOGGING=1
+                </do>
+
+                <do if="${dirtysdk_debug_disable??false}">
+                    DIRTYCODE_LOGGING=0
+                </do>
+
+                <do if="${config-system} == 'kettle' or ${config-system} == 'ps5'">
+                    <do if="${dirtysdk-playfirsttrial??false}">
+                        DIRTYCODE_PLAYFIRSTTRIAL=1
+                    </do>
+                    <do unless="${dirtysdk-playfirsttrial??false}">
+                        DIRTYCODE_PLAYFIRSTTRIAL=0
+                    </do>
+                </do>
+
+                <!-- If we don't define it, the netgamedist code will set its own default -->
+                <do if="@{PropertyExists('dirtysdk-distpktwindow-size')}">
+                    PACKET_WINDOW=${dirtysdk-distpktwindow-size}
+                </do>
+
+                <do if="${config-system} == 'android' or ${config-system} == 'kettle' or ${config-system} == 'unix' or ${config-system} == 'unix64'">
+                    _GNU_SOURCE
+                </do>
+            </defines>
+
+            <warningsuppression>
+                <!-- ================= Common Clang & GCC  =================== -->
+                <do if="${config-compiler} == 'clang' or ${config-compiler} == 'gcc'">
+                    -Wno-unused-parameter
+                </do>
+
+                <!-- ================= Common MSVC  =================== -->
+                <do if="${config-compiler} == 'vc'">
+                    -wd4054     <!-- type cast from function pointer to void pointer -->
+                    -wd4055     <!-- data/void pointer cast to function pointer (type casting does *not* suppress this warning) -->
+                    -wd4201     <!-- nonstandard extension used : nameless struct/union (supported c11 feature) -->
+                    -wd4295     <!-- array is too small to include terminating null character -->
+                </do>
+
+                <!-- ================= CAPILANO =================== -->
+                <do if="${config-system} == 'capilano' and !${gdk.enabled??false}">
+                    -wd4265     <!-- class has virtual functions, but destructor is not virtual -->
+                    -wd4555     <!-- expression has no effect; expected expression with side-effect -->
+                </do>
+                
+                <!-- ================= PC =================== -->
+                <do if="${config-system} == 'pc' or ${config-system} == 'pc64'">
+                    -wd4996     <!-- SAPI uses a deprecated function -->
+                </do>
+            </warningsuppression>
+        </config>
+    </Library>
+</project>

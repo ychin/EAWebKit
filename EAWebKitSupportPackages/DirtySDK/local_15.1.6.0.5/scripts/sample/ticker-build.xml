@@ -1,0 +1,36 @@
+<project>
+    <Program name="ticker" frompartial="DSProgram">
+        <headerfiles basedir="${package.dir}">
+            <includes name="sample/ticker/source/${dirtyplat}/*.h"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.dir}">
+            <includes fromfile="${package.dir}/sample/ticker/project/${dirtyplat}/source.txt" if="@{FileExists('${package.dir}/sample/ticker/project/${dirtyplat}/source.txt')}" optionset="CProgramExtra"/>
+            <includes fromfile="${package.dir}/sample/ticker/project/${dirtyplat}/sourcecpp.txt" if="@{FileExists('${package.dir}/sample/ticker/project/${dirtyplat}/sourcecpp.txt')}"/>
+        </sourcefiles>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+
+                <do if="${config-system} == 'kettle'">
+                    EASTL
+                    coreallocator
+                    EASystemEventMessageDispatcher
+                    EAAssert
+                    EAThread
+                    EAMessage
+                    EAControllerUserPairing
+                </do>
+            </auto>
+        </dependencies>
+
+        <config>
+            <warningsuppression>
+                <do if="${config-compiler} == 'gcc'">
+                    -Wno-unused-but-set-variable
+                </do>
+            </warningsuppression>
+        </config>
+    </Program>
+</project>

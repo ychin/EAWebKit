@@ -1,0 +1,356 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>kettle-clang-debug</Configuration>
+    <Platform>ORBIS</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="kettle-clang-debug|ORBIS">
+      <Configuration>kettle-clang-debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="kettle-clang-opt|ORBIS">
+      <Configuration>kettle-clang-opt</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2CEB818E-B262-F598-0B1B-79B06EC9BDA2}</ProjectGuid>
+    <Keyword>ORBISProj</Keyword>
+    <ProjectName>EAIO</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EAIO_FILEPATH_ENABLED=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UTF_USE_EAASSERT=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>kettle-clang-debug\lib\libEAIO.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-debug\lib" mkdir "kettle-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-debug\build\EAIO" mkdir "kettle-clang-debug\build\EAIO" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <OutDir>kettle-clang-debug\lib\</OutDir>
+    <IntDir>kettle-clang-debug\build\EAIO\v\</IntDir>
+    <TLogLocation>kettle-clang-debug\build\EAIO\v.tlog\</TLogLocation>
+    <TargetName>libEAIO</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-exceptions -Wno-error -fno-elide-type -fdata-sections -ffunction-sections -Wno-format -Wno-unneeded-internal-declaration -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EAIO_FILEPATH_ENABLED=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UTF_USE_EAASSERT=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>kettle-clang-opt\lib\libEAIO.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-opt\lib" mkdir "kettle-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-opt\build\EAIO" mkdir "kettle-clang-opt\build\EAIO" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <OutDir>kettle-clang-opt\lib\</OutDir>
+    <IntDir>kettle-clang-opt\build\EAIO\v\</IntDir>
+    <TLogLocation>kettle-clang-opt\build\EAIO\v.tlog\</TLogLocation>
+    <TargetName>libEAIO</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\EAIO.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFile.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileAsync.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileBase.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileDirectory.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileNotification.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileStream.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAFileUtil.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStream.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamAdapter.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamBuffer.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamChild.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\EAStreamMemory.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\doc\UTFDoc.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Allocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAAsyncExecutor.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAAsyncStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAAsyncTypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileBase.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileDirectory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileNotification.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAFileUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAIniFile.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamAdapter.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamBuffer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamChild.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamCpp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamFixedMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\EAStreamNull.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\FnEncode.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\FnMatch.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\PathString.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Android\EAFileStreamAndroid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\compat\EAFilePath.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAAsyncExecutorImpl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOEARefCount.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOEASTLCoreAllocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOFileStreamImpl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOStreamImpl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\internal\EAIOZoneObject.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\NX\EAFileStreamNX.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Sony\EAAsyncExecutorSony.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Sony\EAFileStreamSony.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\StdC\EAAsyncExecutorStdC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\StdC\EAFileStreamStdC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Unix\EAAsyncExecutorUnix.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Unix\EAFileStreamUnix.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Win32\EAAsyncExecutorWin32.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\include\EAIO\Win32\EAFileStreamWin32.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\scripts\EAIO_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\Allocator.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\Allocator.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\Allocator.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAAsyncExecutor.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAAsyncExecutor.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAAsyncExecutor.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAAsyncStream.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAAsyncStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAAsyncStream.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileDirectory.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAFileDirectory.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAFileDirectory.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileNotification.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAFileNotification.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAFileNotification.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileStream.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAFileStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAFileStream.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAFileUtil.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAFileUtil.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAFileUtil.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAIniFile.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAIniFile.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAIniFile.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStream.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStream.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStream.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamAdapter.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamAdapter.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamAdapter.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamBuffer.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamBuffer.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamBuffer.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamChild.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamChild.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamChild.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamCpp.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamCpp.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamCpp.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamFixedMemory.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamFixedMemory.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamFixedMemory.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamMemory.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamMemory.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamMemory.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\EAStreamNull.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\EAStreamNull.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\EAStreamNull.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\FnEncode.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\FnEncode.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\FnEncode.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\FnMatch.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\FnMatch.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\FnMatch.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\PathString.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\PathString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\PathString.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\compat\EAFilePath.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\compat\EAFilePath.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\compat\EAFilePath.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAAsyncExecutorImpl.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\internal\EAAsyncExecutorImpl.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\internal\EAAsyncExecutorImpl.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAIOCoreAllocator.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\internal\EAIOCoreAllocator.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\internal\EAIOCoreAllocator.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAIOUtil.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\internal\EAIOUtil.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\internal\EAIOUtil.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAIO\local_3.01.13\source\internal\EAIOZoneObject.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAIO\internal\EAIOZoneObject.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAIO\internal\EAIOZoneObject.cpp.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+</Project>

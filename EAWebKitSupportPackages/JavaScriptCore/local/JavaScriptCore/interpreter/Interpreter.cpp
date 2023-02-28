@@ -636,7 +636,7 @@ void Interpreter::reportAssertToEAWebkit(ExecState* exec)
                 stackTrace[i].createStackFameData(exec, &nameArray[i], &urlArray[i], lineArray[i], columnArray[i]);
             }
 
-            EA::WebKit::ReportJSCallstack("EAWebKitAssert", stackTrace.size(), nameArray, urlArray, lineArray, columnArray);
+            EA::WebKit::ReportJSCallstack((char8_t*)"EAWebKitAssert", stackTrace.size(), nameArray, urlArray, lineArray, columnArray);
 
             // delete all the allocated function name, and url strings
             for (uint32_t i = 0; i < stackTrace.size(); i++)

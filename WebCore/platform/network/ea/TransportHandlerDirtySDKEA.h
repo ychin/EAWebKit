@@ -38,8 +38,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAWebKit/EAWebKitTransport.h>
 #include <EAWebKit/EAWebkitAllocator.h>
 
-#include <eastl/fixed_string.h>
-#include <eastl/fixed_map.h>
+#include <EASTL/fixed_string.h>
+#include <EASTL/fixed_map.h>
 
 namespace EA
 {
@@ -157,7 +157,7 @@ private:
 
 struct ProtoSSLRefT;
 
-#include <eastl/list.h>
+#include <EASTL/list.h>
 namespace EA
 {
 namespace WebKit

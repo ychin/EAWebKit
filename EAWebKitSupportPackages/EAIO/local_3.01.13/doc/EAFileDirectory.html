@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAFileDirectory</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+    <style type="text/css">
+<!--
+.style1 {color: #0033CC}
+-->
+    </style>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAFileDirectory</h1>
+
+<h2>Introduction</h2>
+<p>EAFileDirectory provides directory reading functionality. This is useful for both tools and runtime applications, particularly during development time in the case of runtime applications. With </p>
+<p>Directory reading is implemented via two means: low level FindFirstEntry / FindNextEntry functions and a high level DirectoryIterator class.</p>
+<pre class="code-example">EntryFindData* EntryFindFirst(const char16_t* pDirectory, const char16_t* pFilterPattern = NULL);
+bool           EntryFindNext(EntryFindData* pData);
+void           EntryFindFinish(EntryFindData* pData);
+</pre>
+<pre class="code-example">class DirectoryIterator
+{
+    bool Read(const char16_t* pDirectory, EntryList& entryList, 
+               const char16_t* pFilterPattern, int nDirectoryEntryFlags);
+
+    bool ReadRecursive(const char16_t* pBaseDirectory, EntryList& entryList, 
+                        const char16_t* pFilterPattern, int nDirectoryEntryFlags, 
+                        bool bIncludeBaseDirectory);
+};</pre>
+<p>Details for the above interfaces can be found below in the Interface section or in the EAFileDirectory.h file. See also <a href="EAFileBase.html">EAFileBase</a> for enumerations that are pertinent to EAFileDirectory. </p>
+<h2>Example usage</h2>
+<p>Low level functionality:</p>
+<pre class="code-example">EntryFindData* p;
+
+
+for(p = EntryFindFirst(L"/somedir/", L"*.html"); p; p = EntryFindNext(p))
+    printf("%ls", p->mName);
+
+EntryFindFinish(p);</pre>
+<p>High level functionality: </p>
+<pre class="code-example">DirectoryIterator dir;
+EntryList         entryList;
+ 
+dir.ReadRecursive(L"/somedir/", entryList,  L"*.html");
+
+for(EntryList::iterator it(entryList.begin()), itEnd(entryList.end()); it != itEnd; ++it)
+{
+    const DirectoryIterator::Entry&amp; entry = *it;
+
+    printf(&quot;%ls\n&quot;, entry.msName.c_str());
+}</pre>
+<h2>Interface </h2>
+<p>Low level functionality: </p>
+<pre class="code-example"><span class="code-example-comment">/// EntryFindFirst
+///
+/// This function returns an internally allocated EntryFindData* or returns NULL. 
+/// You must call EntryFindFinish to free the EntryFindData*; do not attempt to 
+/// delete the pointer yourself. This function allocates memory from the global
+/// heap; the amount of memory allocated is relative to the number of matching 
+/// entries in the given directory.
+///
+/// Note that this function and all other functions in the EAFile/EADirectory system requires
+/// a directory path name that ends in a path separator. This is by design as it simplifies
+/// the specification of and manipulation of paths.
+///
+</span>EntryFindData* EntryFindFirst(const char16_t* pDirectory, const char16_t* pFilterPattern = NULL);
+
+
+<span class="code-example-comment">/// EntryFindNext
+///
+/// Input is the 'EntryFindData*' returned from EntryFindFirst. 
+/// You must call EntryFindFinish to free the EntryFindData*; 
+/// do not attempt to delete the pointer yourself.
+///
+</span>EntryFindData* EntryFindNext(EntryFindData* pData);
+
+
+<span class="code-example-comment">/// EntryFindFinish
+///
+/// Input is the 'EntryFindData*' returned from EntryFindFirst. 
+/// This is the only safe way to free a EntryFindData*.
+///
+</span>void EntryFindFinish(EntryFindData* pData);</pre>
+<p>High level functionality:</p>
+<pre class="code-example"><span class="code-example-comment"><span class="style1">// Note that Entry and EntryList will be changed in the future to avoid memory allocation.</span></span>
+
+class DirectoryIterator
+{
+public:
+<span class="code-example-comment">    /// Entry
+    /// 
+    /// Represents a single file system directory entry, such as a file or a directory.
+    ///
+</span>    struct Entry
+    {
+        Entry(DirectoryEntry entry = kDirectoryEntryNone, const char16_t* pName = NULL);
+        DirectoryEntry mType;     <span class="code-example-comment">/// Either kDirectoryEntryFile or kDirectoryEntryDirectory.</span>
+        String16       msName;    <span class="code-example-comment">/// This may refer to the directory or file name alone, </span>
+    };                            <span class="code-example-comment">/// or may be a full path. It depends on the documented use.</span>
+
+    typedef eastl::list<entry> EntryList;
+
+<span class="code-example-comment">    /// Read
+    ///
+    /// Returns a list of the directory entries that match the input criteria.
+    /// This function will not store the results of this read internally.
+    /// This function is not recursive; it will not read the contents of subdirectories.
+    /// The returned list contains only the entry name and not the full path to that
+    /// entry. You can prepend the base path to get the full path.
+    /// The returned list will not contain special directory values "." and "..".
+    /// Note that this function and all other functions in the EAFile/EADirectory system requires
+    /// a directory path name that ends in a path separator. This is by design as it simplifies
+    /// the specification of and manipulation of paths.
+    ///
+</span>    bool Read(const char16_t* pDirectory, EntryList& entryList, const char16_t* pFilterPattern = NULL, 
+               int nDirectoryEntryFlags = kDirectoryEntryFile);
+
+<span class="code-example-comment">    /// ReadRecursive
+    ///
+    /// Returns a list of all paths that match the input criteria.
+    /// This function can be used both as a file system enumeration function and 
+    /// as a search function.
+    /// As indicated in the name, this function is recursive. It will search all 
+    /// subdirectories recursively for matching data. The returned list is in
+    /// an order consistent with a depth-first search. The returned list contains 
+    /// partial paths to each entry; you can prepend the base path to get the full path.
+    /// The returned list will not contain special directory values "." and "..".
+    /// Note that this function and all other functions in the EAFile/EADirectory system requires
+    /// a directory path name that ends in a path separator. This is by design as it simplifies
+    /// the specification of and manipulation of paths.
+    ///
+</span>    bool ReadRecursive(const char16_t* pBaseDirectory, EntryList& entryList, 
+                       const char16_t* pFilterPattern = NULL, int nDirectoryEntryFlags = kDirectoryEntryFile, 
+                       bool bIncludeBaseDirectory = true);
+};</pre>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
+
+
+

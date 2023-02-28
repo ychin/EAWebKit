@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EACallstackRecorder</title>    
+<link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+    <style type="text/css">
+<!--
+.style1 {color: #0033CC}
+-->
+    </style>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EACallstackRecorder</h1>
+<h2>Introduction</h2>
+<p>The CallstackRecorder records call stacks. By this we mean that the call stack in effect at any given location in code can be recorded. It can also subsequently report the call stack history that was recorded.</p>
+<p>The most common use of CallstackRecorder is to aid in  debugging, particularly reference count mismatch tracking. It often happens that trying to track the calls to a given AddRef and Release function by using breakpoints in the debugger is very tedious and having this automated saves a lot of time. CallstackRecorder can also track the number of unique ways that a given function is called so you can tell what all the code is that calls some function. </p>
+<p>CallstackRecorder is usually intrusive to source code; that is, you usually need to insert calls to it in your source code for it to work. As such, it is much like profiling statements that users often put into source code to profile segments of code. One way to avoid modifying source code is to use the ability of many compilers to set up a callback function of your choice whenever any function is called. This is called /callcap and /fastcap under Microsoft compilers, for example. </p>
+<p>Report output includes file/line information and also source code if available. See below for example output which demonstrates this. </p>
+<h2>Example usage </h2>
+<p>Here's example usage for how to use CallstackRecorder to trace a refcount history for a class:</p>
+<pre class="code-example"><span class="style1">CallstackRecorder gRecorder;</span> <span class="code-example-comment">// Call gRecorder.SetPredicate(pSomeClass) to track a single SomcClass instance.</span>
+ 
+int SomeClass::AddRef()<br>{
+&nbsp;&nbsp;&nbsp; <span class="style1">Callstack::RecordCurrentCallstack(gRecorder, &quot;SomeClass::AddRef&quot;, (uintptr_t)this);</span>
+
+&nbsp;&nbsp;&nbsp; return ++mRefCount;
+}
+
+int SomeClass::Release()
+{<br>&nbsp;&nbsp;&nbsp; <span class="style1">Callstack::RecordCurrentCallstack(gRecorder, &quot;SomeClass::Release&quot;, (uintptr_t)this);</span><br>
+&nbsp;&nbsp;&nbsp; if(mRefCount &gt; 1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return --mRefCount;
+&nbsp;&nbsp;&nbsp; delete this;
+&nbsp;&nbsp;&nbsp; return 0;
+}
+
+void AppShutdown()
+{
+    <span class="style1">Callstack::TraceCallstackRecording(gRecorder, pStream, false);</span> <span class="code-example-comment">// True = detailed output, false = summarized.</span>
+}</pre>
+<p></p>
+<h2>Example Output </h2>
+<p>There two forms of output, detailed and summarized. The detailed output displays every callstack event that occurred in order. The summarized output displays every unique callstack event and the number of times each occurred. The summarized output is usually more compact and readable; the detailed output is useful for when you want to know the order of calls. </p>
+<p>Here is example detailed output from the above example code: </p>
+<pre class="code-example">Callstack recording trace for Test:
+   0: SomeClass::AddRef
+      f:\Test\Source\EACallstackTest.cpp(287): p-&gt;AddRef();
+      f:\Test\Source\EACallstackTest.cpp(355): TestAddRef1();
+      f:\vs70builds\3077\vc\crtbld\crt\src\crtexe.c(398)
+      0x77e8141a
+
+   1: SomeClass::AddRef
+      f:\Test\Source\EACallstackTest.cpp(287): p-&gt;AddRef();
+      f:\Test\Source\EACallstackTest.cpp(355): TestAddRef1();
+      f:\vs70builds\3077\vc\crtbld\crt\src\crtexe.c(398)
+      0x77e8141a
+
+   2: SomeClass::Release
+      f:\Test\Source\EACallstackTest.cpp(269): p-&gt;Release();
+      f:\Test\Source\EACallstackTest.cpp(289): TestRelease1();
+      f:\Test\Source\EACallstackTest.cpp(355): return gErrorCount;
+      f:\vs70builds\3077\vc\crtbld\crt\src\crtexe.c(398)
+      0x77e8141a
+
+   3: SomeClass::AddRef
+      f:\Test\Source\EACallstackTest.cpp(287): p-&gt;AddRef();
+      f:\Test\Source\EACallstackTest.cpp(355): TestAddRef1();
+      f:\vs70builds\3077\vc\crtbld\crt\src\crtexe.c(398)
+      0x77e8141a
+
+   ...</pre>
+<p>Here is the equivalent summarized output:</p>
+<pre class="code-example">Callstack recording trace for Test:
+   SomeClass::AddRef, call count: 3
+      f:\Test\Source\EACallstackTest.cpp(287): p-&gt;AddRef();
+      f:\Test\Source\EACallstackTest.cpp(355): TestAddRef1();
+      f:\vs70builds\3077\vc\crtbld\crt\src\crtexe.c(398)
+      0x77e8141a
+
+   SomeClass::Release, call count: 1
+      f:\Test\Source\EACallstackTest.cpp(269): p-&gt;Release();
+      f:\Test\Source\EACallstackTest.cpp(289): TestRelease1();
+      f:\Test\Source\EACallstackTest.cpp(355): return gErrorCount;
+      f:\vs70builds\3077\vc\crtbld\crt\src\crtexe.c(398)
+      0x77e8141a
+
+   ...</pre>
+<h2>Interface</h2>
+<p>The CallstackRecorder has a high level interface and a low level interface. The example code shown earlier demonstrates the high level interface, which is often fine for many recording and reporting uses. The low level interface is useful for exerting more control over the recorder input or output. </p>
+<p>High level interface:</p>
+<pre class="code-example"><span class="code-example-comment">/// RecordCurrentCallstack
+///
+/// Adds the current callstack to a given CallstackRecorder.
+/// A typical use of this is to implement AddRef/Release tracking for 
+/// some C++ class object that is leaking due to refcounting mismatches.
+/// 
+/// The return value is the same as with the CallstackRecorder::AddEntry
+/// function.
+///
+</span>bool RecordCurrentCallstack(CallstackRecorder& csr, const char* pName, uintptr_t predicate = 0);
+
+
+<span class="code-example-comment">/// TraceCallstackRecording
+///
+/// Writes a recording to a given output stream. 
+/// If bDetail is true, every individual call is traced in order.
+/// If bDetail is false, only the unique set of calls are traced, 
+/// and they are traced in order of first appearance.
+///
+</span>bool TraceCallstackRecording(CallstackRecorder& csr, EA::IO::IStream* pOutput, bool bDetail);
+</pre>
+<p>Low level interface:</p>
+<pre class="code-example"><span class="code-example-comment">/// callstack_hash_t
+/// Defines the integral hash value used for callstack hashes.
+</span>typedef uint32_t callstack_hash_t;
+
+
+<span class="code-example-comment">/// GetCallstackHash
+/// Returns a hash value for a callstack.
+</span>callstack_hash_t GetCallstackHash(const void* callstack[], size_t entryCount);
+
+
+<span class="code-example-comment">/// CallstackEntry
+/// Defines a given callstack with a name and a hash value.
+</span>class CallstackEntry
+{
+public:
+    typedef fixed_vector&lt;const void*, 16, true&gt; Callstack;
+
+public:
+    CallstackEntry();
+    CallstackEntry(const char* pName, const void* pCallstack[], size_t entryCount);
+    CallstackEntry(const CallstackEntry& ce);
+    CallstackEntry& operator=(const CallstackEntry& ce);
+
+    callstack_hash_t GetHash() const;
+    void             SetHash(callstack_hash_t h);
+    const char*      GetName() const;
+    const Callstack& GetCallstack() const;
+    uint32_t         GetCount() const;
+    uint32_t         IncrementCount();
+
+    bool operator==(const CallstackEntry& ce) const;
+    bool operator!=(const CallstackEntry& ce) const;
+    bool operator< (const CallstackEntry& ce) const;
+};
+
+
+
+<span class="code-example-comment">/// CallstackRecorder
+///
+/// Implements a record of callstacks.
+/// A common usage of this is to track down all the calls to a given 
+/// function in order reference-counting debug memory leaks.
+///
+</span>class CallstackRecorder
+{
+public:
+    typedef hash_set&lt;CallstackEntry&gt; CallstackEntrySet;
+    typedef deque&lt;callstack_hash_t&gt;  CallstackEntryHistory;
+
+public:
+<span class="code-example-comment">    /// CallstackRecorder
+    /// Default constructor.
+</span>    CallstackRecorder(Allocator::ICoreAllocator* pCoreAllocator = NULL);
+
+<span class="code-example-comment">    /// ~CallstackRecorder
+    /// Virtual destructor.
+</span>    virtual ~CallstackRecorder();
+
+<span class="code-example-comment">    /// SetAllocator
+    /// Sets the memory allocator to use with this class.
+    /// This allocator is used to allocate CallstackEntrySet elements and 
+    /// CallstackEntryHistory elements.
+    /// This function must be called before any entries are added.
+</span>    virtual void SetAllocator(Allocator::ICoreAllocator* pCoreAllocator);
+
+<span class="code-example-comment">    /// AddEntry
+    /// Adds a new callstack entry to our recording. Returns true if the 
+    /// entry was added. It would only fail to be added if the predicate 
+    /// was specified and didn't match the expected value.
+    ///
+    /// Example usage:
+    ///     void* callstack[32];
+    ///     size_t n = GetCallstack(callstack, 32);
+    ///     pRecorder->AddEntry("AddRef", &(const void*&)*callstack, n);
+    ///
+</span>    virtual bool AddEntry(const char* pName, const void* callstack[], 
+                             size_t entryCount, uintptr_t predicate = 0);
+
+<span class="code-example-comment">    /// GetEntryCount
+    /// Returns the number of entries in our recording.
+</span>    virtual size_t GetEntryCount() const;
+
+<span class="code-example-comment">    /// GetEntry
+    /// Returns the given historical entry, where the valid entry index is 
+    /// in the range of [0, GetEntryCount).
+</span>    virtual const CallstackEntry* GetEntry(size_t i);
+
+<span class="code-example-comment">    /// GetCallstackEntrySet
+    /// Returns the set of unique callstack entries. This is useful for 
+    /// enumerating the set of unique call pathways to a given location.
+</span>    const CallstackEntrySet& GetCallstackEntrySet() const;
+
+<span class="code-example-comment">    /// GetName
+    /// Returns the name set for this recorder by SetName. If no name was
+    /// set, then an empty string is returned (and not a NULL pointer).
+</span>    const char* GetName() const;
+
+<span class="code-example-comment">    /// SetName
+    /// Sets a name for this recorder. The pName argument must not be NULL.
+    /// The name should be less than 24 characters for it to be stored without
+    /// doing a memory allocation.
+</span>    void SetName(const char* pName);
+
+<span class="code-example-comment">    /// GetPredicate
+    /// Returns the value set by SetPredicate. Will return 0 if the 
+    /// SetPredicate function wasn't called.
+</span>    uintptr_t GetPredicate() const;
+
+<span class="code-example-comment">    /// SetPredicate
+    /// Sets a value whereby if it is nonzero, then AddEntry functions will
+    /// not add entries unless the predicate matches. A more complicated 
+    /// mechanism for filtering entry additions required subclassing this
+    /// CallstackRecorder. 
+</span>    void SetPredicate(uintptr_t predicate);
+};
+</pre>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
+
+
+

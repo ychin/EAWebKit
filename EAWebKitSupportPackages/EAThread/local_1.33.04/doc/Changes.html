@@ -1,0 +1,1442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAThread Changes</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  <meta name="author" content="Paul Pedriana">
+  <meta name="description" content="Describes changes between EASTL versions.">
+  <style type="text/css">
+    .ToDo {color: #FF0000}
+    .small { font-size: smaller }
+  </style>
+</head>
+<body>
+
+   
+
+<h1>EAThread Changes</h1>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.33.04</span> (Jul 07, 2020)</p>
+<p> Changes </p>
+<ul>
+	<li>Implemented SetProcessor for NX.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.33.03</span> (Apr 18, 2020)</p>
+<p> Changes </p>
+<ul>
+	<li>Updated to use gdk.enabled propery instead of gsdk.enabled property.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.33.02</span> (Apr 09, 2020)</p>
+<p> Changes </p>
+<ul>
+  <li>Updating EABase platform macros instead of vendor macros directly.</li>
+  <li>Fixing futex data layout  preprocessor macros</li>
+  <li>Fixing non-bulk build compiler errors</li>
+  <li>Resolving stadia compiler errors</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.33.01</span> (Jan 24, 2020)</p>
+<p> Changes </p>
+<ul>
+  <li>Bug fix for user specified affinity masks containing invalid cpu cores causing threads to not start.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.33.00</span> (Jan 15, 2020)</p>
+<p> Changes </p>
+<ul>
+  <li>Xbsx support</li>
+  <li>Add EA::Thread::GetAvailableCpuAffinityMask() API.</li>
+  <li>Fix Unix version of SetThreadProcessor to skip over system CPU's.</li>
+  <li>Added Assert to Unix version of SetPlatformThreadAffinity() to check if we are trying to set thread affinity to run on an unavailable processor.</li>
+  <li>Added Assert to Unix version of SetThreadProcessor() to check if we are trying to set thread affinity to run on an unavailable processor.</li>
+  <li>SetThreadAffinityMask() now sanitizes the affinity mask and asserts if unavailable processors are selected in the mask or if the sanitized mask ends up zero.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.17</span> (Oct 22, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed issue in EA::Thread::SetProcessor which caused an invalid affinity mask to be used.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.16</span> (Oct 08, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed issue in EA::Thread::SetThreadProcessor which incorrectly used a cpu index as an affinity mask.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.15</span> (Oct 01, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Android callstack unwinding code for x64 now uses the x86 code path.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.14</span> (Sep 20, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Adding GSDK support.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.13</span> (Sep 06, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed compiler error in 32-bit _InterlockedExchange64X_INLINE fallback code.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.12</span> (Sep 06, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed callstack resolution taking a long time on NX.</li>
+  <li>Implemented a fallback for _InterlockedExchange64X_INLINE as Microsoft removed support in VS2019.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.11</span> (Jul 04, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Added thread local caches for to improve runtime performance of callstack generation on Win64.
+  	You can control the size of the cache via the EATHREAD_CALLSTACK_CACHE_MAX define.
+  	You can disable the cache entirely via EATHREAD_DISABLE_CALLSTACK_CACHE if legacy behaviour is desirable. 
+  </li>
+  <li>EA_THREAD_LOCAL prefers the C++11 thread_local keyword before compiler specific alternatives.</li>
+  <li>Removing eathread_sync_armgcc.h very old backwards compatibility header.</li>
+  <li>Updated the android implementation of EA::Thread::GetProcessorCount() use the Android NDK's android_getCpuCount function.  
+  This requires that EAThread compile the cpu-features code in the NDK.  Be aware that you may get duplicate symbol linker errors and will need to stop compiling the cpu-features in your own code.</li>
+  <li>Removing eathread_atomic_apple and eathread_atomic_gcc implementation files because the cpp11 code path is used instead.</li>
+  <li>Removing old Android emulated atomics fallback code.</li>
+  <li>Promoting memory barriers for Apple to use the cpp standard API.</li>
+  <li>Affinity Masks now supported on Linux, Apple, and Android platforms.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.09</span> (May 30, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Added support for EA_WINAPI_FAMILY_GAMES.</li>
+  <li>Removed the EA_WINAPI_FAMILY, EA_WINAPI_PARTITION and EA_WINAPI_FAMILY_PARTITION backward compatible defines from Config.h.</li>
+  <li>Removed deprecation infrastructure code.</li>
+  <li>Updated copyright information.</li>
+  <li>Adding 'pragma once' to more headers.</li>
+  <li>Removing legacy PowerPC code paths.</li>
+  <li>Removing OpenKode platform support.</li>
+  <li>Removing old EABase backwards compatibility code.</li>
+  <li>Migrating from KETTLE/CAPILANO to XBOXONE/PS4 platform defines.</li>
+  <li>Minor code changes to route memory requests to global new when package is used open sourced.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.08</span> (Apr 24, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed a race condition when setting the thread name after the thread entry has been started.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.07</span> (Mar 18, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Protect against exceptions that occur inside of RtlLookupFunctionEntry.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.06</span> (Feb 22, 2019)</p>
+<p> Changes </p>
+<ul>
+  <li>Adding self-assignment check for the resulting string copy when setting a thread name.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.05</span> (Nov 13, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Resolving issue where an inactive 'ThreadDynamicThreadData' meta-data element was selected from the tracking array due to thread ids being recycled.</li>
+  <li>Improved callstack resolution when not using a context for win32.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.04</span> (Aug 13, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Add Code Coverage to EAThread Package.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.03</span> (Apr 17, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Implemented EA::Thread::MakeThread to simplify using lambdas as thread entry points.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.02</span> (Mar 29, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed issues where the Android callstacks were off by 1.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.01</span> (Mar 23, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Fixed GetInstructionPointer for arm/clang.</li>
+  <li>Fully qualifying call to MS API 'SetThreadName' to prevent name lookup issues due to ADL.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.32.00</span> (Feb 15, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Added the ability to get the callstack on ARM.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.11</span> (Jan 29, 2018)</p>
+<p> Changes </p>
+<ul>
+  <li>Removed use of _dyld_get_all_image_infos which is no longer avilable in osx 10.13 (send-back from Sims 4).</li>
+  <li>EA::Thread::Mutex debug mechanism switched to use SysThreadID instead of ThreadId in order to prevent external thread registration which makes the primitive lower cost.</li>
+  <li>Migrated EA::Thread::AtomicInt<T> to use a platform agnostic atomics implementation.  Platform specific implementations are still available via a backwards compatibility macro but by default the platform agnostic implementation is used. They will be removed in a future release.<li>
+  <li>Removing legacy Gen3 headers:
+		<ul>
+			<li>eathread_atomicstruct.h</li>
+			<li>eathread_fiber.h</li>
+			<li>eathread_lockfree.h</li>
+		</ul>
+  </li>
+
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.10</span> (Dec 05, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Added support for the NX platform.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.09</span> (Nov 23, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Removed the deprecated ThreadParameter member mbSuspended.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.08</span> (September 22, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Bug fix for Razor CPU captures not showing thread names when attached from the start of the process.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.07</span> (September 22, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Improving non-member atomics to enable 64-bit integral type overloads on 32-bit platforms.</li>
+	<li>Removing dead code paths for Xenon, and PS3/SPU.</li>
+	<li>Allowing EA::Thread::SetDefaultProcessor to be configured to create floating threads.</li>
+	<li>Allows PS4 named mutexes to fallback to unnamed mutexes when the system runs out of handles.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.06</span> (Jul 11, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Resolving undefined behaviour on PS4 when calling EA::Thread::SetThreadProcessor with 'kProcessorAny' or 'kProcessorDefault' because it would generate shifts by negative values.</li>
+	<li>EA::Thread::SetName fix on PS4 to check if the ThreadDynamicData pointer is not nullptr before using it.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.05</span> (Jun 19, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>On windows we removed the DynamicThreadArray destructor to support memory tracking systems running post main().  This leaks a Windows CRITICAL_SECTION for the operating system to clean up at process shutdown.</li>
+	<li>Adding support for new Windows 10 thread naming API which resolves the numerous issues with the exceptions based solution previously used.  The key feature this enables is viewing thread names in applications other then the debugger, like WPA.
+		<ul><li>For more information: https://randomascii.wordpress.com/2015/10/26/thread-naming-in-windows-time-for-something-better/</li></ul>
+	</li>
+	<li>Removing the "GetModuleInfoApple" functionality but until the next release the code path is still available via a backwards compatibility preprocessor macro "EATHREAD_APPLE_GETMODULEINFO_ENABLED".</li>
+	<li>Adding free-standing function to set thread names that are surfaced in debuggers.  eg. EA::Thread::SetThreadName and EA::Thread::GetThreadName.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.04</span> (Mar 28, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Fixed an indexing bug in EnumerateThreads which would allow for a higher number of threads found to be reported than actually stored in the return array.</li>
+	<li>Adds support for generating a callstack on Kettle when a valid context is provided to EA::Thread::GetCallstack(). </li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.03</span> (Mar 10, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Added support to Kettle to allow users to specify sub-millisecond timers to ThreadSleep. Despite Sony sleep functions only offering millisecond resolution we offer an implementation which proved a 100 microsecond resolution instead. See https://ps4.scedev.net/support/issue/20041/_nanosecond_precision_for_sceKernelNanosleep for reference. </li>
+	<li>Implemented a Reader/Writer Lock backed by a semaphore.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.02</span> (Jan 09, 2017)</p>
+<p> Changes </p>
+<ul>
+	<li>Fixing non-member signed/unsigned mismatch conversion warnings on Windows.</li>
+	<li>Fix for Windows 'SetThreadAffinityMask' to mask out processors not included in the process affinity mask (processors that aren't available or that do not exist).</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.01</span> (October 21st, 2016)</p>
+<p> Changes </p>
+<ul>
+    <li>Fixed GetCallstack() to handle cases when the instruction pointer is null which would prevent getting the callstack from being generated.</li>
+	<li>Updated Build and Initialize scripts to remove warnings generated by Framework 3.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.31.00</span> (June 30th, 2016)</p>
+<p> Changes </p>
+<ul>
+  <li>Added a const overload of EA::Thread::AtomicGetValue.</li>
+  <li>Added EA::Thread::AtomicFetchSub.</li>
+  <li>Fixed EA::Thread::AtomicInt template parameter mismatch in Android C11 atomics.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.30.01</span> (May 27, 2016)</p>
+<p> Changes </p>
+<ul>
+  <li>Added an assert to surface Microsoft "SetThreadAffinityMask" failures.</li>
+  <li>Updated build scripts.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.30.00</span> (Apr 04, 2016)</p>
+<p> Changes </p>
+<ul>
+  <li> Fixed EA::Thread::ThreadID on PS4. NOTE: This is a breaking change, if code assumed the backing type of EA::Thread::ThreadId was a 'ScePthread' structure. 
+	  <ul>
+		<li>EA::Thread::ThreadID is now an integral value matching the debugger.</li>
+		<li>EA::Thread::SysThreadID was introduced to PS4 as a mechanism to retrieve the scePthread object.</li>
+	  </ul>
+  </li>
+  <li>Porting over fixes in GetModuleFromAddress and GetModuleHandleFromAddress from EACallstack for apple platform. </li>
+  <li>Adding EATHREADLIB_API to FindThreadDynamicData as requested by FIFA.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.02</span> (Feb 19, 2016)</p>
+<p> Changes </p>
+<ul>
+    <li>Updated PS4 GetProcessorCount to check if the 7th core is available for use.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.01</span> (Jan 20, 2016)</p>
+<p> Changes </p>
+<ul>
+    <li>Updated the XB1 processor count since Microsoft allowed access to (10% - 50%) of the 7th core.  Check the platform documentation for more details.</li>
+    <li>Migrating ThreadSleep on PS4 from sched_yield to scePthreadYield.</li>
+    <li>Workaround for scePthreadMutex on PS4 allocating memory for empty strings which reduced the number of allowable mutexes.</li>
+    <li>Minor fix for asymmetric warning push without a pop in a cpp.</li>
+</ul>   
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.26.00</span> (Oct 21, 2015)</p>
+<p> Changes </p>
+<ul>
+    <li>Optimizing non-member atomics on x86 processors.</li>
+	<li>Minor VS2015 fixes for warnings.</li>
+	<li>Added support for disabling the priority boost mechanism on Microsoft platforms.</li>
+	<li>Minor fix to mutex name on PS4, enforced 32 byte limitation.</li>
+	<li>Fixed a bug on PS4 where round robbin scheduling was not being specified on threads that didn't have custom thread parameters.  This problem caused a deadlock in unit tests after updating to PS3 SDK 3.x.</li>
+</ul>   
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.25.01</span> (Sep 23, 2015)</p>
+<p> Changes </p>
+<ul>
+    <li>Fix for standalone atomics on compilers that do not specify a unique char32_t type.</li>
+    <li>Add runtime warnings for use of deprecated code.</li>
+    <li>Add build controls for deprecate culling.</li>
+    <li>Enable atomic64 testing for eathread.</li>
+    <li>Android thread names initial change submitted by Andre Pham. Verified to show thread names in visual gdb.</li>
+</ul>   
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.25.00</span> (July 3, 2015)</p>
+<p> Changes </p>
+<ul>
+    <li>Minor fix for padding warning of 16 byte aligned ContextARM64 structure.</li>
+	<li>Deprecated data member 'mbSuspended' of ThreadParameters.</li>
+</ul>   
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.24.00</span> (June 3, 2015)</p>
+<p> Changes </p>
+<ul>
+    <li>Minor fix for win64 get callstack functionality on a different thread. (bug would result in crash)</li>
+	<li>Adding asserts when ThreadParameters mbSuspended is set to true.  Starting a thread in a suspended state is no longer supported and is marked for removal in a future version of EAThread.</li>
+	<li>Added SetThreadName calls for XB1 to marshall thread names to PIX captures. Preprocessor macro EA_CAPILANO_DBG_ENABLED is used to enable/disable the feature.</li>
+	<li>Added non-member atomic functions for use on common non-atomic integral types.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.23.01</span> (March 5, 2015)</p>
+<p> Changes </p>
+<ul>
+    <li>Android C11 atomics macro fixes.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.23.00</span> (January 28, 2015)</p>
+<p> Changes </p>
+<ul>
+    <li>Fixed futex memory barriers due to problems seen on iPhone 5c </li>
+    <li>Fixed ThreadAffinityMask typedef to be unsigned.</li>
+    <li>Fixed memory barriers on ARM platforms (previously only compiler barriers were used.)</li>
+    <li>Added support for Android API 21.  Removed simulated 64-bit atomics.</li>
+    <li>Fixed bug on capilano related to erroneous assert firing for GetThreadTime being less than EATHREAD_MIN_ABSOLUTE_TIME. </li>
+    <li>Removed support for Gen 3 platforms (PS3, Xbox 360), as well as some lingering older code.</li>
+    <li>Corrected the definition of the callstack context class for ARM64.</li>
+    <li>Removed Affinity from the debugger thread name generated from SetName as requested by Luc Isaak.</li>
+    <li>Fixed a warning on VS2015 when building a DLL configuration of the library.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.22.05</span> (September 15, 2014)</p>
+<p> Changes </p>
+<ul>
+    <li>Update callstack generation to support ARM64</li>
+    <li>Fixed EAThread assert handler to output assert messages on Unix platforms.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.22.04</span> (July 14, 2014)</p>
+<p> Changes </p>
+<ul>
+    <li>GetThreadTime (milliseconds) on Kettle to use system up time rather than unix epoch to avoid rollover and precision loss.</li>
+    <li>ThreadTime typedef on kettle to be a double so that we can specify down to nanosecond sleep times.</li>
+    <li>Increasing Mutex name size from 16 bytes to 128 bytes as requested by Frostbite.</li>
+    <li>EA::Thread::GetCallstack implementation on Kettle switched to use __builtin_frame_address based on Sony guidance.<ul><li>Sony has communicated there is a bug in the compiler that affects the entire family of functions.  This will be addressed in future compiler updates.  <a href="https://ps4.scedev.net/forums/thread/52687/#n349873">Subscribe to the following thread for more information</a></li></ul></li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.22.03</span> (June 9, 2014)</p>
+<p> Changes </p>
+<ul>
+    <li>Futex performance improvements on Kettle by introducing an atomic spin lock before hitting the OS mutex.</li>
+    <li>Fixed preprocessor macro definitions for Windows/WinPRT platforms in eathread_fiber.h file.</li>
+    <li>Preprocessor fixes for OSX requested by Maxis.</li>
+    <li>Added documentation to solution generated for Visual Studio.</li>
+</ul>
+<p><span style="font-weight: bold;">Version 1.22.02</span> (April 3, 2014)</p>
+<p> Changes </p>
+<ul>
+    <li>Updated Kettle kTimeoutYield to 1ms due to Sony rounding to the nearest millisecond.</li>
+    <li>Added more error checking in Kettle code path for Sony API's.</li>
+    <li>Fixed build script 'publicdata' exporting SPU libs in non-PS3 builds.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.22.01</span> (March 10, 2014)</p>
+<p> Changes </p>
+<ul>
+    <li>Disabled EATHREAD_PTHREAD_SIGACTION_SUPPORTED=0 on Kettle since it relies on the 'syscall' instruction which has been disabled in Kettle SDK 1.600+</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.22.00</span> (Feburary 14, 2014)</p>
+<p> Changes </p>
+<ul>
+    <li>Removed code for the following deprecated plaforms:
+        <ul>
+            <li>Bada</li>
+            <li>BlackBerry 10 / Playbook</li>
+            <li>Cafe</li>
+            <li>GameCube</li>
+            <li>Marmalade (formerly Airplay)</li>
+            <li>Palm</li>
+            <li>PlayStation 1</li>
+            <li>PlayStation 2</li>
+            <li>Samsung TV</li>
+            <li>Windows CE</li>
+        </ul>
+    </li>
+    <li>Added a __try/__except statement to GetCallstack for some Microsoft platforms. </li>
+    <li>Added a GetThreadId(SysThreadId) utility function that allows you great the ThreadId from a provided SysThreadId.</li>
+    <li>Preprocessor macro EA_SCEDBG_ENABLED will suppress the addition of Sony debug libraries on PS3 and PS4 (liblv2dbg_stub and libSceDbg_stub_weak).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.21.00</span> (December 2, 2013)</p>
+<p> Changes </p>
+<ul>
+  <li>Added support for PS4 (Kettle) and Xbox One (Capilano).</li>
+  <li>Initialized a variable to 0 so that the atomic function that subsequently atomically sets it to a user-specified value doesn't read unintialized memory. It has not been determined if having an uninitialized value was signficant, but in any case this change causes analysis warnings about it to go away.</li>
+  <li>Migrated ThreadTime on PS4 to use SceKernelUseconds instead of our timespec class used in the Unix codepath.</li>
+  <li>Implemented an opt-in DLL safety mechanism for static globals used for tracking created threads.  This introduces a dependency on EAStdC's EAGlobal.  Add -G:EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY=1 to enable this feature.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.09</span> (August 30, 2013)</p>
+<p> Changes </p>
+<ul>
+  <li>Augmented ThreadPool to allow the user to set ThreadParameters::mnProcessor to kProcessorAny and thus prevent ThreadPool from doing any of its own thread CPU affinity control. Suggested by Brian Hixon. </li>
+  <li>Added support for thread affinity masks.  This setting will be a noop on platforms that do not support thread affinities (eg. PS3).</li>
+  <li>Disabled C++11 atomics at the request of EAMT due to poor performance.</li>
+  <li>Fixed Semaphore blocking for 1ms on Kettle.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.08</span> (July 11, 2013)</p>
+<p> Changes </p>
+<ul>
+  <li>Added the base stack address to the ThreadDynamicData structure.  Depending on platform this value maybe NULL for discovered system (not EAThread spawned) threads.  This will be resolved in a future release.</li>
+  <li>Fixed condition variables on OSX/iPhones.</li>
+  <li>Added unit tests for condition variable timeouts.</li>
+  <li>Fixed GetStackBase, GetStackLimit on iOS. </li>
+  <li>Fixed incorrect thread names from being reported.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.07</span> (May 23, 2013)</p>
+<p> Changes </p>
+<ul>
+  <li>Revised Android AtomicInt::Add to use __sync_fetch_and_add instead of an __atomic_cmpxchg loop. The new code should be more efficient and more portable.</li>
+  <li>Fixed GetCallstackContext for WinRT.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.06</span> (April 26, 2013)</p>
+<p> Changes </p>
+<ul>
+  <li>Added <span class="small">EnumerateThreads</span> which reports all threads created by the EAThreads system.</li>
+  <li>Fixed problems with Android GetCallstack; it should be working OK now. </li>
+  <li>Fixed GetCallstackContext(CallstackContext&amp; context, intptr_t threadId) so that it consistently accepts kThreadIdInvalid and kThreadIdCurrent across platforms. Previously, passing one of those to some platforms (e.g. Xenon) could result in a crash.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.05</span> (April 15, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Implemented InitializeCriticalSectionAndSpinCount usage on Microsoft platforms instead of InitializeCriticalSection, as that improves performance in practice with our test cases (Job Manager, EAThread).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.04</span> (March 1, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Added <span class="small">EATHREAD_NAMING</span>, which allows for explicit control over debug thread naming. It also changes the default behavior to not check for a debugger before enabling naming. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.03</span> (February 4, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Integrated a bug fix that was missing from version 1.20.02.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.02</span> (January 16, 2013) </p>
+<p>Changes</p>
+<ul>
+  <li>Fixed a bug in the manual futex implementation that could result in lock hangs on some platforms with certain unusual use patterns. </li>
+  <li>Added support for memory barriers (e.g. eareadbarrier) on ios platforms. </li>
+  <li>Added <span class="small">eathread_min_absolute_time</span>, which defines a minimum valid value for timeouts in absolute time. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.20.01</span> (January 7, 2013) </p>
+<p>Release Notes</p>
+<ul>
+  <li>The Apple 64 bit atomic change below results in 64 bit atomics that don't work properly on iOS 3 and earlier, due to a bug in iOS. You should use an earlier version of EAThread or discuss a workaround if you need to work on these earlier iOS versions. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Disabled atomic 64 bit emulation for Apple platforms. This change was due to the emulation not working as desired on recent iOS versions. See the release notes above for a caveat regarding this.</li>
+  <li>Implemented Thread::SetName fix for Linux/Apple in which a user's call to rename the thread could be cancelled out by the created thread renaming itself. </li>
+  <li>Fixed a missing header include. </li>
+</ul>
+<hr>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style="font-weight: bold;">Version 1.20.00</span> (December 10th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Fixed a bug in ThreadPool regarding its support of kTimeoutNone and kTimeoutImmediate in ThreadPoolParameters. Submitted by Michael Pang. </p>
+  </li>
+  <li>Fixed a bug in GetCallstack for Apple platforms for the case of reading the callstack of a different thread than the current one. The bug was that the first entry of the callstack wasn't being reported. Reported by Michael Wong.</li>
+  <li>Added WiiU support to the main release. Previously WiiU support was in a private release. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.02</span> (November 5, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Fixed XBox 360 thread handle leak in GetSysThreadId(), GetThreadStackBase(), and GetThreadIdFromThreadHandle(). Provided by Steve Timson. </p>
+  </li>
+  <li>Work around an issue with the BlackBerry 10.0.9 SDK</li>
+  <li>Removed a warning thread as error for windows phone SDK</li>
+  <li>EAStdC - winrt-arm fixes.</li>
+  <li>Fix warning as error in opt for Windows 8 (warning C4574:  '_SECURE_SCL' is defined to be '0': did you mean to use '#if _SECURE_SCL'?)</li>
+  <li>Updating the semaphore post function to be more consistent across platforms</li>
+  <li>Fix for returning the right semaphore count from the Post function</li>
+  <li>Fixed Unix GetThreadStackBase to not use static pointers, as they are not thread-safe. Reported by Arbit Baldeva.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.01</span> (September 21, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Fixed Unix thread exit coordination problem in WaitForEnd (eathread_thread_unix.cpp). The problem is that WaitForEnd was returning just before the thread exited, but not just after the thread exited. 99% of the time this doesn't make a difference, but if you delete the thread's stack memory right after WaitForEnd returns, then the difference will be pronounced. Reported by Ben Sze, found by Valgrind.</p>
+  </li>
+  <li>Removed a couple asserts in the eathread_thread_unix.cpp which could theoretically mistakenly trigger in an unusual execution case (created thread instantly exits after it starts, while the main thread gets blocked).</li>
+  <li>Moved a thread priority setting under BSD and Cygwin to handle them better. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.19.00</span> (August 6, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added GetSysThreadId(), which returns the current SysThreadId. This complements the GetThreadId() function which returns the current ThreadId. Suggested by Avery Lee. </li>
+  <li>Added backwards support for EABase's EA_WINAPI functionality.</li>
+  <li>Fixed an unintialized thread name variable in the Unix version of the Thread class. Reported by Ben Sze.</li>
+  <li>Added Apple callstack functionality, which was missed in the previous release. Recall that this is part of the move of the GetCallstack function from EACallstack to EAThread. </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.18.00</span> (July 3, 2012)</p>
+<p>Changes</p>
+<ul>
+    <li>Added Thread::SetProcessor and GetThreadProcessor support for Linux-based platforms. </li>
+    <li>Added GetCallstack() which has been brought over from EACallstack as part of inter-package refactoring.</li>
+    <li>Made it so that the Thread::~Thread doesn't wait for the created thread to exit. This makes it work the same as other platforms.</li>
+    <li>Added support for WinRT.</li>
+    <li>Added preliminary support for Windows Phone 8.</li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.17.02</span> (June 4, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added support for Thread::SetProcessor under Linux-based operating systems.</li>
+  <li>Made Futex have a fallback to just use Mutex for platforms where that's necessary.</li>
+  <li>Made Semaphore have a fallback implementation for platforms whose operating systems don't provide semaphore support. Added a new config option <span class="small">EATHREAD_USE_SYNTHESIZED_SEMAPHORE</span> for this. </li>
+  <li>Added C++11-based threading library implementation.</li>
+  <li>Added support for FreeBSD.</li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.17.01</span> (May 7, 2012)</p>
+<p>Changes</p>
+<ul>
+    <li>Altered EAProcessorPause for PSVita to use __builtin_yield() instead of sceKerneldelayThread().
+    <li>Updated Thread::Begin to add a ref-count for itself. This allows certain kinds of unusual thread usage patterns. Suggested by Devin Doucette.</li>
+    <li>Added <span class="small">EAT_ASSERT_FORMATTED</span> as a new macro for use alongside <span class="small">EAT_ASSERT</span>, <span class="small">EAT_ASSERT_MSG</span>, and <span class="small">EAT_FAIL</span>. </li>
+    <li>Permit switching between emulated and native 64-bit atomics on iOS as older versions (iOS 3) do not support 64-bit atomics properly. By default this platform uses emulated 64-bit atomics but native versions can be selected by calling EA::Thread::SetAtomic64Implementation(EA::Thread::kAtomic64Native).</li>
+    <li>Changed simple_list::iterator friend declaration to be more compliant with the C++ Standard. </li>
+    <li>Updated the declaration of Xenon (XBox 360) atomics to consistently use __stdcall. </li>
+    <li>Revised the Windows version of EA::Thread::ThreadSleep to call SwitchToThread when the time was 0. This often results in smoother performance.</li>
+    <li>Added SysThreadId and GetSysThreadId support for Apple OSs.</li>
+    <li>Added support for the clang compiler under unix64 configurations.</li>
+    <li>Fixed a few build issues when compiling EAThread with MinGW/GCC 4.6.2.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.17.00</span> (February 28, 2012)</p>
+<p>Additions</p>
+<ul>
+    <li>Added PSVita platform support (<span class="small">EA_PLATFORM_PSP2</span>).</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+    <li>Fixed a Unix bug which was regressed for getName/SetName.</li>
+    <li>Fixed a bug on Unix systems so thread names may be set and stored internally in an EAThread.</li>
+    <li>Fixed a potential race condition in AtomicInt::SetValue on Mac where another thread could have altered the atomic's value, causing the CAS operation to spin indefinitely. The fix re-reads the atomic's value if the operation fails.</li>
+</ul>
+<p>Changes</p>
+<ul>
+    <li>Added build variable <span class="small">EAT_ASSERT_ENABLED</span> to give more flexibility when Asserts needs to be enabled.</li>
+    <li>PS3: Added additional <span class="small">EAT_ASSERT</span> usage on returned values by the PS3 API.</li>
+    <li>PS3: Added detection for Mutex::Init in case it is called more than once.</li>
+    <li>Removed PS2 support, as it's a dead platform.</li>
+    <li>Updated the documentation in EAThread.cpp to make the usage of Allocator more clear.</li>
+    <li>Disabled manual futex use for the PSP2 (PSVita) since it has built-in support for lightweight mutexes.</li>
+    <li>Removed old, unused template declarations.</li>
+</ul>
+<p></p>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.07</span> (February 6, 2012)</p>
+<p>Bug Fixes</p>
+<ul>
+    <li>Added specializations of AtomicInt&lt;T&gt; for uint64_t and int64_t that use __attributed__((aligned(8))) to ensure correct alignment on iPhone.</li>
+</ul>
+<p>Changes</p>
+<ul>
+    <li>Added code to set thread policy, but disabled any policy other than SCHED_OTHER by default.</li>
+</ul>
+<p></p>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.06</span> (January 11, 2012)</p>
+<p>Additions</p>
+<ul>
+    <li>This version explicitly supports the Freebox platform.</li>
+    <li>The max thread count has been bumped up to 40 for XBox 360. </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.05</span> (December 21, 2011)</p>
+<p>Bug Fixes</p>
+<ul>    
+    <li>Fixed bug in Windows version of EAThreadGetUniqueId. Reported by James Ding. </li>
+    <li>Enabled 64-bit atomics on iOS and removed all simulated atomic operations.</li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.04</span> (October 19, 2011)</p>
+<p>Additions </p>
+<ul>
+  <li>Added CTR support. </li>
+  <li>Added Futex::Lock(timeout). Provided by Brian Hixon. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a bug in Semaphore under Microsoft platforms (XBox, Win32, Win64) in which Semaphore::GetValue might return a value lower than the actual value. GetValue is a diagnostic function and so its return value can't be accurate, but fixing this bug makes it &quot;more accurate&quot; and makes a unit test pass which previously occasionally failed. This is unlikely to have affected users.</li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Fixed the Microsoft Semaphore::Wait return value to be kResultError when the underlying OS semaphore returned WAIT_ERROR, which in practice never happens for us but is a possibility under some unusual circumstances.</p>
+  </li>
+  <li>Fixed Condition bug which affected Win32 and Win64 Conditions which were named and not intra-process and prevented them from initializing. There were probably no users which this affects, since almost all uses are intra-process. Any users it would have affected would already be aware of the problem. </li>
+  <li>Fixed some unit test failures on Android. Made some unit tests finish faster on non-desktop platforms in general.</li>
+  <li>Fixed a bug in PS3 and Wii versions of Thread::WaitForEnd where it didn't tell you the return value of the thread when you used a specific timeout value for the wait call. It's an uncommon pathway that probably no users are using; otherwise they'd have reported it.</li>
+  <li>Fixed <span class="small">EATHREAD_LOCAL</span> to be undefined on platforms where it's not supported, as opposed to being defined to nothing. Previously it was inconsistent in its treatment of this. This change may result in compile errors for users, but it would be a &quot;good&quot; compiler error because it would be alerting the user that the intended thread-local variable really wasn't thread-local but was global. The solution is to use the alternative EAThread ThreadLocalStorage feature. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>The Semaphore implementation for Unix-like OSs now waits for any busy users of it on its shutdown. </li>
+  <li>Made atomic casting operators return GetValue() instead of directly returning the underlying value in the code. This is useful for the case that a future version of GetValue might do something alternative.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.03</span> (May 4, 2011)</p>
+<p>Additions </p>
+<ul>
+  <li>Added thread SetName support for Unix (Linux, OS X, and BSD). </li>
+  <li>Added initial Playbook support. </li>
+  <li>Added codestripper support. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in PS3 definition of kTimeoutNone; changed it from UINT_MAX to DOUBLE_MAX. Previoiusly it could cause synchronization primitive timeouts to trigger immediately instead of after some time in the case that the system has been running for a few weeks straight. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Revised GetSysThreadId to use static variables on Windows, since otherwise it generates lots of calls to GetProcAddress, etc. Suggested by Avery Lee. </li>
+  <li>Changed Unix Semaphore implementation to loop during destruction if the semaphore is in use.  This prevents leaking semaphores when a semaphore in use is asked to be destroyed.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.02</span> (November 5, 2010)</p>
+<p>Additions </p>
+<ul>
+  <li>Added support for specifying EA::Thread::kProcessorAny for the thread's CPU. Provided by Andy Younger. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Changed thread naming so it occurs only if a debugger is present. Apparently this function misbehaves when a debugger is not present. A downside to this change is that it's sometimes useful to have thread names in the absence of a debugger, as in the case of exception handling and reporting. Reported by Andy Eakins.</li>
+  <li>Fixed bug in FreeThreadDynamicData for Microsoft platforms. Reported by Toan Pham.</li>
+  <li>Fixed typo in Futex for PS3 platform name. The typo had no effect on the code in practice. Reported by Darryl Gates. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Made it so that EAThread headers can be #included from SPU code without error. This involved defining <span class="small">EA_THREADS_AVAILABLE</span> when <span class="small">EA_PLATFORM_PS3_SPU</span> was defined. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.01</span> (May 25, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li>This version has been updated to be compatible with PS3 SN 330, CodeWarrior 1.3, and Android platform.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a bug in Microsoft threading support regarding processor selection. Reported by Brian Hixon. </li>
+  <li>Fixed a PS3 thread destructor leak that can occur in the presence of many simultaneous threads. Reported by Jose Caban.</li>
+  <li>Fixed some Android support. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Exposed the FindThreadDynamicData function for public use. Previously it was internal.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.16.00</span> (April 5, 2010)</p>
+<p>Additions </p>
+<ul>
+  <li>Added Mobile support: iPhone, Palm Pre, and Android. More mobile platforms to follow. </li>
+  <li>Semaphore now supports a max count. However, the behavior of max count is not guaranteed to be consistent between platforms, since platforms have a different view of how to interpret it. You will get more consistent behavior if you set <span class="small">EATHREAD_FAST_MS_SEMAPHORE_ENABLED = 1</span> and <span class="small">EATHREAD_USE_NATIVE_PS3_SEMAPHORE = 1</span>. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed PS3 thread Release bug. pTDD-&gt;Release was being called before pTDD-&gt;mThreadEndSignal.Post(). Reported by Jeff Howell. </li>
+  <li>Fixed nant eaconfig compatibility problem that arose with eaconfig 1.32.06.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added PS3 SN compiler v320 and later compatibility. The new compiler was generating some new warnings. </li>
+  <li>The SP3 Semaphore::Post function was changed to execute in O(1) instead of O(n). Submitted by Jeff Howell.</li>
+  <li>Added a <span class="small">EATHREAD_FAST_MS_SEMAPHORE_ENABLED</span> configuration option. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.15.02</span> (January 15, 2010)</p>
+<p>Additions </p>
+<ul>
+  <li>Added RWMutexIP (eathread_rwmutex_ip.h/cpp) for initial testing as an interprocess read/write mutex. This is currently provisional and is subject to folding into the existing RWMutex class. </li>
+  <li>Added the <span class="small">EATHREAD_MULTIPROCESSING_OS</span> define, which indicates if the platform supports multiple concurrent processes. This value is always defined, either as 0 or 1. </li>
+  <li>Added the <span class="small">EATHREAD_ATOMIC_128_SUPPORTED</span> define, which indicates if 128 bit atomics are supported.  This value is always defined, either as 0 or 1.</li>
+  <li>Added OS X support for the GetProcessorCount function. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed debug-build-only bug in Futex::HasLock on XBox 360 which could cause a crash instead of the intended false return value. This could happen if the user called HasLock when not having the lock. </li>
+  <li>Fixed some <span class="small">#ifdef EAT_ASSERT_ENABLED</span> to be <span class="small">#if EAT_ASSERT_ENABLED</span>. This results in the savings of a few bytes in mutexes in release builds. Reported by Jeff Qifeng Shen.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Added AtomicScratch::sBuffer[128] to the SPU build. Previously this variable was declared but not defined, which meant the user needed to manually define it. </li>
+  <li>Added an assertion to RWMutex if it's initialized for use in inter-process mode but doesn't support this mode. A future version of EAThread will have RWMutex inter-process support and will have this assertion removed. Prompted by Brian Berry. </li>
+  <li>Made the code compile without warning on GCC with -Wextra and -Winline enabled.</li>
+  <li>Adjusted the code to avoid some 'remark' output from SNC when compiling with SNC's -Xdiag=2 option.</li>
+  <li>The package now builds under SNC for PS3 with the -Xfastmath=1 options. In practice these probably won't make much difference for this package. </li>
+  <li>Added <span class="small">EATHREAD_XTL_H_ENABLED</span> config define, which defaults to 1 for the time being. When enabled, eathread_atomic_powerpc.h #includes &lt;xtl.h&gt; under XBox 360. This is solely for backwards compatibility, as it isn't needed by eathread_atomic_powerpc.h but there may be existing user code that is dependent on this include being present. At some point in the future this option will default to 0. </li>
+  <li>Made it so that Futex on PS3 can use the PS3's lwmutex instead of our custom implementation. It's not clear which one is better, but it probably doesn't matter much either way. See <span class="small">EATHREAD_MANUAL_FUTEX_ENABLED</span>.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.15.01</span> (July 10, 2009)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug/weakness in atomic integer support for Wii whereby the code was disabling and re-enabling interrupts (a common approach), but wouldn't do the right thing if the user already had interrupts disabled, as the atomic code was unilaterally re-enabling them. Now it only re-enables interrupts if they were initially enabled. Found by Irene Wong and Bela Kiss.</li>
+  <li>Fixed Win32 VC++ warning C4731 regarding ebx register usage which happens in the case of some kinds of optimized builds. Reported by Dave Cope.</li>
+  <li>Fixed PS3 compile error with recent SDKs related to __db16cyc. Reported by Rashin Arab. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>eathread_pc now frees its per-thread TLS id on module shutdown. This should make a difference for users only if DLLs were initialized and shutdown repeatedly during an application run.</li>
+  <li>The Thread class copy ctor and operator= now are more permissive in how they can be used. Primarily, previously it wouldn't allow copying from an unused thread, but now it does. The copy ctor and operator= are still not arbitrarily thread-safe, however. Suggested by Cyril Saint Girons.</li>
+  <li>Added PS3 support for Thread::SetName. Sony added the ability to set the name of a thread at some point after the introduction of their initial threading API. However, as of SDK 270 it appears that this functionality doesn't work; the  name doesn't appear in the debugger. Suggested by James Fairweather.</li>
+  <li>eathread_atomic_struct now supports Wii. Implemented by Tom Van Dijck.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.15.00</span> (April 6, 2009)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a race condition in ThreadPool::WaitForJobCompletion that could result in the function returning  earlier than it should. Reported by Patrick McMorris. </li>
+  <li>Fixed bug in Wii,PS3,PS2 ~EAThreadDynamicData whereby it wouldn't use the user-assigned allocator to free a custom-allocated thread stack. Submitted by Dave Cope. </li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Implemented Wii version of GetThreadStackBase.</li>
+  <li>Changed ThreadPool::Begin to automatically create another thread as needed under conditions that it wouldn't previously. This results in the behavior being a tad &quot;smarter&quot; than previously.</li>
+  <li>Revised Semaphore::Post on PC and XBox 360 to not access member data after releasing waiting threads. This makes the class a little more flexible by allowing a waiting thread to destroy the Semaphore object upon completion of Wait. This will be implemented in other platforms next.</li>
+  <li>SpinLockRW::IsReadLocked and IsWriteLocked are now const functions. Suggested by Nate Jones. </li>
+  <li>Revised the definition of EAProcessorPause on 360 to use the YieldProcessor intrinsic.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.07</span> (January 19, 2009)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed 360 Futex bug that could cause crashes in debug builds with recent 360 SDKs.</li>
+  <li>Fixed missing critical section delete in 360 Futex. </li>
+  <li>Fixed bug in RWMutex whereby its internal Mutex would be doubly initialized. </li>
+  <li>Fixed bug in PC GetThreadProcessor which resulted in the possibility of a wrong return value on older versions of Windows.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.06</span> (December 5, 2008)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added SetDefaultProcessorMask / GetDefaultProcessorMask, which allow for controlling what processors threads are created on. This is independent of the similar functionality added to ThreadPool in EAThread 1.14.05. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug that would result in <em>libEAThreadSpu.a: could not read symbols</em> errors. Submitted by Jon Sewell.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Revised Wii Thread::SetPriority to check that the OS thinks the thread is valid, as otherwise the OS could assert if the thread recently exited.</li>
+  <li>AtomicInt classes now have a copy ctor and operator= that uses GetValue to read the copied value. This results in synchronization upon copy.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.05</span> (October 28, 2008)<br>
+    <br>
+Additions </p>
+<ul>
+  <li>Added GetAllocator/SetAllocator. This allows the user to specify an allocator to use for cases where memory is allocated. Most parts of EAThread don't allocate memory, but places that do so include the optional factory functions, dynamically allocated stacks, and ThreadPool.</li>
+  <li>Added features to ThreadPool to more finely control thread execution. In particular there is now a processor usage mask and an ability to manually add a thread to the thread pool. </li>
+  <li>Added the GetThreadStackBase function, which returns the base stack address for the current thread. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in return value of Condition::Wait on Wii/Xenon/PC whereby it should return kResultOK but could return an alternative &gt;= 0 value. Submitted by Jun Wang.</li>
+  <li>Fixed bug in Wii Thread class whereby a user-supplied stack would be mistakenly deleted by the Thread class. Reported by Gil Colgate and Bob Flanagan.</li>
+  <li>Fixed VC++ warning C4996 (deprecated strcpy) that shows up in some user's configurations.</li>
+  <li>Fixed 
+
+
+Win64 GetThreadId compile error for older versions of VC++. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>Implemented workaround for VS2008 bug which mistakenly generates warning C4985 for standard library headers.</li>
+  <li>Revised an assertion in Mutex on PC in order to deal with the case of two DLLs using a different ThreadId to refer to the same thread. </li>
+  <li>Removed references to <span class="small">EA_PLATFORM_XBOX</span> (the original XBox, as opposed to XBox 360/<span class="small">EA_PLATFORM_XENON</span>).</li>
+  <li>Added, but left commented out, some code to EAThread.build to implement an SPU ranlib post-build step to deal with the following debugger error: <em>libEAThreadSpu.a: could not read symbols: Archive has no index; run ranlib to add one</em>. It is left disabled while the necessity of providing this is unclear. </li>
+  <li>EAProcessorPause now uses dbcyc16 on PS3 and XBox 360. Recall that dbcyc16 is a pseudo-instruction which is a hint to the hyperthreaded CPU to let the other hyperthread own the instruction pipeline for 16 cycles. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.04</span> (June 6, 2008)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed eathread_pool compile error in non-bulk-builds introduced in the previous release. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.03</span> (May 29, 2008)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added <span class="small">EAT_ASSRERT_MSG</span> and <span class="small">EAT_FAIL_MSG</span> assertion macros. Suggested by Ashton Mason.</li>
+  <li>Added RWSpinLockW to complement RWSpinLock. It provides writer-priority, but removes recursive reading and can spin more in the presence of heavy reader activity. Suggested and partially implemented by Ryan Butterfoss; completed by Stuart Riffle and Paul Pedriana.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed  AtomicInt::operator=() whereby the return value was the old value but should follow C++ operator convention and return the new value. </li>
+  <li>Fixed definition of <span class="small">EATHREAD_LIKEL / EATHREAD_UNLIKELY</span>. Reported by David Galeano. </li>
+  <li>Fixed assertion failure in ThreadPool destructor. Reported by Patrick McMorris.</li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.02 </span> (April 11, 2008)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added GetThreadProcessor and GetProcessorCount functions. </li>
+  <li>Added kTimeoutYield to eathread.h. This is used with ThreadSleep to minimally yield to threads of equivalent priority.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fix for <span class="small">RTL_CRITICAL_SECTION</span> name collision in eathread_futex.h on Windows. Reported by Bob Summerwill. </li>
+  <li>Fix for potential false negative return value in RWSpinLock::IsWriteLocked. Reported by 
+
+
+Ryan Butterfoss. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>Revised eathread_sync to handle changes in the SNC PS3 compiler. In particular, the EACompilerMemoryBarrier definition was modified.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.01 </span> (March 6, 2008)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added SetFiberLimit. Implemented by Stuart Riffle. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Changed Wii kTimeoutNone from UINT_MAX to UINT64_MAX. The latter is what had been intended since Wii ThreadTime was changed to uint64_t in v1.14.00. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.00</span> (February 12, 2008)<br>
+    <br>
+Release Notes </p>
+<ul>
+  <li>This release introduces a lock-free queue and stack and a fiber system created by Stuart Riffle. See eathread_lockfree.h and eathread_fiber.h. These are of beta status at this time and more documentation will be forthcoming in a future release. Feel free to discuss this on this on the UTF Users mailing list. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added eathread_lockfree.h. This implements a lock-free queue and stack created by Stuart Riffle. </li>
+  <li>Added eathread_fiber.h. This implements a fiber system created by Stuart Riffle.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed SN compiler on PS3 implementation of Atomic::Decrement. Reported by Cliff Hammerschmidt. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>Wii definition of ThreadTime changed from unsigned to uint64_t. Suggested by Jun Wang.</li>
+  <li>Removed reference to eathread_atomic_ps3_spu.h, as it doesn't exist. Suggested by Jon Sewell. </li>
+  <li>Added <span class="small">EALOCALE_VERSION</span> / <span class="small">EALOCALE_VERSION_N</span> to the definition set. This allows for determining the version at compile time.</li>
+  <li>Added printf(&quot;\32&quot;) to end of unit test under PS3 and PS2. This indicates to the SN tools that the app is done.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.13.01</span> (December 3, 2007)<br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed compile error under MacOSX in the thread and atomic modules. Submitted by Max Burke.</li>
+  <li>Changed .build file to work around recently introduced bug in NantToVSTools. Reported by Mark Final. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>Changed <span class="small">__SN_VER__</span> usage to <span class="small">__SNC__</span>. SN (compiler vendor) has stated that the former is deprecated. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.13.00 </span> (December 2, 2007)<br>
+    <br>
+Additions </p>
+<ul>
+  <li>Added support for the SN PS3 compiler. </li>
+  <li>Added support for 64 bit Linux. This is primarily driven by the EA Global Online Services team. Thanks to Dave
+
+
+O'Neill for making the test machine account available. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed bug in Linux version of GetStatus whereby it could return that a thread has completed execution before it has actually done so. </li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>Reverted the PowerPC atomic GetValue behavior to that in EAThread 1.10.00. This has the effect of implementing a read/write memory barrier with GetValue.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.12.01</span> (November 5, 2007) <br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes </p>
+<ul>
+  <li>Fixed a potential pointer double-delete on Wii and Unix when there were more than 32 threads. Submitted by Ted (Tetsuya) Sakashita.</li>
+  <li>Fixed linker warning LNK4049 under Xenon optimized builds. Found by Irene Wong.</li>
+</ul>
+<p>Changes </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.12.00</span> (September 6, 2007) <br>
+    <br>
+Release Notes</p>
+<ul>
+  <li>This release implements important bug fixes for Wii. The EAThread unit tests now completely succeed on Wii. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes
+</p>
+<ul>
+  <li>Wii (Revolution): Thread::Begin() now accounts for the thread priority that is passed in ThreadParameters. Thread::ThreadSleep() implementation now accounts for the time parameter. This was submitted by Irene Wong. </li>
+  <li>Wii (Revolution): Thread leak fixed whereby threads weren't being joined in the Thread::WaitForEnd function. This fixes errors that you might see which result in a Wii kernel trace such as &quot;OSCreateThread(): thread 0x8005f330 is still active. in OSThread.c on line 958.&quot; </li>
+  <li>Wii (Revolution): Mutex::Lock calls with non-zero timeouts are now looped on instead of returning immediately. This is a compromise; it's best if users don't use lock timeouts, at least on this platform. </li>
+  <li>Wii (Revolution): Semaphore::Lock calls with non-zero timeouts and with (timeout == 0) fixed. They would previously give erroneous return values. Semaphore::Lock was also used by RWMutex and Condition and thus this by extension fixes bugs in those primitives as well. </li>
+</ul>
+<p>Changes
+</p>
+<ul>
+  <li>Disabled a compiler warning that can occur when compiling as Managed C++. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.11.02</span> (July 9, 2007) <br>
+    <br>
+  Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<p>Bug Fixes
+</p>
+<ul>
+  <li>Fixed GCC 3.4 shared_ptr_mt copy ctor compiler error with respect to const-ness. This was found by Dave O'Neill during Linux testing. </li>
+  <li>Fixed bug in AtomicInt64 under Win64 in the use of large integers. </li>
+</ul>
+<p>Changes
+</p>
+<ul>
+  <li>Changed the way the PS3 branch does thread join, based on a patch sent by Toan Pham. The problem is that previously it was easy to leak threads on PS3 in the caes that you didn't join threads or create multiple threads with a Thread object. This change has the side effect of being incompatible with the use of sys_ppu_thread_exit() calls by the user instead of EAThread ExitThread calls. This was something that wasn't allowed previously anyway. </li>
+  <li>Implemented the shared_ptr_mt unit test. Previously the test was little more than a stub.</li>
+  <li>Updated the FAQ. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.11.01</span> (May 4, 2007) <br>
+    <br>
+  Release Notes:</p>
+<ul>
+  <li>This version implements completely tested support for Linux on x86. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added PlatformBehavior.html to document basic threading behaviour of platforms of significance to us. </li>
+</ul>
+<p>Bug Fixes
+</p>
+<ul>
+  <li>Fixed Linux/GCC 3.4 signal handling in Semaphore and Futex. Previously, the Semaphore would return kResultError if a wait was interrupted by a signal, where as now it retries the wait. It is debateable whether this should be the behaviour, but for the time being the rationale is that cross-platform users most likely want their semaphores to act like other platforms that don't need signal handling. Previously, Futex would mis-lock the futex in the presence of an un-handled signal. </li>
+  <li>Fixed bug in EAThread::Futex::HasLock on Xenon whereby it could return the wrong answer. Fix submitted by Jon Parise. </li>
+</ul>
+<p>Changes
+</p>
+<ul>
+  <li>Revised some individual unit tests to quit upon error instead of repeatedly generating the same error.</li>
+  <li>Revised the documentation to use cleaner HTML.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.11.00</span> (April 11, 2007) <br>
+    <br>
+  Additions </p>
+<ul>
+  <li>Added support for AtomicInt under GCC 3.4/Linux/Cygwin. Without this much of EAThread couldn't have been used on Linux.</li>
+  <li>Added support for Cygwin. Recall that Cygwin is a Unix-like environment that runs on Windows.</li>
+</ul>
+<p>Bug Fixes
+</p>
+<ul>
+  <li>Fixed Linux/GCC 3.4 bugs regarding thread priority.</li>
+  <li>Fixed CodeWarrior/Wii support for the latest compiler and platform SDK. </li>
+</ul>
+<p>Changes
+</p>
+<ul>
+  <li>The PS3 ThreadLocalStorage class has been switched to be implemented via the relatively recently introduced built-in TLS functionality in the PS3 SDK. ThreadLocalStorage is nothing but a thin portability wrapper around the SDK functionality.</li>
+  <li>Masterconfig.xml: Reordered sections to match the sections  used for the other UTF packages, added snvsi and sndbs entries,  added missing IncrediBuild entry,  updated PS3 package to 154, updated CodeWarrior to 3.0.5.2-2. Change done by Bob Summerwill. </li>
+  <li>EASTL.build: Removed 'supportps3' property, which hasn't been respected by eaconfig for the best part of a year. Added 'test.runtime.moduledependencies' property, to mark the test module as depending on the runtime module. You get that for free in NAnt builds, but not in SLN builds. This adds a project-dependency in the generated SLN. Support for single-module (test, example or tool) onto single-module (runtime) dependencies was added for NAnt in eaconfig-1.21.00, and is in the process of being added for SLN builds in nantToVSTools-3.07.00. In the meantime, this extra property will just ignored for SLN builds. Change done by Bob Summerwill.</li>
+  <li>Simplified the AtomicInt::GetValue function on PowerPC. </li>
+  <li>Bumped up the thread id tracking storage by a small amount. A more comprehensive solution to the issue of users wanting to create very many threads still needs to be resolved. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.10.00</span> (Feb 8, 2007) <br>
+    <br>
+  Additions </p>
+<ul>
+  <li>    Added recognition of <span class="small">EATHREAD_DLL</span> in addition to <span class="small">EA_DLL</span> in order to use EAThread as a DLL. <span class="small">EA_DLL</span> is a global define that causes everything to be built and used as DLLs. However, the user may want to set just EAThread to be built and used as a DLL.</li>
+  <li>EAThread build file now includes the standard vcproj and vcprojall targets from eaconfig.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed compiler error on Mac OSX with GCC 3.4 with respect to casting function pointers to (void*), plus similar fix with respect to casting pthread_t to Uint.</li>
+  <li>Fixed bug in Wii/Gamecube version of ThreadBegin.</li>
+  <li>When waiting on a specified job, ThreadPool::WaitForJobCompletion() indicated completion as soon as the job began actively executing instead of waiting for execution to complete.</li>
+  <li>Fixed compiler error in Futex with CodeWarrior on the Wii platform: illegal implicit conversion from 'OSThread *' to 'unsigned long'.</li>
+</ul>
+Changes
+<ul>
+  <li>eathread_pool modified to inherit from IRunnable instead of creating a member static thread function. This gives some additional flexibility.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.09.00</span> (June 27, 2006)<br>
+  <br>
+Release Notes</p>
+<ul>
+  <li>    This version primarily adds an initial Futex class.</li>
+  <li>This removes support for PS3 SDKs prior to v040.</li>
+  <li> There is a known code generation problem with CodeWarrior for Revolution (Wii) whereby it sometimes generates incorrect code for the Atomic primitives. There is no known workaround at present but to rearrange code or disable optimizations.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>    Added an initially experimental Futex class.</li>
+  <li>Added kSysThreadPriorityDefault, which defines the platform-specific default thread priority.</li>
+  <li>Added the following:
+    <ul>
+      <li>typedef &lt;platform-specific&gt; SysThreadId;</li>
+      <li> SysThreadId GetSysThreadId(ThreadId id);</li>
+    </ul>
+  </li>
+  <li>Added the following:
+    <ul>
+      <li> typedef &lt;platform-specific&gt; ThreadUniqueId;</li>
+      <li> void EAThreadGetUniqueId(ThreadUniqueId&amp; result);</li>
+    </ul>
+  </li>
+  <li>Added Mutex::HasLock for use in debug build assertion testing.</li>
+</ul>
+Bug Fixes 
+<ul>
+  <li>Changed PS3 default priority from 256 to 1001 in order to match what the <br>
+    PS3 OS uses as a default priority for new processes.</li>
+  <li>Removed debug code from Thread::SetName().</li>
+  <li>Fixed a race-condidion bug in eathread_condition.cpp.</li>
+  <li>Fixed compiler error in eathread_atomic_x86.h for VC8 (VS 2005).</li>
+</ul>Changes 
+<ul>
+  <li>Converted use of #include &quot;&quot; to #include &lt;&gt;. This allows for faster header access on some platforms.</li>
+  <li> Made source code more consistent with respect to how tabs are used. They are now set to always use spaces instead of \t. Much of the code was migrated to use four spaces per indent instead of three.</li>
+  <li> Support for PS3 SDKs prior to v040 have been removed. This should not affect any users, as SDKs prior to v040 are virtually useless as of this writing.</li>
+  <li> PS3 has been modified to implement a minimum thread stack size of 8192.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Ve<strong>rsion </strong></span><strong>1.08.00</strong> (April 10, 2006)<br>
+    <br>
+Release Notes</p>
+<ul>
+  <li>This version primarily addresses PS3 changes, the Revolution platform, and the Win64 platfom.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added in-code documentation to eathread_pc.cpp and eathread_thread_pc.cpp documenting the potential pitfall of the user using a thread return value of 259. Also suggested a fix for these files that we can choose to use.</li>
+  <li> Added assert to eathread_thread_pc.cpp to verify that the user didn't waste any memory trying to supply a stack pointer manually. Such functionality is not possible on Win32-like systems.</li>
+  <li> Added an additional paragraph to the FAQ item regarding volatile variables</li>
+  <li> Added comments for Wait functions reminding users that timeouts are absolute.</li>
+  <li> Added support for <span class="small">EA_PLATFORM_REVOLUTION</span>, the new Nintendo successor to GameCube. As of this writing (2/2006), the GameCube and Revolution thread APIs are identical, thus we fold our Revolution support into our existing GameCube support. EABase 1.0.12 or later recognizes the existence of <span class="small">EA_PLATFORM_REVOLUTION</span>.</li>
+  <li> Added support for thread-local storage on PS3. Previous PS3 SDKs didn't support thread-local storage (the __thread identifier) previous to 080. But 080 is here now and supposedly the __thread declaration works.</li>
+  <li> Added copy constructor to the Thread class which does what we want instead of what would happen if the compiler generated the copy ctor. Ditto for operator=.</li>
+  <li> Added three FAQ entries to FAQ.html.</li>
+  <li> Added Win64 / x86-64 support, including a unit test project.</li>
+</ul>Bug Fixes
+<ul>
+  <li>PS2 Thread::Begin() now respects the priority passed in.</li>
+  <li> Bug fix for PS2 Thread where it will crash when it's being terminated.</li>
+  <li> PS3 RWMutex (read/write mutex) Lock bug fixed; it was ignoring write lock requests, among other things.</li>
+  <li> Fixed potential compiler warning in eathread_atomic_powerpc.h and eathread_atomic_x86.h.</li>
+  <li> Removal of some &quot;stray&quot; UTF8 binary bytes from a couple files that tripped up the GCC PS3 compiler.</li>
+  <li> Modified eathread_pc.cpp's SetCurrentThreadHandle to always call CheckDynamicThreadArray instead of just sometimes. There are cases where thread handles could be exhausted otherwise.</li>
+  <li>Fixed bug on GameCube/Revolution whereby the thread Begin function was potenially using the wrong stack space.</li>
+  <li> Modified eathread_storage to correctly deal with the fact that Metrowerks doesn't support thread-local storage on console platforms.</li>
+  <li> The PS3 080 SDK (with GCC 4.0) changed how 64 bit integers are interpreted and resulted in compiler errors. This has been fixed.</li>
+  <li> Removed compiler warning from eathread_pool.cpp when using the CodeWarrior compiler.</li>
+</ul>Changes
+<ul>
+  <li>Updated the UserGuide.html document to reflect dependencies in a recursive way. This was requested by EAU in order to help users know just what they need to build test apps.</li>
+  <li> Changed header files that were #including internal header via relative locations to instead #include by 'absolute' location relative to &quot;eathread&quot;. This resolves conflicts that occur with compilers (e.g. Metrowerks) that don't support the concept of relative include locations.</li>
+  <li> Provided support for the PS3 SDK up to at least v0.82.012, whereas the previously published version of EAThread fully supported only up to 0.50.013. Numerous things have changed in both the compiler and SDK since 0.50. The most signficant of this is the move to 32 bit pointers. This also resulted in changes to usage of the sys_cond_wait function.</li>
+  <li> Changed eastl_list.h to use &quot;EAThread/internal/dllinfo.h&quot; instead of &quot;internal.dllinfo.&quot;</li>
+  <li> Changed copyright symbol from &copy; to (c). The problem is that some editors see the former and assume the file is Unicode and save it as a UTF8 Unicode file. Then GCC fails to compile the file. </li>
+  <li> Changed default PS3 thread stack size from 16K to 64K.</li>
+  <li> Added empty virtual destructor to the IRunnable thread class. This is considered a benign change, as the class is saddled with a vtable whether the destructor is declared or not.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">V<strong>ersion </strong></span><strong>1.07.00</strong> (November 07, 2005)</p>
+<p>Additions </p>
+<ul>
+  <li>Added an assert to Mutex::Lock to verify that the lock count isn't some very<br>
+    high value and thus that the user isn't using mismatched lock/unlock pairs.</li>
+  <li>Added PS3 test vcproj file. This makes for easy use with the SN integrated compiler.</li>
+  <li>Added ThreadLocalStorage multi-thread test</li>
+</ul>Bug Fixes
+<ul>
+  <li>Bug fix for linked list code. This could fix a crash that could occur in ThreadPool under some circumstances.</li>
+  <li> Bug fix for thread_pool::WaitForJobCompletion. The wait loop previously might never exit.</li>
+  <li> Bug fix for the Xenon version of Semaphore: Users expect a system memory barrier to occur upon post or wait completion. This was added. It results in slower execution but will be safer for most users. Note that this &quot;fast semaphore&quot; implementation with this change is still much faster than the built-in system semaphore mechanism.</li>
+  <li> GameCube: Modified eathread_atomic_powerpc.h to make it not use the specialized asm for atomic operations don't get used under GameCube. The GameCube seems to sometimes crash when the asm versions are executed.</li>
+  <li> Xenon Thread::Begin: One of the versions wasn't calling SetThreadProcessor, while the other version was. They have been consistent and both call SetThreadProcessor. Question: Should perhaps neither of them call SetThreadProcessor?</li>
+  <li> Modified TestThreadThread.cpp to not generate a warning from the PS2 kernel in PS3 SDKs &gt;= v3.0.</li>
+  <li> Added an alignment specification to gThreadDynamicData in order to be safe. This hasn't caused any problems, but in theory it could, so we are playing it safe.</li>
+  <li> GameCube: Semaphore timeout calculations were incorrect and were fixed.</li>
+  <li> Bug fix for EAThreadLocalStorageData::GetTLSEntry. This fixes the crash happening when ThreadLocalStorage is run in multi-thread environment</li>
+</ul>Changes
+<ul>
+  <li>Disabled warnings that recent versions of XBox 360 xtl.h cause.</li>
+  <li> Changed the Mutex implementation for PC/XBox/Xenon to put a sleep call later, resulting in code that doesn't sleep when it doesn't need to in some cases.<br>
+    The same thing was done to thread pool in the WaitForJob function.</li>
+  <li> Made it so that Xenon thread naming works again on release builds. It was (probably) accidentally disabled during a previous modification.</li>
+  <li> Bumped up EATHREAD_NAME_SIZE from 20 to 32 on all platforms and to 64 on desktop/server platforms.</li>
+  <li> Windows: Changed SetThreadProcessor to use SetThreadIdealProcessor instead of SetThreadAffinityMask. The former is more friendly.</li>
+  <li> Mutex::mThreadId is only available if EAT_ASSERT is enabled.<br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Vers<strong>ion </strong></span><strong>1.06.00</strong> (September 23, 2005)</p>
+<p>Additions </p>
+<ul>
+  <li>Added operator &lt;= and &gt;= for struct ThreadTime under Unix/Posix. This allows you to compare thread times with &lt;= and &gt;= in addition to &lt;, &gt;, ==, etc.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>eathread_thread.cpp for each platform modified to use the constant kThreadIdInvalid instead of using its literal value (0). This has no functional effect; it's purpose is to increase readability and maintainability.</li>
+  <li>On PS3, modified GetThreadTime() to return the correct value.</li>
+  <li>On PS3, fixed interprocess semaphore so that it does not assert.</li>
+  <li>On PS2, changed RunnableFunctionInternal() to release thread ID resource.</li>
+  <li>On PC, XBOX and XENON, added \0 when copying strings for mName in various Parameter classes.</li>
+</ul>Changes
+<ul>
+  <li>SetThreadPriority() and Thread::SetPriority() for Windows now automatically adjust the input priority <br>
+    to a valid priority for Windows.</li>
+  <li>PS3 is now assumed to be cooperative scheduling.</li>
+  <li>On PS3, added mName to EAConditionData for interprocess condition.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"><strong>Version </strong></span><strong> 1.05.00</strong> (June 22, 2005)</p>
+<p>Additions </p>
+<ul>
+  <li>    EAThread now fully supports the PS3 PU (primary processor). The unit tests have been updated to be more critical.</li>
+  <li>Implemented EA::Thread::Thread::SetName() for Xenon, the same as the existing Windows implementation.</li>
+  <li>A number of new FAQ entries were added, based on user questions. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Added #include &lt;string.h&gt; to *_unix.cpp files to be compatible with Mac OSX.</li>
+  <li>Fixed Mutex::Lock() for xenon and pc so that it respects the timeout value passed in</li>
+  <li>Fixed Semaphore::Post() for pc to prevent Semaphore::Wait() returning incorrect semaphore count</li>
+</ul>Changes
+<ul>
+  <li> AtomicInt operators have been modified to return ValueType instead of return AtomicInt&amp;. This change prevents the possibility that the user mistakenly assumes that the int value of the AtomicInt reference returned by operators stay constant, whereas it can be changed by another thread at any time. The return value is the value of AtomicInt at the time when operator function is performed. The previous behaviour was correct to the C++ standard but introduced the possibility for mistakes and so was deemed unsafe. This is a change that can break user code. However, in many <br>
+  (or even most) cases where it breaks user code, it reveals a problem with the user code that could easily have gone undetected.</li>
+  <li> kThreadPriorityDefault changed from 127 to 0. Documentation regarding the thread priority system has been heavily updated both in code and in the standalone HTML documentation.</li>
+  <li> Updated the internal identifier 'kProcessorCount' for Xenon in eathread_pc.cppand eathread_thread.cpp. Note that Xenon thread support is in '_pc.cpp' files and not Xenon-specific files. It turns out that some teams have made build systems whereby they concatenate all .cpp files together into a single .cpp file. While it is not considered very safe to do such .cpp concatenation, the kProcessorCount identifier usage is the only thing in the way of being able to do this with EAThread.</li>
+  <li> Bogus assert fixed in eathread.h/cpp for PC/XBox/Xenon whereby Mutex would think that the thread id is an unexpected value. There was a race condition in eathread_pc.cpp whereby two threads could start the thread id identification system at the same time. It wouldn't result in incorrect behaviour at runtime, but could cause the asserts to think they were a different thread id than expected.</li>
+  <li> Xenon threading code modified to reference the MAXIMUM_PROCESSORS identifier in the XDK (winnt.h). EAThread previous used a custom constant called kProcessorCount, but the MAXIMUM_PROCESSORS define has become available recently and so we now use it.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"><strong>Version </strong></span><strong> 1.04.01</strong> (June 8, 2005)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Converted to Framework 2 package</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"><strong>Version </strong></span><strong> 1.04.00</strong> (March 17, 2005)</p>
+<p>Additions </p>
+<ul>
+  <li>Add ability to allow user function wrapper around Thread::begin() function call, as well a global method to set a wrapper for all Thread::begin() from EA::Thread. For detail, see
+    <ul>
+      <li>EA::Thread::RunnableFunctionUserWrapper</li>
+      <li>EA::Thread::RunnableClassUserWrapper</li>
+      <li>EA::Thread::Thread::Begin(...)</li>
+      <li>EA::Thread::Thread::GetGlobalRunnableFunctionUserWrapper()</li>
+      <li>EA::Thread::Thread::SetGlobalRunnableFunctionUserWrapper()</li>
+      <li>EA::Thread::Thread::GetGlobalRunnableClassUserWrapper(...)</li>
+      <li>EA::Thread::Thread::SetGlobalRunnableClassUserWrapper(..</li>
+    </ul>
+  </li>
+</ul>Bug Fixes
+<ul>
+  <li>Xenon: disabled warning 4365 (signed/unsigned mismatch).</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"><strong>Version </strong></span><strong> 1.3.0</strong> (January 14, 2005)</p>
+<p>Additions </p>
+<ul>
+  <li>    Documentation updated and extended. This includes both the FAQ and the class documentation. Paul Pedriana</li>
+  <li>64 bit atomic operations are now supported on Xenon, as the Xenon SDK is now savvy to such things. Paul Pedriana</li>
+  <li>Thread::SetName and Thread::GetName functions added, as per previously agreed upon. Additionally, under the VC++ debugger these name will be reflected in the thread list. Paul Pedriana</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>ThreadPool changed to use atomic_integer::Decrement instead of preincrement operator--.<br>
+This is a bug fix as the preincrement operator was being used in an 'if' statement and this created a race condition. Paul Pedriana</li>
+</ul>
+Changes
+<ul>
+  <li>    Barrier changed to use atomic_integer::Decrement instead of operator--. It's not clear whether this should be considered a bug fix or a increase in robustness. But the code is probably better having it this way. </li>
+  <li>Macro for determining whether to create export symbols has been changed from _DLL to EA_DLL. This macro is supplied by tlconfig when a DLL is being built. _DLL is defined by the compiler when /MD or /MDd is passed on the compiler command line.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"><strong>Version </strong></span><strong> 1.2.0</strong> (November 3, 2004)</p>
+<p>Additions </p>
+<ul>
+  <li>EA Thread is now available as a DLL. The import library is in lib/pcdll and the DLL and PDB are in bin/pc. Make sure bin/pc is in your path, or copy the DLL to the location of the executable when the program is run so the O/S can find the DLL.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>    Removed all references to windows.h and xtl.h for Windows, XBox, and Xenon platforms. This should improve compile speed with no effect on functionality, but some client code may need to be changed to include these headers now. Paul Pedriana</li>
+  <li>Implemented fast semaphore for Windows/XBox/Xenon. This allows semaphores and things built upon semaphores to go much faster. A post is now 60x faster than a built-in OS semaphore and a successful wait is about 50x faster. Unit tests pass but I will be keeping an eye on this to make sure it is proper. Paul Pedriana</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"><strong>Version </strong></span><strong>1.1.1</strong> (December 12, 2004)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Changes
+<ul>
+  <li>Default tlconfig updated to 1.00.11.</li>
+  <li>Some 64-bit portability warnings fixed.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Versi<strong>on </strong></span><strong>1.1.0 </strong>(August 24, 2004)</p>
+<p>Additions </p>
+<ul>
+  <li>    Factories now allow user-supplied memory.</li>
+  <li>Semaphore and Barrier now have a constructor for the most common case.</li>
+  <li>The return value of a thread is not retrievable from Thread objects.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>    EA::Thread::Begin on PS2 was possibly passing in a thread stack size which was not a multiple of 16. Fixed.</li>
+  <li>Posix semaphore under Windows now makes workaround for dll issue.</li>
+  <li>Bug fix for when WaitForEnd is called when thread was never started on some platforms.</li>
+  <li> GetThreadId will always return a unique and consistent true thread id for every thread, including the main thread and threads created by third paries. Previously, GetThreadId would only work for the main thread and threads created by EAThread.</li>
+</ul>
+Changes
+<ul>
+  <li>    Default tlconfig updated to 1.00.10.</li>
+  <li>Argument bDefaultParameters has been changed to default to true instead of false. This increases the safety of the system. This change will only affect you if you had previously relied on default construction. The change will not result in surprise behaviour for those that neglect to respond to the change.</li>
+  <li>Monitor renamed to Condition by popular demand.</li>
+  <li>#include &lt;memory&gt; changed to #include &lt;new&gt; in various places.</li>
+  <li>Thread creation no longer uses memory from the heap (malloc/new) but instead uses fixed memory set aside on startup.</li>
+  <li>Adjusted code to stop a bogus assert from triggering.</li>
+  <li>Assertions now go through a user-suppliable output function instead of the standard C assert function. A problem with the standard C assert function is that it is defined/enabled by default for some plaforms, such as XBox/Xenon (XBox2).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">V<strong>ersion </strong></span><strong>1.0.0</strong> (June 8, 2004)</p>
+<p>Release Notes</p>
+<ul>
+  <li>Initial public release.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

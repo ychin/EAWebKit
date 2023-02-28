@@ -54,88 +54,88 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\changelog.html">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\changelog.html">
       <Filter>doc\html</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\img\logo.png">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\img\logo.png">
       <Filter>doc\html\img</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\index.html">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\index.html">
       <Filter>doc\html</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\toc.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\html\toc.js">
       <Filter>doc\html</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\index.html">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\index.html">
       <Filter>doc</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\highlight.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\highlight.js">
       <Filter>doc\scripts\highlight</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\1c.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\1c.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\axapta.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\axapta.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\dynamic.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\dynamic.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\javascript.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\javascript.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rib.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rib.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rsl.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\rsl.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\smalltalk.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\smalltalk.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\sql.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\sql.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\static.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\static.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\vbscript.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\vbscript.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\www.js">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\scripts\highlight\languages\www.js">
       <Filter>doc\scripts\highlight\languages</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\doc\style_sheet\style_sheet.css">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\doc\style_sheet\style_sheet.css">
       <Filter>doc\style_sheet</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\EAController.build" />
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\Manifest.xml" />
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\EAController_strip.py">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\EAController.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\EAController_strip.py">
       <Filter>scripts</Filter>
     </None>
-    <None Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\initialize.xml">
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\scripts\initialize.xml">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\EAController.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\EAController.h">
       <Filter>include\EAController</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\internal\Config.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\internal\Config.h">
       <Filter>include\EAController\internal</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\version.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\EAController\version.h">
       <Filter>include\EAController</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle\EAController\KettleController.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle\EAController\KettleController.h">
       <Filter>include\kettle\EAController</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony\EAController\SonyController.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony\EAController\SonyController.h">
       <Filter>include\sony\EAController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\source\sony\SonyController.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\source\sony\SonyController.cpp">
       <Filter>source\sony</Filter>
     </ClCompile>
   </ItemGroup>

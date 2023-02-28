@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>NonLocalAllocator</title>
+<style type="text/css">
+<!--
+.smallCode {
+	font-family: "Courier New", Courier, mono;
+	font-size: x-small;
+}
+.Code {
+	font-family: "Courier New", Courier, mono;
+	font-size: small;
+}
+.style2 {font-family: "Courier New", Courier, mono}
+.style3 {color: #999999}
+-->
+</style>
+</head>
+
+<body>
+<h1>NonLocalAllocator</h1>
+<p>NonLocalAllocator is a heap which manages memory with data structures that are independent of the memory itself. This results in a heap design that is different from a local allocator (in-place linked list heap) like GeneralAllocator and many other conventional heaps. </p>
+<p>The requirements for (and thus the resulting design of)  NonLocalAllocator are primarily based on suggestions received from teams within EA during the requirements-gathering process. NonLocalAllocator isn't implemented simply the same way as GeneralAllocator except being for non-local memory. These differences are driven by the common intended uses for the allocators. For example, GeneralAllocator implements a small-block cache and delayed coalescing of freed blocks, whereas NonLocalAllocator keeps no such cache and always coalesces all free blocks. </p>
+<h3>Features</h3>
+<p>NonLocalAllocator has many of the features of PPMalloc GeneralAllocator/GeneralAllocatorDebug, though it implements them within a single class instead of two classes. The features are implemented very similarly and often identically to the equivalent features in GeneralAllocator/GeneralAllocatorDebug. </p>
+<ul>
+  <li>Allows managing a heap of not just memory but any virtual data source such as disk file space. </li>
+  <li>Optional thread safety, identical to GeneralAllocator.</li>
+  <li>Ability for the user to add additional (non-local) core memory, as well as extend any existing core memory in place.</li>
+  <li>Provides the following allocation functions:
+      <ul class="Code">
+        <li>Malloc(size_t nSize, int nAllocationFlags = 0)</li>
+          <li>MallocAligned(size_t nSize, size_t nAlignment, size_t nAlignmentOffset = 0, int nAllocationFlags = 0)</li>
+          <li>MallocMultiple(size_t count, const size_t* pSizeArray, const size_t* pAlignmentArray,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const size_t* pAlignmentOffsetArray, void* pResultArray[], int nAllocationFlags = 0)</li>
+          <li>Realloc(void* p, size_t nNewSize, int nAllocationFlags = 0)</li>
+          <li>ReallocAligned(void* p, size_t nNewSize, size_t nAlignment, size_t nAlignmentOffset = 0, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int nAllocationFlags = 0)</li>
+          <li>Free(void* p, size_t size = 0)</li>
+      </ul>
+  </li>
+  <li>Allocation flags: Perm, BestFit, Contig.</li>
+  <li>Allocation hooks, identical to GeneralAllocator. </li>
+  <li>Provides the following utility/debug functionality in all builds:
+    <ul class="Code">
+        <li>ValidateAddress(void* p) </li>
+        <li>ValidateHeap()</li>
+        <li>SetAutoHeapValidation(HeapValidationLevel heapValidationLevel, size_t nFrequency)</li>
+        <li>GetUsableSize(void* p)</li>
+        <li>GetLargestFreeBlock()</li>
+        <li>DescribeData(const void* pData, char* pBuffer, size_t nBufferLength)</li>
+    </ul>
+  </li>
+  <li>Provides the following debug functionality in debug builds:
+    <ul>
+      <li> Guard fills / free fills (if debug writing to the non-local heap is enabled) </li>
+      <li>Same debug info tracking options as GeneralAllocatorDebug:
+        <ul>
+          <li>Callstack</li>
+            <li>File/line</li>
+            <li>Group id</li>
+            <li>Time</li>
+            <li>Count</li>
+            <li>User size</li>
+            <li>Overhead </li>
+            <li>Checksum</li>
+            <li>Flags</li>
+        </ul>
+      </li>
+      <li>Leak detection </li>
+      <li>Pointer validation / double free detection. </li>
+    </ul>
+  </li>
+  <li>Has heap reporting functionality similar to GeneralAllocator:
+    <ul>
+      <li class="Code">ReportBegin(), ReportNext(), ReportEnd()</li>
+      <li class="Code">ReportHeap<br>
+    TraceAllocatedMemory()</li>
+    </ul>
+  </li>
+  <li>Metrics tracking, same as GeneralAllocatorDebug.</li>
+  <li>Assertion failure functionality, same as GeneralAllocator.</li>
+</ul>
+<h3>Future Features</h3>
+<p>A few features that are currently missing but can be added if there is interest include:</p>
+<ul>
+  <li>User-driven (possibly async) realloc. This would, for example, allow you to pack video memory between frames somewhat like a handle-based heap but without needing to use handles. </li>
+  <li>Delayed frees. These are present in GeneralAllocatorDebug but are currently omitted in NonLocalAllocator.</li>
+</ul>
+<h3>Example Usage</h3>
+<p>The following demonstrates a minimum usage of NonLocalAllocator.</p>
+<blockquote>
+  <p> <span class="Code"><span class="style3">void* AllocFunction(NonLocalAllocator*, size_t nSize, void*)<br>
+    {<br>
+&nbsp;&nbsp;&nbsp; return pGeneralAllocator->Malloc(nSize);<br>
+    }<br>
+    <br>
+    size_t FreeFunction(NonLocalAllocator*, void* p, size_t nSize, void*)<br>
+    {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pGeneralAllocator->Free(p);<br>
+    }</span><br>
+    <br>
+    </span><span class="Code">
+    NonLocalAllocator nla(AllocFunction, FreeFunction, NULL, pNonLocalMemory, nonLocalMemorySize);<br>
+    <br>
+    void* p = nla.Malloc(1700); <br>
+    nla.Free(p);</span></p>
+</blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

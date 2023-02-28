@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread">
+      <UniqueIdentifier>{89A7B4F7-D8BA-FCBC-05A3-B81B5515699D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\android">
+      <UniqueIdentifier>{970ED491-04FE-06E8-B75F-5CA568935A7F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\apple">
+      <UniqueIdentifier>{0C8C491A-EA0A-4EE3-D023-2499D6510316}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\arm">
+      <UniqueIdentifier>{BC7A8CB5-2A25-B0F0-7710-6F6DC219B295}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\cpp11">
+      <UniqueIdentifier>{E8299015-10C1-7C68-62F2-F6D6CB904A24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\internal">
+      <UniqueIdentifier>{DDD03337-A5F8-34A3-28A9-DD088A5DB2D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\x86">
+      <UniqueIdentifier>{BB8E2520-0A07-E083-1EF6-6349D2CECBD7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\eathread\x86-64">
+      <UniqueIdentifier>{041008DD-7E1A-F8AF-8B1C-932A172D10DF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\android">
+      <UniqueIdentifier>{9AF9EE94-8395-6F2E-E379-8EB77A4AA1DE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\apple">
+      <UniqueIdentifier>{EB88443B-BE69-5DCF-8B97-AB260900519B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\arm">
+      <UniqueIdentifier>{B6D01596-CFFD-4C6E-1DFA-775FE93C9228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\cpp11">
+      <UniqueIdentifier>{4AE2811E-6B18-6DED-B615-6599B906AC4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\libunwind">
+      <UniqueIdentifier>{AB06F590-EBB4-3149-62D2-50C39801D2E7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\null">
+      <UniqueIdentifier>{1A8D4425-EDD8-CF5D-7EDD-A3BB9CD37DA1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\pc">
+      <UniqueIdentifier>{C001EA03-1294-E5B2-35FB-0B57C3017D16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\sony">
+      <UniqueIdentifier>{62FE81E2-52FE-3952-D332-729CCB63B23C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\unix">
+      <UniqueIdentifier>{3AD6505E-23CA-406C-E933-CF336FE40C03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\x86">
+      <UniqueIdentifier>{4C846A9B-E834-53B1-B71E-798F7F8F886A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\AdditionalReading.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Callstack.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Changes.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\ClassDocumentation.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\DesignConsiderations.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\FAQ.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\PlatformThreadBehavior.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\Readme.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\doc\UserGuide.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\EAThread.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\EAThread_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\scripts\make_public.bat">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\android\eathread_android.cpp">
+      <Filter>source\android</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\android\eathread_semaphore_android.cpp">
+      <Filter>source\android</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\apple\eathread_callstack_apple.cpp">
+      <Filter>source\apple</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\apple\eathread_semaphore_apple.cpp">
+      <Filter>source\apple</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\arm\eathread_callstack_arm.cpp">
+      <Filter>source\arm</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_cpp11.cpp">
+      <Filter>source\cpp11</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_mutex_cpp11.cpp">
+      <Filter>source\cpp11</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_semaphore_cpp11.cpp">
+      <Filter>source\cpp11</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\cpp11\eathread_thread_cpp11.cpp">
+      <Filter>source\cpp11</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\libunwind\eathread_callstack_libunwind.cpp">
+      <Filter>source\libunwind</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\null\eathread_callstack_null.cpp">
+      <Filter>source\null</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_callstack_win32.cpp">
+      <Filter>source\pc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_callstack_win64.cpp">
+      <Filter>source\pc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_mutex_pc.cpp">
+      <Filter>source\pc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_pc.cpp">
+      <Filter>source\pc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_semaphore_pc.cpp">
+      <Filter>source\pc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\pc\eathread_thread_pc.cpp">
+      <Filter>source\pc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_barrier_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_callstack_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_condition_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_mutex_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_pthread_stack_info.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_semaphore_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\sony\eathread_thread_sony.cpp">
+      <Filter>source\sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_barrier_unix.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_callstack_glibc.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_condition_unix.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_mutex_unix.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_pthread_stack_info.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_semaphore_unix.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_stadia.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_thread_unix.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\unix\eathread_unix.cpp">
+      <Filter>source\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\x86\eathread_callstack_x86.cpp">
+      <Filter>source\x86</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\android\eathread_atomic_android_c11.h">
+      <Filter>include\eathread\android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\apple\eathread_callstack_apple.h">
+      <Filter>include\eathread\apple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\apple\eathread_sync_apple.h">
+      <Filter>include\eathread\apple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\arm\eathread_sync_arm.h">
+      <Filter>include\eathread\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\cpp11\eathread_atomic_cpp11.h">
+      <Filter>include\eathread\cpp11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_atomic.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_barrier.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_callstack.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_callstack_context.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_condition.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_futex.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_list.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_mutex.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_pool.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwmutex.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwmutex_ip.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwsemalock.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwspinlock.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_rwspinlockw.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_semaphore.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_spinlock.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_storage.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_sync.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\eathread_thread.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\config.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\dllinfo.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone_gcc.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_atomic_standalone_msvc.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\eathread_global.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\internal\timings.h">
+      <Filter>include\eathread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\shared_array_mt.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\shared_ptr_mt.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\version.h">
+      <Filter>include\eathread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86\eathread_atomic_x86.h">
+      <Filter>include\eathread\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86\eathread_sync_x86.h">
+      <Filter>include\eathread\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86-64\eathread_atomic_x86-64.h">
+      <Filter>include\eathread\x86-64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include\eathread\x86-64\eathread_sync_x86-64.h">
+      <Filter>include\eathread\x86-64</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_barrier.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_callstack.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_condition.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_futex.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_mutex.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_pool.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_rwmutex.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_rwmutex_ip.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_semaphore.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_storage.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\eathread_thread.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\source\version.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

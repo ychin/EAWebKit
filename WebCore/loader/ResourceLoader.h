@@ -150,7 +150,7 @@ public:
 		//+EAWebKitChange
 		//10/14/2011 - See explanation in ResourceHandleClient.h
 #if PLATFORM(EA)
-	virtual const SharedBuffer* getResourceData() const;
+	virtual const SharedBuffer* getResourceData() const override;
 #endif
 		//-EAWebKitChange
 

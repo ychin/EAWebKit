@@ -1,0 +1,108 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<property name="EAIOBuildType" value="Library"/>
+	<property name="EAIOBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+	<property name="EAIOBuildType" value="WinRTCppLibrary" if="@{OptionSetExists('WinRTCppLibrary')} and (${config-system} == 'winrt')"/>
+	<property name="EAIOBuildType" value="WinRTRuntimeComponent" if="@{OptionSetExists('WinRTRuntimeComponent')} and (${config-system} == 'winrt') and ${Dll??false}"/>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EAIO.libs">
+			<includes name="${package.EAIO.builddir}/${config}/lib/${lib-prefix}EAIO${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<property name="package.EAIO.includedirs">
+		${property.value}
+		${package.EAIO.dir}/include
+	</property>
+
+	<do if="${EAIO.EAIO_USE_CORESTREAM??0} == 1">
+		<!-- EAIO now uses <CoreStream/IStream> to implement the IStream interface declaration.                 -->
+		<!-- We do this here because it allows users to migrate to using CoreStream without having              -->
+		<!-- to modify their individual .build files but rather to simply add CoreStream to their masterconfig. -->
+		<dependent name="CoreStream"/>
+		<property name="package.EAIO.includedirs">
+			${property.value}
+			${package.CoreStream.includedirs??}
+		</property>
+
+		<property name="package.EAIO.publicdependencies">
+			CoreStream
+		</property>
+	</do>
+
+	<!-- Set all defines that must be properly defined within public include files.                         -->
+	<!-- Some other defines are set in the build file, but are not exposed here because they only impact    -->
+	<!-- the building of the EAIO library code.                                                             -->
+	<property name="package.EAIO.defines" if="@{PropertyExists('EAIO.EAIO_64_BIT_SIZE_ENABLED')}">
+		${property.value}
+		EAIO_64_BIT_SIZE_ENABLED=${EAIO.EAIO_64_BIT_SIZE_ENABLED}
+	</property>
+	<property name="package.EAIO.defines" if="@{PropertyExists('EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING')}">
+		${property.value}
+		EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING=${EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING}
+	</property>
+	<property name="package.EAIO.defines" if="@{PropertyExists('EAIO.EAIO_BACKWARDS_COMPATIBILITY')}">
+		${property.value}
+		EAIO_BACKWARDS_COMPATIBILITY=${EAIO.EAIO_BACKWARDS_COMPATIBILITY}
+	</property>
+	<property name="package.EAIO.defines" if="@{PropertyExists('EAIO.EAIO_USE_CORESTREAM')}">
+		${property.value}
+		EAIO_USE_CORESTREAM=${EAIO.EAIO_USE_CORESTREAM}
+	</property>
+	<property name="package.EAIO.defines" if="@{PropertyExists('EAIO.EAIO_CPP_STREAM_ENABLED')}">
+		${property.value}
+		EAIO_CPP_STREAM_ENABLED=${EAIO.EAIO_CPP_STREAM_ENABLED}
+	</property>
+
+	<publicdata packagename="EAIO" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<runtime>
+			<module name="EAIO" buildtype="${EAIOBuildType}">
+				<includedirs>
+					${package.EAIO.includedirs??}
+				</includedirs>
+
+				<defines>
+					${package.EAIO.defines??}
+				</defines>
+
+				<publicdependencies>
+					<do if="${EAIO.EAIO_USE_CORESTREAM??0} == 1">
+						CoreStream
+					</do>
+					coreallocator
+					EABase
+					EAStdC
+					EASTL
+					EAThread
+				</publicdependencies>
+
+				<libs-external>
+					<do if="${config-system} == kettle">
+						<includes name="${package.kettlesdk.libdir}/libSceAppContent_stub_weak.a" />
+						<includes name="${package.kettlesdk.libdir}/libSceSysmodule_stub_weak.a" />
+					</do>
+					<do if="${config-system} == ps5">
+						<includes name="${package.ps5sdk.libdir}/libSceAmpr.a" />
+						<includes name="${package.ps5sdk.libdir}/libSceAppContent_stub_weak.a" />
+					</do>
+					<do if="${config-system} == xbsx" unless="${Dll??false}">
+						<includes name="dstorage_xs.lib" asis="true"/>
+					</do>
+				</libs-external>
+
+				<!-- FW8 requires java libraries be separate modules with gradle files -->
+				<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} lt 0">
+					<java.classes basedir="${package.EAIO.builddir}/${config}/bin/EAIO/classes">
+						<includes name="**\*.class"/>
+					</java.classes>
+				</do>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EAIOTest"/>
+		</tests>
+	</publicdata>
+
+</project>

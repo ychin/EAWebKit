@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<optionset name="config.targetoverrides">
+		<option name="test-build" value="include" />
+		<option name="test-buildall" value="include" />
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<!-- Package declaration -->
+	<package name="EACallstack" initializeself="true" />
+
+	<!-- Options -->
+	<!-- To enable options put (e.g.) <globalproperties>EACallstack.EACALLSTACK_DEFAULT_ALLOCATOR_ENABLED=1</globalproperties> -->
+	<!-- in your masterconfig file or use -D:EACallstack.EACALLSTACK_DEFAULT_ALLOCATOR_ENABLED=1 on the nant command line.     -->
+	<!-- The EACallstack.EACALLSTACK_XXX values here directly correspond to EACallstack config #defines.                       -->
+	<property name="EATECH_WARNINGSASERRORS" value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+
+	<property name="EACallstack.configDefineTypes">
+		EACALLSTACK_MS_PDB_READER_ENABLED
+		EACALLSTACK_DEFAULT_ALLOCATOR_ENABLED
+		EACALLSTACK_ENABLE_ELF_SPAWN
+		EACALLSTACK_MSVC_DEMANGLE_ENABLED
+		EACALLSTACK_GCC_DEMANGLE_ENABLED
+		EACALLSTACK_MSVC_MAPFILE_ENABLED
+		EACALLSTACK_GCC_MAPFILE_ENABLED
+		EACALLSTACK_SN_MAPFILE_ENABLED
+		EACALLSTACK_PDBFILE_ENABLED
+		EACALLSTACK_DWARFFILE_ENABLED
+		EACALLSTACK_DASM_POWERPC_ENABLED
+		EACALLSTACK_DASM_X86_ENABLED
+		EACALLSTACK_DASM_ARM_ENABLED
+		EACALLSTACK_DEBUG_DETAIL_ENABLED
+		EACALLSTACK_FRAME_POINTERS_ENABLED
+	</property>
+
+	<property name="EACallstack.configDefines" />
+
+	<foreach item="String" in="${EACallstack.configDefineTypes}" property="configDefineType">
+		<property name="EACallstack.configDefines" if="@{PropertyExists('EACallstack.${configDefineType}')}">
+			${property.value}
+			${configDefineType}=${EACallstack.${configDefineType}}
+		</property>
+	</foreach>
+
+	<property name="EACallstack.configDefines" if="@{PropertyExists('EA_XBDM_ENABLED')}">
+		${property.value}
+		EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+	</property>
+
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+
+	<Library name="EACallstack" buildtype="${EACallstackBuildType}">
+		<config>
+			<defines>
+				${EACallstack.configDefines}
+				UTF_USE_EAASSERT=1
+
+				<do if="${Dll??false} and ${config-compiler} == 'vc'">
+					EACALLSTACK_API=__declspec(dllexport)
+				</do>
+				<do if="@{PropertyExists('EA_SCEDBG_ENABLED')}">
+					EA_SCEDBG_ENABLED=${EA_SCEDBG_ENABLED}
+				</do>
+			</defines>
+
+			<buildoptions>
+				<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+				<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+			</buildoptions>
+
+			<warningsuppression if="${config-compiler} == 'vc'">
+				-wd4217    <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+				-wd4350    <!-- disable warning: "behavior change: '_Wrap_alloc(const std::_Wrap_alloc<_Alloc> &)' called instead of '_Wrap_alloc<std::_Wrap_alloc<_Alloc> >(_Other &)' -->
+				-wd4530    <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+				-wd4548    <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+				-wd4619    <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"    MS being silly here -->
+				-wd4738    <!-- disable warning: "storing 32-bit float result in memory, possible loss of performance" -->
+				-wd4985    <!-- disable warning: "attributes not present on previous declaration." -->
+			</warningsuppression>
+		</config>
+
+		<dependencies>
+			<use>
+				EABase
+				coreallocator
+			</use>
+
+			<auto>
+				EAAssert
+				EASTL
+				EAStdC
+				EAThread
+				EAIO
+			</auto>
+		</dependencies>
+
+		<sourcefiles>
+			<includes name="${package.dir}/source/*.cpp" />
+			<!-- Only a PC would want to use this -->
+			<includes name="${package.dir}/source/internal/Win32Runner.cpp" if="${config-system} == pc or ${config-system} == pc64" />
+			<includes name="${package.dir}/source/internal/CabReader.cpp" if="${config-system} == pc or ${config-system} == pc64" />
+			<includes name="${package.dir}/source/internal/DemangleGCC.cpp" />
+			<includes name="${package.dir}/source/internal/Minidump.cpp" />
+			<includes name="${package.dir}/source/internal/cxa_demangle.cpp" />
+		</sourcefiles>
+
+		<!-- Android's arm32 system headers and Clang's compiler headers disagree on what the type of -->
+		<!-- _Unwind_Ptr is supposed to be (in Android's link.h and Clang's unwind.h). However, we need -->
+		<!-- to include both of those headers in various TUs in EACallstack - and while the definitions -->
+		<!-- are both fine and ABI-compatible since they're both the same size (uintptr_t vs unsigned long*), -->
+		<!-- including both in the same bulkbuild file causes compilation errors. So as a solution, we just -->
+		<!-- remove one of the TUs which would conflict from bulkbuild. Not great, but it's what Clang does -->
+		<!-- as well - see  http://lists.llvm.org/pipermail/cfe-commits/Week-of-Mon-20130826/087365.html . -->
+		<bulkbuild enable="true" partial="true" >
+			<do if="${config-system} == 'android' and ${config-processor} == 'arm'">
+				<loosefiles>
+					<includes name="${package.dir}/source/EAModule.cpp" />
+				</loosefiles>
+			</do>
+		</bulkbuild>
+
+		<visualstudio>
+			<excludedbuildfiles>
+				<includes name="${package.dir}/source/platform/**.*" />
+				<includes name="${package.dir}/doc/**.*" />
+				<includes name="${package.dir}/scripts/**.*" />
+				<includes name="${package.dir}/*.build" />
+				<includes name="${package.dir}/Manifest.xml" />
+			</excludedbuildfiles>
+		</visualstudio>
+	</Library>
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+
+	<tests>
+		<!-- this block forces debugsymbols to be on during the definition of EACallstackTest *even* if global property 'eaconfig.debugsymbols' has been set to false,
+        EACallstackTest requires debug symbols in order to succeed, note this is dependent on EACallstackTest having a <config></config> block -->
+		<do if="@{PropertyExists('eaconfig.debugsymbols')}">
+			<script language="C#">
+				<code>
+					<![CDATA[
+                            public static void ScriptMain(Project project)
+                            {
+                                project.Properties.AddLocal("EACallstack.cached-eaconfig-debugsymbols", project.Properties["eaconfig.debugsymbols"]);
+                                project.Properties.UpdateReadOnly("eaconfig.debugsymbols", "true"); // using UpdateReadOnly in case this has been set on command line (which make properites readonly)
+                            }
+                        ]]>
+				</code>
+			</script>
+		</do>
+
+		<Program name="EACallstackTest">
+			<config>
+				<buildoptions>
+					<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+					<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+				</buildoptions>
+
+				<defines>
+					${EACallstack.configDefines}
+					UTF_USE_EAASSERT=1
+					EA_MEMORY_LEAK_TRACE_ENABLED=1
+					EA_MEMORY_ENABLED=1
+					EA_MEMORY_NEW_OVERRIDE_ENABLED=1
+					EA_MEMORY_PPMALLOC_ENABLED=1
+				</defines>
+
+				<warningsuppression if="${config-compiler} == 'vc'">
+					-wd4217    <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+					-wd4530    <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+					-wd4619    <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"    MS being silly here -->
+					-wd4548    <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+					-wd4738    <!-- disable warning: "storing 32-bit float result in memory, possible loss of performance" -->
+					-wd4985    <!-- disable warning: "attributes not present on previous declaration." -->
+				</warningsuppression>
+			</config>
+
+			<dependencies>
+				<use>
+					EABase
+					coreallocator
+				</use>
+
+				<build copylocal="true">
+					EAAssert
+					EASTL
+					EAStdC
+					EAThread
+					PPMalloc
+					EAIO
+					MemoryMan
+					EATest
+					EAMain
+					EACallstack/runtime/EACallstack
+					job_manager
+					gtest
+				</build>
+			</dependencies>
+
+			<includedirs>
+				${package.dir}/include
+				${package.dir}/test/include
+			</includedirs>
+
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+			</sourcefiles>
+
+			<do if="${config-system} == 'android'">
+				<buildsteps>
+					<packaging>
+						<assetfiles basedir="${package.dir}/test/">
+							<includes name="data/**" />
+						</assetfiles>
+					</packaging>
+				</buildsteps>
+			</do>
+
+			<bulkbuild enable="false"/>
+		</Program>
+
+		<!-- undoes the script block above -->
+		<do if="@{PropertyExists('EACallstack.cached-eaconfig-debugsymbols')}">
+			<script language="C#">
+				<code>
+					<![CDATA[
+                        public static void ScriptMain(Project project)
+                        {
+                            project.Properties.UpdateReadOnly("eaconfig.debugsymbols", project.Properties["EACallstack.cached-eaconfig-debugsymbols"]);
+                        }
+                    ]]>
+				</code>
+			</script>
+		</do>
+	</tests>
+
+
+	<!-- ******************************** -->
+	<!-- These do not exist yet in SXML   -->
+	<!-- *******************************  -->
+
+	<fileset name="test.EACallstackTest.deploy-contents-fileset" basedir="${package.configbindir}/test">
+		<includes name="**" />
+	</fileset>
+	<fileset name="test.EACallstackTest.assetfiles" basedir="${package.dir}/test/data/">
+		<includes name="**" />
+		<excludes name="dasm file readme.txt" />
+	</fileset>
+
+	<do if="${config-system} == iphone">
+		<property name="test.EACallstackTest.xcodeproj.paths-to-include-contents-in-bundle">
+			${package.dir}/test/data/
+		</property>
+	</do>
+
+</project>

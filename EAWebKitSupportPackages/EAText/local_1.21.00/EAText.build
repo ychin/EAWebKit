@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="EAText" default="build" xmlns="schemas/ea/framework3.xsd">
+
+    <optionset name="config.targetoverrides">
+        <option name="test-build" value="include" />
+        <option name="test-buildall" value="include" />
+        <option name="test-run" value="include" />
+        <option name="test-runall" value="include" />
+    </optionset>
+
+    <!-- Package declaration -->
+    <package name="EAText" initializeself="true" />
+
+	<property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+    <property name="package.consoledeployment" value="true" unless="@{PropertyExists('package.consoledeployment')}" />
+
+    <!-- Back end definition -->
+    <!-- EAText has some GlyphCache back-ends in its source/<back-end> directories.            -->
+    <!-- By default these are disabled and they are usable for reference purposes.             -->
+    <!-- However, the user can define one of the properties below to enable any of these       -->
+    <!-- back-ends or can find some other way to compile them if useful.                       -->
+    <!-- Note that if you want to use an RNA, RenderEngine, Sage, etc. back-end then           -->
+    <!-- you really want to just use the EATextRNA, EATextRenderEngine, etc. packages          -->
+    <!-- and can think of the back-ends present in EAText as being useful only as a reference. -->
+    <!-- To enable these put (e.g.) <globalproperties>EATextXenonBackEnd</globalproperties>    -->
+    <!-- in your masterconfig file or use -D:EATextXenonBackEnd=1 on the nant command line.    -->
+
+    <property name="EATextXenonBackEnd" value="1" unless="@{PropertyExists('EATextXenonBackEnd')}" />      <!-- XBox 360 DirectX-like API -->
+    <property name="EATextD3DBackEnd" value="1" unless="@{PropertyExists('EATextD3DBackEnd')}" />
+    <property name="EATextGCMBackEnd" value="0" unless="@{PropertyExists('EATextGCMBackEnd')}" />        <!-- PS3 graphics API -->
+    <property name="EATextPSGLBackEnd" value="0" unless="@{PropertyExists('EATextPSGLBackEnd')}" />       <!-- PS3 OpenGL-like graphics API -->
+    <property name="EATextGXMBackEnd" value="1" unless="@{PropertyExists('EATextGXMBackEnd')}" />         <!-- PSVita graphics API -->
+    <property name="EATextWiiBackEnd" value="0" unless="@{PropertyExists('EATextWiiBackEnd')}" />
+    <property name="EATextOpenGLBackEnd" value="1" unless="@{PropertyExists('EATextOpenGLBackEnd')}" />     <!-- Standard OpenGL -->
+    <property name="EATECH_WARNINGSASERRORS" value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+
+
+    <!-- The EAText.EATEXT_XXX values here directly correspond to EAText config #defines. -->
+    <property name="EAText.EATEXT_BITMAP_USE_EAGIMEX" value="0" unless="@{PropertyExists('EAText.EATEXT_BITMAP_USE_EAGIMEX')}" />
+    <property name="EAText.force_static" value="false" unless="@{PropertyExists('EAText.force_static')}" />
+    <property name="EAText.EATEXT_USE_FREETYPE" value="1" unless="@{PropertyExists('EAText.EATEXT_USE_FREETYPE')}" />
+    <property name="runtime.EAText.error.message" if="${EAText.EATEXT_USE_FREETYPE} != 1">
+     ******************************************************************************
+     EAText-1.15.00 and newer only support FreeType as its underlying Font library
+     ******************************************************************************
+    </property>
+
+    <!-- For UTFWin/EASkeleton -->
+    <property name="UTFWin.UTFWIN_DRIVER" value="UTFWIN_DRIVER_NATIVE" unless="@{PropertyExists('UTFWin.UTFWIN_DRIVER')}" />
+
+    <!-- The following don't have default values.
+        EAText.EATEXT_THREAD_SAFETY_ENABLED
+        EAText.EATEXT_DPI
+        EAText.EATEXT_EFFECTS_ENABLED
+        EAText.EATEXT_BITMAP_GLYPHS_ENABLED
+        EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED
+        EAText.EATEXT_FONT_SERVER_ENABLED
+        EAText.EATEXT_STYLE_MANAGER_ENABLED
+        EAText.EATEXT_PS3_RGBA_COMPAT
+        EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED
+        EAText.EATEXT_HEBREW_SCRIPT_SUPPORTED
+        EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED
+        EAText.EATEXT_THAI_SCRIPT_SUPPORTED
+        EAText.EATEXT_OPENTYPE_ENABLED
+        EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED
+        EASTL.EASTL_STD_ITERATOR_CATEGORY_ENABLED
+    -->
+
+
+    <!-- Create extra build types which simply add some additional compiler arguments -->
+    <BuildType name="LibraryExtra" from="config-options-library">
+        <option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+        <option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+        <remove>
+            <cc.options if="${config-compiler} == 'gcc'">
+                -fno-strict-aliasing
+            </cc.options>
+        </remove>
+        <option name="buildset.cc.options" if="${config-compiler} == 'gcc'">
+            ${option.value}
+            -fstrict-aliasing
+        </option>
+    </BuildType>
+
+    <!-- ********************* -->
+    <!-- Runtime configuration -->
+    <!-- ********************* -->
+
+    <!-- EAText.usedependencies_always: Things that are usedependencies whether we are built as a DLL or not. -->
+    <property name="EAText.usedependencies_always">
+        EABase
+        coreallocator
+    </property>
+
+    <property name="EAText.usedependencies_always" if="${UTFWin.UTFWIN_DRIVER} == 'UTFWIN_DRIVER_EASKELETON' ">
+        ${property.value}
+        EASkeleton
+    </property>
+
+    <do if="@{StrStartsWith('${config-system}', 'pc')}">
+        <!-- DirectX is bundled with WindowsSDK 8 and higher-->
+        <dependent name="WindowsSDK"/>
+        <property name="EAText.usedependencies_always" if="${package.WindowsSDK.MajorVersion??7} lt 8">
+            ${property.value}
+            DirectX
+        </property>    
+    </do>
+
+    <!-- EAText.usedependencies_library: Things that are usedependencies when we are built as a library,
+         but are builddependencies when we are built as a DLL. -->
+    <property name="EAText.usedependencies_library">
+        EASTL
+        EAStdC
+        EAThread
+        PPMalloc
+        EAAssert
+        EAIO
+    </property>
+    <property name="EAText.usedependencies_library" if="${EAText.EATEXT_BITMAP_USE_EAGIMEX} != 0">
+        ${property.value}
+        EAGimex
+    </property>
+    <property name="EAText.usedependencies_library">
+        ${property.value}
+        FreeType
+    </property>
+
+    <runtime>
+        <Library name="EAText" buildtype="LibraryExtra">
+            <buildtype name="DynamicLibrary" if="${Dll??false} and !${EAText.force_static}" />
+
+            <config>
+                <warningsuppression>
+                    <do if="${config-compiler} == 'vc'">
+                        -wd4005        <!-- disable warning: "macro redefinition" -->
+                        -wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+                        -wd4365        <!-- disable warning: "conversion from x to y, signed/unsigned mismatch" -->
+                        -wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+                        -wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+                        -wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+                    </do>
+
+                    <do if="${config-compiler} == 'gcc'">
+                        -Wstrict-aliasing=3
+                        -Wextra
+                    </do>
+
+                    <do if="${config-compiler} == 'sn'">
+                        --diag_suppress=68          <!-- disable warning: Integer conversion resulted in change of sign -->
+                        --diag_suppress=1669        <!-- disable warning: Potential unititialized reference to "X" -->
+                    </do>
+                </warningsuppression>
+
+                <defines>
+                    UTF_USE_EAASSERT=1
+                    EATEXT_USE_FREETYPE=1
+                    <do if="@{PropertyExists('EAText.EA_TEXT_REPLACEMENT_CHAR')}">
+                        EA_TEXT_REPLACEMENT_CHAR=${EAText.EA_TEXT_REPLACEMENT_CHAR}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_FAMILY_NAME_ARRAY_CAPACITY')}">
+                        EATEXT_FAMILY_NAME_ARRAY_CAPACITY=${EAText.EATEXT_FAMILY_NAME_ARRAY_CAPACITY}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_BITMAP_USE_EAGIMEX')}">
+                        EATEXT_BITMAP_USE_EAGIMEX=${EAText.EATEXT_BITMAP_USE_EAGIMEX}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_THREAD_SAFETY_ENABLED')}">
+                        EATEXT_THREAD_SAFETY_ENABLED=${EAText.EATEXT_THREAD_SAFETY_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_DPI')}">
+                        EATEXT_DPI=${EAText.EATEXT_DPI}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_EFFECTS_ENABLED')}">
+                        EATEXT_EFFECTS_ENABLED=${EAText.EATEXT_EFFECTS_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_BITMAP_GLYPHS_ENABLED')}">
+                        EATEXT_BITMAP_GLYPHS_ENABLED=${EAText.EATEXT_BITMAP_GLYPHS_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED')}">
+                        EATEXT_POLYGONAL_GLYPHS_ENABLED=${EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_FONT_SERVER_ENABLED')}">
+                        EATEXT_FONT_SERVER_ENABLED=${EAText.EATEXT_FONT_SERVER_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_STYLE_MANAGER_ENABLED')}">
+                        EATEXT_STYLE_MANAGER_ENABLED=${EAText.EATEXT_STYLE_MANAGER_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_PS3_RGBA_COMPAT')}">
+                        EATEXT_PS3_RGBA_COMPAT=${EAText.EATEXT_PS3_RGBA_COMPAT}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED')}">
+                        EATEXT_ARABIC_SCRIPT_SUPPORTED=${EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_HEBREW_SCRIPT_SUPPORTED')}">
+                        EATEXT_HEBREW_SCRIPT_SUPPORTED=${EAText.EATEXT_HEBREW_SCRIPT_SUPPORTED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED')}">
+                        EATEXT_DEVANAGARI_SCRIPT_SUPPORTED=${EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_THAI_SCRIPT_SUPPORTED')}">
+                        EATEXT_THAI_SCRIPT_SUPPORTED=${EAText.EATEXT_THAI_SCRIPT_SUPPORTED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_OPENTYPE_ENABLED')}">
+                        EATEXT_OPENTYPE_ENABLED=${EAText.EATEXT_OPENTYPE_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED')}">
+                        EATEXT_EMBEDDED_BACKUP_FONT_ENABLED=${EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EASTL.EASTL_STD_ITERATOR_CATEGORY_ENABLED')}">
+                        EASTL_STD_ITERATOR_CATEGORY_ENABLED=${EASTL.EASTL_STD_ITERATOR_CATEGORY_ENABLED}
+                    </do>
+                    <do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+                        EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+                    </do>
+
+                    <!-- DLL-related defines -->
+                    <do if="${Dll??false}">
+                        <do if="${config-compiler} == 'vc'">
+                            <!-- When force_static is true, the following has the effect of making EAText be   -->
+                            <!-- built as a static library but it uses its dependencies as dynamic libraries.  -->
+                            <!-- This is not a terribly flexible system. What happens if you want one of those -->
+                            <!-- dependents to not be a DLL but be static itself?                              -->
+                            <do if="${EAText.force_static}">
+                                EATEXT_API=
+                            </do>
+                            <do if="!${EAText.force_static}">
+                                EATEXT_API=__declspec(dllexport)
+                            </do>
+                            EATEXT_API_LOCAL
+                            EA_DLL
+                            EASTL_DLL
+                        </do>
+
+                        <do if="${config-compiler} == 'gcc' or ${config-compiler} == 'clang'">
+                            <do if="${Dll??false} and (${config-compiler} == 'gcc' or ${config-compiler} == 'clang')">
+                                EATEXT_API=__attribute__ ((visibility("default")))
+                                EATEXT_API_LOCAL=__attribute__ ((visibility("hidden")))
+                            </do>
+                        </do>
+                    </do>
+                </defines>
+            </config>
+
+            <dependencies>
+                <use>
+                    ${EAText.usedependencies_always}
+                    <do unless="${Dll??false} and !${EAText.force_static}">
+                        ${EAText.usedependencies_library}
+                    </do>
+                </use>
+
+                <build>
+                    <do if="${Dll??false} and !${EAText.force_static}">
+                        ${EAText.usedependencies_library}
+                    </do>
+                </build>
+            </dependencies>
+
+            <includedirs>
+                ${package.dir}/include
+            </includedirs>
+
+            <sourcefiles>
+                <includes name="${package.dir}/source/*.cpp" />
+                <includes name="${package.dir}/source/internal/*.cpp" />
+
+                <do if="${UTFWin.UTFWIN_DRIVER} == 'UTFWIN_DRIVER_EASKELETON' ">
+                    <includes name="${package.dir}/source/EASkeleton/*.cpp" />
+                </do>
+
+                <do if="${UTFWin.UTFWIN_DRIVER} != 'UTFWIN_DRIVER_EASKELETON' ">
+                    <do if="${config-system} == pc or ${config-system} == pc64">
+                        <includes name="${package.dir}/source/D3D/*.cpp" if="${EATextD3DBackEnd} != '0'" />
+                    </do>
+                    <do if="${config-system} == xenon">
+                        <includes name="${package.dir}/source/Xenon/*.cpp" if="${EATextXenonBackEnd} != '0'" />
+                    </do>
+                    <do if="${config-system} == ps3">
+                        <includes name="${package.dir}/source/GCM/*.cpp" if="${EATextGCMBackEnd} != '0'" />
+                        <includes name="${package.dir}/source/PSGL/*.cpp" if="${EATextPSGLBackEnd} != '0'" />
+                    </do>
+                    <do if="${config-system} == iphone">
+                        <includes name="${package.dir}/source/OpenGL_ES/*.cpp" if="${EATextOpenGLBackEnd} != '0'" />
+                    </do>
+                    <do if="${config-system} == android">
+                        <includes name="${package.dir}/source/OpenGL_ES/*.cpp" if="${EATextOpenGLBackEnd} != '0'" />
+                    </do>
+                </do>
+            </sourcefiles>
+
+            <visualstudio>
+                <excludedbuildfiles>
+                    <includes name="${package.dir}/doc/**.html" />
+                </excludedbuildfiles>
+            </visualstudio>
+        </Library>
+    </runtime>
+
+    <!-- Bulkbuild Setup -->
+    <fileset name="runtime.EAText.bulkbuild.sourcefiles" fromfileset="runtime.EAText.sourcefiles" />
+
+    <!-- ********************* -->
+    <!-- Test configuration    -->
+    <!-- ********************* -->
+    <property name="asset-copy-subdir" value="" />
+    <property name="asset-copy-subdir" value="data" unless="${config-system} == iphone or ${config-system} == android" />
+    
+    <tests>
+        <Program name="EATextTest">
+            <config>
+                <warningsuppression>
+                    ${runtime.EAText.warningsuppression??}
+                </warningsuppression>
+
+                <defines>
+                    ${runtime.EAText.defines}
+                    EA_MEMORY_LEAK_TRACE_ENABLED=1
+                    <do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+                        EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+                    </do>
+                </defines>
+            </config>
+            <dependencies>
+                <use>
+                    EABase
+                    coreallocator
+                    UTFDraw2D       <!-- Needed only by the EAText/extras/EATextTextEdit.cpp file -->
+                </use>
+
+                <build>
+                    EASTL
+                    EAStdC
+                    EAThread
+                    PPMalloc
+                    EAAssert
+                    EAIO
+                    MemoryMan
+                    EACOM
+                    EATest
+                    EAMain
+                    EAPlatform       <!-- Needed only by the EAText/extras/EATextTextEdit.cpp file -->
+									  FreeType
+									  <do if="${UTFWin.UTFWIN_DRIVER} == 'UTFWIN_DRIVER_EASKELETON' ">
+                        EASkeleton
+                    </do>                       
+                    <do if="${EAText.EATEXT_BITMAP_USE_EAGIMEX} != 0">
+                        EAGimex
+                        libjpeg
+                        libpng
+                        zlib
+                    </do>
+                </build>
+            </dependencies>
+
+            <includedirs>
+                ${package.dir}/include
+                ${package.dir}/test/include
+            </includedirs>
+
+            <sourcefiles>
+                <includes name="${package.dir}/test/source/*.cpp" />
+                <includes name="${package.dir}/extras/EATextTextEdit.cpp" />
+            </sourcefiles>
+
+            <libraries>
+                <includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+
+                <do if="${config-system} == ps3">
+                    <includes name="${package.ps3sdk.appdir}/target/ppu/lib/libsn.a" />
+                </do>
+            </libraries>
+
+            <do if="${config-system} == 'android'">
+                <java>
+                    <sourcefiles basedir="${package.dir}/test/android/EATextTest/java_source">
+                        <includes name="**.java" />
+                    </sourcefiles>
+                </java>
+            </do>
+
+            <!-- Framework seems to think package.dir is the configbindir on capilano, so we ignore this step
+            and take care of it in the data deployment step lower down -->
+            <do if="${config-system} != 'capilano'">
+                <buildsteps>
+                    <packaging packagename="EATextTest" deployassets="true">
+                        <assetfiles basedir="${package.dir}/test/source/${asset-copy-subdir}">
+                            <includes name="data/*.*" if="${config-system} == android"/>
+                            <includes name="**" unless="${config-system} == android"/>
+                        </assetfiles>
+                    </packaging>
+                </buildsteps>
+            </do>
+            <do if="${config-system} == 'capilano'">
+                <buildsteps>
+                    <postbuild-step>
+                        <target>
+                            <copy todir="${package.configbindir}/test/EATextTest/data" maintainattributes="true" clobber="true">
+                                <fileset basedir="${package.dir}/test/source/data">
+                                    <includes name="**" />
+                                </fileset>
+                            </copy>
+                        </target>
+                    </postbuild-step>
+                </buildsteps>
+            </do>
+        </Program>
+
+        <!-- ***************************** -->
+        <!-- EATextTestExtra configuration -->
+        <!-- ***************************** -->
+
+        <do if="!${Dll??false}">
+            <!-- Getting this to work with a DLL build would be a headache. -->
+            <Program name="EATextTestExtra">
+                <config>
+                    <defines>
+                        ${runtime.EAText.defines}
+                        EA_MEMORY_LEAK_TRACE_ENABLED=1
+                        EATEXT_THREAD_SAFETY_ENABLED=0
+                    </defines>
+
+                    <warningsuppression>
+                        ${test.EATextTest.warningsuppression??}
+                    </warningsuppression>
+                </config>
+
+                <dependencies>
+                    <use>
+                        ${test.EATextTest.usedependencies}
+                    </use>
+                    <build>
+                        ${test.EATextTest.builddependencies}
+                    </build>
+                </dependencies>
+
+                <includedirs>
+                    ${test.EATextTest.includedirs}
+                </includedirs>
+
+                <sourcefiles fromfileset="runtime.EAText.sourcefiles">
+                    <includes name="${package.dir}/test/source/*.cpp" />
+                    <includes name="${package.dir}/extras/EATextTextEdit.cpp" />
+                </sourcefiles>
+
+                <libraries fromfileset="test.EATextTest.libs">
+                </libraries>
+
+                <do if="${config-system} == 'android'">
+                    <java>
+                        <sourcefiles basedir="${package.dir}/test/android/EATextTestExtra/java_source">
+                            <includes name="**.java" />
+                        </sourcefiles>
+                    </java>
+                </do>
+                <do if="${config-system} != 'capilano'">
+                    <buildsteps>
+                        <packaging packagename="EATextTestExtra" deployassets="true">
+                            <assetfiles basedir="${package.dir}/test/source/${asset-copy-subdir}">
+                                <includes name="data/*.*" if="${config-system} == android"/>
+                                <includes name="**" unless="${config-system} == android"/>
+                            </assetfiles>
+                        </packaging>
+                    </buildsteps>
+                </do>
+                <do if="${config-system} == 'capilano'">
+                    <buildsteps>
+                        <postbuild-step>
+                            <target>
+                                <copy todir="${package.configbindir}/test/EATextTestExtra/data" maintainattributes="true" clobber="true">
+                                    <fileset basedir="${package.dir}/test/source/data">
+                                        <includes name="**" />
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </postbuild-step>
+                    </buildsteps>
+                </do>
+            </Program>
+        </do>
+
+        <!-- ****************************** -->
+        <!-- EATextTestChar32 configuration -->
+        <!-- ****************************** -->
+        <!-- We test the building of EAText with EATEXT_CHAR_TYPE == char32_t -->
+
+        <do if="${config-system} == 'android' or ${config-system} == 'unix' or ${config-system} == 'iphone' or ${config-compiler} == 'vc'">
+            <Program name="EATextTestChar32">
+                <config>
+                    <defines>
+                        ${runtime.EAText.defines}
+                        EA_MEMORY_LEAK_TRACE_ENABLED=1
+                        EATEXT_CHAR_AS_CHAR32=1
+                    </defines>
+
+                    <warningsuppression>
+                        ${test.EATextTest.warningsuppression??}
+                    </warningsuppression>
+                </config>
+
+                <dependencies>
+                    <use>
+                        ${test.EATextTest.usedependencies}
+                    </use>
+                    <build>
+                        ${test.EATextTest.builddependencies}
+                    </build>
+                </dependencies>
+
+                <includedirs>
+                    ${test.EATextTest.includedirs}
+                </includedirs>
+
+                <sourcefiles fromfileset="runtime.EAText.sourcefiles">
+                    <includes name="${package.dir}/test/source/*.cpp" />
+                    <includes name="${package.dir}/extras/EATextTextEdit.cpp" />
+                </sourcefiles>
+
+                <libraries fromfileset="test.EATextTest.libs">
+                </libraries>
+
+                <do if="${config-system} == 'android'">
+                    <java>
+                        <sourcefiles basedir="${package.dir}/test/android/EATextTestChar32/java_source">
+                            <includes name="**.java" />
+                        </sourcefiles>
+                    </java>
+                </do>
+
+                <do if="${config-system} != 'capilano'">
+                    <buildsteps>
+                        <packaging packagename="EATextTestChar32" deployassets="true">
+                            <assetfiles basedir="${package.dir}/test/source/${asset-copy-subdir}">
+                                <includes name="data/*.*" if="${config-system} == android"/>
+                                <includes name="**" unless="${config-system} == android"/>
+                            </assetfiles>
+                        </packaging>
+                    </buildsteps>
+                </do>
+                <do if="${config-system} == 'capilano'">
+                    <buildsteps>
+                        <postbuild-step>
+                            <target>
+                                <copy todir="${package.configbindir}/test/EATextTestChar32/data" maintainattributes="true" clobber="true">
+                                    <fileset basedir="${package.dir}/test/source/data">
+                                        <includes name="**" />
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </postbuild-step>
+                    </buildsteps>
+                </do>
+            </Program>
+        </do>
+
+
+        <!-- ********************* -->
+        <!-- Demo configuration    -->
+        <!-- ********************* -->
+
+        <Program name="EATextDemo">
+            <config>
+                <defines>
+                    ${runtime.EAText.defines}
+                    EA_MEMORY_LEAK_TRACE_ENABLED=1
+                </defines>
+
+                <warningsuppression>
+                    <do if="${config-compiler} == 'vc'">
+                        -wd4005        <!-- disable warnign: "macro redefinition" -->
+                        -wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+                        -wd4365        <!-- disable warning: "conversion from x to y, signed/unsigned mismatch" -->
+                        -wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+                        -wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+                        -wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'" -->
+                        -wd4985        <!-- disable warning: "attributes not present on previous declaration." -->
+                    </do>
+
+                    <do if="${config-compiler} == 'sn'">
+                        --diag_suppress=68          <!-- disable warning: Integer conversion resulted in change of sign -->
+                        --diag_suppress=1669        <!-- disable warning: Potential unititialized reference to "X" -->
+                    </do>
+                </warningsuppression>
+            </config>
+
+            <dependencies>
+                <auto>
+                    UTFDraw2D       <!-- Needed only by the EAText/extras/EATextTextEdit.cpp file -->
+                </auto>
+                <use>
+                    EABase
+                    coreallocator
+                </use>
+                <build>
+                    EASTL
+                    EAStdC
+                    EAThread
+                    PPMalloc
+                    EAAssert
+                    EAIO
+                    MemoryMan
+                    EACOM
+                    EATest
+                    EAMain
+                    EAPlatform       <!-- Needed only by the EAText/extras/EATextTextEdit.cpp file -->
+									  FreeType
+									  <do if="${UTFWin.UTFWIN_DRIVER} == 'UTFWIN_DRIVER_EASKELETON' ">
+                        EASkeleton
+                    </do>
+                    <do if="${EAText.EATEXT_BITMAP_USE_EAGIMEX} != 0">
+                        EAGimex
+                        libjpeg
+                        libpng
+                        zlib
+                    </do>
+                </build>
+            </dependencies>
+
+            <includedirs>
+                ${package.dir}/include
+            </includedirs>
+
+            <sourcefiles>
+                <includes name="${package.dir}/demo/source/*.cpp" />
+                <includes name="${package.dir}/extras/EATextTextEdit.cpp" />
+            </sourcefiles>
+
+            <libraries>
+                <includes name="${package.configlibdir}/${lib-prefix}${package.name}${lib-suffix}" />
+
+                <do if="${config-system}=='ps3'">
+                    <includes name="${package.ps3sdk.appdir}/target/ppu/lib/libsn.a" />
+                </do>
+                <do if="${config-system}=='pc' or ${config-system}=='pc64'">
+                    <includes name="${eaconfig.PlatformSDK.dir.lib}/Shell32.lib" />
+                </do>
+            </libraries>
+
+            <do if="${config-system} == 'android'">
+                <java>
+                    <sourcefiles basedir="${package.dir}/test/android/EATextDemo/java_source">
+                        <includes name="**.java" />
+                    </sourcefiles>
+                </java>
+            </do>
+
+            <do if="${config-system} != 'capilano'">
+                <buildsteps>
+                    <packaging packagename="EATextDemo" deployassets="true">
+                        <assetfiles basedir="${package.dir}/test/source/${asset-copy-subdir}">
+                            <includes name="data/*.*" if="${config-system} == android"/>
+                            <includes name="**" unless="${config-system} == android"/>
+                        </assetfiles>
+                    </packaging>
+                </buildsteps>
+            </do>
+            <do if="${config-system} == 'capilano'">
+                <buildsteps>
+                    <postbuild-step>
+                        <target>
+                            <copy todir="${package.configbindir}/test/EATextDemo/data" maintainattributes="true" clobber="true">
+                                <fileset basedir="${package.dir}/test/source/data">
+                                    <includes name="**" />
+                                </fileset>
+                            </copy>
+                        </target>
+                    </postbuild-step>
+                </buildsteps>
+            </do>
+        </Program>
+    </tests>
+
+    <!-- ********************* -->
+    <!-- Test Data Deploy      -->
+    <!-- ********************* -->
+    <parallel.foreach item="String" in="${test.buildmodules}" property="module">
+        <property name="${module}outputdir" value="${package.configbindir}/test/${module}" />
+        <choose>
+            <do if="${config-system} == iphone">
+                <property name="test.${module}.xcodeproj.paths-to-include-contents-in-bundle">
+                    ${package.dir}/test/source/data/
+                </property>
+            </do>
+            <do>
+                <choose>
+                    <do if="${config-system} == 'capilano'">
+                        <property name="${module}outputdir" value="${package.configbindir}/test/${module}" />
+                        <property name="test.${module}.workingdir" value="${${module}outputdir}" />
+                        <property name="test.${module}.run.workingdir" value="${${module}outputdir}" />
+                    </do>
+                    <do if="${config-system} == 'unix' or ${config-system} == 'unix64' or ${config-system} == 'ps3' ">
+                        <property name="test.${module}.outputdir" value="${${module}outputdir}" />
+                        <property name="test.${module}.asset-configbuilddir" value="${test.${module}.outputdir}/data" />
+                        <property name="test.${module}.workingdir" value="${test.${module}.outputdir}" />
+                        <property name="test.${module}.run.workingdir" value="${test.${module}.outputdir}" />
+                    </do>
+                    <do>
+                        <property name="${module}.outputdir" value="${${module}outputdir}" />
+                        <property name="test.${module}.asset-configbuilddir" value="${${module}.outputdir}/data" />
+                        <property name="test.${module}.workingdir" value="${${module}.outputdir}" />
+                        <property name="test.${module}.run.workingdir" value="${${module}.outputdir}" />
+                    </do>
+                </choose>
+            </do>
+        </choose>
+    </parallel.foreach>
+</project>

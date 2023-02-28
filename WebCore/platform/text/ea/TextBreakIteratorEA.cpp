@@ -25,12 +25,12 @@
 #include "TextBreakIterator.h"
 #include "TextEncoding.h"
 #include "TextBoundaries.h"
-#include <wtf/atomics.h>
+#include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 
 #include <EAWebKit/EAWebKit.h>
 #include <EAWebKit/EAWebKitTextInterface.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <internal/include/EAWebKitString.h>
 

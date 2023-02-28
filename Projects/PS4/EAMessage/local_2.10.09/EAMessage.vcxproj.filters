@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAMessage">
+      <UniqueIdentifier>{63D81DA1-EE16-D118-8CEA-BEA8D7F9D40C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAMessage\internal">
+      <UniqueIdentifier>{98C54166-8192-2230-48B0-9110ED043270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\Changes.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\EAMessage.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\EAMessageDefer.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\EAMessageExtra.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\UTFDoc.css">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\EAMessage.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\scripts\EAMessage_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\EAMessage.h">
+      <Filter>include\EAMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\EAMessageDefer.h">
+      <Filter>include\EAMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\EAMessageExtra.h">
+      <Filter>include\EAMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\internal\Config.h">
+      <Filter>include\EAMessage\internal</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source\EAMessage.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source\EAMessageDefer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source\EAMessageExtra.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

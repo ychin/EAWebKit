@@ -15,54 +15,54 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zconf.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zconf.h">
       <Filter>include\xceedzip</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zlib.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\xceedzip\zlib.h">
       <Filter>include\xceedzip</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\version.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\version.h">
       <Filter>include\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zconf.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zconf.h">
       <Filter>include\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zlib.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include\zlib\zlib.h">
       <Filter>include\zlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\adler32.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\adler32.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\compress.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\compress.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\crc32.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\crc32.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\deflate.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\deflate.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\infback.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\infback.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inffast.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inffast.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inflate.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inflate.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inftrees.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\inftrees.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\trees.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\trees.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\uncompr.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\uncompr.c">
       <Filter>install</Filter>
     </ClCompile>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install\zutil.c">
       <Filter>install</Filter>
     </ClCompile>
   </ItemGroup>

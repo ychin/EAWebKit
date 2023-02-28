@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "config.h"
 
-#include <EAWebkit/EAWebkitJavascriptValue.h>
+#include <EAWebKit/EAWebkitJavascriptValue.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <internal/include/EAWebkitEASTLHelpers.h>
 #include <internal/include/EAWebKitString.h>
@@ -37,7 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/include/EAWebKit_p.h>
 #include <EAAssert/eaassert.h>
 
-#include <eastl/fixed_vector.h>
+#include <EASTL/fixed_vector.h>
 
 #include <JSValue.h>
 #include <JSFunction.h>

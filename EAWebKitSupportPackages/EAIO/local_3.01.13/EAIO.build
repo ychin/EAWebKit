@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<property name="Dll" value="${Dll??false}" />
+
+	<optionset name="config.targetoverrides">
+		<option name="test-build" value="include" />
+		<option name="test-buildall" value="include" />
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<package name="EAIO" initializeself="true"/>
+
+	<!-- Options -->
+	<!-- To enable options put (e.g.) <globalproperties>EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED=1</globalproperties> -->
+	<!-- in your masterconfig file or use -D:EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED=1 on the nant command line.     -->
+	<!-- The EAIO.EAIO_XXX values here directly correspond to EAIO config #defines.                              -->
+	<property name="EATECH_WARNINGSASERRORS"                value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+	<property name="EAIO.EAIO_FILEPATH_ENABLED"             value="0" unless="@{PropertyExists('EAIO.EAIO_FILEPATH_ENABLED')}" />
+	<property name="EAIO.NXMETA_CONFIG.ENABLED"             value="1" unless="@{PropertyExists('EAIO.NXMETA_CONFIG.ENABLED')}" />
+	<property name="EAIO.NXMETA_CONFIG.TEMP_SIZE"           value="0x40000000" unless="@{PropertyExists('EAIO.NXMETA_CONFIG.TEMP_SIZE')}" /> <!-- 1GB -->
+	<property name="EAIO.NXMETA_CONFIG.CACHE_SIZE"          value="0x40000000" unless="@{PropertyExists('EAIO.NXMETA_CONFIG.CACHE_SIZE')}" /> <!-- 1GB -->
+	<property name="EAIO.NXMETA_CONFIG.CACHE_JOURNAL_SIZE"  value="0x01000000" unless="@{PropertyExists('EAIO.NXMETA_CONFIG.CACHE_JOURNAL_SIZE')}" /> <!-- 16MB -->
+
+	<!--
+        EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED
+        EAIO.EAIO_INIFILE_ENABLED
+        EAIO.EAIO_64_BIT_SIZE_ENABLED
+        EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING
+        EAIO.EAIO_BACKWARDS_COMPATIBILITY
+        EAIO.EAIO_USE_CORESTREAM
+        EAIO.EAIO_CPP_STREAM_ENABLED
+        EAIO.EAIO_APPLE_USE_UNIX_IO
+    -->
+
+	<!-- If CoreStream is enabled, declare it as a dependent. We do this because it allows        -->
+	<!-- us to import CoreStream's <CoreStream/scripts/initialize.xml declarations. This is       -->
+	<!-- useful to us because it means that EAIO users automatically start seeing CoreStream's    -->
+	<!-- headers without having to modify their build files. And this is useful because we are    -->
+	<!-- introducing the usage of CoreStream in EAIO to users that probably don't have CoreStream -->
+	<!-- already in their builds. See <EAIO/scripts/initialize.xml>                               -->
+	<dependent name="CoreStream" if="${EAIO.EAIO_USE_CORESTREAM??0} == 1" />
+
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+
+	<do if="${config-system} == 'nx'">
+		<!-- This generates the nmeta file for EAIO with a larger temp drive -->
+		<optionset name="runtime.EAIO.nmetaoptions" fromoptionset="config-options-nmetaoptions" if="${EAIO.NXMETA_CONFIG.ENABLED??1} == 1">
+			<option name="application.temporaryStorageSize"     value="${EAIO.NXMETA_CONFIG.TEMP_SIZE}"/>
+			<option name="application.cacheStorageSize"         value="${EAIO.NXMETA_CONFIG.CACHE_SIZE}"/>
+			<option name="application.cacheStorageJournalSize"  value="${EAIO.NXMETA_CONFIG.CACHE_JOURNAL_SIZE}"/>
+		</optionset>
+	</do>
+
+	<!--
+	ObjectiveCppLibrary buildtype used to have objc_arc disabled as default and new buildtypes were created to have that enabled.
+	However, in one of the Framework/eaconfig refactoring, ObjectiveCppLibrary got assigned to the new builtypes.  At the moment,
+	this package's .mm file has not been updated to build with -fobjc_arc, so need to create a private typetype to turn this off.
+	-->
+	<do if="${config-system}==osx or ${config-system}==iphone">
+		<optionset name="EAIO-ObjCppLibrary-NoObjcArc-optionset" fromoptionset="config-options-${config-system}.objective.cpp.library">
+			<option name="buildset.name" value="EAIO-ObjCppLibrary-NoObjcArc"/>
+			<option name="enable_objc_arc" value="off"/>
+		</optionset>
+		<GenerateBuildOptionset configsetname="EAIO-ObjCppLibrary-NoObjcArc-optionset"/>
+	</do>
+
+	<runtime>
+		<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} gte 0">
+			<JavaLibrary name="EAIOJNI" gradle-directory="source/Android" if="'${config-system}' == 'android'"/>
+		</do>
+
+		<Library name="EAIO" buildtype="${EAIOBuildType}">
+			<dependencies>
+				<use>
+					EABase
+					coreallocator
+					<do if="${EAIO.EAIO_USE_CORESTREAM??0} == 1">
+						CoreStream
+					</do>
+				</use>
+				<auto>
+					EASTL
+					EAStdC
+					EAThread
+					EAAssert
+				</auto>
+				<build>
+				</build>
+			</dependencies>
+			<libraries>
+				<do if="${config-system} == xbsx and ${Dll??false}">
+					<includes name="dstorage_xs.lib" asis="true"/>
+				</do>
+			</libraries>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<headerfiles>
+				<includes name="${package.dir}/include/EAIO/**.h" />
+			</headerfiles>
+			<sourcefiles>
+				<includes name="source/*.cpp" />
+				<includes name="source/internal/*.cpp" />
+				<includes name="source/Apple/**.mm" if="${config-system} == iphone || ${config-system} == osx" optionset="EAIO-ObjCppLibrary-NoObjcArc" />
+				<includes name="source/compat/EAFilePath.cpp" if="${EAIO.EAIO_FILEPATH_ENABLED} == 1" />
+			</sourcefiles>
+
+			<!-- explicitly list the mm files as loose files until Framework is fixed as it will incorrectly strip mm files depending on build order -->
+			<bulkbuild enable="true" partial="${config-system} == iphone || ${config-system} == iphone-sim || ${config-system} == osx">
+				<loosefiles if="${config-system} == iphone || ${config-system} == osx">
+					<includes name="source/Apple/**.mm"/>
+				</loosefiles>
+			</bulkbuild>
+			
+			<!-- FW8 requires java libraries be separate modules with gradle files -->
+			<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} lt 0">				
+				<java>
+					<sourcefiles basedir="${package.dir}/source/Android/java_source" if="${config-system} == android">
+						<includes name="**.java" />
+					</sourcefiles>
+				</java>
+			</do>
+
+
+			<config>
+				<defines>
+					UTF_USE_EAASSERT=1
+					<do if="${Dll} and ${config-compiler} == 'vc'">
+						EAIO_API=__declspec(dllexport)
+						EAIO_TEMPLATE_API=__declspec(dllexport)
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_FILEPATH_ENABLED')}">
+						EAIO_FILEPATH_ENABLED=${EAIO.EAIO_FILEPATH_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED')}">
+						EAIO_DEFAULT_ALLOCATOR_ENABLED=${EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_INIFILE_ENABLED')}">
+						EAIO_INIFILE_ENABLED=${EAIO.EAIO_INIFILE_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_64_BIT_SIZE_ENABLED')}">
+						EAIO_64_BIT_SIZE_ENABLED=${EAIO.EAIO_64_BIT_SIZE_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING')}">
+						EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING=${EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_BACKWARDS_COMPATIBILITY')}">
+						EAIO_BACKWARDS_COMPATIBILITY=${EAIO.EAIO_BACKWARDS_COMPATIBILITY}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_USE_CORESTREAM')}">
+						EAIO_USE_CORESTREAM=${EAIO.EAIO_USE_CORESTREAM}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_CPP_STREAM_ENABLED')}">
+						EAIO_CPP_STREAM_ENABLED=${EAIO.EAIO_CPP_STREAM_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_APPLE_USE_UNIX_IO')}">
+						EAIO_APPLE_USE_UNIX_IO=${EAIO.EAIO_APPLE_USE_UNIX_IO}
+					</do>
+					<do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+						EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+					</do>
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4917        <!-- disable warning: "OLE_HANDLE: a GUID can only be associated with a class, interface or namespace -->
+						-wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+						-wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+						-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+						-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+						-wd4365        <!-- disable warning: "conversion from x to y, signed/unsigned mismatch" -->
+						-wd6011        <!-- disable warning: Dereferencing NULL pointer-->
+					</do>
+				</warningsuppression>
+				<buildoptions>
+					<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+					<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+				</buildoptions>
+			</config>
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>
+
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+	<tests>
+		<Program name="EAIOTest">
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					EABase
+					coreallocator
+					<do if="${EAIO.EAIO_USE_CORESTREAM??0} == 1">
+						CoreStream
+					</do>
+				</use>
+				<build>
+					EASTL
+					EAStdC
+					EACOM
+					MemoryMan
+					PPMalloc
+					EAAssert
+					EAThread
+					EATest
+					EAMain
+					EAIO/runtime/EAIO
+					MemoryMan
+				</build>
+			</dependencies>
+			<includedirs>
+				${package.dir}/include
+				${package.dir}/test/include
+			</includedirs>
+			<libraries>
+				<do if="${config-system} == 'kettle'">
+					<includes name="${package.kettlesdk.libdir}/libSceAppContent_stub_weak.a" />
+					<includes name="${package.kettlesdk.libdir}/libSceSysmodule_stub_weak.a" />
+				</do>
+			</libraries>
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+			</sourcefiles>
+			<do if="${config-system} == android">
+				<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} lt 0"> 	<!-- FW8 requires java libraries be separate modules with gradle files -->
+					<do if="${config-system} == android">
+						<java>
+							<sourcefiles basedir="${package.dir}/test/android/src/main/java/com/ea" if="${config-system} == android">
+								<includes name="**.java" />
+							</sourcefiles>
+						</java>
+					</do>
+				</do>
+				<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} gte 0">
+					<android-gradle 
+						gradle-directory="${package.dir}/test/android">
+						<javasourcefiles basedir="${package.dir}/test/android">
+							<includes name="**.java" />
+						</javasourcefiles>
+					</android-gradle>
+				</do>
+			</do>
+
+			<config>
+				<defines>
+					UTF_USE_EAASSERT=1
+					EA_MEMORY_LEAK_TRACE_ENABLED=1
+					<do if="@{PropertyExists('EAIO.EAIO_FILEPATH_ENABLED')}">
+						EAIO_FILEPATH_ENABLED=${EAIO.EAIO_FILEPATH_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED')}">
+						EAIO_DEFAULT_ALLOCATOR_ENABLED=${EAIO.EAIO_DEFAULT_ALLOCATOR_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_INIFILE_ENABLED')}">
+						EAIO_INIFILE_ENABLED=${EAIO.EAIO_INIFILE_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_64_BIT_SIZE_ENABLED')}">
+						EAIO_64_BIT_SIZE_ENABLED=${EAIO.EAIO_64_BIT_SIZE_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING')}">
+						EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING=${EAIO.EAIO_DIRECTORY_ITERATOR_USE_PATHSTRING}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_BACKWARDS_COMPATIBILITY')}">
+						EAIO_BACKWARDS_COMPATIBILITY=${EAIO.EAIO_BACKWARDS_COMPATIBILITY}
+					</do>
+					<do if="@{PropertyExists('EAIO.EAIO_USE_CORESTREAM')}">
+						EAIO_USE_CORESTREAM=${EAIO.EAIO_USE_CORESTREAM}
+					</do>
+					<do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+						EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+					</do>
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+						-wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+						-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+						-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+						-wd6011        <!-- disable warning: Dereferencing NULL pointer-->
+					</do>
+				</warningsuppression>
+			</config>
+			<bulkbuild enable="true" />
+		</Program>
+	</tests>
+
+	<do if="${config-system} == 'nx'">
+		<!-- This generates the nmeta file for EAIO with a larger temp drive -->
+		<optionset name="test.EAIOTest.nmetaoptions" fromoptionset="config-options-nmetaoptions">
+			<option name="application.temporaryStorageSize"     value="0xFA000000"/> <!-- 4000MB, the maximum -->
+			<option name="application.cacheStorageSize"         value="${EAIO.NXMETA_CONFIG.CACHE_SIZE}"/>
+			<option name="application.cacheStorageJournalSize"  value="${EAIO.NXMETA_CONFIG.CACHE_JOURNAL_SIZE}"/>
+		</optionset>
+	</do>
+
+	<fileset name="test.EAIOTest.deploy-contents-fileset" basedir="${package.configbindir}/test/">
+		<includes name="**" />
+	</fileset>
+
+	<property name="test.EAIOTest.deploymentfiles">
+		$(RemoteRoot)=$(ImageDir)
+	</property>
+
+</project>
+

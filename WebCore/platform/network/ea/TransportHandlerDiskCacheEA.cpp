@@ -50,7 +50,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAIO/EAFileDirectory.h>
 #include <internal/include/EAWebKitString.h>
 #include <internal/include/EAWebKitAssert.h>
-#include <internal/include/EAWebKitEASTLHelpers.h>
+#include <internal/include/EAWebkitEASTLHelpers.h>
 #include <internal/include/EAWebKitNewDelete.h>
 #include <stdio.h>
 #include <time.h>
@@ -58,8 +58,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DateEA.h"
 #include <EAIO/FnEncode.h>
 #include <EAWebKit/EAWebKitFileSystem.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <wtf/CryptographicallyRandomNumber.h>
+#include <EAIO/EAFileBase.h>
 
 namespace EA
 {
@@ -1465,7 +1466,12 @@ bool TransportHandlerDiskCache::RemoveUnusedCachedFiles()
     EA::IO::DirectoryIterator            directoryIterator;
     EA::IO::DirectoryIterator::EntryList entryList;
 
-    if(directoryIterator.Read(msCacheDirectory.c_str(), entryList, kSearchCachedFileExtension, EA::IO::kDirectoryEntryFile))
+
+    wchar_t cacheBuff[EA::IO::kMaxPathLength];
+    wchar_t fileExtBuff[EA::IO::kMaxPathLength];
+    EA::StdC::Strlcpy(cacheBuff, msCacheDirectory.c_str(), EA::IO::kMaxPathLength);
+    EA::StdC::Strlcpy(fileExtBuff, kSearchCachedFileExtension, EA::IO::kMaxPathLength);
+    if (directoryIterator.Read(cacheBuff, entryList, fileExtBuff, EA::IO::kDirectoryEntryFile))
     {
         for(EA::IO::DirectoryIterator::EntryList::iterator it = entryList.begin(); it != entryList.end(); ++it)
         {

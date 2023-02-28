@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EACallstack">
+      <UniqueIdentifier>{56303C41-0BC6-816B-1CAE-CF3F7C60DDDB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EACallstack\Apple">
+      <UniqueIdentifier>{E30B5059-5F8E-5E51-4CD5-4AD4740065BB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EACallstack\internal">
+      <UniqueIdentifier>{384EE90A-35CB-3C7D-D58F-9B9AB025FA1D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\internal">
+      <UniqueIdentifier>{0507DC95-253D-2470-6433-CE87F971582B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform">
+      <UniqueIdentifier>{5E0F5025-1688-6B68-ACF0-B2E3A7FA0780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\Apple">
+      <UniqueIdentifier>{B3CF0A6A-6D33-DFB1-32E6-571CF943B435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\null">
+      <UniqueIdentifier>{D636FA58-846E-6DFB-C543-55DE88DA08CA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\nx">
+      <UniqueIdentifier>{40E7815A-4DB9-B8C1-E85B-E3D5F81AAC9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\Sony">
+      <UniqueIdentifier>{52E1099E-1BC7-ABC8-EB95-71FE5480554E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\unix">
+      <UniqueIdentifier>{F13DE6BD-1877-6697-58C6-E88BBF1FB1CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\Win32">
+      <UniqueIdentifier>{CB59C4A4-B3E2-DE0C-ABD3-69099B84111A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\platform\Win64">
+      <UniqueIdentifier>{21CE972A-C4F0-9883-3207-88EFFC831401}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\Changes.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EAAddressRep.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EACallstack.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EACallstackRecorder.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\EADasm.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\FAQ.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\PS3DumpFile.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\doc\UTFDoc.css">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\EACallstack.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\scripts\EACallstack_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Apple\EACallstack_Apple.cpp">
+      <Filter>source\platform\Apple</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Apple\EAModule_Apple.cpp">
+      <Filter>source\platform\Apple</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\null\EACallstack_null.cpp">
+      <Filter>source\platform\null</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\null\EAModule_null.cpp">
+      <Filter>source\platform\null</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\nx\EACallstack_nx.cpp">
+      <Filter>source\platform\nx</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\nx\EAModule_nx.cpp">
+      <Filter>source\platform\nx</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Sony\EACallstack_Sony.cpp">
+      <Filter>source\platform\Sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Sony\EAModule_Sony.cpp">
+      <Filter>source\platform\Sony</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EACallstack_execinfo.cpp">
+      <Filter>source\platform\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EACallstack_unix.cpp">
+      <Filter>source\platform\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EACallstack_unwind.cpp">
+      <Filter>source\platform\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\unix\EAModule_unix.cpp">
+      <Filter>source\platform\unix</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Win32\EACallstack_Win32.cpp">
+      <Filter>source\platform\Win32</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Win32\EAModule_Win32.cpp">
+      <Filter>source\platform\Win32</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\platform\Win64\EACallstack_Win64.cpp">
+      <Filter>source\platform\Win64</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\Allocator.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\Apple\EACallstackApple.h">
+      <Filter>include\EACallstack\Apple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\Context.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\DWARF3File.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EAAddressRep.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EACallstack.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EACallstackRecorder.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EADasm.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EAModule.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\EASymbolUtil.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\ELFFile.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\IAddressRep.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\CabReader.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Config.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\DemangleGCC.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\EACallstackUtils.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\EADasmARM.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\EASTLCoreAllocator.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\ELF.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Intrin.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Minidump.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\internal\Win32Runner.h">
+      <Filter>include\EACallstack\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\MapFile.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\PDBFile.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\include\EACallstack\version.h">
+      <Filter>include\EACallstack</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\AddressRepCache.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\AddressRepLookupSet.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\Allocator.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\DWARF3File.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EAAddressRep.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EACallstack.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EACallstackRecorder.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EACallstackUtils.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasm.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmARM.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmARMThumb.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmPowerPC.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EADasmx86.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EAModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\EASymbolUtil.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\ELFFile.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\internal\cxa_demangle.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\internal\DemangleGCC.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\internal\Minidump.cpp">
+      <Filter>source\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\MapFile.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EACallstack\local_2.03.04\source\PDBFile.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

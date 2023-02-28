@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>EAText -- Requirements</title>
+
+  
+  
+  <meta content="Paul Pedriana" name="author">
+
+  
+  <meta content="The list of requirements for EAText." name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<h1>Requirements</h1>
+<p>This document describes the requirements that drive the design and implementation of EAText. </p>
+<p>A given platform or application may
+      have smaller requirements. A key requirement is that systems with lower
+      requirements pay a smaller price. This requirement set is based on what
+      shipping titles on all platforms have needed in the past or have asked
+      for in the future. Note that the term "script" refers to a specific writing system, as in "Hebrew script."</p>
+<ul>
+
+  <li>Cross-platform portable.</li>
+
+  <li>Scalable functionality,
+advanced features can be compiled away if
+desired. Users with lower requirements "pay" only for what they need.</li>
+
+  <li>Simple high level API.
+Drawing a line of plain text should be achievable at the application
+level with a single line of C++ code.</li>
+
+  <li>High performance. </li>
+
+  
+  <ul>
+
+    <li>Low memory usage,
+including little or no runtime memory allocation.</li>
+
+    <li>Fast execution, including
+the ability to create and save pre-built display lists.</li>
+
+    <li>Fast startup. Supports the
+pre-loading of glyphs from disk.</li>
+
+    <li>Smooth
+performance. Hiccups with disturb the frame rate should not occur under
+conventional usage.</li>
+
+  
+  </ul>
+
+  <li>"Easy" maintenance.</li>
+
+  
+  <ul>
+
+    <li>Easy to add new script
+support, due to the introduction of a universal text analysis and
+layout pipeline. Users of EAText need not change their code for it to
+work with new scripts.</li>
+
+    <li>The universal pipeline
+should also allow new maintainers to do changes with less fear of
+breaking something.</li>
+
+  
+  </ul>
+
+  <li>Ability to add raster back
+ends; system is not dependent on any
+3D solution.</li>
+
+  <li>Ability to draw large text efficiently.</li>
+
+  <li>Ability to layout and draw text in 3D as well as onto 2D surfaces via the same unified pipeline. <span class="315340005-27012005"><font>This includes text as polygonal and possibly extruded models.</font></span>
+  </li>
+
+  <li>Provide the ability for users to build their own pipelines with
+the basic utilities of the provided library.</li>
+
+  <li>Nextgen console and
+PC-friendly. Base functionality works on
+existing consoles such as PS2.</li>
+
+  <li>CSS-friendly (font style
+specification).</li>
+
+  <li>Alignment: left, right,
+centered, justified.</li>
+
+  <li>TrueType font capable,
+bitmap font capable.</li>
+
+  <li>RGB capable (not just
+monochrome as with outline fonts).</li>
+
+  <li>Rasterization: antialiasing
+and translucency at a minimum. Styles
+can provide information for rasterization.</li>
+
+  <li>Provides enough support for
+the writing of text editors.</li>
+
+  
+  <ul>
+
+    <li>Possibly provide a
+reference multi-lingual text editor with the
+package.</li>
+
+  
+  </ul>
+
+  <li>Provides enough support for
+the writing of formatted (e.g. HTML)
+display.</li>
+
+  
+  <ul>
+
+    <li>An implementation of HTML
+parsing and display is available as a
+separate package.</li>
+
+  
+  </ul>
+
+  <li>Supports multiple scripts
+and fonts in a line of text,
+allowing not just for HTML but also for overcoming font glyph support
+problems.</li>
+
+  <li>Complex script support</li>
+
+  
+  <ul>
+
+    <li>Bidirectional script.</li>
+
+    <li>Contextual shaping.</li>
+
+    <li>Combining characters.</li>
+
+    <li>Specialized word breaking.</li>
+
+  
+  </ul>
+
+  <li>Minimum supported script,
+based on current shipping titles and requested languages:</li>
+
+  
+  <ul>
+
+    <li>Latin (English, Spanish, etc.)</li>
+
+    <li>Chinese (traditional and simplified)</li>
+
+    <li>Japanese (kanji, hiragana, katakana)</li>
+
+    <li>Korean</li>
+
+    <li>Thai</li>
+
+    <li>Hebrew</li>
+
+    <li>Greek</li>
+
+    <li>Hungarian</li>
+    <li>Hindi</li>
+    <li>Arabic</li>
+
+  
+  </ul>
+
+  <li>Password character support.</li>
+
+  
+  <ul>
+
+    <li>Proper password entry is
+difficult to do properly with complex scripts, and can be non-trivial
+for even simple scripts. </li>
+
+  
+  </ul>
+
+  <li>Beautification shaping:
+ligatures and kerning pairs.<font face="Arial" size="2"></font></li>
+
+</ul>
+
+<hr style="width: 100%; height: 2px;">End of document<br>
+
+<br>
+
+<br>
+
+<br>
+
+<span style="font-weight: bold;"><br>
+
+</span><br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body>
+</html>

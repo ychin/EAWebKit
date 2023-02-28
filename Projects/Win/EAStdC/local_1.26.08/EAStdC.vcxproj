@@ -1,0 +1,322 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-debug|Win32">
+      <Configuration>pc-vc-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-opt|Win32">
+      <Configuration>pc-vc-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>EAStdC</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4548; 4619; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_GLIBCPP_USE_C99=1;_GLIBCXX_USE_C99_MATH=1;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc-vc-debug\lib\EAStdC.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc-vc-debug\lib/EAStdC.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-debug\lib" mkdir "pc-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-debug\build\EAStdC" mkdir "pc-vc-debug\build\EAStdC" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <OutDir>pc-vc-debug\lib\</OutDir>
+    <IntDir>pc-vc-debug\build\EAStdC\v\</IntDir>
+    <TLogLocation>pc-vc-debug\build\EAStdC\v.tlog\</TLogLocation>
+    <TargetName>EAStdC</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946 </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4548; 4619; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819;</DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_GLIBCPP_USE_C99=1;_GLIBCXX_USE_C99_MATH=1;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>pc-vc-opt\lib\EAStdC.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>pc-vc-opt\lib/EAStdC.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-opt\lib" mkdir "pc-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-opt\build\EAStdC" mkdir "pc-vc-opt\build\EAStdC" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <OutDir>pc-vc-opt\lib\</OutDir>
+    <IntDir>pc-vc-opt\build\EAStdC\v\</IntDir>
+    <TLogLocation>pc-vc-opt\build\EAStdC\v.tlog\</TLogLocation>
+    <TargetName>EAStdC</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\EAStdC.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAAlignment.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EABitTricks.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAByteCrackers.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EACType.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EADateTime.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAFixedPoint.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAGlobal.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAHash.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAMathHelp.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAMemory.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAOSGlobal.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EARandom.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAScanf.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EASprintf.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAStdC Index.pdf">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAStdC.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAStopwatch.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EAString.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\EATextUtil.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\Int128_t.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\doc\UTFDoc.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAAlignment.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EABitTricks.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAByteCrackers.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EACallback.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EACType.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EADateTime.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAEndian.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAFixedPoint.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAGlobal.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAHashCRC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAHashString.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAMathHelp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAMemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAProcess.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EARandom.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EARandomDistribution.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAScanf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EASingleton.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EASprintf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EASprintfOrdered.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAStdC.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAStopwatch.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EAString.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\EATextUtil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\Int128_t.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\internal\Config.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\internal\IntrusiveList.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\internal\ScanfCore.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\internal\SprintfCore.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\internal\stdioEA.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\include\EAStdC\internal\Thread.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\scripts\EAStdC_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\scripts\make_public.bat">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EACallback.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EACType.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EADateTime.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAFixedPoint.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAGlobal.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAHashCRC.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAHashString.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAMemory.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAProcess.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EARandom.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAScanf.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAScanfCore.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EASprintf.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EASprintfCore.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EASprintfOrdered.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAStdC.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAStopwatch.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EAString.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\EATextUtil.cpp" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAStdC\local_1.26.08\source\Int128_t.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

@@ -125,7 +125,7 @@ public:
 
     virtual void setToolTip(const String&, TextDirection) override;
 
-	virtual void print(Frame*);
+	virtual void print(Frame*) override;
 #if ENABLE(SQL_DATABASE)
 	virtual void exceededDatabaseQuota(Frame*, const String&, DatabaseDetails) override;
 #endif

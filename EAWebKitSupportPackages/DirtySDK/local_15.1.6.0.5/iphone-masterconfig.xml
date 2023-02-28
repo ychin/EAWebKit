@@ -1,0 +1,21 @@
+<project>
+    <masterversions>
+        <package name="XcodeProjectizer"                version="3.07.02" />
+        <package name="EABase"                          version="2.09.13"/>
+        <package name="EAThread"                        version="1.32.17"/>
+    </masterversions>
+
+    <buildroot>build</buildroot>
+    <ondemand>true</ondemand>
+    <ondemandroot>../../packages</ondemandroot>
+
+    <globalproperties>
+      dirtysdk-distpktwindow-size
+      dirtysdk-samples
+      osx-deployment-target-version=10.12
+      iphone-extra-frameworks="CFNetwork Foundation Security SystemConfiguration"
+      osx-extra-frameworks="-framework Security"
+    </globalproperties>
+
+    <config package="eaconfig" default="iphonesim-x64-clang-debug" includes="iphonesim-x64-clang-* osx-x64-clang-*"/>   
+</project>

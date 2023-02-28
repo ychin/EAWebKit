@@ -63,7 +63,7 @@
 
 //+EAWebKitChange
 //7/22/2013
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 //-EAWebKitChange
 
 using namespace WTF;

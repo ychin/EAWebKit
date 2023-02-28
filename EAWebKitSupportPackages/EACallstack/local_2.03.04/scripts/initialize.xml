@@ -1,0 +1,41 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<property name="EACallstackBuildType" value="Library"/>
+	<property name="EACallstackBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+	<property name="EACALLSTACK_DEBUGFLAGS_ON" value="0" local="true"/>
+	<property name="EACALLSTACK_DEBUGFLAGS_ON" value="1" if="@{OptionSetGetValue('config-options-common', 'debugflags')} == on" local="true"/>
+	<property name="EA_SCEDBG_ENABLED" value="${EA_SCEDBG_ENABLED??${EACALLSTACK_DEBUGFLAGS_ON}}"/>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EACallstack.libs">
+			<includes name="${package.EACallstack.builddir}/${config}/lib/${lib-prefix}EACallstack${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<!-- EACallstack header files location. -->
+	<property name="package.EACallstack.includedirs">
+		${package.EACallstack.dir}/include
+	</property>
+
+	<publicdata packagename="EACallstack" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<runtime>
+			<module name="EACallstack" buildtype="${EACallstackBuildType}">
+				<includedirs>
+					${package.EACallstack.includedirs}
+				</includedirs>
+				<publicdependencies>
+					coreallocator
+					EASTL
+				</publicdependencies>
+
+				<libs-external if="(${config-system} == 'kettle') and ${EA_SCEDBG_ENABLED} != 0">
+					<includes name="${package.kettlesdk.libdir??}/libSceDbg_stub_weak.a" />
+				</libs-external>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EACallstackTest"/>
+		</tests>
+	</publicdata>
+</project>

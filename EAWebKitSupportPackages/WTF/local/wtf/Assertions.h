@@ -118,7 +118,7 @@ extern "C" {
 */
 // + EAWebKit change
 // For some reason define 'NO_RETURN' gives error on latest PS4 and PS5 SDK's disabling this.
-#if (COMPILER(GCC_OR_CLANG) || COMPILER(MSVC)) && !(defined(EA_PLATFORM_PS5) || defined(EA_PLATFORM_PS4))
+#if (COMPILER(GCC_OR_CLANG) || COMPILER(MSVC)) && !(defined(EA_PLATFORM_PS5) || defined(EA_PLATFORM_PS4) || defined(EA_PLATFORM_STADIA))
 // - EAWebKit change
 #define NO_RETURN_DUE_TO_CRASH NO_RETURN
 #else

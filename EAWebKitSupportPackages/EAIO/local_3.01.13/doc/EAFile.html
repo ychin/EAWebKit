@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAFile</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAFile</h1>
+
+<h2>Introduction</h2>
+<p>EAFile is the file manipulation interface in the UTF. The IO portion of it is built upon the <a href="EAStream.html">EAStream</a> interface. EAFile provides the following suite of components:</p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <td><strong>Component</strong></td>
+      <td><strong>Description</strong></td>
+    </tr>
+    <tr>
+      <td><a href="EAFileBase.html">EAFileBase</a></td>
+      <td>Fundamental file system defintions </td>
+    </tr>
+    <tr>
+      <td><a href="EAFilePath.html">EAFilePath</a></td>
+      <td>File path manipulation </td>
+    </tr>
+    <tr>
+      <td><a href="EAFileStream.html">EAFileStream</a></td>
+      <td>File IO via the IStream interface </td>
+    </tr>
+    <tr>
+      <td><a href="EAFileAsync.html">EAFileAsync</a></td>
+      <td>Asynchronous IO </td>
+    </tr>
+    <tr>
+      <td><a href="EAFileUtil.html">EAFileUtil</a></td>
+      <td>File and directory manipulation </td>
+    </tr>
+    <tr>
+      <td><a href="EAFileNotification.html">EAFileNotification</a></td>
+      <td>File change detection</td>
+    </tr>
+    <tr>
+      <td><a href="EAFileDirectory.html">EAFileDirectory</a></td>
+      <td>Directory information </td>
+    </tr>
+    <tr>
+      <td><a href="EAStream.html">EAStream</a>...</td>
+      <td>Stream adapters, encoders, manipulators</td>
+    </tr>
+  </table>
+</blockquote>
+<p>Each of the above components resides in independent sources files and is documented independently.</p>
+<h2>Conventions</h2>
+<p>There are some conventions and standards we use in the UTF in order to make user and developer expectations consistent and safe:</p>
+<ul>
+  <li>Paths are represented in the form that is normal for the given target platform. There is no attempt to make some kind of universal path format that works for all platforms. However, both '\' and '/' are accepted under Microsoft platforms as directory separators.</li>
+  <li>Path case sensitivity follows the conventions of the given platform. Thus Microsoft-based platforms are case-insensitive,  and other platforms are usually case-sensitive.</li>
+  <li>UTF functions that accept file paths always expect a supplied path buffer to be at least kMaxPathLength in capacity. This makes for simpler logic, though it creates an opportunity for inattentive users to generate buffer overruns. </li>
+  <li>Directory paths always end with a directory separator. This makes for simpler logic and portable behaviour.</li>
+  <li>Path representations are preferred to be char16_t strings. This makes for simpler logic and manipulation and for easier localization on platforms that require it, especially Windows. The debates on this topic are legendary and we admit that both sides of the debate have points. </li>
+  <li>The term &quot;file name&quot; is used to describe just the name of the file and not its full path. The term &quot;file path&quot; is used to describe a full path to a file.</li>
+  <li>The concept of &quot;current directory&quot; is not  supported by the UTF file system, as it has been found to be a concept fraught with perils and portability problems. There is a GetCurrentDirectory and SetCurrentDirectory function, but that is entirely for the user's use and the EAFile* functions don't use it. Similarly, the concept of current drive or current volume is also not supported. </li>
+  <li>All functionality is made possible on all platforms to the extent possible. This may include custom implementations of some functionality. </li>
+</ul>
+<p></p>
+<p></p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body></html>
+
+
+

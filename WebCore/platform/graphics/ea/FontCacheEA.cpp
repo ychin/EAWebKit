@@ -33,7 +33,7 @@
 
 #include <internal/include/EAWebKit_p.h>
 #include <internal/include/EAWebKitString.h>
-#include <EAWebkit/EAWebKitTextInterface.h>
+#include <EAWebKit/EAWebKitTextInterface.h>
 
 using namespace WTF;
 

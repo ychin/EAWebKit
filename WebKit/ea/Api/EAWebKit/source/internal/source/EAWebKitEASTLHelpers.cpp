@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "config.h"
-#include <internal/include/EAWebKitEASTLHelpers.h>
+#include <internal/include/EAWebkitEASTLHelpers.h>
 #include <EAWebKit/EAWebkitSTLWrapper.h>
 
 #include <EAIO/FnEncode.h> 

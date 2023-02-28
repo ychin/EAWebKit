@@ -29,9 +29,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #if ENABLE(EATEXT_IN_DLL)
 #include <internal/include/EAWebKitTextWrapper.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include EA_ASSERT_HEADER
-#include <CoreAllocator/icoreallocator_interface.h>
+#include <coreallocator/icoreallocator_interface.h>
 #include <EAWebKit/EAWebKit.h>
 #include <EAIO/EAStreamMemory.h>
 #include <internal/include/EAWebKitAssert.h>

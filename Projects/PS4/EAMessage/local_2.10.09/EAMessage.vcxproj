@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>kettle-clang-debug</Configuration>
+    <Platform>ORBIS</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="kettle-clang-debug|ORBIS">
+      <Configuration>kettle-clang-debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="kettle-clang-opt|ORBIS">
+      <Configuration>kettle-clang-opt</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}</ProjectGuid>
+    <Keyword>ORBISProj</Keyword>
+    <ProjectName>EAMessage</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include";"..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EAMESSAGE_C_HANDLER_ENABLED=1;EAMESSAGE_DEFER_ENABLED=0;EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR=0;EAMESSAGE_TRACE_ENABLED=0;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UTF_USE_EAASSERT=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>kettle-clang-debug\lib\libEAMessage.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-debug\lib" mkdir "kettle-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-debug\build\EAMessage" mkdir "kettle-clang-debug\build\EAMessage" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <OutDir>kettle-clang-debug\lib\</OutDir>
+    <IntDir>kettle-clang-debug\build\EAMessage\v\</IntDir>
+    <TLogLocation>kettle-clang-debug\build\EAMessage\v.tlog\</TLogLocation>
+    <TargetName>libEAMessage</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include";"..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\EAAssert\local_1.05.11\include";"..\..\..\..\EAWebKitSupportPackages\EAThread\local_1.33.04\include";"..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include";"..\..\..\..\EAWebKitSupportPackages\EASTL\local_3.16.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-exceptions -Wno-error -fno-elide-type -fdata-sections -ffunction-sections -Wno-format -Wno-unneeded-internal-declaration -isystem "$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include" -isystem "$(SCE_ORBIS_SDK_DIR)\target\include_common" $(ORBISIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EAMESSAGE_C_HANDLER_ENABLED=1;EAMESSAGE_DEFER_ENABLED=0;EAMESSAGE_ENABLE_DEFAULT_ALLOCATOR=0;EAMESSAGE_TRACE_ENABLED=0;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UTF_USE_EAASSERT=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>kettle-clang-opt\lib\libEAMessage.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-opt\lib" mkdir "kettle-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-opt\build\EAMessage" mkdir "kettle-clang-opt\build\EAMessage" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <OutDir>kettle-clang-opt\lib\</OutDir>
+    <IntDir>kettle-clang-opt\build\EAMessage\v\</IntDir>
+    <TLogLocation>kettle-clang-opt\build\EAMessage\v.tlog\</TLogLocation>
+    <TargetName>libEAMessage</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_ORBIS_SDK_DIR)\host_tools\lib\clang\include;$(SCE_ORBIS_SDK_DIR)\target\include;$(SCE_ORBIS_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\EAMessage.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\EAMessage.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\EAMessageDefer.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\EAMessageExtra.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\doc\UTFDoc.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\EAMessage.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\EAMessageDefer.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\EAMessageExtra.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\include\EAMessage\internal\Config.h" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\scripts\EAMessage_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source\EAMessage.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAMessage\EAMessage.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAMessage\EAMessage.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source\EAMessageDefer.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAMessage\EAMessageDefer.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAMessage\EAMessageDefer.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAMessage\local_2.10.09\source\EAMessageExtra.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">kettle-clang-debug\build\EAMessage\EAMessageExtra.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">kettle-clang-opt\build\EAMessage\EAMessageExtra.cpp.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-debug|ORBIS' ">
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-opt|ORBIS' ">
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+  <ItemGroup Label="Whole Archive Linker Command Line Insertion Hack">
+    <Link Include="--whole-archive" Condition="'$(EAFrameworkWholeArchive)' == 'true'" />
+  </ItemGroup>
+</Project>

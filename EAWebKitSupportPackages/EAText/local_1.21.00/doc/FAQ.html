@@ -1,0 +1,1093 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+<title>EAText -- FAQ</title>
+<meta content="Paul Pedriana" name="author">
+<meta content="Frequently Asked Questions about EAText"
+ name="description">
+<link href="UTFDoc.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+.SmallBody {font-size: 10pt}
+.style1 {font-size: 9pt}
+.style2 {font-size: 12px}
+-->
+  </style>
+</head>
+<body>
+<h1>uFAQ</h1>
+<p>This document provides answers to frequently asked questions regarding EAText. There are some additional answers to more involved questions in the <a href="How-To.html">How-To</a> document.</p>
+<p class="faq-question">What is EAText?</p>
+<p class="faq-answer">EAText is a text layout and rendering library which supports advanced functionality. Such systems are sometimes (though somewhat mistakenly) called font systems. EAText supports a number of advanced features that basic text display libraries don't usually have. Among these are bidirectional layout, vertical layout, complex scripts such as Thai, advanced word breaking, support for styled text (e.g. HTML) display, support for the writing of text editors with all of the above features, etc. While EAText is not specific to game programming, our discussions here revolve around its use in EA game development.</p>
+<p class="faq-question">Why is it called EAText instead of EAFont? </p>
+<p class="faq-answer">It's called EAText because EAText is about more than just fonts -- it's about character, text, and script classification and layout.</p>
+<p class="faq-question">What is the legal status of EAText? </p>
+<p class="faq-answer">EAText is 100% hand-written by EA and there should be no legal issues associated with using it for any use within EA. However, for TrueType font support EAText uses the FreeType package which is an open source. EAText also supports using Font Fusion which is a commercial package that EA licenses for use in games. These are described below.</p>
+<p class="faq-question">What platforms is EAText useful for? </p>
+<p class="faq-answer">EAText is designed with an eye towards 2005+ gaming platforms, but is designed to perform reasonably well on older platforms such as the PS2. </p>
+<p class="faq-question">What is FreeType? </p>
+<p class="faq-answer">FreeType is an open source font rasterization library which is available under the FreeType License (FTL) or the GNU General Public License (GPL) version 2. It is written in C, designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images) of most vector and bitmap font formats.</p>
+<p class="faq-question">What is Font Fusion? </p>
+<p class="faq-answer">Font Fusion is a commercial outline font rasterization library made by Bitstream and which is licensed to Electronic Arts. Font Fusion does the low level work of converting glyph outlines (e.g. Bezier) to bitmaps. Font Fusion supports a number of outline font types such as TrueType, PostScript, and PFR (Portable Font Resource). EAText builds upon Font Fusion by providing management of platform-savvy glyph caches, line and paragraph layout, text characterization, style management, etc.</p>
+<p class="faq-question">What languages does EAText support?</p>
+<p class="faq-answer">EAText supports layout and interactive editing in at least 28 languages from 9 scripts, including:</p>
+<blockquote>
+  <table border="1" cellspacing="0" id="table4">
+    <tbody>
+      <tr>
+        <td class="SmallBody">Arabic (bidirectional)</td>
+        <td class="SmallBody">French</td>
+        <td class="SmallBody">Italian</td>
+        <td class="SmallBody">Russian</td>
+      </tr>
+      <tr>
+        <td class="SmallBody">Chinese (simplified and traditional) </td>
+        <td class="SmallBody">German</td>
+        <td class="SmallBody">Japanese (kanji, hiragana, katakana)</td>
+        <td class="SmallBody">Spanish</td>
+      </tr>
+      <tr>
+        <td class="SmallBody">Czech</td>
+        <td class="SmallBody">Greek</td>
+        <td class="SmallBody">Korean</td>
+        <td class="SmallBody">Swedish</td>
+      </tr>
+      <tr>
+        <td class="SmallBody">Danish</td>
+        <td class="SmallBody">Hebrew (bidirectional) </td>
+        <td class="SmallBody">Norwegian</td>
+        <td class="SmallBody">Thai (complex composition and breaking) </td>
+      </tr>
+      <tr>
+        <td class="SmallBody">Dutch</td>
+        <td class="SmallBody">Hindi (complex composition) </td>
+        <td class="SmallBody">Polish</td>
+        <td class="SmallBody">Tagalog</td>
+      </tr>
+      <tr>
+        <td class="SmallBody">English</td>
+        <td class="SmallBody">Hungarian</td>
+        <td class="SmallBody">Portuguese</td>
+        <td class="SmallBody">Turkish</td>
+      </tr>
+      <tr>
+        <td class="SmallBody">Finnish</td>
+        <td class="SmallBody">Icelandic</td>
+        <td class="SmallBody">Romanian</td>
+        <td class="SmallBody">Vietnamese</td>
+      </tr>
+    </tbody>
+  </table>
+</blockquote>
+<p class="faq-question">What types of fonts are supported by EAText?</p>
+<p class="faq-answer">Here we provide a list of font types supported by EAText. Note that in many cases this support is really driven by what the font library (FreeType, Font Fusion) supports.</p>
+<blockquote>
+  <table border="1" cellspacing="0" id="table5">
+    <tbody>
+      <tr class="SmallBody">
+        <td><strong>Font Type </strong></td>
+        <td><strong>Description</strong></td>
+      </tr>
+      <tr class="SmallBody">
+        <td>TrueType</td>
+        <td>Standard TrueType fonts.</td>
+      </tr>
+      <tr class="SmallBody">
+        <td>PostScript</td>
+        <td>Includes both Type 1 and Type 2 fonts. </td>
+      </tr>
+      <tr class="SmallBody">
+        <td>OpenType</td>
+        <td>OpenType is the successor to TrueType and PostScript. </td>
+      </tr>
+      <tr class="SmallBody">
+        <td>PFR</td>
+        <td>Portable Font Resource (a.k.a. TrueDoc, WebFont).</td>
+      </tr>
+      <tr class="SmallBody">
+        <td>FFS</td>
+        <td>Font Fusion Stroke -- compact Asian fonts.</td>
+      </tr>
+      <tr class="SmallBody">
+        <td>BmpFont</td>
+        <td>EAText bitmapped fonts, produced by BitmapFontEditor and BitmapFontGenerator. </td>
+      </tr>
+      <tr class="SmallBody">
+        <td>PolygonFont</td>
+        <td>EAText polygonal fonts (true 3D geometry), produced by PolygonFontGenerator.</td>
+      </tr>
+      <tr class="SmallBody">
+        <td>ContourFont</td>
+        <td>EAText contour fonts (3D outlines), produced by ContourFontGenerator.</td>
+      </tr>
+    </tbody>
+  </table>
+</blockquote>
+<p class="faq-question">Can I use just the Unicode (or Break) portion of EAText?</p>
+<p class="faq-answer">As noted in the FAQ entry above, you can the Script, Unicode, Iterator, and Break modules in EAText without introducing any package or library dependencies. This may be useful for if you don't want font handling and typesetting functionality but want line breaking or other basic Unicode-related functionality. You need to set your build to compile just the following files:</p>
+<blockquote>
+  <ul>
+    <li>EATextUnicode.cpp</li>
+    <li>EATextBreak.cpp</li>
+    <li>EATextScript.cpp</li>
+  </ul>
+</blockquote>
+
+<p class="faq-question">What is the difference between EAText and the old rwfont?</p>
+<ul>
+  <li>EAText has more code than rwfont and so has higher code memory usage. How much is hard to tell and you can't just compare the .obj files because EAText has functionality that gets linked away or compiled away depending on options.That being said, it's probably on the order of 10s of K when only your necessary functionality is used.
+    
+</li>
+  <li>EAText properly supports all locales of signficance to EA, including Asian and Middle-East (Hebrew and Arabic).</li>
+  <li>Right now EAText uses more font memory than rwfont does for the case of using multiple fonts from the same .ttf file. However, this will be fixed in the next EAText package cycle, so perhaps it's moot.</li>
+  <li>EAText has better bitmapped font functionality and support, and better effects (e.g. shadow, outline) functionality than rwfont.</li>
+  <li>EAText may be harder to use, since it has more functionality and tries to be a little more generic in design.</li>
+  <li>EAText has much better styled text support. CCS, password entry, underlining, inline images and custom symbols, HTML-like layout capabilities with mixed be styles in a paragraph, proper out-of-space ellipsizing. etc.</li>
+  <li>EAText works with FreeType in addition to Font Fusion, and EA wants to be eventually be free from paying $tens of thousands for Font Fusion. </li>
+</ul>
+<p class="faq-question">How do I build EAText?</p>
+<p class="faq-answer">EAText comes with a conventional EA Framework2/nant/eaconfig build file and an associated masterconfig.xml file. There are a number of dependent packages for EAText, however. Most of these are commonly used core UTF packages such as EABase, EASTL, EAThread, etc. Each of these packages are small and all but one of them are already in common use around EA. See the above FAQ entry regarding dependencies.</p>
+<p class="faq-answer">If you want to make a build of EAText without using Framework2/nant/eaconfig, it's fairly easy to figure out how to do, as there are no special compilation directives to know about. Have a look at the EAText masterconfig.xml file to see what other packages EAText is dependent on. We are working to reduce the dependencies.</p>
+
+<p class="faq-question">How efficient is EAText?</p>
+<p class="faq-answer">EAText is mostly a "pay as you go" system. The most basic uses of it tend to be fast and memory-friendly. As you use it to do more advanced things such as complex and/or bidirectional script layout, the cost increases. In any case, EAText does not have pathological behavior and doesn't have hiccup behavior. Memory allocation is minimal or non-existent, and memory allocation can be provided by the user. Other functionality in EAText assists in the construction of fast text display.</p>
+<p class="faq-answer">If you are drawing debug text in you app, them make sure to use the LayoutSimple function instead of the full-blown Typesetter layout functionality. LayoutSimple executes much faster, though at the cost of not supporting localized text.</p>
+
+<p class="faq-question">EAText displays my TrueType font worse than Windows does.</p>
+<p class="faq-answer">EAText uses Font Fusion to do glyph rasterization, and Font Fusion doesn't always produce output as good as Windows does. This is partly because some fonts simply have hinting that is tuned to work specifically for the Windows font rasterizer.</p>
+
+<p class="faq-question">Which is better, TrueType fonts or PostScript fonts? </p>
+<p class="faq-answer">For on-screen text such as that in computer applications TrueType fonts are better. The reason for this is that TrueType fonts have better mechanisms for displaying fonts at small sizes, whereas PostScript fonts weren't originally designed to support small sizes and the support they have for it is minimal. PostScript fonts were designed to print at high resolutions on PostScript printers. </p>
+
+<p class="faq-question">What is the complete set of compile-time options&nbsp; (#defines) for EAText? </p>
+<p class="faq-answer">EAText is configured via a set of #defines present in EATextConfig.h. The user may override the configuration defines by either #defining their values globally for the project (which EATextConfig.h will pick up) or by simply modifying EATextConfig.h.</p>
+
+<p class="faq-question">Can I use a Microsoft font such as Arial or Comic in my game?</p>
+<p class="faq-answer">Your PC game could reference the existing Windows fonts on the users' computers, but distributing a Microsoft font is another issue. Microsoft has made their fonts license-able via a company called Ascender (http://www.ascendercorp.com) and you should contact the current EA font licensing representative and Ascender to discuss the options. </p>
+<p class="faq-answer">Microsoft fonts have an advantage over many other fonts in that they are very well optimized for displaying on computer screens as opposed to most fonts which don't look good unless they are rendered at high resolution like with commercial printing. This explains why somebody might be interested in Microsoft fonts.</p>
+
+<p class="faq-question">The font I am specifying doesn't seem to be what's used, or the glyphs are all squares. </p>
+<p class="faq-answer">EAText's FontServer uses a <a href="#FontServerMatch">matching algorithm</a> to match the user-specified font style to a Font. The primary cause of unexpected results occurs when the font family name you specify doesn't (case-insensitively) match the name of the font. You can usually tell the name of the font in Windows by double-clicking the font file (assuming it's a .ttf/.otf outline font) and seeing the name Windows shows for it. However, when using FreeType sometimes that doesn't match, and further investigation with EATextViewer may be necessary:</p>
+<ul>
+  <li>Download the latest version of <a href="http://packages.ea.com/Package.aspx?ID=760">EATextViewer</a>.</li>
+  <li>Copy/Paste the file path  of your font into &ldquo;Family(s) or font file&rdquo;.</li>
+  <li>Press the &ldquo;Update Style&rdquo; button to refresh</li>
+  <li>Then examine the &ldquo;Family&rdquo; field. That's the field that EAText sees as the family.</li>
+  <li>With FreeType the family can differ from what Windows and Font Fusion thinks it is. </li>
+</ul>
+<blockquote>
+  <p><img src="images/EATextViewerMatch.png" width="908" height="718"> </p>
+</blockquote>
+<p class="faq-answer">Another way this problem can happen is if the font file is a .ttc (True Type Collection) file, which is actually a container of multiple .ttf files, each with a potentially different family name. If the embedded fonts have differing character set support (e.g. one is Japanese, another is Korean), then you might have this problem. The solution is to get the name of each of the embedded fonts and make sure you use the right name in your text style specification. Windows is not always able to handle .ttc files (Mac and Linux can), so if you are using Windows you can use <a href="http://onlinefontconverter.com/">onlinefontconverter.com</a> or <a href="http://luc.devroye.org/fonts-28889.html">ttc2ttf</a> to examine the .ttc file. </p>
+<p class="faq-question">Our platform requires us to draw our game at a given resolution which is then stretched to a wider resolution. </p>
+<p class="faq-answer">When you draw text and it is horizontally or vertically stretched by the machine it can look bad. You may need to use the Font::SetTransform function to set the text to draw in a pre-squished or pre-stretched way so that upon stretching or compressing it is scaled to the proper dimensions.</p>
+<p class="faq-question">Can EAText create styled text? </p>
+<p class="faq-answer">EAText supports the functionality required to make a commercial level web browser and thus can support conventional styled text. The EA XHTML package implements an HTML parsing and display engine that follows the XHTML standard. Also, the Typesetter module of EAText provides for the ability to do styled text itself via direct calls as opposed to an HTML-like data format. </p>
+<p class="faq-question">Does EAText support ClearType?</p>
+<p class="faq-answer">ClearType is Microsoft's term for font technology that increases the apparently resolution of fonts on LCD displays by using the RGB components of a pixel independently as if they were independent pixels. This is also known as sub-pixel antialiasing. EAText supports this and provides a <a href="Sub-pixel%20Antialiasing%20(ClearType).html">document</a> devoted to it. </p>
+<p class="faq-question">Does EAText support sub-pixel positioning/rendering?</p>
+<p class="faq-answer">EAText supports sub-pixel <i>glyph</i> positioning or rendering, and line and paragraph layout is done with sub-pixel precision. However, by default glyph are generated with integer positions and advance values because TrueType hinting and bitmapped fonts are optimized for pixel boundaries. Sub-pixel glyph rendering allows inter-glyph spacing to be more accurate while preserving decent anti-aliasing of glyphs. It doesn't result in individual glyphs looking better than regular anti-aliasing. See the <a href="Sub-pixel%20Antialiasing%20(ClearType).html#Subpixelpositioning">sub-pixel antialiasing document</a> for detailed information about this. </p>
+<p class="faq-question">How do I implement IME (Input Method Editing)?</p>
+<p class="faq-answer"> Input Method Editing refers to a system for entering text into a word processor when the keyboard alone is insufficient for the task. The most common usage of IME is to enter Asian glyphs on a system with a mouse and (usually but not necessarily) a conventional 101 key keyboard. Desktop operating systems typically provide libraries or APIs which implement IME, though a programmer usually needs to write code to adapt an application to these libraries. Implementing an IME engine from scratch is a daunting task which is not likely to be practical for most software application developers.&nbsp;</p>
+<p class="faq-answer"> As of this writing, EAText doesn't provide any IME functionality such as a wrapper for a platform-specific IME implementation. However, it is likely that some example code will eventually make it into the EAText extras directory. So check there if you are interested in this. The UTF EAApp package implements such an IME platform adapter.</p>
+<p class="faq-question">My text is rendering with glyphs being clipped or stretched.</p>
+<p class="faq-answer">The most common cause of this is a problem with coordinate registration whereby glyph vertices are not being correctly registered to screen pixels, and roundoff errors cause the hardware renderer to omit things. </p>
+<p class="faq-answer">The destination coordinates that are generated by EATextTypesetter (and the deprecated EATextLayout) should all be rounded to integral boundaries when drawn to a 2D raster. The text then needs to be drawn at destination coordinates whereby the vertices do not lie on exact pixel boundaries. This is because hardware roundoff errors cause the triangles to sometimes be clipped when the vertices are right on these boundaries. With conventional 3D models in an app this happens as well, but it doesn't cause a visual problem; it's only a problem when something needs to be &quot;pixel perfect&quot; as does 2D text. Some graphics systems (e.g. OpenGL, DX10+) define pixel boundaries as coordinates as values ending in .0 where others define them as coordinates ending in .5 (DX9).</p>
+<p class="faq-answer">Some users have found that this problem occurs when they have bilinear filtering disabled in their shader or render state and enabling filtering fixes the problem. A way to this problem is to toggle between point sampling and bilinear. If there is a visible difference between the two, the 1:1 pixel mapping isn&rsquo;t. 50% checkerboards are good for this, too. </p>
+<p class="faq-answer">Another way you can run into this problem: full-screen antialiasing (FSAA). Some FSAA modes introduce a  quarter or half pixel offset into rasterization coordinates which can turn a correctly positioned text render into a pathological case. The best case is to alter the rasterization mode if possible &ndash; sometimes you can enable multisampling &ndash; and that not being possible, a workaround is to target an offset of ~0.375 or so and rely on point sampling to snap into place. </p>
+<p class="faq-answer">Here's what one user did to brute-force fix the problem: </p>
+<blockquote>
+  <p class="faq-answer">  In the vertex submission, I increased the quad size by a pixel and pinched the UV's in by a pixel. Overall the size of the text thus remains the same, but the clipping issues  disappear. </p>
+</blockquote>
+<p class="faq-answer">Here's an example of the same text drawn with and without the pixel registration problem. </p>
+<blockquote>
+  <table border="1" cellspacing="0">
+    <tr>
+      <th>With registration problem</th>
+      <th>Without registration problem </th>
+    </tr>
+    <tr>
+      <td><img src="images/FontRenderError.gif" width="260" height="94"></td>
+      <td><img src="images/FontRenderErrorFixed.gif" width="258" height="94"></td>
+    </tr>
+  </table>
+</blockquote>
+<p class="faq-answer">Here are some additional examples of mis-registration:</p>
+<blockquote>
+  <p class="faq-answer"> <img src="images/TextMisregister1.png" width="286" height="48"></p>
+  <p class="faq-answer"><img src="images/TextMisregister2.png" width="231" height="49" border="1"></p>
+  <p class="faq-answer"><img src="images/TextMisregister3.png" width="150" height="29"></p>
+  <p class="faq-answer"><img src="images/TextMisregister4.png" width="229" height="25"></p>
+  <p class="faq-answer"><img src="images/TextMisregister5.png" width="252" height="38"></p>
+</blockquote>
+<p class="faq-question">My text is garbled on the screen.</p>
+<span class="faq-answer">There are various causes of this. Often they are usually caused by a problem with the GlyphCache, but not always, as we can see: </span>
+<blockquote>
+  <table border="1" width="70%" id="table8" cellspacing="0">
+    <tr>
+      <td><img border="0" src="images/DXT%20Error.jpg" width="68" height="31">
+        <p> <img border="0" src="images/DXT%20Error%202.jpg" width="206" height="34"></td>
+      <td>If you see something like either of these then you have a DXT format problem. Some graphics systems don't follow . To test this, try changing the GlyphCache format to ARGB at app init with:
+        <blockquote>
+          <p class="code-example-span style2">pGlyphCache-&gt;SetOption(EA::Text::GlyphCache::kOptionDefaultFormat, EA::Text::kTextureFormat32Bpp);</p>
+        </blockquote>
+        <p></td>
+    </tr>
+    <tr>
+      <td><img border="0" src="images/Non-Linear%20Texture%20Error.jpg" width="143" height="47"></td>
+      <td>If you see something like this then you probably are using a non-linear texture format. You need to use a linear texture format such as D3DFMT_A8R8G8B8_LIN instead of D3DFMT_A8R8G8B8.
+        <p></td>
+    </tr>
+    <tr>
+      <td><img src="images/TextMagnification.png" width="221" height="34"></td>
+      <td>If you see something like this then probably the text is being rendered with some kind of screen transform that is magnifying it or shrinking it. The example here comes from mistakenly having a back-buffer of 800x600 but a front buffer of 1280x720. </td>
+    </tr>
+    <tr>
+      <td><img src="images/BadARGBOrder.png" width="187" height="35"></td>
+      <td>This is due to the ARGB channels being in the wrong order. This can happen if the texture format mis-matches the video format or if the pixel shader is swizzling channels in some what that it shouldn't be. </td>
+    </tr>
+    <tr>
+      <td><img src="images/MissingShader.png" width="174" height="53"></td>
+      <td>This is due to a missing shader due to it not being present or somehow failing to load. </td>
+    </tr>
+    <tr>
+      <td><img src="images/BadHinting1.png" width="88" height="37"></td>
+      <td>This is due to a TrueType font that lacks hinting and is being drawn with anti-aliasing disabled and at too small a size. The resolution is to use anti-aliasing, use a larger font size, switch to a font that has hinting, or switch to a bitmapped font. </td>
+    </tr>
+    <tr>
+      <td><img src="images/SmallAsianText1.png" width="167" height="29"></td>
+      <td><p>This Japanese text is somewhat blurry. This is due to using a text size that is simply too small for the amount of detail in the glyphs. The resolution is to use a larger font size, disable antialiasing (works only if the font has hinting), or switch to a bitmapped font. However, switching to a bitmapped font is hard to do for Japanese due to the large character set. </p>
+        <p>Switching to a font with hinting yields the following:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/SmallAsianText2.png" width="191" height="31"></p></td>
+    </tr>
+    <tr>
+      <td><p><img src="images/TextureExhaustion1.png" width="192" height="62"></p>
+        <p><img src="images/TextureExhaustion2.png" width="211" height="112"></p></td>
+      <td valign="top"><p><img src="images/GlyphCacheTexture.jpg" alt="Full glyph cache" width="128" height="128" border="1" align="right">This text looks like it has been stamped over with parts of itself or has parts of letters punched away. It is the result of texture exhaustion not being handled. The GlyphCache implements one or more glyph textures which store rendered glyphs. You can set the size of textures it uses and the max number of textures it will use. Unless you specify a larger texture size or enable the use of multiple textures, the primary texture can run out of space (see picture above-rigth) if many characters from many fonts are used by the application. The GlyphCache::AddGlyphTexture function returns false if the space is exhausted and can't be expanded; the pictures at the left are a result of not handling this case. Typically you would clear the glyph cache or increase its capacity. </p>
+      </td>
+    </tr>
+    <tr>
+      <td><img src="images/WeakFontHinting.png" width="154" height="29"></td>
+      <td valign="top">This one (courtesy of the Need for Speed game) was due to the font having weak TrueType hinting. The font vendor revised the hinting and sent back a  better working font a few days later. </td>
+    </tr>
+  </table>
+</blockquote>
+<p class="faq-question">My text colors are wrong in some places</p>
+<p class="faq-answer">The most common cause of this is the use of DXT for font coloring that doesn't doesn't work well with DXT. This may also be due to weaknesses in the EAText runtime DXT encoder in some cases. The picture below shows an effects font drawn with DXT. Note how there are some black pixels that should be light blue. </p>
+<blockquote>
+  <p class="faq-answer"><img src="images/DXTColorLimitationDemo.png" width="148" height="25" border="1"></p>
+</blockquote>
+<p class="faq-question">Some small glyphs have extra pixels </p>
+<p class="faq-answer">Font Fusion sometimes renders glyphs slightly different from Windows GDI, and this can show up as visual imperfections with tiny font sizes. It's not so much a bug in Font Fusion as it's a case of the original font authors designing the font to work specifically for GDI with its math roundoff behaviour, etc. But bug or not, it doesn't look right. A future version of EAText will find a way to work around this problem, but in the meantime it may be best to use an alternative font, tweak the existing font, or use bitmapped fonts.</p>
+<p class="faq-answer">Example:</p>
+<blockquote>
+  <p class="faq-answer"><img src="images/SmallGlyphSizeImperfections.png" width="31" height="18"></p>
+</blockquote>
+<p class="faq-question">When I change registered FontServer fonts at runtime, I get glyph corruption. </p>
+<p class="faq-answer">Due to limitations on how the GlyphCache works, if you change fonts at runtime it's possible that existing font images will be corrupted. The solution is to either make sure that the GlyphCache is unused between changes, or to shut down and re-initialize the FontServer between changes as opposed to simply unregistering and registering fonts at runtime. </p>
+<p class="faq-answer">&nbsp;</p>
+<p class="faq-question">Is <a href="http://en.wikipedia.org/wiki/Web_Open_Font_Format">WOFF</a> (Web Open Font Format) supported? </p>
+<p class="faq-answer">At this time, EAText currently depends on FreeType or FontFusion to support WOFF. And as of February 2013, neither has such support, though WOFF will be supported at some point in 2013 by FreeType. If you have an interest in having EAText provide WOFF support, let us know. Some third party libraries (e.g. WebKit and EA's wrapper EAWebKit) provide WOFF support on top of the font system. </p>
+<p class="faq-answer">&nbsp;</p>
+<p class="faq-question"></p>
+<p class="faq-question">My text has antialiasing problems in glyph curves </p>
+<p class="faq-answer">Below on the left is a picture of the problem. It is simply a result of how Font Fusion and FreeType render glyphs with anti-aliasing whereas they were originally meant to be drawn without it. The problem can be improved by using EATextEffects to draw the glyph and using a j or s curve program as follows:</p>
+<blockquote>
+  <p class="faq-answer"><span class="code-example-span">SetGlyphColor 0xffffffff<br>DrawGlyph<br>ApplyCurve 0 1<br>Merge</span><br>
+  </p>
+  <table border="1" cellspacing="0">
+    <tr>
+      <th>Antialiasing problem </th>
+      <th>With correction curve applied </th>
+    </tr>
+    <tr>
+      <td><img src="images/ApplyCurveBefore.gif"></td>
+      <td><img src="images/ApplyCurveAfter.gif"></td>
+    </tr>
+  </table>
+</blockquote>
+<p class="faq-question">My text doesn't render at all.</p>
+<p class="faq-answer">There are numerous causes of this. The most common reason for this is that your rendering parameters are somehow wrong. Perhaps your triangles are backwards or your shader is wrong or your render state is incorrect or your text color is simply black or transparent. A good way to diagnose whether the problem is on the EAText side of things or the rendering side of things is to look at the LineLayout generated by EAText Typesetter. If it is non-empty and its GlyphLayoutInfoArray has sensible values then the problem is probably on the rendering side of things.</p>
+<p class="faq-question">Underlines aren't getting drawn. </p>
+<p class="faq-answer">If your underlines aren't getting drawn then it is probably a fault or omission of your EAText-using code and not EAText itself. 
+<p class="faq-answer">EAText supports underlines via the 
+  
+
+kDFUnderline text decoration style. However, lines are separate from glyphs and require separate drawing. Just like glyph drawing, which is done by getting glyph positioning information from the LineLayout struct, line drawing is also done by getting line information from the LineLayout struct. See the LineLayout::GetGlyphDecoration function for this information. 
+<p class="faq-answer">For more about underlines (and strikethroughs), see the <a href="How-To.html">How-To.html</a> doc. 
+<p class="faq-question">I'm getting a crash in the memory manager when loading a .ttc font.</p>
+<p class="faq-answer"> Font Fusion has a bug in its handling of .ttc files whereby it miscalculates memory sizes and mistakenly tries to do huge memory allocations. As of this writing, the only known way to fix it is to #define ENABLE_CACHING_EBLC = 0 in the FontFusion build file or in the Font Fusion config.h file. </p>
+<p class="faq-question">How do I remove unneeded characters from a font?</p>
+<p class="faq-answer"> Asian (e.g. Japanese, Chinese, Korean) fonts typically have thousands of characters, whereas some applications don't need all the characters present in the font. You can save a significant amount of memory and disk space by stripping unneeded characters from a font, provided you know precisely what characters you need and don't need.</p>
+<p class="faq-answer"> EAText provides a FontLab Python script (RemoveGlyphs.py) to remove all characters (glyphs, actually) that aren't in a user-provided list. This script is in the EAText/extras directory. Note that this script can only be run from within the FontLab application, which of course means that you need to have access to a copy of the FontLab commercial application. FontLab is the current best-of-breed commercial font editor.</p>
+<p class="faq-answer">A slightly more labor-intensive method but which doesn't require FontLab is to use TTX (http://www.letterror.com/code/ttx/) to convert the TTF to XML format, delete the glyph data that you don't need, and use TTX to convert back to XML. To convert a .ttf to XML (.ttx) drag a .ttf file onto ttx.exe. The resulting XML file can be 20+ megabytes for Asian fonts. Open the XML file in an editor which can handle large sizes. </p>
+<p class="faq-question">I have an Asian font that doesn't work with EAText or BitmapFontEditor, but it works on Windows or Macintosh.</p>
+<p class="faq-answer"> Most likely this is because the font isn't a Unicode font and instead has support only for old-style Asian encodings such as Big5 (Chinese) Wansung (Korean), or ShiftJIS (Japanese). Asian fonts developed since about the year 2000 are typically Unicode, but there are quite a few older-style Asian fonts still around. EAText supports only Unicode fonts because supporting other types would needlessly bloat the code and data required to support the other encodings. What you want to do is convert the font to Unicode; see the next FAQ entry. </p>
+<p class="faq-question">How do I convert my non-Unicode font to Unicode?</p>
+<p class="faq-answer"> Unfortunately, professionally font tools such as FontLab curiously lack the ability to convert font encodings. The only tool currently able to do this is the commercial TrueKeys application (http://www.unidocsys.com/). On the other hand, you should be able to get the supplier of your font to provide a Unicode version, as all fonts really should be Unicode these days and other encodings are inefficient and waste memory and CPU cycles to handle.</p>
+<p class="faq-question">How do I tell the name of a font in a .ttf file?</p>
+<p class="faq-answer"> To see the name of a font, double click on the .ttf file and the Windows font viewer will display font information. If double-clicking the .ttf file doesn't show the font info but instead runs some other app like ACDSee then that app has stolen the .ttf file extension. In that case you can right-click the font and select the &quot;Open With...&quot; menu item and set it to open with C:\Windows\System32\FontView.exe. If that somehow doesn't work, then consider using the EATextViewer app or the FontViewer app which you can get from the EA package server or from the UTFTools repository on EAOS. Lastly, on some versions of Windows you can right-click a .ttf file and select &quot;properties&quot; from the popup menu and get information. On a Macintosh you can right-click a font and use the &quot;Get Info&quot; item and look at the name in the resulting info. </p>
+<p class="faq-question">Text is being drawn with the wrong font. </p>
+<p class="faq-answer">The usual cause of this is that either you misspelled the font name or (assuming you are using the FontServer to acquire the font) you didn't register the font with the FontServer. Note that many fonts have names that are different from their file name. For example, times.ttf is a font called &quot;Times New Roman.&quot; See the FAQ entry above for info about how to tell the name of a font in a .ttf file. </p>
+<p class="faq-question">Text doesn't look very great. </p>
+<p class="faq-answer">The most common causes of this are:</p>
+<ul>
+  <li>You have a coordinate registration problem (addressed earlier in this FAQ).</li>
+  <li>Font Fusion is not doing as well as it could. </li>
+  <li>The font simply isn't very well implemented.</li>
+</ul>
+<p class="faq-answer">In order to diagnose this is, you want to do two things:</p>
+<ol>
+  <li>View the font in a Windows application such as Word, WordPad, or Notepad. You'll need to add the font to your Windows fonts directory in order to do this. If the font looks the same in Windows as it does in your app then it's a font problem. If it looks different then proceed to step 2. </li>
+  <li>View the font in the EATextViewer application. If the font looks the same in EATextViewer as it does in your app then it's a Font Fusion problem which you can't do much about. If the font looks different then your app has a problem. </li>
+</ol>
+<p class="faq-question">Text is being drawn with what seems like the right font, but it looks ugly or rough, but it looks fine on Windows. </p>
+<p class="faq-answer">The most common cause of this is that the font is being drawn without smoothing, whereas the font for all practical purposes needs smoothing to look good at the sizes you are drawing it at. Typically fonts like this lack TrueType &quot;hinting.&quot; </p>
+<p class="faq-answer">Also, some fonts happen to be designed in such a way that they work fine on Windows but don't look as well when drawn by other font systems such as Font Fusion. Try viewing the font in EATextViewer and if it still looks wrong then it's probably the font's fault and you may want to try another size, smoothing setting, or font. </p>
+<p class="faq-question">Text is being drawn with what seems like the right font, but it looks blurry, but it looks crisp on Windows. </p>
+<p class="faq-answer">The most common cause of this is that the font is being drawn with smoothing, whereas it would look crisp when smoothing is disabled. Some fonts are designed to look very crisp at small sizes via TrueType font &quot;hinting.&quot; In fact the text you are reading now is designed this way, though if you have ClearType enabled on your Windows computer then it will looks a little less crisp (though still look good).</p>
+<p class="faq-question">Text drawn with EAText is bigger than I expect. </p>
+<p class="faq-answer">That's probably a DPI setting thing. EAText by default assumes your monitor DPI is 96 -- the same as Windows. You will notice that a size 16 font in EAText is identical to a size 16 font in Windows. However, some operating systems, such as Macintosh, assume your monitor is 72 DPI. Most likely, you were previously used to rendering text at an assumed 72 DPI. </p>
+<p class="faq-answer">If you are creating Font objects directly (e.g. with operator new), then you can use the Font::SetOption function with kOptionDPI. See Font.h for more. If you are using the FontServer to create fonts for you, then you can use the FontServer::SetOption function with kOptionDPI to set the DPI. In either case, you need to do this right after you create the Font or FontServer and before you use them. </p>
+<p class="faq-answer">The EATextConfig.h file has a parameter called EATEXT_DPI which defaults to 96 but can be set to 72. This value defines what the default dpi is for fonts is. But you can still use the Font and/or FontServer SetOption function to override this at runtime. </p>
+<p class="faq-answer">Lastly, you can scale your font sizes by 72 / 96 (0.75), which should have a similar or possibly identical effect.</p>
+<p class="faq-question">My Chinese (or Thai, Korean, Hebrew, ...) text is blank.</p>
+<p class="faq-answer">Most likely this is because the text is being drawn with a font that doesn't support the given language. This can happen because: </p>
+<ul>
+  <li>You didn't register the desired font with the FontServer. </li>
+  <li>You specifically called out for a different font in the LayoutSettings you gave TypeSetter. </li>
+  <li> You didn't enable the kOptionSmartFallback FontServer option. <br>
+    Smart fallback means that if the user-specified font specification can't support a given char/script, other registered fonts are considered.</li>
+  <li>The FontServer picked a font that it thought had your characters but somehow the font's version of those characters was bad.</li>
+  <li>There is some bug in EAText Typesetter or FontServer.</li>
+</ul>
+<p class="faq-answer">The best way to make sure the right fonts are used is to specify them by name in the FontStyle family name array. You can either make per-locale font styles or you can specify an array of font families in order of most to least preferred. If you specify the kOptionSmartFallback FontServer option, then the FontServer will to through the extra effort of finding a font to match your text even if you didn't specify the family in the font style request. </p>
+<p class="faq-answer">Another possible cause of blank text is that the text is being drawn in the same color as the background.</p>
+<p class="faq-answer"> </p>
+<p class="faq-question">How do I draw large text sizes? </p>
+<p class="faq-answer">Text derived from TrueType fonts (EATextOutlineFont) or bitmapped fonts (EATextBitmapFont) doesn't work well for large-sized text (with glyphs larger than about 30x30 texels in size), as it uses a lot of memory. Above about 128x128 in size the memory usage becomes too high to be used for drawing arbitrary text. If you try to solve this by scaling smaller sized text you will usually end up with unacceptable results.</p>
+<p class="faq-answer"> One way to resolve this is to use polygonal fonts -- fonts based on a vertex mesh instead of based on a texture quad. EATextPolygonFont provides polygonal font support, and the PolygonFontGenerator tool creates polygonal fonts from TrueType fonts. You will need to implement the drawing the vertex information yourself, but otherwise most of the hard work is done for you. The EAText <a href="White Paper.html">White Paper</a> demonstrates extruded (and animated) 3D polygonal text. As of this writing, the polygonal fonts generated by PolygonFontGenerator could stand to be better compressed; they are using floating point values and have a lot of zeroes that could be pared away. Please notify the EAText maintainer if this is an issue that you would like resolved.</p>
+<p class="faq-question">How do I tell EAText to make a bold font when all I have is a regular one? </p>
+<p class="faq-answer">Typically this feature is implemented (e.g. by Microsoft) by drawing the glyph horizontally a second time one pixel to the right, and for larger font sizes this can be combined with drawing it a pixel larger vertically as well. It doesn't look as good as a true bold font, but for some purposes it is OK. EAText supports this via EAText Effects. You can read more about Effects in the EATextEffect document, but you would use a script like this to implement a single-pixel doubling bold effect:</p>
+<p class="faq-answer"></p>
+<p class="code-example">EffectsState es;
+
+es.SetGlyphColor(0xff000000); <span class="code-example-comment">// Any color will work. </span>
+es.SetGlyphSmooth(true);<span class="code-example-comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // This isn't necessary; it works with monochrome fonts as well.</span>
+es.DrawGlyph();
+es.Merge();
+es.Clear();
+es.SetGlyphOffset(1, 0);
+es.DrawGlyph();
+es.Merge();
+<p class="faq-answer">With larger fonts (~18+ pixels) you can do circular smears. </p>
+<p class="faq-question">How do I use EAText with my graphics system? </p>
+<p class="faq-answer">Text must be drawn by some graphics system, but there are different graphics systems across varying applications and platforms. EAText attempts to implement as much text/font/glyph/layout as possible, but there still needs to be some glue provided by the user to make this work with a given graphics system. There are two fundamental things the user needs to provide in the way of this glue:</p>
+<ul>
+  <li>
+    <p class="faq-answer">A subclass of EATextGlyphCache which implements four functions.
+  </li>
+  <li>
+    <p class="faq-answer">A vertex mesh container which understands the graphic system's vertex/index buffer API.
+  </li>
+</ul>
+<p class="faq-answer">These are discussed further in the <a href="Graphics Engine Support.html">Graphics Engine Support</a> <a href="Graphics Engine Support.html"></a> document and an pre-made example is provided in the EATextRNA package. If you are using the RNA graphics system, you can just try using the EATextRNA functionality. Even if you aren't using RNA, it is probably a useful example to copy from. Contact the maintainers of EAText if you would like to have a RenderEngine adapter.</p>
+<p class="faq-answer"> You should expect it to take about one or two days' work to make an EAText adapter for your graphics system, assuming you are familiar with your graphics system. </p>
+<p class="faq-question">How do I draw text as textured glyphs instead of solid colored glyphs? </p>
+<p class="faq-answer">This is best handled outside of EAText and at the level of the user's graphics system layer over EAText. EAText Typesetter generates a LineLayout that contains positions and UV rectangle coordinates of glyphs on the EAText GlyphCache texture. What you probably want to do is write a simple pixel shader that uses the EAText GlyphCache texture glyph as a test value or alpha value which is used against your own texture to enable pixels in it or modulate their transparency. So really you are just combining the glyph alpha with a texture of your choice and drawing the texture where the glyph is opaque. With such textured glyphs its often useful to implement a dark glyph outline for the glyphs, which may or may not need to be drawn as a second pass, depending on your pixel shader. </p>
+<p class="faq-question">How do I implement user password entry so that characters are replaced by &#9679;&#9679;&#9679;&#9679;&#9679; chars ? </p>
+<p class="faq-answer">There are two primary means of doing this:</p>
+<ul>
+  <li>Use a font that has only &#9679; glyphs. EAText provides such a font in the <em>extras</em> directory. </li>
+  <li>Use the EAText kPMPassword style. This is a slightly more correct mechanism than using a specialized font. </li>
+</ul>
+<p>To use kPMPassword, set the TextStyle::mPasswordMode member to kPMPassword, and Typesetter will automatically draw all glyphs as &#9679;, regardless of the actual characters typed. This requires that the given font have a &#9679; char (Unicode 25CF) present. </p>
+<p class="faq-question"><a name="FontServerMatch"></a>How does the FontServer match requests to fonts? </p>
+<p class="faq-answer">The FontServer uses the following function to match a request (TextStyle) to one or more resulting Fonts:</p>
+<p class="code-example">Font* GetFont(const TextStyle* pTextStyle, FontSelection&amp; fontSelection, uint32_t maxCount = 0xffffffff,
+              Char c = kCharInvalid, Script script = kScriptUnknown, bool bManaged = true);</p>
+<p class="faq-answer">The following is pseudocode which describes the algorithm the FontServer uses. </p>
+<pre class="code-example">fontNameList = list of all names in the requested TextStyle
+fontNameList = font name substitutions on fontNameList if enabled.
+candidateFaceList = all existing font faces whose names match the requested names.
+Try:
+   for each in candidateFaceList:
+      matchFaceList = find the best matching existing font for each face, taking into account Char c if specified.
+   if matchFaceList is empty:
+      candidateFaceList = all existing faces
+      goto Try
+sort matchFaceList to start with the best matching face.
+create fonts for matchFaceList. Try to use existing fonts instead of creating new ones.
+</pre>
+<p class="faq-answer"></p>
+<p class="faq-answer">In summary, the FontServer gives highest priority to fonts that have the same family name (e.g. Arial) as the user's request (i.e. TextStyle::mFamilyNameArray). Next in priority is font size, then font style information, such as normal/bold/italic. If the user specifies a Char c, then regardless of how good a match is, a Font won't be selected unless it support the given Char. The same applies to the supplied Script. Always try to use an existing font instead of creating a new font that is a duplicate. </p>
+<p class="faq-question">What is OpenType?</p>
+<p class="faq-answer">OpenType is the successor to TrueType which does two primary things:</p>
+<ul>
+  <li>
+    <p class="faq-answer">It supports both PostScript-style and TrueType-style curves.
+  </li>
+  <li>
+    <p class="faq-answer">It defines an advanced system for glyph substitution and positioning.
+  </li>
+</ul>
+<p class="faq-answer">OpenType is essentially a successor to TrueType and extends the functionality of TrueType to include the above features. An OpenType font typically has a file extension of either .otf or .ttf. EAText supports OpenType fonts, but doesn't support all its options, as there are a very large number of vague and rarely used OpenType features.</p>
+<p class="faq-answer">With EAText, you really don't need OpenType functionality unless you are laying out text in Arabic or Hindi. OpenType is also normally required for Thai, but EAText has some alternative code to allow Thai to work without OpenType. So you don't need to enable OpenType (see kOptionOpenTypeFeatures in EAText) unless the aforementioned applies to you. EAText versions after 1.04.00 disable OpenType by default. </p>
+<p class="faq-question">How do I force a pair of characters to not be replaced by a ligature? How do I force a pair of characters to be replace by a ligature when they normally aren't?</p>
+<p class="faq-answer">You can insert either of the following Unicode characters between the given pair, depending on your intention:</p>
+<p class="faq-answer">&nbsp;&nbsp;&nbsp; 200C ZERO WIDTH NON-JOINER (forces characters to not be joined)<br>
+&nbsp;&nbsp;&nbsp; 200D ZERO WIDTH JOINER (forces characters to be joined)</p>
+<p class="faq-answer">From the Unicode Standard: "The ZWJ and ZWNJ are designed for marking the unusual cases where ligatures or cursive connections are required or prohibited. These characters are not to be used in all cases where ligatures or cursive connections are desired; instead, they are only for overriding the normal behavior of the text."</p>
+<p class="faq-answer">If the font or layout engine has ligatures disabled, then ligatures cannot be made, even if ZWJ is present.</p>
+<p class="faq-question">What languages are supported by the built-in Windows fonts?</p>
+<p class="faq-answer">Built-in Windows fonts are often used by people to do basic testing of language support in a game. We provide a table here that identifies which Windows typefaces support which languages. The columns in blue indicate languages which Microsoft calls &quot;WGL&quot; (Windows Glyph List) and which consistitute the major simple languages of Europe.</p>
+<blockquote>
+  <table border="1" cellpadding="0" cellspacing="0" width="100%" id="table7">
+    <tbody>
+      <tr>
+        <td align="center"><font face="Arial" size="1">Typeface</font></td>
+        <td align="center"><font face="Arial" size="1" color="#0000FF">West Europe</font></td>
+        <td align="center"><font face="Arial" size="1" color="#0000FF">East Europe</font></td>
+        <td align="center"><font size="1" face="Arial" color="#0000FF">Baltic</font></td>
+        <td align="center"><font face="Arial" size="1" color="#0000FF">Greek</font></td>
+        <td align="center"><font face="Arial" size="1" color="#0000FF">Russian</font></td>
+        <td align="center"><font face="Arial" size="1" color="#0000FF">Turkish</font></td>
+        <td align="center"><font face="Arial" size="1">Hebrew</font></td>
+        <td align="center"><font face="Arial" size="1">Arabic</font></td>
+        <td align="center"><font face="Arial" size="1">Thai</font></td>
+        <td align="center"><font face="Arial" size="1">Japanese</font></td>
+        <td align="center"><font face="Arial" size="1">Korean</font></td>
+        <td align="center"><font face="Arial" size="1">S. Chinese</font></td>
+        <td align="center"><font face="Arial" size="1">T. Chinese</font></td>
+        <td align="center"><font face="Arial" size="1">Hindi</font></td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Arial Unicode MS</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Arial</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Comic Sans</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Courier New</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Microsoft Sans Serif</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Tahoma</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Times New Roman</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Trebuchet</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Verdana</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">MingLiU</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">PMingLiU</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">BatangChe</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Batang</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Gulim</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">MS UI Gothic</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">MS Mincho</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">SimSun</font></td>
+        <td align="center"><font face="Arial" color="#0000FF">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+        <td align="center">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><font face="Arial" size="1">Mangal</font></td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center">&nbsp;</td>
+        <td align="center"><font face="Arial">&#9679;</font></td>
+      </tr>
+    </tbody>
+  </table>
+</blockquote>
+<p class="faq-question">What character sets are associated with each language?</p>
+<p class="faq-answer">The following table illustrates this for the Unicode, ISO, and Microsoft standards, where n/a means that the given language is not supported by the given standard:</p>
+<blockquote>
+  <table border="1" cellspacing="0" id="table6">
+    <tr>
+      <td><strong>Language</strong></td>
+      <td><strong>Unicode script </strong></td>
+      <td><strong>ISO</strong> </td>
+      <td><strong>Microsoft code page</strong></td>
+      <td><strong>Microsoft code page name </strong></td>
+    </tr>
+    <tr>
+      <td>Arabic</td>
+      <td>Arabic</td>
+      <td><div align="center">8859-6</div></td>
+      <td><div align="center">1256</div></td>
+      <td>Arabic</td>
+    </tr>
+    <tr>
+      <td>S Chinese</td>
+      <td>Han</td>
+      <td><div align="center">n/a</div></td>
+      <td><div align="center">936</div></td>
+      <td>Simplified Chinese GBK </td>
+    </tr>
+    <tr>
+      <td>T Chinese </td>
+      <td>Han</td>
+      <td><div align="center">n/a</div></td>
+      <td><div align="center">950</div></td>
+      <td>Traditional Chinese Big 5 </td>
+    </tr>
+    <tr>
+      <td>Czech</td>
+      <td>Latin Extended A </td>
+      <td><div align="center">8859-2</div></td>
+      <td><div align="center">1250</div></td>
+      <td>Central Europe </td>
+    </tr>
+    <tr>
+      <td>Danish</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Dutch</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>English</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Finnish</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>French</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>German</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Greek</td>
+      <td>Greek</td>
+      <td><div align="center">8859-7</div></td>
+      <td><div align="center">1253</div></td>
+      <td>Greek</td>
+    </tr>
+    <tr>
+      <td>Hebrew</td>
+      <td>Hebrew</td>
+      <td><div align="center">8859-8</div></td>
+      <td><div align="center">1255</div></td>
+      <td>Hebrew</td>
+    </tr>
+    <tr>
+      <td>Hindi</td>
+      <td>Devanagari</td>
+      <td><div align="center">8859-12</div></td>
+      <td><p align="center">n/a</p></td>
+      <td>n/a</td>
+    </tr>
+    <tr>
+      <td>Hungarian</td>
+      <td>Latin Extended A </td>
+      <td><div align="center">8859-2</div></td>
+      <td><div align="center">1250</div></td>
+      <td>Central Europe </td>
+    </tr>
+    <tr>
+      <td>Icelandic</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Italian</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Japanese</td>
+      <td>Han, Hirigana, Katakana</td>
+      <td><div align="center">n/a</div></td>
+      <td><div align="center">932</div></td>
+      <td>Japanese Shift-JIS</td>
+    </tr>
+    <tr>
+      <td>Korean</td>
+      <td>Hangul</td>
+      <td><div align="center">n/a</div></td>
+      <td><div align="center">949</div></td>
+      <td>Korean</td>
+    </tr>
+    <tr>
+      <td>Norwegian</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1 </td>
+    </tr>
+    <tr>
+      <td>Polish</td>
+      <td>Latin Extended A </td>
+      <td><div align="center">8859-2</div></td>
+      <td><div align="center">1250</div></td>
+      <td>Central Europe</td>
+    </tr>
+    <tr>
+      <td>Portuguese</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Russian</td>
+      <td>Cyrillic</td>
+      <td><div align="center">8859-5</div></td>
+      <td><div align="center">1251</div></td>
+      <td>Cyrillic</td>
+    </tr>
+    <tr>
+      <td>Spanish</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Swedish</td>
+      <td>Latin</td>
+      <td><div align="center">8859-1</div></td>
+      <td><div align="center">1252</div></td>
+      <td>Latin 1</td>
+    </tr>
+    <tr>
+      <td>Thai</td>
+      <td>Thai</td>
+      <td><div align="center">8859-11</div></td>
+      <td><div align="center">874</div></td>
+      <td>Thai</td>
+    </tr>
+    <tr>
+      <td>Turkish</td>
+      <td>Latin Extended A </td>
+      <td><div align="center">8859-2</div></td>
+      <td><div align="center">1254</div></td>
+      <td>Turkish</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="faq-question">What are the standard fonts that come with Windows?
+<p>For Windows XP, the standard set of OS-provided fonts is:
+<blockquote>
+  <table border="0">
+    <tr valign="top">
+      <td><span class="style1">Arial<br>
+        Arial Black <br>
+        Arial Bold <br>
+        Arial Bold Italic <br>
+        Arial Italic <br>
+        Comic Sans MS <br>
+        Comic Sans MS Bold <br>
+        Courier 10,12,15 <br>
+        Courier New <br>
+        Courier New Bold<br>
+        Courier New Bold Italic <br>
+        Courier New Italic <br>
+        </span></td>
+      <td><p class="style1"> Estrangelo Edessa <br>
+          Franklin Gothic Medium <br>
+          Franklin Gothic Medium Italic<br>
+          Gautami <br>
+          Georgia <br>
+          Georgia Bold <br>
+          Georgia Bold Italic <br>
+          Georgia Italic Impact <br>
+          Latha <br>
+          Lucida Console <br>
+          Lucida Sans Unicode<br>
+          Microsoft Sans Serif <br>
+          <br>
+        </p></td>
+      <td><span class="style1">Modern<br>
+        MS Sans Serif 8,10,12,14,18,24 <br>
+        MS Serif 8,10,12,14,18,24<br>
+        Mv Boli <br>
+        Palatino Linotype <br>
+        Palatino Linotype Bold <br>
+        Palatino Linotype Bold Italic <br>
+        Palatino Linotype Italic <br>
+        Roman <br>
+        Script <br>
+        Small Fonts <br>
+        <br>
+        <br>
+        </span></td>
+      <td><p class="style1"> Symbol 8,10,12,14,18,24 <br>
+          Tahoma <br>
+          Tahoma Bold <br>
+          Times New Roman <br>
+          Times New Roman Bold <br>
+          Times New Roman Bold Italic <br>
+          Times New Roman Italic<br>
+          Trebuchet MS <br>
+          Trebuchet MS Bold <br>
+          Trebuchet MS Bold Italic <br>
+          Trebuchet MS Italic <br>
+          Tunga <br>
+          <br>
+        </p></td>
+      <td><span class="style1">Verdana <br>
+        Verdana Bold <br>
+        Verdana Bold Italic<br>
+        Verdana Italic<br>
+        Webdings <br>
+        WingDings <br>
+        WST_Czech <br>
+        WST_Engl <br>
+        WST_Fren <br>
+        WST_Germ <br>
+        WST_Ital <br>
+        WST_Span <br>
+        WST_Swed </span></td>
+    </tr>
+  </table>
+</blockquote>
+<p class="faq-question">EAText brings in features that I don't need and would like to make it smaller.
+<p>You can remove EAText features with the following #defines, which are settable via nant globalproperties or whatever build system you are using. 
+<pre class="code-example">&lt;globalproperties&gt;
+    EAText.EATEXT_BITMAP_USE_EAGIMEX=0                 Can disable if your app doesn't use bitmapped fonts (.BmpFont files)
+    EAText.EATEXT_THREAD_SAFETY_ENABLED=0              Can disable if you will only access EAText from a single thread.
+    EAText.EATEXT_EFFECTS_ENABLED=0                    Can disable if your app doesn't use text effects (e.g shadows, outlines, glows).
+    EAText.EATEXT_BITMAP_GLYPHS_ENABLED=0              Can disable if your app doesn't use bitmapped fonts (.BmpFont files)
+    EAText.EATEXT_POLYGONAL_GLYPHS_ENABLED=0           Most apps don't use polygonal glyphs.
+    EAText.EATEXT_STYLE_MANAGER_ENABLED=0              Can disable if your app doesn't use named styles. A lot of apps don't use named styles.
+    EAText.EATEXT_ARABIC_SCRIPT_SUPPORTED=0            Can disable if your app doesn't use Arabic.
+    EAText.EATEXT_DEVANAGARI_SCRIPT_SUPPORTED=0        Can disable if your app doesn't use Hindi.
+    EAText.EATEXT_THAI_SCRIPT_SUPPORTED=0              Can disable if your app doesn't use Thai.
+    EAText.EATEXT_OPENTYPE_ENABLED=0                   Can disable if your app doesn't use Arabic or Hindi.
+    EAText.EATEXT_EMBEDDED_BACKUP_FONT_ENABLED=0       Can be disabled by most apps, as they provide their own proper set of fonts.
+&lt;/globalproperties&gt;
+</pre>
+<p class="faq-question">What's the difference between Font Fusion and FreeType? 
+<ul>
+  <li>Originally we used FontFusion instead of FreeType due to TrueType-related patent issues, but the relevant patents have expired.</li>
+  <li> Font Fusion is a commercial font rasterization package which costs EA thousands of dollars to use, and is being phased out in favor of FreeType, which is essentially the same but free. </li>
+  <li>FreeType has slightly better rasterization of small-sized fonts (&lt;16 pixels). They are equal for larger fonts. </li>
+  <li>FreeType allows us to more easily support sub-pixel font smoothing, so the quality is effectively better. </li>
+  <li>There is effectively little or no speed difference between the two, as font glyphs are cached by EAText.</li>
+  <li>All the details of layout (glyph placement, style lookups, word and line breaking, etc.) are done by EAText and are not affected by FontFusion or FreeType (their job is almost solely to convert individual glyph curves in the .ttf file to raster images).</li>
+  <li>For Arabic and Hindi, EAText uses OpenType records in the .ttf files, but it gets those itself instead of anything in FreeType or FontFusion (they don&rsquo;t have such functionality), and so that's unrelated to which of the two is used.</li>
+</ul>
+<p class="faq-answer">See the <a href="Font%20Quality.html">Font Quality.html</a> doc for additional info about font quality options and issues. </p>
+<p class="style1">
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

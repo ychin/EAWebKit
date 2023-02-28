@@ -13,9 +13,9 @@
   <property name="ConfigIsDebug"  value="false"/>
   <property name="ConfigIsOpt"    value="false"/>
   <property name="ConfigIsFinal"  value="false"/>
-  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
-  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
-  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', 'debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', 'opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', 'final')}  != -1"/>
 
   <property name="OsIsWin"      value="false"/>
   <property name="OsIsOSX"      value="false"/>

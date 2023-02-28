@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<StudioDocument xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!-- List of build logs file -->
+    <LastBuildLogFilename>build\log\LastBuild.log</LastBuildLogFilename>
+    <AccumulatedBuildLogFilename>build\log\AccumulatedBuild.log</AccumulatedBuildLogFilename>
+
+    <!-- List of platforms supported by the project -->
+    <Platforms>
+        <Platform>android-arm-clang</Platform>
+        <Platform>android-arm64-clang</Platform>
+        <Platform>android-x86-clang</Platform>
+        <Platform>capilano-vc</Platform>
+        <Platform>xb1gdk-vc</Platform>
+        <Platform>xbsx-vc</Platform>
+        <Platform>capilano-vc-dll</Platform>
+        <Platform>xb1gdk-vc-dll</Platform>
+        <Platform>kettle-clang</Platform>
+        <Platform>ps5-clang</Platform>
+        <Platform>pc-vc</Platform>
+        <Platform>pc64-vc</Platform>
+        <Platform>pc64-vc-dll</Platform>
+        <Platform>unix64-clang</Platform>
+        <Platform>nx-arm-clang</Platform>
+        <Platform>nx-arm64-clang</Platform>
+        <Platform>stadia-clang</Platform>
+    </Platforms>
+
+    <!-- List of build types supported by the project -->
+    <BuildTypes>
+        <BuildType>debug</BuildType>
+        <BuildType>debug-opt</BuildType>
+        <BuildType>opt</BuildType>
+        <BuildType>retail</BuildType>
+    </BuildTypes>
+
+    <!-- List of filters for the log explorer -->
+    <LogExplorer>
+        <Filter>build\log\*.*</Filter>
+    </LogExplorer>
+
+    <GlobalVariables>
+        <Variable Name="Nant">..\Framework\version\bin\nant.exe</Variable>
+    </GlobalVariables>
+
+    <!-- List of Gui elements for build options -->
+    <GuiElements>
+
+        <!--
+        ================================================================================
+        Perform the Clean task
+        ================================================================================
+        -->
+        <BuildTask Label="Clean" UncheckAfterBuild="true">
+            <BuildProgram>${Nant}</BuildProgram>
+            <CommandPrefix>clean -D:config=${Platform}-${BuildType} -D:package.configs="${Platform}-${BuildType}" </CommandPrefix>
+            <BuildOptions>
+                <CheckBoxOption Label="Verbose" Checked="false">
+                    <CheckedArguments>-verbose</CheckedArguments>
+                </CheckBoxOption>
+
+                <TextBoxOption Label="Buildfile Location" ArgumentPrefix="-buildfile:">
+                    <Argument>DirtySDK.build</Argument>
+                </TextBoxOption>
+            </BuildOptions>
+        </BuildTask>
+
+        <!--
+        ================================================================================
+        Create a VisualStudio vcproj file
+        ================================================================================
+        -->
+        <BuildTask Label="Generate SLN" UseSelectedPlatform="true" UseSelectedBuildType="true">
+            <BuildProgram>${Nant}</BuildProgram>
+            <CommandPrefix>-D:config=${Platform}-${BuildType} </CommandPrefix>
+            <CommandSuffix>${PlatformConfig} slnruntime</CommandSuffix>
+            <BuildOptions>
+                <CheckBoxOption Label="Verbose" Checked="true">
+                    <CheckedArguments>-verbose</CheckedArguments>
+                </CheckBoxOption>
+
+                <CheckBoxOption Label="Samples" Checked="true">
+                    <CheckedArguments>-D:dirtysdk-samples=true</CheckedArguments>
+                </CheckBoxOption>
+
+                <CheckBoxOption Label="Unique Solution" Checked="false">
+                    <CheckedArguments>-D:dirtysdk-uniquesln=true</CheckedArguments>
+                </CheckBoxOption>
+
+                <TextBoxOption Label="Visual Studio Version" ArgumentPrefix="-D:vsversion=">
+                    <Argument>2012</Argument>
+                </TextBoxOption>
+            </BuildOptions>
+        </BuildTask>
+
+        <!--
+        ================================================================================
+        Perform a typical Build
+        ================================================================================
+        -->
+        <BuildTask Label="Build" UseSelectedPlatform="true" UseSelectedBuildType="true">
+            <BuildProgram>${Nant}</BuildProgram>
+            <CommandPrefix>-D:config=${Platform}-${BuildType} -D:package.configs="${Platform}-${BuildType}" </CommandPrefix>
+            <BuildOptions>
+                <CheckBoxOption Label="Verbose" Checked="true">
+                    <CheckedArguments>-verbose</CheckedArguments>
+                </CheckBoxOption>
+
+                <CheckBoxOption Label="Samples" Checked="true">
+                    <CheckedArguments>-D:dirtysdk-samples=true</CheckedArguments>
+                </CheckBoxOption>
+
+                <CheckBoxOption Label="Visual Studio" Checked="false">
+                    <CheckedArguments>slnruntime visualstudio</CheckedArguments>
+                </CheckBoxOption>
+
+                <TextBoxOption Label="Visual Studio Version" ArgumentPrefix="-D:vsversion=">
+                    <Argument>2012</Argument>
+                </TextBoxOption>
+
+                <TextBoxOption Label="Extra Options"/>
+            </BuildOptions>
+        </BuildTask>
+
+        <!--
+        ================================================================================
+        Build public Doxygen doc (static functions ignored)
+        ================================================================================
+        -->
+        <BuildTask Label="Build Public Doc" UseSelectedPlatform="true" UseSelectedBuildType="true" Checked="false" StopOnFail="true">
+            <BuildProgram>${Nant}</BuildProgram>
+            <CommandPrefix>dirtysdk-builddoc -D:config=${Platform}-${BuildType} </CommandPrefix>
+            <BuildOptions>
+                <CheckBoxOption Label="Verbose" Checked="true">
+                    <CheckedArguments>-verbose</CheckedArguments>
+                </CheckBoxOption>
+            </BuildOptions>
+        </BuildTask>
+
+        <!--
+        ================================================================================
+        Build full Doxygen doc (static functions included)
+        ================================================================================
+        -->
+        <BuildTask Label="Build Full Doc" UseSelectedPlatform="true" UseSelectedBuildType="true" Checked="false" StopOnFail="true">
+            <BuildProgram>${Nant}</BuildProgram>
+            <CommandPrefix>dirtysdk-buildfulldoc -D:config=${Platform}-${BuildType} </CommandPrefix>
+            <BuildOptions>
+                <CheckBoxOption Label="Verbose" Checked="true">
+                    <CheckedArguments>-verbose</CheckedArguments>
+                </CheckBoxOption>
+            </BuildOptions>
+        </BuildTask>
+
+        <RunTrigger Label="Perforce">
+            <Program>C:\Program Files\Perforce\p4v.exe</Program>
+        </RunTrigger>
+
+        <RunTrigger Label="Open SLN">
+            <Program>C:\Windows\System32\cmd.exe</Program>
+            <Argument>/C build\DirtySDK\dev15.1\DirtySDK.sln</Argument>
+            <Icon>build\DirtySDK\dev15.1\DirtySDK.sln</Icon>
+        </RunTrigger>
+
+    </GuiElements>
+</StudioDocument>

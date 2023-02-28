@@ -1,0 +1,17 @@
+source/crypt/cryptrand.c
+source/dirtysock/pc/dirtynetwin.c
+source/dirtysock/gdk/dirtyerrgdk.c
+source/dirtysock/dirtyaddr.c
+source/dirtysock/pc/dirtylibwin.c
+source/proto/gdk/protohttpgdk.c
+source/proto/protomangle.c
+source/proto/protossl.c
+source/proto/protowebsocket.c
+source/voip/voip.c
+source/voip/voipblocklist.c
+source/voip/voipcommon.c
+source/voip/voipconnection.c
+source/voip/voipconduit.c
+source/voip/voipmixer.c
+source/voip/voipcodec.c
+source/voip/voiptranscribe.c

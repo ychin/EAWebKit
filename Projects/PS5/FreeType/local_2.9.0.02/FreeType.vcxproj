@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4836B6A6-0EA6-81E9-164C-55D84863E469}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>FreeType</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -Wno-unused-function -Wno-uninitialized -Wno-unused -Wno-shorten-64-to-32 -Wno-unused-parameter -Wno-macro-redefined -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <ExtraWarnings>TRUE</ExtraWarnings>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NoStrictAliasing>TRUE</NoStrictAliasing>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;EA_DEBUG;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-debug\lib\libFreeType.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-debug\lib" mkdir "ps5-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-debug\build\FreeType" mkdir "ps5-clang-debug\build\FreeType" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\lib\</OutDir>
+    <IntDir>ps5-clang-debug\build\FreeType\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\FreeType\v.tlog\</TLogLocation>
+    <TargetName>libFreeType</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-misleading-indentation -Wno-unused-function -Wno-uninitialized -Wno-unused -Wno-shorten-64-to-32 -Wno-unused-parameter -Wno-macro-redefined -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <ExtraWarnings>TRUE</ExtraWarnings>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <NoStrictAliasing>TRUE</NoStrictAliasing>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;FT2_BUILD_LIBRARY;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-opt\lib\libFreeType.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-opt\lib" mkdir "ps5-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-opt\build\FreeType" mkdir "ps5-clang-opt\build\FreeType" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\lib\</OutDir>
+    <IntDir>ps5-clang-opt\build\FreeType\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\FreeType\v.tlog\</TLogLocation>
+    <TargetName>libFreeType</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\ft2build.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\freetype.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftadvanc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbbox.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbdf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbitmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftbzip2.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftcache.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftchapters.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftcid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftdriver.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fterrdef.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fterrors.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftfntfmt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftgasp.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftglyph.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftgxval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftgzip.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftimage.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftincrem.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftlcdfil.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftlist.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftlzw.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmac.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmodapi.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftmoderr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftotval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftoutln.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftparams.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftpfr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftrender.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsizes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsnames.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftstroke.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsynth.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftsystem.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fttrigon.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\fttypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\t1tables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\ttnameid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\tttables.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\tttags.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftconfig.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftheader.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftoption.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\config\ftstdlib.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\autohint.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\cffotypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\cfftypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftcalc.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftdebug.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftdrv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\fthash.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftmemory.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftobjs.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftpic.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftrfork.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftserv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftstream.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\fttrace.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\ftvalid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\internal.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\psaux.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\pshints.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\sfnt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\t1types.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\tttypes.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svcid.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svkern.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svmm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svotval.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svprop.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\include\freetype\internal\services\svwinfnt.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\autofit\autofit.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\autofit\autofit.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\autofit\autofit.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftbase.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftbase.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftbase.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftbbox.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftbbox.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftbbox.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftbitmap.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftbitmap.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftbitmap.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftdebug.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftdebug.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftdebug.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftfntfmt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftfntfmt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftfntfmt.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftfstype.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftfstype.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftfstype.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftgasp.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftgasp.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftgasp.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftglyph.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftglyph.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftglyph.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftinit.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftinit.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftinit.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftlcdfil.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftlcdfil.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftlcdfil.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftmm.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftmm.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftmm.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftpfr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftpfr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftpfr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftstroke.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftstroke.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftstroke.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftsynth.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftsynth.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftsynth.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftsystem.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftsystem.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftsystem.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\fttype1.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\fttype1.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\fttype1.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\base\ftwinfnt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\base\ftwinfnt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\base\ftwinfnt.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\bdf\bdf.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\bdf\bdf.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\bdf\bdf.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\cache\ftcache.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\cache\ftcache.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\cache\ftcache.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\cff\cff.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\cff\cff.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\cff\cff.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\cid\type1cid.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\cid\type1cid.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\cid\type1cid.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\gzip\ftgzip.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\gzip\ftgzip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\gzip\ftgzip.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\lzw\ftlzw.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\lzw\ftlzw.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\lzw\ftlzw.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\pcf\pcf.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\pcf\pcf.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\pcf\pcf.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\pfr\pfr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\pfr\pfr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\pfr\pfr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\psaux\psaux.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\psaux\psaux.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\psaux\psaux.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\pshinter\pshinter.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\pshinter\pshinter.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\pshinter\pshinter.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\psnames\psmodule.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\psnames\psmodule.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\psnames\psmodule.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\raster\raster.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\raster\raster.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\raster\raster.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\sfnt\sfnt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\sfnt\sfnt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\sfnt\sfnt.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\smooth\smooth.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\smooth\smooth.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\smooth\smooth.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\truetype\truetype.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\truetype\truetype.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\truetype\truetype.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\type1\type1.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\type1\type1.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\type1\type1.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\type42\type42.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\type42\type42.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\type42\type42.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\FreeType\local_2.9.0.02\installed\src\winfonts\winfnt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\FreeType\winfonts\winfnt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\FreeType\winfonts\winfnt.c.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
-    <Configuration>pc-vc-dev-debug</Configuration>
+    <Configuration>pc-vc-debug</Configuration>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
-      <Configuration>pc-vc-dev-debug</Configuration>
+    <ProjectConfiguration Include="pc-vc-debug|Win32">
+      <Configuration>pc-vc-debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
-      <Configuration>pc-vc-dev-opt</Configuration>
+    <ProjectConfiguration Include="pc-vc-opt|Win32">
+      <Configuration>pc-vc-opt</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -17,33 +17,22 @@
     <ProjectGuid>{C77E27F0-AA71-6169-241E-0184FBD0F95B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>libpngEAWebKit</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <UseOfStl>c++_static</UseOfStl>
-    <TargetFrameworkSDKToolsDirectory>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64</TargetFrameworkSDKToolsDirectory>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
-    <UniversalCRT_PropsPath>C:\packages\WindowsSDK\10.0.18362\installed\10\DesignTime\CommonConfiguration\Neutral\uCRT.props</UniversalCRT_PropsPath>
-    <UCRTContentRoot>C:\packages\WindowsSDK\10.0.18362\installed\10\</UCRTContentRoot>
-    <UniversalCRTSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir>
-    <UniversalCRTSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir_10>
-    <WindowsSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir>
-    <WindowsSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir_10>
-    <NETFXKitsDir>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</NETFXKitsDir>
-    <DotNetSdkRoot>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</DotNetSdkRoot>
-    <NETFXSDKDir>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</NETFXSDKDir>
-    <FrameworkSDKRoot>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</FrameworkSDKRoot>
-    <SDK40ToolsPath>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\</SDK40ToolsPath>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
     <UseNativeEnvironment>true</UseNativeEnvironment>
     <UseDebugLibraries>True</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
@@ -54,15 +43,15 @@
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"C:\packages\EABase\2.09.12\include\Common";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-bigobj  /FS /Zf</AdditionalOptions>
-      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /FS /Zf </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -78,7 +67,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;EA_USE_XCEEDZIP=0;PNG_IMPEXP=;PNG_NO_MMX_CODE;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libpngEAWebKit\local-1.01.00-01\pc-vc-dev-debug\lib\libpngEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc-vc-debug\lib\libpngEAWebKit.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -88,35 +77,36 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libpngEAWebKit\local-1.01.00-01\pc-vc-dev-debug\lib/libpngEAWebKit.lib</OutputFile>
+      <OutputFile>pc-vc-debug\lib/libpngEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc-vc-dev-debug\build\libpngEAWebKit" mkdir "pc-vc-dev-debug\build\libpngEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "pc-vc-debug\lib" mkdir "pc-vc-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-debug\build\libpngEAWebKit" mkdir "pc-vc-debug\build\libpngEAWebKit" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
-    <OutDir>pc-vc-dev-debug\lib\</OutDir>
-    <IntDir>pc-vc-dev-debug\build\libpngEAWebKit\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-debug|Win32' ">
+    <OutDir>pc-vc-debug\lib\</OutDir>
+    <IntDir>pc-vc-debug\build\libpngEAWebKit\v\</IntDir>
+    <TLogLocation>pc-vc-debug\build\libpngEAWebKit\v.tlog\</TLogLocation>
     <TargetName>libpngEAWebKit</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
-  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' " Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
     <ClCompile>
-      <AdditionalIncludeDirectories>"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"C:\packages\EABase\2.09.12\include\Common";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj  /FS /Zf</AdditionalOptions>
-      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj /FS /Zf </AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.19041\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral";C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2;C:\packages\DotNet\4.72-1/installed/Reference Assemblies/.NETFramework/v4.7.2\Facades</AdditionalUsingDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <CompileAs>Default</CompileAs>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -128,11 +118,11 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>FALSE</MinimalRebuild>
       <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
-      <Optimization>MinSpace</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;EA_USE_XCEEDZIP=0;NDEBUG;PNG_IMPEXP=;PNG_NO_MMX_CODE;WIN32;WINVER=0x0601</PreprocessorDefinitions>
       <ProcessorNumber>8</ProcessorNumber>
-      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libpngEAWebKit\local-1.01.00-01\pc-vc-dev-opt\lib\libpngEAWebKit.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>pc-vc-opt\lib\libpngEAWebKit.pdb</ProgramDataBaseFileName>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
@@ -142,54 +132,55 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Lib>
-      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libpngEAWebKit\local-1.01.00-01\pc-vc-dev-opt\lib/libpngEAWebKit.lib</OutputFile>
+      <OutputFile>pc-vc-opt\lib/libpngEAWebKit.lib</OutputFile>
       <SuppressStartupBanner>TRUE</SuppressStartupBanner>
     </Lib>
     <PreBuildEvent>
-      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
-@if not exist "pc-vc-dev-opt\build\libpngEAWebKit" mkdir "pc-vc-dev-opt\build\libpngEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+      <Command>@if not exist "pc-vc-opt\lib" mkdir "pc-vc-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-opt\build\libpngEAWebKit" mkdir "pc-vc-opt\build\libpngEAWebKit" &amp; SET ERRORLEVEL=0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
-    <OutDir>pc-vc-dev-opt\lib\</OutDir>
-    <IntDir>pc-vc-dev-opt\build\libpngEAWebKit\vstmp\</IntDir>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-opt|Win32' ">
+    <OutDir>pc-vc-opt\lib\</OutDir>
+    <IntDir>pc-vc-opt\build\libpngEAWebKit\v\</IntDir>
+    <TLogLocation>pc-vc-opt\build\libpngEAWebKit\v.tlog\</TLogLocation>
     <TargetName>libpngEAWebKit</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\include;$(VsInstallRoot)\VC\Tools\MSVC\14.29.30133\atlmfc\include;$(WindowsSdkDir)\Include\10.0.19041.0\ucrt;$(WindowsSdkDir)\Include\10.0.19041.0\um;$(WindowsSdkDir)\Include\10.0.19041.0\shared;$(WindowsSdkDir)\Include\10.0.19041.0\winrt;$(NETFXKitsDir)\Include\um</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\png.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngconf.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngdebug.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnginfo.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnglibconf.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngpriv.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngstruct.h" />
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\contrib\visupng\cexcept.h" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\png.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngerror.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngget.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngmem.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngpread.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngread.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrio.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrtran.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrutil.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngset.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngtrans.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwio.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwrite.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwtran.c" />
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwutil.c" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\png.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngconf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngdebug.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnginfo.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnglibconf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngpriv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngstruct.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\contrib\visupng\cexcept.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\png.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngerror.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngget.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngmem.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngpread.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngread.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrio.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrtran.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrutil.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngset.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngtrans.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwio.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwrite.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwtran.c" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwutil.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
-  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>

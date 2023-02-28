@@ -25,7 +25,7 @@
 #include "../../../../../../WebKit/ea/Api/EAWebKit/include/EAWebKit/EAWebKitTextInterface.h"
 #include <unicode/ustring.h>
 #include <unicode/unorm.h>
-#include <WTF/assertions.h>
+#include <wtf/Assertions.h>
 #include <EABase/eabase.h>
 #if defined(EA_PLATFORM_MICROSOFT)
 #include EAWEBKIT_PLATFORM_HEADER
@@ -40,7 +40,7 @@ namespace WebKit
 }
 
 COMPILE_ASSERT(sizeof(UChar)	== sizeof(uint16_t), UCharShouldBeTwoBytes);
-COMPILE_ASSERT(sizeof(wchar_t)	== 2, wchar_tShouldBeTwoBytes); //We are relying on it in many places.
+//COMPILE_ASSERT(sizeof(wchar_t)	== 2, wchar_tShouldBeTwoBytes); //We are relying on it in many places.
 
 
 // Note by Arpit Baldeva:

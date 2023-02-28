@@ -1,0 +1,9 @@
+0000cfa0 <sched_yield>:
+    cfa0:	e92d0090 	push	{r4, r7}
+    cfa4:	e3a0709e 	mov	r7, #158	; 0x9e
+    cfa8:	ef000000 	svc	0x00000000
+    cfac:	e8bd0090 	pop	{r4, r7}
+    cfb0:	e1b00000 	movs	r0, r0
+    cfb4:	512fff1e 	bxpl	lr
+    cfb8:	ea008b74 	b	2fd90 <____set_syscall_errno_from_arm>
+    cfbc:	e1a00000 	nop			(mov r0,r0)

@@ -227,10 +227,10 @@
 
 /* include the utfXX.h ------------------------------------------------------ */
 
-#include "unicode/utf8.h"
-#include "unicode/utf16.h"
+#include "utf8.h"
+#include "utf16.h"
 
 /* utf_old.h contains deprecated, pre-ICU 2.4 definitions */
-#include "unicode/utf_old.h"
+#include "utf_old.h"
 
 #endif

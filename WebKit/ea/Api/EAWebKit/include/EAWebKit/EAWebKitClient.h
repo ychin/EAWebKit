@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAWebKit/EAWebKitConfig.h>
 #include <EAWebKit/EAWebKitLocalizedStringsEnum.h>
 #include <EAWebKit/EAWebkitSTLWrapper.h>
-#include <EAWebKit/EAWebkitSystem.h>
+#include <EAWebKit/EAWebKitSystem.h>
 
 namespace EA
 {

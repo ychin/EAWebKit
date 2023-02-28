@@ -1,0 +1,736 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>EAText -- Effects</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta
+ content="Descriptions about how to do various possibly non-obvious things with EAText."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+	.EffectsProgramText {font-size: 9pt; font-family: "Courier New", Courier, mono; }
+	.EffectsDescription {font-size: 10pt; font-family: "Times New Roman", Times, serif; }
+  </style>
+</head>
+<body>
+<h1>Effects</h1>
+<p>EAText 1.05.00 introduced the new runtime effects system. The previous effects system will remain available for a period of time for backward compatibility. The new effects system is instruction list-based as opposed to being struct/enum-based like the previous system. The new instruction list-based system is based loosely on workflow in image editing tools such as Photoshop. This system bears some resemblance to a GPU pixel shader program, though in this case the unit of operation is a glyph as opposed to being a fragment (pixel). </p>
+<h2>Hello World</h2>
+<p>Before we get very far describing the effects system in detail, we would like to present the EATextEffects version of a hello world program. The following is a basic effects program in string form, with commentary on each instruction on the right side. </p>
+<blockquote>
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="212" class="EffectsProgramText">SetGlyphColor 0xff0000ff<br></td>
+      <td width="479"><span class="EffectsDescription">Set the current color to an ARGB representing solid blue. </span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">SetGlyphSmooth<br></td>
+      <td><span class="EffectsDescription">Enable anti-aliasing.</span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">DrawGlyph<br></td>
+      <td><span class="EffectsDescription">Draw the current glyph into the floating layer. </span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">Merge</td>
+      <td><span class="EffectsDescription">Copy the floating layer to the base layer.</span></td>
+    </tr>
+  </table>
+</blockquote>
+<p>The program above is applied to every glyph, and results in simply drawing antialiased blue text. You don't need an effects program to draw this, as you can accomplish this with a regular EAText OutlineFont. We'll provide more elaborate examples of things like outlines and shadows below. </p>
+<h2>Using Effects </h2>
+<p>To use EAText Effects, you need to do three things:</p>
+<ol>
+  <li>Create effects</li>
+  <li>Register effects</li>
+  <li>Create OutlineFonts for the effects</li>
+</ol>
+<h3>Step 1. </h3>
+<p>There are two ways to create effects: programmatically or via a string with the CreateInstructionList function. </p>
+<p>Programmatic creation:</p>
+<pre class="code-example">EffectsState es;
+
+es.SetGlyphColor(0xff0000ff);<br>es.SetGlyphSmooth(true);<br>es.SetGlyphBrush(EA::Text::kBSRound, 3, 0.7f, 1.0f);<br>es.SetGlyphOffset(2, 2);<br>es.DrawGlyphSmearOutline();<br>es.ApplyBoxBlur(1, 1.0, 2);<br>es.Merge();
+<br><span class="code-example-comment">// The program is now stored in es.mInstructionList / es.mInstructionListSize. mInstructionList is just an array of uint32_t.</span>
+</pre>
+<p>String creation:</p>
+<pre class="code-example">EffectsState es;
+ 
+EA::Text::CreateInstructionList(&quot;SetGlyphColor 0xffffffff\n&quot;    <span class="code-example-comment">// Normally you would use a string that comes from</span><br>                                &quot;SetGlyphSmooth 1\n&quot;            <span class="code-example-comment">// some data, but for our example we use a C++ </span><br>                                &quot;SetGlyphBrush 0 3 0.5 0.5\n&quot;   <span class="code-example-comment">// string literal.</span><br>                                &quot;DrawGlyphSmearOutline\n&quot;<br>                                &quot;ApplyCurve 1 1\n&quot;<br>                                &quot;Merge\n&quot;<br>                                &quot;Clear\n&quot;<br>                                &quot;SetGlyphColor 0xffffffff\n&quot;<br>                                &quot;SetGlyphSmooth 0\n&quot;<br>                                &quot;DrawGlyph\n&quot;<br>                                &quot;Merge\n&quot;, es);
+
+<span class="code-example-comment">// The program is now stored in es.mInstructionList / es.mInstructionListSize. mInstructionList is just an array of uint32_t.</span></pre>
+<h3>Step 2. </h3>
+<p>To register an effect with the FontServer, you use the FontServer::AddEffect function. Here is some example code:</p>
+<pre class="code-example"><span class="code-example-comment">// We use the EffectsState es.mInstructionList variable here, 
+// but really it's just an array of uint32_t, so you can just 
+// use a saved uint32_t array if you want.
+</span>
+pFontServer-&gt;AddEffect(0x12345678, es.mInstructionList, es.mInstructionListSize); <span class="code-example-comment"> // Call this before using the given effect.</span><br>.
+.
+pFontServer-&gt;RemoveEffect(0x12345678); <span class="code-example-comment"> // Call this after no longer needing the effect.</span></pre>
+<p>Effects can be added and removed at any time. Once any effects are registered, you can create fonts with the effects either directly or indirectly via the FontServer. </p>
+<h3>Step 3.</h3>
+<p>There are two ways to create effects fonts: direct creation and indirect creation via the FontServer. </p>
+<p>Direct creation of an effects font (error checking omitted):</p>
+<pre class="code-example">EA::Text::OutlineFont* pFont = EATEXT_CA_NEW(OutlineFont, pCoreAllocator, &quot;OutlineFont&quot;)(pCoreAllocator);
+
+pFont-&gt;AddRef();
+pFont-&gt;Open(pTrueFontFileStream);
+pFont-&gt;SetTransform(16.f);
+pFont-&gt;SetEffect(0x123456768);<br><span class="code-example-comment"> 
+// Use the font like any other EAText Font.</span>
+ 
+pFont-&gt;Release();
+</pre>
+<p>Indirect creation of an effects font via the FontServer:</p>
+<pre class="code-example">EA::Text::TextStyle textStyle;
+ 
+wcscpy(textStyle.mFamilyNameArray[0], L&quot;Arial&quot;);<br>textStyle.mfSize = 12;
+textStyle.mEffect = 0x12345678;<br>
+EA::Text::OutlineFont* pFont = pFontServer-&gt;GetFont(&amp;textStyle);
+<span class="code-example-comment"> 
+// Use the font like any other EAText Font.</span>
+ 
+pFont-&gt;Release();
+</pre>
+<p>If you are using multi-colored effects then you may find that you need to use ARGB GlyphCache instead of a DXT GlyphCache, as the latter may result in undesirable coloring artifacts due to the lossy compression involved in DXT. </p>
+<h2>Instruction Summary</h2>
+<p>The following table summarizes the instructions available as of this EAText 1.05.00. The instructions on the left are enumerated values defined in EATextEffects.h. </p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <th scope="col">Instruction</th>
+      <th scope="col">Action</th>
+      <th scope="col">Arguments</th>
+      <th scope="col">Notes</th>
+    </tr>
+    <tr>
+      <td> kEISetExpansion  <br></td>
+      <td>Sets expansion parameters</td>
+      <td>uint32 gutter, max glyph expansion, in the range of [0, 128] </td>
+      <td>Sets the base layer gutter (buffer size around the glyph for blurs, etc.), and sets the max pixels a glyph image can expand due to blurs, glows, etc. Must be called early in a program. Default values are kGlyphGutterSizeDefault and kMaxExpansionDefault (see EATextEffects.h). This instruction is for performance reasons. The first value limits the memory used for compositing; the second limits the memory used by the resulting glyph. </td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphMinAlpha</td>
+      <td>Sets min alpha for glyph bounds</td>
+      <td>uint32_t A, in the range of [0, 255]</td>
+      <td>Sets the color below which a pixel is not considered part of a glyph. Used for calculating glyph bounds after effects are applied.</td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphColor</td>
+      <td>Set current color</td>
+      <td>uint32_t ARGB color, where each component is in the range of [0, 255], or [0, 0xff] </td>
+      <td>Sets color for next glyph draw of any type (normal, blur, outline).</td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphOffset</td>
+      <td>Move glyph</td>
+      <td>int32_t dx, dy, in the range of [-64, +64] </td>
+      <td>Moves glyph draw position relative to baseline pen position.</td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphHSpace</td>
+      <td>Add space to glyph sides</td>
+      <td>int32_t left space, right space, in the range of [-64, +64] </td>
+      <td>Adding space on the left moves the glyph to the right relative to the pen. Adding space on the right increases the advance (moves the next glyph to the right). Usually you would need this only once for an instruction set.</td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphVSpace</td>
+      <td>Add space to glyph sides</td>
+      <td>int32_t top space, bottom space, in the range of [-64, +64] </td>
+      <td>Adding space on top increases the ascent and line height. Adding space on bottom decreases the descent value and increases the line height. Usually you would need this only once for an instruction set.</td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphSmooth</td>
+      <td>Enable/disable smoothing</td>
+      <td>bool enable</td>
+      <td>The next glyph draw of any type (normal, blur, outline) uses this.</td>
+    </tr>
+    <tr>
+      <td>kEISetGlyphBrush</td>
+      <td>Set brush</td>
+      <td>uint32_t shape, size, hardness, opacity</td>
+      <td>Usually one of enum BrushShape. Used only for drawing outline, but may be used for other purposes in the future.</td>
+    </tr>
+    <tr>
+      <td>kEISetTargetImage</td>
+      <td>Set filter target image</td>
+      <td>uint32_t targetImage</td>
+      <td>Sets the image action destination: either kETIFloat or kETIBase. Default is kETIFloat. Most of the time you want to use kETIFloat.</td>
+    </tr>
+    <tr>
+      <td>kEISetTargetMask</td>
+      <td>Set filter target mask</td>
+      <td>uint32_t maskFlags</td>
+      <td>Set the filter raster op so that it applies to color alpha, or both.</td>
+    </tr>
+    <tr>
+      <td>kEIDrawGlyphSmearOutline</td>
+      <td>Draw glyph outline smear</td>
+      <td>&lt;none&gt;</td>
+      <td>Draws an outline smear with the a pattern that matches the current brush and uses other settings.</td>
+    </tr>
+    <tr>
+      <td>kEIDrawGlyphBrushOutline</td>
+      <td>Draw glyph outline w/ brush</td>
+      <td>&lt;none&gt;</td>
+      <td>Draws an outline directly with the current brush and other settings.</td>
+    </tr>
+    <tr>
+      <td>kEIDrawGlyph</td>
+      <td>Draw glyph</td>
+      <td>&lt;none&gt;</td>
+      <td>Draws a glyph with the current settings.</td>
+    </tr>
+    <tr>
+      <td>kEIClear</td>
+      <td>Clear target image</td>
+      <td>&lt;none&gt;</td>
+      <td>Clears the target image (should always be kETIFloat), in preparation for another drawing layer.</td>
+    </tr>
+    <tr>
+      <td>kEIApplyCurve</td>
+      <td>Apply brightness s, j, or f curve</td>
+      <td>uint32_t curveType, float strength, in the range of [0.0, 3.0]</td>
+      <td valign="top">Applies a brightness curve to the target image. j curve makes dark things darker, f makes lighter things lighter, s does both. See below for pictures. </td>
+    </tr>
+    <tr>
+      <td>kEIApplyBoxBlur</td>
+      <td>Apply box blur</td>
+      <td>float radius, gain, uint32_t pass count</td>
+      <td>Implements a basic box blur on the target image. Gain is a multiplier in the range of [0, infinity] which reduces (gain &lt; 1) or increase (&gt; 1) the blurred pixel volume. A value &gt; 1 causes a blurred glyph to not fade away so much. A value of 1 has no effect.</td>
+    </tr>
+    <tr>
+      <td>kEIMerge</td>
+      <td>Copies the source glyph to dest</td>
+      <td>&lt;none&gt;</td>
+      <td>Copies the floatinglayer with the base layer via a merge-like blend. Leaves source as-is. This operation is similar to Photoshop merge layer down, but preserves the top layer instead of making it go away. </td>
+    </tr>
+    <tr>
+      <td>kEICallUser</td>
+      <td>Call user function</td>
+      <td>uint32_t user-defined id</td>
+      <td>Calls user function.</td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Compositing Model</h2>
+<p>EAText effects are implemented via a compositing scheme that bears some resemblance to the layered compositing found in image editing programs like Photoshop. The EAText effects version of this is much simpler and much more limited in functionality. There are two layers: a colored base layer, and an alpha floating layer. Most operations (glyph drawing, blurring, curve application) are done on the floating alpha layer, and the results are merged onto the colored base layer, much like a layer merge in Photoshop. </p>
+<p>Let's walk through an effects program and describe what is happening, step by step:</p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetExpansion 6 3 <br>
+      </span></td>
+      <td class="EffectsDescription">Sets the base layer so that it has a 6 pixel buffer around the glyph to handle offset draws, blurs, etc. And set it so that the glyphs grows its bounds no more than 3 pixels due to blurring (not offsetting). This instruction is for performance reasons. The first value limits the memory used for compositing; the second limits the memory used by the resulting glyph. </td>
+    </tr>
+    <tr>
+      <td width="199" valign="top"><span class="EffectsProgramText">SetGlyphColor 0xff0000ff<br>
+</span></td>
+      <td width="936" class="EffectsDescription">Set the glyph color to an ARGB value. When the floating alpha layer is merged onto the base layer, this color will be applied. If the A is less than 0xff, the floating layer will be merged onto the base layer with some transparency. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphSmooth 1<br>
+</span></td>
+      <td class="EffectsDescription">Set the glyph to be anti-aliased when drawn to the floating layer. Recall that the floating layer is strictly an alpha channel. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphOffset 2 2<br>
+</span></td>
+      <td class="EffectsDescription">Sets the glyph to be drawn two pixels to the right and two pixels below where it normally would be drawn. This results in a shadow. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphBrush 0 3 0.7 1.0</span></td>
+      <td class="EffectsDescription">Sets the kind of smear to be used in the following step. 0 means use a round brush, 3 means use a brush with a diameter of 3, 0.7 means to use a brush that is not a solid circle but a fuzzy-edged circle. The 1.0 means to make the brush have no additional opacity applied to its already fuzzy-edged circle. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">DrawGlyphSmearOutline<br>
+</span></td>
+      <td class="EffectsDescription">Causes a glyph to be drawn on the floating layer via repeated drawings on top of each other in a pattern that matches the brush. This will result in a certain kind of smudged glyph. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">ApplyBoxBlur 1 1.1 2<br>
+</span></td>
+      <td class="EffectsDescription">Applies a box blur to the floating layer whereby the blur radius is 1, a opacity gain of 1.1 is applied (makes blur more solid), and the blur is applied twice in a row.</td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">Merge<br>
+</span></td>
+      <td class="EffectsDescription">Merges the floating layer onto the base ARGB layer with the current glyph color ARGB. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">Clear<br>
+</span></td>
+      <td class="EffectsDescription">Clears the floating layer. You would typically do this if you want to draw a new independent glyph on the floating layer. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphColor 0xff12e8c7<br>
+</span></td>
+      <td class="EffectsDescription">Sets the glyph color to a new ARGB value. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphSmooth 0<br>
+</span></td>
+      <td class="EffectsDescription">Disable glyph smoothing (anti-aliasing). </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphOffset 0 0<br>
+</span></td>
+      <td class="EffectsDescription">Restore the glyph offset to its original non-offsetted position. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">DrawGlyph<br>
+</span></td>
+      <td class="EffectsDescription">Draw a glyph on the floating layer. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">Merge<br>
+</span></td>
+      <td class="EffectsDescription">Merge the floating layer onto the base ARGB layer with the current glyph color ARGB. This merge will occur with the previously drawn glyph and will result in the glyph being drawn on top of the previously merged glyph shadow. </td>
+    </tr>
+    <tr>
+      <td valign="top"><span class="EffectsProgramText">SetGlyphHSpace 1 1</span></td>
+      <td class="EffectsDescription">Causes the glyph metrics to have one extra leading pixel and one extra trailing pixel, but has no effect on the glyph image itself. You would do this if you wanted to space glyphs out horizontally, especially if the effect causes the glyphs to expand a lot. </td>
+    </tr>
+  </table>
+</blockquote>
+<p>EAText caches effects glyphs, so typically the effects composition isn't happening much or at all during runtime, since the glyphs were cached upon first generation. An alternative to using EAText effects at runtime is to use them (or Photoshop) with BitmapFonts, typically bia the BitmapFontEditor tool. With bitmapped effects fonts, all effects are generated outside the game in the data pipeline. </p>
+<h2>Shadowed Text</h2>
+<p>Shadowed text is implemented via the ApplyBoxBlur, SetGlyphOffset, and possibly SetGlyphHSpace instructions. Here are some examples.</p>
+<blockquote>
+  <table border="1" cellpadding="1">
+    <tr>
+      <td width="174"><div align="center"><img src="images/ThinHardShadow.png" width="116" height="25"></div></td>
+      <td width="210" class="EffectsProgramText">SetGlyphColor 0xff000000<br>
+        SetGlyphSmooth 0<br>
+        SetGlyphOffset 1 1<br>
+        DrawGlyph<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xff277DFF<br>
+        SetGlyphOffset 0 0<br>
+        DrawGlyph<br>
+      Merge</td>
+      <td width="775" valign="top">Here's a thin hard shadow, drawn with non-anti-aliased text and non-anti-aliased single pixel shadow.</td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/SoftShadow.png" width="174" height="33"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff404040<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphOffset 2 2<br>
+        DrawGlyph<br>
+        ApplyBoxBlur 2 1 2<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xff0E5EB8<br>
+        SetGlyphOffset 0 0<br>
+        DrawGlyph<br>
+      Merge<br></td>
+      <td valign="top">Here's a similar approach to above but drawn with an anti-aliased text and shadow. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/ColoredShadow.png" width="147" height="66"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff0000ff<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 0.7 1.0<br>
+        SetGlyphOffset 2 2<br>
+        DrawGlyphSmearOutline<br>
+        ApplyBoxBlur 1 1.0 2<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xff12e8c7<br>
+        SetGlyphSmooth 0<br>
+        SetGlyphOffset 0 0<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 1 1</td>
+      <td valign="top">Here's neon text with a colored shadow. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/ShadowFont.png" width="141" height="32"></div></td>
+      <td class="EffectsProgramText">SetGlyphOffset 2 2<br>
+        SetGlyphHSpace 1 1<br>
+        SetGlyphColor 0xff000000<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 0.5 .5<br>
+        DrawGlyphSmearOutline<br>
+        ApplyBoxBlur 2 1.0 2<br>
+      Merge</td>
+      <td valign="top">Sometimes you want a standalone shadow font which you would typically pair with an standard overlay font. Here's an example of such a shadow font. Note that the font here has a built-in offset (SetGlyphOffset) and glyph horizontal spacing expansion (SetGlyphHSpace). </td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Outlined Text </h2>
+<p>Outlined text is frequently used for text drawn on the screen against a background that varies in color, such as a 3D game view. With EAText effects, outlined text is typically implemented via the DrawGlyphSmearOutline or DrawGlyphBrushOutline instructions, though an outline derived by a box blur and brightness curve is feasible as well. EAText 1.05.00 doesn't support DrawGlyphBrushOutline, though a future release is intended to support it. </p>
+<p>Here we show some examples of outlined text programs.</p>
+<blockquote>
+  <table border="1" cellpadding="1">
+    <tr>
+      <td width="194"><div align="center"><img src="images/ThinOutline.png" width="139" height="26"></div></td>
+      <td width="210" class="EffectsProgramText">SetGlyphColor 0xff4000c0<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 .5 1<br>
+        DrawGlyphSmearOutline<br>
+        ApplyCurve 0 1<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffff00ff<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 1 0</td>
+      <td width="755" valign="top">This is a basic thin outline. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/MediumOutline.png" width="142" height="37"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff061FB5<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 5 1 .8<br>
+        DrawGlyphSmearOutline<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xff5ECDF6<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 2 1</td>
+      <td valign="top">This is a medium outline.</td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/HighlightedOutline.png" width="146" height="37"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff000000<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 5 2 1<br>
+        DrawGlyphSmearOutline<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xfff00000<br>
+        SetGlyphOffset 0 0<br>
+        DrawGlyph<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0x80800020<br>
+        SetGlyphOffset 1 1<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 1 0</td>
+      <td valign="top">Here we have a medium outline with a highlight on the glyphs which give them some depth. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/OutlineViaBlur.png" width="131" height="30"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff000060<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 1 1<br>
+        DrawGlyphSmearOutline<br>
+        ApplyBoxBlur 1 1.5 1<br>
+        ApplyCurve 2 1<br>
+        ApplyCurve 0 1<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffffFF60<br>
+        SetGlyphSmooth 0<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 1 0</td>
+      <td valign="top">Here's an example of a program that creates an outline via a blur and brightness curve. This results in an outline that is smoothly uniform but is not very hard. The internal lettering is hard-edged, but that's because disabled smoothing for the internal glyph. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/OutlineAndShadow.png" width="194" height="32"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff202020<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphOffset 2 2<br>
+        DrawGlyph<br>
+        ApplyBoxBlur 2 1 2<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphOffset 0 0<br>
+        SetGlyphColor 0xff0000c0<br>
+        SetGlyphBrush 1 3 .7 .7<br>
+        DrawGlyphSmearOutline<br>
+        ApplyCurve 2 1<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xff35E778<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 1 1</td>
+      <td valign="top">Here we have an outline and shadow, with a small amount of horizontal spacing added. If the shadows are very heavy you may find you need to split fonts like this into two fonts: shadow + glyph. This technique is described below. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/SmallCrispOutline.png" width="67" height="42"></div></td>
+      <td class="EffectsProgramText">SetGlyphColor 0xff000000<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 0 1<br>
+        DrawGlyphSmearOutline<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffffffff<br>
+        SetGlyphSmooth 0<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 0 0</td>
+      <td valign="top">Here's some small text with a crisp outline used as a mockup test for EAText effects. </td>
+    </tr>
+    <tr>
+      <td><div align="center"><img src="images/DoubleOutline.png" width="124" height="19"></div></td>
+      <td><span class="EffectsProgramText"><font face="Courier New">SetGlyphColor 0xff0000ff<br>
+SetGlyphSmooth 0<br>
+SetGlyphBrush 0 5 1.0 1.0<br>
+DrawGlyphSmearOutline<br>
+Merge<br>
+Clear<br>
+SetGlyphColor 0xff00ffff<br>
+SetGlyphBrush 0 3 1.0 1.0<br>
+DrawGlyphSmearOutline<br>
+Merge<br>
+Clear<br>
+SetGlyphColor 0xffff00ff<br>
+DrawGlyph<br>
+Merge<br>
+SetGlyphHSpace 2 2</font></span></td>
+      <td valign="top">Here's an example of a program that creates a hard double outline. The result in this case isn't very pretty, but it demonstrates the effect.</td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Glows</h2>
+<p>Glows are typically just shadows that aren't offset and which have color instead of being dark gray. The primary means of implementing a glow with EAText effects is via a colored blur. However, the user may choose to implement a glow as a gray image and use the rendering environment (color, pixel shader) to implement the glow color and luminescence.</p>
+<p>Here's an example of a glow effects program:</p>
+<blockquote>
+  <table border="1" cellpadding="1">
+    <tr>
+      <td width="174" scope="col"><div align="center"><img src="images/GreenGlow.png" width="120" height="33"></div></td>
+      <td width="210" class="EffectsProgramText" scope="col">SetGlyphColor 0xff60FA88<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 0.7 1.0<br>
+        DrawGlyphSmearOutline<br>
+        ApplyBoxBlur 1 1.15 4<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffFFFF60<br>
+        SetGlyphSmooth 0<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 1 1</td>
+      <td width="252" valign="top" scope="col">This is a basic thin font with a green glow. </td>
+    </tr>
+    <tr>
+      <td scope="col"><div align="center"><img src="images/PinkGlow.png" width="174" height="61"></div></td>
+      <td class="EffectsProgramText" scope="col">SetGlyphColor 0xffFF27C0<br>
+        SetGlyphSmooth 1<br>
+        DrawGlyph<br>
+        ApplyBoxBlur 3 1.7 4<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffffffff<br>
+        SetGlyphBrush 1 3 .7 .7<br>
+        DrawGlyphSmearOutline<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffCD1948<br>
+        DrawGlyph<br>
+        Merge<br>
+      SetGlyphHSpace 3 0</td>
+      <td valign="top" scope="col">Here's another one. </td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Text Crispness </h2>
+<p>You can adjust glyph and glyph shadow crispness with the ApplyCurve instruction. This instruction works like the Photoshop Curves feature, though it is currently limited to variations of f-shaped, j-shaped, and s-shaped curves. These curves modify the brightness or alpha values of images in useful ways. </p>
+<blockquote>
+  <table border="1" cellpadding="4" cellspacing="2">
+    <tr>
+      <th scope="col">no curve </th>
+      <th scope="col">f curve </th>
+      <th scope="col">j curve </th>
+      <th scope="col">s curve </th>
+    </tr>
+    <tr>
+      <th scope="col"><img src="images/NoCurve.png" width="222" height="220"></th>
+      <th scope="col"><img src="images/FCurve.png" width="222" height="220"></th>
+      <th scope="col"><img src="images/JCurve.png" width="222" height="220"></th>
+      <th scope="col"><img src="images/SCurve.png" width="222" height="220"></th>
+    </tr>
+  </table>
+</blockquote>
+<p>Here's an example of these curves being applied in an EAText effect: </p>
+<blockquote>
+  <p><img src="images/CurveExample.png" width="660" height="190"></p>
+</blockquote>
+<p>When applied to the floating glyph layer (a.k.a. kETIFloat), the ApplyCurve instruction always applies only to the glyph alpha, as the floating layer is an alpha-only layer. When applied to the base layer (a.k.a. kETIBase), the ApplyCurve instruction affects either the alpha or the color brightness, depending on the current EffectsChannelMask in effect (see kEISetTargetMask). </p>
+<p>Here's an example of an effects program that uses ApplyCurve.</p>
+<blockquote>
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="251" class="EffectsProgramText">SetGlyphColor 0xff0000ff<span class="style24"><br>
+      </span></td>
+      <td width="440"><span class="EffectsDescription">Set the current color to an ARGB representing solid blue. </span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">DrawGlyph<br>      </td>
+      <td><span class="EffectsDescription">Draw the current glyph into the floating layer. </span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">ApplyBoxBlur 2 1.2 2 </td>
+      <td><span class="EffectsDescription">Blur the glyph. </span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">ApplyCurve s 1.5 </td>
+      <td><span class="EffectsDescription">Apply s curve to the blur, making it crisper along its edges.</span></td>
+    </tr>
+    <tr>
+      <td class="EffectsProgramText">Merge</td>
+      <td><span class="EffectsDescription">Copy the floating layer to the base layer. </span></td>
+    </tr>
+  </table>
+</blockquote>
+<h2>User-defined Effects </h2>
+<p>EATextEffects allows the user to define effects via the CallUser instruction. This allows the user to do custom image operations via the EffectsPlugin interface. See EATextEffects.h for more. We can expand this documentation in the future if user effects become more relevant. </p>
+<h2><a name="Glyph_Overlap"></a>Glyph Overlap </h2>
+<p>When creating fonts with shadows or glows, you may find that glyph shadows overlap adjacent glyphs in a bad way:</p>
+<blockquote>
+  <table border="1" cellpadding="1">
+    <tr>
+      <td scope="col"><img src="images/GlowInterference.png" width="285" height="69"></td>
+      <td scope="col"><span class="EffectsProgramText">SetGlyphColor 0xff8c078c<br>
+        SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 0.7 1.0<br>
+        DrawGlyphSmearOutline<br>
+        ApplyBoxBlur 2 1.5 2<br>
+        Merge<br>
+        Clear<br>
+        SetGlyphColor 0xffffffff<br>
+        SetGlyphSmooth 0<br>
+        DrawGlyph<br>
+        Merge</span></td>
+    </tr>
+  </table>
+</blockquote>
+<p>Aside from simply spreading apart the glyphs (via the SetGlyphHSpace effects instruction) there aren't many ways to solve this problem other than to implement a two-pass effect. To implement a two-pass effect, you create two fonts: a shadow font and a standard font. When you draw a string of text, you first draw the string with the shadow font, then with the standard font. </p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <td scope="col"><img src="images/TwoPassShadow.png" width="282" height="69"></td>
+      <td class="EffectsProgramText" scope="col"><font face="Courier New">SetGlyphColor 0xff8c078c<br>
+        </font><font face="Courier New">SetGlyphSmooth 1<br>
+        SetGlyphBrush 0 3 0.7 1.0<br>
+        DrawGlyphSmearOutline<br>
+        ApplyBoxBlur 1 1.2 2<br>
+        Merge</font></td>
+    </tr>
+    <tr>
+      <td scope="col"><img src="images/TwoPassGlyph.png" width="282" height="69"></td>
+      <td class="EffectsProgramText" scope="col"><font face="Courier New"> SetGlyphColor 0xffffffff<br>
+        SetGlyphSmooth 0<br>
+        DrawGlyph<br>
+        Merge</font></td>
+    </tr>
+    <tr>
+      <td scope="col"><img src="images/TwoPassResult.png" width="282" height="69"></td>
+      <td scope="col">(the result)</td>
+    </tr>
+  </table>
+</blockquote>
+Note that the two separate glyph effects programs above are simply the same thing as the one large effects program split into two. The same effect above can work for offset shadows.
+<h2>Limitations</h2>
+<p>The current implementation of EATextEffects is fairly limited in what it can do. Here is a partial list of functionality you might want but which isn't natively supported:</p>
+<blockquote>
+  <table border="1" cellpadding="1" cellspacing="0">
+    <tr>
+      <th scope="col">Feature</th>
+      <th scope="col">Comment</th>
+    </tr>
+    <tr>
+      <td>Gradients</td>
+      <td>Gradients would allow glyphs to have a multi-shaded look which adds lighting or depth. <br>
+      Basic support of this would be fairly easy to add to EATextEffects in the future. </td>
+    </tr>
+    <tr>
+      <td>Subtraction/multiplication/etc.</td>
+      <td>These would allow things such as making hollowed glyphs. <br>
+      Basic support of this would be fairly easy to add to EATextEffects in the future.</td>
+    </tr>
+    <tr>
+      <td>Inner/outer glow</td>
+      <td><p>These would allow for a 3D look and highlights.<br>
+        This would require some effort to add to EATextEffects.        <br>
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td>Path stroke</td>
+      <td>This would allow for some advanced glyph effects. <br>
+      This would require some effort to add to EATextEffects. </td>
+    </tr>
+    <tr>
+      <td>Masks</td>
+      <td>Masks would allow for certain kinds of useful compositing operations.<br>
+        This would require some effort to add to EATextEffects. </td>
+    </tr>
+    <tr>
+      <td>Arbitrary layers</td>
+      <td><p>This would allow for some kinds of advanced compositing. <br>
+        Basic support of this would be fairly easy to add to EATextEffects, but it would have to be deemed important enough to warrant doing. </p>
+      </td>
+    </tr>
+  </table>
+</blockquote>
+<p>If you want to have more effects functionality that isn't currently supported, there are three primary solutions:</p>
+<ul>
+  <li>Add a user-defined instruction via kEICallUser.</li>
+  <li>Modify EATextEffects to add a new native instruction. </li>
+  <li>Use a BitmapFont (via Photoshop and BitmapFontEditor) instead of an effects-based OutlineFont. </li>
+</ul>
+<p>Another limitation of EATextEffects is that the colors are baked into the glyphs and cannot by dynamically changed at draw time except via environment coloring. You may want to take a given effect font and apply coloring to it dynamically so that the effects font may be reused with multiple colors. But how can you do this if you have a glyph that has two or more colors with shaded gradients? There are three fundamental solutions to this problem:</p>
+<ol>
+  <li>Create a unique font for each color combination you want to use. See the Dynamic Effects section for a discussion of how to manage this. </li>
+  <li>Use the multi-pass technique discussed in the Glyph Overlap section of this document to create a unique font for each effect layer. Make each layer be grayscale and draw each pass separately, using and environment color as desired. </li>
+  <li>If the font has essentially only a single color and black (e.g. black outline), you may be able to make the color white and apply an environment color to it at draw time.</li>
+</ol>
+<h2><a name="Dynamic_Effects"></a>Dynamic Effects </h2>
+<p>As discussed elsewhere in this document, you can create effects fonts directly or you can create them indirectly via FontStyle requests to the Font Server. In either case it is most efficient if you avoid duplicating effects because a unique set of glyphs is generated by each effects font and stored in the limited glyph cache space. If your application is creating effects dynamically at runtime then you need to find a practical way of making sure that font effects are efficiently created and managed and that you don't mistakenly create two fonts that look the same as each other. </p>
+<p>The easiest way to accomplish this is to keep a tiny table of effects hashes to effect ids. Here is some example code for the case of using font styles: </p>
+<pre class="code-example">
+typedef eastl::hash_map&lt;uint32_t, uint32_t&gt; IdMap;
+IdMap idMap;
+<span class="code-example-comment"> .
+ .
+ .
+</span>uint32_t hashValue = EffectsState::HashInstructionList(pInstructionList, instructionCount);
+uint32_t someId;  <span class="code-example-comment">// This can possibly be the same as hashValue, in which case you can use just a hash_set instead of a hash_map.</span>
+ 
+IdMap::iterator = idMap.find(hashValue);
+
+if(iterator == idMap.end())
+{
+	iterator = idMap.insert(IdMap::value_type(hashValue, someId)).first;
+	pFontServer->AddEffect(someId, pInstructionList, instructionCount);
+}
+<span class="code-example-comment"> .
+ .
+ .
+</span>EA::Text::TextStyle textStyle;
+textStyle.mEffect = someId;<br>
+EA::Text::OutlineFont* pFont = pFontServer-&gt;GetFont(&amp;textStyle);
+<span class="code-example-comment"> 
+// Use the font like any other EAText Font.</span>
+ 
+pFont-&gt;Release();
+</pre>
+<p>This functionality may be built into a future version of FontServer if it seems to have general usefulness.</p>
+<h2>Testing Effects </h2>
+<p>The easiest way to test EAText Effects is to use the EATextViewer application (v0.95 or later). It lets you type/paste text-based instructions which you can preview and tweak. If you are creating EAText effects then you want to use EATextViewer to iteratively tweak your effects programs. Don't forget to set the foreground color to 255,255,255 in EATextViewer, as it multiplies the resulting glyphs with this color. Consider setting the background color or background image for your mockup. </p>
+<p>Here's a screenshot of the EATextViewer mocking up an effect:</p>
+<blockquote>
+  <p><img src="images/EATextViewerDemo.png" width="900" height="707"></p>
+</blockquote>
+<hr style="width: 100%; height: 2px;">End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

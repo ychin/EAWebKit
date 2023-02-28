@@ -39,7 +39,7 @@
 #include <WebFrame.h>
 #include <WebFrame_p.h>
 #include <EAWebKit/EAWebKitClient.h>
-#include <internal/include/EAWebKitEASTLHelpers.h>
+#include <internal/include/EAWebkitEASTLHelpers.h>
 namespace WebCore {
 
 std::unique_ptr<Pasteboard> Pasteboard::createForCopyAndPaste()

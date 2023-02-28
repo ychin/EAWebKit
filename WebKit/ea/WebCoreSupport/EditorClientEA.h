@@ -109,7 +109,7 @@ public:
     virtual bool spellingUIIsShowing() override;
     virtual void willSetInputMethodState() override;
     virtual void setInputMethodState(bool enabled) override;
-    virtual TextCheckerClient* textChecker() { return NULL; }
+    virtual TextCheckerClient* textChecker() override { return NULL; }
 
     virtual bool supportsGlobalSelection() override;
 

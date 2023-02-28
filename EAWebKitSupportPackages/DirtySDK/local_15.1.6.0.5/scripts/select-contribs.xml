@@ -1,0 +1,53 @@
+<project>
+    <!-- Create a list of contrib libraries to use, based on the platform in question -->
+    <property name="package.DirtySDK.contribs.available" value="${property.value}"/>
+
+    <do if="${dirtysdk-samples??false} or ${dirtysdk-contribs??false}">
+        <!-- =================  COMMON =================== -->
+        <property name="package.DirtySDK.contribs.available">
+            common
+        </property>
+
+        <!-- =================  PS5   ===================== -->
+        <property if="${config-system} == 'ps5'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+
+        <!-- =================  CAPILANO  =================== -->
+        <property if="${config-system} == 'capilano'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+
+        <!-- =================  SCARLETT  =================== -->
+        <property if="${config-system} == 'xbsx'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+
+        <!-- =================  KETTLE  ===================== -->
+        <property if="${config-system} == 'kettle'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+
+        <!-- =================  PC  =================== -->
+        <property if="${config-system} == 'pc'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+
+        <!-- =================  PC64  =================== -->
+        <property if="${config-system} == 'pc64'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+
+        <!-- =================  STADIA  ==================== -->
+        <property if="${config-system} == 'stadia'" name="package.DirtySDK.contribs.available">
+            ${property.value}
+            voipaux
+        </property>
+    </do>
+</project>

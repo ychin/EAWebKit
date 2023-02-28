@@ -37,8 +37,8 @@
 #include <wtf/Forward.h>
 
 
-#include <eastl/string.h>
-#include <eastl/map.h>
+#include <EASTL/string.h>
+#include <EASTL/map.h>
 
 namespace EA { namespace WebKit {
     class WebPage;

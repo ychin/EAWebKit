@@ -20,13 +20,13 @@
 
 #include "config.h"
 #include "EventLoop.h"
-#include <EAWebkit/EAWebkitClient.h>
+#include <EAWebKit/EAWebKitClient.h>
 #include "WebFrame_p.h"
 #include "WebPage.h"
 #include "Page.h"
-#include <EAWebkit/EAWebKitView.h>
+#include <EAWebKit/EAWebKitView.h>
 #include "WebInspector.h"
-#include "JSDomWindowCustom.h"
+#include "JSDOMWindowCustom.h"
 
 namespace WebCore {
 

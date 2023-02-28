@@ -80,7 +80,7 @@
 #include "WebPage_p.h"
 #include "runtime_object.h"
 #include "runtime_root.h"
-#include "interpreter.h"
+#include "Interpreter.h"
 #if USE(ACCELERATED_COMPOSITING)
 #include "texmap/TextureMapper.h"
 #include "texmap/TextureMapperPlatformLayer.h"
@@ -91,7 +91,7 @@
 #include "ea_utility.h"
 #include "ea_instance.h"
 #include <EAWebKit/EAWebKit.h>
-#include <EAWebkit/EAWebkitClient.h>
+#include <EAWebKit/EAWebKitClient.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <internal/include/EAWebKit_p.h>
 #include "PageClientEA.h"

@@ -1,0 +1,753 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>EAText -- Glossary</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta
+ content="Definitions of common terms related to text processing."
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<h1>Glossary</h1>
+<p>This document provides definitions to various terms related to text
+    processing layout.</p>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Advance<br>
+		Advance width<br>
+      </td>
+      <td style="vertical-align: top;">Advance width refers to the distance from 
+		the beginning of one character on a printed display to the beginning of 
+		the next character on the display.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Analysis </td>
+      <td style="vertical-align: top;">An analysis is a Microsoft term (though 
+		not a Microsoft concept) which describes the properties of a run of 
+		text. In particular, it is used to store information regarding the 
+		bidirectional embedding levels of a run of text. A first step in the 
+		text layout pipeline is to take a paragraph and identify runs of like 
+		directionality and embedding level. An analysis stores this information. <br>
+		See <a href="http://www.unicode.org/reports/tr9/">
+		http://www.unicode.org/reports/tr9/</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Ascent<br>
+      </td>
+      <td>The ascent of a glyph is the distance from the base line to the 
+		topmost portion of the glyph. The ascent of a font is the distance from 
+		the baseline to the topmost portion of any glyph.<br>
+		See Descent.<br>
+		See <a href="http://en.wikipedia.org/wiki/Typeface">
+		http://en.wikipedia.org/wiki/Typeface</a>
+		for some related typographical concepts.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Baseline<br>
+      </td>
+      <td>The baseline is the line upon which a string of text is drawn. For 
+		horizontal text, it is at the bottom of the glyphs; for vertical text, 
+		it goes through the center of glyphs.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Bidirectional<br>
+		Bidi<br>
+      </td>
+      <td style="vertical-align: top;">Refers to text that when viewed flows in 
+		two opposite directions, usually left-to-right and right-to-left.<br>
+		See <a href="http://en.wikipedia.org/wiki/Bi-directional_text">
+		http://en.wikipedia.org/wiki/Bi-directional_text</a><br>
+		See <a href="http://www.unicode.org/reports/tr9/">
+		http://www.unicode.org/reports/tr9/</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Break</td>
+      <td style="vertical-align: top;">A point within text that is a natural 
+		splitting point. There are paragraph breaks which split paragraphs, line 
+		breaks which split lines, sentence breaks which split sentences, word 
+		breaks which split words, and charater breaks which split divisible 
+		characters.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Caps height</td>
+      <td style="vertical-align: top;">The height of capital letters in a font 
+		above the baseline, not including any diacritics that may be above them.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Character </td>
+      <td style="vertical-align: top;">A character is an atomic unit of a 
+		written language. Consists of letters, Asian ideograms, numerals, 
+		punctuation, etc. In computer systems, the term 'character' is somewhat 
+		ambiguous.<br>
+		See <a href="http://en.wikipedia.org/wiki/Grapheme">
+		http://en.wikipedia.org/wiki/Grapheme</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Character set </td>
+      <td style="vertical-align: top;">A character set is an assignment of 
+		glyphs to numerical values (e.g. A == 65). ASCII is a character set, as 
+		is Chinese Big 5. Unicode specifies a single unified character set with 
+		each character called a &quot;code point.&quot;<br>
+		See <a href="http://en.wikipedia.org/wiki/Character_encoding">
+		http://en.wikipedia.org/wiki/Character_encoding</a><br>
+      </td>
+    </tr>
+<tr>
+<td style="vertical-align: top; width: 150px">
+ClearType</td>
+<td style="vertical-align: top">
+ClearType is the name of a Microsoft technology used to improve the appearance of
+text drawn on LCD displays. It works by using the individual red, green, and blue
+components of an LCD screen pixel as if they were independent pixels.
+</td>
+</tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Cluster </td>
+      <td style="vertical-align: top;">A cluster is a contiguous set of 
+		characters that combine together in a single glyph cell and are 
+		considered one indivisible&nbsp; unit. A simple example is the cluster 
+		of a and ` together as à. Complex scripts have more complex examples. </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Condensed Type</td>
+      <td>A narrower version of the normal width of a typeface. For example, 
+		Arial Narrow is a condensed variation of Arial.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Code page<br>
+      </td>
+      <td>A code page is for all practical purposes the same as a character set. 
+		The term &quot;code page&quot; is Microsoft-specific.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Code point <br>
+      </td>
+      <td>A Unicode character value. A code point is a specific term used by the 
+		Unicode standard which serves to avoid confusion over the difference 
+		between what is a character and what is a glyph.<br>
+		See <a href="http://en.wikipedia.org/wiki/ISO_10646">
+		http://en.wikipedia.org/wiki/ISO_10646</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Complex script<br>
+      </td>
+      <td>A complex script has at least one of the following attributes:<br>
+      <ul>
+        <li>Bidirectional character ordering</li>
+        <li>Contextual shaping</li>
+        <li>Combining characters</li>
+        <li>Specialized word-breaking and justification rules</li>
+        <li>Illegal character combinations</li>
+      </ul>
+      <br>
+		Bidirectional rendering refers to the script's ability to handle text 
+		that reads both left-to-right and right-to-left. For example, in the 
+		bidirectional rendering of Arabic, the default reading direction for 
+		text is right-to-left, but for some numbers it is left-to-right. 
+		Processing a complex script must account for the difference between the 
+		logical (keystroke) order and the displayed order of the glyphs on the 
+		screen.<br>
+      <br>
+		Additionally, processing must properly deal with caret movement and 
+		cursor hit testing. The mapping between screen position and a character 
+		index requires knowledge of font metrics and the layout algorithm.<br>
+      <br>
+		Contextual shaping occurs when a script's characters change shape 
+		depending on the characters that surround them. This occurs in English 
+		cursive writing (&quot;handwriting&quot;) when a lowercase &quot;l&quot; changes shape 
+		depending on the character that precedes it such as an &quot;a&quot; (connects low 
+		to the &quot;l&quot;) or an &quot;o&quot; (connects high). Arabic is a script that exhibits 
+		contextual shaping.<br>
+      <br>
+		Combining characters (ligatures) are characters that join into one 
+		character when placed together. One example is the &quot;ae&quot; combination in 
+		English; it is sometimes represented by a single character. <br>
+		Arabic is a script that has many combining characters.<br>
+      <br>
+		Specialized word break and justification refers to scripts that have 
+		complex rules for dividing words between lines or justifying text on a 
+		line. Thai is such a script.<br>
+      <br>
+		Filtering out invalid character combinations occurs when a language does 
+		not allow certain character combinations. Thai is such a script.<br>
+      </td>
+    </tr>
+    <tr>
+      <td>Coverage<br>
+      </td>
+      <td>Coverage refers to the support a font has for the gamut of characters. 
+		While a font can have glyphs for any Unicode code point, it is common 
+		that fonts support only certain scripts. Basic fonts have coverage for 
+		only Latin scripts, whereas a Chinese font will usually have support for 
+		(or coverage of) Chinese script and basic Latin script. <br>
+      </td>
+    </tr>
+    <tr>
+      <td>CSS<br>
+		Cascading Style Sheets<br>
+      </td>
+      <td>CSS is the standard mechanism for defining styles in the HTML family 
+		of page description languages.<br>
+		See <a href="http://www.w3.org/Style/CSS">http://www.w3.org/Style/CSS</a>.<br>
+      </td>
+    </tr>
+    <tr>
+      <td>Decomposition<br>
+      </td>
+      <td>Decomposition is the process of breaking a composed or shaped 
+		character down into its basic parts, often for the purpose of doing 
+		proper searching and comparison. For example, if you search for the 
+		digit 1 in a paragraph of text and there is a 1 which is in superscript 
+		form, it should be found. Similarly, a superscript 1 should compare as 
+		equal to a regular 1 in terms of sorting. Other kinds of composition 
+		exist as well, such as the application of diacriticals to base 
+		characters.<br>
+      </td>
+    </tr>
+    <tr>
+      <td>Descent<br>
+      </td>
+      <td>The descent of a glyph is the distance between the baseline and the 
+		lowest part of a glyph. The descent of a font is the largest distance 
+		between the baseline and the bottom of any glyph. For most Western 
+		scripts, the descent is a value less or equal to zero, as the bottoms of 
+		such glyphs are usually at the baseline or below it.<br>
+		See Ascent.<br>
+		See <a href="http://en.wikipedia.org/wiki/Typeface">
+		http://en.wikipedia.org/wiki/Typeface</a>
+		for some related typographical concepts.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Devanagari</td>
+      <td>The script that covers numerous Indic languages such as Hindi, Nepali, 
+		and Sanskrit.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Diacritic</td>
+      <td>A diacritic is an accent mark added to a letter. Examples include (but 
+		are not limited to) accent, macron, umlaut, breve, caron, circumflex, 
+		cedilla, and ogonek.<br>
+		See <a href="http://en.wikipedia.org/wiki/Diacritical">
+		http://en.wikipedia.org/wiki/Diacritical</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">EFIGS</td>
+      <td>A mnemonic for English, French, Italian, German, Spanish.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Em<br>
+&nbsp;</td>
+      <td>A relative unit of usually horizontal measurement equal to the - 
+		character of the type size currently in use. For example, an em in 
+		12-point type is equal to 12 points. Originally derived from the width 
+		of the upper-case M.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">En</td>
+      <td>A relative unit of usually horizontal measurement equal to half of one 
+		em.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Embedding</td>
+      <td>Embedding refers to the inclusion
+of a run of opposing direction text within a
+run of text. If you have an English sentence and put some RTL text in
+the middle of it, the RTL text is embedded within the primary LTR text.
+If you then embed a run of LTR text within the RTL text then you have
+an
+additional level of embedding in place. An embedding level of 0 means
+LTR, a
+level of 1 means RTL alone or within LTR 0, a level of 2 means LTR
+within RTL
+1, a level of 3 means RTL within LTF of level 2, etc.<br>
+See <a href="http://www.unicode.org/reports/tr9/">http://www.unicode.org/reports/tr9/</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td>Extended Type</td>
+      <td>Typeface with wider body relative to its height.</td>
+    </tr>
+    <tr>
+      <td>Family<br>
+      </td>
+      <td>A family is a class of related fonts. A family is very
+similar to a typeface, though strictly speaking it is possible to
+define a family which has multiple typefaces in it. However, it often
+occurs that a family has a single typeface in it and the two terms
+become synonymous.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">FFS</td>
+      <td>Font Fusion Stroke font. See StrokeFont. </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Fixed-Pitch</td>
+      <td>Also known as monospaced. Refers to fonts in which each character has 
+		the same standard width. An example is Courier.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Font</td>
+      <td>A font is a particular incarnation
+of a typeface (e.g. 10 pt courier
+bold). It is common to confuse fonts with their superset -- typefaces.</td>
+    </tr>
+<tr>
+<td style="vertical-align: top; width: 150px">
+gasp</td>
+<td>
+gasp (Grid-fitting and Scan-conversion Procedure) refers to information stored in
+a TrueType font which identifies which font sizes are best for applying hinting
+and anti-aliasing. A very large font (&gt;= 64 pixels) generally doesn't need to
+have hinting applied. On the other hand, a small font (~10 pixels) almost always
+needs hinting in order to look good. TrueType fonts often have a gasp table, which
+simply says what sizes the font author thinks should have hinting and anti-aliasing
+applied. The gasp information itself provides no hinting or anti-aliasing functionality.</td>
+</tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Glyph</td>
+      <td>A glyph is a graphical
+representation of a character. In terms of computer text processing and
+display, a glyph may be a combination of multiple code points, as would
+be the case with separate accents or other
+diacriticals. There is a distinction between glyphs and characters that
+is subtle but significant. Character are what the user types on their
+keyboard, whereas glyphs are the physical manifestation of such
+characters. The ratio between characters and glyphs is not necessarily
+1:1, though it is often so for simple English text.<br>
+See <a href="http://en.wikipedia.org/wiki/Glyph">http://en.wikipedia.org/wiki/Glyph</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Grapheme</td>
+      <td>A grapheme is the same thing as a character.<br>
+See <a href="http://en.wikipedia.org/wiki/Grapheme">http://en.wikipedia.org/wiki/Grapheme</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Hints</td>
+      <td>Hints are instructions stored in some fonts which allow them to draw 
+		well on low resolution display such as a computer monitor. The font you 
+		are reading now is hinted. An unhinted font will display poorly on a 
+		computers screen below about 15 pixels in height.</td>
+    </tr>
+<tr>
+<td style="vertical-align: top; width: 150px">
+IME (Input Method Editing)</td>
+<td>
+Input Method Editing refers to a system for entering text into a word processor
+when the keyboard alone is insufficient for the task. The most common usage of IME
+is to enter Asian glyphs on a system with a 101 key keyboard.
+</td>
+</tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Italic</td>
+      <td>Letterform with a pronounced diagonal slant and often some cursiveness 
+		as well. This is similar to oblique, but oblique refers to a font that 
+		is only slanted. See Oblique.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Itemize<br>
+Itemization</td>
+      <td>Itemization is the process of
+separating a string of text into runs of like
+direction and script. Sometimes this includes like font style as well.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Jamo</td>
+      <td> Jamo are the Korean equivalent of letters.&nbsp; They are combined in square two-dimensional patterns of two to four jamo to form what are known as Hangul. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Justification<br>
+      </td>
+      <td>Justification is the process of fitting horizontal text
+within its left and right boundaries such that it meets both edges. It
+is a common mistake to confuse alignment with justification. There is
+left alignment, but there is no such thing as left justification, as
+that's like saying something meets both sides on the left side.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Hangul</td>
+      <td>The name of the script used to write the Korean language. There are 11,172 encoded characters in the Hangul Syllables character<br>
+      block, AC00..D7A3. Looks like this: <font face="Arial Unicode MS">&#54620;&#47448;<span
+style="font-family: Palatino Linotype">. See <a href="http://en.wikipedia.org/wiki/Hangul">
+http://en.wikipedia.org/wiki/Hangul</a></span></font></td>
+    </tr>
+<tr>
+<td style="vertical-align: top; width: 150px">
+Kanji</td>
+<td>
+Kanji are Chinese characters used in the modern Japanese writing system aside Hiragana,
+Katakana, and Arabic numerals. The Japanese term kanji literally means "Han characters".
+Looks like this: &#27018; &#36795; &#20685;. See <a href="http://en.wikipedia.org/wiki/Kanji">
+http://en.wikipedia.org/wiki/Kanji</a></td>
+</tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Kerning</td>
+      <td>Kerning is the process of altering
+the space between specific pairs of glyphs. Normally kerning is found
+only with variably spaced fonts and not with monospaced fonts. A
+kerning value for a font is an adjustment of the normal advance vector
+for a given glyph to the next glyph. Thus, a zero value means that
+there is no adjustment and the glyphs are regularly drawn; a negative
+value means the glyphs are made closer together than normal, and a
+positive value means the glyphs are farther apart than normal. <br>
+See <a href="http://en.wikipedia.org/wiki/Kerning">http://en.wikipedia.org/wiki/Kerning</a></td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Layout</td>
+      <td>Layout is the process of arranging
+glyphs from string of text. Layout of some scripts (e.g. Latin) is
+relatively simple, whereas the layout of
+others (e.g. Arabic, Thai) is complex. </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Leading<br>
+&nbsp;</td>
+      <td>Pronounced &#8220;ledding.&#8221; Leading refers to extra space that is placed 
+		between lines of text to increase the vertical space between lines. 
+		Sometimes leading is described as being the vertical space from baseline 
+		to baseline of successive lines of text, but this is not correct.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Letter spacing</td>
+      <td>Extra space inserted between letters in a word. Often used in words 
+		set in capitals to improve visual appearance. See Tracking.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Ligature</td>
+      <td>A ligature is a single
+glyph which is a derived from two otherwise independent side-by-side
+glyphs. The combination of a and e to form &aelig; is an example of
+a ligature.<br>
+See <a href="http://en.wikipedia.org/wiki/Ligature_%28typography%29">http://en.wikipedia.org/wiki/Ligature_(typography)</a></td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">LTR<br>
+Left to Right</td>
+      <td>LTR refers to text display
+directionality. Most scripts
+use the left to right direction to display their text. See RTL. </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Monospaced.</td>
+      <td>Also known as fixed-pitch. Refers to fonts in which each character has 
+		the same standard width. An example is Courier.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Oblique</td>
+      <td>Letterform with a pronounced diagonal slant but otherwise similar to 
+		its non slanted sibling. This is similar to italic, but italic refers to 
+		a font that is often additionally stylistically embellished. See Italic.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">OpenType<br>
+      </td>
+      <td>A typographical system
+that consists of a font specification and a layout assistance
+specification. OpenType fonts are similar to
+TrueType&nbsp; fonts but have additional information and can have
+PostScript
+outlines. OpenType fonts files usually use the .otf file extension. <br>
+See <a href="http://en.wikipedia.org/wiki/OpenType">http://en.wikipedia.org/wiki/OpenType</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Outline
+font</td>
+      <td>An outline font that
+is primarily defined by filled curves such as Bezier curves. Such fonts
+are usually scalable; a single outline specification allows for various
+sizes of rendered glyphs. TrueType,
+PostScript, and OpenType fonts are examples of outline
+fonts.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">PFR</td>
+      <td>Portable Font Resource, also known as a WebFont or TrueDoc font. It is a compressed TrueType font variation. </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Pitch</td>
+      <td>Size designation of monospaced fonts &#8211; based on typewriter and line 
+		printer technology. Also refers to the measurement of the number of 
+		characters to an inch.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Point<br>
+		Pica<br>
+		Didot</td>
+      <td>A point is a unit of measure in typography. There are 3 sorts of 
+		points, though most computer based typography uses only the first:<ul>
+		<li>PostScript point or computer point (now the universal point in 
+		computers): 1 pt = 0.35277 mm = 0.01388889 in = 1/72 in.</li>
+		<li>Didot point (continental European point system): 1 dd = 0.375 mm = 
+		0.014831 in, approx. 1/72 French royal inch (pouce).</li>
+		<li>American printer&#8216;s point (Anglo-American point system): 1 pp = 
+		0.3514598 mm = 0.013837 in, ca. 1/72 in.</li>
+		</ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">PostScript<br>
+PostScript font<br>
+      </td>
+      <td>PostScript is a programming language; it is designed
+specifically for specifying how to print a page of graphics and/or
+text. A PostScript font is an outline font
+specification used by the PostScript language to display text.
+PostScript fonts files use the .pfa or
+.pfb file extension.<br>
+See <a href="http://en.wikipedia.org/wiki/PostScript">http://en.wikipedia.org/wiki/PostScript</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Proportional spaced fonts</td>
+      <td>Fonts in which each character has its own width, as opposed to 
+		monospaced fonts. For example, the &#8220;i&#8221; in a proportionally spaced font 
+		is usually much narrower than the &#8220;M.&#8221;</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Roman</td>
+      <td>Used to distinguish upright letterforms from sloped, oblique or 
+		italic. Also used to refer to the upright, normal weight and width 
+		variant of a typeface. Infrequently used to refer to serif as opposed to 
+		sans serif types. Also refers to types based on traditional Roman 
+		letterform proportions and design characteristics.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">RTL<br>
+Right to Left<br>
+      </td>
+      <td>RTL refers to text display
+directionality. Middle-Eastern
+scripts such as Arabic, Hebrew, and Farsi are right to left. See LTR.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Sans serif type</td>
+      <td>Fonts without horizontal strokes at the top and bottom of characters. 
+		Sans serif typefaces include Arial and Helvetica.</td>
+    </tr>
+<tr>
+<td style="vertical-align: top; width: 150px">
+SBIT</td>
+<td>
+Refers to Scalar Bitmaps, which are bitmapped (1 bit per pixel) versions of glyphs
+embedded into TrueType fonts. SBIT glyphs are an alternative to hinting as a means
+of producing sharp glyphs at small sizes.
+</td>
+</tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Script</td>
+      <td>A script is a writing system, such
+as Latin, Arabic, Hangul. Western languages
+such as English, French, and Spanish all fall under the category of
+Latin
+script.<br>
+See <a href="http://en.wikipedia.org/wiki/Writing_system">http://en.wikipedia.org/wiki/Writing_system</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Serif type</td>
+      <td>Fonts with a horizontal stroke projecting from the main strokes of a 
+		character. Some popular serif typefaces are Times Roman and Century 
+		Schoolbook. </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Shaping</td>
+      <td>Shaping is the process of
+converting a string of keyboard derived characters
+into a string of glyphs properly designed for display. This may include
+adding, removing, and changing glyphs from the original string. For
+example, a two character string of a` may be shaped into &agrave;.
+Similarly, Arabic text shaping causes characters to change
+representation depending on their position within a word (beginning,
+middle, end, or alone). </td>
+    </tr>
+    <tr>
+      <td>Small capitals<br>
+		small caps</td>
+      <td>Capital letters with the same optical height and proportions as the 
+		lower case letters of the same typeface. In PostScript and TrueType 
+		formats Small caps are often contained in separate small caps fonts and 
+		are designated with an SC after the font name. They contain the normal 
+		capitals and small caps instead of the lower case letters. Small caps 
+		have their own forms and proportions and, unlike false small caps, are 
+		not simply the capital letters at a reduced size. False small caps are 
+		recognizable by stroke thickness which seems too thin &#8211; the weights are 
+		scaled when the size is reduced &#8211; and characters which appear too light 
+		in comparison to the lower case letters. OpenType has no need for 
+		seperate small caps fonts, because the small caps can be integrated in 
+		the normal font.</td>
+    </tr>
+    <tr>
+      <td>Stretch</td>
+      <td>Defines a font's horizontal extent type, such as condensed, normal, 
+		expanded, ultra expanded, etc.</td>
+    </tr>
+    <tr>
+      <td>Stroke font<br>
+      </td>
+      <td>A stroke font is a font that is primarily defined by line
+strokes. East Asian kanji glyphs conceptually are stroked glyphs and
+sometimes draw better and compress better when represented as strokes
+instead of outlines. Such fonts are usually scalable; a single outline
+specification allows for various sizes of rendered glyphs. There is no
+major standard for the computerized implementation of stroked fonts,
+but sometimes stroked fonts are embedded into the TrueType or OpenType
+file format.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Style</td>
+      <td>For fonts, this refers to normal, italic, or oblique. It does not 
+		refer to weight (light, medium, bold, black, heavy), nor does it refer 
+		to variant (small caps or regular caps), nor does it refer to stretch 
+		(condensed, expanded). See Weight, Variant, and Stretch.<p>For HTML, 
+		style refers to the CSS (cascading style sheet) style, which is a broad 
+		description of both a font and how text is layed out in that font. See 
+		CSS.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Subscript</td>
+      <td>Small character which appears above the x-height.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Superscript </td>
+      <td>Small character which appears above the y-height.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Title case </td>
+      <td><p>Unicode defines three kinds of case mapping: lowercase, uppercase, and titlecase. The difference between uppercasing and titlecasing a character or character sequence can be seen in compound characters (that is, a single character that represents a compount of two characters).</p>
+        <p>Some letters in some languages are compound letters. For example, in Unicode, character U+01F3 is LATIN SMALL LETTER DZ; it is a single Unicode character, but it looks like two characters. Much like with regular characters, it looks like dz when in lower case, looks like Dz when it begins a capitalized word, and looks like DZ when it is upper case or in an all-caps word. But since this is a single Unicode character, it needs to be represented with three Unicode code points and not two. These three points are called the lower case, title case, and upper case versions of the character. For characters like this, the title case version of it (Dz) is not the same as the upper case version of it (DZ). <BR>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Tracking</td>
+      <td>Altering the spacing between characters of a word or words. Tracking is distinct
+		from kerning, which alters the spacing between character pairs 
+		only. There is no
+standard definition for tracking, though usually it is implemented as some sort
+of percentage-based horizontal stretching of the advance widths between characters.
+See Letter Spacing.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">TrueType</td>
+      <td>TrueType is an outline font
+specification. TrueType fonts files use the .ttf or
+.ttc file extension.<br>
+See <a href="http://en.wikipedia.org/wiki/TrueType">http://en.wikipedia.org/wiki/TrueType</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Typeface</td>
+      <td>A typeface is a typographical character
+family classification (e.g. Courier). A typeface is very similar to a
+family, though strictly speaking it is a subset of a family. However,
+typeface and family are often used somewhat interchangeably because
+usually a typeface and its family are the same thing (i.e. the typeface
+is the only one in its family and thus the typeface name essentially
+becomes its family name as well). <br>
+See <a href="http://en.wikipedia.org/wiki/Typeface">http://en.wikipedia.org/wiki/Typeface</a><br>
+See <a href="http://en.wikipedia.org/wiki/Typography">http://en.wikipedia.org/wiki/Typography</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Typesetting</td>
+      <td>Typesetting is the process of laying out text on a page, taking into 
+		account styles, line wrapping, leading, flow around graphics, 
+		underlining, etc.</td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">Unicode</td>
+      <td>Unicode is a character set that
+attempts to encompass all known written
+languages. Additionally Unicode defines a number of standardized
+conventions for the basic computational processing of text from these
+languages.<br>
+See <a href="http://en.wikipedia.org/wiki/Unicode">http://en.wikipedia.org/wiki/Unicode</a><br>
+See <a href="http://en.wikipedia.org/wiki/ISO_10646">http://en.wikipedia.org/wiki/ISO_10646</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">UCS<br>
+Universal Character Set<br>
+      </td>
+      <td>UCS is simply a way to directly map
+a a Unicode code point to a numerical integers such as C++'s short or
+int. Usually when we think of wide Unicode strings, we are talking
+about
+UCS2 (two byte representation). UTF16 is nearly the same as UCS2. The C
+wchar_t data type usually refers to UCS2 or UCS4, depending on the
+compiler and/or platform.<br>
+See <a href="http://en.wikipedia.org/wiki/ISO_10646">http://en.wikipedia.org/wiki/ISO_10646</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 150px; vertical-align: top;">UTF<br>
+Universal
+Transformation Format. <br>
+      </td>
+      <td>UTF is simply a way to
+assign full set of Unicode code points to various byte or multi-byte
+encodings. Examples include UTF8 and UTF16. UTF is different from UCS
+in that UTF is an encoding that is more complicated because it doesn't
+treat the values as numbers but as combinatorial sequences. The purpose
+of UTF
+is to compress code point representations.<br>
+See <a href="http://en.wikipedia.org/wiki/UTF-8">http://en.wikipedia.org/wiki/UTF-8</a><br>
+See <a href="http://en.wikipedia.org/wiki/UTF-16">http://en.wikipedia.org/wiki/UTF-16</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td>Weight</td>
+      <td>The thickness or relative amount of blackness of the main strokes of 
+		characters. Typical weights are regular, light, medium, demi bold, bold, 
+		etc.</td>
+    </tr>
+    <tr>
+      <td>XHTML</td>
+      <td>XHTML is essentially the successor to HTML 4.<br>
+		See <a href="http://www.w3.org/TR/xhtml1/">http://www.w3.org/TR/xhtml1</a></td>
+    </tr>
+    <tr>
+      <td>x-height<br>
+      </td>
+      <td>The height of short lower-case glyphs such as 'x' in Latin
+fonts.<br>
+See <a href="http://en.wikipedia.org/wiki/Typeface">http://en.wikipedia.org/wiki/Typeface</a>
+for some related typographical concepts.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+&nbsp;
+<font face="Arial" size="2"><font
+ style="font-family: helvetica,arial,sans-serif;" size="4"><br>
+</font></font>
+<hr style="width: 100%; height: 2px;">End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

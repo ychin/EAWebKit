@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAWebKit/EAWebKit.h>
 #include <EAWebKit/EAWebKitSystem.h>
 #include <internal/include/EAWebKitAssert.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <EAWebKit/EAWebKitFileSystem.h>
 #include <EAWebKit/EAWebKitThreadInterface.h>
 #include <EAWebKit/EAWebkitAllocator.h>

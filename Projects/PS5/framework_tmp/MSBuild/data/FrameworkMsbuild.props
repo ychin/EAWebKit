@@ -1,0 +1,57 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- msbuild version compatibility, property for dll path for reference required when writing custom msbuilds tasks -->
+	<PropertyGroup>
+		<MicrosoftBuildTasksDll>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MicrosoftBuildTasksDll>
+		<MicrosoftBuildUtilitiesDll>$(MSBuildBinPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll</MicrosoftBuildUtilitiesDll>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(VisualStudioVersion) &gt;= 14.0">
+		<MicrosoftBuildTasksDll>$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MicrosoftBuildTasksDll>
+		<MicrosoftBuildUtilitiesDll>$(MSBuildBinPath)\Microsoft.Build.Utilities.Core.dll</MicrosoftBuildUtilitiesDll>
+	</PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworkMonikerAssemblyAttributesPath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)'))</TargetFrameworkMonikerAssemblyAttributesPath>
+	</PropertyGroup>
+
+	<!-- default for FrameworkExecuteCopyLocal usage of FrameworkCopyWithAttributes -->
+	<ItemDefinitionGroup>
+		<FrameworkCopyLocal>
+			<Retries>6</Retries>
+			<RetryDelayMilliseconds>1000</RetryDelayMilliseconds>
+			<MaintainAttributes>false</MaintainAttributes>
+			<SkipUnchanged>true</SkipUnchanged>
+			<NonCritical>false</NonCritical>
+		</FrameworkCopyLocal>
+	</ItemDefinitionGroup>
+	<ItemDefinitionGroup>
+		<Content>
+			<Retries>6</Retries>
+			<RetryDelayMilliseconds>1000</RetryDelayMilliseconds>
+			<MaintainAttributes>false</MaintainAttributes>
+			<SkipUnchanged>true</SkipUnchanged>
+			<NonCritical>false</NonCritical>
+		</Content>
+	</ItemDefinitionGroup>
+	<ItemDefinitionGroup>
+		<Resource>
+			<Retries>6</Retries>
+			<RetryDelayMilliseconds>1000</RetryDelayMilliseconds>
+			<MaintainAttributes>false</MaintainAttributes>
+			<SkipUnchanged>true</SkipUnchanged>
+			<NonCritical>false</NonCritical>
+		</Resource>
+	</ItemDefinitionGroup>
+	<ItemDefinitionGroup>
+		<EmbeddedResource>
+			<Retries>6</Retries>
+			<RetryDelayMilliseconds>1000</RetryDelayMilliseconds>
+			<MaintainAttributes>false</MaintainAttributes>
+			<SkipUnchanged>true</SkipUnchanged>
+			<NonCritical>false</NonCritical>
+		</EmbeddedResource>
+	</ItemDefinitionGroup>
+	
+	<!-- shut down msbuild transtive propagation of static libraries - FW handles this for us -->
+	<PropertyGroup>
+		<StaticLibraryResolveLinkLib>$(CommonBuildOnlyTargets)</StaticLibraryResolveLinkLib>
+	</PropertyGroup>
+</Project>

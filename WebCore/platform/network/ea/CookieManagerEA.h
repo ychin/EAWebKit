@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EASTL/list.h>
 
 #include <EAWebKit/EAWebKit.h>
-#include <internal/include/EAWebKitEASTLHelpers.h>
+#include <internal/include/EAWebkitEASTLHelpers.h>
 #include <time.h>
 
 #include "Cookie.h"

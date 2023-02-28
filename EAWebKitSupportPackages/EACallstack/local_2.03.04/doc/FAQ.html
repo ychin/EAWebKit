@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>EACallstack FAQ</title>
+  <meta content="Paul Pedriana" name="author">
+  <meta content="Frequently Asked Questions about EAText"
+ name="description">
+  <link href="UTFDoc.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+<!--
+.SmallBody {font-size: 10pt}
+.outputPRE {	font-family: "Courier New", Courier, mono;
+	font-size: 9pt;
+	color: #000099;
+}
+-->
+  </style>
+</head>
+<body>
+<h1>FAQ</h1>
+<p class="faq-question">What can EACallstack do? </p>
+<p class="faq-answer">EACallstack has the following functionality:</p>
+<ul>
+  <li>Get the callstack addresses for some thread (including the current thread) in a running program. </li>
+  <li>Convert code adresses to their associated function names, source code files, and source code itself.
+    <ul>
+      <li>Supports these conversions with .map, .pdb, and .elf files for XBox, PS3, Win32, Win64.</li>
+      <li>Can do these conversions at runtime on the given platform or offline on a PC.</li>
+    </ul>
+  </li>
+  <li>Unmangle C++ names.</li>
+  <li>Clean up verbose symbol declarations. </li>
+  <li>Disassemble PowerPC and x86 machine code. </li>
+  <li>Record callstack activity, typically for the purpose of diagnosing memory leaks such as reference counting leaks. </li>
+</ul>
+<p class="faq-question">What can EACallstack <em>not</em> do? </p>
+<p class="faq-answer">It is not a generic debugger engine. While it can do address-to-symbol lookups, it can't tell you anything more than that, such as give you a list of all the variables that are global. It can't provide much help in the way of assisting in profiling, aside from doing the aforementioned lookups. </p>
+<p class="faq-question">What is the difference between a PS3 .elf and file and .self file? </p>
+<p class="faq-answer"></p>
+<p class="faq-answer">A SELF file (Signed ELF) itself is really just an ELF that has a Sony header prefixed to it. Similarly a .sprx file is a .prx file with a Sony header prefixed to it. </p>
+<p class="faq-question">What are the meanings of the cryptic acronyms used in .map (etc.) files? </p>
+<blockquote>
+  <table border="1" cellspacing="0" id="table6">
+    <tr>
+      <td><strong>Acronym</strong></td>
+      <td><strong>Meaning</strong></td>
+    </tr>
+    <tr>
+      <td>.bss</td>
+      <td>Refers to a section which contains zero-initialized static/global variables. BSS means Block Started by Symbol. Refers to See http://en.wikipedia.org/wiki/.bss</td>
+    </tr>
+    <tr>
+      <td>.data</td>
+      <td>Refers to a section which contains the pre-initialized data used for the program</td>
+    </tr>
+    <tr>
+      <td>got</td>
+      <td>Refers to the Global Offset Table found on PowerPC. It is an array of pointers to addresses of symbols used by some block of code. Superceded by TOC. See http://www.ibm.com/developerworks/linux/library/l-powasm2.html</td>
+    </tr>
+    <tr>
+      <td>.init</td>
+      <td>Refers to a section which contains functions run on init, before main. </td>
+    </tr>
+    <tr>
+      <td>.opd</td>
+      <td>Refers to a section which contains "official procedure declarations" which are used to assist in linking functions and specifying the entry point to a program (the entry point is the first instruction in the code to be executed). Typically found only on RISC architectures such as PowerPC. </td>
+    </tr>
+    <tr>
+      <td>.text</td>
+      <td>Refers to a section which contains the actual code (historically known as the program text)</td>
+    </tr>
+    <tr>
+      <td>toc</td>
+      <td>Refers to the Table of Contents found on PowerPC. TOC is an array of pointers to symbols used by some block of code. Supercedes GOT. See http://www.ibm.com/developerworks/linux/library/l-powasm2.html</td>
+    </tr>
+    <tr>
+      <td>.rodata</td>
+      <td>Refers to a section which contains read-only data. </td>
+    </tr>
+  </table>
+</blockquote>
+<p class="faq-question"><a name="WindowsDLLs"></a>How do I do lookups for Windows DLLs? </p>
+<p class="faq-answer">DLL (Dynamic Link Libraries) and libraries which are loaded at runtime instead of built-in at compile time. Since they are dynamically loaded, their code might be loaded into an arbitrary location in memory at runtime, though each DLL has a &quot;preferred&quot; load address which is used if nothing else is already at that location. Since the load address is determined at runtime, you can't know how to translate a callstack address into the  function it refers to without knowing where in memory the DLL was loaded. EACallstack expects that when you register a symbol file (e.g. .pdb, .map) you supply the base address where the associated code (e.g. .exe, .xex) was loaded into memory. </p>
+<p class="faq-answer">While the code in a DLL can be loaded into an arbitrary location in memory at runtime, the symbol information in the .map/.pdb file stores addresses for symbols as if the DLL were loaded at the default &quot;preferred&quot; DLL base address. But at runtime a callstack address from the DLL will be based on where the DLL was loaded into memory. For example, a symbol in the .map file which is at address 0x00403000 could be at 0x00423000 at runtime if the DLL base address ends up being 0x00420000 instead of the default 0x00400000. </p>
+<p class="faq-answer">As a result of this, symbol databases for DLLs (e.g. EACallstack's MapFileMSVC or PDBFile) have a SetBaseAddress function which can be called in order to specify where the the DLL got located in memory. How do you tell what the base addresses are which you need to pass to SetBaseAddress? The answer to this depends on whether you are doing online lookups or offline lookups. </p>
+<p class="faq-answer">See the Online lookups and Offline lookups below in the PS3 PRX section for this. The situation for DLLs is almost identical to the situation for PRXs.</p>
+<p class="faq-question"><a name="PS3PRXs"></a>How do I do lookups for PS3 PRXs? </p>
+<p class="faq-answer">A PRX (PlayStation Relocatable) is like a Microsoft DLL for the PS3. The fact that it's relocatable means that its code might be loaded into an arbitrary location in memory at runtime. A result of this is that you can't know how to translate a callstack address into the  function it refers to without knowing where in memory the PRX was loaded. This is the same as with Microsoft DLLs. EACallstack expects that when you register a symbol file (e.g. .map, .elf, .self, prx, .sprx) you supply the base address where the associated code (e.g. .elf, .self, .prx, .sprx) was loaded into memory. </p>
+<p class="faq-answer">Symbol information for a PRX is the same as for a PS3 ELF. Symbol information can be read from a .map file, or it can be read from the debug information present in the .prx or .sprx file. A .prx file is really just an ELF file but just named with a different file extension. Similarly, a .sprx file is really just a SELF file with a different file extension. While the code in a PRX can be loaded into an arbitrary location in memory at runtime, the symbol information in the .map/.prx/.sprx file stores addresses for symbols as if the PRX were loaded at a memory address of 0x00000000. In other words, the addresses are relative to the beginning of the PRX's beginning instead of expressed as absolute addresses on the PS3. But at runtime a callstack address from the PRX will be based on where the PRX was loaded into memory. For example, a symbol in the .map file which is at address 0x00003000 will be at 0x00603000 at runtime if the PRX base address ends up being 0x00600000. In order to look up the address in a .map file, you need to subtract 0x00600000 from the address in order to make it relative to the addresses in the .map file.</p>
+<p class="faq-answer">As a result of this, symbol databases for PRXs (e.g. EACallstack's MapFileGCC or DWARF3File) have a SetBaseAddress function which can be called in order to specify where the the PRX got located in memory. How do you tell what the base addresses are which you need to pass to SetBaseAddress? The answer to this depends on whether you are doing online lookups or offline lookups. </p>
+<h4 class="faq-answer">Online lookups</h4>
+<p class="faq-answer">My online lookups, we mean address lookups of an application's own code addresses as it's running. For a MapFile to do a lookup of an address that originates from the main application elf, its base address can just default to 0x00000000 and lookups will work. For a MapFile to do a lookup of an address that originates from a PRX, you can let the MapFile automatically detect what the base address is in its Init function, or you need to call the MapFile SetBaseAddress function manually. MapFile will be able to automatically detect the base address in its Init function if the map file's file name (e.g. EAWebKit.map) is the same as the prx file name (e.g. EAWebKit.prx) and if the PRX itself has been loaded prior to when the MapFile Init function is called. You should call pAddressLookup-&gt;SetOption(kOptionOfflineLookup, 0) before calling MapFile Init to ensure that it does an automatic detect of the base address, though currently this setting defaults to 0 anyway.</p>
+<p class="faq-answer">In the case of manually calling SetBaseAddress, you need to determine the base address for the given PRX. You can do it upon loading the PRX via the following code: </p>
+<pre class="code-example">EA::Callstack::AddressRepLookupSet gLookupSet; 
+     
+sys_prx_id_t moduleId &nbsp;&nbsp;&nbsp;= sys_prx_load_module(prxFilePath, 0, NULL);
+uint64_t &nbsp;&nbsp;&nbsp;&nbsp;baseAddress = EA::Callstack::GetModuleBaseAddressByHandle(moduleId);
+   
+gLookupSet.AddDatabaseFile(prxMapFilePath, baseAddress);
+gLookupSet.GetAddressRepLookup(prxMapFilePath)-&gt;SetOption(kOptionOfflineLookup, 0);</pre>
+<p class="faq-answer"></p>
+<p class="faq-answer">Or you can do it later via the following code: </p>
+<pre class="code-example">EA::Callstack::AddressRepLookupSet gLookupSet; 
+     
+<span class="code-example-comment">// Recall that MapFile is an instance of IAddressRepLookup.</span>
+IAddressRepLookup* pLookup &nbsp;&nbsp;&nbsp;&nbsp;= gLookupSet.GetAddressRepLookup(prxMapFilePath);
+uint64_t &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baseAddress = EA::Callstack::GetModuleBaseAddress(prxMapFilePath);
+    
+pLookup-&gt;SetOption(kOptionOfflineLookup, 0);
+pLookup-&gt;SetBaseAddress(baseAddress);</pre>
+<p class="faq-answer"></p>
+<p class="faq-answer">One thing you can't successfully do is adjust callstack addresses before doing lookups as an alternative to calling SetBaseAddress. EACallstack has a GetModuleBaseAddressByAddress function which could be used to do this, but doing this won't work because the adjusted callstack addresses will all be low values and all of them will work for any MapFile (or DWARF3File) instance. You'd get a bunch of incorrect symbols returned. </p>
+<h4 class="faq-answer">Offline lookups </h4>
+<p class="faq-answer">By offline lookps, we mean address lookups being done on a PC for applications that are currently running or have previously run on another machine. The problem is that you need to call SetBaseAddress on any MapFiles or DWARF3Files (i.e. AddressRepLookups) associated with PRXs, but the application is usually no longer running. Unlike Windows DLLs, there's no mechanism on PS3 to force a PRX to load at some predetermined address, nor is there the concept of a default load address like there is with Windows DLLs. Nor can the callstack addresses generated by the app be pre-adjusted on the app's side while it runs, for the reason described in the paragraph above. </p>
+<p class="faq-answer">As a result, the only solution is for the runtime application to somehow publish the DLL base addresses so that the offline application (usually a PC app) can setup the AddressRepLookups with the correct base address. This situation exists not just for PRXs but also for Microsoft DLLs. The application can write this to a debug stream, a disk file, a network socket, etc. As of this writing EACallstack doesn't provide a built-in mechanism to do this, as such a thing tends to be fairly application-specific. The ExceptionHandler package does report the PRX base addresses in its exception reports, and EACallstack's PS3DumpFile reports PRX base addresses in its output.</p>
+<p class="faq-answer">ExceptionHandler report PRX base address output:</p>
+<pre class="code-example"><span class="outputPRE">[Modules]
+ &nbsp;&nbsp;base 0x10050000 size 0x00010430 entry 0x10050000 liblv2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /dev_flash/sys/external/liblv2.sprx
+ &nbsp;&nbsp;base 0x10080000 size 0x00002dc0 entry 0x10080000 cellSysmodule_Library /dev_flash/sys/external/libsysmodule.sprx
+ &nbsp;&nbsp;base 0x100a0000 size 0x0001b6b0 entry 0x100a0000 cellSysutil_Library&nbsp;&nbsp; /dev_flash/sys/external/libsysutil.sprx
+ &nbsp;&nbsp;.
+ &nbsp;&nbsp;. </span></pre>
+<p class="faq-answer">PS3DumpFile report PRX base address output:</p>
+<pre class="code-example"><span class="outputPRE">PRX data
+  liblv2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PRX ID: 0x23000000 Code base address: 0x00300000 Code size: 0x2000 Version: 257 Path: "/dev_flash/sys/external/liblv2.sprx" 
+  cellSysmodule_Library PRX ID: 0x23001000 Code base address: 0x00310000 Code size: 0x1600 Version: 257 Path: "/dev_flash/sys/external/libsysmodule.sprx" &nbsp;&nbsp;cellSysutil_Library &nbsp;&nbsp;PRX ID: 0x23002000 Code base address: 0x00320000 Code size: 0x2000 Version: 257 Path: "/dev_flash/sys/external/libsysutil.sprx"
+ &nbsp;.
+ &nbsp;.</span></pre>
+<p class="faq-answer">The application can print module info as it loads PRXs with something like the following: </p>
+<pre class="code-example">sys_prx_id_t moduleId &nbsp;&nbsp;&nbsp;= sys_prx_load_module(prxFilePath, 0, NULL);
+uint64_t &nbsp;&nbsp;&nbsp;&nbsp;baseAddress = EA::Callstack::GetModuleBaseAddressByHandle(moduleId);
+ 
+printf(&quot;PRX Load: \&quot;%s\&quot; 0x%08x\n&quot;, prxFilePath, (unsigned)baseAddress);</pre>
+<p class="faq-answer"></p>
+<p class="faq-answer">The application can print module info later during execution with the following:</p>
+<pre class="code-example">EA::Callstack::ModuleInfo moduleInfoArray[32];<span class="code-example-comment"> // Watch out that too many of these on the stack can exhaust stack memory.</span> 
+   
+size_t count = EA::Callstack::GetModuleInfo(moduleInfoArray, 32);
+ 
+for(size_t i = 0; i &lt; count; ++i) <span class="code-example-comment">// In practice we should call GetModuleInfo(NULL, 0) to get the required size. </span>
+{
+&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;PRX Load: \&quot;%s\&quot; 0x%08x\n&quot;, moduleInfoArray[i].mPath.c_str(), (unsigned)moduleInfoArray[i].mBaseAddress);
+} </pre>
+<p class="faq-answer">An application that does offline lookups for an app with PRXs would do something like the following: </p>
+<pre class="code-example">EA::Callstack::AddressRepLookupSet gLookupSet;
+PRXInfoArray gPRXInfoArray; <span class="code-example-comment">// This is an array filled in with the data printed by the offline application.</span> 
+     
+<span class="code-example-comment">// We iterate all the PRX Load entries from the application output. 
+</span>for(int i = 0; i &lt; gPRXInfoArray.size(); i++)
+{
+&nbsp;&nbsp;&nbsp;&nbsp;gLookupSet.AddDatabaseFile(gPRXInfoArray[i].mpMapFilePath, gPRXInfoArray[i].mBaseAddress);
+&nbsp;&nbsp;&nbsp;&nbsp;gLookupSet.GetAddressRepLookup(gPRXInfoArray[i].mpMapFilePath)-&gt;SetOption(EA::Callstack::kOptionOfflineLookup, 1);
+}<span class="outputPRE"> </span></pre>
+<p class="faq-question">Why isn't my XBox 360 callstack functionality working right?</p>
+<p class="faq-answer">The most common cause of this is that you are not defining EA_XBDM_ENABLED = 1 in your build. EA_XBDM_ENABLED is set to 1 by default in debug builds only. This is because final builds cannot use the xbdm library, and so EACallstack requires the user to explicitly enable xbdm in order to use it. </p>
+<p class="faq-question">Why is my XBox 360 callstack showing up in the debugger with no entries? </p>
+<p class="faq-answer">This is usually caused by the excessively large jump support Microsoft added to the compiler to make incremental linking work with big executables. Disable incremental linking and enable comdat folding and it goes away. Solution by Kevin Perry. </p>
+<p class="faq-question">I get crashes on Microsoft 64 bit platforms within RtlVirtualUnwind.</p>
+<p class="faq-answer">It turns out that using alloca somewhere in your callstack can sometimes cause RtlVirtualUnwind to crash. It's not clear if this is the fault of EACallstack (due to not providing a full context) or if it's truly a bug in RtlVirtualUnwind. Until some workaround is found within EACallstack, you can disable your alloca usage to work around this. </p>
+<p class="faq-question"></p>
+<p class="faq-question">The functions reported for the callstack seem senseless. </p>
+<p class="faq-answer">If GetCallstack returned what looks like reasonable addresses, but when translated to symbols seems senseless, there are two common causes:</p>
+<ul>
+  <li>Your .map/.pdb/.dsym etc. information is not consistent with the executable and/or DLLs run with it. </li>
+  <li>The base address of the module(s) is not being accounted for.</li>
+</ul>
+<p class="faq-answer">The first case above is straightforward, but the second case requires some explaining. Some of it is explained already above <a href="#PS3PRXs">in</a> <a href="#WindowsDLLs">two</a> DLL-related sections. </p>
+<p class="faq-answer"><span>/DYNAMICBASE:NO</span></p>
+<p class="faq-answer">&nbsp;</p>
+<p class="faq-answer">DLL (Dynamic Link Libraries) and libraries which are loaded at runtime instead of built-in at compile time. Since they are dynamically loaded, their code might be loaded into an arbitrary location in memory at runtime, though each DLL has a &quot;preferred&quot; load address which is used if nothing else is already at that location. Since the load address is determined at runtime, you can't know how to translate a callstack address into the function it refers to without knowing where in memory the DLL was loaded. EACallstack expects that when you register a symbol file (e.g. .pdb, .map) you supply the base address where the associated code (e.g. .exe, .xex) was loaded into memory. </p>
+<p class="faq-answer">While the code in a DLL can be loaded into an arbitrary location in memory at runtime, the symbol information in the .map/.pdb file stores addresses for symbols as if the DLL were loaded at the default &quot;preferred&quot; DLL base address. But at runtime a callstack address from the DLL will be based on where the DLL was loaded into memory. For example, a symbol in the .map file which is at address 0x00403000 could be at 0x00423000 at runtime if the DLL base address ends up being 0x00420000 instead of the default 0x00400000. </p>
+<p class="faq-answer">As a result of this, symbol databases for DLLs (e.g. EACallstack's MapFileMSVC or PDBFile) have a SetBaseAddress function which can be called in order to specify where the the DLL got located in memory. How do you tell what the base addresses are which you need to pass to SetBaseAddress? The answer to this depends on whether you are doing online lookups or offline lookups. </p>
+<p class="faq-answer">See the Online lookups and Offline lookups below in the PS3 PRX section for this. The situation for DLLs is almost identical to the situation for PRXs.</p>
+<p class="faq-answer">&nbsp;</p>
+<hr style="width: 100%; height: 2px;">End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

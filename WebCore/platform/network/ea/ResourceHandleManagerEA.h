@@ -38,7 +38,7 @@
 #include <EAWebKit/EAWebKit.h>
 #include <EAWebKit/EAWebKitTransport.h>
 #include <EAWebKit/EAWebKitClient.h>
-#include <internal/include/EAWebKitEASTLHelpers.h>
+#include <internal/include/EAWebkitEASTLHelpers.h>
 #include <EASTL/fixed_list.h>
 #include <EASTL/fixed_vector.h>
 #include "CookieManagerEA.h"

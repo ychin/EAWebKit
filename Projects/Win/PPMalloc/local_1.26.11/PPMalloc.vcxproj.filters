@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\doxygen">
+      <UniqueIdentifier>{51D5656C-3E1D-849C-3C43-F9B2E6DBF442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\images">
+      <UniqueIdentifier>{FCB077B3-5B50-83B8-EBDF-BDD4727B7E89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extras">
+      <UniqueIdentifier>{06303527-D7CF-D251-6221-E04A7928034D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\PPMalloc">
+      <UniqueIdentifier>{E2ED1E0A-3C15-177F-2678-CCF328087B87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\PPMalloc\internal">
+      <UniqueIdentifier>{6795BF18-2506-BE8B-FDD9-2992E83473D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\cmn">
+      <UniqueIdentifier>{3F66983D-C68A-B0B8-5868-DD46F143E4CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\pc">
+      <UniqueIdentifier>{C001EA03-1294-E5B2-35FB-0B57C3017D16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\Changes.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\ClassDocumentation.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\DetailedFeatureList.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\doxygen\ppmalloc.doxygen.config">
+      <Filter>doc\doxygen</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\FAQ.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\GeneralAllocator.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\images\SmallBlockAllocator.png">
+      <Filter>doc\images</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\NonLocalAllocator.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\ReadMe.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\ScratchpadAllocator.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\SmallBlockAllocator.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\SmallBlockAllocatorCalculator.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\SmallObjectAllocator.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\doc\UserGuide.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\PPMalloc.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\scripts\PPMalloc_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EAAllocInfo.cpp">
+      <Filter>extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EASmallBlockAllocator.cpp">
+      <Filter>extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EASmallBlockAllocatorPool.cpp">
+      <Filter>extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\CallStackCmn.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\DefaultCoreAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAAllocationRecorder.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAFixedAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAGeneralAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAGeneralAllocatorDebug.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAHandleAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EANonLocalAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAScratchpadAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EASmallObjectAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\EAStackAllocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\MutexCmn.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\setallocator.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\shared.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\cmn\version.cpp">
+      <Filter>source\cmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\source\pc\EAGeneralAllocatorDebugWin32.cpp">
+      <Filter>source\pc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EAAllocInfo.h">
+      <Filter>extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EAGeneralAllocatorSTL.h">
+      <Filter>extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EASmallBlockAllocator.h">
+      <Filter>extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EASmallBlockAllocatorPool.h">
+      <Filter>extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\extras\EASystemAllocator.h">
+      <Filter>extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAAllocationRecorder.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAFixedAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAGeneralAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAGeneralAllocatorDebug.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAGeneralAllocatorSTL.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAHandleAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EANonLocalAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAScratchpadAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EASmallObjectAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\EAStackAllocator.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\internal\callstack.h">
+      <Filter>include\PPMalloc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\internal\config.h">
+      <Filter>include\PPMalloc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\internal\DefaultCoreAllocator.h">
+      <Filter>include\PPMalloc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\internal\dllinfo.h">
+      <Filter>include\PPMalloc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\internal\mutex.h">
+      <Filter>include\PPMalloc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\internal\shared.h">
+      <Filter>include\PPMalloc\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\PPMalloc\local_1.26.11\include\PPMalloc\version.h">
+      <Filter>include\PPMalloc</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

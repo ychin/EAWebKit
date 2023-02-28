@@ -62,7 +62,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SecurityOrigin.h"
 #include "Page.h"
 #include "PageGroup.h"
-#include "webpage_p.h"
+#include "WebPage_p.h"
 #include "UserStyleSheet.h"
 #include "UserStyleSheetTypes.h"
 #include "UserContentController.h"
@@ -1582,7 +1582,7 @@ void ClearSurfaceToColor(ISurface *surface, WebCore::Color color)
 } // WebKit
 } // EA
 
-#if !defined(EA_PLATFORM_MICROSOFT)
+#if !defined(EA_PLATFORM_MICROSOFT) && !defined(EA_PLATFORM_STADIA)
 extern "C" char* getenv(const char* param)
 {
     (void)param;

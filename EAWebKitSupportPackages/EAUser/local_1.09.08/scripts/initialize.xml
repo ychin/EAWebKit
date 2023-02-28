@@ -1,0 +1,126 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<property name="EAUserBuildType" value="Library"/>
+	<property name="EAUserBuildType" value="DynamicLibrary" if="${Dll??false}" />
+	<property name="EAUserBuildType" value="WinRTCppLibrary" if="@{OptionSetExists('WinRTCppLibrary')}"/>
+	<property name="EAUserBuildType" value="WinRTRuntimeComponent" if="@{OptionSetExists('WinRTCppLibrary')} and ${Dll??false}"/>
+
+	<property name="package.EAUser.use-origin" value="${package.EAUser.origin-enabled??false} and (${config-system} == 'pc64' or ${config-system} == 'pc')" />
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EAUser.libs">
+			<includes name="${package.EAUser.builddir}/${config}/lib/${lib-prefix}EAUser${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<!-- Determines which platform dir to use based on our config. We default to null if the config isn't supported by the package. -->
+	<property name="config-folder-name" value="${config-system}"/>
+	<property name="config-folder-name" value="pc" if="${config-system} == pc or ${config-system} == 'pc64'"/>
+	<property name="config-folder-name" value="gdk" if="${gdk.enabled??false}"/>
+	<property name="config-folder-name" value="sony" if="${config-system} == kettle"/>
+	<property name="config-folder-name" value="${config-os??unknown}" unless="@{DirectoryExists('${package.EAUser.dir}/include/${config-folder-name}')}"/>
+	<property name="config-folder-name" value="null" unless="@{DirectoryExists('${package.EAUser.dir}/include/${config-folder-name}')}"/>
+
+	<property name="package.EAUser.includedirs">
+		${package.EAUser.dir}/include
+		${package.EAUser.dir}/include/${config-folder-name}
+	</property>
+
+	<property name="package.EAUser.includedirs" if="${config-system} == kettle">
+		${property.value}
+		${package.EAUser.dir}/include/kettle
+	</property>
+
+	<property name="package.EAUser.includedirs" if="${config-system} == iphone">
+		${property.value}
+		${package.EAUser.dir}/include/null
+	</property>
+
+	<property name="runtime.EAUser.defines" if="${package.EAUser.use-origin??false}">
+		${property.value}
+		EAUSER_ORIGIN_ENABLED
+	</property>
+
+	<do if="${gdk.enabled??false}">
+		<choose>
+			<do if="'@{OptionSetGetValue('config-options-common', 'usedebuglibs')}' == 'on'">
+				<property name="eauser-gdk-config" value="Debug"/>
+			</do>
+			<do>
+				<property name="eauser-gdk-config" value="Release"/>
+			</do>
+		</choose>
+		<choose>
+			<do if="${config-vs-version} gte 15.0 and ${config-vs-version} lte 15.9">
+				<property name="eauser-gdk-vs-version" value="141"/>
+			</do>
+			<do if="${config-vs-version} gte 16.0">
+				<property name="eauser-gdk-vs-version" value="142"/>
+			</do>
+			<do>
+				<fail message="Unknown version of visual studio: ${config-vs-version}" />
+			</do>
+		</choose>
+	</do>
+	<publicdata packagename="EAUser">
+		<runtime>
+			<module name="IEAUser" buildtype="${EAUserBuildType}">
+				<includedirs>
+					${package.EAUser.dir}/include
+				</includedirs>
+				<publicdependencies>
+					EAController/IEAController
+				</publicdependencies>
+			</module>
+			<module name="EAUser" buildtype="${EAUserBuildType}">
+				<includedirs>
+					${package.EAUser.includedirs}
+				</includedirs>
+				<publicdependencies>
+					<do if="${package.EAUser.use-origin??false}">
+						OriginSDK
+					</do>
+					EAUser/IEAUser
+					EAController
+					<do if="${gdk.enabled??false}">
+						GDK/GDK.extension.Xbox.Services.API.C
+					</do>
+				</publicdependencies>
+				<defines if="${package.EAUser.use-origin??false}">
+					EAUSER_ORIGIN_ENABLED
+				</defines>
+				<libs-external>
+					<do if="${config-system} == 'kettle'">
+						<includes name="${package.kettlesdk.libdir}\libSceUserService_stub_weak.a"/>
+						<includes name="${package.kettlesdk.libdir}\libSceNpCommon_stub_weak.a"/>
+						<includes name="${package.kettlesdk.libdir}\libSceNpManager_stub_weak.a"/>
+						<includes name="${package.kettlesdk.libdir}\libSceNpToolkit2_stub_weak.a"/>
+					</do>
+					<do if="${config-system} == 'ps5'">
+						<includes name="${package.ps5sdk.libdir}\libSceSysmodule_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceJson2_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceNpCppWebApi_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceNpManager_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceNet_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceSsl_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceHttp2_stub_weak.a"/>
+						<includes name="${package.ps5sdk.libdir}\libSceNpWebApi2_stub_weak.a"/>
+					</do>
+					<do if="${gdk.enabled??false}">
+						<includes name="crypt32.lib" asis="true"/>
+					</do>
+				</libs-external>
+				<contentfiles>
+					<includes if="'${config-system}' == 'kettle'" basedir="${package.kettlesdk.sdkdir}/target" name="sce_module/libSceNpToolkit2.prx" optionset="copy-always" />
+					<includes if="'${config-system}' == 'balin'" basedir="${package.balinsdk.sdkdir}/target" name="sce_module/libSceNpCppWebApi.prx" optionset="copy-always"/>
+					<includes if="'${config-system}' == 'ps5'" basedir="${package.ps5sdk.sdkdir}/target" name="sce_module/libSceNpCppWebApi.prx" optionset="copy-always"/>
+				</contentfiles>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EAUserTest"/>
+		</tests>
+	</publicdata>
+</project>
+

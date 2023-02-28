@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<!-- options in the the config.targetoverrides optionset must be changed _before_ the package target  -->
+	<optionset name="config.targetoverrides">
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<package name="EAThread" initializeself="true" />
+
+
+	<!-- Create extra build types which simply add some additional compiler arguments -->
+	<optionset name="config-options-library-extra" fromoptionset="config-options-library">
+		<option name="buildset.name" value="LibraryExtra" />
+		<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS??0} == 0" />
+		<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS??0} == 1" />
+	</optionset>
+	<task name="GenerateBuildOptionset" configsetname="config-options-library-extra" />
+	<optionset name="LibraryExtra"/>
+	<optionset name="CFiles" fromoptionset="CLibrary">
+		<option name="bulkbuild" value="off"/>
+	</optionset>
+
+	<!-- Required to access the 7th Core on XB1 -->
+	<optionset name="test.EAThreadTest.appxmanifestoptions">
+		<option name="extension_options" value="extended-resource-config"/>
+		<option name="extended-resource-config">
+			&lt;mx:Extension Category="xbox.system.resources"&gt;
+			&lt;mx:XboxSystemResources resourceConfiguration="extended"/&gt;
+			&lt;/mx:Extension&gt;
+		</option>
+	</optionset>
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+	<runtime>
+		<Library name="EAThread">
+			<buildtype name="LibraryExtra" unless="${Dll??false}" />
+			<buildtype name="DynamicLibrary" if="${Dll??false}" />
+			<dependencies>
+				<use>
+					EABase
+					<do if="${EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY??0}=='1'">
+						EAStdC  <!-- todo:  fix this.  this is problematic when doing a clean build b/c the .lib is not generated.  -->
+					</do>
+				</use>
+				<build>
+				</build>
+			</dependencies>
+			<includedirs>
+				${package.dir}/include
+				<do if="${config-system} == android">
+					${package.AndroidNDK.appdir}/sources/android
+				</do>
+			</includedirs>
+			<sourcefiles>
+				<includes name="source/*.cpp" />
+				<includes name="${package.AndroidNDK.appdir}/sources/android/cpufeatures/cpu-features.c" optionset="CFiles" if="${config-system}==android"/>
+			</sourcefiles>
+			<do if="${config-system} == android">
+				<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} lt 0">
+					<!-- FW8 requires java libraries be separate modules with gradle files -->
+					<java>
+						<sourcefiles if="${config-system} == android">
+							<includes name="source/android/java/EAThread.java" />
+						</sourcefiles>
+					</java>
+				</do>
+				<do if="@{StrCompareVersions('${nant.version}', '8.0.0')} gte 0">
+					<android-gradle gradle-directory="source/android">
+						<javasourcefiles basedir="${package.dir}/source/android">
+							<includes name="**.java" />
+						</javasourcefiles>
+					</android-gradle>
+				</do>
+			</do>
+			<bulkbuild enable="true" />
+			<config>
+				<defines>
+					<do if="@{PropertyExists('EAThread.EATHREAD_MANUAL_FUTEX_ENABLED')}">
+						EATHREAD_XTL_H_ENABLED=${EAThread.EATHREAD_XTL_H_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAThread.EATHREAD_MANUAL_FUTEX_ENABLED')}">
+						EATHREAD_MANUAL_FUTEX_ENABLED=${EAThread.EATHREAD_MANUAL_FUTEX_ENABLED}
+					</do>
+					<do if="@{PropertyExists('EAThread.EATHREAD_TLS_COUNT')}">
+						EATHREAD_TLS_COUNT=${EAThread.EATHREAD_TLS_COUNT}
+					</do>
+					<do if="@{PropertyExists('EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY')}">
+						EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY=${EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY}
+					</do>
+					<do if="${Dll??false} and ${config-compiler} == 'vc'">
+						EATHREADLIB_API=__declspec(dllexport)
+					</do>
+					<do if="@{PropertyExists('eaconfig.disable_framepointer_optimization')}">
+						EATHREAD_WIN32_FRAME_POINTER_OPTIMIZATION_DISABLED
+					</do>
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4339        <!-- disable warning: "use of undefined type detected in CLR meta-data - may lead to a runtime exception" -->
+						-wd4985        <!-- disable warning: "attributes not present on previous declaration." -->
+					</do>
+				</warningsuppression>
+			</config>
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="source/**.cpp"/>
+					<includes name="${package.dir}/doc/**.html" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>
+
+	<!-- ***************************** -->
+	<!-- EAThreadTest configuration    -->
+	<!-- ***************************** -->
+	<tests>
+		<do if="${EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY??0}=='0'">
+			<Program name="EAThreadTest">
+				<copylocal value="true" />
+				<dependencies>
+					<use>
+						EABase
+					</use>
+					<build copylocal="true">
+						coreallocator
+						EAAssert
+						EAMain
+						EAStdC
+						EASTL
+						EATest
+						EAThread/runtime/EAThread
+						MemoryMan
+						PPMalloc
+					</build>
+				</dependencies>
+				<includedirs>
+					${package.dir}/include
+					${package.dir}/test/thread/source
+				</includedirs>
+				<config>
+					<defines>
+						EA_MEMORY_LEAK_TRACE_ENABLED=1
+						<do unless="@{OptionSetGetValue('config-options-common', 'debugflags')} == on">
+							EAT_ASSERT_ENABLED=${EAT_ASSERT_ENABLED??0}
+						</do>
+						<do if="@{PropertyExists('EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY')}">
+							EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY=${EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY}
+						</do>
+					</defines>
+				</config>
+				<sourcefiles>
+					<includes name="test/thread/source/*.cpp" />
+				</sourcefiles>
+			</Program>
+
+
+			<!-- ************************************** -->
+			<!-- EAThreadTestAllocator configuration    -->
+			<!-- ************************************** -->
+			<Program name="EAThreadTestAllocator" if="${EAThread.BuildExtraTests??false}">
+				<copylocal value="true" />
+				<dependencies>
+					<use>
+						EABase
+					</use>
+					<build copylocal="true">
+						coreallocator
+						EAAssert
+						EAMain
+						EAStdC
+						EASTL
+						EATest
+						MemoryMan
+						PPMalloc
+					</build>
+				</dependencies>
+				<includedirs>
+					${package.dir}/include
+					${package.dir}/test/thread/source
+				</includedirs>
+				<sourcefiles>
+					<includes name="test/thread/source/*.cpp" />
+				</sourcefiles>
+				<config>
+					<defines>
+						EATHREAD_TEST_ALLOCATOR=1
+					</defines>
+				</config>
+			</Program>
+
+			<!-- ************************************** -->
+			<!-- EAThreadTestInterprocess configuration -->
+			<!-- ************************************** -->
+			<Program name="EAThreadTestInterprocess" if="${EAThread.BuildExtraTests??false}">
+				<copylocal value="true"/>
+				<dependencies>
+					<use>
+						EABase
+					</use>
+					<build copylocal="true">
+						coreallocator
+						EAAssert
+						EAMain
+						EAStdC
+						EASTL
+						EATest
+						MemoryMan
+						PPMalloc
+					</build>
+				</dependencies>
+				<includedirs>
+					${package.dir}/include
+					${package.dir}/test/interprocess_test/source
+					${package.dir}/test/thread/source
+				</includedirs>
+				<sourcefiles>
+					<includes name="test/interprocess_test/source/*.cpp" />
+				</sourcefiles>
+				<config>
+					<defines>
+						EATHREAD_TEST_ALLOCATOR=1
+					</defines>
+				</config>
+			</Program>
+		</do>
+
+		<!-- ************************************** -->
+		<!-- EAThreadTestDllSafety configuration    -->
+		<!-- ************************************** -->
+		<do if="${EAThread.EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY??0}=='1'">
+			<DynamicLibrary name="EAThreadTestDllSafetyMod1">
+				<dependencies>
+					<auto>
+						coreallocator
+						EAAssert
+						EABase
+						EAMain
+						EAStdC
+						EASTL
+						EATest
+						EAThread/runtime/EAThread
+						MemoryMan
+						PPMalloc
+					</auto>
+				</dependencies>
+				<sourcefiles>
+					<includes name="test/dllsafety/source/*.cpp" />
+				</sourcefiles>
+				<config>
+					<defines>
+						EATEST_API=
+						EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY=1
+						EATHREAD_TEST_ALLOCATOR=1
+						EATHREADLIB_API=
+					</defines>
+				</config>
+			</DynamicLibrary>
+
+			<DynamicLibrary name="EAThreadTestDllSafetyMod2">
+				<dependencies>
+					<auto>
+						coreallocator
+						EAAssert
+						EABase
+						EAMain
+						EAStdC
+						EASTL
+						EATest
+						EAThread/runtime/EAThread
+						MemoryMan
+						PPMalloc
+					</auto>
+				</dependencies>
+				<sourcefiles>
+					<includes name="test/dllsafety/source/*.cpp" />
+				</sourcefiles>
+				<config>
+					<defines>
+						EATEST_API=
+						EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY=1
+						EATHREAD_TEST_ALLOCATOR=1
+						EATHREADLIB_API=
+					</defines>
+				</config>
+			</DynamicLibrary>
+
+			<Program name="EAThreadTestDllSafety">
+				<dependencies>
+					<use>
+						EABase
+					</use>
+					<build copylocal="true">
+						coreallocator
+						EAAssert
+						EAMain
+						EAStdC
+						EASTL
+						EATest
+						EAThread/test/EAThreadTestDllSafetyMod1
+						EAThread/test/EAThreadTestDllSafetyMod2
+						MemoryMan
+						PPMalloc
+					</build>
+				</dependencies>
+				<includedirs>
+					${package.dir}/include
+				</includedirs>
+				<sourcefiles>
+					<includes name="test/dllsafety/source/*.cpp" />
+				</sourcefiles>
+				<config>
+					<copylocal value="true" />
+					<defines>
+						EATHREAD_GLOBAL_VARIABLE_DLL_SAFETY=1
+						EATHREAD_TEST_ALLOCATOR=1
+					</defines>
+				</config>
+			</Program>
+		</do>
+	</tests>
+
+
+	<!-- ********************* -->
+	<!-- Documentation         -->
+	<!-- ********************* -->
+	<property name="doc.type" value="Doxygen" />
+	<fileset name="package.doxygenfiles">
+		<includes name="${package.dir}/doc/doxygen/eathread.doxygen.config" />
+	</fileset>
+
+</project>

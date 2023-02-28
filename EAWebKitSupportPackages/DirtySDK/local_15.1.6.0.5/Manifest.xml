@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<package>
+    <manifestVersion>2</manifestVersion>
+    <packageName>DirtySDK</packageName>
+    <versionName>15.1.6.0.5</versionName>
+    <contactName>DirtySock Team</contactName>               <!-- Author name -->
+    <contactEmail>GS-DirtySockSupport@ea.com</contactEmail> <!-- Contact email address -->
+    <owningTeam>GOS</owningTeam>
+    <summary>                                               <!-- Library description -->
+        <p> DirtySock is a cross-platform client network layer currently available on Android, iOS,
+            Linux, OSX, PC, PS4, Windows Phone 8, and Xbox One platforms.  DirtySock
+            is intended primarily for shipping titles. DirtySock supplies peer-peer networking with
+            reliable UDP, client/server protocols including Aries, HTTP, and SSL, and much more.
+            Please see the included documentation for more information.
+        </p>
+    </summary>
+    <changes>
+        <p>
+            See the included changelog.txt file for details on changes from previous versions.
+        </p>
+    </changes>
+    <status>Official</status>
+    <license>EA Proprietary (Internal Use Only)</license>
+    <homePageUrl>https://developer.ea.com/display/dirtysock/DirtySock+Customer+Portal</homePageUrl>
+    <documentationUrl>https://docs.developer.ea.com/gos_docs/dirtysdk-latest/15.1.x/doc/pc</documentationUrl>
+    <frameworkVersion>2</frameworkVersion>                  <!-- Buildable Framework 2 package -->
+    <buildable>true</buildable>
+    <community>Please refer to the release notes on the EATech site for full information</community>
+    <tags>framework2, online, sdk</tags>
+    <relationship>
+        <builds>
+            <build name="solution" supported="true" />
+            <build name="nant" supported="true" targets="build" />
+        </builds>
+        <platforms>
+            <platform name="android" build="Supported" test="NotSupported" />
+            <platform name="iphone" build="Supported" test="NotSupported" />
+            <platform name="iphonesim" build="Supported" test="NotSupported" />
+            <platform name="pc" build="Supported" test="NotSupported" />
+            <platform name="pc64" build="Supported" test="NotSupported" />
+            <platform name="ps4" build="Supported" test="NotSupported" />
+            <platform name="xboxone" build="Supported" test="NotSupported" />
+            <platform name="unix" build="Supported" test="NotSupported" />
+            <platform name="unix64" build="Supported" test="NotSupported" />
+        </platforms>
+    </relationship>
+</package>

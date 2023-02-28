@@ -284,7 +284,7 @@ Use this file to define ENABLE() macros only. Do not use this file to define USE
 
 /* JIT off for now in x86_64 + MSVC */
 
-#if defined(EA_PLATFORM_CONSOLE)
+#if defined(EA_PLATFORM_CONSOLE) || defined (EA_PLATFORM_STADIA)
 #define ENABLE_JIT 0
 #define ENABLE_DFG_JIT 0
 #define ENABLE_LLINT_C_LOOP 1

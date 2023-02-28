@@ -13,9 +13,9 @@
   <property name="ConfigIsDebug"  value="false"/>
   <property name="ConfigIsOpt"    value="false"/>
   <property name="ConfigIsFinal"  value="false"/>
-  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
-  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
-  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', 'debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', 'opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', 'final')}  != -1"/>
 
   <property name="OsIsWin"      value="false"/>
   <property name="OsIsOSX"      value="false"/>
@@ -23,6 +23,7 @@
   <property name="OsIsXbsx"     value="false"/>
   <property name="OsIsKettle"   value="false"/>
   <property name="OsIsPS5"      value="false"/>
+  <property name="OsIsStadia"   value="false"/>
   
   <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
   <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
@@ -30,6 +31,7 @@
   <property name="OsIsXbsx"     value="true" if="${config-system} == xbsx"/>
   <property name="OsIsKettle"   value="true" if="${config-system} == kettle"/>
   <property name="OsIsPS5"      value="true" if="${config-system} == ps5"/>
+  <property name="OsIsStadia"   value="true" if="${config-system} == stadia"/>
 
   <optionset name="customized-config-options-library" fromoptionset="config-options-library-c">
     <option name="buildset.name" value="CustomizedLibraryC"/>
@@ -67,13 +69,14 @@
     SQLITE_DEBUG
   </property>
   -->
-  <do if="${OsIsCapilano} or ${OsIsKettle} or ${OsIsPS5} or ${OsIsWin} or ${OsIsOSX}">
+  <do if="${OsIsCapilano} or ${OsIsKettle} or ${OsIsPS5} or ${OsIsWin} or ${OsIsOSX} or ${OsIsStadia}">
     <property name="sqlite.platform.suffix" value="CAPILANO"  if="${OsIsCapilano}"/>
     <property name="sqlite.platform.suffix" value="XBSX"      if="${OsIsXbsx}"/>
     <property name="sqlite.platform.suffix" value="KETTLE"    if="${OsIsKettle}"/>
     <property name="sqlite.platform.suffix" value="PS5"       if="${OsIsPS5}"/>
     <property name="sqlite.platform.suffix" value="MYWIN"     if="${OsIsWin}"/>
     <property name="sqlite.platform.suffix" value="MYOSX"     if="${OsIsOSX}"/>
+    <property name="sqlite.platform.suffix" value="STADIA"    if="${OsIsStadia}"/>
 
     <property name="runtime.defines">
       ${property.value}

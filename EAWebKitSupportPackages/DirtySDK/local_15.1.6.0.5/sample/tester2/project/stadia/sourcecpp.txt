@@ -1,0 +1,2 @@
+sample/tester2/source/unix/t2new.cpp
+sample/tester2/source/stadia/t2host.cpp

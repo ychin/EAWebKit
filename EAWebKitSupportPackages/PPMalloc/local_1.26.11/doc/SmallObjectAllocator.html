@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>SmallObjectAllocator</title>
+<style type="text/css">
+<!--
+.smallCode {
+	font-family: "Courier New", Courier, mono;
+	font-size: x-small;
+}
+.Code {
+	font-family: "Courier New", Courier, mono;
+	font-size: small;
+}
+.style3 {color: #999999}
+-->
+</style>
+</head>
+
+<body>
+<h1>SmallObjectAllocator</h1>
+<p>The design of SmallObjectAllocator borrows from a number of small block allocators around EA, such as DynamicSOA, CMemPool, and LionSmallAlloc. Basically, it is a collection of fixed-size pools. It attempts to strike a balance between three considerations: speed, fragmentation, and features. These are briefly discussed below. </p>
+<h3>Speed</h3>
+<p>SmallObjectAllocator attempts to optimize the primary allocation pathway to be as fast as possible for its circumstances. The result is that most Malloc operations will be very fast. The code path that the large majority of allocations take is shown below. There are only simple accesses to local memory, very basic math, and only 'positive' branches. It's quite fast for the features and fragmentation benefits that it has and operates in O(1) with respect to heap size. You could likely come up with something faster if you hard-coded it to a particular set of circumstances and removed some features. </p>
+<blockquote>
+  <p class="smallCode">void* SmallObjectAllocator::Malloc(size_t size)<br>
+    {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if(size &lt;= mMaxMallocSize)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size_t&nbsp;&nbsp;&nbsp;&nbsp; poolIndex &nbsp;= mPoolIndexTable[(size - 1) / 8];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pool* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pPool &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= mPoolArray + poolIndex;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CoreBlock* pCoreBlock = pPool-&gt;mpCoreBlockCurrent;<br>
+  <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(pCoreBlock)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chunk* const pChunk = pCoreBlock-&gt;mpChunkList;<br>
+    <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pCoreBlock-&gt;mnFreeChunkCount--;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pCoreBlock-&gt;mpChunkList = pChunk-&gt;mpNext;<br>
+    <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(pCoreBlock-&gt;mpChunkList)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return pChunk;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;. . .<br>
+        }
+  </p>
+</blockquote>
+<p>The Free pathway is very fast (also O(1)) for the case that the user provides page-aligned/sized pool blocks, and is slower (but probably not terribly so) for the case where you provide arbitrarily aligned/sized pool blocks. Providing the allocation size to Free allows it to operate in more or less O(1) as well. SmallObjectAllocator does not do the technique whereby the allocated size is 'stashed' in the bytes behind the allocated pointer. </p>
+<p>Feel free to compare the speed of SmallObjectAllocator to existing small block allocators available to you and comment on your findings. </p>
+<h3>Fragmentation</h3>
+<p>SmallObjectAllocator follows the same approach that Tiburon's CMemPool small block allocator does regarding block allocation: blocks are allocated and freed in a way that allows for pool reclamation and better packing. It does this by allocating from the most dense pool source freeing back to the pool source instead of to an anonymous shared pool. This results in a few extra lines of code in Malloc and Free but potentially significant benefits in terms of reduced fragmentation. </p>
+<h3>Features</h3>
+<p>SmallObjectAllocator has a subset of the features found in PPMalloc GeneralAllocator and NonLocalAllocator. The subset of features that it does have are implemented very similarly and often identically to the equivalent features in the other allocators. </p>
+<ul>
+  <li>User can specify the allocation size of pools and the number of pools. </li>
+  <li>Pools can grow if their core memory becomes exhausted.</li>
+  <li>Pools can optionally shrink if their core memory is freed. </li>
+  <li>User can specify the max amount of memory that can be wasted in an allocation while using a larger pool to supply an allocation instead of growing the existing pool.</li>
+  <li>Provides the following allocation functions:
+    <ul class="Code">
+      <li>Malloc(size_t size)</li>
+      <li>MallocAligned(size_t size, size_t align)</li>
+      <li>Realloc(void* p, size_t size, size_t sizeOld = 0)</li>
+      <li>Free(void* p, size_t size = 0)</li>
+    </ul>
+  </li>
+  <li>Provides the following utility/debug functionality in all builds:
+    <ul class="Code">
+      <li>ValidateAddress(void* p) </li>
+      <li>ValidateHeap()</li>
+      <li>GetUsableSize(void* p) </li>
+    </ul>
+  </li>
+  <li>Provides the following optional debug functionality in debug builds:
+    <ul>
+      <li>Double free detection.</li>
+      <li>Stale pointer use detection through free memory fills.</li>
+      <li>Extra heap validation.</li>
+      <li>Leak detection. </li>
+    </ul>
+  </li>
+  <li>Has heap reporting functionality similar to GeneralAllocator and NonLocalAllocator:
+    <ul>
+      <li class="Code">ReportBegin(), ReportNext(), ReportEnd()</li>
+      <li class="Code">TraceAllocatedMemory()</li>
+    </ul>
+  </li>
+</ul>
+<h3>Future Features</h3>
+<p>A few features that are currently missing but can be added if there is interest include:</p>
+<ul>
+  <li>Guard fills for allocated memory in debug builds. This allows for the detection of overruns of allocated memory. </li>
+  <li>High water mark tracking for pools. This allows for pool size tuning.</li>
+  <li>Allocation hooks. This allows the user to listen in on the allocation activity. </li>
+</ul>
+<h3>Example Usage</h3>
+<p>The following demonstrates a minimum usage of SmallObjectAllocator.</p>
+<blockquote>
+  <p> <span class="Code"><span class="style3">void* AllocFunction(SmallObjectAllocator*, size_t nSize, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size_t nAlignment, size_t nAlignmentOffset, void*)<br>
+  {<br>
+&nbsp;&nbsp;&nbsp;  return pGeneralAllocator->MallocAligned(nSize, nAlignment, nAlignmentOffset);<br>
+}<br>
+<br>
+void FreeFunction(SmallObjectAllocator*, void* p, void*)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pGeneralAllocator->Free(p);<br>
+}</span><br>
+<br>
+SmallObjectAllocator soa(SmallObjectAllocator::Parameters(), AllocFunction, FreeFunction, NULL);<br>
+<br>
+void* p = soa.Malloc(17); <br>
+soa.Free(p);</span></p>
+</blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

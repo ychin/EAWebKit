@@ -39,6 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <EAWebKit/EAWebKitConfig.h>
 #include <EAWebKit/EAWebKitSystem.h>
 #include <EAWebKit/EAWebKitDll.h>
+
 namespace EA
 {
 namespace WebKit

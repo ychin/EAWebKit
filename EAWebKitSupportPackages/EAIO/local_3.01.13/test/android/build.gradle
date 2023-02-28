@@ -1,0 +1,107 @@
+apply plugin: 'com.android.application'
+
+buildDir = framework_build_dir
+allprojects
+{
+	repositories {
+		maven { url "https://jitpack.io" }
+	}
+}
+
+
+android
+{
+	compileSdkVersion framework_compile_sdk_version
+	buildToolsVersion framework_build_tools_version
+	defaultConfig {
+		minSdkVersion framework_min_sdk_version
+	}
+
+	applicationVariants.all {
+		// this grossness is because of some mismatches between what Tegra expects
+		// gradle to output and what it actually outputs at current plugin versions,
+		// need to clean this up so it doesn't leak into user files like this
+		variant -> variant.outputs.all {
+			outputFileName = "../" + outputFileName
+		}
+	}
+
+	sourceSets.main {
+		jniLibs.srcDirs = nsight_tegra_jni_libs_dirs
+		assets.srcDirs += [
+			'assets/'
+		]
+	}
+
+	buildTypes {
+		'android-arm64-clang-debug' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-arm64-clang-debug-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-arm64-clang-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+
+		'android-arm-clang-debug' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-arm-clang-debug-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-arm-clang-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		
+		'android-x86-clang-debug' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-x86-clang-debug-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-x86-clang-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		
+		'android-x64-clang-debug' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-x64-clang-debug-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+		'android-x64-clang-opt' {
+			initWith(buildTypes.debug)
+			debuggable true
+			matchingFallbacks = ['debug']
+		}
+	}
+}
+
+dependencies
+{
+	implementation project(':EAIOJNI')
+	implementation project(':EAThreadJNI')
+}

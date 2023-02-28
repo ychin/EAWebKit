@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TextPopupEA_h
 #define TextPopupEA_h
 
-#include "font.h"
+#include "Font.h"
 #include "Timer.h"
 
 namespace EA

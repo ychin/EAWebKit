@@ -84,7 +84,8 @@ extern "C" {
 @typedef JSChar
 @abstract A Unicode character.
 */
-    typedef unsigned short JSChar;
+    //typedef unsigned short JSChar;
+    typedef char16_t JSChar;
 #else
     typedef char16_t JSChar;
 #endif

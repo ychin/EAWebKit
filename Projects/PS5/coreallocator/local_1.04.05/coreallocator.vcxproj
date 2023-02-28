@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{84809069-50FF-302B-BA7A-19700854AE26}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>coreallocator</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\build\coreallocator\</OutDir>
+    <IntDir>ps5-clang-debug\build\coreallocator\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\coreallocator\v.tlog\</TLogLocation>
+    <TargetName>coreallocator</TargetName>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\build\coreallocator\</OutDir>
+    <IntDir>ps5-clang-opt\build\coreallocator\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\coreallocator\v.tlog\</TLogLocation>
+    <TargetName>coreallocator</TargetName>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icoreallocator.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icoreallocator_interface.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icoreallocatormacros.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\icorealloclistener.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\version.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\coreallocator\local_1.04.05\include\coreallocator\detail\macro_impl.h" />
+  </ItemGroup>
+  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

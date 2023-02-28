@@ -33,9 +33,8 @@
 #include "WebPage.h"
 #include "Frame.h"
 #include "WebFrame.h"
-#include "webframe_p.h"
+#include "WebFrame_p.h"
 #include "Page.h"
-
 
 #include <internal/include/EAWebKit_p.h>
 

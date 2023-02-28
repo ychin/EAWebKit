@@ -1,0 +1,106 @@
+<project>
+    <masterversions>
+        <package name="AndroidEmulator"                 version="1.18.00"                       />
+        <package name="AndroidSDK"                      version="100.00.00-pr1"                 />
+        <package name="AndroidAPI"                      version="28"                            />
+        <package name="AndroidBuildTools"               version="29.0.2"                        />
+        <package name="AndroidPlatformTools"            version="28"                            />
+        <package name="AndroidNDK"                      version="15.2.4203891"                  />
+        <package name="AndroidTools"                    version="26.1.1"                        />
+        <package name="ApacheAnt"                       version="1.9.7"                         />
+        <package name="GradleWrapper"                   version="1.00.00-pr1"                   />
+        <package name="CapilanoSDK"                     version="180713-proxy" >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="180713" />
+            </exception>
+        </package>
+
+        <!-- Nintendo Switch -->
+        <package name="nx_config"                       version="1.00.05" />
+        <package name="nxsdk"                           version="9.0.0" />
+        <package name="nx_vsi"                          version="9.0.6.27951" />
+        
+        <!-- PS4 -->
+        <package name="kettlesdk"                       version="7.508.021-proxy" >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="7.508.021" />
+            </exception>
+        </package>
+        <package name="ProDG_VSI"                       version="7.50.0.5-proxy" >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="7.50.0.5" />
+            </exception>
+        </package>
+        <package name="PlayStation4AudioInEx"           version="7.008.001" />
+        <package name="PlayStation4AppContentEx"        version="7.008.001" />        
+
+        <!-- Balin -->
+        <package name="ps5sdk"                          version="1.00.00.40-proxy"            />
+        <package name="Ps5NpEntitlementAccessEx"        version="1.00.00.26"                    />
+        <package name="Ps5VSI"                          version="1.00.0.7-1-proxy"              />
+
+        <!-- Gemini -->
+        <package name="GDK"                             version="200602-proxy"                  />
+
+        <package name="Doxygen"                         version="1.8.14-1"                      />
+        <package name="GraphViz"                        version="2.38.0"                        />
+        <package name="jdk"                             version="azul-8.0.222-pc64"             />  <!-- for android build -->
+        <package name="nantToVSTools"                   version="3.19.09"                       />
+        <package name="Speex"                           version="1.2rc1-8"                      />
+        <package name="vstomaketools"                   version="2.06.09"                       />
+        <package name="WindowsSDK"                      version="10.0.19041-proxy"               >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="10.0.19041"                    />
+            </exception>
+        </package>
+
+        <package name="coreallocator"                   version="1.04.02"                       />
+        <package name="EAAssert"                        version="1.05.07"                       />
+        <package name="EABase"                          version="2.09.13"                       /> 
+        <package name="EAController"                    version="1.09.01"                       />
+        <package name="EAControllerUserPairing"         version="1.12.09"                       />
+        <package name="EAStdC"                          version="1.26.07"                       />
+        <package name="EAUser"                          version="1.09.05"                       />
+        <package name="EAMessage"                       version="2.10.03"                       />
+        <package name="EASTL"                           version="3.16.01"                       />
+        <package name="EASystemEventMessageDispatcher"  version="1.05.00"                       />
+        <package name="EAThread"                        version="1.33.00"                       />
+        <package name="PPMalloc"                        version="1.26.07"                       />
+        <package name="opus"                            version="1.00.05"                       />
+        <package name="ConsoleRemoteServer"             version="0.03.08"                       />
+
+        <!-- setup cross compile -->
+        <package name="UnixClang"                       version="4.0.1"/>
+        <package name="UnixCrossTools"                  version="2.02.01"/>
+        <package name="vsimake"                         version="3.80"/>
+
+        <!-- PPMalloc dependencies -->
+        <package name="EACallstack"                     version="2.02.01"                       />
+        <package name="EAIO"                            version="2.24.01"                       />
+        <package name="job_manager"                     version="4.05.05"                       />
+        <package name="rwmath"                          version="3.01.01"                       />
+
+        <package name="StadiaSDK"                       version="1.48-proxy" uri="p4://dice-p4-one.dice.ad.ea.com:2001/SDK/stadia/StadiaSDK/1.48-proxy?cl=7404663" allowoverride="true">
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="1.48-1" uri="p4://dice-p4-one.dice.ad.ea.com:2001/SDK/stadia/StadiaSDK/1.48-1?cl=7404663" allowoverride="true"/>
+            </exception>
+        </package>
+    </masterversions>
+
+    <globalproperties>
+        dirtysdk-distpktwindow-size
+        dirtysdk-novoip
+        nonproxy
+        eaconfig.generate-portable-solution=false <!-- set true when generating solutions for partners as it uses relative paths instead of absolute -->
+        package.GDK.graphics-libs=no
+        package.AndroidSDK.minimumSDKVersion=24
+        <if condition="'${config-system}'=='ps5'">
+            EASystemEventMessageDispatcher.IncludeCompanionLibs=false
+        </if>
+    </globalproperties>
+
+    <config package="eaconfig" default="pc64-vc-debug" includes="capilano-vc-opt capilano-vc-debug xb1gdk-vc-opt xb1gdk-vc-debug xbsx-vc-debug xbsx-vc-opt xb1-vc-dll-debug xb1gdk-vc-dll-debug kettle-clang-opt kettle-clang-debug pc64-vc-opt pc64-vc-debug pc64-vc-dll-dev-opt pc64-vc-dll-debug ps5-clang-debug ps5-clang-final" />
+    <buildroot>build</buildroot>
+    <ondemand>true</ondemand>
+    <ondemandroot>../../packages</ondemandroot>
+</project>

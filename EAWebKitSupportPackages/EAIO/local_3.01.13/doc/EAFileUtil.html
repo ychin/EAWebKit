@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAFileUtil</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+    <style type="text/css">
+<!--
+.style1 {color: #0033CC}
+-->
+    </style>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAFileUtil</h1>
+<h2>Introduction</h2>
+<p>EAFileUtil is a library of standalone functions which query or manipulate files and directories. </p>
+<p>Functionality present in EAFileUtil includes:</p>
+<ul>
+  <li>bool File::Create</li>
+  <li>bool File::Exists</li>
+  <li>bool File::Move</li>
+  <li>bool Directory::Rename</li>
+  <li>bool Directory::Copy</li>
+  <li>bool MakeTempPathName</li>
+  <li>int GetCurrentWorkingDirectory</li>
+  <li>...</li>
+</ul>
+<p>A list of all available functions is at the end of this file. </p>
+<h2>Example usage </h2>
+<p>We provide some example code for  selected EAFileUtil functions here.</p>
+<p>File::PatternExists:</p>
+<pre class="code-example">bool PluginSystem::PluginsExist()
+{
+    eastl::fixed_string&lt;char16_t, kMaxPathLength&gt; pathPattern(mDirectory);
+ 
+    pathPattern += L&quot;*.plugin&quot;;
+ 
+    return <span class="style1">File::PatternExists(pathPattern.c_str())</span>;
+}</pre>
+<p>File::GetTime:</p>
+<pre class="code-example">bool FileChangeDetector::HasFileChanged(const char16_t* pFilePath)
+{
+    const time_t timeOfLastModification = <span class="style1">File::GetTime(pFilePath, kFileTimeTypeLastModification)</span>;
+ 
+    return (timeOfLastModification &gt;= mTimeOfLastCheck);
+}
+</pre>
+<p>Directory::Create:</p>
+<pre class="code-example">bool Installer::CreateAudioDirectory()
+{
+    eastl::fixed_string&lt;char16_t, kMaxPathLength&gt; audioDirectory(mBaseDirectory);
+    
+    audioDirectory += L&quot;Audio&quot;;
+    audioDirectory += kFilePathSeparator;
+ 
+    return <span class="style1">Directory::Create(audioDirectory.c_str())</span>;
+}</pre>
+<p>Directory::Copy:</p>
+<pre class="code-example">bool Installer::InstallDataFiles()
+{
+<span class="code-example-comment">    // Copy the DVD directory tree to the HD.
+</span>    return <span class="style1">Directory::Copy(mHDDataDir.c_str(), mDVDDataDir.c_str(), true, false)</span>;
+}</pre>
+<p>MakeTempPathName:</p>
+<pre class="code-example">bool SuperBaseballApp::SaveGame(const char16_t* pSaveGameDirectoryPath, const char16_t* pSaveGameFileName)
+{
+    eastl::fixed_string&lt;char16_t, kMaxPathLength&gt; tempGamePath(kMaxPathLength - 1, 0);
+
+<span class="code-example-comment">    // Make a temp file name in the specified directory and with the extension &quot;.tmp&quot;.
+</span>    if(<span class="style1">MakeTempPathName(const_cast&lt;char16_t*&gt;(tempGamePath.data()), pSaveGameDirectoryPath, 
+                         pSaveGameFileName, L&quot;.tmp&quot;)</span>)
+    {
+        if(WriteGame(tempGamePath.c_str()))
+        {
+            eastl::fixed_string&lt;char16_t, kMaxPathLength&gt; saveGamePath(pSaveGameDirectoryPath);
+            saveGamePath += pSaveGameFileName;
+
+            File::Rename(tempGamePath.c_str(), saveGamePath.c_str(), true);
+        }
+        else
+            File::Remove(tempGamePath.c_str());
+
+        return true;
+    }
+
+    return false;
+}</pre>
+<p>GetSpecialDirectory:</p>
+<pre class="code-example">bool SuperBaseballApp::WritePrefs()
+{
+    eastl::fixed_string&lt;char16_t, kMaxPathLength&gt; prefsFilePath(kMaxPathLength - 1, 0);
+    
+    prefsFilePath.resize(<span class="style1">GetSpecialDirectory(kSpecialDirectoryUserApplicationData, 
+                                              const_cast&lt;char16_t*&gt;(prefsFilePath.data()), true)</span>);
+    prefsFilePath += L&quot;prefs.dat&quot;;
+
+    WritePrefsFile(prefsFilePath.c_str());
+}
+</pre>
+<h2>Interface</h2>
+<p>Instead of display the header file contents here, we instead make a table that briefly shows the available functions. See EAFileUtil.h for more details and for any functions that may have been added since this writing.</p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <td><strong>Function </strong></td>
+      <td><strong>Description</strong></td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::Exists</td>
+      <td>Tells if a file exists. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::PatternExists</td>
+      <td>Tells if a file matching a given wildcard pattern exists. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::Create</td>
+      <td>Creates a file.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::Remove</td>
+      <td>Deletes a file. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::Move</td>
+      <td>Moves a file to a different location, can also act as a rename.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::Rename</td>
+      <td>Renames a file. Same as moving to same directory. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::Copy</td>
+      <td>Copies a file. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::GetSize</td>
+      <td>Gets the size of a file in bytes. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::IsWritable</td>
+      <td>Tells if a file can be opened for writing.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::GetAttributes</td>
+      <td>Gets the access attributes of a file. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::SetAttributes</td>
+      <td>Sets the access attributes of a file. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::GetTime</td>
+      <td>Gets the time of file creation, modification, etc. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::SetTime</td>
+      <td>Sets the time of file creation, modification, etc. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> File::ResolveAlias</td>
+      <td>Tells what file an alias file refers to. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span">&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::Exists</td>
+      <td>Tells if a directory exists.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::EnsureExists</td>
+      <td>Creates a directory if it doesn't already exist. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::Create</td>
+      <td>Creates a directory. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::Remove</td>
+      <td>Deletes a directory, optionally recursively. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span">Directory::Move</td>
+      <td>Moves a directory to a different location, can also act as a rename. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::Rename</td>
+      <td>Renames a directory. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::Copy</td>
+      <td>Copies a directory, optionally recursively. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::GetAttributes</td>
+      <td>Gets the access attributes of a directory.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::SetAttributes</td>
+      <td>Sets the access attributes of a directory.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::GetCurrentWorkingDirectory</td>
+      <td>Gets the application's current working directory. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> Directory::SetCurrentWorkingDirectory</td>
+      <td>Sets the application's current working directory.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span">&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> MakeTempPathName</td>
+      <td>Creates a temporary file name. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> GetTempDirectory</td>
+      <td>Gets the directory used for temporary files. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> SetTempDirectory</td>
+      <td>Sets the directory used for temporary files. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> GetDriveFreeSpace</td>
+      <td>Gets free space of a given drive/volume. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> GetDriveName</td>
+      <td>Gets the name of a given drive/volume. </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> GetDriveSerialNumber</td>
+      <td>Gets the serial number of a given drive/volume.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span">GetDriveTypeValue</td>
+      <td>Gets the type of the drive/volume (e.g. fixed HD, DVD, network). </td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> GetDriveInfo</td>
+      <td>Gets miscellaneous information about the available drives/volumes available.</td>
+    </tr>
+    <tr>
+      <td class="code-example-span"> GetSpecialDirectory</td>
+      <td>Gets uniquely assigned system directories, such as the user's document directory. </td>
+    </tr>
+  </table>
+</blockquote>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body></html>
+
+
+

@@ -1,7 +1,7 @@
 Building EA WebKit
 ------------------
 
-This version supports Win32, Win64, XBox One and PS4 platforms.
+This version supports Win32, Win64, XBox One, XboxOneGDK, XBSX, Stadia, PS5 and PS4 platforms.
 
 EA WebKit requires that you have proper development tools installed.  Contact your platform providers to install the proper SDKs.
 
@@ -46,5 +46,4 @@ Developer Requirements
  3. Open the \Projects\PS4\EAWebKit\<EA WebKit Version No>\EAWebKit.sln
  4. Execute Build.
 
- This version was tested with VS2015, Playstation 4 SDK version 5.508.021 and the SN VSI 2.1.7.3 tool.
 

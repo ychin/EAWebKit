@@ -1,0 +1,308 @@
+<head>
+<title>SmallBlockAllocator Calculator</title>
+<script>
+
+//IsPowerOfTwo - returns true of nValue is a power of 2
+function IsPowerOfTwo(nValue)
+{
+    return (nValue != undefined) && (Number(nValue) != NaN) && (nValue > 0) && ((nValue & (nValue - 1)) == 0);
+}
+
+//SBACoreBlockOverhead - returns how much space is used up in a CoreBlock for header and other overhead
+function SBACoreBlockOverhead(mSizeOfPointer)
+{
+	if (8 == mSizeOfPointer) 
+	{
+		return 48;
+	}
+	return 32;
+}
+
+//SBAParameters definition/constructor
+function SBAParameters(mnCoreBlockSize, mnInitCoreBlockCount, mnGrowCoreBlockCount, mnMinAlignment, mnMaxAlignment, mnMaxAllocSize, kOptionMaxAllocWaste, mSizeOfPointer)
+{
+    this.mnCoreBlockSize        = Number(mnCoreBlockSize);
+    this.mnInitCoreBlockCount   = Number(mnInitCoreBlockCount);
+    this.mnGrowCoreBlockCount   = Number(mnGrowCoreBlockCount);
+    this.mnMinAlignment         = Number(mnMinAlignment);
+    this.mnMaxAlignment         = Number(mnMaxAlignment);
+    this.mnMaxAllocSize         = Number(mnMaxAllocSize);
+    this.kOptionMaxAllocWaste   = Number(kOptionMaxAllocWaste);
+	this.mSizeOfPointer	        = Number(mSizeOfPointer);
+}
+
+//Validates SBAParameters (returns number of errors found)
+function SBAParametersValidate(Parameters)
+{
+    var errorsFound = 0;
+
+	if (Parameters.mSizeOfPointer == NaN || (Parameters.mSizeOfPointer != 4 && Parameters.mSizeOfPointer != 8)) 
+	{
+        alert("unexpected pointer size");
+        errorsFound += 1;
+	}
+
+    //check that all parameters are valid integers (min and max alignment are checked below as part of IsPowerOfTwo)
+    if (Parameters.mnCoreBlockSize == NaN || Parameters.mnCoreBlockSize < 0 ||
+        Parameters.mnInitCoreBlockCount == NaN || Parameters.mnInitCoreBlockCount < 0 ||
+        Parameters.mnGrowCoreBlockCount == NaN || Parameters.mnGrowCoreBlockCount < 0 ||
+        Parameters.mnMaxAllocSize == NaN || Parameters.mnMaxAllocSize < 0 ||
+        Parameters.kOptionMaxAllocWaste == NaN || Parameters.kOptionMaxAllocWaste < 0 )
+    {
+        alert("All parameters must be valid non-negative integers!");
+        errorsFound += 1;
+    }
+
+    if (!IsPowerOfTwo(Parameters.mnMinAlignment))
+    {
+        alert("mnMinAlignment must be a power of two");
+        errorsFound += 1;
+    }
+
+    if (!IsPowerOfTwo(Parameters.mnMaxAlignment) || (0 != Parameters.mnMaxAlignment % Parameters.mnMinAlignment))
+    {
+        alert("mnMaxAlignment must be a power of two and a multiple of mnMinAlignment");
+        errorsFound += 1;
+    }
+
+    if (0 != Parameters.mnCoreBlockSize % Parameters.mnMaxAlignment)
+    {
+        alert("mnCoreBlockSize must be a multiple of mnMaxAlignment");
+        errorsFound += 1;
+    }
+
+    if ((0 != Parameters.mnMaxAllocSize) && (0 != Parameters.mnMaxAllocSize % Parameters.mnMinAlignment))
+    {
+        alert("mnMaxAllocSize must be a multiple of mnMinAlignment (or 0 to use default mnMaxAllocSize of ((mnCoreBlockSize-ChunkOverhead()/)2))");
+        errorsFound += 1;
+    }
+
+	if ( (0 != Parameters.mnMaxAllocSize) && (Parameters.mnMaxAllocSize > (Parameters.mnCoreBlockSize - SBACoreBlockOverhead(Parameters.mSizeOfPointer))) ) 
+	{
+        alert("mnMaxAllocSize must be <= " + (Parameters.mnCoreBlockSize - SBACoreBlockOverhead(Parameters.mSizeOfPointer)) + " [that's mnCoreBlockSize-CoreBlockOverhead()]");
+        errorsFound += 1;
+	}
+
+    return errorsFound;
+}
+
+
+function TableRow( element0, element1 )
+{
+    rowData = "<tr>";
+
+    for ( var dataIndex = 0 ; dataIndex < arguments.length; dataIndex++ )
+    {
+		rowData += "<td align=center>" + arguments[dataIndex] + "</td>" 
+    }
+    rowData += "</tr>";
+    return rowData;
+}
+
+function DisplayPoolList(Parameters)
+{
+    if ( 0 != SBAParametersValidate(Parameters) )
+    {
+        return;
+    }
+
+    //set max alloc size to default if needed
+    if ( 0 == Parameters.mnMaxAllocSize )
+    {
+        Parameters.mnMaxAllocSize = (Parameters.mnCoreBlockSize - SBACoreBlockOverhead(Parameters.mSizeOfPointer)) / 2;
+    }
+
+    var availableSpace = (Parameters.mnCoreBlockSize - SBACoreBlockOverhead(Parameters.mSizeOfPointer)); 
+
+	if (availableSpace < Parameters.mnMaxAllocSize) 
+	{
+		Parameters.mnMaxAllocSize = availableSpace;
+	}
+
+    var doc = document;
+
+    doc.write("<br><h2>Pool List:</h2>");
+    doc.write("<table>");
+    doc.write(TableRow("<b>Alloc Size&nbsp;&nbsp;&nbsp;&nbsp;</b>","<b>Allocs per Core Block&nbsp;&nbsp;&nbsp;&nbsp;</b>","<b>Overhead per Allocation&nbsp;&nbsp;&nbsp;&nbsp;</b>","<b>Max Unused space per Alloc</b>"));
+
+    var prevChunkSize = 0;
+    var prevNumChunks = 0;
+    var lastWrittenChunkSize = 0;
+
+    for ( var chunkSize = Parameters.mnMinAlignment; chunkSize <= Parameters.mnMaxAllocSize; chunkSize += Parameters.mnMinAlignment )
+    {
+        var newNumChunks = Math.floor(availableSpace / chunkSize);
+        //if the new chunk size allows for less chunks than the previous then go ahead and write data for the previous one
+        //if the new chunk size allows the same amount of chunks then we're not going to bother to write the previous one because
+        //it's not needed
+        if (newNumChunks < prevNumChunks)
+        {
+            var waste = availableSpace % prevChunkSize;
+			var overhead = SBACoreBlockOverhead(Parameters.mSizeOfPointer) + waste;
+            var overheadString = overhead;
+
+            if ( overhead > 0 )
+            {
+                var overheadPerChunk = overhead / prevNumChunks;
+
+                //round overheadPerChunk to two decimal places...
+                overheadPerChunk = Math.round(overheadPerChunk*100)/100;
+
+                overheadString = "&nbsp;&nbsp;" + overheadPerChunk + "&nbsp;bytes";
+            }
+            var maxUnused = (prevChunkSize-lastWrittenChunkSize)-1;
+            if (maxUnused > Parameters.kOptionMaxAllocWaste)
+            {
+                maxUnused = "<b>" + Parameters.kOptionMaxAllocWaste + "</b>";
+            }
+            doc.write(TableRow(prevChunkSize,prevNumChunks,overheadString, maxUnused));
+            lastWrittenChunkSize = prevChunkSize;
+        }
+
+        prevChunkSize = chunkSize;
+        prevNumChunks = newNumChunks;
+    }
+
+    //write out the last row
+	var waste = availableSpace % prevChunkSize;
+	var overhead = SBACoreBlockOverhead(Parameters.mSizeOfPointer) + waste;
+	var overheadString = overhead;
+
+	if ( overhead > 0 )
+	{
+		var overheadPerChunk = overhead / prevNumChunks;
+
+		//round overheadPerChunk to two decimal places...
+		overheadPerChunk = Math.round(overheadPerChunk*100)/100;
+
+		overheadString = "&nbsp;&nbsp;" + overheadPerChunk + "&nbsp;bytes";
+	}
+    var maxUnused = (prevChunkSize-lastWrittenChunkSize)-1;
+    if (maxUnused > Parameters.kOptionMaxAllocWaste)
+    {
+        maxUnused = "<b>" + Parameters.kOptionMaxAllocWaste + "</b>";
+    }
+    doc.write(TableRow(prevChunkSize,prevNumChunks,overheadString, maxUnused));
+    lastWrittenChunkSize = prevChunkSize;
+
+    doc.write("</table>");
+}
+</script>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+<!-- Begin
+
+function getHrefParams()
+{
+    var idx = location.href.indexOf('?');
+    var params = new Array();
+    if (idx != -1)
+    {
+        var pairs = location.href.substring(idx+1, location.href.length).split('&');
+        for (var i=0; i<pairs.length; i++)
+        {
+            nameVal = pairs[i].split('=');
+            params[nameVal[0]] = nameVal[1];
+        }
+    }
+return params;
+}
+//  End -->
+</script>
+
+</head>
+<body>
+
+
+
+<h1>SmallBlockAllocator Calculator 1.0</h1>
+This calculator is for validating init parameters for EA::Allocator::SmallBlockAllocator and for visualizing the affect they have (in terms of pools created and allocation overhead). <br>
+See <a href="SmallBlockAllocator.html">SmallBlockAllocator.html</a> for details on the allocator and explanation of the parameters.
+Enter parameters on the left and hit update to visualize the pools that will be created in the SBA based (mnCoreBlockSize and mnMinAlignment are the primary two that affect the pools).
+
+<h4>Terms</h4>
+<b>Overhead</b>: This is based on the core block overhead plus any space left over in a core block (due to allocations not fitting perfectly).<br>
+<b>Max Unused space</b>: This is worse-case scenario when a user requests an allocation that does not fall on the exact pool size. For example, with mnMinAlignment=8, when we request a 1 byte allocation we will have to fund it from the 8 byte pool leaving 7 bytes unused. Use mnMinAlignment=4 to mimize this value.
+
+<table><tr><td valign=top>
+
+<br>
+<h2>Parameters:</h2><br>
+
+<form type=get name="ParametersForm" action="SmallBlockAllocatorCalculator.html">
+
+<label>
+mnCoreBlockSize:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="mnCoreBlockSize" id="mnCoreBlockSize" value="2048">
+</label><br>
+
+<label>
+mnInitCoreBlockCount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="mnInitCoreBlockCount" id="mnInitCoreBlockCount" value="25">
+</label><br>
+
+<label>
+mnGrowCoreBlockCount:&nbsp;
+<input type="text" name="mnGrowCoreBlockCount" id="mnGrowCoreBlockCount" value="8">
+</label><br>
+
+<label>
+mnMinAlignment:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="mnMinAlignment" id="mnMinAlignment" value="8">
+</label><br>
+
+<label>
+mnMaxAlignment:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="mnMaxAlignment" id="mnMaxAlignment" value="64">
+</label><br>
+
+<label>
+mnMaxAllocSize:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="mnMaxAllocSize" id="mnMaxAllocSize" value="0">
+</label><br>
+
+<label>
+kOptionMaxAllocWaste:&nbsp;&nbsp;&nbsp;
+<input type="text" name="kOptionMaxAllocWaste" id="kOptionMaxAllocWaste" value="256">&nbsp;&nbsp;&nbsp;
+</label><br>
+
+<label>
+Size of Pointer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="mSizeOfPointer" id="mSizeOfPointer" value="4">
+</label><br>
+
+<br>
+<input type="submit" value="Update"> <br>
+</form>
+
+</td><td>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+if (-1 != location.href.indexOf('?'))
+{
+    var hrefParams = getHrefParams();
+
+    document.ParametersForm.mnCoreBlockSize.value        = unescape(hrefParams["mnCoreBlockSize"]);
+    document.ParametersForm.mnInitCoreBlockCount.value   = unescape(hrefParams["mnInitCoreBlockCount"]);
+    document.ParametersForm.mnGrowCoreBlockCount.value   = unescape(hrefParams["mnGrowCoreBlockCount"]);
+    document.ParametersForm.mnMinAlignment.value         = unescape(hrefParams["mnMinAlignment"]);
+    document.ParametersForm.mnMaxAlignment.value         = unescape(hrefParams["mnMaxAlignment"]);
+    document.ParametersForm.mnMaxAllocSize.value         = unescape(hrefParams["mnMaxAllocSize"]);
+    document.ParametersForm.kOptionMaxAllocWaste.value   = unescape(hrefParams["kOptionMaxAllocWaste"]);
+	document.ParametersForm.mSizeOfPointer.value 		 = unescape(hrefParams["mSizeOfPointer"]);
+}
+
+var sbaParameters = new SBAParameters(ParametersForm.mnCoreBlockSize.value,ParametersForm.mnInitCoreBlockCount.value, ParametersForm.mnGrowCoreBlockCount.value, ParametersForm.mnMinAlignment.value, ParametersForm.mnMaxAlignment.value, ParametersForm.mnMaxAllocSize.value, ParametersForm.kOptionMaxAllocWaste.value, ParametersForm.mSizeOfPointer.value);
+if (0 == SBAParametersValidate(sbaParameters))
+{
+    DisplayPoolList(sbaParameters);
+}
+
+//  End -->
+</script>
+
+</td></tr></table>
+</body>
+

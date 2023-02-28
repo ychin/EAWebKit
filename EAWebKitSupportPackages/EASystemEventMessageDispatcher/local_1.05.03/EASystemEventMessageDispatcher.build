@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="EASystemEventMessageDispatcher" default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<package name="EASystemEventMessageDispatcher" initializeself="true"/>
+	<include file="scripts/initialize.xml"/>
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+	<runtime>		
+		<!-- Determines which platform dir to use based on our config. We default to null if the config isn't supported by the package. -->
+		<property name="config-folder-name" value="${config-system}"/>
+		<property name="config-folder-name" value="sony" if="${config-system} == 'kettle'"/>
+		<property name="config-folder-name" value="${config-os??unknown}" unless="@{DirectoryExists('${package.dir}/source/${config-folder-name}')}"/>
+		<property name="config-folder-name" value="null" unless="@{DirectoryExists('${package.dir}/source/${config-folder-name}')}"/>
+
+		<property name="EACUP_EVENT_ENUM_FIRST_ID" value="0x7F450010" unless="@{PropertyExists('EACUP_EVENT_ENUM_FIRST_ID')}"/>
+
+		<Library name="IEASystemEventMessageDispatcher" buildtype="Utility">
+			<config>
+				<defines>
+				EACUP_EVENT_ENUM_FIRST_ID=${EACUP_EVENT_ENUM_FIRST_ID}
+				</defines>
+			</config>
+			<dependencies>
+				<use>
+					coreallocator
+					EAAssert
+					EABase
+					EAMessage
+					EAStdC
+					EASTL
+					EAThread
+				</use>
+			</dependencies>
+			<headerfiles>
+				<includes name="${package.dir}/include/IEASystemEventMessageDispatcher/*.h" />
+			</headerfiles>
+		</Library>
+
+		<Library name="EASystemEventMessageDispatcher" buildtype="${EASystemEventMessageDispatcherBuildType}">
+			<config>
+				<warningsuppression>
+					<do if="${config-system} == 'capilano' || ${config-system} == 'winrt'">
+						-wd4626 <!-- vccorlib.h: (used by WinRT EventHandles) assignment operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted -->
+						-wd4628 <!-- vccorlib.h: digraphs not supported with -Ze. -->
+						-wd5027 <!-- vccorlib.h: (used by WinRT EventHandles) move operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted -->
+					</do>
+				</warningsuppression>
+				<defines>
+					<do if="${Dll??false} and ${config-compiler} == 'vc'">
+						EASEMD_API=__declspec(dllexport)
+					</do>
+					<do if="${EASystemEventMessageDispatcher.Debug}">
+						EASEMD_ENABLE_DEBUG=1
+					</do>
+					<do if="${EASystemEventMessageDispatcher.IncludeCompanionLibs} and ${config-system} != 'ps5'">
+						EASEMD_ENABLE_COMPANION_LIBS=1
+					</do>
+				</defines>
+			</config>
+			<dependencies>
+				<interface>
+					EABase
+					EASystemEventMessageDispatcher/IEASystemEventMessageDispatcher
+				</interface>
+				<auto>
+					EABase
+					EAAssert
+					EAMessage
+					EASTL
+					coreallocator
+					EAThread
+					EAStdC
+				</auto>
+			</dependencies>
+			<headerfiles>
+				<includes name="${package.dir}/include/EASystemEventMessageDispatcher/*.h" />
+			</headerfiles>
+			<sourcefiles>
+				<includes name="${package.dir}/source/*.cpp" />
+				<includes name="${package.dir}/source/internal/*.cpp" />
+				<includes name="${package.dir}/source/${config-folder-name}/*.cpp" />
+
+				<do if="@{DirectoryExists('${package.dir}/source/${config-folder-name}/')} == false">
+					<includes name="${package.dir}/source/null/*.cpp" />
+				</do>
+			</sourcefiles>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>
+	
+	<!-- ********************* -->
+	<!-- Test configuration	   -->
+	<!-- ********************* -->
+	
+	<tests>
+		<optionset name="config.targetoverrides">
+			<option name="run" value="include" />
+		</optionset>
+		
+		<property name="package.consoledeployment" value="true" unless="@{PropertyExists('package.consoledeployment')}" />
+
+		<property name="EASEMDTestBuildtype" value="Program" />
+		<property name="EASEMDTestBuildtype" value="WinRTCppProgram" if="@{OptionSetExists('WinRTCppProgram')}" />
+
+		<Program name="EASEMDTest" buildtype="${EASEMDTestBuildtype}">
+			<copylocal value="true"/>
+			<config>
+				<warningsuppression>
+					<do if="${config-system} == 'capilano' || ${config-system} == 'winrt'">
+					  -wd4555
+					  -wd4472
+					</do>
+					<do if="${config-system} == 'kettle'">
+						-Wno-deprecated-writable-strings
+					</do>
+				</warningsuppression>
+				<defines>
+				EACUP_EVENT_ENUM_FIRST_ID=${EACUP_EVENT_ENUM_FIRST_ID}
+				</defines>
+			</config>
+			<dependencies>
+				<interface>
+					EABase
+				</interface>
+				<auto>
+					EAMessage
+					EAMain
+					EASTL
+					EAStdC
+					EASystemEventMessageDispatcher
+					EATest
+					EAThread
+					EAAssert
+					coreallocator
+					PPMalloc
+					MemoryMan
+				</auto>
+			</dependencies>
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+			</sourcefiles>
+			<libraries>
+				<do if="${config-system} == 'kettle'">
+					<includes name="${package.kettlesdk.libdir}\libSceAppContent_stub_weak.a" />
+					<includes name="${package.kettlesdk.libdir}\libSceCompanionHttpd_stub_weak.a" />
+					<includes name="${package.kettlesdk.libdir}\libSceCompanionUtil_stub_weak.a" />
+					<includes name="${package.kettlesdk.libdir}\libSceSysmodule_stub_weak.a" />
+					<includes name="${package.kettlesdk.libdir}\libSceSystemService_stub_weak.a" />
+					<includes name="${package.kettlesdk.libdir}\libSceUserService_stub_weak.a" />
+				</do>
+			</libraries>
+		</Program>
+
+		<fileset name="test.EASEMDTest.deploy-contents-fileset">
+			<includes name="${package.configbindir}/**" />
+		</fileset>
+	</tests>
+
+</project>

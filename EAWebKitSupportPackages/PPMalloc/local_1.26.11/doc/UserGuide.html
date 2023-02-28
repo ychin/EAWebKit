@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>User Guide</title>
+  
+  <meta content="Basic instructions on how to use the package modules." name="description"></head>
+<body>
+<h1><big><big>User Guide</big></big></h1>
+<p>This document provides a brief description of the PPMalloc modules and
+  then provides some basic information on using these modules. You will
+  want to consult documentation for individual modules for more detailed
+  information about them.<br>
+  <br>
+  <span style="font-weight: bold;">PPMalloc Modules</span><span style="font-weight: bold;"></span>
+</p>
+<div style="margin-left: 40px;">
+<table style="text-align: left; width: 100%;" border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Module</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Description</span></td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Source</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Dependencies</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a href="GeneralAllocator.html">GeneralAllocator</a><br>
+      </td>
+      <td style="vertical-align: top;">Implements a general purpose allocator. </td>
+      <td style="vertical-align: top;"><font size="-2">EAGeneralAllocator.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a href="GeneralAllocator.html">GeneralAllocatorDebug</a><br>
+      </td>
+      <td style="vertical-align: top;">Implements a user-level debug layer on top of GeneralAllocator. Useful
+for doing named allocations, recording stack traces, doing delayed
+frees, etc.</td>
+      <td style="vertical-align: top;"><font size="-2">EAGeneralAllocatorDebug.h/cpp<br>
+EAGeneralAllocatorDebugPS2.cpp,<br>
+EAGeneralAllocatorDebugWin32.cpp, etc.<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">GeneralAllocator<br>
+SystemAllocator<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">StackAllocator<br>
+      </td>
+      <td style="vertical-align: top;">Implements a fast allocator that works by incrementing a pointer through a block of memory.</td>
+      <td style="vertical-align: top;"><font size="-2">EAStackAllocator.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FixedAllocator<br>
+      </td>
+      <td style="vertical-align: top;">Implements a pool of same-sized objects, for fast allocation and tight object packing and good similar-object locality. </td>
+      <td style="vertical-align: top;"><font size="-2">EAFixedAllocator.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a href="NonLocalAllocator.html">NonLocalAllocator</a><br>
+      </td>
+      <td style="vertical-align: top;">Implements an allocator for memory that is inaccessable by the entity allocating it. </td>
+      <td style="vertical-align: top;"><font size="-2">EANonLocalAllocator.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">GeneralAllocator<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a href="SmallObjectAllocator.html">SmallObjectAllocator</a><br>
+      </td>
+      <td style="vertical-align: top;">Implements an allocator specialized for non-fragmenting small-sized blocks </td>
+      <td style="vertical-align: top;"><font size="-2">EASmallObjectAllocator.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a href="SmallBlockAllocator.html">SmallBlockAllocator</a></td>
+      <td style="vertical-align: top;">Alternative to SmallObjectAllocator.</td>
+      <td style="vertical-align: top;"><font size="-2">extras/EASmallObjectAllocator.h/cpp</font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase</font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a href="ScratchpadAllocator.html">ScratchpadAllocator</a></td>
+      <td style="vertical-align: top;">Implements a per-thread stack allocator for fast temporary per-thread memory. More flexible than alloca, similar to C99 dynamically sized automatic arrays but portable and more flexible. </td>
+      <td style="vertical-align: top;">&nbsp;</td>
+      <td style="vertical-align: top;">&nbsp;</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">HandleAllocator<br>
+      </td>
+      <td style="vertical-align: top;">Implements a handle-based allocator with conventional lock semantics
+and heap compaction. Useful for preventing heap fragmentation problems.</td>
+      <td style="vertical-align: top;"><font size="-2">EAHandleAllocator.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">GeneralAllocator<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SystemAllocator<br>
+      </td>
+      <td style="vertical-align: top;">Implements an allocator which uses the underlying operating system or
+kernel libraries for memory allocation. Useful for implementing
+underneath custom allocators such as those here.</td>
+      <td style="vertical-align: top;"><font size="-2">EASystemAllocator.h<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">AllocationRecorder<br>
+      </td>
+      <td style="vertical-align: top;">Implements an automated allocation activity recording and playback
+system for any generalized allocator, such as GeneralAllocator. Useful
+for doing offline testing of memory allocation patterns and behaviour.</td>
+      <td style="vertical-align: top;"><font size="-2">EAAllocationRecorder.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase<br>
+      </font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">AllocatorInterface<br>
+      </td>
+      <td style="vertical-align: top;">Implements the EA IAllocator interface on top of GeneralAllocator.</td>
+      <td style="vertical-align: top;"><font size="-2">EAAllocatorInterface.h/cpp<br>
+      </font></td>
+      <td style="vertical-align: top;"><font size="-2">GeneralAllocator<br>
+GeneralAllocatorDebug<br>
+      </font></td>
+    </tr><tr>
+      <td style="vertical-align: top;">NewDelete<br>
+      </td>
+      <td style="vertical-align: top;">Implements overrides for the C++ new and delete operators.<br>
+      </td>
+      <td style="vertical-align: top;"><font size="-2">EANewDelete/cpp</font></td>
+      <td style="vertical-align: top;"><font size="-2">EABase</font></td>
+    </tr><tr>
+      <td style="vertical-align: top;">GeneralAllocatorSTL<br>
+      </td>
+      <td style="vertical-align: top;">Defines a custom STL allocator which uses GeneralAllocator as the allocation source.<br>
+      </td>
+      <td style="vertical-align: top;"><font size="-2">EAGeneralAllocatorSTL.h</font></td>
+      <td style="vertical-align: top;"><font size="-2">GeneralAllocator</font></td>
+    </tr>
+
+
+  </tbody>
+</table>
+</div>
+
+<p><span style="font-weight: bold;">The Basics</span></p>
+<p>Most likely, what you are primarily interested in is GeneralAllocator.
+  The other modules provide more esoteric functionality that you may want
+  to consider for advanced systems. Either way, GeneralAllocator stands
+  by itself has has no dependencies on the other modules; you can just
+  grab GeneralAllocator.h/cpp and throw the rest away if that suits your
+  needs. <br>
+  <br>
+  All code is in C++ and largely follows the EA coding guidelines as of
+  January of 2004. All classes are in the EA::Allocator C++ namespace.
+  Thus, the fully qualified name of GeneralAllocator is
+  EA::Allocator::GeneralAllocator. Most of the code is plain C++ and
+  doesn't attempt to be very academic with the language. Thus RTTI is not
+  used, template usage is used only in one module (FixedAllocator),
+  exception handling is not used, etc. Unit tests have been set up for
+  most of the functionality and are available with the full package. The
+  headers are heavily commented in Doxygen-savvy format and the source
+  code for the primary modules has been heavily commented as well. <br>
+  <br>
+<span style="font-weight: bold;">GeneralAllocator Examples</span></p>
+<p>Here we provide some basic examples showing how to use GeneralAllocator. </p>
+<blockquote>
+  <pre>#include "PPMalloc/EAGeneralAllocator.h"
+using namespace EA::Allocator;
+
+GeneralAllocator allocator;
+void* p = allocator.Malloc(20);
+allocator.Free(p);
+</pre>
+</blockquote>
+<p>To use GeneralAllocatorDebug, you simply substitute that class for GeneralAllocator, like this:</p>
+<blockquote>
+  <pre>#include "PPMalloc/EAGeneralAllocator<span style="color: rgb(0, 153, 0);">Debug</span>.h"
+using namespace EA::Allocator;
+ 
+GeneralAllocator<span style="color: rgb(0, 153, 0);">Debug</span> allocator;
+void* p = allocator.Malloc(20);
+allocator.Free(p);</pre>
+</blockquote>
+<p>If you want to initialize the allocator with a large block of existing memory, you simply pass that memory into the constructor or Init function, like so:</p>
+<blockquote>
+  <pre>GeneralAllocator allocator(pMemory, nMemorySize);</pre>
+</blockquote>
+<p>  If you would like to use GeneralAllocatorDebug to allocate memory with a name attached to it, you would do this:</p>
+<blockquote>
+  <pre>allocator.MallocDebug(20, 0, "model");
+</pre>
+</blockquote>
+<p>If you would like to use GeneralAllocatorDebug to allocate memory which
+  tracks the full call stack and the allocation time along with a name,
+you would do this:</p>
+<blockquote>
+  <pre>unsigned flags = (1 &lt;&lt; GeneralAllocatorDebug::kDebugDataIdCallStack) || 
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (1 &lt;&lt; GeneralAllocatorDebug::kDebugDataIdAllocationTime<span style="font-family: monospace; color: rgb(0, 0, 153);">);</span>
+allocator.MallocDebug(20, flags, "model");</pre>
+</blockquote>
+<p>If you would like to validate the heap to see if there has been any corruption, you would do this:</p>
+<blockquote>
+  <pre>allocator.ValidateHeap(<span style="font-family: monospace;">GeneralAllocator::</span>kHeapValidationLevelFull);
+</pre>
+</blockquote>
+<p>If you would like to provide a C++ hook function to track all allocation activity, you would use SetHookFunction like this:</p>
+<blockquote>
+  <pre>void SomeClass::SetupHook()
+{
+    allocator.SetHookFunction(<span style="font-family: monospace;">HookFunction, this</span><span style="font-family: monospace;"><span style="color: rgb(0, 0, 153);">);</span>
+<span style="color: rgb(0, 0, 153);">}
+
+</span></span>static void HookFunction(const GeneralAllocator::HookInfo* pHI, void* pContext)
+{
+    <span style="font-family: monospace;">SomeClass* const pSomeClass = (SomeClass*)pContext; // Possibly use this.</span>
+     
+    if(!pHookInfo-&gt;mbEntry) // If we are being called at the end of the function (so we can see the result)...
+    {
+        if(pHookInfo-&gt;mHookType == GeneralAllocator::kHookTypeMalloc)
+           pHookInfo-&gt;mnSizeInputTotal, pHookInfo-&gt;mpDataOutput<span style="font-family: monospace; color: rgb(0, 0, 153);">;
+      </span><span style="font-family: monospace; color: rgb(0, 0, 153);"></span>  else if(pHookInfo-&gt;mHookType == GeneralAllocator::kHookTypeFree)
+           pHookInfo-&gt;mpDataInput;
+    }
+}</pre>
+</blockquote>
+<p>  If you would like to use GeneralAllocator as a sub heap of some other
+heap (e.g. another GeneralAllocator), you would simply do this:</p>
+<blockquote>
+  <pre>GeneralAllocator gaParent;
+GeneralAllocator gaChild(gParent.Malloc(1000000), 1000000, false); <span style="font-family: monospace; color: rgb(0, 0, 153);">     </span></pre>
+</blockquote>
+<p>
+If you want to have a sub heap that grows on demaind, you would do this:</p>
+<blockquote>
+  <pre>size_t SubHeapCoreFreeFunction(GeneralAllocator* /*pChild*/, void* pCore, size_t nSize, void* pContext)
+{
+ &nbsp;&nbsp; GeneralAllocator* const pParent = (GeneralAllocator*)pContext;
+ &nbsp;&nbsp; pParent-&gt;Free(pCore);
+ &nbsp;&nbsp; return nSize;
+}
+     
+bool MallocFailureFunction(GeneralAllocator* pChild, size_t nSize, void* pContext)
+{
+ &nbsp;&nbsp; GeneralAllocator* const pParent = (GeneralAllocator*)pContext;
+ &nbsp;&nbsp; if(nSize &lt; 1000000) // Allocate at least N bytes of new core.
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nSize = 1000000;
+ &nbsp;&nbsp; void* const pNewCore = pParent-&gt;Malloc(nSize);
+ &nbsp;&nbsp; if(pNewCore)
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pChild-&gt;AddCore(pNewCore, nSize, true, false, SubHeapCoreFreeFunction, pParent);
+ &nbsp;&nbsp; return (pNewCore != NULL);
+}
+     
+// Create a main heap.
+GeneralAllocator gaParent;
+     
+// Create a sub heap from the main heap.
+GeneralAllocator gaChild(gaParent.Malloc(1000000), 1000000, false, false, SubHeapCoreFreeFunction, &amp;gaParent);
+gaChild.SetMallocFailureFunction(MallocFailureFunction, &amp;gaParent);
+gaChild.SetOption(GeneralAllocator::kOptionEnableSystemAlloc, 0);</pre>
+</blockquote>
+<p><hr style="width: 100%; height: 2px;">
+  End of document<br>
+    
+
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+</p>
+</body></html>

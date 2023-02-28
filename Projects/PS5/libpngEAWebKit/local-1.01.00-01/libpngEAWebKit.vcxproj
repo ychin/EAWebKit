@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>ps5-clang-debug</Configuration>
+    <Platform>PROSPERO</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ps5-clang-debug|PROSPERO">
+      <Configuration>ps5-clang-debug</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ps5-clang-opt|PROSPERO">
+      <Configuration>ps5-clang-opt</Configuration>
+      <Platform>PROSPERO</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C77E27F0-AA71-6169-241E-0184FBD0F95B}</ProjectGuid>
+    <Keyword>PROSPEROProj</Keyword>
+    <ProjectName>libpngEAWebKit</ProjectName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseOfStl>c++_static</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-everything -fno-elide-type -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;EA_DEBUG;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;EA_USE_XCEEDZIP=0;PNG_IMPEXP=;PNG_NO_MMX_CODE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-debug\lib\liblibpngEAWebKit.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-debug\lib" mkdir "ps5-clang-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-debug\build\libpngEAWebKit" mkdir "ps5-clang-debug\build\libpngEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <OutDir>ps5-clang-debug\lib\</OutDir>
+    <IntDir>ps5-clang-debug\build\libpngEAWebKit\v\</IntDir>
+    <TLogLocation>ps5-clang-debug\build\libpngEAWebKit\v.tlog\</TLogLocation>
+    <TargetName>liblibpngEAWebKit</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng";"..\..\..\..\EAWebKitSupportPackages\EABase\local_2.10.01\include\Common";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\install";"..\..\..\..\EAWebKitSupportPackages\zlibEAWebKit\local-1.2.5-7-01\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Wno-everything -fno-elide-type -isystem "$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include" -isystem "$(SCE_PROSPERO_SDK_DIR)\target\include_common" $(PROSPEROIntelliSense) </AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;EA_PLATFORM_BALIN=1;EA_PLATFORM_PS5=1;EA_SLN_BUILD=1;EA_USE_XCEEDZIP=0;NDEBUG;PNG_IMPEXP=;PNG_NO_MMX_CODE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>ps5-clang-opt\lib\liblibpngEAWebKit.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "ps5-clang-opt\lib" mkdir "ps5-clang-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "ps5-clang-opt\build\libpngEAWebKit" mkdir "ps5-clang-opt\build\libpngEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <OutDir>ps5-clang-opt\lib\</OutDir>
+    <IntDir>ps5-clang-opt\build\libpngEAWebKit\v\</IntDir>
+    <TLogLocation>ps5-clang-opt\build\libpngEAWebKit\v.tlog\</TLogLocation>
+    <TargetName>liblibpngEAWebKit</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\lib\clang\include;$(SCE_PROSPERO_SDK_DIR)\target\include;$(SCE_PROSPERO_SDK_DIR)\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\png.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngconf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngdebug.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnginfo.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pnglibconf.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngpriv.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\pngstruct.h" />
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\include\libpng\contrib\visupng\cexcept.h" />
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\png.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\png.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\png.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngerror.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngerror.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngerror.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngget.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngget.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngget.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngmem.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngmem.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngmem.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngpread.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngpread.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngpread.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngread.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngread.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngread.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrio.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngrio.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngrio.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrtran.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngrtran.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngrtran.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngrutil.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngrutil.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngrutil.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngset.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngset.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngset.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngtrans.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngtrans.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngtrans.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwio.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngwio.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngwio.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwrite.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngwrite.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngwrite.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwtran.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngwtran.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngwtran.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\libpngEAWebKit\local-1.01.00-01\source\pngwutil.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">ps5-clang-debug\build\libpngEAWebKit\pngwutil.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">ps5-clang-opt\build\libpngEAWebKit\pngwutil.c.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-debug|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ps5-clang-opt|PROSPERO' ">
+    <ExecutablePath>$(SCE_PROSPERO_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+    <ContinueCompilingOnError>true</ContinueCompilingOnError>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.props" />
+  <Import Project="..\..\framework_tmp\MSBuild\data\FrameworkMsbuild.tasks" />
+</Project>

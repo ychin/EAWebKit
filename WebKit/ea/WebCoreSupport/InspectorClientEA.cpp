@@ -41,13 +41,13 @@
 #include "ScriptDebugServer.h"
 #include <wtf/text/CString.h>
 
-#include "webinspector.h"
-#include "webpage.h"
-#include "webpage_p.h"
+#include "WebInspector.h"
+#include "WebPage.h"
+#include "WebPage_p.h"
 
-#include <EAWebkit/EAWebkitView.h>
+#include <EAWebKit/EAWebKitView.h>
 #include <internal/include/EAWebKit_p.h>
-#include <EAWebkit/EAWebKitClient.h>
+#include <EAWebKit/EAWebKitClient.h>
 #include <EAWebKit/EAWebKitFileSystem.h>
 #include <internal/include/EAWebKitAssert.h>
 
@@ -326,7 +326,8 @@ void InspectorSettingsEA::finalize()
 
 InspectorSettingsEA::InspectorSettingsEA()
 {
-	mInspectorSettingsPath = EA::WebKit::GetFullPath("InspectorSettings.txt",true).c_str();
+    EA::IO::Path::PathString8 path = EA::WebKit::GetFullPath("InspectorSettings.txt", true);
+	mInspectorSettingsPath = path.c_str();
 	readSettingsFromFile();
 }
 

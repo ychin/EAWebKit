@@ -1,0 +1,16 @@
+// ===========================================================================
+// Pc-Lint policy for the EACallstack SPU package
+// ===========================================================================
+
+
+// ===========================================================================
+// Include the pclintconfig legacy policy file which contains the EAC minimal
+// pclint warnings set.
+// ===========================================================================
+policy_legacy.lnt
+
+-uEA_PLATFORM_PS3		// Remove EA_PLATFORM_PS3 defined from ps3-gcc.lnt. This config is built for EA_PLATFORM_PS3_SPU, not EA_PLATFORM_PS3.
+
+-e117		// [EACallstack_PS3_SPU.cpp] Suppress: Inappropriate storage class. The target symbols spRegister and lrRegister are registers.
+-esym(729, EA::Callstack::spRegister)	// [EACallstack_PS3_SPU.cpp] Suppress: Symbol not explicitly initialized. The symbol is a register to be manipulated in assembly code.
+-esym(729, EA::Callstack::lrRegister)	// [EACallstack_PS3_SPU.cpp] Suppress: Symbol not explicitly initialized. The symbol is a register to be manipulated in assembly code.

@@ -206,7 +206,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PLATFORM_DLL_EXPORT_FUNC(funcname, libname)
 #define PLATFORM_DLL_EXPORT_VAR(variable, libname)   
 
-#elif defined(__APPLE__) 
+#elif defined(__APPLE__) || defined(EA_PLATFORM_STADIA)
 
 #define PLATFORM_DLL_MODULE(name,attr,major,minor) 
 

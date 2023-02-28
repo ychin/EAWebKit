@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\IEAController\Config.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\IEAController\Config.h">
       <Filter>include\IEAController</Filter>
     </ClInclude>
-    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\IEAController\IEAController.h">
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\include\IEAController\IEAController.h">
       <Filter>include\IEAController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\source\IEAController\IEAController.cpp">
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAController\local_1.08.00\source\IEAController\IEAController.cpp">
       <Filter>source\IEAController</Filter>
     </ClCompile>
   </ItemGroup>

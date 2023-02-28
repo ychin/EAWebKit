@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="doc">
+      <UniqueIdentifier>{DFB4099A-82DA-E6E3-65E3-1092D1C3EC8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\html">
+      <UniqueIdentifier>{19D303E2-3E96-BED5-B277-E2BAE4A46210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\html\img">
+      <UniqueIdentifier>{700DABE3-E392-CFFB-DD19-FB49EF92BF68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts">
+      <UniqueIdentifier>{EBD83D84-3586-9BAD-7398-E0ED3BA1AB5B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts\highlight">
+      <UniqueIdentifier>{64B4BEFF-B21F-0760-DEF9-0D5E85B67231}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\scripts\highlight\languages">
+      <UniqueIdentifier>{4EE6F5F4-39A7-2A56-61D1-86E244DAE313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc\style_sheet">
+      <UniqueIdentifier>{92502084-1DA1-F0D7-29E7-AAAE542CDB22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0FEB36D4-DED9-B510-4A82-8CE6435F7E81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAUser">
+      <UniqueIdentifier>{6B4567CB-64C0-E682-5A63-70232025E7CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\gdk">
+      <UniqueIdentifier>{EBA7D3BE-AFDD-4CE4-D620-F82B165AF061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\gdk\EAUser">
+      <UniqueIdentifier>{1E93820A-C899-8991-8C08-CCDC289FDFA2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{5A85C5D6-CF62-A432-DADB-C2831F0F295F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{F438CD36-9A9B-08FA-222C-0DC9EBFE35EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\gdk">
+      <UniqueIdentifier>{285CB9C7-9007-D86F-BF29-CDF6FC65EBB3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\html\changelog.html">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\html\img\logo.png">
+      <Filter>doc\html\img</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\html\index.html">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\html\toc.js">
+      <Filter>doc\html</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\index.html">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\highlight.js">
+      <Filter>doc\scripts\highlight</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\1c.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\axapta.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\dynamic.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\javascript.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\rib.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\rsl.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\smalltalk.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\sql.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\static.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\vbscript.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\scripts\highlight\languages\www.js">
+      <Filter>doc\scripts\highlight\languages</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\doc\style_sheet\style_sheet.css">
+      <Filter>doc\style_sheet</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\EAUser.build" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\Manifest.xml" />
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\scripts\EAUser_strip.py">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\scripts\initialize.xml">
+      <Filter>scripts</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include\EAUser\EAUser.h">
+      <Filter>include\EAUser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include\EAUser\version.h">
+      <Filter>include\EAUser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\include\gdk\EAUser\GDKUser.h">
+      <Filter>include\gdk\EAUser</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\source\EAUserCoreAllocator.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\EAWebKitSupportPackages\EAUser\local_1.09.08\source\gdk\GDKUser.cpp">
+      <Filter>source\gdk</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

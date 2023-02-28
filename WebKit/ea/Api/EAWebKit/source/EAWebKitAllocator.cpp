@@ -106,7 +106,7 @@ class DefaultAllocator : public Allocator
 		#if defined(_MSC_VER)
 			return _aligned_malloc(size, alignment);
 		#elif defined(__GNUC__) 
-            #if defined(EA_PLATFORM_OSX)
+            #if defined(EA_PLATFORM_OSX) || defined(EA_PLATFORM_STADIA)
             	void* mem;
             	posix_memalign(&mem,alignment,size); 
             	return mem;

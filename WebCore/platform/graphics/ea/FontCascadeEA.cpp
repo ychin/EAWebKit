@@ -36,7 +36,7 @@
 #include <EAWebKit/EAWebKitTextInterface.h>
 #include <internal/include/EAWebKitAssert.h>
 #include <EASTL/fixed_vector.h>
-#include <internal/include/EAWebkit_p.h>
+#include <internal/include/EAWebKit_p.h>
 #include <wtf/MathExtras.h>
 #include "PlatformContextCairo.h"
 #include "TextRun.h"
@@ -557,14 +557,14 @@ __inline bool needSwap(const UChar symbol)
         symbol == '(' ||
         symbol == ')' ||
         symbol == '.' ||
+        symbol == '!' ||
+        symbol == '-' ||
         symbol == ',' ||
         symbol == ';' ||
         symbol == ':' ||
         symbol == '\'' ||
         symbol == '\"' ||
-        symbol == 160 ||  // Unicode Character 'NO-BREAK SPACE' 
-        symbol == 1548 || // This is "Arabic Comma" symbol.
-        symbol == 1563)   // This is "Arabic Semicolon" symbol.
+        symbol == 160)
     {
         return true;
     }

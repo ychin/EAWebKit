@@ -1,0 +1,1063 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>EAText Changes</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  <meta name="author" content="Paul Pedriana">
+  <meta name="description" content="Describes changes between package versions.">
+
+  <style type="text/css">
+	.small {
+	     font-size: smaller
+    }
+  </style>
+</head>
+<body>
+<h1>EAText Changes</h1>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Unreleased</span> (TBD, 2019)</p>
+<ul>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.21.00</span> (July 24, 2019)</p>
+<ul>
+	<li>Modified code to compile with the EAIO 3.00.00.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.07</span> (June 7, 2019)</p>
+<ul>
+	<li>Set the overflow allocator in EATextTypesetter to prevent "Allocation without arena" exceptions. This happens in the rare case that the TextStyle vector needs to resize.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.06</span> (February 15, 2019)</p>
+<ul>
+	<li><a href="https://jira.frostbite.ea.com/browse/FB-104730">FB-104730</a> Fixed wrapping for the edge case of where the layout width is too narrow for a single word.
+		<ul>
+		<li>Fixed <span class="small">kTWSoft</span> so that text no longer overflows (except if the first character on the line doesn't fit).</li>
+		<li><span class="small">kTWEmergency</span> behaves like <span class="small">kTWSoft</span> when the first word doesn't fit.</li>
+		<li><span class="small">kTWWrap</span> is no longer converted to <span class="small">kTWEmergency</span> when wrapping. If the first word doesn't fit, it will overflow.</li></ul></li>
+	</li>
+	<li>Fixed Assert that was caused by incorrectly resizing the glyph arrays when languags that use multi-character glyphs (Arabic).</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.05</span> (September 7, 2018)</p>
+<ul>
+	<li>Removed unneeded EAText.build override EA_TEXT_REPLACEMENT_CHAR</li>
+	<li>Fixed build warnings on EAText for linux and other config environments. Code was calling memcpy on virtual memory.</li>
+	<li>Fixed build warnings in linux, mac, and other configurations that the code was calling memset on a pointer to dynamic class 'TextStyle'. The vtable pointer would be overwritten.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.04</span> (August 27, 2018 - unstable)</p>
+<ul>
+	<li>Added missing code for exposing EAText replacement character configuration so it can be defined in the licensee's masterconfig.</li>
+	<li>Using the default allocator for Typesetter::mBidiRunInfoArray. This fixes a crash in Frostbite when we are trying to use more than the fixed size.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.03</span> (July 24, 2018)</p>
+<ul>
+	<li>Expose EAText replacement character configuration so it can be defined in the licensee's masterconfig.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.01</span> (May 9, 2018)</p>
+<ul>
+    <li>TextStyle::Reset was not calling it's parent (FontStyle) Reset function. This was preventing all the properties from being reset.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.20.00</span> (April 25, 2018)</p>
+<ul>
+    <li>Multi-line text ignores trailing whitespace on each line so text that is horizontally centered appears centered correctly. <a href="https://jira.frostbite.ea.com/browse/FB-42750">FB-42750</a></li>
+    <li>Changes to LineMetrics fields: Deprecated fields mnVisibleLineLength and mfVisibleSpace. Added fields mnContentStartIndex, mnTrailingSpaceIndex, mfLeadingSpace, and mfTrailingSpace. <a href="https://jira.frostbite.ea.com/browse/FB-42750">FB-42750</a></li>
+	<li>Fixed for EAText testing crash in Typesetter Arabic OTF Coverage. Adding a check to make sure that the coverage format is a valid one when looking for the coverage index. If the format isn't valid, return -1. The two valid formats are 1 & 2. However, EAText allows invalid formats. If we allow invalid formats; we can't assume the default is a valid format.</li>
+	<li>Removing the assumption that all fonts have Latin characters for the font stripping feature. When the Latin character wasn't included it would say the character was included, but would show an invalid glyph.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.19.00</span> (February 23, 2018)</p>
+<ul>
+	<li>Fixed bug with custom kerning. <a href="https://jira.frostbite.ea.com/browse/FB-42737">FB-42737</a></li>
+	<li>Fixed bug with Reverse Capitalization. Non alphabet characters were being stripped. E.g. "aB12Cd" would become "AbcD"</li>
+	<li>Changed default number of characters to analyze when word-wrapping. Previous code was always laying out 16K chars before finding where to wrap.<br/>
+	Large chunks of text like the EULA were paying a high price to re-layout thousands of unnecessary characters on every line. <a href="https://jira.frostbite.ea.com/browse/FB-81518">FB-81518</a><br/>
+	New code uses the pixel width of the layout as a guide for how many chars to analyze when wrapping. For a simple EULA-like case, layout time went from ~450ms to ~70ms.
+	</li>
+	<li>Fixed bug where password bullet symbol was not appearing for certain fonts by adding more fall back characters. The order: 0x25CF, 0x2022, 0x2219, 0x2B24, 0x2218, 0x25E6, '*' <a href="https://jira.frostbite.ea.com/browse/FB-74926">FB-74926</a></li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.18.00</span> (January 25th, 2018)</p>
+<ul>
+	<li>Fixed incorrect test that failed only when there are multiple glyph caches. <a href=" https://jira.frostbite.ea.com/browse/FB-80471">FB-80471</a></li>
+	<li>Only calculate supported chars once for each FaceData. <a href="https://jira.frostbite.ea.com/browse/FB-80551">FB-80551</a> This change affects the OutlineFont class.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.17.01</span> (January 17th, 2018)</p>
+<ul>
+	<li>Upgraded EAText to work with FreeType 2.9.0.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.17.00</span> (December 14, 2017)</p>
+<ul>
+	<li>Made RectangleSet and SpanList not use fixed size containers. Reason being that we want more items than the fixed size. Additionally, the overflow functionality doesn't work in Frostbite because it's calling malloc -- and no arena. That is not allowed.<br/>
+	Additionally, the description in fixed_list is:<br/>
+	"The primary downside to a fixed_list is that the number of nodes it can contain is fixed upon its declaration. If you want a fixed_list that doesn't have this limitation, then you probably don't want a fixed_list. You can always create your own memory allocator that works the way you want."<br/><a href="http://tib-codecollab2/ui#review:id=117236">Code Review.</a></li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.16.01</span> (December 4, 2017)</p>
+<ul>
+	<li>Fixed an issue where letter spacing was being applied twice. <a href="https://jira.frostbite.ea.com/browse/FB-69768">link</a></li>
+	<li>Fixed an issue where right-aligned text using a Letter Spacing would cause the text to go out-of-bounds. This is directly related to the letter spacing being applied twice. <a href="https://jira.frostbite.ea.com/browse/FB-78878">link</a></li>
+	<li>BaselineLayout::FollowBaseline, which allows for laying out curved text, now takes an additional optional parameter: letterSpacing. This needs to be passed to the layout code now due to fixing the aforementioned letter spacing bugs.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.16.00</span> (June 19, 2017)</p>
+<ul>
+    <li>Replaces EAText's default glyph packing algorithm with a much improved algorithm. Texture space is used much more efficiently at the trade off of a small memory overhead for internal tracking, and a slightly higher runtime cost when inserting new glyphs. To revert to the old behaviour you can use GlyphCache::SetOption(kOptionUseGlyphBinPacking, 0)</li>
+	<li>Added an option for the FontServer to prefer the most recently added font source when the fonts are the same. This feature is off by default but can be useful for teams who don't have control over where fonts are being loaded from and require their fonts to always be preferred over fonts which may have registered before they could. Enabled with FontServer::SetOption(kOptionPreferNewFontsOnMatch, 1) </li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.15.02</span> (October 21st, 2016)</p>
+<ul>
+    <li>Fixed a bug in NormalizeC function which would prevent writing out Hangul/Jamo text unless an unnecessarily large buffer was passed in.</li>
+	<li>Fix for Normalization Composite Forms which would fail on series of successive Starter Characters, causing larger than expected substrings to be copied into the output buffer resulting in duplicate characters appearing when normalizing (very apparent when normalizing a series of ASCII characters)</li>
+	<li>Added support for composing the Hangul character 0xD5C8</li>
+	<li>Fixed implementation of IsNormalized() to provide correct results whereas previously users may simply crash. It should be noted that this implementation internally calls Normalize() so if the users only intent is to check if a string is not normalized in order to normalize the string, they should instead simply call Normalize unitlaterally and opt not to use IsNormalized() at all until an improved version can be implemented.</li>
+	<li>Fixed a bug in LayoutParagraph where the TextStyle's mfLineSpacing value was being ignored.</li>
+	<li>Fixed a bug in the typesetter where TextStyle mLetterSpacing was not being honoured.</li>
+	<li>Fixed a potential issue in the FollowBaseline function to prevent cases where we can't fit a glyph on a curved baseline and end up looping forever.</li>
+	<li>Increased the mCharCount in GlyphInfo bitfield size to allow up to a series of 7 glyphs to be substitutes as part of text shaping common for Arabic text. This change does increase the size of the GlyphInfo struct by 1 byte to a total of 5.</li>
+	<li>Added additional assert information to help prevent truncation errors when large values are stored in the Typesetter::GlyphInfo packed struct</li>
+	<li>Updated Build and Initialize scripts to remove warnings generated by Framework 3.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.15.01</span> (August 10th, 2016)</p>
+<ul>
+    <li>Fixed LineLayouts for the typesetter not being constructed with the typesetter's allocator.</li>
+	<li>Submitting a fix for line length for RTL text which was affecting UI in Tunguska.</li>
+	<li>Fixed the font matching algorithm to not perform extra work when we want the typesetter to fail when it can't find a font.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.15.00</span> (January 21st, 2016)</p>
+<ul>
+    <li>Removed support for the long since deprecated Font library, Font Fusion.</li>
+    <li>Fixed warnings generated by VS2015 Update 1.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.14.07</span> (June 12th, 2015)</p>
+<ul>
+    <li>Fixed a problem with the Typesetter where it was possible for font pointers to be be stored internally in LineLayout objects and then become stale after a call to FreeUnusedFonts on another thread.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.14.06</span> (May 4th, 2015)</p>
+<ul>
+    <li>Corrects a rare timing issue where if a user requests an unmanaged font which is not present in the font server and is returned the font server's embedded font. Upon destruction of the font, it was previously possible for the underlying memory stream to have been prematurely destroyed - this has been fixed.</li>
+    <li>Corrects the descent value used when reading the OS2 table for outline fonts which was previously the wrong sign</li>
+    <li>Provides EAText with a mechanism for remembering which fonts it created when a font requests a font which cannot be served by the font server. This prevents the FontServer from recreating the same approximate font each time the user asks for the font we don't have - since new fonts were being created your glyph cache may have inflated. This change fixes that.
+        <ul><li>You may use <span class="small">FontServer::SetOption(kOptionRequireFontStyleMatch, 1)</style> to have EAText assert when a font is being approximated.</li></ul></li>
+    <li>Changed FollowBaseline function() to recalculate the position of placed glyphs if there was ever an overlap detected since our only decent fix for overlapping glyphs is to shift them to the right which can result in "centered" text being off-center. </li>
+    <li>Fixed the GlyphCache to properly initialize the TextureInfoArray's overflow allocator.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.14.05</span> (March 16th, 2015)</p>
+<ul>
+    <li>We now ensure all allocations for the collator's Trie are done through the EAText allocator regardless of move operations</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.14.04</span> (February 23rd, 2015)</p>
+<ul>
+    <li>Fixed errors compiling with VS2015.</li>
+    <li>Added a heuristic to how font metrics are read to compensate for when a font creator may have made specified invalid values in a font's metrics tables. This has been an issue with a number of fonts created in EA and is actually common in a not small portion of fonts in the world to the point that Windows seems to have their own heuristic for correcting bad fonts as well.</li>
+    <li>Puts in some code to help avoid a potential issue when comparing glyphInfo types in the GlyphCache. Specifically, if a font was freed but the memory wasn't overwritten, someone using a stale pointer could theoretically have a glyphInfo item which could collide with a freed font's gyphInfo.</li>
+    <li>Increases the strength of a font lookup check for determining if the selected font to be returned by the font server requested by the server matches their requirements more finely.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.14.03</span> (February 9th, 2015)</p>
+<ul>
+    <li>Fixed a bug in the glyph cache where font corruption could occur in rare situations if two fonts had identical font descriptions (FontDescription operator== returned true incorrectly).</li>
+    <li>Modified <span class="small">operator ==</span> for the <span class="small">FontDescription</span> class to compare additional data members that were previously not included in the comparison.</li>
+    <li>EAText now ensures glyphs on a texture atlas have 'mnGlyphPadding' number of zero-alpha pixels surrounding the actual glyph. This is helpful to prevent leaking from one glyph into another when doing effect such as blurring.</li>
+    <li>Added Bidirectional Paired Bracket support as specified by Unicode Standard 7.0.0. This support should likely fix any character ordering issues discovered when trying to render right-to-left text when mixed with various types of brackets.</li>
+    <li>EAText no longer depends on DirectX if the version of the WindowsSDK being built against is at least major version 8.</li>
+    <li>Adds support for premultiplied alpha on RBGA textures. This can be enabled via the GlyphCache's <span class="small">SetOption(kOptionPremultipliedOutput, 1)</span> function</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">1.14.02</span> (December 11th, 2014)</p>
+<ul>
+    <li>Fixed bug in LineLayout::GetBoundingBox() where bVisible arguments was having the reverse effect of that described by documentation.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.01</span> (September 15th, 2014)</p>
+<ul>
+    <li>Allows users to explicitly specify the limit for the font family name array by defining the global property "EAText.EATEXT_FAMILY_NAME_ARRAY_CAPACITY=xxxx"</li>
+    <li>Fixed compilers warning on iphone-arm64 and iphonesim-x64 configurations.</li>
+    <li>Eliminated a global constructor that could cause a crash during program startup or shutdown.</li>
+    <li>Modified the default setting for <span class="small">EAText.EATEXT_USE_FREETYPE</span> to 1.  Users who want to use FontFusion instead will need to ensure the define is set to 0.  However,
+        we strongly encourage users to use FreeType to avoid licensing costs.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.14.00</span> (June, 2014)</p>
+<ul>
+    <li>Removed unsupported platforms from the codebase.</li>
+    <li>Fixed several compiler warnings.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.13.00</span> (April 15, 2014)</p>
+<ul>
+  <li>Added support for Unicode 6.3.0 Normalization. This support adds Composition, Decomposition, Compatability Composition and Compatability Decomposition.</li>
+    <li>Added support for Unicode 6.3.0 Collation. EAText currently supports collation of unicode characters against the list of characters listed in
+        the <a href="Language Characters.html">Language Characters</a> document. Any other characters will have their collation weighting derived according to the standard.
+        Additionally, the EAText collator can be customized to weight characters differently as specified within the standard specifically: Shifted, IgnoreSP, Blanked, Shift-Trimmed and Non-Ignorable.
+        <br />
+        EAText currently only supports collation element weights based on the Default Unicode Collation Element Table (DUCET) which should be sufficient for most cases across
+    many locales. If you require support for custom tailoring to the Collation Element Table beyond the weights outlined in the DUCET please contact EATechCoreSupport@ea.com.</li>
+    <li>Fixed Typesetter constructor to pass on its allocator to mSchedule and mBidiRunInfoArray. Reported by Skyler Dawson (Mass Effect team). </li>
+    <li>Added support for sub-pixel-antialiasing. This implements the EAText side of the problem, whereas the app's rendering engine must provide the vertex and fragment shaders. This support requires enabling <span class="small">FT_CONFIG_OPTION_SUBPIXEL_RENDERING</span> in FreeType, which requires legal approval and licensing until sometime in the year 2019 when the relevant patents expire. There is a new <a href="Sub-pixel%20Antialiasing%20(ClearType).html">document</a> available on this topic. You can use the EAText/tools/ftview.exe utility to experiment with sub-pixel anti-aliasing. As of this writing EATextViewer doesn't yet support it natively. </li>
+    <li>Added formal support for defining the EAText Char type as char32_t or wchar_t in addition to the existing default char16_t. The ability to do that was previously possible but not formally exposed nor being tested, whereas now it is. You can enable this via the config defines: <span class="small">EATEXT_CHAR_AS_WCHAR</span>, <span class="small">EATEXT_CHAR_AS_CHAR32</span>, <span class="small">EATEXT_CHAR_AS_CHAR16</span> (default).</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.12.00</span> (February 11, 2014)</p>
+<ul>
+  <li>Fixed a bug in EATextEffects in which SetGlyphSmooth 0 under FreeType resulted in mangled glyphs. Reported by Magnus Sjoberg. </li>
+  <li>Added identifiers, functionality, and documentation for supporting sub-pixel anti-aliasing.</li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Added 565 support for smaller sized sub-pixel anti-aliasing textures.</p>
+  </li>
+  <li>
+    <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"> Added Apple and Unix implementations of GetSystemFontDirectory.</p>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.11.01</span> (December 1, 2013)</p>
+<ul>
+  <li>Fixed a bug in EATextStyleReader that could cause it to mistakenly fail when there is no newline after the last style. </li>
+  <li>Fixed a bug in which the Bidi system could crash due to a negative array index. Reported by Arpit Baldeva.</li>
+  <li>Fixed a bug in Layout::SetLayoutFonts. Reported by Jeff Price. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.11.00</span> (August 6th, 2013)</p>
+<ul>
+  <li>Fixed font family name identification for the case of using FreeType as a back-end font file reading library. Previously you could get a case whereby the Font Server thinks two different Adobe fonts are equal when they aren't, due to how FreeType reports font family names by default. Reported separately by Chris Sidhall and 
+
+
+Shu Zhang.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;">Version 1.10.00</span> (July 22nd, 2013)</p>
+<ul>
+  <li>Added UnicodeOptions to EATextUnicode.h/cpp. This allows for Unicode-related functions to have a generic set of options. The primary motivation for this is to allow the non-0-termination of strings and for supplying a locale context to functions.</li>
+  <li>Fixed thread safety for the case of using FreeType. Provided by Arpit Baldeva. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.10</span> (June 3rd, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Fixed non-bulk-build failure</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.09</span> (May 6th, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Made it so that FontServer enables the FontServer::kOptionOpenTypeFeatures option when the global <span class="small">EATEXT_OPENTYPE_ENABLED</span> option is enabled.</li>
+  <li>Made it so that all containers use ICoreAllocator as a fallback.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.08</span> (April 3rd, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>GCC warning fixes.</li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.07</span> (March 4th, 2013)</p>
+<p>Changes</p>
+<ul>
+  <li>Added some additional custom allocator support to some Manager containers that were previously missing it. Provided by Tim Johansson.</li>
+  <li>Added explicit static (as opposed to DLL) support to the nant .build file. This allows you to build EAText as a static library even if nant is set to build packages as DLLs. Provided by Tim Johansson.</li>
+  <li>Added EASkeleton GlyphCache.</li>
+  <li>Removed the assert from GlyphCache:: ~GlyphCache, as it was getting in the way of flexible user usage.</li>
+</ul>
+
+
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.06</span> (January 7th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Revised FontServer::GetFont to handle scoring of font pitch matches differently. Now it won't consider font pitch for matches if the family name has been specified in the font request. This allows things to work better in practice.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.05</span> (November 1, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added checks for left-to-right and right-to-left marks in GetBidiClass. This allows them to have the intended standard effect on bidirectional layout. Implemented by Danilo Jose Guerrero Rodriguez.</li>
+  <li>Added a new config option: <span class="small">EATEXT_WESTERN_IDEOGRAPHIC_LINE_BREAK_ENABLED</span><br>
+  Controls whether Japanese text uses Western-style line breaking only at spaces as opposed to conventional Asian-style line breaking which can occur between most characters. It turns out that some game teams like to tailor their text so that it breaks at the most pleasing locations in their UIs and this can best be controlled via a Western-style line breaking and zero-width spaces applied at intentional locations.</li>
+  <li>Augmented EALexer.h to be more flexible in the character types it accepts. This change for all practical purposes affects only users of the XHTML package, which uses EAText/EALexer.h. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.04 </span>(August 6th, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Revised FreeType glyph rendering code to use ft_pixel_mode_mono instead of mFontDescription.mSmooth. Apparently recent versions of FreeType can disobey your request to build a smoothed font and build a monchrome one anyway. Without this fix you could get garbled looking glyphs under FreeType in uncommon cases. </li>
+  <li>Fixed memory leak when releasing all styles.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.03 </span>(July 3, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added EATextCache kOptionAssertOnFailure, which allows you to specify that it's OK for texture cache overflows to occur. The primary use case for this is if you are manually handling texture overflow. It was also useful for the EAText unit tests, which in one place simulate manually handling texture overflow.</li>
+  <li>Fixed the upper and lower case conversion functions, via correcting errors in their lookup tables. Previously Greek and Russian languages were broken in this respect. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.02 </span>(June 4, 2012)</p>
+<p>Changes</p>
+<ul>
+	<li>Added support for new windows runtime (<span class="small">winrt</span>).</li>
+    <li>Made the EA::Text::Shutdown function call ShutdownFontServer and ShutdownStyleManager.</li>
+    <li>Made GetDefaultLayout/SetDefaultLayout, GetStyleManager/SetStyleManager, and GetFontServer/SetFontServer be DLL-exported. </li>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.01 </span>(May 7, 2012)</p>
+<p>Additions</p>
+<ul>
+  <li>Added kTextureFormatABGR.</li>
+  <li>Added FontServer::GetOption to match SetOption. </li>
+  <li>Added Font decoration thickness support if it is not specified in the font file.</li>
+  <li>Added GlyphCache kOptionColumnWidthScale. This is useful for handling high resolution displays more efficiently, where your font sizes are all much bigger than normal.</li>
+  <li>Added FontServer::kOptionRequireFontFamilyMatch which allows the user to control default behavior of FontServer regarding the matching done by GetFont. This option allows you to specify that FontServer should do nothing, assert, or fail if the user requested font name doesn't match anything found. By doing nothing, FontServer may return a font of a different family than requested in the case that the requested name isn't present.</li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fix bug where the text decoration were not drawn properly in the case of a baseline Y-axis coordinate origin. Thanks to Ivan Vasilets for reporting the issue.</li>
+  <li>Fixed bug in the definition of kWordBreakTypeAll.</li>
+  <li>Fixed bug in WordBreakIterator where it would return the wrong value if you OR'd break types together instead of using them individually. Reported by Chris Sidhall.</li>
+</ul>
+<p>Changes</p>
+<ul>
+  <li>Improved the OutlineFont::IsCharSupported accuracy while retaining speed by using a bitvector which has cached results. The downside to this change is that for large fonts (typially Asian fonts), it increases per-font memory usage by as much as 8K. It also can change the chosen glyph set for a line rendered with multiple fonts, though usually for the better. A followup change may be needed to bring down the 8K memory via some optimizations. </li>
+  <li>Note: A known problem is Y-up font system exists and it's support is being evaluated.</li>
+  <li>Revised the documented minimum glyph cache texture size to be 128 instead of 64. In practice the texture size can be smaller than 128, but it requires the user to change some glyph cache options. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.09.00 </span>(March 01, 2012)</p>
+<p>Changes</p>
+<ul>
+  <li>Added PSVita platform support (<span class="small">EA_PLATFORM_PSP2</span>).</li>
+  <li>Fixed bug in SentenceBreakIterator::GetNextSentenceBreak in which it would ignore paragraph breaks. </li>
+  <li>Slightly revised Typesetter::UpdateFontSelection to try to keep the same font for a block of text, as opposed to changing fonts mid-string for the rest of the string. </li>
+  <li>Fixed EATextStyleReader's reading of letter-spacing, word-spacing, and line-spacing. Reported by Sam Moggach.</li>
+  <li>Fixed EATextStyleReader::CurrentColumn bug; it was previously always returning 0. Reported by Ivan Vasilets.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.08.02 </span>(December 21, 2011)</p>
+<p>Changes</p>
+<ul>
+  <li>Added an mStyleName member to the TextStyle struct, and made TextStyleReader fill in this name during style reading. Requested by Ross Smith. </li>
+  <li>Did a few changes to ensure that the memory allocator is not looked up before main(). Note that previously it wasn't allocating memory before main but merely looking up the global default allocator, and this change makes it so that even the lookup doesn't occur. Submitted by Bob Summerwill and his team.</li>
+  <li>Updated the unit tests to be compatible with EASTL 1.13.03, as it changed the <span class="small">EASTL_STD_ITERATOR_CATEGORY_ENABLED</span> default value. </li>
+  <li>Fixed a compile warning in EATextStyleReader under very recent versions of GCC.</li>
+  <li>Updated EA::Text::Shutdown to call ResetEffectBitmaps, so that any memory allocated to static EffectsBitmaps gets freed.</li>
+  <li>Updated EffectsBitmaps to not call mpAllocator-&gt;Free(mpData) unless mpData is non-NULL. This allows the mpAllocator to go stale and EffectsBitmaps doesn't care if EffectsBitmaps isn't being used.</li>
+  <li>Added inline GetAllocator/SetAllocator functions to EffectsBitmaps. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.08.01</span> (October 19, 2011)</p>
+<p>Additions</p>
+<ul>
+  <li>Added support for 32 bit wchar_t. This can be configured via the <span class="small">EATEXT_CHAR_TYPE</span> and <span class="small">EATEXT_FILE_PATH_CHAR_TYPE</span> defines.</li>
+  <li>Added support for the clang compiler, which is new for the iPhone iOS5 SDK. This amounted simply to avoiding a couple compiler warnings. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Made it so that EATextLayout frees its static memory from EA::Text::Shutdown as opposed to freeing it in the runtime library exit. Previously it might seem to the user that memory was leaking when it really wasn't, though with some configurations it could conceivably crash in the case that the user kills the memory heap at the end of the execution of main. </li>
+</ul>
+Changes
+<ul>
+  <li>EATextStyleReader no longer has a 256 char / 16 arg limit on the style callback text. </li>
+  <li>Added the <span class="small">EATEXT_LAYOUT_ENABLED</span> option, which will eventually be used to kill EATextLayout. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.08.00</span> (August 18, 2011)</p>
+<p>Additions</p>
+<ul>
+  <li>Added GlyphCache::GetOption, to retrieve option values, along with a new option: kOptionMaxTextureCount. The ability to set the max texture count was always present, but you weren't able to read it via GetOption. </li>
+  <li>Added functionality to EATextCollation and EATextUnicode. Added IsLower/IsUpper (which just map to the existing GetCase). Added ToLower/ToUpper. Added Collator::Compare(const Char* p1, uint32_t p1Length, const Char* p2, uint32_t p2Length). Revised the Collator to be better, though it still isn't Unicode-correct except for running under Windows. Added IsCharDigit(Char c, int&amp; digit). Added GetDecompositionType(Char c). Added ASCIICompatibleEncoding(const Char* pTextInput, uint32_t nTextLength, char8_t* pTextOutput, uint32_t nTextOutputCapacity), but the implementation is a dummy implementation for now which just echoes the text back. Made GetCharName do something useful on non-Windows platforms. </li>
+</ul>
+<p>Bug Fixes</p>
+<ul>
+  <li>Fixed a compile error under EDG-based compilers for the case of EASTL hash tables that needed to declare a custom hash function but weren't. </li>
+  <li>Fixed a possible thread collision in EATextOutline font when using recent versions of FontFusion. Previously there wasn't a thread collision because the affected EAText code was reading const data and documenting that it was so. But a recent change we made to the FontFusion config appears to have made it no longer be const and triggered a thread collision.</li>
+  <li>Fixed some Arabic ligature support in Typesetter. Implemented by  Jose Carlos Bellido Bello and C&eacute;sar Puerta.</li>
+  <li>Fixed an Arabic typesetting bug related to inherited script characters. Submitted by C&eacute;sar Puerta.</li>
+  <li>Fixed a font leak in FontServer::FreeUnusedFonts. Reported by C&eacute;sar Puerta.</li>
+  <li>Fixed a bug in Layout::JustifyGlyphs, though Layout is no longer supported and was replaced by Typesetter a couple years ago.</li>
+  <li>Fixed a bug in LineLayout::LineLayout which wasn't setting the EAText allocator for some members but was just using the default one. Reported by C&eacute;sar Puerta.</li>
+  <li>Fixed a bug where setting the config option <span class="small">EATEXT_STYLE_MANAGER_ENABLED</span> to 0 would result in a compile error. Reported by C&eacute;sar Puerta.</li>
+  <li>Fixed internal Strlen function compiler warning that users could encounter.</li>
+</ul>
+Changes
+<ul>
+  <li>GlyphCache now supports storing scaling factors with glyphs. Implemented by C&eacute;sar Puerta. </li>
+  <li>EATextBreak so that now supports the user-supplied option flags. Previously it ignored them due to lack of support for them. </li>
+  <li>Added protection for the case that Fonts are used after the font system Shutdown has been called. Previously, when using FreeType you could get crashes when calling FreeType APIs after FreeType has been shut down. </li>
+  <li>Made it so that when using FontFusion, glyphs are rendered better when the user specifies kOptionEnableHinting=0 for fonts that don't have hinting. We are looking into making this functionality automatic: draw in &quot;TV mode&quot; when hints aren't present in a font, but draw in &quot;natural grid fit&quot; (hinting) mode when hinting is present. The problem is that Font Fusion doesn't provide an API to tell you if a font has hinting. </li>
+  <li>GetCharName now does at least something on all platforms: it prints the proper name on Windows as before, and now prints it's hex value on other platforms.</li>
+  <li>Added some code to auto-detect fonts that don't have hinting and make them render better by default.</li>
+  <li>Misc unit test cleanup and updates.</li>
+  <li>Added some reference OpenGL ES glyph cache code, though it's disabled until it can be tested.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.07.02</span> (May 4, 2011)</p>
+<p>Release notes </p>
+<ul>
+  <li>Playbook support has been verified</li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added codestripper support</li>
+</ul>
+<p>Bug Fixes</p>
+<ul><li>Fixed a calculation bug for the case of drawing paragraphs with kVABottom alignment. Reported by Patrick Laflamme.</li>
+  <li>Fixed FreeType support, which was broken in the last release or two. </li>
+  <li>Fixed bug in GetTextPositionFromDisplayPosition that would result in FLT_MIN (1e-38) instead of 0. Reported by 
+
+
+Ken Murfitt and Andrew Willmott. It's not known if this bug had any practical effect on users. </li>
+</ul>
+Changes
+<ul>
+  <li>Made it so <span class="small">EATEXT_USE_FREETYPE</span> no longer needs to be defined by all projects that use EAText. Previously EAText used FreeType headers in EAText headers and thus exposed FreeType to users of EAText instead of keeing the includes private within EAText. A result is that now EAText does a small extra memory allocation per-font whereas previously that memory came from the OutlineFont class instance data. </li>
+  <li>FontServer::AddFont and AddFace return value has been clarified; it now documents (and behaves) that the return value includes only fonts that have been newly added and weren't previously present. </li>
+  <li>Added ability for FontServer AddFont and AddFace to tell you what the resulting FontDescription  was. </li>
+  <li>Implemented workaround for bug in some versions of Font Fusion with respect to reading the font descent value. </li>
+  <li>Moved mPixelData from BmpTextureInfo to TextureInfo. This allows for easier writing of custom font implementations.</li>
+  <li>Added a 'bool bIgnoreSizeLimits' parameter to GlyphCache::AddTextureInfo.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.07.01</span> (November 17, 2010)</p>
+<p>Release notes:</p>
+<ul>
+  <li>Due to a bug in the SN PS3 compiler in the 340.001 SDK, unit tests of Typesetter fail, and possibly user code as well. More recent compiler versions seem to have fixed the bug.</li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added a print EXIT(n) at the end of the unit tests on wii to support EARunner_Wii.</li>
+  <li>Added OpenGL ES support, via EATextGlyphCache_OpenGL_ES.cpp.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed a bug on x64 which could result in an assert firing in create_array or <span class="small">EATEXT_SA_NEW_ARRAY</span>. Reported by Stephen Kiazyk.</li>
+  <li>Fixed a bug where EATextBitmap's allocator wasn't being NULLed on Shutdown. </li>
+  <li>Fixed an EATextStyle bug for operator= when assigning to self.</li>
+  <li>Fixed a unit test compile error under Unix. </li>
+  <li>Fixed a memory leak in the demo app. </li>
+  <li>Fixed possible compiler warning in EffectsBitmaps::EndUse.</li>
+</ul>
+Changes
+<ul>
+  <li>Set <span class="small">EATEXT_PS3_RGBA_COMPAT</span> to default to 0 instead of 1.</li>
+  <li>Unit tests now pass on iPhone. Previously there were some cases of char16_t / wchar_t conflicts.</li>
+  <li>Limited the  GetSystemFontDirectory tests to Windows as that function is implemented only on Windows.</li>
+  <li>Unit tests now run on Android (via replacing std STL usage with EASTL).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.07.00</span> (June 01, 2010)</p>
+<p>Release notes </p>
+<ul>
+  <li>This version has been updated to support PS3 SN 330, CodeWarrior 1.3, and Android platform.</li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Implemented the GetCase and ConvertCase functions. They were previously merely stubs.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in EATextOutline font (.ttf font support) for the usage of memory-based fonts as opposed to stream-based fonts. Reported by Patrick Laflamme.</li>
+  <li>Fixed bug in EATextTypesetter (layout) related to y-up coordinate systems. Reported by Patrick Laflamme.</li>
+  <li>Fixed bug in EATextEffects related to EffectsBitmaps. Reported by 
+
+
+Tomas Ramos.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.06.02</span> (April 30, 2010)</p>
+<p>Additions</p>
+<ul>
+  <li>This version supports mobile platforms, including iPhone, Palm, Android, Samsung, LiMo.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Added ability for Korean line breaking to act like Western text. This is considered a bug because it should have been default behaviour for most layout situations previously. Reported by Wa Kan. </li>
+  <li>Revised EATextEffects to preserve monospaced font spacing in the presence of effects. Previously, applying effects would make the font no longer act monospaced. </li>
+</ul>
+Changes
+<ul>
+  <li>Updated code as needed to support latest compilers and platforms. </li>
+  <li>Disabled strict aliasing on PS3 due to optimized code generation problems. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.06.01</span> (October 29, 2009)</p>
+<p>Additions</p>
+<ul>
+  <li>Added FontServer::FreeUnusedFonts, which releases any fonts which only the FontServer has references to. This allows for improved memory usage. Suggested by Tobin Armour.</li>
+  <li>Added OutlineFont::ResetEffectBitmaps, which is described below.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed a bug in EATextOutlineFont related to mpFFT2K-&gt;baseAddr that would result in an assertion failure and memory leak for fonts with effects. This bug was introduced in EAText 1.06.00 (i.e. the most recent release). </li>
+</ul>
+Changes
+<ul>
+  <li>Made it so you can call OutlineFont::SetSmoothing before opening the font. Previously, opening the font would result in clearing any value that the user might have set with SetSmoothing.</li>
+  <li>Revised the Effects feature so that all effects share the same effect composition canvas (EffectsBitmaps). This results in reduced memory usage. Along with this is the new static OutlineFont::ResetEffectBitmaps function which allows the user to unilaterally purge effect composition canvas memory. This change was prompted by the Need for Speed Shift game, which used multiple large effects fonts simultaneously, which resulted in memory waste until the fonts were released. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.06.00</span> (June 24, 2009)</p>
+<p>Release Notes </p>
+<ul>
+  <li>This version of EAText introduces support for FreeType as an alternative to Font Fusion. For the foreseeable future you will need to talk to your legal representative about legal issues surrounding FreeType, as it is open source software which has some TrueType patent-related issues. These patents expire in November of 2009 but FreeType is still open source, though not GPL-based. You can enable FreeType usage by globally defining <font size="-1">EATEXT_USE_FREETYPE</font> or with Framework2 builds by defining <font size="-1">EAText.EATEXT_USE_FREETYPE=1</font> in your masterconfig.xml file. Note that you will need to use the FreeType package (available on the package server or on EAOS) when enabling this option. </li>
+  <li>This release requires that when using FreeType EAText be initialized once on startup with EA::Text::Init() and eventually shut down with EA::Text::Shutdown(). This is due to how FreeType works. </li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added FreeType support as per the above release notes. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed DXT texture support on PS3 for the case of multi-colored glyphs (e.g. text effects).Previously, if you used DXT texture support and text effects at the same time you'd get botched glyphs on screen with the PS3. </li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.07 </span>(May 18, 2009)</p>
+<p>Release Notes </p>
+<ul>
+  <li>This version of EAText is dependent on CoreAllocator package version 1.03.00 (Oct 10, 2007) or later. </li>
+  <li>The EAText unit tests now expect that the user define ps3sdk.enablepsgl=true in the masterconfig properties. </li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed compiler error for the case of <font size="-1">EATEXT_OPENTYPE_ENABLED</font> being set to zero. Reported by Luc Isaak.</li>
+  <li>Fixed unit test PS3 SDK 270 linker error for the case of using Framework2 and the ps3sdk.enablepsgl build property was defined. </li>
+</ul>
+Changes
+<ul>
+  <li>OutlineFont::SetTransform no longer asserts that mfSize == 0. This was preventing the user from overriding the initial size assigned to a font via the FontServer when acquiring a new Font from the FontServer.</li>
+  <li>Converted code to use the <font size="-1">CORE_NEW</font> / <font size="-1">CORE_DELETE</font> functionality from the CoreAllocator package instead of an internal EAText version.</li>
+  <li>Made FontServer automatically clear the GlyphCache of any glyphs from any font the user removes from the FontServer, and exposed a GlyphCache function to do this as well. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.06 </span>(February 25, 2009)</p>
+<p>Additions</p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed FontServer::GetFont bug whereby the same font could be multiply AddRefd by the user if multiply specified in the font specification.  Submitted by Chris Sidhall </li>
+</ul>
+Changes
+<ul>
+  <li>Made Typesetter::UpdateFontSelection more efficient by avoiding FontServer lookups when possible. Submitted by Ralf Kornmann.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.05 </span>(November 21, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>GlyphCache now supports writing to 8 bit destinations in addition to the existing ARGB and DXT3 destinations. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug whereby OutlineFont::GetGlyphMetrics could return true even if the glyph is non-existant.</li>
+  <li>Fixed bug in the GetGlyphIds function whereby it would write to pGlyphIdArray if the user set it to NULL. The function is specified as allowing the user to use a NULL pGlyphIdArray to indicate that it shouldn't be written to. </li>
+</ul>
+Changes
+<ul>
+  <li>Updated EATextUnicode to fill in some  functionality.</li>
+  <li>FontServer::GetFont now compares family names with case-insensitivity and gives more weight to first-listed family names. </li>
+  <li>Collator::Compare now supports locales specified by SetLocale. Prompted by Jon Parise.</li>
+  <li>Added a bWriteInvalidGlyphs parameter to GetGlyphIds.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.04 </span>(August 18, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added VS2008 compatibility. </li>
+</ul>
+Bug Fixes<ul>
+  <li>Fixed bug in OutlineFont::GetGlyphIds whereby it wouldn't return kGlyphIdInvalid when bUseReplacementGlyph was false. </li>
+  <li>Fixed assertion failure in Typesetter::GetTextWidth. Reported by Alex Bilyk. </li>
+  <li>Fixed a couple Thai line break bugs. One of the fixes was submitted by Alex Bilyk. </li>
+  <li>Fixed bug in LineLayout::GetLineHeight whereby it would return a smaller-than-correct value for fonts with fractional metrics. Submitted by Ralf Kornmann.</li>
+  <li>Fixed bug in LineLayout::UpdateLineState whereby paragraph text could be mistakenly clipped on the right side. Reported by Ralf Kornmann. </li>
+  <li>Fixed bug in DXT encoding of multi-colored glyphs on big-endian systems.</li>
+</ul>
+Changes
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.03 </span>(June 10, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>Added a component flags option to LayoutSimple. </li>
+  <li>Added CreateInstructionList to EATextEffects, which is a standalone utility function that creates effects from readable string form. Previously this was in the unit tests, but it's useful to expose. </li>
+  <li>Added EA Password.ttf to the extras directory. This is a font that can be used to display a password securely. See the .html doc that accompanies it for more information. </li>
+  <li>Added an IStream to TextureInfo, which allows pre-loading textures from arbitrary streams. </li>
+  <li>Added AddWordBreakDictionaryEntry, which allows augmenting the dictionary-based line break system (typically for Thai support).</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed potential hang on bad input in EATextTypesetter.</li>
+  <li>Fixed bogus assertion in LineLayout::Validate.</li>
+  <li>Fixed bugus assertion in Typesetter::SubstituteEllipsis. </li>
+  <li>Fixed FontDescription ctor to memset all of itself instead of just the first four bytes.</li>
+  <li>Fixed BmpFont's mistaken setting of its fixed-pitch flag and linethrough value.</li>
+  <li>Fixed FontServer::AddFont whereby it could fail to add BmpFonts.</li>
+  <li>Fixed bug whereby an italic or bold font might not be recognized as such. </li>
+</ul>
+Changes
+<ul>
+  <li>Removed mutex lock in OutlineFont that wasn't necessary. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.02 </span>(February 12, 2008)</p>
+<p>Additions</p>
+<ul>
+  <li>This version adds (warning-free) support for GCC 4.1 and later. Version 1.05.01 and 1.05.00 work on GCC 4.1 except they generate a single compiler warning.Versions 1.05.00 and earlier generate a compiler error on GCC 4.1 related to jumping past a label. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in OutlineFont::InitEffectsProcessor whereby legacy effects wouldn't work. Reported by Ralf Kornmann.</li>
+  <li>Fixed bug in FontServer::SetAllocator whereby it wouldn't echo the allocator to mEffectDataList. Reported by John Chin.</li>
+  <li>Fixed bug in misdetection of Greek text. Reported by Alex Bilyk.</li>
+  <li>Fixed bug in LineLayoutIterator::GetNextTextStyleSegment whereby a crash could occur with complex languages. Reported by Alex Bilyk.</li>
+  <li>Fixed bug in LineLayout::GetTextPositionFromDisplayPosition whereby testing to the right of text would return the wrong index. Submitted by John Chin. </li>
+  <li>Fixed bug in LineLayout::Append whereby glyph indexes could incorrectly appended. Reported by John Chin. </li>
+  <li>Fixed bug in EffectsProcessor::AdjustFontMetrics whereby line height was incorrectly calculated. Reported by Henry Allen. </li>
+  <li>Fixed potential reference count leak in FontServer for the case of a multi-face font request.</li>
+  <li>Fixed bug regarding parentheses misusage in 
+
+
+EA_LIKELY /
+
+
+EA_UNLIKELY.</li>
+</ul>
+Changes
+<ul>
+  <li>Added EATEXT_VERSION / EATEXT_VERSION_N to the definition set. This allows for determining the version at compile time.</li>
+  <li>Added printf(&quot;\32&quot;) to end of unit test under PS3 and PS2. This indicates to the SN tools that the app is done.</li>
+  <li>Added ablity for user to specify a vertical offset applied to rectangles returned by GetGlyphSelection.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.01 </span>(January 9, 2008)</p>
+<p>Release Notes:</p>
+<ul>
+  <li>This version works with GCC 4.1 and later except that it generates one compiler warning when all compiler warnings are enabled. </li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Added new Effects instruction called SetExpansion which allows the user to control some compositing workspace parameters. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed Effects glyph clipping graphical glitches that occur when you use very large outlines or blurs. </li>
+  <li>Fixed compatibility problem with older versions of Font Fusion that lacked a member variable that new ones have.</li>
+</ul>
+Changes
+<ul>
+  <li>Increased the Effects max pen size from 7 to 13. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.05.00 </span>(January 7, 2008)</p>
+<p>Release Notes</p>
+<ul>
+  <li>This release introduces the new runtime text effects system. See below for more. </li>
+  <li>This version works with GCC 4.1 and later except that it generates one compiler warning when all compiler warnings are enabled. </li>
+</ul>
+<p>Additions</p>
+<ul>
+  <li>Automatic Thai line breaking now works on Windows. This means that you don't need to do tricks like putting &#8226; between break opportunities. The next step is to make a version that works outside Windows, though this may not be necessary given that our non-Windows-based platforms (e.g. console platforms) don't typically ship to Thai locales. </li>
+  <li>Added a new runtime text effects system. This system uses an instruction-list based approach and is significantly more powerful than the previous struct/enum-based system, but shouldn't be much slower in practice since glyphs are cached. EATextViewer 0.93 and later can view these effects. See  EAText Effects.html  for detailed information about this system. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Thai line breaking bug fixed whereby unexpected Thai characters could cause an out-of-bounds array read. </li>
+</ul>
+Changes
+<ul>
+  <li>Updated FAQ with new entry about potential DXT color errors. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.04.00 </span>(December 11, 2007)</p>
+<p>Release Notes</p>
+<ul>
+  <li>This is not the release that upgrades the dynamic effects system. The dynamic effects system upgrade/overhaul will occur with the next major release (1.05.00) that should be completed within a few weeks of this release. </li>
+	<li>A small cleanup of some deprecated #includes were done. This may cause user code to fail to compile if the user code was mistakenly omitting some #includes. See the Changes section below for more. </li>
+	<li>Package dependencies have been reduced; see the Changes section for 
+	details.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>LayoutSimple now optionally calculates basic layout metrics (width, height). Suggested and partially implemented by John Chin. </li>
+  <li>Added SNC compiler compatibility.</li>
+  <li>Added char8_t version of Font::GetGlyphIds, for fast debug text.</li>
+  <li>Added additional thread safety to BmpFont. This doesn't really fix any bug so much as it gives the user a little more freedom.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fix for DLL builds whereby EASTL wasn't being linked in. Found and fixed by Daniel Craig.</li>
+  <li>Fixed bug in EATextLineBreak (and thus in EATextTypesetter) which would cause \n chars on empty lines (e.g. AAA\n<font color="#FF0000">\n</font>BBB) to be ignored. Reported by John Chin. </li>
+  <li>Fixed bug in (the deprecated file) EATextLayout.cpp whereby GetBaselineAndDescent could leave the descent value uninitialized. </li>
+  <li>Fixed missing 'mpFont = NULL;' statement in OutlineFont::Close, leading to a possible double-free. Submitted by Avery Lee and Jon Parise on Sims 3. </li>
+  <li>Fixed bug in OutlineFont whereby the line-through (often known as strike-through) thickness and over-line thickness might be set to a value less than 1.0. The value is set to always be at least 1 pixel in thickness. </li>
+  <li>Fixed multi-threaded crash bug whereby two threads using the same shared .ttf data (but through different fonts) could collide. Found by Jon Parise and Avery Lee on Sims 3.</li>
+</ul>
+Changes
+<ul>
+  <li>Removed the RenderWare 4.5 back-end code (i.e. EAText/include/RenderWare/*, EAText/source/RenderWare/*). RenderWare support (and any other back-end support) is intended to be provided externally by the EATextRenderWare package.</li>
+  <li>Made EAText compatible with  versions of EASTL earlier than 1.08.00. If you used an older version of EASTL with EAText 1.03.00, you would get compile errors regarding EASTLICoreAllocator. </li>
+  <li>Removed #includes of EATextFontServer.h, EATextOutlineFont.h, and EATextBmpFont.h from EATextFont.h. These were present for temporary backward compatibility with old versions of EAText. Most code shouldn't be affected by this. Having these #includes were becoming a problem because EATextOutlineFont.h #includes FontFusion's T2K.h (due to a flaw in the design of Font Fusion) and was resulting in exposing Font Fusion to just about anything that used EAText. </li>
+  <li>Removed dependency on the EAStdC package. Calls functions like strlen have been changed to use the C runtime library versions where those are efficient and changed to inline replacements otherwise. </li>
+  <li>The LayoutSimple function now recognizes the \n character and makes it do what you would expect for that character.  LayoutSimple otherwise continues to remain as dumb as possible in order to maximize speed. This was requested by John Chin. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.03.00 </span>(November 8, 2007)</p>
+<p>Release Notes</p>
+<ul>
+  <li>Some of the changes here comes out of the C&amp;C integration effort of John Chin at EALA. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added the LineLayout::Assign function. </li>
+  <li>Added the LineLayout::GetBoundingBox function. </li>
+  <li>GlyphCache now lets you specify the padding around glyphs. This allows for blurring shader effects, among other things. </li>
+  <li>Added kOptionDPI, which allows you to specify the DPI used by fonts. </li>
+  <li>Added a Demo directory with demos of how to do fundamental things. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug in LineLayout::CalculateVisibleSpace whereby it might miscalculate the space. </li>
+  <li>Fixed bug in LayoutParagraph whereby kVACenter (vertically centered alignment) might be not rounded to integral boundaries. This matches a similar bug fixed in v1.02.01 for kHACenter.</li>
+  <li>Make workaround for memory limitation in Font Fusion that would cause fonts to fail loading if you loaded more than ~10 fonts of the same face. This is really a problem in Font Fusion, but we provide a workaround for it here.</li>
+</ul>
+Changes
+<ul>
+  <li>Typesetter::LayoutParagraph now lets you specify the Typesetter's own LineLayout as the destination. Previously you had to supply some other LineLayout instance.</li>
+  <li>Made the BmpFont class more flexible to custom user texture formats and graphics systems. Previously BmpFont required you to make a subclass and operate a certain way. </li>
+	<li>Made it so that the following modules can be compiled with no external 
+	package dependencies: EATextUnicode, EATextBreak, EATextScript. 
+	EATextIterator.</li>
+    <li>Made it so that the back-ends (e.g. XBox 360 GlyphCache) no longer are compiled by default in the nant .build file. You can override this via global properties for each back end (e.g. EATextXenonBackEnd) and if you are maintaining a vcproj file then you can do whatever you want. This change probably doesn't affect most or any users because in practice people use custom back-ends (e.g. as with the EATextRNA package). </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.02.01 </span>(September 24, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>&lt;none&gt;</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug introduced in previous release which would cause BmpFont::ReadBmpTexture to fail if you weren't using gimex to load textures. This bug would cause the function to fail when it didn't need to. Submitted by Scott Penso.</li>
+  <li>Fixed bug in Typesetter::AdjustPositioning when kHACenter (centered alignment) was used whereby pixels weren't rounded to integral boundaries and would result in text that wasn't as sharp as it should be. It was fixed with a call to floor(). Submitted by Dirk Ringe.</li>
+</ul>
+Changes
+<ul>
+  <li>Usage of EAStdC::Sscanf replaced with sscanf, as the correctness of the current EAStdC::Sscanf is currently unknown. Thus it is safer to use sscanf. However, EAStdC::Sscanf is currently being re-written and the new version will be heavily unit tested and have significantly better performance than sscanf on most or all platforms.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.02.00 </span>(September 11, 2007)</p>
+<p>Release Notes</p>
+<ul>
+  <li>Package dependencies have been simplified and reduced. See the Changes section for details.</li>
+  <li>The next version of EAText after this will make using BmpFonts easier and more portable. However, in the meantime you can still simply subclass the BmpFont class and more or less do whatever you want.</li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added support in Typesetter for   the line-height text style when it is present.</li>
+  <li>Added ability for user to control/override debug allocation names. See in <font size="-1">EATEXT_ALLOC_PREFIX</font> in Config.h.</li>
+  <li>EAText now supports Win64 and 64 bit platforms in general. However, as of this writing the third party Bitstream FontFusion package that EAText uses has some bugs in its 64 bit implementation. </li>
+  <li>Did major work upgrading the documentation. Added FontQuality.html, GraphicsEngineSupport.html, and How-To.html. Implemented most of UserGuide.html. Added entries to FAQ.html and Glossary.html. Removed a few .html files and merged their previous contents into existing .html files. </li>
+  <li>Added RemoveGlyphs.py to the EAText utilities. This is a Python script which removes unneeded glyphs from TrueType fonts with FontLab. It can very very useful for paring down the memory requirements of Asian fonts. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Made the initialization gpCoreAllocator in EAText.cpp be NULL instead of a call to GetDefaultAllocator. This is considered a &quot;bug fix&quot; because we consider it incorrect to reference memory allocators as part of global initialization before main(). </li>
+  <li>Fixed Font memory leak for the case of password text.</li>
+  <li>Fixed some unit test failures. The unit test had the bugs, not the EAText library. </li>
+  <li>Fixed NULL pointer bug in EATextLayout (which is a deprecated module) for the case where the output buffer is exhausted.</li>
+  <li>Fixed potential thread collisions during rendering via OutlineFont. This change was essentially integrated from the Sims 3 line and Avery Lee's fix. The problem is that OutlineFont::RenderGlyphBitmap requires FontFusion to be locked until OutlineFont::DoneGlyphBitmap is called. This is due to a limitation in Font Fusion whereby it can only ever have one rendered glyph available at a time. </li>
+  <li>Implemented workaround for bug in Font Fusion which caused some TrueType fonts to be rendered without hinting. Some fonts depend on hinting to draw correctly as opposed to using hinting to merely improve drawing quality. </li>
+  <li>Fix for FontServer unintended font selection in presence of certain unusual font style situations.</li>
+  <li>Implemented workaround for bug in Font Fusion regarding #define true/false. There wasn't a bug in EAText itself but rather was some bad C++ in Font Fusion. </li>
+  <li>Implemented workaround for bug in Font Fusion regarding minimum size of hinting applied to TrueType fonts. Font Fusion mistakenly uses the lowestRecPPEM TrueType header field to decide when to apply hinting, and this breaks some fonts. </li>
+</ul>
+Changes
+<ul>
+  <li>Updated Glossary.html to include a definition for EFIGS (English, French, ...).</li>
+  <li>Updated FAQ to include an entry related to pixel registration problems and resulting bad glyphs. </li>
+  <li>EATextCache can now auto-lock the cache when you try to modify it. Currently there are cases where this is useful. There was briefly a bug in EATextCache.cpp related to this but which was never released. </li>
+  <li>Updated line break table information to cover all currently supported scripts.</li>
+  <li>Revised the OutlineFont implementation to share common data between all faces. This results in significant memory savings with large fonts.</li>
+  <li> Modified EATextLayout (which is a deprecated module) to use EATextBreak to do line breaking.</li>
+  <li>Implemented support for unit test TestFunction error return values that are any non-zero value.</li>
+  <li>Removed dependency on the MemoryMan, UTFFoundation, and EACOM packages; added dependency on the EAStdC package. This is part of the move to reduce and simplify the UTF family of packages such that only basic common core packages are used. The current package dependencies for EAText now are:
+    <ul>
+      <li> EABase, EASTL, EAAssert, EAStdC, EAThread, CoreAllocator, EAIO, PPMalloc (only if you use OpenType) , 
+FontFusion</li>
+    </ul>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.01.00 </span>(May 4, 2007)</p>
+<p>Additions </p>
+<ul>
+  <li>Added support for dynamic font selection. This means that, if enabled, Typesetter and FontServer allow you to dynamically choose fonts at layout time based on fonts' character support. This is useful for mixed locale text such as that you see when sharing text or content between users. </li>
+  <li>Added support for .otf fonts. Previously there was support for OpenType information in TrueType (.ttf) fonts, but support for formal OpenType fonts. </li>
+  <li>Added SetOption function to the Server and Font classes.</li>
+  <li>Added support for the Font Fusion 3.x generation of software (not to be confused with the Font Fusion package version number). </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed CodeWarrior compile warnings of various sorts, plus a linker error regarding operator new.</li>
+  <li>Fixed Linux and Cygwin compile errors of various sorts.</li>
+  <li>Fixed some bogus assertion failures.</li>
+</ul>
+Changes
+<ul>
+  <li>Changed default texture cache format to be kTextureFormatDXT3; it was previously kTextureFormatNone.</li>
+  <li>GlyphCache supports user-specified texture formats. Previously it would always create DXT only.</li>
+  <li>Did some documentation cleanup and additions.</li>
+  <li>Made the reading of OpenType information from fonts optional (via kOptionOpenTypeFeatures).</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 1.00.00 </span>(Mar 24, 2007)</p>
+<p>Release Notes</p>
+<ul>
+  <li>This version of EAText is the first version that supports the new EATextRNA package and which allows EAText to work with the RNA graphics system. Similarly, this version of EAText should be able to similarly support other conventional graphics systems such as RenderWare RenderEngine. </li>
+  <li>The fundamental technical functionality that is still missing from EAText is support for glyph cache double-buffering and/or delayed caching. Under some cases of dynamic glyph cache manipulation on some platforms this functionality can be important. </li>
+  <li>Associated with this release is the EA Knowledge EAText white paper. <a href="http://knowledge.ea.com/articles/render/attachment.aspx?id=3278">http://knowledge.ea.com/articles/render/attachment.aspx?id=3278</a></li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Implemented the EAText Presentation.html document. It may or may not end up being distributed as part of the formal EAText package, however, as it is about 8MB in size and is something people usually might read only once.</li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed bug whereby the build would fail with EATEXT_THREAD_SAFETY_ENABLED set to 0.</li>
+  <li>Fixed a number of places whereby &quot;y is up&quot; coordinate system support wasn't working.</li>
+  <li>Fixed bugs in GlyphCache code that worked with 32 bpp ARGB textures. </li>
+</ul>
+Changes
+<ul>
+  <li>BitmapFont texture atlases are now the same thing as GlyphCache texture atlases and can be used directly as such. BitmapFont is now working as originally intended. </li>
+  <li>Changed all Mutex use to Futex use. Mutexes on PS3 are much slower than Futexes.</li>
+  <li>Typesetter styles are now attributes of a schedule item, instead of being a schedule item themselves. This simplifies logic and fixes a bug whereby the style at the beginning of a line is not set correctly.</li>
+  <li>Moved Font creation into the FontServer::CreateNewFont function, which is overridable but the user. </li>
+  <li>The EATEXT_VERTICAL_ENABLED config option now defaults to being disabled.</li>
+  <li>The EAText .build file system has been simplified to a single .build file.</li>
+  <li>Made some FontServer member functions virtual. Given that FontServer isn't frequently (or possibly ever) called at runtime, this shouldn't have much of a detrimental performance impact.</li>
+  <li>GlyphCache now uses dynamically allocated TextureInfo instead of statically allocated TextureInfo. However, the user is free to force the dynamic allocation of TextureInfo to occur up front on GlyphCache startup and thus act similar to statically allocated TextureInfo.</li>
+  <li>Did intial work towards Unicode-correct Normalization and Collation. This work is not yet complete. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 0.09.00 </span>(Jan 23, 2007) </p>
+<p>Release Notes</p>
+<ul>
+  <li>Along with this EAText publication there have been associated publications of EATextViewer, PolygonFontGenerator, and ContourFontGenerator. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added basic GlyphCache implementations for various platforms.</li>
+  <li>PolygonFont class implemented. An associated PolygonFontGenerator tool has been completed as well. </li>
+  <li>Added RemoveFace function to FontServer. </li>
+  <li>Added EATextEdit.h/cpp to the extras directory. This implements a generic multi-line interactive text editor. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Fixed potential crash for FontStyle::operator=() when the FontStyle information is uninitialized. </li>
+  <li>Added an additional EATRACE/EAASSERT #define fix in config.h. </li>
+</ul>
+
+Changes
+<ul>
+  <li>Modified EATextOutlineFont (.ttf font reader) so it can deal with missing FontFusion features.</li>
+  <li>Minor unit test changes and additions have been made. </li>
+  <li>Minor build file changes were made. </li>
+  <li>Removed unnecessary mutex usage from BmpFont. </li>
+  <li>Adjusted the way OutlineFont calculates monopitch font widths.</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 0.08.00 </span>(Nov 29, 2006) <br>
+    <br>
+  Release Notes</p>
+<ul>
+  <li>This version implements adds mostly-working Arabic support and initial OpenType support. </li>
+</ul>
+<p>Additions </p>
+<ul>
+  <li>Added Typesetter.html document, whihc documents basic Typesetter usage. </li>
+  <li>OpenType support is in first working state. More work needs to be done to support contextual substitution and glyph positioning. </li>
+  <li>All of EAText now cleanly and consistently uses ICoreAllocator. </li>
+  <li>Some minor functionality has been added to Typesetter. </li>
+</ul>
+Bug Fixes
+<ul>
+  <li>Various Typesetter bug fixes have been made.</li>
+  <li>A couple GlyphCache bugs have been fixed. </li>
+  <li>VS2005 support has been added. </li>
+</ul>
+Changes
+<ul>
+  <li>EATextOutlineFont, EATextBmpFont, and EATextPolygonFont broken out into separate files from EATextFont. </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;"></span>
+<p><span style="font-weight: bold;">Version 0.07.00 </span>(Oct 23, 2006) <br>
+  <br>
+  Release Notes</p>
+<ul>
+  <li>This version represents the first formally published version of this package. The version here is 0.07, which indicates that EAText is  about 70% done as this writing. The primary functionality of EAText is in place as of version 0.07 and is in use by a number of teams. The remaining functionality essentially consists of:
+    <ul>
+      <li>Add Unicode string normalization and collation functionality.</li>
+      <li>Finish support for Polygon fonts (3D fonts).</li>
+      <li>Finish support for complex scripts (e.g. Thai, Arabic).</li>
+      <li>Implement the configuration parameters defined in EATextConfig.h.</li>
+    </ul>
+  </li>
+</ul>
+<p>Additions </p>
+<ul>
+    <li>Added Framework 2 / EAConfig / NAnt build files to this package.</li>
+    <li>Added ability to switch between the lightweight EAAssert package and the heavier EATrace package.</li>
+    <li>Added this Changes.html document.</li>
+</ul>
+Bug Fixes 
+<ul>
+    <li>&lt;none&gt;</li>
+</ul>
+Changes 
+<ul>
+    <li>&lt;none&gt;</li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;">Earlier versions</span><br>
+
+<br>
+
+Version 0.07.00 (above) is the first version of this package which contained this document. A list of previous changes is not available and is not likely worthwhile, as 0.07.00 is the version published as a formal package. <br>
+
+<br>
+
+<br>
+
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body>
+</html>
