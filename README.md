@@ -6,6 +6,8 @@ EAWebKit is a port by Electronic Arts of the [WebKit](https://webkit.org/) proje
 
 EAWebKit is open-sourced by Electronic Arts and the official source code can be downloaded at https://gpl.ea.com/eawebkit.html.
 
+This branch contains modifications such as this README and misc fixes to make EAWebKit build. For the direct 1-to-1 mirror from EA, use the [`mirror`](https://github.com/ychin/EAWebKit/tree/mirror) branch.
+
 ## License 
 Please see [licenses](licenses) for the different licenses for EAWebKit.
 
