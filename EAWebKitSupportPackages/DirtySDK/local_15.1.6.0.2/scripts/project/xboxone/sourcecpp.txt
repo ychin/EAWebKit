@@ -1,0 +1,11 @@
+source/dirtysock/xboxone/dirtyauthxboxone.cpp
+source/dirtysock/netconnlocaluser.cpp
+source/dirtysock/xboxone/netconnxboxone.cpp
+source/misc/xboxone/userapixboxone.cpp
+source/misc/xboxone/userlistapixboxone.cpp
+source/misc/xboxone/privilegeapixboxone.cpp
+source/proto/xboxone/protohttpxboxone.cpp
+source/proto/xboxone/protomanglexboxone.cpp
+source/voip/xboxone/voipxboxone.cpp
+source/voip/xboxone/voipheadsetxboxone.cpp
+source/voip/xboxone/voipnarratexboxone.cpp

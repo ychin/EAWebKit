@@ -1,0 +1,3 @@
+sample/tester2/source/nx/t2host.cpp
+sample/tester2/source/nx/t2new.cpp
+sample/tester2/source/nx/t2nxrender.cpp

@@ -63,6 +63,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		#pragma comment(lib, "shell32.lib") // Required for SHGetFolderPath, etc.
     #endif
 
+#elif defined(EA_PLATFORM_UNIX) 
+    #include <stdio.h>
+    #include <errno.h>
+    #include <fcntl.h>
+    #include <unistd.h>
+    #include <sys/stat.h>
+    #include <sys/types.h>
+    #include <utime.h>		// Some versions may require <sys/utime.h>
+
+    #ifndef S_ISREG
+        #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+    #endif
+
+    #ifndef S_ISDIR
+        #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+    #endif
 #endif
 
 #ifdef _MSC_VER
@@ -139,7 +155,7 @@ char16_t gpTempDirectory[kTempDirectoryLength]  = { 0 };
 // of it and cannot use it. It can only be of use if the user intervenes and 
 // reads this value before calling system file io functions.
 //
-#if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
+#if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX)
     // Define nothing, as the system supports this.
 #else
     const uint32_t kCWDLength                       = kMaxDirectoryLength + 1;
@@ -220,6 +236,23 @@ EAIO_API bool File::Create(const char16_t* pPath, bool bTruncate)
 
         return false;
 
+    #elif  defined(EA_PLATFORM_UNIX)
+
+        char8_t path8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+        // We have a problem here if the given file exists and is open by another 
+        // entity but in write mode with no ability for us to read the file.
+        const int fileHandle = open(path8, O_RDWR | O_CREAT | (bTruncate ? O_TRUNC : 0), 0777);
+
+        if(fileHandle >= 0)
+        {
+            close(fileHandle);
+            return true;
+        }
+
+        return false;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -277,6 +310,20 @@ EAIO_API bool File::Create(const char8_t* pPath, bool bTruncate)
 
         return false;
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        // We have a problem here if the given file exists and is open by another 
+        // entity but in write mode with no ability for us to read the file.
+        const int fileHandle = open(pPath, O_RDWR | O_CREAT | (bTruncate ? O_TRUNC : 0), 0777);
+
+        if(fileHandle >= 0)
+        {
+            close(fileHandle);
+            return true;
+        }
+
+        return false;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -300,6 +347,18 @@ EAIO_API bool File::Exists(const char16_t* pPath)
             const DWORD dwAttributes = ::GetFileAttributesW(reinterpret_cast<LPCWSTR>(pPath));
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0));
 
+        #elif defined(EA_PLATFORM_UNIX) 
+
+            char8_t path8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+            // We don't have enough info to tell if it's a file or directory.
+            struct stat tempStat;
+            const int result = stat(path8, &tempStat);
+
+            if(result == 0)
+                return S_ISREG(tempStat.st_mode) != 0;
+
         #else
             EA_FAIL_M("Unimplemented");
             // Bug Paul Pedriana to finish this for the given platform.
@@ -322,6 +381,15 @@ EAIO_API bool File::Exists(const char8_t* pPath)
 
             const DWORD dwAttributes = ::GetFileAttributesW(reinterpret_cast<LPCWSTR>(path16.c_str()));
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0));
+
+        #elif defined(EA_PLATFORM_UNIX) 
+
+            // We don't have enough info to tell if it's a file or directory.
+            struct stat tempStat;
+            const int result = stat(pPath, &tempStat);
+
+            if(result == 0)
+                return S_ISREG(tempStat.st_mode) != 0;
 
         #else
             EA_FAIL_M("Unimplemented");
@@ -399,6 +467,14 @@ EAIO_API bool File::Remove(const char16_t* pPath)
         // Possibly save off an error value here.
         return (bResult != 0);
 
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        char8_t path8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+        const int result = unlink(path8);
+        return (result == 0);
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -420,6 +496,11 @@ EAIO_API bool File::Remove(const char8_t* pPath)
 
         const BOOL bResult = ::DeleteFileW(reinterpret_cast<LPCWSTR>(path16.c_str()));
         return (bResult != 0); // Possibly save off an error value here.
+
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        const int result = unlink(pPath);
+        return (result == 0);
 
     #else
         EA_FAIL_M("Unimplemented");
@@ -443,6 +524,29 @@ EAIO_API bool File::Move(const char16_t* pPathSource, const char16_t* pPathDesti
 
         if(bOverwriteIfPresent || !Exists(pPathDestination))
             return (::MoveFileExW(reinterpret_cast<LPCWSTR>(pPathSource), reinterpret_cast<LPCWSTR>(pPathDestination), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) != 0);
+        return false;
+
+    #elif defined(EA_PLATFORM_UNIX) 
+        char8_t srcPath8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(srcPath8, kMaxPathLength, pPathSource);
+
+        char8_t dstPath8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(dstPath8, kMaxPathLength, pPathDestination);
+
+        if (!bOverwriteIfPresent && Exists(dstPath8))
+            return false;
+        
+        if (rename(srcPath8, dstPath8) == 0)
+            return true;
+
+        // If we failed, it might be because we tried to move between two different filesystems.
+        // In which case we must manually copy.
+        if(Copy(pPathSource, pPathDestination, bOverwriteIfPresent))
+        {
+            Remove(pPathSource); // To consider: Back out of the copy if the remove fails.
+            return true;
+        }
+
         return false;
 
     #else
@@ -472,6 +576,24 @@ EAIO_API bool File::Move(const char8_t* pPathSource, const char8_t* pPathDestina
 
         return false;
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        if (!bOverwriteIfPresent && Exists(pPathDestination))
+            return false;
+        
+        if (rename(pPathSource, pPathDestination) == 0)
+            return true;
+
+        // If we failed, it might be because we tried to move between two different filesystems.
+        // In which case we must manually copy.
+        if(Copy(pPathSource, pPathDestination, bOverwriteIfPresent))
+        {
+            Remove(pPathSource); // To consider: Back out of the copy if the remove fails.
+            return true;
+        }
+
+        return false;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -493,6 +615,64 @@ EAIO_API bool File::Copy(const char16_t* pPathSource, const char16_t* pPathDesti
 
         return ::CopyFileW(reinterpret_cast<LPCWSTR>(pPathSource), reinterpret_cast<LPCWSTR>(pPathDestination), !bOverwriteIfPresent) != 0;
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        if(bOverwriteIfPresent || !Exists(pPathDestination))
+        {
+            char8_t srcPath8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(srcPath8, kMaxPathLength, pPathSource);
+
+            int result = -1;
+
+            const int nFileHandleSource = open(srcPath8, O_RDONLY);
+
+            if(nFileHandleSource >= 0)
+            {
+                char8_t dstPath8[kMaxPathLength];
+                StrlcpyUTF16ToUTF8(dstPath8, kMaxPathLength, pPathDestination);
+
+                const int nFileHandleDestination = open(dstPath8, O_WRONLY | O_TRUNC | O_CREAT, 0777); // To do: Replicate the rights of the original file instead of using just 0777.
+
+                if(nFileHandleDestination >= 0)
+                {
+                    // To do: Watch out for (errno == EINTR).
+
+                    const uint64_t kBufferSize(2048);
+                    char           pBuffer[kBufferSize];
+                    int            readCount = 0;
+                    int            writeCount = 0;
+
+                    do {
+                        result = read(nFileHandleSource, pBuffer, kBufferSize);
+
+                        if(result >= 0)
+                        {
+                            readCount = result;
+
+                            // The Posix standard allows for a write call to write only some of what you ask.
+                            for(writeCount = 0; (result >= 0) && (writeCount < readCount); writeCount += result)
+                                result = write(nFileHandleDestination, pBuffer, readCount);
+                        }
+                        else if(errno == EINTR)
+                        {
+                            // If the read was interrupted by a signal, we just continue. 
+                            // However, the user might not want this behavior. We don't currently
+                            // have a means of specifying how signal interruptions are handled.
+                            result = 0;
+                        }
+                    } while ((result >= 0) && (readCount > 0));
+
+                    close(nFileHandleDestination);
+                }
+
+                close(nFileHandleSource);
+            }
+
+            return result >= 0;
+        }
+
+        return false;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -508,6 +688,56 @@ EAIO_API bool File::Copy(const char8_t* pPathSource, const char8_t* pPathDestina
     #if defined(EA_PLATFORM_WINDOWS) 
 
         return ::CopyFileA(pPathSource, pPathDestination, !bOverwriteIfPresent) != 0;
+
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        if(bOverwriteIfPresent || !Exists(pPathDestination))
+        {
+            int result = 0;
+
+            const int nFileHandleSource = open(pPathSource, O_RDONLY);
+
+            if(nFileHandleSource >= 0)
+            {
+                const int nFileHandleDestination = open(pPathDestination, O_WRONLY | O_TRUNC | O_CREAT, 0666);
+
+                if(nFileHandleDestination >= 0)
+                {
+                    const uint64_t kBufferSize(2048);
+                    char           pBuffer[kBufferSize];
+                    int            readCount = 0;
+                    int            writeCount = 0;
+
+                    do {
+                        result = read(nFileHandleSource, pBuffer, kBufferSize);
+
+                        if(result >= 0)
+                        {
+                            readCount = result;
+
+                            // The Posix standard allows for a write call to write only some of what you ask.
+                            for(writeCount = 0; (result >= 0) && (writeCount < readCount); writeCount += result)
+                                result = write(nFileHandleDestination, pBuffer, readCount);
+                        }
+                        else if(errno == EINTR)
+                        {
+                            // If the read was interrupted by a signal, we just continue. 
+                            // However, the user might not want this behaviour. We don't currently
+                            // have a means of specifying how signal interruptions are handled.
+                            result = 0;
+                        }
+                    } while ((result >= 0) && (readCount > 0));
+
+                    close(nFileHandleDestination);
+                }
+
+                close(nFileHandleSource);
+            }
+
+            return result >= 0;
+        }
+
+        return false;
 
     #else
         EA_FAIL_M("Unimplemented");
@@ -552,6 +782,16 @@ EAIO_API size_type File::GetSize(const char16_t* pPath)
             #pragma warning(pop)
         #endif
 
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        char8_t path8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+        struct stat tempStat;
+        const int result = stat(path8, &tempStat);
+
+        if(result == 0)
+            return tempStat.st_size;
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -567,12 +807,22 @@ EAIO_API size_type File::GetSize(const char8_t* pPath)
 {
     using namespace EA::IO::Path;
 
+    #if   defined(EA_PLATFORM_UNIX) 
+
+        struct stat tempStat;
+        const int result = stat(pPath, &tempStat);
+        if(result == 0)
+            return tempStat.st_size;
+        return kSizeTypeError;
+
+    #else
 
         PathString16 path16;
         ConvertPathUTF8ToUTF16(path16, pPath);
 
         return File::GetSize(path16.c_str());
 
+    #endif
 }
 
 
@@ -630,6 +880,31 @@ EAIO_API int File::GetAttributes(const char16_t* pPath)
         if(dwCurrentAttributes & FILE_ATTRIBUTE_SYSTEM)
             nAttributes |= kAttributeSystem;
     
+    #elif defined(EA_PLATFORM_UNIX)
+
+        char8_t path8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+        struct stat tempStat;
+        const int result = stat(path8, &tempStat);
+
+        if(result == 0)
+        {
+            // We read the 'other' user accessibility. The group or owner accessibility
+            // will typically be at least as great as the 'other' user accessibility.
+            // What we really want is to know what the *current user's* accessibility is.
+            if(tempStat.st_mode & S_IROTH)
+                nAttributes |= kAttributeReadable;
+            if(tempStat.st_mode & S_IWOTH)
+                nAttributes |= kAttributeWritable;
+            if(tempStat.st_mode & S_IXOTH)
+                nAttributes |= kAttributeExecutable;
+            if(tempStat.st_mode & S_IFDIR)
+                nAttributes |= kAttributeDirectory;
+            if(tempStat.st_mode & S_IFLNK)
+                nAttributes |= kAttributeAlias;
+        }
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -691,6 +966,28 @@ EAIO_API int File::GetAttributes(const char8_t* pPath)
         if(dwCurrentAttributes & FILE_ATTRIBUTE_SYSTEM)
             nAttributes |= kAttributeSystem;
     
+    #elif defined(EA_PLATFORM_UNIX)
+
+        struct stat tempStat;
+        const int result = stat(pPath, &tempStat);
+
+        if(result == 0)
+        {
+            // We read the 'other' user accessibility. The group or owner accessibility
+            // will typically be at least as great as the 'other' user accessibility.
+            // What we really want is to know what the *current user's* accessibility is.
+            if(tempStat.st_mode & S_IROTH)
+                nAttributes |= kAttributeReadable;
+            if(tempStat.st_mode & S_IWOTH)
+                nAttributes |= kAttributeWritable;
+            if(tempStat.st_mode & S_IXOTH)
+                nAttributes |= kAttributeExecutable;
+            if(tempStat.st_mode & S_IFDIR)
+                nAttributes |= kAttributeDirectory;
+            if(tempStat.st_mode & S_IFLNK)
+                nAttributes |= kAttributeAlias;
+        }
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -794,6 +1091,40 @@ EAIO_API bool File::SetAttributes(const char16_t* pPath, int nAttributeMask, boo
 
         #endif
 
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        char8_t pPath8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(pPath8, kMaxPathLength, pPath);
+
+
+        struct stat tempStat;
+        if (stat(pPath8, &tempStat) == 0)
+            return false;
+
+        mode_t modeChange = 0;
+
+        if (nAttributeMask & kAttributeReadable)
+            modeChange |= S_IROTH;
+        if (nAttributeMask & kAttributeWritable)
+            modeChange |= S_IWOTH;
+        if (nAttributeMask & kAttributeExecutable)
+            modeChange |= S_IXOTH;
+
+        if (modeChange == 0)
+            return true;
+
+
+        mode_t newMode;
+        if (bEnable)
+            newMode = tempStat.st_mode | modeChange;
+        else
+            newMode = tempStat.st_mode & ~modeChange;
+
+        if (chmod(pPath8, newMode) == 0)
+            return true;
+
+        return false;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -892,6 +1223,35 @@ EAIO_API bool File::SetAttributes(const char8_t* pPath, int nAttributeMask, bool
 
         #endif
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        struct stat tempStat;
+        if (stat(pPath, &tempStat) == 0)
+            return false;
+
+        mode_t modeChange = 0;
+
+        if (nAttributeMask & kAttributeReadable)
+            modeChange |= S_IROTH;
+        if (nAttributeMask & kAttributeWritable)
+            modeChange |= S_IWOTH;
+        if (nAttributeMask & kAttributeExecutable)
+            modeChange |= S_IXOTH;
+
+        if (modeChange == 0)
+            return true;
+
+        mode_t newMode;
+        if (bEnable)
+            newMode = tempStat.st_mode | modeChange;
+        else
+            newMode = tempStat.st_mode & ~modeChange;
+
+        if (chmod(pPath, newMode) == 0)
+            return true;
+
+        return false;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -935,6 +1295,26 @@ EAIO_API time_t File::GetTime(const char16_t* pPath, FileTimeType timeType)
 
         return 0;
 
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        char8_t path8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(path8, kMaxPathLength, pPath);
+
+        struct stat tempStat;
+        const int result = stat(path8, &tempStat);
+
+        if(result == 0)
+        {
+            if(timeType == kFileTimeTypeCreation)
+                return tempStat.st_ctime;
+            else if(timeType == kFileTimeTypeLastModification)
+                return tempStat.st_mtime;
+            else if(timeType == kFileTimeTypeLastAccess)
+                return tempStat.st_atime;
+        }
+
+        return 0;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -970,6 +1350,23 @@ EAIO_API time_t File::GetTime(const char8_t* pPath, FileTimeType timeType)
 
         return 0;
 
+    #elif defined(EA_PLATFORM_UNIX) 
+
+        struct stat tempStat;
+        const int result = stat(pPath, &tempStat);
+
+        if(result == 0)
+        {
+            if(timeType == kFileTimeTypeCreation)
+                return tempStat.st_ctime;
+            else if(timeType == kFileTimeTypeLastModification)
+                return tempStat.st_mtime;
+            else if(timeType == kFileTimeTypeLastAccess)
+                return tempStat.st_atime;
+        }
+
+        return 0;
+
     #else
         EA_FAIL_M("Unimplemented");
 
@@ -989,7 +1386,7 @@ EAIO_API time_t File::GetTime(const char8_t* pPath, FileTimeType timeType)
 //
 EAIO_API bool File::SetTime(const char16_t* pPath, int nFileTimeTypeFlags, time_t nTime)
 {
-    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
+    #if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX)
 
         #if defined(EA_PLATFORM_WINDOWS)
             _utimbuf timbuf;
@@ -1022,6 +1419,13 @@ EAIO_API bool File::SetTime(const char16_t* pPath, int nFileTimeTypeFlags, time_
             return (utime(path8, &timbuf) == 0);
         #endif
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        // To do.
+        // int utime(const char *path, const struct utimbuf *times);
+        (void)pPath; (void)nFileTimeTypeFlags; (void)nTime;
+        return false;
+
     #else
 
         // Other platforms are not known to support this functionality.
@@ -1033,7 +1437,7 @@ EAIO_API bool File::SetTime(const char16_t* pPath, int nFileTimeTypeFlags, time_
 
 EAIO_API bool File::SetTime(const char8_t* pPath, int nFileTimeTypeFlags, time_t nTime)
 {
-    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
+    #if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX)
 
         #if defined(EA_PLATFORM_WINDOWS)
             _utimbuf timbuf;
@@ -1062,6 +1466,15 @@ EAIO_API bool File::SetTime(const char8_t* pPath, int nFileTimeTypeFlags, time_t
         #else
             return ( utime(pPath, &timbuf) == 0);
         #endif
+
+    #elif defined(EA_PLATFORM_UNIX)
+
+        // To do.
+        // int utime(const char *path, const struct utimbuf *times);
+
+        (void)pPath; (void)nFileTimeTypeFlags; (void)nTime;
+
+        return false;
 
     #else
 
@@ -1318,6 +1731,7 @@ EAIO_API bool InitializeFileSystem(bool /*bInitialize*/)
 //
 EAIO_API bool MakeTempPathName(char16_t* pPath, const char16_t* pDirectory, const char16_t* pFileName, const char16_t* pExtension, uint32_t nDestPathLength)
 {
+    #ifndef EA_PLATFORM_UNIX
         using namespace EA::IO::Path;
     
 
@@ -1373,10 +1787,44 @@ EAIO_API bool MakeTempPathName(char16_t* pPath, const char16_t* pDirectory, cons
         }
 
         return false;
+    #else
+        // We do character arrays instead of string literals because string literals won't be possible if wchar_t != char16_t.
+        const char16_t tmp[]    = { '/', 't', 'm', 'p', '/', 0 };
+        const char16_t temp[]   = { 't', 'm', 'p', 0 };
+        const char16_t XXXXXX[] = { 'X', 'X', 'X', 'X', 'X', 'X', 0}; // Some mkstemps implementations (e.g. Linux) require that there be six Xs and no less, while others don't (BSD).
+        const char16_t empty[]  = { 0 };
+
+        if(!pDirectory)
+            pDirectory = tmp;
+
+        if(!pFileName)
+            pFileName = temp;
+        
+        if(!pExtension)
+            pExtension = empty;
+        
+        char8_t path8[kMaxPathLength];
+
+        size_t  nLength = StrlcpyUTF16ToUTF8(path8,           kMaxPathLength,           pDirectory, EAIOStrlen16(pDirectory));
+        nLength +=        StrlcpyUTF16ToUTF8(path8 + nLength, kMaxPathLength - nLength, pFileName,  EAIOStrlen16(pFileName));
+        nLength +=        StrlcpyUTF16ToUTF8(path8 + nLength, kMaxPathLength - nLength, XXXXXX,     EAIOStrlen16(XXXXXX));
+        nLength +=        StrlcpyUTF16ToUTF8(path8 + nLength, kMaxPathLength - nLength, pExtension, EAIOStrlen16(pExtension));
+        
+        // We have a path8 like so: /UserSpecifiedDirectory/UserSpecifiedFileNameXXXXXX.userSpecfiedExtension
+        int fd = mkstemps(path8, (int)EAIOStrlen16(pExtension));
+        if(fd == -1)
+            return false;
+        close(fd);
+        
+        StrlcpyUTF8ToUTF16(pPath, nDestPathLength, path8, nLength);
+        return true;
+
+    #endif
 }
 
 EAIO_API bool MakeTempPathName(char8_t* pPath, const char8_t* pDirectory, const char8_t* pFileName, const char8_t* pExtension, uint32_t nDestPathLength)
 {
+    #ifndef EA_PLATFORM_UNIX
         // User must allocate space for the resulting temp path.
         if(pPath)
         {
@@ -1428,6 +1876,25 @@ EAIO_API bool MakeTempPathName(char8_t* pPath, const char8_t* pDirectory, const 
         }
 
         return false;
+    #else
+        if(!pDirectory)
+            pDirectory = "/tmp";
+
+        if(!pFileName)
+            pFileName = "temp";
+
+        if(!pExtension)
+            pExtension = "";
+
+        if (snprintf(pPath, nDestPathLength, "%s%sXXXXX%s", pDirectory, pFileName, pExtension) >= (int)nDestPathLength)
+            return false;
+
+        if (mkstemp(pPath) != 0)
+            return false;
+        // TODO: might want to set g/o flags here?
+
+        return true;
+    #endif
 }
 
 
@@ -1455,6 +1922,16 @@ EAIO_API int GetTempDirectory(char16_t* pDirectory, uint32_t nMaxPermittedLength
             return (int)dwResult;
         }
         return -1;
+
+    #elif defined(EA_PLATFORM_UNIX)
+        const char8_t* tmp  = getenv("TMPDIR");
+
+        if (!tmp)
+            tmp = "/tmp/";        
+
+        return StrlcpyUTF8ToUTF16(pDirectory, nMaxPermittedLength, tmp);
+        
+    
 
     #else
         EA_FAIL_M("Unimplemented");
@@ -1491,6 +1968,14 @@ EAIO_API int GetTempDirectory(char8_t* pDirectory, uint32_t nMaxPermittedLength)
 
         return -1;
 
+    #elif defined(EA_PLATFORM_UNIX)
+        const char8_t* tmp  = getenv("TMPDIR");
+
+        if (!tmp)
+            tmp = "/tmp/";        
+
+        return EAIOStrlcpy8(pDirectory, tmp, nMaxPermittedLength);
+        
      #else
 
         // Bug Paul Pedriana to finish this for the given platform.
@@ -1616,6 +2101,18 @@ EAIO_API int GetDriveName(const char16_t* pPath, char16_t* pName)
         pName[0] = 0;
         return -1;
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        int i;
+
+        // Copy the first component of pPath into pName. Thus if pPath is /abc/def/ghi,
+        // pName will be set to /abc.
+        for(i = 1, pName[0] = pPath[0]; pPath[i] != '/'; ++i)
+            pName[i] = pPath[i];
+        pName[i] = 0;
+
+        return i;
+
     #else
         // Bug Paul Pedriana for this if you need it.
         // Perhaps for mountable file systems we can get the file system name.
@@ -1700,6 +2197,10 @@ EAIO_API DriveType GetDriveTypeValue(const char16_t* pPath)
 
         return kDriveTypeUnknown;
 
+    #elif defined(EA_PLATFORM_UNIX)
+        (void)pPath; // Prevent possible compiler warnings related to disuse.
+        return kDriveTypeFixed;
+
     #else
         (void)pPath; // Prevent possible compiler warnings related to disuse.
         return kDriveTypeUnknown;
@@ -1734,6 +2235,19 @@ EAIO_API bool Directory::Exists(const char16_t* pDirectory)
             const DWORD dwAttributes = ::GetFileAttributesW(reinterpret_cast<LPCWSTR>(pDirectory));
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0));
 
+        #elif defined(EA_PLATFORM_UNIX) 
+
+            char8_t directory8[kMaxPathLength];
+            StrlcpyUTF16ToUTF8(directory8, kMaxPathLength, pDirectory);
+
+            struct stat tempStat;
+            const int result = stat(directory8, &tempStat);
+
+            if(result == 0)
+                return S_ISDIR(tempStat.st_mode) != 0;
+
+            // Fall through to return false.
+
         #else
             EA_FAIL_M("Unimplemented");
             // Bug Paul Pedriana to finish this for the given platform.
@@ -1751,6 +2265,16 @@ EAIO_API bool Directory::Exists(const char8_t* pDirectory)
 
             const DWORD dwAttributes = ::GetFileAttributesA(pDirectory);
             return ((dwAttributes != INVALID_FILE_ATTRIBUTES) && ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0));
+
+        #elif defined(EA_PLATFORM_UNIX) 
+
+            struct stat tempStat;
+            const int result = stat(pDirectory, &tempStat);
+
+            if(result == 0)
+                return S_ISDIR(tempStat.st_mode) != 0;
+
+            // Fall through to return false.
 
         #else
             // Bug Paul Pedriana to finish this for the given platform.
@@ -1835,6 +2359,26 @@ namespace
 
                 const BOOL bResult = CreateDirectoryW(reinterpret_cast<LPCWSTR>(pDirectory), NULL);
                 return bResult || (GetLastError() == ERROR_ALREADY_EXISTS);
+            }
+
+            return false;
+
+        #elif  defined(EA_PLATFORM_UNIX)  
+
+            if(pDirectory[0]) // Our code below requires at least one char in the string.
+            {
+                Path::PathString8 directory8;
+                uint32_t nLength = ConvertPathUTF16ToUTF8(directory8, pDirectory);
+
+                Path::StripTrailingSeparator(&directory8[0], nLength);
+
+                #if defined(EA_PLATFORM_UNIX) 
+                    const int result = mkdir(directory8.c_str(), 0777);
+                    return ((result == 0) || (errno == EEXIST));
+                #else
+                    const BOOL bResult = CreateDirectoryA(directory8.c_str(), NULL);
+                    return bResult || (GetLastError() == ERROR_ALREADY_EXISTS);
+                #endif
             }
 
             return false;
@@ -2009,6 +2553,19 @@ EAIO_API bool Directory::Remove(const char16_t* pDirectory, bool bAllowRecursive
             EAIOStrlcpy16(path, pDirectory, nStrlen); // Force NULL terminator in place of directory separator
             return 0 != RemoveDirectoryW(reinterpret_cast<LPCWSTR>(pDirectory));
 
+        #elif  defined(EA_PLATFORM_UNIX)  
+
+            Path::PathString8 directory8;
+            uint32_t nLength = ConvertPathUTF16ToUTF8(directory8, pDirectory);
+
+            Path::StripTrailingSeparator(&directory8[0], nLength);
+
+            #if defined(EA_PLATFORM_UNIX)
+                return (rmdir(directory8.c_str()) == 0);
+            #else
+                return (RemoveDirectoryA(directory8.c_str()) != 0);
+            #endif
+
         #else
             EA_FAIL_M("Unimplemented");
             // Bug Paul Pedriana for this when you need it.
@@ -2037,6 +2594,15 @@ EAIO_API bool Directory::Rename(const char16_t* pDirectoryOld, const char16_t* p
         // Under Win32 you can rename a directory by using the file move API.
         return (File::Move(pDirectoryOld, pDirectoryNew) != 0);
 
+    #elif defined(EA_PLATFORM_UNIX)
+        char8_t pPathSource8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(pPathSource8, kMaxPathLength, pDirectoryOld);
+
+        char8_t pPathDestination8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(pPathDestination8, kMaxPathLength, pDirectoryNew);
+
+        return rename(pPathSource8, pPathDestination8);
+        
     #else
         EA_FAIL_M("Unimplemented");
         // Bug Paul Pedriana for this when you need it.
@@ -2051,6 +2617,9 @@ EAIO_API bool Directory::Rename(const char16_t* pDirectoryOld, const char16_t* p
 
 EAIO_API bool Directory::Rename(const char8_t* pDirectoryOld, const char8_t* pDirectoryNew)
 {
+    #if defined(EA_PLATFORM_UNIX) 
+        return rename(pDirectoryOld, pDirectoryNew);
+    #else        
         EA::IO::Path::PathString16 oldPath16;
         ConvertPathUTF8ToUTF16(oldPath16, pDirectoryOld);
 
@@ -2058,6 +2627,7 @@ EAIO_API bool Directory::Rename(const char8_t* pDirectoryOld, const char8_t* pDi
         ConvertPathUTF8ToUTF16(newPath16, pDirectoryNew);
 
         return Directory::Rename(oldPath16.c_str(), newPath16.c_str());
+    #endif
 }
 
 
@@ -2232,6 +2802,23 @@ EAIO_API int Directory::GetCurrentWorkingDirectory(char16_t* pDirectory, uint32_
         pDirectory[0] = 0;
         return 0;
 
+    #elif defined(EA_PLATFORM_UNIX)
+
+        char pPath8[kMaxDirectoryLength];
+        const char* const pResult = getcwd(pPath8, kMaxDirectoryLength - 6); // '- 6' so that a '/' can possibly be appended. UTF8 can burn 6 bytes for a single character encoding.
+
+        if(pResult)
+        {
+            size_t nStrlen = StrlcpyUTF8ToUTF16(pDirectory, kMaxDirectoryLength - 2, (char8_t*)pPath8, kLengthNull); // -2 so we have space for possible trailing '\' and '\0'.
+
+            if(Path::EnsureTrailingSeparator(pDirectory, nMaxPermittedLength))
+                nStrlen++;
+            return nStrlen;
+        }
+
+        pDirectory[0] = 0;
+        return 0;
+
     #else
 
         if(!gbCurrentWorkingDirectoryInitialized) // If we haven't set the default value of the current working directory...
@@ -2249,11 +2836,26 @@ EAIO_API int Directory::GetCurrentWorkingDirectory(char16_t* pDirectory, uint32_
 
 EAIO_API int Directory::GetCurrentWorkingDirectory(char8_t* pDirectory, uint32_t nMaxPermittedLength)
 {
+    #if defined(EA_PLATFORM_UNIX)
+
+        const char* const pResult = getcwd(pDirectory, nMaxPermittedLength);
+
+        if(pResult)
+        {
+            Path::EnsureTrailingSeparator(pDirectory, nMaxPermittedLength);
+            return strlen(pDirectory); // No StdC
+        }
+
+        pDirectory[0] = 0;
+        return 0;
+
+    #else
         char16_t pDirectory16[kMaxPathLength];
 
         Directory::GetCurrentWorkingDirectory(pDirectory16, kMaxPathLength);
 
         return (int)(unsigned)StrlcpyUTF16ToUTF8(pDirectory, nMaxPermittedLength, pDirectory16);
+    #endif
 }
 
 
@@ -2267,6 +2869,13 @@ EAIO_API bool Directory::SetCurrentWorkingDirectory(const char16_t* pDirectory)
         // Windows has a SetCurrentDirectory function, but it doesn't change any settings
         // in the C runtime. _wchdir calls the OS SetCurrentDirectory and sets the C runtime values.
         return _wchdir(reinterpret_cast<const wchar_t *>(pDirectory)) == 0;
+
+    #elif defined(EA_PLATFORM_UNIX)
+
+        char8_t directory8[kMaxPathLength];
+        StrlcpyUTF16ToUTF8(directory8, kMaxPathLength, pDirectory);
+
+        return chdir(directory8) == 0;
 
     #else
         bool bResult = false;
@@ -2300,10 +2909,14 @@ EAIO_API bool Directory::SetCurrentWorkingDirectory(const char16_t* pDirectory)
 
 EAIO_API bool Directory::SetCurrentWorkingDirectory(const char8_t* pDirectory)
 {
+    #if defined(EA_PLATFORM_UNIX) || defined(__APPLE__)
+        return chdir(pDirectory) == 0;
+    #else
         EA::IO::Path::PathString16 path16;
         ConvertPathUTF8ToUTF16(path16, pDirectory);
 
         return Directory::SetCurrentWorkingDirectory(path16.c_str());
+    #endif
 }
 
 
@@ -2451,6 +3064,17 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
             return (int)EAIOStrlen16(pDirectory);
         return -1;
 
+    #elif defined(EA_PLATFORM_UNIX)
+        // better just call 8-bit version and convert, as we don't have a 
+        // 16-bit non-eastl::string sprintf available any more.
+        
+        char8_t directory8[kMaxDirectoryLength];
+
+        int result = GetSpecialDirectory(specialDirectory, directory8, bEnsureDirectoryExistence, kMaxDirectoryLength);
+        if (result < 0)
+            return -1;
+
+        return StrlcpyUTF8ToUTF16(pDirectory, nMaxPermittedLength, directory8);
     #else
 
         // Bug Paul Pedriana for this when you need it for another platform.
@@ -2470,6 +3094,7 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char16_t* pD
 EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char8_t* pDirectory, 
                         bool bEnsureDirectoryExistence, uint32_t nMaxPermittedLength)
 {
+    #if !defined(EA_PLATFORM_UNIX)
         EA::IO::Path::PathString16 path16;
         path16.resize(nMaxPermittedLength);
 
@@ -2479,6 +3104,65 @@ EAIO_API int GetSpecialDirectory(SpecialDirectory specialDirectory, char8_t* pDi
         }
         
         return -1;
+    #else
+        (void)bEnsureDirectoryExistence;
+
+        const char8_t* home    = getenv("HOME");
+        const char8_t* shared  = "/Users/Shared";  // TODO: this is OSX-specific
+        const char8_t* tmp     = getenv("TMPDIR");
+
+        if (!tmp)
+            tmp = "/tmp/";
+        if (!home)
+            home = tmp;
+
+        switch (specialDirectory)
+        {
+            case kSpecialDirectoryNone:
+                return -1;
+                
+            case kSpecialDirectoryTemp:
+                return EAIOStrlcpy8(pDirectory, tmp, nMaxPermittedLength);
+
+            case kSpecialDirectoryOperatingSystem:
+                return EAIOStrlcpy8(pDirectory, "/System/", nMaxPermittedLength);
+            case kSpecialDirectoryOperatingSystemTrash:
+                // Return per-user trash.
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/.Trash/", home);
+            case kSpecialDirectoryOperatingSystemFonts:
+                // there should really be kSpecialDirectoryUserFonts too.
+                return EAIOStrlcpy8(pDirectory, "/Library/Fonts/", nMaxPermittedLength);
+            
+            case kSpecialDirectoryCurrentApplication:
+                // TODO. Not sure we can get to argv now that EAIO is off by itself.
+                return -1;
+
+            case kSpecialDirectoryUserDesktop:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Desktop/", home);
+            case kSpecialDirectoryCommonDesktop:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Desktop/", shared);
+            case kSpecialDirectoryUserApplicationData:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Library/", home);
+            case kSpecialDirectoryCommonApplicationData:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Library/", shared);
+            case kSpecialDirectoryUserDocuments:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Documents/", home);
+            case kSpecialDirectoryCommonDocuments:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Documents/", shared);
+
+            case kSpecialDirectoryUserMusic:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Music/", home);
+            case kSpecialDirectoryCommonMusic:
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Music/", shared);
+
+            case kSpecialDirectoryUserProgramsShortcuts:    // shortcuts is a windowsism, assume they mean the apps directory
+                return snprintf(pDirectory, nMaxPermittedLength, "%s/Applications/", home);
+            case kSpecialDirectoryCommonProgramsShortcuts:
+                return EAIOStrlcpy8(pDirectory, "/Applications/", nMaxPermittedLength);
+        }
+
+        return -1;
+    #endif
 }
 
 

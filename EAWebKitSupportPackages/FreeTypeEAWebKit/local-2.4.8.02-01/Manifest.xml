@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <summary>FreeTypeEAWebKit SDK</summary>
+  <description>
+    Implements the FreeType open source font rasterization library for EAWebKit. 
+  </description>
+  <status>Official</status>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+</package>

@@ -131,7 +131,45 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	#define FALSE 0 
 #endif
 
-#if defined(_WIN32) || defined(_WIN64) 
+#if   defined(__ORBIS__) || defined (__PROSPERO__)
+#define PLATFORM_DLL_MODULE(name,attr,major,minor) 
+
+#if defined(__cplusplus)
+#define PLATFORM_DLL_START(funcname) extern "C" int module_start(size_t args, const void* argp){return funcname(args,argp);}	
+#else
+#define PLATFORM_DLL_START(funcname) int module_start(size_t args, const void* argp){return funcname(args,argp);}
+#endif
+
+#define PLATFORM_DLL_START_SUCCESS                      TRUE
+#define PLATFORM_DLL_START_FAILURE                      FALSE
+
+#if defined(__cplusplus)
+#define PLATFORM_DLL_STOP(funcname)	extern "C" int module_stop(size_t args, const void* argp){return funcname(args,argp);}	
+#else
+#define PLATFORM_DLL_STOP(funcname)	int module_stop(size_t args, const void* argp){return funcname(args,argp);}		
+#endif
+#define PLATFORM_DLL_STOP_SUCCESS                       TRUE
+#define PLATFORM_DLL_STOP_FAILURE                       FALSE
+
+#define PLATFORM_DLL_LIB(libname,attr)
+#define PLATFORM_DLL_LIB_ATTR_REGISTER					0x0001
+#define PLATFORM_DLL_LIB_ATTR_OVERRIDE					0x0002
+#define PLATFORM_DLL_LIB_ATTR_DEPENDENT_LOAD			0x0008
+
+#define PLATFORM_DLL_EXPORT_INTERFACE __declspec(dllexport)
+#define PLATFORM_DLL_IMPORT_INTERFACE __declspec(dllimport)
+
+#if defined(__cplusplus)
+#define PLATFORM_DLL_EXPORT_FUNC_DECLARE(funcname,rettype,interfacetype) extern "C" interfacetype rettype funcname(); 
+#else
+#define PLATFORM_DLL_EXPORT_FUNC_DECLARE(funcname,rettype,interfacetype) interfacetype rettype funcname(); 
+#endif
+
+#define PLATFORM_DLL_EXPORT_FUNC(funcname, libname)
+#define PLATFORM_DLL_EXPORT_VAR(variable, libname)   
+
+
+#elif defined(_WIN32) || defined(_WIN64) 
 
 #define PLATFORM_DLL_MODULE(name,attr,major,minor) 
 

@@ -645,6 +645,8 @@ void FileChangeNotification::ThreadFunctionFFCN(uint32_t dwNotifyFilter, const c
         #define WIN32_LEAN_AND_MEAN
     #endif
     #include <windows.h>
+#elif defined(EA_PLATFORM_UNIX)
+    #include <time.h>
 #endif
 
 #ifdef _MSC_VER
@@ -662,6 +664,8 @@ static int GetCurrentFCNTime()
 {
     #if defined(EA_PLATFORM_WINDOWS)
         return (int)GetTickCount();
+    #elif defined(EA_PLATFORM_UNIX)
+        return (int)(clock() * INT64_C(1000) / CLOCKS_PER_SEC);
     #else
         return 0; // Fill in others here as needed.
     #endif

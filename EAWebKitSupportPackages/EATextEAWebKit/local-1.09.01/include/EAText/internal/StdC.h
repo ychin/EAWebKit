@@ -305,7 +305,7 @@ namespace EA
         inline double Strtod(const char16_t* pString, char16_t** ppStringEnd)
         {
 #if (EA_WCHAR_SIZE == 2) && defined(EA_HAVE_WCHAR_IMPL)
-            return wcstod(pString, ppStringEnd);
+           return wcstod((wchar_t*) pString, (wchar_t**)ppStringEnd);
 #else
             char8_t  buffer8[64];
             char8_t* p    = buffer8;

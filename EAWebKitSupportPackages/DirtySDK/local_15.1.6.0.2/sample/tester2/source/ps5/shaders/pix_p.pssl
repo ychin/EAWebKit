@@ -1,0 +1,17 @@
+﻿/* SIE CONFIDENTIAL
+Prospero Programmer Tool Runtime Library Release 00.850.020
+* Copyright (C) 2018 Sony Interactive Entertainment Inc.
+*/
+
+struct V2P
+{
+	float4 pos : S_POSITION;
+	float4 color : TEXCOORD0;
+};
+
+[CxxSymbol("T2Shader::ps")]
+float4 main(V2P input) : S_TARGET_OUTPUT0
+{	
+	return input.color;
+}
+

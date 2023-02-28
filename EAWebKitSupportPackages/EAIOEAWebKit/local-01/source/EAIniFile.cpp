@@ -67,7 +67,11 @@ namespace IFLocal // Local namespace
 {
     // We define these as character arrays instead of strings because some compilers
     // set wchar_t strings to be 32 bits (char32_t) instead of char16_t.
+    #ifdef EA_PLATFORM_UNIX
+        const char16_t kTextFileNewLineString[] = { '\n', 0 };
+    #else
         const char16_t kTextFileNewLineString[] = { '\r', '\n', 0 };
+    #endif
     const char16_t kSectionFormat[] = { '[', '%', 's', ']', '%', 's', 0 }; // "[%s]%s"
     const char16_t kKeyFormat[]     = { '%', 'l', 's', ' ', '=', ' ', '%', 'l', 's', '%', 'l', 's', 0 }; // %ls = %ls%ls
     const char16_t kValueFormat[]   = { '%', 's', 0 }; // "%s"

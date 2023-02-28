@@ -181,7 +181,7 @@ inline size_t bitCount(uint64_t bits)
 template<typename T, size_t Size> char (&ArrayLengthHelperFunction(T (&)[Size]))[Size];
 // GCC needs some help to deduce a 0 length array.
 #if COMPILER(GCC_OR_CLANG)
-template<typename T> char (&ArrayLengthHelperFunction(T (&)[0]))[0];
+template<typename T> char (&ArrayLengthHelperFunction(T (&)[1]))[1];
 #endif
 #define WTF_ARRAY_LENGTH(array) sizeof(::WTF::ArrayLengthHelperFunction(array))
 
@@ -308,7 +308,11 @@ inline void* operator new(size_t, NotNullTag, void* location)
 // This adds various C++14 features for versions of the STL that may not yet have them.
 namespace std {
 // MSVC 2013 supports std::make_unique already.
-#if !defined(_MSC_VER) || _MSC_VER < 1800
+//+EAWebKitChange
+//9/27/2017
+// To support osx back in, plus 16.x version of EAWebKit supports MSVC 2015+
+#if !PLATFORM(EA)
+//-EAWebKitChange
 template<class T> struct _Unique_if {
     typedef unique_ptr<T> _Single_object;
 };
@@ -339,7 +343,11 @@ make_unique(Args&&...) = delete;
 #endif
 
 // MSVC 2015 supports these functions.
-#if !COMPILER(MSVC) || _MSC_VER < 1900
+//+EAWebKitChange
+//9/27/2017
+// To support osx back in, plus 16.x version of EAWebKit supports MSVC 2015+
+#if !PLATFORM(EA)
+//-EAWebKitChange
 // Compile-time integer sequences
 // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3658.html
 // (Note that we only implement index_sequence, and not the more generic integer_sequence).
@@ -370,23 +378,6 @@ T exchange(T& t, U&& newValue)
 }
 #endif
 
-#if COMPILER_SUPPORTS(CXX_USER_LITERALS)
-// These literals are available in C++14, so once we require C++14 compilers we can get rid of them here.
-// (User-literals need to have a leading underscore so we add it here - the "real" literals don't have underscores).
-namespace literals {
-namespace chrono_literals {
-    CONSTEXPR inline chrono::seconds operator"" _s(unsigned long long s)
-    {
-        return chrono::seconds(static_cast<chrono::seconds::rep>(s));
-    }
-
-    CONSTEXPR chrono::milliseconds operator"" _ms(unsigned long long ms)
-    {
-        return chrono::milliseconds(static_cast<chrono::milliseconds::rep>(ms));
-    }
-}
-}
-#endif
 }
 
 using WTF::KB;

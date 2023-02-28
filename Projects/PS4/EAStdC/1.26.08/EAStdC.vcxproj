@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\framework_tmp\ProDG_VSI-7.00.0.5\ProDG_VSI_MSBuild.V160.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>kettle-clang-dev-debug</Configuration>
+    <Platform>ORBIS</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="kettle-clang-dev-debug|ORBIS">
+      <Configuration>kettle-clang-dev-debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="kettle-clang-dev-opt|ORBIS">
+      <Configuration>kettle-clang-dev-opt</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}</ProjectGuid>
+    <Keyword>ORBISProj</Keyword>
+    <ProjectName>EAStdC</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\7.008.031\installed</SCE_ORBIS_SDK_DIR>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\EAStdC\1.26.08\include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;_GLIBCPP_USE_C99=1;_GLIBCXX_USE_C99_MATH=1;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\EAStdC\1.26.08\kettle-clang-dev-debug\lib\libEAStdC.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-dev-debug\build\EAStdC" mkdir "kettle-clang-dev-debug\build\EAStdC" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <OutDir>kettle-clang-dev-debug\lib\</OutDir>
+    <IntDir>kettle-clang-dev-debug\build\EAStdC\vstmp\</IntDir>
+    <TargetName>libEAStdC</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include;C:\packages\kettlesdk\7.008.031\installed\target\include;C:\packages\kettlesdk\7.008.031\installed\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\EAStdC\1.26.08\include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CppLanguageStd>Cpp17</CppLanguageStd>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_GLIBCPP_USE_C99=1;_GLIBCXX_USE_C99_MATH=1;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\EAStdC\1.26.08\kettle-clang-dev-opt\lib\libEAStdC.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-dev-opt\build\EAStdC" mkdir "kettle-clang-dev-opt\build\EAStdC" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <OutDir>kettle-clang-dev-opt\lib\</OutDir>
+    <IntDir>kettle-clang-dev-opt\build\EAStdC\vstmp\</IntDir>
+    <TargetName>libEAStdC</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include;C:\packages\kettlesdk\7.008.031\installed\target\include;C:\packages\kettlesdk\7.008.031\installed\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="C:\packages\EAStdC\1.26.08\EAStdC.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\Changes.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAAlignment.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EABitTricks.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAByteCrackers.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EACType.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EADateTime.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAFixedPoint.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAGlobal.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAHash.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAMathHelp.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAMemory.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAOSGlobal.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EARandom.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAScanf.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EASprintf.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAStdC Index.pdf">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAStdC.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAStopwatch.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EAString.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\EATextUtil.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\Int128_t.html">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\doc\UTFDoc.css">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAAlignment.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EABitTricks.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAByteCrackers.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EACallback.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EACType.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EADateTime.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAEndian.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAFixedPoint.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAGlobal.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAHashCRC.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAHashString.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAMathHelp.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAMemory.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAProcess.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EARandom.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EARandomDistribution.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAScanf.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EASingleton.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EASprintf.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EASprintfOrdered.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAStdC.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAStopwatch.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EAString.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\EATextUtil.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\Int128_t.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\version.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\internal\Config.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\internal\IntrusiveList.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\internal\ScanfCore.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\internal\SprintfCore.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\internal\stdioEA.h" />
+    <ClInclude Include="C:\packages\EAStdC\1.26.08\include\EAStdC\internal\Thread.h" />
+    <None Include="C:\packages\EAStdC\1.26.08\scripts\EAStdC_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EAStdC\1.26.08\scripts\make_public.bat">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EACallback.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EACallback.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EACallback.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EACType.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EACType.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EACType.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EADateTime.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EADateTime.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EADateTime.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAFixedPoint.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAFixedPoint.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAFixedPoint.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAGlobal.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAGlobal.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAGlobal.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAHashCRC.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAHashCRC.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAHashCRC.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAHashString.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAHashString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAHashString.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAMemory.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAMemory.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAMemory.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAProcess.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAProcess.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAProcess.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EARandom.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EARandom.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EARandom.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAScanf.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAScanf.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAScanf.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAScanfCore.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAScanfCore.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAScanfCore.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EASprintf.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EASprintf.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EASprintf.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EASprintfCore.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EASprintfCore.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EASprintfCore.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EASprintfOrdered.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EASprintfOrdered.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EASprintfOrdered.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAStdC.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAStdC.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAStdC.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAStopwatch.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAStopwatch.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAStopwatch.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EAString.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EAString.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EAString.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\EATextUtil.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\EATextUtil.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\EATextUtil.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\EAStdC\1.26.08\source\Int128_t.cpp">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\EAStdC\Int128_t.cpp.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\EAStdC\Int128_t.cpp.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\7.008.031\installed</SCE_ORBIS_SDK_DIR>
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\7.008.031\installed</SCE_ORBIS_SDK_DIR>
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+</Project>

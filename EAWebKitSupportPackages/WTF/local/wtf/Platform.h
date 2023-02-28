@@ -122,7 +122,7 @@
     || defined(__powerpc__)    \
     || defined(__powerpc)      \
     || defined(__POWERPC__)    \
-    || defined(CS_UNDEFINED_STRING)         \
+    || defined(_M_PPC)         \
     || defined(__PPC))         \
     && defined(__BYTE_ORDER__) \
     && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)

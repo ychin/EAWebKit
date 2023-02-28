@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<!-- options in the the config.targetoverrides optionset must be changed _before_ the package target  -->
+	<optionset name="config.targetoverrides">
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<package name="EAStdC" initializeself="true"/>
+
+	<property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+
+	<!-- There are a couple places in this package where operator new is         -->
+	<!-- currently used, though that is slated to change to ICoreAllocator soon. -->
+	<!-- In the meantime, we have the option to use standard new or EASTL's new. -->
+	<!--   <globalproperties>                                                    -->
+	<!--       EAStdC.EASTDC_USE_STANDARD_NEW=1                                  -->
+	<!--   </globalproperties>                                                   -->
+	<!--property name="EAStdC.EASTDC_USE_STANDARD_NEW"  value="0" unless="@{PropertyExists('EAStdC.EASTDC_USE_STANDARD_NEW')}" / Not unilaterally defined.-->
+	<property name="EATECH_WARNINGSASERRORS" value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+
+	<!-- Create extra build types which simply add some additional compiler arguments -->
+	<BuildType name="LibraryExtra" from="${EAStdCBuildType}">
+		<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+		<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+	</BuildType>
+
+	<optionset name="LibraryExtra">
+		<option name="cc.options" if="${config-compiler} == 'vc'">
+			@{StrReplace(${option.value}, '/wd4668', '/we4668')} <!-- Instead of disabling warning 4668, make it an error. -->
+		</option>
+	</optionset>
+
+	<runtime>
+		<Library name="EAStdC" buildtype="LibraryExtra">
+			<config>
+				<defines>
+					_GLIBCPP_USE_C99=1
+					_GLIBCXX_USE_C99_MATH=1
+
+					<do if="@{PropertyExists('eaconfig.use_valgrind')}">
+						<do if="${eaconfig.use_valgrind} == true">
+							EASTDC_VALGRIND_ENABLED=1
+						</do>
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_USE_STANDARD_NEW')}">
+						EASTDC_USE_STANDARD_NEW=${EAStdC.EASTDC_USE_STANDARD_NEW}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_THREADING_SUPPORTED')}">
+						EASTDC_THREADING_SUPPORTED=${EAStdC.EASTDC_THREADING_SUPPORTED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_MEMORY_INLINE_ENABLED')}">
+						EASTDC_MEMORY_INLINE_ENABLED=${EAStdC.EASTDC_MEMORY_INLINE_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_CHAR32_SUPPORT_ENABLED')}">
+						EASTDC_CHAR32_SUPPORT_ENABLED=${EAStdC.EASTDC_CHAR32_SUPPORT_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_VSNPRINTF8_ENABLED')}">
+						EASTDC_VSNPRINTF8_ENABLED=${EAStdC.EASTDC_VSNPRINTF8_ENABLED}
+					</do>
+
+					<do if="${Dll} and ${config-compiler} == 'vc'">
+						EASTDC_API=__declspec(dllexport)
+						EASTDC_API_LOCAL
+					</do>
+
+					<do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+						EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EA_SCEDBG_ENABLED')}">
+						EA_SCEDBG_ENABLED=${EA_SCEDBG_ENABLED}
+					</do>
+				</defines>
+
+				<warningsuppression if="${config-compiler} == 'vc'">
+					-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+					-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+				</warningsuppression>
+
+			</config>
+
+			<dependencies>
+				<use>
+					EABase
+				</use>
+				<auto>
+					EAAssert
+					EAThread
+				</auto>
+			</dependencies>
+
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+
+			<sourcefiles>
+				<includes name="${package.dir}/source/*.cpp" />
+			</sourcefiles>
+
+			<bulkbuild enable="true" />
+
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+
+	</runtime>
+
+
+	<!-- copylocal doesn't work structured XML prior to Framework 3.15.00. -->
+	<property name="test.EAStdCTest.copylocal" value="true" />
+
+	<tests>
+		<Program name="EAStdCTest">
+			<config>
+				<defines>
+					EA_MEMORY_LEAK_TRACE_ENABLED=1
+
+					<do if="@{PropertyExists('EA_XBDM_ENABLED')}">
+						EA_XBDM_ENABLED=${EA_XBDM_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EA_SCEDBG_ENABLED')}">
+						EA_SCEDBG_ENABLED=${EA_SCEDBG_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_THREADING_SUPPORTED')}">
+						EASTDC_THREADING_SUPPORTED=${EAStdC.EASTDC_THREADING_SUPPORTED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_CHAR32_SUPPORT_ENABLED')}">
+						EASTDC_CHAR32_SUPPORT_ENABLED=${EAStdC.EASTDC_CHAR32_SUPPORT_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_VSNPRINTF8_ENABLED')}">
+						EASTDC_VSNPRINTF8_ENABLED=${EAStdC.EASTDC_VSNPRINTF8_ENABLED}
+					</do>
+
+					<do if="@{PropertyExists('EAStdC.EASTDC_USE_STANDARD_NEW')}">
+						EASTDC_USE_STANDARD_NEW=${EAStdC.EASTDC_USE_STANDARD_NEW}
+					</do>
+
+					<!-- 
+			Some platforms generate noise in timing sensitive tests when their main process is swapped out 
+			for long periods of time so we disable them on the buildfarm but not locally via the manifest.xml unless
+			the user explicitly specifies the below property
+			-->
+					<do if="@{PropertyExists('EAStdC.SwappableProcessPlatform')}">
+						EASTDC_SWAPPABLE_PROCESS_PLATFORM=${EAStdC.SwappableProcessPlatform}
+					</do>
+
+				</defines>
+
+				<warningsuppression if="${config-compiler} == 'vc'">
+					-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+					-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+					-wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. -->
+					-wd4574        <!-- disable warning: "_SECURE_SCL' is defined to be '0': did you mean to use '#if _SECURE_SCL'? -->
+				</warningsuppression>
+			</config>
+
+			<dependencies>
+				<use>
+					EABase
+				</use>
+
+				<build copylocal="true">
+					EAAssert
+					EAMain
+					EASTL
+					EATest
+					EAThread
+					EAStdC/runtime/EAStdC
+				</build>
+			</dependencies>
+
+			<includedirs>
+				${package.dir}/include
+				${package.dir}/test/include
+			</includedirs>
+
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+			</sourcefiles>
+
+			<bulkbuild enable="true" />
+
+		</Program>
+
+	</tests>
+</project>

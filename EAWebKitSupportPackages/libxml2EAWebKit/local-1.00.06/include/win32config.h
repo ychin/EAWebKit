@@ -5,7 +5,9 @@
 #define HAVE_STDARG_H
 #define HAVE_MALLOC_H
 
+#if !defined(__PPU__) // Sony PS3 platform doesn't support errno, even though it uses GCC.
     #define HAVE_ERRNO_H
+#endif
 
 #if defined(_WIN32_WCE)
     #undef HAVE_ERRNO_H

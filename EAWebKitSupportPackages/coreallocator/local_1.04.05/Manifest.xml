@@ -1,0 +1,58 @@
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>Frostbite Game Framework Foundation</contactName>
+  <contactEmail>Frostbite.Team.GameFramework.Foundation@ea.com</contactEmail>
+  <componentName>Game Framework - Foundation</componentName>
+  <owningTeam>Frostbite Foundation</owningTeam>
+  <sourceLocation>//packages/coreallocator/1.04.05/</sourceLocation>
+  <tags>eatech, core</tags>
+  <summary>coreallocator</summary>
+  <description>
+		ICoreAllocator defines an abstract interface for dynamic memory
+		allocation.  It consists of two variations of alloc and one free
+		function.  Specialized versions of operator new and new[] are
+		also provided.  This interface will be used by Next Generation
+		Ignition technologies.
+
+		No implementation of the interface is provided in this package;
+		users are expected to supply their own.  We encourage the use
+		of the PPMalloc allocator.
+	</description>
+  <homePageUrl>http://easites.ea.com/EATech/Core/UTF/Pages/default.aspx</homePageUrl>
+  <changes>Please refer to the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/coreallocator-1.04.05/coreallocator/1.04.05/doc/Changes.html">changelog</a> for details.</changes>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <driftVersion>1.04.05</driftVersion>
+  <versionName>1.04.05</versionName>
+  <relationship>
+	<builds>
+	  <build configs="winprt-" name="solution" supported="true" />
+	  <build name="nant" supported="true" targets="test-build example-build" />
+	  <build name="test" supported="true" targets="test-run-fast" />
+	  <build name="xcode" supported="true" />
+	</builds>
+	<platforms>
+	  <platform build="Supported" configs="pc-vc-dev" name="pc" test="Supported" />
+	  <platform build="Supported" configs="pc64-vc-dev" name="pc64" test="Supported" />
+	  <platform build="Supported" name="xenon" test="Supported" />
+	  <platform build="Supported" name="ps3" test="Supported" />
+	  <platform build="Supported" name="unix" test="Supported" />
+	  <platform build="Supported" name="unix64" test="Supported" />
+	  <platform build="Supported" name="osx" test="Supported" />
+	  <platform build="Supported" name="iphone" test="Supported" />
+	  <platform build="Supported" name="iphonesim" test="NotSupported" />
+	  <platform build="Supported" name="android" test="Supported" />
+	  <platform build="Supported" name="capilano" test="Supported" />
+	  <platform build="Supported" name="kettle" test="Supported" />
+	  <platform build="Supported" name="winrt" test="Supported" />
+	  <platform build="Supported" name="winprt" test="Supported" />
+	  <platform build="Supported" name="nx" test="Supported" />
+	  <platform build="Supported" name="balin" test="Supported" />
+	  <platform build="Supported" name="xb1gdk" test="Supported" />
+	  <platform build="Supported" name="pc64gdk" test="Supported" />
+	  <platform build="Supported" name="ps5" test="Supported" />
+	  <platform build="Supported" name="stadia" test="Supported" />
+	  <platform build="Supported" name="xbsx" test="Supported" />
+	</platforms>
+  </relationship>
+</package>

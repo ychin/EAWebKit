@@ -65,7 +65,7 @@ namespace EA
         /// These represent the most common file system errors. However, there are additional errors 
         /// which may be returned by the system APIs which are different from these. You should be 
         /// prepared to receive any value for an error code. 
-        #if  !defined(EA_PLATFORM_WINDOWS) && !defined(EA_PLATFORM_XBOXONE) && !defined(EA_PLATFORM_PS4)
+        #if  !defined(EA_PLATFORM_WINDOWS) && !defined(EA_PLATFORM_XBOXONE) && !defined(EA_PLATFORM_SONY) && !defined(EA_PLATFORM_XBSX)
             enum IOResultCode
             {
                 kFSErrorBase              =   0, /// Error code base for this module
@@ -195,6 +195,8 @@ namespace EA
 #if defined(EA_PLATFORM_WINDOWS)
    #include <EAIO/Win32/EAFileStreamWin32.h>
 
+#elif defined(EA_PLATFORM_UNIX) 
+   #include <EAIO/Unix/EAFileStreamUnix.h>
 #else
    #include <EAIO/StdC/EAFileStreamStdC.h>
 #endif

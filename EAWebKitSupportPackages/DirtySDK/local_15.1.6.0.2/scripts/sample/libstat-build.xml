@@ -1,0 +1,17 @@
+<project>
+    <Program name="libstat" frompartial="DSProgram">
+        <headerfiles basedir="${package.dir}">
+            <includes name="sample/libstat/source/*.h"/>
+        </headerfiles>
+
+        <sourcefiles basedir="${package.dir}">
+            <includes fromfile="sample/libstat/project/source.txt"/>
+        </sourcefiles>
+
+        <dependencies>
+            <auto>
+                DirtySDK/dirtysock
+            </auto>
+        </dependencies>
+    </Program>
+</project>

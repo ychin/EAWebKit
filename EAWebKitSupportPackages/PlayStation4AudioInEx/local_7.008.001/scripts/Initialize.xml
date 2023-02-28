@@ -1,0 +1,9 @@
+<project>
+    <publicdata packagename="PlayStation4AudioInEx">
+        <module name="PlayStation4AudioInEx">
+            <libs>
+                <includes name="${package.PlayStation4AudioInEx.dir}/installed/target/lib/*.a" />
+            </libs>
+        </module>
+    </publicdata>
+</project>

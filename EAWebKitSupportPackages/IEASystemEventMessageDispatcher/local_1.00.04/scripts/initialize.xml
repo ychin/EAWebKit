@@ -1,0 +1,13 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+  <publicdata packagename="IEASystemEventMessageDispatcher" >
+    <runtime>
+      <module name="IEASystemEventMessageDispatcher">
+        <includedirs>
+          ${package.IEASystemEventMessageDispatcher.dir}/include
+        </includedirs>
+      </module>
+    </runtime>
+  </publicdata>
+
+</project>

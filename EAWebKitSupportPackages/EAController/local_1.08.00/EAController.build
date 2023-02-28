@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="EAController" default="build" xmlns="schemas/ea/framework3.xsd">
+	<package name="EAController" initializeself="true"/>
+
+	<do if="${config-system}==capilano and !(${gsdk.enabled??false})">
+		<property name="package.sdkreferences.capilano">
+			${property.value}
+			Xbox Wheel API, Version=8.0
+		</property>
+	</do>
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+
+	<runtime>
+		<!-- Determines which platform dir to use based on our config. We default to null if the config isn't supported by the package. -->
+		<property name="config-folder-name" value="${config-system}"/>
+		<property name="config-folder-name" value="pc" if="${config-system} == 'pc' or ${config-system} == 'pc64'"/>
+		<property name="config-folder-name" value="gdk" if="${gsdk.enabled??false}"/>
+		<property name="config-folder-name" value="sony" if="${config-system} == kettle"/>
+		<property name="config-folder-name" value="${config-os??unknown}" unless="@{DirectoryExists('${package.dir}/source/${config-folder-name}')}"/>
+		<property name="config-folder-name" value="null" unless="@{DirectoryExists('${package.dir}/source/${config-folder-name}')}"/>
+
+		<Library name="IEAController" buildtype="${IEAControllerBuildType}">
+			<config>		
+				<defines>
+					<do if="${Dll??false} and ${config-compiler} == 'vc'">
+						EACONTROLLER_API=__declspec(dllexport)
+					</do>
+				</defines>
+			</config>
+			<dependencies>
+				<use>
+					EABase
+				</use>
+				<build>
+					coreallocator
+					EAAssert
+					EAThread
+					EASTL
+				</build>
+			</dependencies>
+			<headerfiles>
+				<includes name="${package.dir}/include/IEAController/**.h" />
+			</headerfiles>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/source/IEAController/*.cpp" />
+			</sourcefiles>
+		</Library>
+
+		<Library name="EAController" buildtype="${EAControllerBuildType}">
+			<config>
+				
+				<warningsuppression>
+					<do if="${config-system} == 'capilano'">
+						-wd4471
+						-wd4472
+						-wd4628 <!-- vccorlib.h: digraphs not supported with -Ze. -->
+						-wd4946 <!-- Suppress warning in Windows headers about reinterpret cast of hat-types. Can only be suppressed reliably, globally -->
+					</do>
+				</warningsuppression>
+							
+				<defines>
+					<do if="${Dll??false} and ${config-compiler} == 'vc'">
+						EACONTROLLER_API=__declspec(dllexport)
+					</do>
+				</defines>
+			</config>
+
+			<dependencies>
+				<use>
+					EABase
+					coreallocator
+				</use>
+				<build>
+					EABase
+					EAAssert
+					EAController/IEAController
+					EASTL
+					EAStdC
+					EAThread
+				</build>
+			</dependencies>
+
+			<includedirs>
+				${package.EAController.includedirs}
+			</includedirs>
+
+			<sourcefiles>
+				<includes name="${package.dir}/source/*.cpp" />
+				<includes name="${package.dir}/source/internal/*.cpp" />
+				<includes name="${package.dir}/source/${config-folder-name}/*.cpp" />
+			</sourcefiles>
+			
+			<headerfiles>
+				<includes name="${package.dir}/include/EAController/*.h" />
+				<includes name="${package.dir}/include/EAController/internal/*.h" />
+				<includes name="${package.dir}/include/${config-folder-name}/EAController/*.h" />
+				<includes name="${package.dir}/include/kettle/EAController/*.h" if="${config-system} == kettle"/>
+			</headerfiles>
+
+			<libraries>
+				<do if="${config-system} == 'kettle'">
+					<includes name="${package.kettlesdk.libdir}\libScePad_stub_weak.a"/>
+					<includes name="${package.kettlesdk.libdir}\libSceUserService_stub_weak.a"/>
+				</do>
+			</libraries>
+
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>
+	
+	<tests>
+		<Program name="EAControllerTest">
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					EABase
+					coreallocator
+				</use>
+				<build>
+					coreallocator
+					EAAssert
+					EABase
+					EAMain
+					EATest
+					EAStdC
+					EASTL
+					EAThread
+					MemoryMan
+					PPMalloc
+				</build>
+			</dependencies>
+			<sourcefiles>
+				<includes name="${package.dir}/test/*.cpp"/>
+			</sourcefiles>
+		</Program>
+	</tests>
+
+</project>

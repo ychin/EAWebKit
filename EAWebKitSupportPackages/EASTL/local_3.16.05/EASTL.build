@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<!-- options in the the config.targetoverrides optionset must be changed _before_ the package target  -->
+	<optionset name="config.targetoverrides">
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<property name="Dll" value="${Dll??false}" />
+	<package name="EASTL" initializeself="true"/>
+
+	<property name="EATECH_WARNINGSASERRORS" value="0" unless="@{PropertyExists('EATECH_WARNINGSASERRORS')}" />
+	<property name="EASTLTest.BuildExtras" value="0" unless="@{PropertyExists('EASTLTest.BuildExtras')}" />
+
+	<!-- Create extra build types which simply add some additional compiler arguments -->
+	<BuildType name="LibraryExtra" from="config-options-library">
+		<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+		<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+	</BuildType>
+	<optionset name="LibraryExtra">
+	</optionset>
+
+	<BuildType name="ProgramExtra" from="config-options-program">
+		<option name="warningsaserrors" value="off" if="${EATECH_WARNINGSASERRORS} == 0" />
+		<option name="warningsaserrors" value="on" if="${EATECH_WARNINGSASERRORS} == 1" />
+	</BuildType>
+	<optionset name="ProgramExtra">
+	</optionset>
+
+	<optionset name="CppCXEnabledIfSupported" fromoptionset="config-options-program">
+		<option name="cc.options" if="${config-system} == 'capilano'">
+			${option.value}
+			-ZW
+		</option>
+	</optionset>
+
+	<!-- ********************* -->
+	<!-- Runtime configuration -->
+	<!-- ********************* -->
+
+	<runtime>
+		<Library name="EASTL">
+			<buildtype name="LibraryExtra" unless="${Dll}" />
+			<buildtype name="DynamicLibrary" if="${Dll}" />
+			<dependencies>
+				<auto>
+					EABase
+					<do if="${EASTL.EASTL_CORE_ALLOCATOR_ENABLED??1} == 1">
+						coreallocator
+					</do>
+					<do if="${EASTL.EASTL_EASTDC_VSNPRINTF??1} == 1">
+						EAStdC
+					</do>
+				</auto>
+			</dependencies>
+			<sourcefiles>
+				<includes name="${package.dir}/source/*.cpp" />
+				<includes name="${EASTL.EASTL_CUSTOM_SOURCE}" if="@{PropertyExists('EASTL.EASTL_CUSTOM_SOURCE')}"/>
+			</sourcefiles>
+			<bulkbuild enable="true" />
+			<config>
+				<defines>
+					<do if="${Dll} and ${config-compiler} == vc">
+						EASTL_API=__declspec(dllexport)
+					</do>
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4217     <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+						-wd4530     <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+						-wd4619     <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+						-wd4548     <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+						-wd4738     <!-- disable warning: "storing 32-bit float result in memory, possible loss of performance" -->
+					</do>
+				</warningsuppression>
+			</config>
+
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.html" />
+					<includes name="${package.dir}/doc/EASTL.natvis" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+					<includes name="${package.dir}/Manifest.xml" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>
+
+
+	<!-- ********************* -->
+	<!-- Test configuration    -->
+	<!-- ********************* -->
+
+	<tests>
+		<Program name="EASTLTest">
+			<buildtype name="ProgramExtra" />
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					coreallocator
+					EABase
+				</use>
+				<auto>
+					PPMalloc
+					EAStdC
+					EATest
+					EAThread
+					EAMain
+					EAAssert
+					EASTL/runtime/EASTL
+				</auto>
+			</dependencies>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+				<includes name="${package.dir}/test/source/TestCppCXTypeTraits.cpp" optionset="CppCXEnabledIfSupported" />
+			</sourcefiles>
+			<config>
+				<defines>
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+						-wd4275        <!-- disable warning: "non dll-interface class 'X' used as base for dll-interface class 'Y'" -->
+						-wd4290        <!-- disable warning: "C++ exception specification ignored except to indicate a function is not __declspec(nothrow)" -->
+						-wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+						-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+						-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+						-wd4738        <!-- disable warning: "storing 32-bit float result in memory, possible loss of performance" -->
+					</do>
+				</warningsuppression>
+			</config>
+		</Program>
+
+		<Program name="EASTLTestExtra" if="${EASTLTest.BuildExtras} == 1">
+			<buildtype name="ProgramExtra" />
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					coreallocator
+					EABase
+				</use>
+				<auto>
+					PPMalloc
+					EAStdC
+					EATest
+					EAThread
+					EAMain
+					EAAssert
+					EASTL/runtime/EASTL
+				</auto>
+			</dependencies>
+			<includedirs>
+				${package.dir}/include
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/test/source/*.cpp" />
+			</sourcefiles>
+			<config>
+				<defines>
+					EASTL_SLIST_SIZE_CACHE=0            <!-- We need to be careful with what things we tweak here.             -->
+					EASTL_LIST_SIZE_CACHE=0             <!-- This unit test uses other packages which themselves use EASTL.    -->
+					EASTL_ENABLE_VIRTUAL_ALLOCATOR=1    <!-- Some settings, if tweaked here, could break other packages unless -->
+					EASTL_ALLOCATOR_COPY_ENABLED=1      <!-- they also have the same tweak enabled.                            -->
+					EASTL_VALIDATE_COMPARE_ENABLED=1
+					EASTL_RESET_ENABLED=0
+					EASTL_VALIDATE_INTRUSIVE_LIST=1
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+						-wd4275        <!-- disable warning: "non dll-interface class 'X' used as base for dll-interface class 'Y'" -->
+						-wd4290        <!-- disable warning: "C++ exception specification ignored except to indicate a function is not __declspec(nothrow)" -->
+						-wd4365        <!-- disable warning: "conversion from 'x' to 'y', signed/unsigned mismatch" -->
+						-wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+						-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+						-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+						-wd4738        <!-- disable warning: "storing 32-bit float result in memory, possible loss of performance" -->
+					</do>
+				</warningsuppression>
+			</config>
+		</Program>
+
+		<!-- Android doesn't have a Standard C++ library until SDK r5 (December 2, and thus no STL. -->
+		<Program name="EASTLBenchmark" if="${EASTLTest.BuildExtras} == 1 and ${config-system} != 'android'">
+			<buildtype name="ProgramExtra" />
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					coreallocator
+					EABase
+				</use>
+				<auto>
+					PPMalloc
+					EAStdC
+					EATest
+					EAThread
+					EAMain
+					EAAssert
+					EASTL/runtime/EASTL
+				</auto>
+			</dependencies>
+			<includedirs>
+				${package.dir}/include
+				${package.dir}/benchmark/source
+				${package.dir}/test/source
+			</includedirs>
+			<sourcefiles>
+				<includes name="${package.dir}/benchmark/source/*.cpp" />
+				<includes name="${package.dir}/test/source/EASTLTest.cpp" />
+				<includes name="${package.dir}/test/source/EASTLTestAllocator.cpp" />
+			</sourcefiles>
+			<config>
+				<defines>
+					<!-- Try to get the list caching the same as the competing std STL -->
+					<!-- Note that as of v1.16.01 EASTL was changed to have EASTL_SLIST_SIZE_CACHE == 1 by default. -->
+					<do if="${config-system} == 'unix' or ${config-system} == 'unix64'">
+						EASTL_LIST_SIZE_CACHE=0
+						EASTL_SLIST_SIZE_CACHE=0
+					</do>
+					<do if="${config-compiler} == 'vc'">
+						_SCL_SECURE_NO_WARNINGS
+						_ITERATOR_DEBUG_LEVEL=0
+					</do>
+				</defines>
+				<warningsuppression>
+					<do if="${config-compiler} == 'vc'">
+						-wd4127        <!-- disable warning: "conditional expression is constant" -->
+						-wd4217        <!-- disable warning: "member template functions cannot be used for copy-assignment or copy-construction" -->
+						-wd4242        <!-- disable warning: "conversion from 'x' to 'y', possible loss of data" -->
+						-wd4275        <!-- disable warning: "non dll-interface class 'X' used as base for dll-interface class 'Y'" -->
+						-wd4290        <!-- disable warning: "C++ exception specification ignored except to indicate a function is not __declspec(nothrow)" -->
+						-wd4365        <!-- disable warning: "conversion from 'type x' to 'type y', signed/unsigned mismatch" -->
+						-wd4530        <!-- disable warning: "C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc" -->
+						-wd4548        <!-- disable warning: "expression before comma has no effect; expected expression with side-effect" -->
+						-wd4555        <!-- disable warning: "expression has no effect; expected expression with side-effect" -->
+						-wd4619        <!-- disable warning: "#pragma warning : there is no warning number 'xxxx'"  MS being silly here -->
+						-wd4738        <!-- disable warning: "storing 32-bit float result in memory, possible loss of performance" -->
+					</do>
+				</warningsuppression>
+			</config>
+		</Program>
+	</tests>
+
+	<fileset name="test.EASTLTest.deploy-contents-fileset" basedir="${package.configbindir}/test">
+		<includes name="**" />
+	</fileset>
+
+	<fileset name="test.EASTLTestExtra.deploy-contents-fileset" basedir="${package.configbindir}/test">
+		<includes name="**" />
+	</fileset>
+
+	<fileset name="test.EASTLBenchmark.deploy-contents-fileset" basedir="${package.configbindir}/test">
+		<includes name="**" />
+	</fileset>
+
+</project>
+

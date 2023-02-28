@@ -139,7 +139,9 @@ typedef unsigned long trio_flags_t;
 # include <signal.h>
 #endif
 # include <locale.h>
+# if !defined(__ANDROID__)
 #  define USE_LOCALE
+# endif
 #endif /* TRIO_PLATFORM_UNIX */
 #if defined(TRIO_PLATFORM_VMS)
 # include <unistd.h>

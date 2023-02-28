@@ -1,0 +1,19 @@
+// ===========================================================================
+// Pc-Lint policy for the EAStdC package
+// ===========================================================================
+
+
+// ===========================================================================
+// Include the pclintconfig legacy policy file which contains the EAC minimal
+// pclint warnings set.
+// ===========================================================================
+policy_legacy.lnt
+
+-e830		// Location cited in prior message
+-e831		// Reference cited in prior message
+
+// ===========================================================================
+// This package could run on the pclint level bellow and still have a small
+// number of warnings, not doing this because we need to focus on the lower
+// level warnings in other packages first.
+//-w4		// Pushing pclint to warning level 4

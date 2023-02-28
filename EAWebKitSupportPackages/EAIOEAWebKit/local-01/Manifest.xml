@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+
+	<summary>EAIOEAWebKit</summary>
+
+	<description>
+		This package implements portable file and stream IO similar to 
+		that provided in desktop file system and path manipulation APIs.
+		As of 10/2006, this package is gradually being migrated from the 
+		EAFile* functionality in the UTFFoundation package. A future
+		version of EAIO should have all the file functionality moved 
+		from UTFFoundation.
+	</description>
+
+	<changes>
+		Changes are detailed in the package doc/Changes.html file.
+	</changes>
+
+	<status>Official</status>
+	<statusComment></statusComment>
+
+
+	<frameworkVersion>2</frameworkVersion>
+
+	<buildable>true</buildable>
+
+</package>
+

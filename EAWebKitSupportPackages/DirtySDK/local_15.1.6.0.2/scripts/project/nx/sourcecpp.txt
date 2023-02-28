@@ -1,0 +1,6 @@
+source/crypt/nx/cryptrandnx.cpp
+source/dirtysock/nx/dirtyerrnx.cpp
+source/dirtysock/nx/dirtylibnx.cpp
+source/dirtysock/nx/dirtynetnx.cpp
+source/dirtysock/netconnlocaluser.cpp
+source/dirtysock/nx/netconnnx.cpp

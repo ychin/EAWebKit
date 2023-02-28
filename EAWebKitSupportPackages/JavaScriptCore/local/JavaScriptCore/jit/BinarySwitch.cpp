@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "BinarySwitch.h"
+#include <random>
 
 #if ENABLE(JIT)
 
@@ -169,14 +170,8 @@ void BinarySwitch::build(unsigned start, bool hardStart, unsigned end)
         for (unsigned i = 0; i < size; ++i)
             localCaseIndices.append(start + i);
         
-        std::random_shuffle(
-            localCaseIndices.begin(), localCaseIndices.end(),
-            [this] (unsigned n) {
-                // We use modulo to get a random number in the range we want fully knowing that
-                // this introduces a tiny amount of bias, but we're fine with such tiny bias.
-                return m_weakRandom.getUint32() % n;
-            });
-        
+        std::shuffle(localCaseIndices.begin(), localCaseIndices.end(), std::default_random_engine(m_weakRandom.getUint32()));		
+		
         for (unsigned i = 0; i < size - 1; ++i) {
             m_branches.append(BranchCode(NotEqualToPush, localCaseIndices[i]));
             m_branches.append(BranchCode(ExecuteCase, localCaseIndices[i]));

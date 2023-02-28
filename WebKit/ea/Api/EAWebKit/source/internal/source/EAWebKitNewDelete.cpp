@@ -60,31 +60,49 @@ extern	Allocator* spEAWebKitAllocator;
 
 void* operator new(size_t size)
 {
-	return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new");
+	if (!EA::WebKit::spEAWebKitAllocator)
+		return malloc(size);
+	else
+		return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new");
 }
 
 void* operator new[](size_t size)
 {
-    return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new[]");
+	if (!EA::WebKit::spEAWebKitAllocator)
+		return malloc(size);
+	else
+		return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new[]");
 }
 
 void* operator new	(size_t size, int, const char* pFileName, int nLine)
 {
-	return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new");
+	if (!EA::WebKit::spEAWebKitAllocator)
+		return malloc(size);
+	else
+		return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new");
 }
 void* operator new[](size_t size, int, const char* pFileName, int nLine)
 {
-	return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new[]");
+	if (!EA::WebKit::spEAWebKitAllocator)
+		return malloc(size);
+	else
+		return EA::WebKit::spEAWebKitAllocator->Malloc(size, 0, "EAWebKit Anonymous new[]");
 }
 
 void operator delete(void *p)
 {
-	EA::WebKit::spEAWebKitAllocator->Free(p,0);
+	if (!EA::WebKit::spEAWebKitAllocator)
+		free(p);
+	else
+		EA::WebKit::spEAWebKitAllocator->Free(p,0);
 }
 
 void operator delete[](void *p)
 {
-	EA::WebKit::spEAWebKitAllocator->Free(p,0);
+	if (!EA::WebKit::spEAWebKitAllocator)
+		free(p);
+	else
+		EA::WebKit::spEAWebKitAllocator->Free(p,0);
 }
 
 //EAWebKit code does not call std::nothrow_t variations but some system libs may.

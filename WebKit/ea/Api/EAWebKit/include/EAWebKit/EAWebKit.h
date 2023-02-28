@@ -420,7 +420,8 @@ public:
     virtual void DestroyJavascriptValueArray(JavascriptValue *args);
 
 	// Misc. Runtime APIs
-	virtual void ClearMemoryCache(MemoryCacheClearFlags flags = MemoryCacheClearAll); 
+	virtual void ClearMemoryCache(MemoryCacheClearFlags flags = MemoryCacheClearAll);
+    virtual void TriggerGarbageCollectFromScript();   //The least impactful way to try free up some memory.
 	virtual void NetworkStateChanged(bool isOnline); //Call this to indicate any change in network status. 
 	virtual void RegisterURLSchemeAsCORSEnabled(const char16_t* pScheme);
     virtual bool IsURLSchemeCORSEnabled(const char16_t* pScheme);

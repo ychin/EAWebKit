@@ -100,6 +100,12 @@ _cairo_box_contains_point (const cairo_box_t *box,
 static inline cairo_bool_t
 _cairo_box_is_pixel_aligned (const cairo_box_t *box)
 {
+#if CAIRO_FIXED_FRAC_BITS <= 8 && 0
+    return ((box->p1.x & CAIRO_FIXED_FRAC_MASK) << 24 |
+	    (box->p1.y & CAIRO_FIXED_FRAC_MASK) << 16 |
+	    (box->p2.x & CAIRO_FIXED_FRAC_MASK) << 8 |
+	    (box->p2.y & CAIRO_FIXED_FRAC_MASK) << 0) == 0;
+#else /* GCC on i7 prefers this variant (bizarrely according to the profiler) */
     cairo_fixed_t f;
 
     f = 0;
@@ -109,6 +115,7 @@ _cairo_box_is_pixel_aligned (const cairo_box_t *box)
     f |= box->p2.y & CAIRO_FIXED_FRAC_MASK;
 
     return f == 0;
+#endif
 }
 
 #endif /* CAIRO_BOX_H */

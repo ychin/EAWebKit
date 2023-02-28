@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Platform Behavior</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type">
+  <meta name="author" content="Paul Pedriana">
+  <meta name="description" content="Describes changes between EASTL versions.">
+</head>
+
+
+<body>
+
+<h1><font size="+3">Platform Behavior </font></h1>
+<p>This document describes differences in threading behavior between the various platforms which EA actively develops for. </p>
+<h3>XBox 360</h3>
+<p>The XBox 360 has three 3.2 GHz 64 PowerPC CPUs, each of which has two hardware threads. Thus the machine acts somewhat like it has six 1.6 GHz virtual CPUs, and in fact the OS API functions exposes the processor as such. However, the number of cycles a pair of hardware threads share isn't necessarily evenly distributed, and if the application assigns only one thread to a given CPU, the OS runs the CPU in a mode whereby the unused hardware thread uses a fraction of the cycles such that you have a situation more like 3.0 GHz for the active hardware thread and 0.2 GHz for the idling hardware thread. The OS allows the user to control which of the six virtual CPUs a thread runs on and the user can likewise query which of the six CPUs a thread is running on. Each individual CPU is rather similar to the CPU found on the Playstation 3, with the primary difference being the 360 CPU's support for an extended VMX instruction set. </p>
+<p>The 360 uses a weak memory model SMP approach to memory coherence and synchronization. This means that the user needs to be more diligent about proper use of memory synchronization than necessary with other platforms such as Intel x86. There is an L1 memory cache per physical CPU, and the two hardware threads on each CPU have an identical view of memory. Thus user memory synchronization should be necessary only between threads of different CPUs and not threads on the same CPU. </p>
+<p>The OS threading APIs are very similar to those provided by Windows, though the underlying thread scheduler is very different. Threads on the 360 are pre-emptive, but are not time-sliced. If a higher priority thread is started or unblocked then it will pre-empt a lower priority thread, but if an equal priority thread is started or unblocked then it will not execute until some other thread blocks, yields, or exits. Thread priority is a simple concept on the 360: there is a single linear range of thread priorities and threads with a higher priority value override those of a lower priority value. </p>
+<p>Threads on the 360 have priorities which change only when the user changes them. This is unlike threads on more advanced platforms such as Windows and Linux whereby threads can have their priorities dynamically altered by the OS for various purposes. </p>
+<p>As with Windows, the OS provides a MUTEX implementation and a CRITICAL_SECTION (lightweight mutex) implementation. These map to EAThread::Mutex with the inter-process flag enabled and to EAThread::Mutex with the inter-process flag disabled and EAThread::Futex respectively. The mutex is so much slower than the critical section that you want to always use the latter when possible. </p>
+<h3>Playstation 3</h3>
+<p>The Playstation 3 has a single 3.2 GHz 64 bit PowerPC CPU which has two hardware threads. Thus the machine acts somewhat like it has two 1.6 GHz virtual CPUs. This is much like the case with each of the XBox 360 CPUs. Since both of these hardware threads shares the same view of memory, sychronization issues that exist for multiprocessing platforms don't exist for the PS3. For example, memory barriers (acquire/release) are unneeded. </p>
+<p>The OS provides a pthreads API and provides a native threading API that is somewhat similar looking to pthreads. The pthreads API provides the basic pthreads synchronization primitives but doesn't provide all of them and doesn't support cancellation. Most applications use the native threading API, as it is a little faster and has the same functionality as the pthreads API. The PS3's threading functionality is generally not as full-featured as the XBOx 360 threading functionality and has some quirky behaviour. Like the 360, the PS3 supports pre-emption but not time slicing. Due to the PS3 having a single CPU, users sometimes find that they have a hard time ensuring that all their threads get an appropriate amount of CPU time. </p>
+<p>The OS provides a mutex implementation and a lwmutex (lightweight mutex) implementation. These map to EAThread::Mutex and EAThread::Futex respectively. The mutex is so much slower than the lwmutex that you want to always use the latter (or EAThread::Futex) when possible. </p>
+<h3>Windows (Win32  on x86)</h3>
+<p>Windows has a few variants that run on a few types of hardware, but we discuss Win32 on x86 here. Win64 on x86-64 is nearly the same, so most of what we say here applies to it as well. </p>
+<p>The Intel x86 processor uses a strong memory coherency model. This means that even in a multi-processor environment memory writes are automatically ordered by the system for you. This means that memory barriers (acquire/release) aren't necessary. However, Intel and AMD may release processors in the future that don't have such strongly ordered behaviour and in any case you should use memory barriers as if you were on a weakly ordered SMP system if you want portability. Even with the x86 platform you still need to use atomic operations and conventional memory synchronization primitives properly.</p>
+<p>Windows provides a native synchronization API, plus there exists two well-known third party implementations of pthreads (pthreads-win and Cygwin). The pthreads implementation follows the Posix standard to the extent possible but can't be perfect due to fact that it is implemented on top of native Windows threads. </p>
+<p>Windows provides a pre-emptive and time sliced scheduling environment. Applications can modify the time slicing quanta, but it defaults to about 20 to 50 milliseconds. Windows implements dynamic thread priority boosting to improve the response of some threads. It also implements thread-starvation resolution via providing time slices to some threads are being starved.</p>
+<p>Windows threading has a tiered priority scheme whereby processes are assigned priorities relative to other processes and threads within processes are assigned priorities relative to other threads inside and outside their processes. The API provided to control priorities is quirky because it is inconsistent and counter-intuitive. For example, you can set a thread priority of 2, 3 or 7, but not 4, 5, or 6 -- unless your process is of a certain kind of priority at which time you can use these priorities.</p>
+<h3>Wii / GameCube </h3>
+<p>The Wii and the GameCube are very similar machines and have nearly identical processor and threading behavior. What we say about Wii applies the same to the GameCube. The Wii has a single 32 bit 0.73 GHz PowerPC with a single hardware thread. The OS implements thread scheduling that is pre-emptive but not time-sliced. The OS provides some basic synchronization primitives such as mutexes, semaphores, enable/disable interrupts. Since there is a single CPU which doesn't have support for multiple hardware threads, there are essentially no memory synchronization issues on the Wii platform. Memory changed by any thread is automatically seen by all other threads. You still need to user synchronization primitives such as mutexes to control memory access, though. </p>
+<h3>Linux (Kernel 2.4 and 2.6 on x86) </h3>
+<p>Linux runs on many types of hardware, and so we discuss only OS-level issues here. Linux up till version 2.4 supported only lightweight processes and not true native kernel threads. Linux 2.6 added support for true native threads and made multithreading on Linux both more powerful and more efficient.</p>
+<p>Linux offers a nearly complete implementation of Posix standard threading (pthreads) as well as some extension functionality. Linux can get rather confusing regarding the topic of thread and process priorities, however. Linux offers three thread scheduling modes: SCHED_OTHER, SCHED_RR, and SCHED_FIFO. The default is SCHED_OTHER and for this mode there are no user-controlled thread priorities; all threads are of priority 0 and an attempt to change the priority will fail. The other two scheduling modes (SCHED_RR and SCHED_FIFO) are for real-time processing and require the given process to be executed with superuser privileges. These scheduling modes trump all threads of mode SCHED_OTHER and there are 99 priority levels of increasing importance in the range of [1, 99]. Since most Linux applications use SCHED_OTHER, it's important that synchronization primitives be properly used to synchronize executation of multiple threads in a process. </p>
+<table border="1">
+  <tbody>
+    <tr>
+      <td valign="bottom"><b>Policy</b></td>
+      <td valign="bottom"><b>Priority<br>
+        Range</b></td>
+      <td valign="bottom"><b>Policy</b></td>
+    </tr>
+    <tr>
+      <td valign="top">SCHED_OTHER</td>
+      <td valign="top">0</td>
+      <td valign="top">The default Linux time-sharing policy. Processes are only run when there is no waiting real-time process. You can change the dynamic priority with the nice() and setpriority() system calls.</td>
+    </tr>
+    <tr>
+      <td valign="top">SCE_KERNEL_SCHED_FIFO</td>
+      <td valign="top">[1, 99]</td>
+      <td valign="top">The basic real-time scheduling policy; requires superuser privileges. The system maintains a FIFO queue for each process priority; a FIFO process runs until it surrenders control or is preempted by a higher priority process. A preempted process stays at the head of its queue, and resumes execution as soon as there are no higher priority processes waiting.</td>
+    </tr>
+    <tr>
+      <td valign="top">SCE_KERNEL_SCHED_RR</td>
+      <td valign="top">[1, 99]</td>
+      <td valign="top">A more sophisticated real-time scheduling policy; requires superuser privileges.  RR processes are subject to preemption if they exceed their CPU time quantum and there is at least one task of the same priority waiting. RR processes preempted by higher priority processes stay at the head of their queue and get the rest of their quantum before they time out. Process that exceed their quantum are placed at the end of the queue, and are not executed again until all currently waiting processes of the same priority have had a chance.</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Mac OS X (x86 and PowerPC)</h3>
+<p>MacOS previously ran on single and multiprocessing PowerPC machines, but switched to running on x86 machines. The hardware issues that exist for Windows and Linux on x86 apply similarly to MacOS on x86, and the hardware issues that exist for other OSs on PowerPC apply similarly to MacOS on PowerPC. So we will restrict our discussion to the OS level. </p>
+<p>MacOS provides a number of threading APIs for users, but the only one that should matter for our purposes is its pthreads API. MacOS pthreads are a good subset of the Posix standard and are similar or slightly better than what you find on BSD Unix but not as complete as what's available on Linux. MacOS provides true threads as opposed to lightweight processes found on some Unix variants and found on Linux prior to kernel v2.6.</p>
+<p>MacOS threads are both pre-emptive and time-sliced. Thus two threads of equal priority on a CPU will alternately be given time slices. </p>
+<h3>XBox</h3>
+<p>The XBox is essentially the same hardware as a 733 MHz Pentium 3 Celeron (x86). The OS provides an API that is very similar to the Windows API, except that like the XBox 360 the threading is not time-sliced. We won't discuss this platform further because it has been retired as of the beginning of the year 2007.</p>
+<h3>Playstation 2 </h3>
+<p>The PS2 has a single 64 bit MIPS CPU with a single hardware thread. The OS provides a very basic threading API and two synchronization primitives: semaphore and enable/disable interrupts. Additionally the PS2 supports interrupt-based execution on top of formal threads. The threading is pre-emptive but not time-sliced. We won't discuss this platform further because there is little to say about it.</p>
+<h3></h3>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+
+<br>
+
+<br>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+</body>
+</html>

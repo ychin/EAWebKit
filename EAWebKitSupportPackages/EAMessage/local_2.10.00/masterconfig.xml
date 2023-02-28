@@ -1,0 +1,478 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <syncversions />
+  <masterversions>
+    <package name="EABase" version="2.00.44" />
+    <package name="rwmath" version="1.27.00" />
+    <package name="EASharp" version="1.02.03" />
+    <package name="EASharpTest" version="1.02.03" />
+    <package name="Scintilla" version="1.00.06" />
+    <package name="FunctionInvoker" version="0.90.00" />
+    <package name="snsystemssdk" version="310.001" />
+    <package name="jdk" version="1.6.0_23-1" />
+    <package name="AndroidEmulator" version="1.18.00" />
+    <package name="android_config" version="1.04.02-pr01" />
+    <package name="AndroidSDK" version="18" />
+    <package name="AndroidNDK" version="r9" />
+    <package name="blast_config" version="1.00.00" />
+    <package name="eaconfig" version="2.13.00" />
+    <package name="ios_config" version="1.00.05" />
+    <package name="UnixGCC" version="0.07.00" />
+    <package name="UnixClang" version="0.07.00" />
+    <package name="osx_config" version="1.07.02" />
+    <package name="IPhoneRunner" version="1.03.00" />
+    <package name="iphonesdk" version="7.0-proxy-1" />
+    <package name="RemoteBuild" version="4.00.01" />
+    <package name="vstomaketools" version="2.05.16" />
+    <package name="MarmaladeSDK" version="1.00.01-proxy" />
+    <package name="marmalade_config" version="1.00.00" />
+    <package name="Framework" version="3.16.00" />
+    <package name="XGEAddin" version="3.1.0" />
+    <package name="CoreFileSystemRw" version="1.04.01" />
+    <package name="psp2_config" version="1.01.00" />
+    <package name="XcodeProjectizer" version="2.05.02" />
+    <package name="freebox_ndk" version="0.106-2" />
+    <package name="BloxPropertyEditor" version="2.00.01" />
+    <package name="BloxWindows" version="2.02.04" />
+    <package name="BloxControls" version="5.03.00" />
+    <package name="BloxLogging" version="2.00.03" />
+    <package name="BloxDialogs" version="2.01.03" />
+    <package name="BloxClipboard" version="3.00.04" />
+    <package name="BloxDragAndDrop" version="3.01.05" />
+    <package name="BloxMenus" version="1.01.00" />
+    <package name="BloxDiagramming" version="4.02.01" />
+    <package name="BloxCurve" version="0.04.02" />
+    <package name="BloxMultiTrack" version="0.04.02" />
+    <package name="BloxSystem" version="1.07.00" />
+    <package name="BloxServices" version="1.04.01" />
+    <package name="BloxNAntBuild" version="1.02.02" />
+    <package name="BloxArgs" version="1.01.02" />
+    <package name="BloxThemes" version="1.02.01" />
+    <package name="BloxData" version="2.00.00" />
+    <package name="BloxUndoRedo" version="1.00.02" />
+    <package name="KinectSDK" version="1.7" />
+    <package name="nunit" version="2.5.9.10348" />
+    <package name="EA3_SDK_pc" version="3.29.17" />
+    <package name="EA3_SDK_light" version="1.00.00" />
+    <package name="EAGameState" version="1.00.06" />
+    <package name="EADotNet" version="02.05" />
+    <package name="EADotNetMath" version="2.01.01" />
+    <package name="EADotNetRenderer" version="1.09.01" />
+    <package name="EADotNetEA3" version="1.01.00" />
+    <package name="EAExpression" version="2.00.04" />
+    <package name="EAExpressionScript" version="2.00.04" />
+    <package name="EAGenericData" version="2.00.12" />
+    <package name="EADotNetGraph" version="0.00.05" />
+    <package name="DockPanel" version="2.3.1-5" />
+    <package name="EALockFreeAlloc" version="1.00.03" />
+    <package name="EADebugDraw" version="1.00.00" />
+    <package name="SmartPropertyGrid" version="3.2.0.45-beta-1" />
+    <package name="pcwiimotelib" version="1.00.07" />
+    <package name="ParallelExtensions" version="1.0.3058.34407" />
+    <package name="humanik" version="2013.1.1" />
+    <package name="EAGranite" version="0.06.00" />
+    <package name="DotNet" version="4.0-2" />
+    <package name="DotNetSDK" version="2.0-4" />
+    <package name="EACouchFileSystem" version="1.00.02" />
+    <package name="p4api_net" version="2012.2" />
+    <package name="SharpDX" version="2.0.2010.06-1" />
+    <package name="log4net" version="1.2.10-ea-2" />
+    <package name="spubuildpipe" version="0.00.10" />
+    <package name="AdManager" version="3.08.06" />
+    <package name="Allocator" version="1.07.01" />
+    <package name="coreallocator" version="1.04.00" />
+    <package name="EAAssert" version="1.03.05" />
+    <package name="eacore_locale" version="2.02.05" />
+    <package name="eadxt" version="1.07.04" />
+    <package name="eadxt_samples" version="1.07.00" />
+    <package name="eadxt_test" version="1.07.04" />
+    <package name="EAJson" version="1.04.00" />
+    <package name="job_manager" version="3.17.00" />
+    <package name="job_test" version="3.17.00" />
+    <package name="job_util" version="3.06.01" />
+    <package name="job_profiler" version="0.05.00" />
+    <package name="job_profiler_tool" version="0.05.00" />
+    <package name="RadialPS3" version="20090422" />
+    <package name="realmemcard_ps3" version="2.04.00" />
+    <package name="realmemcard_xenon" version="5.04.00" />
+    <package name="realmemcard_core" version="1.01.02" />
+    <package name="realmemcard_wii" version="2.00.00" />
+    <package name="rwbigfile" version="2.01.00" />
+    <package name="rwbigfiledriver" version="1.00.00" />
+    <package name="rwcodec" version="1.09.01" />
+    <package name="rwcontroller" version="1.05.00-sn" />
+    <package name="rwfilesystem" version="1.24.00" />
+    <package name="FileProfileAnalyzer" version="2.02.04-1" />
+    <package name="filesyshio2" version="2.00.00" />
+    <package name="rwsocket" version="1.00.02" />
+    <package name="rwstdc" version="1.04.03-EAStdC" />
+    <package name="rwtimer" version="1.01.03" />
+    <package name="rwxml" version="1.02.01-eastdc" />
+    <package name="xceedzip" version="5.0.0-16" />
+    <package name="EACamera" version="1.02.01" />
+    <package name="EACameraExample" version="1.01.00" />
+    <package name="EACameraTest" version="1.02.00" />
+    <package name="qautil" version="0.07.00" />
+    <package name="rwCommonQA" version="1.02.06" />
+    <package name="rwbigfile_test" version="2.01.00" />
+    <package name="rwcodec_test" version="1.09.00" />
+    <package name="rwcontroller_test" version="1.05.00" />
+    <package name="rwfilesystem_test" version="1.24.00" />
+    <package name="rwmath_test" version="1.18.00" />
+    <package name="EAStringIntern" version="1.05.00" />
+    <package name="EAApp" version="1.05.00" />
+    <package name="EACallstack" version="1.18.02" />
+    <package name="EACOM" version="2.07.05" />
+    <package name="EADeploy" version="1.00.00" />
+    <package name="EAGimex" version="3.03.10" />
+    <package name="EAIO" version="2.19.01" />
+    <package name="EALocale" version="2.07.00" />
+    <package name="EAMessage" version="2.09.00" />
+    <package name="EAPlatform" version="1.03.02" />
+    <package name="EATest" version="2.07.00" />
+    <package name="EATestPrintServer" version="2.00.00" />
+    <package name="EAReportUploader" version="1.02.04" />
+    <package name="EAReportCooker" version="1.02.04" />
+    <package name="EARunner" version="1.05.00" />
+    <package name="EACrypto" version="1.02.03" />
+    <package name="EAStdC" version="1.13.00" />
+    <package name="EASTL" version="2.01.00" />
+    <package name="EAText" version="1.11.00" />
+    <package name="EATextRNA" version="1.07.03" />
+    <package name="EATextViewer" version="0.95.04" />
+    <package name="EAThread" version="1.20.09" />
+    <package name="EATrace" version="2.10.01" />
+    <package name="EAXml" version="1.02.01" />
+    <package name="ExceptionHandler" version="1.12.02" />
+    <package name="InputMan" version="2.24.00" />
+    <package name="MemoryMan" version="1.07.08" />
+    <package name="MemoryFramework" version="1.14.01" />
+    <package name="PPMalloc" version="1.21.00" />
+    <package name="Symmogrifier" version="1.06.01" />
+    <package name="UTFDraw2D" version="1.03.04" />
+    <package name="UTFFoundation" version="2.14.03" />
+    <package name="UTFInternet" version="3.06.07" />
+    <package name="UTFSockets" version="2.13.01" />
+    <package name="UTFWin" version="1.17.02" />
+    <package name="UTFWinSamples" version="1.14.00" />
+    <package name="UTFXml" version="3.08.04" />
+    <package name="XHTML" version="2.06.00" />
+    <package name="SafeCom" version="1.06.03" />
+    <package name="ResourceMan" version="2.05.05" />
+    <package name="ResourceConfig" version="2.04.05" />
+    <package name="ResourceManPackageToolkit" version="1.01.01" />
+    <package name="EASkeleton" version="0.04.03" />
+    <package name="EASkeletonAppFramework" version="0.04.00" />
+    <package name="EASkeletonTest" version="0.04.02" />
+    <package name="MemoryViewer" version="0.05.01" />
+    <package name="Harmony" version="1.05.00" />
+    <package name="aemsup" version="1.11.00" />
+    <package name="aemsupgpl" version="1.11.00" />
+    <package name="csis" version="4.00.00" />
+    <package name="csisfw2" version="5.05.00" />
+    <package name="EAAudioBase" version="0.03.00" />
+    <package name="EAAudioBase_Tests" version="0.03.00" />
+    <package name="EAAudioController" version="1.04.00" />
+    <package name="EAAudioControllerAudition" version="1.04.00" />
+    <package name="EAAudioControllerBuilder" version="1.04.00" />
+    <package name="EAAudioController_Tests" version="1.04.00" />
+    <package name="EAAudioSampleBank" version="1.01.00-dippy02" />
+    <package name="EAAudioCore" version="9.05.00" />
+    <package name="EAAudioCore_Samples" version="9.05.00" />
+    <package name="EAAudioCore_Tests" version="9.05.00" />
+    <package name="EAAudio3D" version="6.00.00" />
+    <package name="EAAudio3D_Samples" version="1.00.00-1" />
+    <package name="EAAudioSimple3D" version="1.00.00" />
+    <package name="eajpeg" version="1.00.01-3" />
+    <package name="rwaudioprofile" version="2.01.00" />
+    <package name="rwmovietools" version="1.07.00" />
+    <package name="GameTalk" version="4.3.7" />
+    <package name="simex" version="19.00.00" />
+    <package name="sx" version="5.02.00" />
+    <package name="sinfo" version="1.74.00" />
+    <package name="gpllame" version="8.00.00" />
+    <package name="sxgpl" version="4.14.00" />
+    <package name="rwmovie" version="3.15.00" />
+    <package name="rwmovie_eaaudiocore_modules" version="2.03.00" />
+    <package name="rwmovie_example" version="3.15.00" />
+    <package name="vp6" version="2.09.00" />
+    <package name="VirtualDub" version="1.7.0" />
+    <package name="eanetsolver" version="1.02.01" />
+    <package name="eacollision_heightfield" version="2.02.00" />
+    <package name="eacollision_contactgen" version="2.12.01" />
+    <package name="eacollision_convexhull" version="1.05.06" />
+    <package name="eacollision_convexhullbuilders" version="1.04.01" />
+    <package name="eacollision_features" version="1.08.00" />
+    <package name="eacollision_primitives" version="1.17.02" />
+    <package name="eacollision_spatialmaps" version="1.10.00" />
+    <package name="eaphysics_base" version="1.06.05" />
+    <package name="eaphysics_world" version="0.11.02" />
+    <package name="eaphysics_characters" version="1.30.07" />
+    <package name="eacollision_gjk" version="1.00.00" />
+    <package name="eaphysics_dataformat" version="5.00.01" />
+    <package name="eaphysics_inertiautils" version="1.04.00" />
+    <package name="eaphysics_maya_visualizer" version="4.04.01" />
+    <package name="eaphysics_maya_authoring" version="1.12.03" />
+    <package name="eaphysics_maya_tools" version="5.01.03" />
+    <package name="eaphysics_databuilders" version="5.01.01" />
+    <package name="eaphysics_maya_databuilders" version="4.03.04" />
+    <package name="eaphysics_simulation" version="1.18.00" />
+    <package name="eaphysics_simulation_jobs" version="1.02.01" />
+    <package name="eaphysics_unitframework" version="1.07.01" />
+    <package name="rwcollision_volumes" version="6.13.04" />
+    <package name="rwphysics_draw" version="6.07.01" />
+    <package name="rwphysics_parts" version="6.07.00" />
+    <package name="rwphysics_samples" version="5.10.00" />
+    <package name="rwphysics_world" version="6.01.09" />
+    <package name="visualdebugger_base" version="2.07.00" />
+    <package name="visualdebugger_app" version="2.07.00" />
+    <package name="visualdebugger_draw" version="1.18.00" />
+    <package name="visualdebugger_havok" version="1.01.00" />
+    <package name="buildutils" version="1.30.00" />
+    <package name="benchmarkenvironment" version="3.29.00" />
+    <package name="databuilders_base" version="5.00.00" />
+    <package name="dataiterator_base" version="1.03.02" />
+    <package name="FontFusion" version="4.5a.07" />
+    <package name="FreeType" version="2.4.8.07" />
+    <package name="libxml2" version="1.00.06" />
+    <package name="PVRTC" version="3.1-1" />
+    <package name="ATITC" version="1.81-1" />
+    <package name="imageoperate_base" version="5.06.01-wiifix" />
+    <package name="maya_databuilders" version="4.00.02" />
+    <package name="meshoperate_meshutils" version="0.07.02" />
+    <package name="meshoperate_samples" version="3.02.00" />
+    <package name="meshoperate_tools" version="3.24.01" />
+    <package name="meshoperate_base" version="2.08.00" />
+    <package name="meshoperate_convexhull" version="2.01.00" />
+    <package name="meshoperate_halfedgemesh" version="2.03.05" />
+    <package name="meshoperate_halffacemesh" version="2.02.03" />
+    <package name="meshoperate_maya" version="2.03.03" />
+    <package name="meshoperate_serialization" version="2.04.01" />
+    <package name="renderengine_base" version="1.07.00-wiifix" />
+    <package name="serialization" version="1.09.04" />
+    <package name="serialization_imaging_archives" version="1.07.00" />
+    <package name="serialization_rwmath" version="1.09.01" />
+    <package name="serialization_xml_archive" version="3.09.02" />
+    <package name="simd" version="1.25.01" />
+    <package name="eastasissolver" version="1.02.01" />
+    <package name="ant" version="2013.10-blox" />
+    <package name="ant_compliance_test" version="2013.10-blox" />
+    <package name="ant_test" version="2013.10-blox" />
+    <package name="ant_testframework" version="2013.10-blox" />
+    <package name="antunit" version="2013.10-blox" />
+    <package name="databuild" version="2013.10-blox" />
+    <package name="databuild_test" version="2013.10-blox" />
+    <package name="antcodesize" version="2013.10-blox" />
+    <package name="ant_codegen" version="2013.10-blox" />
+    <package name="antcollision" version="2013.10-blox" />
+    <package name="antcollision_test" version="2013.10-blox" />
+    <package name="antcommonplugins" version="2013.10-blox" />
+    <package name="antcommonplugins_test" version="2013.10-blox" />
+    <package name="anthumanik" version="2013.10-blox" />
+    <package name="anthumanik_test" version="2013.10-blox" />
+    <package name="antprototypeplugins" version="2013.07" />
+    <package name="antremoteinput" version="2013.10-blox" />
+    <package name="antremoteinputapp" version="2013.10-blox" />
+    <package name="antremoteinputlink" version="2013.10-blox" />
+    <package name="antrenderextensions" version="2013.10-blox" />
+    <package name="gscripter" version="2013.10-blox" />
+    <package name="audioplugins" version="2013.10-blox" />
+    <package name="audioplugins_test" version="2013.10-blox" />
+    <package name="characterinteraction" version="2013.10-blox" />
+    <package name="characterinteraction_test" version="2013.10-blox" />
+    <package name="contextdbplugins" version="2013.10-blox" />
+    <package name="contextdbplugins_test" version="2013.10-blox" />
+    <package name="extramath" version="2013.10-blox" />
+    <package name="extramath_test" version="2013.10-blox" />
+    <package name="interactiontoolkit" version="2013.10-blox" />
+    <package name="interactiontoolkit_test" version="2013.10-blox" />
+    <package name="interactiontoolkit_eacollision" version="2013.10-blox" />
+    <package name="interactiontoolkit_eacollision_test" version="2013.10-blox" />
+    <package name="interactiontoolkit_eaphysics" version="2013.10-blox" />
+    <package name="interactiontoolkit_eaphysics_test" version="2013.10-blox" />
+    <package name="interactiontoolkit_eapshared" version="2013.10-blox" />
+    <package name="luaantplugins" version="2013.10-blox" />
+    <package name="luaantplugins_test" version="2013.10-blox" />
+    <package name="nightly_test" version="2013.10-blox" />
+    <package name="pa2plugins" version="2013.10-blox" />
+    <package name="pa2plugins_test" version="2013.10-blox" />
+    <package name="paplugins" version="2013.10-blox" />
+    <package name="paplugins_test" version="2013.10-blox" />
+    <package name="sampleplugins" version="2013.10-blox" />
+    <package name="sampleplugins_test" version="2013.10-blox" />
+    <package name="sbuantplugins" version="2013.10-blox" />
+    <package name="sbuantplugins_test" version="2013.10-blox" />
+    <package name="stateflow" version="2013.10-blox" />
+    <package name="stateflow_test" version="2013.10-blox" />
+    <package name="vdbantprofiler" version="2013.10-blox" />
+    <package name="locoantplugins" version="2013.10-blox" />
+    <package name="railtracks" version="2013.10-blox" />
+    <package name="antkinect" version="2013.10-blox" />
+    <package name="antkinect_test" version="2013.10-blox" />
+    <package name="antcameraplugins" version="2012.10" />
+    <package name="antcameraplugins_test" version="2012.10" />
+    <package name="antprofiler" version="2013.10" />
+    <package name="NvTriStrip" version="1.00.03" />
+    <package name="libjpeg" version="1.01.03" />
+    <package name="libpng" version="1.5.10.03" />
+    <package name="lzma" version="4.65-6" />
+    <package name="libtiff" version="1.00.00-4" />
+    <package name="Moq" version="4.0.10827" />
+    <package name="OpenCover" version="4.0.521" />
+    <package name="ReportGenerator" version="1.2.5" />
+    <package name="dippybird" version="stable" />
+    <package name="MySqlDotNet" version="dev" />
+    <package name="ETBFManifest" version="stable" />
+    <package name="ETBFTaskDefUtils" version="stable" />
+    <package name="ETBFXmlUtils" version="stable" />
+    <package name="ETBFExtensions" version="stable" />
+    <package name="mono" version="dev-proxy" />
+    <package name="DirectX" version="9.0c.2010.06" />
+    <package name="ps3sdk" version="440.001-lite" />
+    <package name="PlayStation3NPEx" version="370.001" />
+    <package name="xenonsdk" version="2.0.21256.1" />
+    <package name="IncrediBuild" version="3.61.1.1243" />
+    <package name="Maya" version="2008.0-1" />
+    <package name="MayaSDK" version="2012.0.0" />
+    <package name="MayaRuntime" version="2012.0.0-2" />
+    <package name="VisualStudio" version="10.0.40219-2-sp1" />
+    <package name="WindowsSDK" version="7.1.7600.0.30514" />
+    <package name="sndbs" version="2.0.19" />
+    <package name="snvsi" version="1.8.8" />
+    <package name="ActivePython" version="2.7.2.5" />
+    <package name="ActivePerl" version="5.8.8.820" />
+    <package name="HelpToolkit" version="5.00.01" />
+    <package name="bison" version="1.35" />
+    <package name="Doxygen" version="1.7.5" />
+    <package name="CriterionDocTools" version="1.2.2" />
+    <package name="flex" version="2.5.4" />
+    <package name="PcLint" version="9.00k-nonproxy" />
+    <package name="Bullseye" version="7.13.25" />
+    <package name="trap2" version="2.02.01-01" />
+    <package name="unit" version="2.07.01" />
+    <package name="unit_test" version="2.07.01" />
+    <package name="Wiicorder" version="1.00.00" />
+    <package name="pc64_test_server" version="1.00.00" />
+    <package name="pclintconfig" version="0.16.04" />
+    <package name="LanguageDatabaseExporter" version="2.00.03" />
+    <package name="fbxsdk" version="2009.1-lite" />
+    <package name="LUA" version="5.2.0-5" />
+    <package name="zlib" version="1.2.5-8" />
+    <package name="lz4" version="r104-01" />
+    <package name="CygwinGCC" version="1.00.00" />
+    <package name="sony_edge" version="1.1.0-1" />
+    <package name="Putty" version="2010-07-13-1" />
+    <package name="psp2sdk" version="1.650" />
+    <package name="psp2npex" version="0.945" />
+    <package name="CodeStripper" version="1.08.00" />
+    <package name="BitmapFontGenerator" version="2.05.00" />
+    <package name="cafe_config" version="1.01.01" />
+    <package name="cafesdk" version="2.08.07" />
+    <package name="EAMain" version="2.01.00" />
+    <package name="eacloth_maya" version="1.10.01" />
+    <package name="simplecloth" version="1.01.03" />
+    <package name="meshoperate_dotnet" version="0.04.00" />
+    <package name="DirtySDK" version="8.18.7-eatechinternal" />
+    <package name="vp8" version="1.00.00" />
+    <package name="vorbis" version="1.00.01" />
+    <package name="JsonDotNet" version="5.0.6" />
+    <package name="EASTLICA" version="1.02.00" />
+    <package name="EAPatchClient" version="1.08.00" />
+    <package name="EAPatchServer" version="1.04.00" />
+    <package name="EAPatchMaker" version="1.08.00" />
+    <package name="CoreFileSystem" version="1.03.00" />
+    <package name="CoreFileSystemEAIO" version="1.04.01" />
+    <package name="RimQnxSDK" version="10.1.0" />
+    <package name="rimqnx_config" version="0.03.01" />
+    <package name="stv_config" version="1.02.00" />
+    <package name="stv_ndk" version="1001-2" />
+    <package name="antautodeskplugins" version="2013.10-blox" />
+    <package name="AutodeskDCCLink" version="1.00.04" />
+    <package name="NaturalInputManager" version="dev-stable" />
+    <package name="NaturalInputGesture" version="dev-stable" />
+    <package name="NaturalInputSpeech" version="dev-stable" />
+    <package name="CoreStream" version="1.04.01" />
+    <package name="Sandcastle" version="1.9.8.0" />
+    <package name="antbuild" version="dev" />
+    <package name="EAPatchDemo" version="dev" />
+    <package name="antbackend" version="2013.10-blox" />
+    <package name="Rigamate" version="2013.07-ant" />
+    <package name="DevPartner" version="8.0-1" />
+    <package name="NCover" version="2.0.0" />
+    <package name="goldparserengine" version="1.00.00" />
+    <package name="BloxAssetExplorer" version="0.01.00" />
+    <package name="BloxAssetStore" version="1.00.00" />
+    <package name="antphysics" version="3.08.00-blox" />
+    <package name="antphysics_test" version="3.08.00-blox" />
+    <package name="antphysicsdatabuilder" version="3.02.00-blox" />
+    <package name="eacloth_ant" version="0.06.00-blox" />
+  </masterversions>
+  <config package="eaconfig" default="pc-vc-dev-debug" />
+  <ondemand>true</ondemand>
+  <buildroot>build</buildroot>
+  <globalproperties>android-use-device
+android-use-emulator
+buildlistfile
+buildutils.strictwarnings=true
+bulkbuild
+cc.parallelcompiler
+dippybird.build.sln
+dippybird.run.tests
+dirtysdk-samples
+EAAudioCore.enablexmaencoder
+eaconfig.build-MP=
+eaconfig.debugsymbols
+eaconfig.deploy-contents
+eaconfig.optimization.ltcg=off
+eaconfig.xenon.forceredeploy=true
+EAMAIN_INCLUDE_TESTMM
+eaphysics_characters.debugsupport=true
+eaphysics_maya_visualizer.disable_visualdebugger_app=true
+EASKELETON_DIRECT3D11_ENABLED=false
+EATech.Simex.disable_quicktime=true
+EATEST_INCLUDE_TESTMM
+ExcludeHumanIK=true
+iphone-extra-frameworks="GLKit"
+LIBJPEG_EA_SUPPORT_ENABLED=1
+LIBPVRTC_SUPPORT_ENABLED=1
+osx-extra-frameworks="-framework
+AppKit
+-framework
+OpenGL
+-framework
+QuartzCore
+-framework
+AudioUnit
+-framework
+CoreAudio"
+package.AndroidSDK.EnableGLESv2=true
+package.AndroidSDK.EnableOpenSLES=true
+package.configs
+package.consoledeployment
+package.eaphysics_base.userwcore
+package.GameTalk.protocol=UTFSockets
+package.run.console
+package.rwfilesystem.enableprofiler=true
+package.unit.use_eamain_report=true
+package.UnixClang.include-SDL-lib=true
+package.UnixGCC.include-SDL-lib=true
+package.visualdebugger.builddir
+plugins
+ps3sdk.enablepsgl
+ps3target
+test.run.args="-v"
+test_packages
+use_vs_2012
+UTFSockets.UTFSOCKETS_AUTO_INIT=0
+visualdebugger_base.64bit_ids
+visualdebugger_base.support_rwcollision_volumes
+visualdebugger_base.support_rwphysics_base
+visualdebugger_base.support_rwphysics_parts
+visualdebugger_base.userwcore=false
+wait-for-results=0
+xaml-add-windows-forms-dll=true
+xcode-application-directory="Xcode.app"
+xenontarget
+</globalproperties>
+  <framework1overrides />
+</project>

@@ -769,63 +769,42 @@ namespace EA
             PathString16::PathString16()
                 : base_type()
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString16::PathString16(const PathString16& ps)
                 : base_type(ps)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString16::PathString16(const char16_t* path)
                 : base_type(path)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString16::PathString16(const char16_t* path, size_type n)
                 : base_type(path, n)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString16::PathString16(size_type n, char16_t c)
                 : base_type(n, c)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString16::PathString16(const char16_t* first, const char16_t* last)
                 : base_type(first, last)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString16::PathString16(const PathString16& ps, size_type position, size_type n)
                 : base_type(ps, position, n)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
@@ -879,63 +858,42 @@ namespace EA
             PathString8::PathString8()
                 : base_type()
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString8::PathString8(const PathString8& ps)
                 : base_type(ps)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString8::PathString8(const char8_t* path)
                 : base_type(path)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString8::PathString8(const char8_t* path, size_type n)
                 : base_type(path, n)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString8::PathString8(size_type n, char8_t c)
                 : base_type(n, c)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString8::PathString8(const char8_t* first, const char8_t* last)
                 : base_type(first, last)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
             PathString8::PathString8(const PathString8& ps, size_type position, size_type n)
                 : base_type(ps, position, n)
             {
-                #if EASTL_NAME_ENABLED
-                    mAllocator.set_name(EAIO_ALLOC_PREFIX "PathString");
-                #endif
             }
 
             inline
@@ -1081,17 +1039,3 @@ namespace EA
 
 
 #endif // Header include guard
-
-
-
-
-
-
-
-
-
-
-
-
-
-

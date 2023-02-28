@@ -468,7 +468,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Specifies the number of family names a FontStyle can hold.
 //
 #ifndef EATEXT_FAMILY_NAME_ARRAY_CAPACITY
-    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
+    #if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX)
         #define EATEXT_FAMILY_NAME_ARRAY_CAPACITY 8
     #else
         #define EATEXT_FAMILY_NAME_ARRAY_CAPACITY 4
@@ -716,7 +716,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // know what kind of font faces it will be working with at compile time.
 //
 #ifndef EATEXT_FAMILY_SUBSTITUTION_ENABLED
-    #if defined(EA_PLATFORM_WINDOWS) || defined(CS_UNDEFINED_STRING)
+    #if defined(EA_PLATFORM_WINDOWS) || defined(EA_PLATFORM_UNIX)
         #define EATEXT_FAMILY_SUBSTITUTION_ENABLED 1
     #else
         #define EATEXT_FAMILY_SUBSTITUTION_ENABLED 0

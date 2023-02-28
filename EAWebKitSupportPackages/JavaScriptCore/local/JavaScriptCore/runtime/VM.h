@@ -330,13 +330,21 @@ public:
     void* enabledProfilerAddress() { return &m_enabledProfiler; }
 
 #if ENABLE(JIT)
+#if defined FORCE_NON_JIT //Forcing fallback into non jit version for PC builds only. For some reason 16.x version uses jit all the time and disabling it in EAPlatform.h does not working properly.
+    bool canUseJIT() { return false; }
+#else
     bool canUseJIT() { return m_canUseJIT; }
+#endif
 #else
     bool canUseJIT() { return false; } // interpreter only
 #endif
 
 #if ENABLE(YARR_JIT)
+#if FORCE_NON_JIT //Forcing fallback into non jit version for PC builds only. For some reason 16.x version uses jit all the time and disabling it in EAPlatform.h does not working properly.
+    bool canUseRegExpJIT() { return false; }
+#else
     bool canUseRegExpJIT() { return m_canUseRegExpJIT; }
+#endif
 #else
     bool canUseRegExpJIT() { return false; } // interpreter only
 #endif

@@ -1,0 +1,51 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+  <property name="EAStdCBuildType" value="Library"/>
+  <property name="EAStdCBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+
+  <!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+  <do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+    <fileset name="package.EAStdC.libs">
+      <includes name="${package.EAStdC.builddir}/${config}/lib/${lib-prefix}EAStdC${lib-suffix}" />
+	</fileset>
+  </do>
+	
+  <!-- EAStdC header files location. -->
+  <property name="package.EAStdC.includedirs">
+	${package.EAStdC.dir}/include
+  </property>
+  
+  <publicdata packagename="EAStdC" if="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+    <runtime>
+      <module name="EAStdC" buildtype="${EAStdCBuildType}">
+        <includedirs>
+          ${package.EAStdC.includedirs??}
+        </includedirs>
+        <publicdependencies>
+          EABase
+          EAAssert
+          EAThread
+        </publicdependencies>
+
+        <libs-external>
+          <do if="${config-system} == 'kettle' and ${EA_SCEDBG_ENABLED??0} != 0">
+            <includes name="${package.kettlesdk.libdir}/libSceDbg_stub_weak.a" />
+          </do>
+          <do if="${config-system} == 'ps5' and ${EA_SCEDBG_ENABLED??0} != 0">
+            <includes name="${package.ps5sdk.libdir}/libSceDbg_nosubmission_stub_weak.a" />
+          </do>
+        </libs-external>
+
+        <defines>
+          <do if="@{PropertyExists('EAStdC.EASTDC_USE_STANDARD_NEW')}">
+            EASTDC_USE_STANDARD_NEW=${EAStdC.EASTDC_USE_STANDARD_NEW}
+          </do>
+          <do if="@{PropertyExists('EAStdC.EASTDC_GLOBALPTR_SUPPORT_ENABLED')}">
+              EASTDC_GLOBALPTR_SUPPORT_ENABLED=${EAStdC.EASTDC_GLOBALPTR_SUPPORT_ENABLED}
+          </do>
+        </defines>
+      </module>
+    </runtime>
+  </publicdata>
+
+</project>

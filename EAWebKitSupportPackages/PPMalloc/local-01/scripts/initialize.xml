@@ -1,0 +1,15 @@
+<project>
+
+    <!-- here is where the PPMallocEAWebKit header files are located. -->
+    <property name="package.PPMalloc.includedirs">
+        ${package.PPMalloc.dir}/include
+        ${package.PPMalloc.dir}/Extras
+    </property>
+
+    <!-- Here's the list of exported library files. -->
+
+    <fileset name="package.PPMalloc.libs">
+        <includes name="${package.PPMalloc.builddir}/${config}/lib/${lib-prefix}PPMalloc${lib-suffix}" />
+    </fileset>
+
+</project>

@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2006 Apple Computer, Inc.  All rights reserved.
-	Copyright (C) 2011, 2014, 2015 Electronic Arts, Inc. All rights reserved.
+	Copyright (C) 2011, 2014, 2015, 2017 Electronic Arts, Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -89,10 +89,9 @@ void Font::platformInit()
 
 		// This fix was contributed by YC Chin.  The Line spacing and gap calculations were wrong and did not include leading.
 		m_fontMetrics.setLineGap(fontMetrics.mfLeading);        
-		// Instead of using line height by EAText, we calculate it ourselves (in sync with other webkit ports). 
-		//m_fontMetrics.setLineSpacing(fontMetrics.mfLineHeight);
-		float lineHeight = ascent + descent + ceilf(fontMetrics.mfLeading);
-		m_fontMetrics.setLineSpacing(lineHeight);
+		//EADPCOMMERCEBUGS-72691 Arabic font fix: use the line height given by EAText.
+		m_fontMetrics.setLineSpacing(fontMetrics.mfLineHeight);
+		
 		m_fontMetrics.setUnitsPerEm(1000);                          // This is a typical value for a TrueType font, not necessarily the actual value.
 		m_fontMetrics.setXHeight(fontMetrics.mfXHeight);            // This is the height of lower case characters.
 

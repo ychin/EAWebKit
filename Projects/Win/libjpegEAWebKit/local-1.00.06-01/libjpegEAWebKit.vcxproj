@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-dev-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
+      <Configuration>pc-vc-dev-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
+      <Configuration>pc-vc-dev-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>libjpegEAWebKit</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <TargetFrameworkSDKToolsDirectory>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64</TargetFrameworkSDKToolsDirectory>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <UniversalCRT_PropsPath>C:\packages\WindowsSDK\10.0.18362\installed\10\DesignTime\CommonConfiguration\Neutral\uCRT.props</UniversalCRT_PropsPath>
+    <UCRTContentRoot>C:\packages\WindowsSDK\10.0.18362\installed\10\</UCRTContentRoot>
+    <UniversalCRTSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir>
+    <UniversalCRTSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir_10>
+    <WindowsSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir>
+    <WindowsSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir_10>
+    <NETFXKitsDir>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</NETFXKitsDir>
+    <DotNetSdkRoot>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</DotNetSdkRoot>
+    <NETFXSDKDir>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</NETFXSDKDir>
+    <FrameworkSDKRoot>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</FrameworkSDKRoot>
+    <SDK40ToolsPath>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\</SDK40ToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj  /FS /Zf</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;LIBJPEG_EA_SUPPORT_ENABLED=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libjpegEAWebKit\local-1.00.06-01\pc-vc-dev-debug\lib\libjpegEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libjpegEAWebKit\local-1.00.06-01\pc-vc-dev-debug\lib/libjpegEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-debug\build\libjpegEAWebKit" mkdir "pc-vc-dev-debug\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <OutDir>pc-vc-dev-debug\lib\</OutDir>
+    <IntDir>pc-vc-dev-debug\build\libjpegEAWebKit\vstmp\</IntDir>
+    <TargetName>libjpegEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj  /FS /Zf</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;LIBJPEG_EA_SUPPORT_ENABLED=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libjpegEAWebKit\local-1.00.06-01\pc-vc-dev-opt\lib\libjpegEAWebKit.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\libjpegEAWebKit\local-1.00.06-01\pc-vc-dev-opt\lib/libjpegEAWebKit.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-opt\build\libjpegEAWebKit" mkdir "pc-vc-dev-opt\build\libjpegEAWebKit" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <OutDir>pc-vc-dev-opt\lib\</OutDir>
+    <IntDir>pc-vc-dev-opt\build\libjpegEAWebKit\vstmp\</IntDir>
+    <TargetName>libjpegEAWebKit</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jconfig.h" />
+    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jerror.h" />
+    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jmemsys.h" />
+    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jmorecfg.h" />
+    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jpeglib.h" />
+    <ClInclude Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\include\jsupport_ea.h" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcapimin.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcapistd.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jccoefct.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jccolor.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcdctmgr.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jchuff.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcinit.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcmainct.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcmarker.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcmaster.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcomapi.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcparam.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcphuff.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcprepct.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jcsample.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jctrans.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdapimin.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdapistd.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdatadst.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdatasrc.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdcoefct.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdcolor.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jddctmgr.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdhuff.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdinput.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmainct.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmarker.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmaster.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdmerge.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdphuff.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdpostct.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdsample.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jdtrans.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jerror.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jfdctflt.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jfdctfst.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jfdctint.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctflt.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctfst.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctint.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jidctred.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jmemmgr.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jquant1.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jquant2.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jsupport_ea.c" />
+    <ClCompile Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\libjpegEAWebKit\local-1.00.06-01\source\jutils.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

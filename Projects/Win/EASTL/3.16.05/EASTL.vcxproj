@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-dev-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
+      <Configuration>pc-vc-dev-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
+      <Configuration>pc-vc-dev-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F741D66C-94C2-1776-A80D-5FE6FCCC8890}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>EASTL</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <TargetFrameworkSDKToolsDirectory>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64</TargetFrameworkSDKToolsDirectory>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <UniversalCRT_PropsPath>C:\packages\WindowsSDK\10.0.18362\installed\10\DesignTime\CommonConfiguration\Neutral\uCRT.props</UniversalCRT_PropsPath>
+    <UCRTContentRoot>C:\packages\WindowsSDK\10.0.18362\installed\10\</UCRTContentRoot>
+    <UniversalCRTSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir>
+    <UniversalCRTSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir_10>
+    <WindowsSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir>
+    <WindowsSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir_10>
+    <NETFXKitsDir>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</NETFXKitsDir>
+    <DotNetSdkRoot>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</DotNetSdkRoot>
+    <NETFXSDKDir>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</NETFXSDKDir>
+    <FrameworkSDKRoot>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</FrameworkSDKRoot>
+    <SDK40ToolsPath>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\</SDK40ToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\EASTL\3.16.05\include";"C:\packages\EASTL\3.16.05\source";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAStdC\1.26.08\include";"C:\packages\coreallocator\1.04.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj  /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4738; 4548; 4619; 4530; 4217; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\EASTL\3.16.05\pc-vc-dev-debug\lib\EASTL.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\EASTL\3.16.05\pc-vc-dev-debug\lib/EASTL.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-debug\build\EASTL" mkdir "pc-vc-dev-debug\build\EASTL" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <OutDir>pc-vc-dev-debug\lib\</OutDir>
+    <IntDir>pc-vc-dev-debug\build\EASTL\vstmp\</IntDir>
+    <TargetName>EASTL</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\EASTL\3.16.05\include";"C:\packages\EASTL\3.16.05\source";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAStdC\1.26.08\include";"C:\packages\coreallocator\1.04.05\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44242 -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4738; 4548; 4619; 4530; 4217; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\EASTL\3.16.05\pc-vc-dev-opt\lib\EASTL.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\EASTL\3.16.05\pc-vc-dev-opt\lib/EASTL.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-opt\build\EASTL" mkdir "pc-vc-dev-opt\build\EASTL" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <OutDir>pc-vc-dev-opt\lib\</OutDir>
+    <IntDir>pc-vc-dev-opt\build\EASTL\vstmp\</IntDir>
+    <TargetName>EASTL</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\coreallocator\1.04.05\coreallocator.vcxproj">
+      <Project>{84809069-50FF-302B-BA7A-19700854AE26}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\EABase\2.09.12\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\packages\EASTL\3.16.05\EASTL.build">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EASTL\3.16.05\Manifest.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EASTL\3.16.05\doc\EASTL.natvis">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\algorithm.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\allocator.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\allocator_malloc.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\any.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\array.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bitset.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bitvector.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\chrono.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\core_allocator.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\core_allocator_adapter.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\deque.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\finally.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_allocator.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_function.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_hash_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_hash_set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_list.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_slist.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_string.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_substring.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\fixed_vector.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\functional.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\hash_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\hash_set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\heap.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\initializer_list.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\intrusive_hash_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\intrusive_hash_set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\intrusive_list.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\intrusive_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\iterator.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\linked_array.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\linked_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\list.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\memory.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\meta.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\numeric.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\numeric_limits.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\optional.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\priority_queue.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\queue.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\random.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\ratio.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\safe_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\scoped_array.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\scoped_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\segmented_vector.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\shared_array.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\shared_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\slist.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\sort.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\span.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\stack.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\string.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\string_hash_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\string_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\string_view.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\tuple.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\type_traits.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\unique_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\unordered_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\unordered_set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\utility.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\variant.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\vector.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\vector_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\vector_multimap.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\vector_multiset.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\vector_set.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\version.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\weak_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\adaptors.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\call_traits.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\compressed_pair.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\fixed_ring_buffer.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\fixed_tuple_vector.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\intrusive_sdlist.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\intrusive_slist.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\list_map.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\lru_cache.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\ring_buffer.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\sort_extra.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\bonus\tuple_vector.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\allocator_traits.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\allocator_traits_fwd_decls.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\char_traits.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\config.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\copy_help.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\enable_shared.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\fill_help.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\fixed_pool.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\function.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\function_detail.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\function_help.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\functional_base.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\generic_iterator.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\hashtable.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\in_place_t.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\integer_sequence.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\intrusive_hashtable.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\mem_fn.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\memory_base.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\move_help.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\pair_fwd_decls.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\piecewise_construct_t.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\red_black_tree.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\smart_ptr.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\thread_support.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\tuple_fwd_decls.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\type_compound.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\type_fundamental.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\type_pod.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\type_properties.h" />
+    <ClInclude Include="C:\packages\EASTL\3.16.05\include\EASTL\internal\type_transformations.h" />
+    <None Include="C:\packages\EASTL\3.16.05\scripts\EASTL_strip.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EASTL\3.16.05\scripts\initialize.xml">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EASTL\3.16.05\scripts\make_public.bat">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EASTL\3.16.05\scripts\CMake\CommonCppFlags.cmake">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <None Include="C:\packages\EASTL\3.16.05\scripts\nn\preferences.py">
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ExcludedFromBuild>
+      <ExcludedFromBuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ExcludedFromBuild>
+    </None>
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\allocator_eastl.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\assert.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\fixed_pool.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\hashtable.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\intrusive_list.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\numeric_limits.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\red_black_tree.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\string.cpp" />
+    <ClCompile Include="C:\packages\EASTL\3.16.05\source\thread_support.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

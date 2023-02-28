@@ -1,0 +1,9 @@
+source/dirtysock/xboxone/dirtyauthxboxone.cpp
+source/dirtysock/netconnlocaluser.cpp
+source/dirtysock/gdk/netconngdk.cpp
+source/misc/gdk/userapigdk.cpp
+source/misc/gdk/userlistapigdk.cpp
+source/misc/gdk/privilegeapigdk.cpp
+source/voip/xboxone/voipxboxone.cpp
+source/voip/xboxone/voipheadsetxboxone.cpp
+source/voip/gdk/voipnarrategdk.cpp

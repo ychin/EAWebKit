@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>EASTL FAQ</title>
+<meta content="text/html; charset=us-ascii" http-equiv="content-type">
+<meta name="author" content="Paul Pedriana">
+<meta name="description" content="Frequently asked questions about EASTL.">
+<meta name="generator" content="Nvu HTML editor">
+<style type="text/css">
+    .SmallBody{
+        font-size: 10pt
+    }
+    
+    body 
+    {
+	    font-family: Palatino Linotype, Book Antiqua, Times New Roman;
+	    font-size: 11pt;
+    }
+
+    h1
+    {
+	    font-family: Verdana;
+	    display: block;
+	    background-color: #FFF0B0;
+	    border: solid 2px black;
+	    font-size: 16pt;
+	    font-weight: bold;
+	    padding: 6px;
+    }
+
+    h2 
+    {
+	    font-size: 14pt;
+    	font-family: Verdana;
+    	border-bottom: 2px solid black;
+    }
+
+    h3
+    {
+    	font-family: Verdana;
+    	font-size: 13pt;
+    	font-weight: bold;
+    }
+
+    .code-example 
+    {
+    	display: block;
+    	background-color: #e0e0f0;
+    	margin-left: 3em;
+    	margin-right: 3em;
+	    margin-top: 1em;
+	    margin-bottom: 1em;
+	    padding: 8px;
+	    border: solid 2px #a0a0d0;
+	    font-family: monospace;
+	    font-size: 10pt;
+	    white-space: pre;
+    }
+
+    .code-example-span 
+    {
+    	font-family: monospace;
+    	font-size: 10pt;
+    	white-space: pre;
+    }
+
+    .code-example-comment
+    {
+    	background-color: #e0e0f0; 
+    	padding: 0px 0px; 
+    	font-family: monospace; 
+    	font-size: 10pt; 
+    	white-space: pre; 
+	    color: #999999; 
+	    margin: auto auto; 
+    }
+
+
+    .faq-question
+    {
+    	background-color: #D0E0D0;
+    	font-size: 12pt;
+	    font-weight: bold;
+	    margin-bottom: 0.5em;
+	    margin-top: 0em;
+	    padding-left:8px;
+	    padding-right:8px;
+	    padding-top:2px;
+	    padding-bottom:2px
+    }
+
+    .faq-answer
+    {
+    	display: block;
+    	margin: 4pt 1em 1em;
+    }
+</style>
+</head>
+<body>
+<h1>EABase FAQ</h1>
+<table style="width: 100%;" border="0" cellpadding="0" cellspacing="0" cols="2">
+<tbody>
+<tr>
+<td width="32">1</td>
+<td><a href="#Info.1">What is the purpose of the Common directory in the EABase include path?</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="#Info.2">Can I #include just EABase/config/eaplatform.h instead of EABase/eabase.h?</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="#Info.3">Why do we have EA_PLATFORM_XENON instead of EA_PLATFORM_XBOX360? Ditto for REVOLUTION instead of Wii.</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="#Info.4">Why do we have EA_PLATFORM_PLAYSTATION2 but then have EA_PLATFORM_PS3?</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="#Info.5">What platforms/compilers does EABase support?</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="#Info.6">GCC is giving me warnings regarding INT64_C/UINT64_C.</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="#Info.7">PRId8 (and similar) are broken on VC++.</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="#Info.8">Why does EABase's own headers prefix internal #includes with &lt;EABase/...&gt;?</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td><a href="#Info.9">EABase is pretty slow to adopt user suggestions. Why is that?</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td><a href="#Info.10">Why is EABase implemented with per-platform #ifdefs inside the headers instead of having individual per-platform #included headers?</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td><a href="#Info.11">What's bool8_t?</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td><a href="#Info.12">What are float_t and double_t?</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td><a href="#Info.13">What are intptr_t and uintptr_t?</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td><a href="#Info.14">Can EABase be used from C?</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td><a href="#Info.15">The PRId32, PRIx64, etc. macros are annoying to use.</a></td>
+</tr>
+<tr>
+<td>16</td>
+<td><a href="#Info.16">I am having problems with __STDC_CONSTANT_MACROS, stdint.h, and macros like UINT64_C.</a></td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><a href="#Info.17">I am having problems with char16_t under Visual Studio. </a></td>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+
+<p class="faq-question"><a name="Info.1"></a>What is the purpose of the 
+Common directory in the EABase include path?</p>
+<p class="faq-answer">This is for historical reasons. It was simply set 
+that way early on and while we don't do things that way any more, we didn't want 
+to change backward compatibility. But you can hide this in the build file, as 
+virtually all build files around EA do.</p>
+<p class="faq-answer">Either way, user code #includes 
+&lt;EABase/eabase.h&gt; and the builds are set so that 'common' is the base. I would 
+again vote for removing 'common' if studios wouldn't mind changing their build 
+scripts.<p class="faq-question"><a name="Info.2"></a>Can I #include just 
+EABase/config/eaplatform.h instead of EABase/eabase.h?</p>
+<p class="faq-answer">You can do this starting with EABase 2.0.14, but 
+it wasn't supported in previous versions.</p>
+
+<p class="faq-question"><a name="Info.3"></a>Why do we have 
+EA_PLATFORM_XENON instead of EA_PLATFORM_XBOX360? Ditto for REVOLUTION instead 
+of Wii.</p>
+<p class="faq-answer">The XBox 360 was called Xenon by Microsoft until 
+soon before shipping, but we were developing for it as much as two years ahead 
+of the name change. The situation is similar for Revolution and Wii. 
+EAPLATFORM_PS3 is the same name as the shipping product because Sony always used 
+one name: PS3.</p>
+
+<p class="faq-question"><a name="Info.4"></a>Why do we have 
+EA_PLATFORM_PLAYSTATION2 but then have EA_PLATFORM_PS3?</p>
+<p class="faq-answer">This is for historical reasons. People prefer the 
+shorter name but didn't want to change old names. All future names will likely 
+use the shortest reasonable name.</p>
+
+<p class="faq-question"><a name="Info.5"></a>What platforms/compilers does 
+EABase support?</p>
+<p class="faq-answer">EABase supports at least the following compilers:</p>
+<ul>
+ <li>GCC</li>
+ <li>VC++</li>
+ <li>CodeWarrior</li>
+ <li>SN</li>
+ <li>EDG</li>
+ <li>IBM</li>
+ <li>Borland</li>
+</ul>
+<p class="faq-answer">EABase supports the following platforms:</p>
+<ul>
+	<li>XBox 360 (a.k.a. Xenon)</li>
+	<li>Playstation 3</li>
+	<li>Win32</li>
+	<li>Win64</li>
+	<li>Mac OS X</li>
+	<li>iPhone</li>
+	<li>Android</li>
+	<li>Linux</li>
+	<li>HP-UX</li>
+	<li>Solaris</li>
+	<li>Cygwin<br>
+</li>
+</ul>
+
+<p class="faq-question"><a name="Info.6"></a>GCC is giving me warnings 
+regarding INT64_C/UINT64_C.</p>
+<p class="faq-answer">This is because you are using GCC 3.x (probably 
+3.4) and that version of GCC's INT64_C definition is simply broken. EABase 
+doesn't try to rectify the broken behavior as any rectification attempt may well 
+collide with GCC library code that is dependent on the bug.</p>
+
+<p class="faq-question"><a name="Info.7"></a>PRId8 (and similar) are 
+broken on VC++.</p>
+<p class="faq-answer">Correct, and this is due to weakness in VC++ up to 
+at least VC 7.1. Perhaps a later version will rectify this problem. In the 
+meantime, you can expect compiler warnings and/or incorrect behaviour when 
+working with this type on VC++.</p>
+
+<p class="faq-question"><a name="Info.8"></a>Why does EABase's own headers 
+prefix internal #includes with &lt;EABase/...&gt;?</p>
+<p class="faq-answer">Because this makes it more portable. Strictly 
+speaking, when #including a header, the compiler doesn't necessarily look first 
+in the same directory as the #including file, so unless you fully prefix your 
+headers you could end up #including some other unintended header.</p>
+
+<p class="faq-question"><a name="Info.9"></a>EABase is pretty slow to 
+adopt user suggestions. Why is that?</p>
+<p class="faq-answer">EABase is a rather core package and is used by a 
+large number of users around EA. We are very concerned about code bloat in 
+packages at as low a level as this. As a result, changes don't tend to occur in 
+EABase until months after they are suggested, and even then only if the changes 
+are simple, beneficial, and universally usable.</p>
+
+<p class="faq-question"><a name="Info.10"></a>Why is EABase implemented 
+with per-platform #ifdefs inside the headers instead of having individual 
+per-platform #included headers</span>
+<p class="faq-answer">For ease of maintenance. EABase supports a fairly 
+large number of platforms, compilers, and compiler versions. Much of EABase is 
+the same between platforms and so it's much easier to maintain via a small 
+number of files with #ifdefs and avoids the orphaning of platforms and compilers 
+to a much greater extent than otherwise. The downside is that the EABase headers 
+take a little longer to compile, though this is unlikely to have a measurable 
+impact in real projects.</p>
+
+<p class="faq-question"><a name="Info.11"></a>What's bool8_t?</p>
+<p class="faq-answer">It's a boolean type guaranteed to be 8 bits. It's 
+  defined to be bool on platforms that have an 8 bit bool and defined to be int8_t 
+  on platforms that have a larger bool size. However, bool8_t is hard to use in a 
+  portable way and it's often best just to stick with int8_t.</p>
+  
+<p class="faq-question"><a name="Info.12"></a>What are float_t and 
+double_t?</p>
+<p class="faq-answer">float_t are C99 data types that have a precision 
+that is by design determined by compiler settings. float_t may be defined as any 
+of float, double, or long double. double_t may be defined as any of these as 
+well. About the only thing you can count on is that sizeof(double_t) &gt;= 
+sizeof(float_t). You probably don't want to use float_t and double_t in your 
+code and are probably better off providing your own typedef if you want your 
+floating point types to be variable.</p>
+
+<p class="faq-question"><a name="Info.13"></a>What are intptr_t and 
+uintptr_t?</span>
+<p class="faq-answer">intptr_t is a signed integer type that is defined 
+as being at least as big as a pointer type. In all known compilers it is exactly 
+as bit as a pointer type. intptr_t is not the same thing as a pointer to an int, 
+despite that the name sounds like so. On a platform with 32 bit pointers, 
+intptr_t will be equivalent to int32_t, whereas on a platform with 64 bit 
+pointers it will be equivalent to int64_t. However, you should use intptr_t and 
+uintptr_t whenever possible, as some compilers (e.g. VC++) treat them 
+differently from simply int32_t and int64_t.</p>
+
+<p class="faq-question"><a name="Info.14"></a>Can EABase be used from C?</span>
+<p class="faq-answer">Yes, this is supported.</p>
+
+<p class="faq-question"><a name="Info.15"></a>The PRId32, PRIx64, etc. 
+macros are annoying to use.</span>
+<p class="faq-answer">These macros are defined because the C99 standard 
+defines them and they are the only way to accomplish portable printf usage with 
+the standard library implementations of the printf family of functions. 
+Alternative implementations of the printf family such as that found in the 
+UTFFoundation package provide a portable means to specify sized types these 
+functions.</p>
+
+<p class="faq-question"><a name="Info.16"></a>I am having problems with __STDC_CONSTANT_MACROS, stdint.h, and macros like UINT64_C.</p>
+<p class="faq-answer">The basic problem here is due to a weakness in the C99 standard. The problem is that the C99 standard (possibly for backward compatibility reasons) requires the user to #define __STDC_CONSTANT_MACROS before #including stdint.h if the user wants C99 stdint functionality to work. So you either need to predefine this in your build file or you need to manually define it in your source before #including stdint.h for the first time in any compilation unit. The problem with the latter solution is that it requires all code which #includes stdint.h to cooperate and agree to #define __STDC_CONSTANT_MACROS before including stdint.h. All code has to cooperate in doing this because once stdint.h gets #included by somebody, any further #includes of it will of course be ignored. EABase (and for that matter most EA users) needs to have C99 functionality working, so either it needs to define __STDC_CONSTANT_MACROS and #include stdint.h, or the user needs to define __STDC_CONSTANT_MACROS in the make file, or all users of stdint.h must agree to manually #define __STDC_CONSTANT_MACROS before including stdint.h. EABase provides a slight convenience in that it promises to define __STDC_CONSTANT_MACROS, but #including it first is not always feasible.</p>
+
+<p class="faq-question"><a name="Info.17">I am having problems with char16_t under VC++ 2010 or VS2012.</a>
+<p class="faq-answer">VS2010 through at least VS2013 unilaterally defines the C++11 Standard char16_t and char32_t in its yvals.h header unless _HAS_CHAR16_T_LANGUAGE_SUPPORT or _CHAR16T are defined. However, VC++ does not support C++11 Standard u&quot;&quot; or U&quot;&quot; string literals which go with char16_t and char32_t, which makes its definition of char16_t and char32_t nearly useless and causes headaches for us, since we depend on the char16_t type. </p>
+<p class="faq-answer">To avoid compile errors related to this, you need to have code either #include &lt;EABase/eabase.h&gt; before #including standard library headers or you need to define _CHAR16T globally in your project defines. You can do both, though what's best depends on your situation. However, you can in some cases still get linker errors when your project includes std STL, because defining _CHAR16T causes the compiler to ignore the char16_t definition in yvals.h, yet sometimes the linker wants to link in VC++ char16_t definitions of some templates. If you have that problem then your best solution until Microsoft fixes this is to make sure _CHAR16T is not defined, and don't use EABase and EABase-using code in the same source files as you use VC++ STL headers. This is not a great solution, but there isn't much choice. </p>
+<p class="faq-answer">Microsoft postings have suggested that support of u&quot;&quot; and U&quot;&quot; string literals may come with VS2015.</p>
+<hr style="width: 100%; height: 2px;">
+End of document<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

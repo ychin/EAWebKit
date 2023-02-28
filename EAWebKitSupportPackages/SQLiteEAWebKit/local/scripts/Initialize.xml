@@ -1,0 +1,15 @@
+<project>
+<!-- 	About SQLiteEAWebKit 
+	External Open Source library.
+-->        
+    <!-- header file location -->
+	<property name="package.SQLiteEAWebKit.includedirs">
+    ${package.SQLiteEAWebKit.dir}/include/
+  </property>
+    
+    <!-- Library file location -->
+    <fileset name="package.SQLiteEAWebKit.libs">
+        <includes name="${package.SQLiteEAWebKit.builddir}/${config}/lib/${lib-prefix}SQLiteEAWebKit${lib-suffix}" />
+    </fileset>
+
+</project>

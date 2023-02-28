@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="pixman" default="build">
+  <!-- Properties -->
+  <property name="currDir" value="@{PathGetFullPath('.')}"/>
+  <property name="currVer" value="@{PathGetFileName('${currDir}')}"/>
+
+  <!-- Package declaration -->
+  <package  name="pixman" targetversion="${currVer}"/>
+  <include file="scripts/initialize.xml" />
+
+  <!-- Set some useful properties to avoid clutter in the build file. -->
+  <property name="ConfigIsDebug"  value="false"/>
+  <property name="ConfigIsOpt"    value="false"/>
+  <property name="ConfigIsFinal"  value="false"/>
+  <property name="ConfigIsDebug"  value="true" if="@{StrIndexOf('${config-name}', '-debug')}  != -1"/>
+  <property name="ConfigIsOpt"    value="true" if="@{StrIndexOf('${config-name}', '-opt')}    != -1"/>
+  <property name="ConfigIsFinal"  value="true" if="@{StrIndexOf('${config-name}', '-final')}  != -1"/>
+
+  <property name="OsIsWin"      value="false"/>
+  <property name="OsIsOSX"      value="false"/>
+  <property name="OsIsCapilano" value="false"/>
+  <property name="OsIsKettle"   value="false"/>
+  
+  <property name="OsIsWin"      value="true" if="${config-system} == pc or ${config-system} == pc64"/>
+  <property name="OsIsOSX"      value="true" if="${config-system} == osx"/>
+  <property name="OsIsCapilano" value="true" if="${config-system} == capilano"/>
+  <property name="OsIsKettle"   value="true" if="${config-system} == kettle"/>
+
+  <optionset name="customized-config-options-library-c" fromoptionset="config-options-library-c">
+    <option name="buildset.name" value="CustomizedLibraryC"/>
+  </optionset>
+  <task name="GenerateBuildOptionset" configsetname="customized-config-options-library-c" />
+
+  <do if="${config-compiler} == 'vc'">
+    <optionset name="CustomizedLibraryC">
+      <option name="cc.options" if="${config-system} == pc">
+        ${option.value}
+        /arch:SSE2
+      </option>
+      <option name="cc.options">
+        ${option.value}
+        /fp:precise
+      </option>
+    </optionset>
+  </do>
+  
+  <do if="${config-compiler} == 'gcc' and ${OsIsOSX}">
+    <optionset name="CustomizedLibraryC">
+        <!-- gcc -O2 optimization level on Mac seems to misbehave on pixman and some of the sites don't render properly.
+          Changing to -O1 optimization level fixes the issue.
+          On https://developer.apple.com/library/mac/#documentation/Darwin/Reference/Manpages/man1/gcc.1.html , Apple
+          documents the flags that are turned on by -O1 and -O2 optimization level. If I remove the optimization 
+          grouping (-O2/-Os) and instead pass all those options as done below, the problem goes away. This probably means that there
+          is some hidden/undocumented option. So we simply pass on the known optimization options to get better optimization. -->
+        <option name="cc.options" if="!${ConfigIsDebug}">
+            @{StrReplace(${option.value}, '-O2', '-O1')}
+        </option>
+            
+        <option name="cc.options" if="!${ConfigIsDebug}">
+            @{StrReplace(${option.value}, '-Os', ' ')}
+        </option>
+            
+        <!-- o1 options
+          -fdelayed-branch - removed from following list as the compiler throws a not supported warning
+          -->
+            
+        <option name="cc.options" if="!${ConfigIsDebug}">
+            ${option.value}
+            -fdefer-pop 
+            -fguess-branch-probability -fcprop-registers -fif-conversion -fif-conversion2 -ftree-ccp
+            -ftree-dce -ftree-dominator-opts -ftree-dse -ftree-ter -ftree-lrs -ftree-sra -ftree-copyrename
+            -ftree-fre -ftree-ch -funit-at-a-time -fmerge-constants
+        </option>
+            
+        <!-- o2 options
+          Removed -fstrict-aliasing -freorder-blocks -fsched-interblock as per following info from the doc.
+          In Apple's version of GCC, -fstrict-aliasing, -freorder-blocks, and -fsched-interblock are
+          disabled by default when optimizing.
+          -->
+        <option name="cc.options" if="!${ConfigIsDebug}">
+            ${option.value}
+            -fthread-jumps -fcrossjumping -foptimize-sibling-calls -fcse-follow-jumps
+            -fcse-skip-blocks -fgcse  -fgcse-lm -fexpensive-optimizations -frerun-cse-after-loop
+            -fcaller-saves -fpeephole2 -fschedule-insns  -fschedule-insns2   -fsched-spec
+            -fregmove  -fstrict-overflow -fdelete-null-pointer-checks 
+            -freorder-functions -falign-functions  -falign-jumps -falign-loops  -falign-labels -ftree-vrp
+            -ftree-pre
+        </option>
+            
+        <option name="cc.options">
+            @{StrReplace(${option.value}, '-ffast-math', ' ')}
+        </option>
+    </optionset>
+  </do>
+    
+  <property name="runtime.buildtype" value="CustomizedLibraryC" />
+
+  <property name="runtime.defines">
+    ${property.value}
+    PACKAGE=pixman
+    PACKAGE_VERSION=""
+    PACKAGE_BUGREPORT=""
+    PIXMAN_NO_TLS   <!-- Without it, XP builds can crash because called from a DLL-->
+  </property>
+
+  <property name="runtime.defines" if="${OsIsWin}">
+    ${property.value}
+    WIN32
+    _WINDOWS
+    _CRT_NONSTDC_NO_DEPRECATE
+    _CRT_SECURE_NO_DEPRECATE
+  </property>
+
+  <!-- As per https://bugzilla.mozilla.org/show_bug.cgi?id=640250, MSVC 2008 and prior produce incorrect code for one of
+  the functions in the pixman-sse2.c. The optimized code works fine. So we disable SSE2 optimization in debug builds.-->
+  <property name="runtime.defines" if="${OsIsWin} and !${ConfigIsDebug}">
+    ${property.value}
+    USE_SSE2
+  </property>
+
+  <property name="runtime.defines" if="${OsIsCapilano} or ${OsIsKettle}">
+    ${property.value}
+    USE_SSE2
+  </property>
+
+  <property name="runtime.defines" if="${OsIsOSX}">
+    ${property.value}
+    HAVE_PTHREAD_SETSPECIFIC
+    USE_SSE2
+  </property>
+
+  <property name="runtime.warningsuppression" />
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'vc'">
+    -wd4625
+    -wd4626
+    -wd4127
+    -wd4255
+    -wd4242
+    -wd4244
+    -wd4706
+    -wd4701
+    -wd4245
+    -wd4206
+    -wd4305
+    -wd4306
+    -wd4132
+    -wd4189
+    -wd4152
+    -wd4311
+    -wd4267
+    -wd4013
+    -wd4047
+    -wd4267
+    -wd4311
+  </property>
+
+  <property name="runtime.warningsuppression" if="${config-compiler} == 'gcc'">
+    -Wno-multichar <!-- disable warning: "error: multi-character character constant" -->
+  </property>
+
+  <property name="runtime.includedirs">
+    ${package.dir}/include
+  </property>
+
+  <fileset name="runtime.headerfiles">
+    <includes name="${package.dir}/include/**/*.h"/>
+  </fileset>
+
+  <fileset name="runtime.sourcefiles">
+    <includes name="${package.dir}/source/pixman-access-accessors.c" />
+    <includes name="${package.dir}/source/pixman-arm.c" />
+    <includes name="${package.dir}/source/pixman-bits-image.c" />
+    <includes name="${package.dir}/source/pixman-edge.c" />
+    <includes name="${package.dir}/source/pixman-image.c" />
+    <includes name="${package.dir}/source/pixman-timer.c" />
+    <includes name="${package.dir}/source/pixman.c" />
+    <includes name="${package.dir}/source/pixman-access.c" />
+    <includes name="${package.dir}/source/pixman-combine-float.c" />
+    <includes name="${package.dir}/source/pixman-fast-path.c" />
+    <includes name="${package.dir}/source/pixman-implementation.c" />
+    <includes name="${package.dir}/source/pixman-region16.c" />
+    <includes name="${package.dir}/source/pixman-trap.c" />
+    <includes name="${package.dir}/source/pixman-combine32.c" />
+    <includes name="${package.dir}/source/pixman-general.c" />
+    <includes name="${package.dir}/source/pixman-linear-gradient.c" />
+    <includes name="${package.dir}/source/pixman-mips.c" />
+    <includes name="${package.dir}/source/pixman-noop.c" />
+    <includes name="${package.dir}/source/pixman-region32.c" />
+    <includes name="${package.dir}/source/pixman-utils.c" />
+    <includes name="${package.dir}/source/pixman-conical-gradient.c" />
+    <includes name="${package.dir}/source/pixman-glyph.c" />
+    <includes name="${package.dir}/source/pixman-matrix.c" />
+    <includes name="${package.dir}/source/pixman-ppc.c" />
+    <includes name="${package.dir}/source/pixman-solid-fill.c" />
+    <includes name="${package.dir}/source/pixman-edge-accessors.c" />
+    <includes name="${package.dir}/source/pixman-gradient-walker.c" />
+    <includes name="${package.dir}/source/pixman-radial-gradient.c" />
+    <includes name="${package.dir}/source/pixman-x86.c" />
+    <includes name="${package.dir}/source/pixman-sse2.c"    if="${OsIsWin} and !${ConfigIsDebug}" />
+    <includes name="${package.dir}/source/pixman-sse2.c"    if="${OsIsOSX} or ${OsIsCapilano} or ${OsIsKettle}" />
+  </fileset>
+</project>
+    

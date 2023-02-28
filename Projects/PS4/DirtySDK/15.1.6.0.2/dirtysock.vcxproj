@@ -1,0 +1,856 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\framework_tmp\ProDG_VSI-7.00.0.5\ProDG_VSI_MSBuild.V160.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>kettle-clang-dev-debug</Configuration>
+    <Platform>ORBIS</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="kettle-clang-dev-debug|ORBIS">
+      <Configuration>kettle-clang-dev-debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="kettle-clang-dev-opt|ORBIS">
+      <Configuration>kettle-clang-dev-opt</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3785ECC6-FAD1-0282-174E-4BA55594CD7A}</ProjectGuid>
+    <Keyword>ORBISProj</Keyword>
+    <ProjectName>dirtysock</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\7.008.031\installed</SCE_ORBIS_SDK_DIR>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Clang</PlatformToolset>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions> -Wformat=2 -Winit-self -Wmissing-declarations -Wmissing-field-initializers -Wold-style-definition -Wpointer-arith -Wsign-compare -Wshadow -Wstrict-aliasing -Wstrict-prototypes -Wuninitialized -Wunreachable-code -Wwrite-strings -fno-omit-frame-pointer -std=c11 -Wno-error -fno-elide-type -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <ExtraWarnings>TRUE</ExtraWarnings>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\DirtySDK\15.1.6.0.2\kettle-clang-dev-debug\lib\libdirtysock.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-dev-debug\lib" mkdir "kettle-clang-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-dev-debug\build\dirtysock" mkdir "kettle-clang-dev-debug\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <OutDir>kettle-clang-dev-debug\lib\</OutDir>
+    <IntDir>kettle-clang-dev-debug\build\dirtysock\vstmp\</IntDir>
+    <TargetName>libdirtysock</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include;C:\packages\kettlesdk\7.008.031\installed\target\include;C:\packages\kettlesdk\7.008.031\installed\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions> -Wformat=2 -Winit-self -Wmissing-declarations -Wmissing-field-initializers -Wold-style-definition -Wpointer-arith -Wsign-compare -Wshadow -Wstrict-aliasing -Wstrict-prototypes -Wuninitialized -Wunreachable-code -Wwrite-strings -fno-omit-frame-pointer -std=c11 -Wno-error -fno-elide-type -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <ExtraWarnings>TRUE</ExtraWarnings>
+      <GenerateDebugInformation>TRUE</GenerateDebugInformation>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <OptimizationLevel>Level3</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <SDLCheck>FALSE</SDLCheck>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Warnings>MoreWarnings</Warnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\DirtySDK\15.1.6.0.2\kettle-clang-dev-opt\lib\libdirtysock.a</OutputFile>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "kettle-clang-dev-opt\lib" mkdir "kettle-clang-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "kettle-clang-dev-opt\build\dirtysock" mkdir "kettle-clang-dev-opt\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <OutDir>kettle-clang-dev-opt\lib\</OutDir>
+    <IntDir>kettle-clang-dev-opt\build\dirtysock\vstmp\</IntDir>
+    <TargetName>libdirtysock</TargetName>
+    <TargetExt>.a</TargetExt>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include;C:\packages\kettlesdk\7.008.031\installed\target\include;C:\packages\kettlesdk\7.008.031\installed\target\include_common</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\coreallocator\1.04.05\coreallocator.vcxproj">
+      <Project>{84809069-50FF-302B-BA7A-19700854AE26}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\EABase\2.09.12\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\PS4\EASystemEventMessageDispatcher\1.05.00\IEASystemEventMessageDispatcher.vcxproj">
+      <Project>{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtydefs.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtylang.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtyvers.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\platform.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commall.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commsrp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commudp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commudputil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptaes.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptarc4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptbn.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptchacha.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptcurve.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptdef.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptgcm.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\crypthash.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\crypthmac.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptmd5.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptmont.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptnist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptrand.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptrsa.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptsha1.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptsha2.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyaddr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtycert.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyerr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtylib.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtymem.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtynames.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtynet.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtysessionmanager.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtythread.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyuser.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\netconn.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\netconndefs.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\ps4\dirtycontextmanagerps4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\ps4\dirtyeventmanagerps4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\ps4\dirtywebapips4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\ps4\netconnps4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\connapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamedist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamedistserv.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgameerr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamelink.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamepkt.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgameutil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtygif.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtygraph.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtyjpg.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtypng.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\privilegeapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\qosclient.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\qoscommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\userapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\userlistapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\weblog.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\ps4\userlistapips4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoadvt.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttp2.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttpmanager.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttpserv.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttputil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protomangle.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoname.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protossl.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protostream.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\prototunnel.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoupnp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protowebsocket.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\aws.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\base64.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\binary7.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\hpack.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\jsonformat.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\jsonparse.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\murmurhash3.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufread.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufwrite.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\utf8.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voip.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipblocklist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipcodec.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipdef.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipgroup.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipnarrate.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voiptranscribe.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voiptunnel.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\xml\xmlformat.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\xml\xmlparse.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commsrp.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\comm\commsrp.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\comm\commsrp.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commudp.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\comm\commudp.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\comm\commudp.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commudputil.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\comm\commudputil.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\comm\commudputil.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptaes.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptaes.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptaes.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptarc4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptarc4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptarc4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptbn.c">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' "> -Wformat=2 -Winit-self -Wmissing-declarations -Wmissing-field-initializers -Wold-style-definition -Wpointer-arith -Wsign-compare -Wshadow -Wstrict-aliasing -Wstrict-prototypes -Wuninitialized -Wunreachable-code -Wwrite-strings -fno-omit-frame-pointer -std=c11 -Wno-error -fno-elide-type -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">false</CompileAsWinRT>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">None</DebugInformationFormat>
+      <ExtraWarnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</ExtraWarnings>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">8</ProcessorNumber>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptbn.c.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' "> -Wformat=2 -Winit-self -Wmissing-declarations -Wmissing-field-initializers -Wold-style-definition -Wpointer-arith -Wsign-compare -Wshadow -Wstrict-aliasing -Wstrict-prototypes -Wuninitialized -Wunreachable-code -Wwrite-strings -fno-omit-frame-pointer -std=c11 -Wno-error -fno-elide-type -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">false</CompileAsWinRT>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">None</DebugInformationFormat>
+      <ExtraWarnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</ExtraWarnings>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">8</ProcessorNumber>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptbn.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptchacha.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptchacha.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptchacha.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptcurve.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptcurve.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptcurve.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptgcm.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptgcm.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptgcm.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\crypthash.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\crypthash.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\crypthash.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\crypthmac.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\crypthmac.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\crypthmac.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptmd5.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptmd5.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptmd5.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptmont.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptmont.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptmont.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptnist.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptnist.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptnist.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrand.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptrand.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptrand.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandcommon.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptrandcommon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptrandcommon.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandpriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrsa.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptrsa.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptrsa.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptsha1.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptsha1.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptsha1.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptsha2.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\crypt\cryptsha2.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\crypt\cryptsha2.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtyaddr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtyaddr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtyaddr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtycert.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtycert.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtycert.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtyerr.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtyerr.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtyerr.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtylib.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtylib.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtylib.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtylib.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtymem.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtymem.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtymem.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynames.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtynames.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtynames.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynet.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtynet.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtynet.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynetpriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtythread.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\dirtythread.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\dirtythread.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconn.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\netconn.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\netconn.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconncommon.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\netconncommon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\netconncommon.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconncommon.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconnlocaluser.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\netconnlocaluser.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\netconnlocaluser.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconnlocaluser.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtycontextmanagerps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtycontextmanagerps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtycontextmanagerps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtyerrps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtyerrps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtyerrps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtyeventmanagerps4.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtyeventmanagerps4.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtyeventmanagerps4.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtylibps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtylibps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtylibps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtynetps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtynetps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtynetps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtysessionmanagerps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtysessionmanagerps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtysessionmanagerps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtyuserps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtyuserps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtyuserps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\dirtywebapips4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\dirtywebapips4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\dirtywebapips4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\ps4\netconnps4.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">_DEBUG;_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_DEBUG;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\dirtysock\ps4\netconnps4.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\packages\EAMessage\2.10.00\include";"C:\packages\EAMessage\2.10.00\extras";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include";"C:\packages\EASystemEventMessageDispatcher\1.05.00\include\kettle";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\sony";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\kettle";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\sony";"C:\packages\EAUser\1.09.01\include\kettle";"C:\packages\PlayStation4AppContentEx\7.008.001\installed\target\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' "> -fno-exceptions -Wno-error -fno-elide-type -Wno-format -Wno-unneeded-internal-declaration -Wno-multichar -Wno-unused-parameter -isystem "C:\packages\kettlesdk\7.008.031\installed\host_tools\lib\clang\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include" -isystem "C:\packages\kettlesdk\7.008.031\installed\target\include_common" $(ORBISIntelliSense)</AdditionalOptions>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">false</CompileAsWinRT>
+      <CppLanguageStd Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Cpp17</CppLanguageStd>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">None</DebugInformationFormat>
+      <GenerateDebugInformation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</GenerateDebugInformation>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TRUE</MultiProcessorCompilation>
+      <OptimizationLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">Level3</OptimizationLevel>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">_GNU_SOURCE;DIRTYCODE_PLAYFIRSTTRIAL=0;EA_PLATFORM_KETTLE=1;EA_PLATFORM_PS4=1;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">8</ProcessorNumber>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">FALSE</SDLCheck>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">TurnOffAllWarnings</WarningLevel>
+      <Warnings Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">MoreWarnings</Warnings>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\dirtysock\ps4\netconnps4.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\connapi.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\game\connapi.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\game\connapi.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamedist.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\game\netgamedist.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\game\netgamedist.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamedistserv.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\game\netgamedistserv.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\game\netgamedistserv.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamelink.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\game\netgamelink.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\game\netgamelink.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgameutil.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\game\netgameutil.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\game\netgameutil.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtygif.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\graph\dirtygif.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\graph\dirtygif.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtygraph.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\graph\dirtygraph.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\graph\dirtygraph.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtyjpg.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\graph\dirtyjpg.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\graph\dirtyjpg.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtypng.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\graph\dirtypng.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\graph\dirtypng.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\qosclient.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\qosclient.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\qosclient.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\qoscommon.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\qoscommon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\qoscommon.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\userapi.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\userapi.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\userapi.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\userapipriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\weblog.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\weblog.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\weblog.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\ps4\privilegeapips4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\ps4\privilegeapips4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\ps4\privilegeapips4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\ps4\userapips4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\ps4\userapips4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\ps4\userapips4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\ps4\userlistapips4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\misc\ps4\userlistapips4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\misc\ps4\userlistapips4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\platform\plat-str.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\platform\plat-str.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\platform\plat-str.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\platform\plat-time.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\platform\plat-time.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\platform\plat-time.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoadvt.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protoadvt.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protoadvt.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttp2.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protohttp2.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protohttp2.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttpmanager.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protohttpmanager.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protohttpmanager.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttpserv.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protohttpserv.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protohttpserv.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttputil.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protohttputil.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protohttputil.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protomangle.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protomangle.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protomangle.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoname.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protoname.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protoname.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protossl.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protossl.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protossl.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protostream.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protostream.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protostream.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\prototunnel.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\prototunnel.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\prototunnel.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoupnp.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protoupnp.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protoupnp.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protowebsocket.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\protowebsocket.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\protowebsocket.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\ps4\protohttpps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\proto\ps4\protohttpps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\proto\ps4\protohttpps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\aws.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\aws.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\aws.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\base64.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\base64.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\base64.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\binary7.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\binary7.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\binary7.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\hpack.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\hpack.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\hpack.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\jsonformat.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\jsonformat.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\jsonformat.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\jsonparse.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\jsonparse.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\jsonparse.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\murmurhash3.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\murmurhash3.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\murmurhash3.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufcommon.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\protobufcommon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\protobufcommon.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufread.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\protobufread.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\protobufread.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufwrite.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\protobufwrite.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\protobufwrite.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\utf8.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\util\utf8.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\util\utf8.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voip.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voip.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voip.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipblocklist.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipblocklist.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipblocklist.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcodec.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipcodec.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipcodec.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcommon.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipcommon.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipcommon.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconduit.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconnection.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipconnection.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipconnection.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconnection.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipdvi.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipdvi.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipdvi.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipdvi.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipgroup.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipgroup.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipgroup.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipheadset.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipmixer.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipnarrate.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voipnarrate.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voipnarrate.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippacket.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippcm.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voippcm.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voippcm.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippcm.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voiptranscribe.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voiptranscribe.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voiptranscribe.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voiptunnel.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\voiptunnel.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\voiptunnel.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\ps4\voipheadsetps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\ps4\voipheadsetps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\ps4\voipheadsetps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\ps4\voipps4.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\voip\ps4\voipps4.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\voip\ps4\voipps4.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\xml\xmlformat.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\xml\xmlformat.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\xml\xmlformat.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\xml\xmlparse.c">
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">kettle-clang-dev-debug\build\dirtysock\xml\xmlparse.c.obj</ObjectFileName>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">kettle-clang-dev-opt\build\dirtysock\xml\xmlparse.c.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-debug|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\7.008.031\installed</SCE_ORBIS_SDK_DIR>
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'kettle-clang-dev-opt|ORBIS' ">
+    <SCE_ORBIS_SDK_DIR>C:\packages\kettlesdk\7.008.031\installed</SCE_ORBIS_SDK_DIR>
+    <ExecutablePath>$(SCE_ORBIS_SDK_DIR)\host_tools\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+</Project>

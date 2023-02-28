@@ -1,0 +1,293 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAWebKit", ".\EAWebKit.vcxproj", "{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", ".\..\..\cairo\local-1.12.14\cairo.vcxproj", "{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coreallocator", ".\..\..\coreallocator\1.04.05\coreallocator.vcxproj", "{84809069-50FF-302B-BA7A-19700854AE26}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dirtysock", ".\..\..\DirtySDK\15.1.6.0.2\dirtysock.vcxproj", "{3785ECC6-FAD1-0282-174E-4BA55594CD7A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAAssert", ".\..\..\EAAssert\1.05.11\EAAssert.vcxproj", "{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EABase", ".\..\..\EABase\2.09.12\EABase.vcxproj", "{616312F7-3D52-8788-1611-B1F9DB83B8A7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAController", ".\..\..\EAController\local_1.08.00\EAController.vcxproj", "{2217D233-E3A2-D60D-6888-A1F4F052FC87}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAIOEAWebKit", ".\..\..\EAIOEAWebKit\local-01\EAIOEAWebKit.vcxproj", "{95087B53-A8A4-43EA-FA54-1B64A1E188F2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAMessage", ".\..\..\EAMessage\2.10.00\EAMessage.vcxproj", "{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAStdC", ".\..\..\EAStdC\1.26.08\EAStdC.vcxproj", "{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EASTL", ".\..\..\EASTL\3.16.05\EASTL.vcxproj", "{F741D66C-94C2-1776-A80D-5FE6FCCC8890}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EASystemEventMessageDispatcher", ".\..\..\EASystemEventMessageDispatcher\1.05.00\EASystemEventMessageDispatcher.vcxproj", "{154AC773-EA25-8A7D-5177-1A0E9FD68F31}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EATextEAWebKit", ".\..\..\EATextEAWebKit\local-1.09.01\EATextEAWebKit.vcxproj", "{1A31188D-0E51-00B9-8D5B-017215BB9F76}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAThread", ".\..\..\EAThread\1.33.00\EAThread.vcxproj", "{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAUser", ".\..\..\EAUser\1.09.01\EAUser.vcxproj", "{6E7694DB-C96A-DD28-AB03-425ED83413EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeEAWebKit", ".\..\..\FreeTypeEAWebKit\local-2.4.8.02-01\FreeTypeEAWebKit.vcxproj", "{2B72415D-9DAD-0B07-6A83-FC7612921224}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEAController", ".\..\..\EAController\local_1.08.00\IEAController.vcxproj", "{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEASystemEventMessageDispatcher", ".\..\..\EASystemEventMessageDispatcher\1.05.00\IEASystemEventMessageDispatcher.vcxproj", "{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEAUser", ".\..\..\EAUser\1.09.01\IEAUser.vcxproj", "{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JavaScriptCore", ".\..\..\JavaScriptCore\local\JavaScriptCore.vcxproj", "{545B2B54-2E05-D685-49DA-280D6D6A90D1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpegEAWebKit", ".\..\..\libjpegEAWebKit\local-1.00.06-01\libjpegEAWebKit.vcxproj", "{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpngEAWebKit", ".\..\..\libpngEAWebKit\local-1.01.00-01\libpngEAWebKit.vcxproj", "{C77E27F0-AA71-6169-241E-0184FBD0F95B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2EAWebKit", ".\..\..\libxml2EAWebKit\local-1.00.06\libxml2EAWebKit.vcxproj", "{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixman", ".\..\..\pixman\local-0.28.2\pixman.vcxproj", "{E0C359C8-17A5-C1EE-D97F-86677C6226DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPMalloc", ".\..\..\PPMalloc\local-01\PPMalloc.vcxproj", "{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQLiteEAWebKit", ".\..\..\SQLiteEAWebKit\local\SQLiteEAWebKit.vcxproj", "{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WTF", ".\..\..\WTF\local\WTF.vcxproj", "{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibEAWebKit", ".\..\..\zlibEAWebKit\local-1.2.5-7-01\zlibEAWebKit.vcxproj", "{03994ABE-57B1-4D7C-896F-62AEE8658914}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		kettle-clang-dev-debug|ORBIS = kettle-clang-dev-debug|ORBIS
+		kettle-clang-dev-opt|ORBIS = kettle-clang-dev-opt|ORBIS
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{03994ABE-57B1-4D7C-896F-62AEE8658914}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{154AC773-EA25-8A7D-5177-1A0E9FD68F31}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{1A31188D-0E51-00B9-8D5B-017215BB9F76}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{1B2DE46A-E934-13BF-0AAE-2F1FE5402FF3}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{1F61FE6E-0A70-A947-34E7-66F7C6E520BF}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{20E5DCAA-0CE2-9928-F4CE-D228A79A3083}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{2217D233-E3A2-D60D-6888-A1F4F052FC87}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{2A0FF027-33A6-BDB0-546B-B2DBEB6D6C1D}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{2B72415D-9DAD-0B07-6A83-FC7612921224}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{3486DF90-8F24-6A9B-FF72-3B20A0C510C4}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{3785ECC6-FAD1-0282-174E-4BA55594CD7A}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{40721B17-E5D4-DD0E-D0AE-15FC07EF2E90}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{45CCCBD6-B89F-78E1-94C3-A06A3FB37D0F}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{4A3E9D7F-6F2E-E7F5-8CCA-F346214AD919}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{4AF6E1A2-59F3-BAE7-B9CB-5B57281C2A4C}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{545B2B54-2E05-D685-49DA-280D6D6A90D1}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{616312F7-3D52-8788-1611-B1F9DB83B8A7}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{6DE0CB4A-7EAE-7FAD-EC99-53298CD32114}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{6E7694DB-C96A-DD28-AB03-425ED83413EF}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{6F5570F9-14AE-ED41-3D88-192E8CAB0CC1}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{82EEA8B8-0FA4-E15D-A58C-8139C44C547E}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{84809069-50FF-302B-BA7A-19700854AE26}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{95087B53-A8A4-43EA-FA54-1B64A1E188F2}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{9CD99718-9EA1-ADA4-280D-BC5CAB5814D5}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{B3FE648B-1F90-4243-31BE-9F40FEA5FC86}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{C77E27F0-AA71-6169-241E-0184FBD0F95B}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{E0C359C8-17A5-C1EE-D97F-86677C6226DA}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-debug|ORBIS.ActiveCfg = kettle-clang-dev-debug|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-debug|ORBIS.Build.0 = kettle-clang-dev-debug|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-opt|ORBIS.ActiveCfg = kettle-clang-dev-opt|ORBIS
+		{F741D66C-94C2-1776-A80D-5FE6FCCC8890}.kettle-clang-dev-opt|ORBIS.Build.0 = kettle-clang-dev-opt|ORBIS
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

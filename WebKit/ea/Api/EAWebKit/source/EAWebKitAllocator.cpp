@@ -337,7 +337,7 @@ Allocator* spEAWebKitAllocator = 0;
 
 void SetAllocator(EA::WebKit::Allocator* pAllocator)
 {
-    EAW_ASSERT_MSG(!spEAWebKitAllocator, "Setting an allocator while one already exists. It is also advisable to not call SetAllocator(0) on Shutdown since some memory might free up as part of dll unload.");
+	EAW_ASSERT_MSG(!spEAWebKitAllocator, "Setting an allocator while one already exists. It is also advisable to not call SetAllocator(0) on Shutdown since some memory might free up as part of dll unload.");
 	spEAWebKitAllocator = pAllocator;
 }
 

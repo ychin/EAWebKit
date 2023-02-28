@@ -1,0 +1,60 @@
+#!/bin/bash
+
+FW_VERSION=version
+FW_DIR=../Framework/$FW_VERSION
+
+if [ ! -f $FW_DIR/bin/nant.exe ]; then
+    echo "Unable to locate nant.exe."
+else
+    MONO_PATH=mono
+
+    # if the default mono fails, try finding another installed version
+    ${MONO_PATH} $FW_DIR/bin/nant.exe -version > /dev/null
+    if [ $? -ne 0 ]; then
+        MONO_PATH=""
+        foundmonos=`whereis -b mono | sed 's/^mono://g'`
+        for next in $foundmonos
+        do
+            ${next} $FW_DIR/bin/nant.exe -version > /dev/null
+            if [ $? -eq 0 ]; then
+                MONO_PATH=${next}
+                break
+            fi
+        done
+        if [ "${MONO_PATH}" == "" ]; then
+            echo "Failed to find a version of Mono runnable with $FW_DIR/bin/nant.exe. Note: framework 3 requires minimum Mono JIT compiler version 2.10.8."
+            exit -1
+        fi
+    fi
+
+    GCC_VERSION="gcc -v 2>&1 | tail -1"
+    CMD_ECHO="${MONO_PATH} ${FW_DIR}/bin/nant.exe ${@} ..."
+    CMD="${MONO_PATH} ${FW_DIR}/bin/nant.exe ${@} -masterconfigfile:unix-masterconfig.xml"
+
+    FREE_MEM=$(free|awk '/\-\/\+ buffers\/cache/{print $4}')
+
+    if [ $FREE_MEM -lt 7000000 ]; then
+       # If does not have 7GB of free memory, tune the cc.threadcount accordingly
+       # Limit: 1 threadcount per 2G of free memory     
+       FREE_MEM_PER_THREAD=2000000
+       THREAD_COUNT=$(($FREE_MEM/$FREE_MEM_PER_THREAD))
+
+       # Retain minimum of 1 threadcount
+       if [ "$THREAD_COUNT" -eq 0 ]; then
+          THREAD_COUNT=1
+       fi
+
+       echo "Free Memory: ${FREE_MEM} < 7 GB.  Overriding cc/link.threadcount to ${THREAD_COUNT}"     
+       
+       CMD+=" -G:cc.threadcount=${THREAD_COUNT} -G:link.threadcount=${THREAD_COUNT}"
+    fi
+
+    # in order to use the new g++, enable devtoolset-2 if it exists
+    if [ -n "$(rpm -qa | grep devtoolset-2)" ]; then
+       echo 'scl enable devtoolset-2 "'${CMD_ECHO}'"'
+       exec scl enable devtoolset-2 "$GCC_VERSION; $CMD"
+    else
+       exec $CMD
+    fi
+fi
+

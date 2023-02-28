@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\framework_tmp\CapilanoSDK-180705\XdkBuild.v141.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-dev-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-dev-debug|Durango">
+      <Configuration>capilano-vc-dev-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-dev-opt|Durango">
+      <Configuration>capilano-vc-dev-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>EABase</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <TargetFrameworkSDKToolsDirectory>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64</TargetFrameworkSDKToolsDirectory>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
+    <UniversalCRT_PropsPath>C:\packages\WindowsSDK\10.0.18362\installed\10\DesignTime\CommonConfiguration\Neutral\uCRT.props</UniversalCRT_PropsPath>
+    <UCRTContentRoot>C:\packages\WindowsSDK\10.0.18362\installed\10\</UCRTContentRoot>
+    <UniversalCRTSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir>
+    <UniversalCRTSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir_10>
+    <WindowsSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir>
+    <WindowsSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir_10>
+    <RCToolPath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64</RCToolPath>
+    <NETFXKitsDir>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</NETFXKitsDir>
+    <DotNetSdkRoot>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</DotNetSdkRoot>
+    <NETFXSDKDir>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</NETFXSDKDir>
+    <FrameworkSDKRoot>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</FrameworkSDKRoot>
+    <SDK40ToolsPath>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\</SDK40ToolsPath>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <LayoutDir>$(Platform)\Layout\</LayoutDir>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <LayoutDir>$(Platform)\Layout\</LayoutDir>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <OutDir>capilano-vc-dev-debug\build\EABase\</OutDir>
+    <IntDir>capilano-vc-dev-debug\build\EABase\vstmp\</IntDir>
+    <TargetName>EABase</TargetName>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <OutDir>capilano-vc-dev-opt\build\EABase\</OutDir>
+    <IntDir>capilano-vc-dev-opt\build\EABase\vstmp\</IntDir>
+    <TargetName>EABase</TargetName>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\eabase.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\eahave.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\earesult.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\eastdarg.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\eaunits.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\int128.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\nullptr.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\version.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\config\eacompiler.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\config\eacompilertraits.h" />
+    <ClInclude Include="C:\packages\EABase\2.09.12\include\Common\EABase\config\eaplatform.h" />
+  </ItemGroup>
+  <Target Name="UtilityCopyLocal" DependsOnTargets="FrameworkExecuteCopyLocal" AfterTargets="AfterBuild" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+  <Target Name="_DurangoDeploy" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " />
+  <Target Name="_InjectMakePriPath" BeforeTargets="_GetSdkToolPaths" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <PropertyGroup>
+      <MakePriExeFullPath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64\makepri.exe</MakePriExeFullPath>
+    </PropertyGroup>
+  </Target>
+  <Target Name="_DurangoDeploy" AfterTargets="AfterBuild" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " />
+  <Target Name="_InjectMakePriPath" BeforeTargets="_GetSdkToolPaths" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <PropertyGroup>
+      <MakePriExeFullPath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64\makepri.exe</MakePriExeFullPath>
+    </PropertyGroup>
+  </Target>
+</Project>

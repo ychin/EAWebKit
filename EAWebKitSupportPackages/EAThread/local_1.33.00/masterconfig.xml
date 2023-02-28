@@ -1,0 +1,70 @@
+<project>
+	<globalproperties>
+		<globalproperty name="package.Foundation.nant.warningsuppression">2015</globalproperty>
+	</globalproperties>
+	
+	<masterversions>
+		<package name="ConsoleRemote" version="0.03.08" />
+		<package name="ConsoleRemoteServer" version="0.03.06" />
+		<package name="coreallocator" version="1.04.04" />
+		<package name="CoreFileSystem" version="1.06.00" />
+		<package name="CoreFileSystemEAIO" version="1.05.01" />
+		<package name="CoreStream" version="1.05.03" />
+		<package name="EAAssert" version="1.05.10" />
+		<package localondemand="true" name="EABase" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EABase/2.09.10?cl=5141613" version="2.09.10" />
+		<package name="EACallstack" version="2.02.00" />
+		<package name="EACOM" version="3.00.05" />
+		<package name="EAConcurrentHeap" version="0.40.06" />
+		<package name="EAController" version="1.07.00" />
+		<package name="EAControllerUserPairing" version="1.11.07" />
+		<package name="EACrypto" version="1.03.05" />
+		<package name="EADotNetMath" version="2.03.00" />
+		<package name="EAIO" version="3.01.05" />
+		<package name="EAJson" version="1.07.04" />
+		<package localondemand="true" name="EAMain" version="3.03.00" />
+		<package name="EAMessage" version="2.10.06" />
+		<package name="EAPatchClient" version="1.12.02" />
+		<package name="EASaveLoad" version="1.10.00" />
+		<package name="EAStdC" version="1.26.07" />
+		<package name="EASTL" version="3.16.01" />
+		<package name="EAStringIntern" version="1.05.04" />
+		<package name="EASystemEventMessageDispatcher" version="1.05.00" />
+		<package name="EAThread" version="1.32.17" />
+		<package name="EATrace" version="2.12.06" />
+		<package localondemand="true" name="EAUser" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/EAUser/1.07.02-fb?cl=5472890" version="1.07.02-fb" />
+		<package localondemand="true" name="ExceptionHandler" version="1.19.13" />
+		<package name="FBMath" version="0.0.7">
+			
+			<exception propertyname="useFBMathDevHead">
+				<condition uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/fbmath/dev?head" value="true" version="dev" /> 
+			</exception>
+		</package>
+		<package name="FreeType" version="2.9.0.01" />
+		<package localondemand="false" name="gtest" version="1.8.0.ea.19" />
+		<package localondemand="true" name="IEAController" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEAController/shim?cl=5112285" version="shim" />
+		<package localondemand="true" name="IEASaveLoad" version="1.09.01" />
+		<package localondemand="true" name="IEASystemEventMessageDispatcher" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEASystemEventMessageDispatcher/shim?cl=5112285" version="shim" />
+		<package localondemand="true" name="IEAUser" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/IEAUser/shim?cl=5112285" version="shim" />
+		<package localondemand="true" name="InputMan" version="2.36.04" />
+		<package name="job_manager" version="4.05.05" />
+		<package name="libjpeg" version="1.01.06" />
+		<package name="libpng" version="1.6.34.00-5" />
+		<package name="libtiff" version="1.00.00-7" />
+		<package name="libxml2" version="1.00.11" />
+		<package localondemand="true" name="lua" uri="p4://dice-p4-one.dice.ad.ea.com:2001/SDK/lua/dev?cl=5252874" version="dev" />
+		<package name="lz4" version="1.8.0-3" />
+		<package name="lzma" version="4.65-8" />
+		<package name="MemoryMan" version="2.02.00" />
+		<package name="Oodle" version="2.7.2-1" />
+		<package name="PPMalloc" version="1.26.07" />
+		<package localondemand="true" name="rwmath" uri="p4://dice-p4-one.dice.ad.ea.com:2001/packages/rwmath/shim?cl=5132615" version="shim" />
+		<package name="Symmogriffer" version="1.08.03" />
+		<package name="UTFInternet" version="3.08.02" />
+		<package name="UTFSockets" version="2.15.13" />
+		<package name="UTFXml" version="3.08.13" />
+		<package name="zlib" version="1.2.11-4" />
+		<package name="ZSTD" version="1.04.02" />
+	</masterversions>
+
+	<config default="pc64-vc-dev-opt" includes="pc64-vc-dev-opt pc64-vc-dev-debug" package="eaconfig" />
+<packageroots><packageroot>../..</packageroot></packageroots><ondemand>true</ondemand><ondemandroot>D:\ondemand</ondemandroot></project>

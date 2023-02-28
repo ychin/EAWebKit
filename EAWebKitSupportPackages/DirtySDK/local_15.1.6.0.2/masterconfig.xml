@@ -1,0 +1,97 @@
+<project>
+    <masterversions>
+        <package name="AndroidEmulator"                 version="1.18.00"                       />
+        <package name="AndroidSDK"                      version="100.00.00-pr1"                 />
+        <package name="AndroidAPI"                      version="28"                            />
+        <package name="AndroidBuildTools"               version="29.0.2"                        />
+        <package name="AndroidPlatformTools"            version="28"                            />
+        <package name="AndroidNDK"                      version="15.2.4203891"                  />
+        <package name="android_config"                  version="5.00.00-pr1"                   />
+        <package name="AndroidTools"                    version="26.1.1"                        />
+        <package name="ApacheAnt"                       version="1.9.7"                         />
+        <package name="GradleWrapper"                   version="1.00.00-pr1"                   />
+        <package name="CapilanoSDK"                     version="180712-1-proxy" >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="180712-1" />
+            </exception>
+        </package>
+
+        <!-- Nintendo Switch -->
+        <package name="nx_config"                       version="1.00.05" />
+        <package name="nxsdk"                           version="9.0.0" />
+        <package name="nx_vsi"                          version="9.0.6.27951" />
+        
+        <!-- PS4 -->
+        <package name="kettlesdk"                       version="7.008.001-proxy" >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="7.008.001" />
+            </exception>
+        </package>
+        <package name="ProDG_VSI"                       version="7.00.0.5-proxy" >
+            <exception propertyname="nonproxy">
+                <condition value="true"                 version="7.00.0.5" />
+            </exception>
+        </package>
+        <package name="PlayStation4AudioInEx"           version="6.508.001" />
+        <package name="PlayStation4AppContentEx"        version="6.508.010" />        
+
+        <!-- Balin -->
+        <package name="ps5sdk"                          version="0.90.00.24-proxy"/>
+
+        <package name="Ps5VSI"                          version="0.90.0.3-proxy"/>
+
+        <!-- Gemini -->
+        <package name="GSDK"                            version="191100-proxy"                  />
+
+        <package name="Doxygen"                         version="1.8.14-1"                      />
+        <package name="GraphViz"                        version="2.38.0"                        />
+        <package name="jdk"                             version="azul-8.0.222-pc64"             />  <!-- for android build -->
+        <package name="nantToVSTools"                   version="3.19.09"                       />
+        <package name="Speex"                           version="1.2rc1-7"                      />
+        <package name="vstomaketools"                   version="2.06.09"                       />
+        <package name="WindowsSDK"                      version="10.0.18362"                    /> 
+
+        <package name="coreallocator"                   version="1.04.02"                       />
+        <package name="EAAssert"                        version="1.05.07"                       />
+        <package name="EABase"                          version="2.09.11"                       /> 
+        <package name="EAController"                    version="1.07.01"                       />
+        <package name="EAControllerUserPairing"         version="1.11.08"                       /> 
+        <package name="EAStdC"                          version="1.26.07"                       />
+        <package name="EAUser"                          version="1.08.01"                       />
+        <package name="EAMessage"                       version="2.10.03"                       />
+        <package name="EASTL"                           version="3.16.01"                       />
+        <package name="EASystemEventMessageDispatcher"  version="1.05.00"                       />
+        <package name="EAThread"                        version="1.33.00"                       />
+        <package name="PPMalloc"                        version="1.26.07"                       />
+        <package name="opus"                            version="1.00.04"                       />
+        <package name="ConsoleRemoteServer"             version="0.03.02"                       />
+
+        <!-- setup cross compile -->
+        <package name="UnixClang"                       version="4.0.1"/>
+        <package name="UnixCrossTools"                  version="2.02.01"/>
+        <package name="vsimake"                         version="3.80"/>
+
+        <!-- PPMalloc dependencies -->
+        <package name="EACallstack"                     version="2.02.01"                       />
+        <package name="EAIO"                            version="2.24.01"                       />
+        <package name="job_manager"                     version="4.05.05"                       />
+        <package name="rwmath"                          version="3.01.01"                       />
+    </masterversions>
+
+    <globalproperties>
+        dirtysdk-distpktwindow-size
+        dirtysdk-novoip
+        nonproxy
+        eaconfig.generate-portable-solution=false <!-- set true when generating solutions for partners as it uses relative paths instead of absolute -->
+        package.GSDK.graphics-libs=no
+        package.AndroidSDK.minimumSDKVersion=24
+        <if condition="'${config-system}'=='ps5'">
+            EASystemEventMessageDispatcher.IncludeCompanionLibs=false
+        </if>
+    </globalproperties>
+
+    <config package="eaconfig" default="win64-vc-debug" includes="xb1-vc-final xb1-vc-debug xb1gdk-vc-final xb1gdk-vc-debug xbsx-vc-debug xbsx-vc-final xb1-vc-dll-debug xb1gdk-vc-dll-debug ps4-clang-final ps4-clang-debug win64-vc-final win64-vc-debug win64-vc-dll-dev-final win64-vc-dll-debug ps5-clang-debug ps5-clang-final" />
+    <buildroot>build</buildroot>
+    <ondemand>true</ondemand>
+    <ondemandroot>../../packages</ondemandroot>
+</project>

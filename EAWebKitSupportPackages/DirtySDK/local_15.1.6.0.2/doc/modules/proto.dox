@@ -1,0 +1,182 @@
+/*!
+    \Moduledef Proto Proto
+
+    \Description
+        Proto modules consist of various communications protocols; most are implementations of
+        industry-standard protocols, with a small number of custom protocols.
+
+        <b>Index</b>
+
+        <a href="#proto_overview">Overview</a>\n
+        <a href="#proto_dirtysock">Using a Dirtysock Protocol</a>\n
+        <a href="#proto_example">Example</a>\n
+
+        <b><a name="proto_overview">Overview</a></b>
+
+        The Proto module contains several useful communications protocols, including:
+
+        - ProtoAdvt  - an "advertising" protocol for broadcasting announcements over a LAN
+        - ProtoHttp  - an http client supporting many http 1.1 features
+        - ProtoHttp2 - an http client supporting many http 2 features
+        - ProtoHttpManager - manages multiple ProtoHttp refs operating in parallel, for web-like transactions
+        - ProtoHttpServ - a simple http 1.1 server
+        - ProtoHttpUtil - http utility functions
+        - ProtoMangle - client to interface with ea "demangler" server used for NAT port prediction
+        - ProtoName - a wrapper for hostname lookup functinality
+        - ProtoPing - a module implementing ICMP ping support
+        - ProtoPingManager - manages multiple ProtoPing refs operating in parallel
+        - ProtoSSL - a secure sockets protocol implementation
+        - ProtoStream - a module used for streaming of media over an HTTP connection
+        - ProtoTunnel - implements a secure connection over which multiple UDP protocols can be tunneled
+        - ProtoUdp - wraps basic UDP send/recv functionality
+        - ProtoUpnp - implements a simple UPnP client aimed at NAT configuration of static routes
+        - ProtoWebSocket - implements a WebSocket client
+
+        <b><a name="proto_dirtysock">Using a Dirtysock Protocol</a></b>
+
+        Generally, there is a core set of functions a Dirtysock protocol implements:
+
+        <ul>
+            <li>
+                <b>Proto<em>Protocol</em>Create</b> - handles the allocation of a private state structure
+                as well as basic initialization tasks.  The reference pointer returned by the
+                Create function is used by the other protocol functions.
+
+                Examples: ProtoHttpCreate(), ProtoPingCreate()
+            </li>
+
+            <li>
+                <b>Proto<em>Protocol</em>Destroy</b> - releases the private state structure, terminates any
+                pending connections, and closes any open socket resources.
+
+                Examples: ProtoSSLDestroy(), ProtoAriesDestroy()
+            </li>
+
+            <li>
+                <b>Proto<em>Protocol</em>Request</b> - initiates a transaction request of some sort.  The naming
+                will vary depending on the protocol in question.
+
+                Examples: ProtoHttpGet(), ProtoPingRequest()
+            </li>
+
+            <li>
+                <b>Proto<em>Protocol</em>Receive</b> - reads the response from a Request transaction.  Returns
+                zero if no data is available.  In general, the caller is responsible for handling
+                timeout errors.
+
+                Examples: ProtoHttpInfo()/ProtoHttpData(), ProtoPingResponse(), ProtoSSLRecv()
+            </li>
+
+            <li>
+                <b>Proto<em>Protocol</em>Update</b> - handles reading from the socket and any protocol parsing
+                involved, and generally stores the data within the protocol reference structure.
+                In some cases, Update() is called asynchronously via socket callback, in other
+                cases the user must periodically call the update function.
+
+                Examples: _ProtoPingCallback() (private, called by socket callback) ProtoHttpUpdate() (public,
+                called by user).
+            </li>
+        </ul>
+
+        Commonly, a single recurring state-based routine will handle these transactions.  Example
+        psuedocode could look like this:
+
+        <b><a name="proto_example">Example</a></b>
+
+        \code{.c}
+
+        int32_t MyRecurringNetFunc(MyNetRef *pMyNetState, char *pHostName, uint32_t timeout)
+        {
+            // if update function is not in a socket callback, call it here
+            if (pMyNetState->pRef != NULL)
+            {
+                ProtoUpdate(pMyNetState->pRef);
+            }
+
+            switch(pMyNetState->eState)
+            {
+                // before we can do anything, we have to resolve the hostname
+                case MYPROTO_STATE_RESOLVE:
+                {
+                    if (pMyNetState->pHost == NULL)
+                    {
+                        // request hostname resolve (async)
+                        pMyNetState->pHost = SocketLookup(pHostName,timeout);
+                    }
+                    else
+                    {
+                        int32_t host;
+
+                        // check to see if the hostname is resolved yet
+                        host = pMyNetState->pHost->Done(pMyNetState->pHost);
+                        if (host == -1)
+                        {
+                            // we've timed out - move to destroy state
+                            pMyNetState->eState = MYPROTO_STATE_DESTROY;
+                        }
+                        else if (host != 0)
+                        {
+                            // init the protocol, and move to request state
+                            pMyNetState->pRef = ProtoCreate();
+                            pMyNetState->eState = MYPROTO_STATE_REQUEST;
+                        }
+                    }
+                }
+                break;
+
+                case MYPROTO_STATE_REQUEST:
+                {
+                    // make the transaction request
+                    ProtoRequest(pMyNetState->pRef,...);
+
+                    // advance to receive state
+                    pMyNetState->eState = MYPROTO_STATE_RECEIVE;
+                }
+                break;
+
+                case MYPROTO_STATE_RECEIVE:
+                {
+                    if (ProtoReceive(pMyNetState->pRef,...))
+                    {
+                        // we've got some data... do something with it
+                        _MyNetReadDataFunc(pMyNetState);
+
+                        // done - advance to destroy stage
+                        pMyNetState->eState = MYPROTO_STATE_DESTROY;
+                    }
+                }
+                break;
+
+                case MYPROTO_STATE_DESTROY:
+                {
+                    if (pMyNetState->pHost)
+                    {
+                        // release hostname resolve socket
+                        pMyNetState->pHost->Free(pCmdRef->pHost);
+                        pMyNetState->pHost = NULL;
+                    }
+
+                    if (pMyNetState->pRef)
+                    {
+                        // release protocol
+                        ProtoDestroy(pCmdRef->pRef);
+                        pMyNetState->pRef = NULL;
+                    }
+
+                    pMyNetState->eState = MYPROTO_STATE_INACTIVE;
+                }
+                break;
+
+                case MYPROTO_STATE_INACTIVE:
+                {
+                }
+                break;
+            }
+        }
+
+        \endcode
+
+        In many cases, some of these states will be broken out into separate functions, when
+        multiple transactions are required.
+
+*/

@@ -88,7 +88,7 @@ const unsigned* LLIntOffsetsExtractor::dummy()
 
 //+EAWebKitChange
 //3/11/2014
-#if defined(EA_PLATFORM_XBOXONE)
+#if defined(EA_PLATFORM_XBOXONE) || defined(EA_PLATFORM_XBSX)
 int main(Platform::Array<Platform::String^>^ args)
 {
 #else

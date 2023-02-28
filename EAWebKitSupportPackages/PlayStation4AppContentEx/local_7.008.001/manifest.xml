@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<package>
+    <contactName>DirtySock Team</contactName>
+    <contactEmail>GSDirtysockSupport@ea.com</contactEmail>
+    <summary>PS4 AppContent Extension</summary>
+    <license>Commercial Software</license>
+    <frameworkVersion>1</frameworkVersion>
+    <buildable>false</buildable>
+    <versionName>7.008.001</versionName>
+</package>

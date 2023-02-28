@@ -1,0 +1,2 @@
+contrib/voipaux/source/voipspeex.c
+contrib/voipaux/source/voipopus.c

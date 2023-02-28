@@ -341,7 +341,10 @@ WebPagePrivate::WebPagePrivate(WebPage *wPage)
         pageConfiguration.databaseProvider = &WebDatabaseProvider::singleton(); 
     }
     // Use this for progress notification configuration.progressTrackerClient = static_cast<WebFrameLoaderClient*>(configuration.loaderClientForMainFrame);
+#if !defined(EA_PLATFORM_PS5)
+    //TODO there possible crash on PS5, need to investigate this issue later. Not affecting normal WebKit usage.
 	pageConfiguration.inspectorClient = new WebCore::InspectorClientEA(webPage);
+#endif
 
     VisitedLinkStoreEA::setShouldTrackVisitedLinks(true);
     pageConfiguration.visitedLinkStore = VisitedLinkStoreEA::create();

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="build" xmlns="schemas/ea/framework3.xsd">
+
+	<!-- options in the the config.targetoverrides optionset must be changed _before_ the package target  -->
+	<optionset name="config.targetoverrides">
+		<option name="test-run" value="include" />
+		<option name="test-runall" value="include" />
+	</optionset>
+
+	<property name="Dll" value="false" unless="@{PropertyExists('Dll')}" />
+	<package name="EAAssert" initializeself="true" />
+
+	<runtime>
+		<Library name="EAAssert" buildtype="${EAAssertBuildType}">
+			<dependencies>
+				<use>
+					EABase
+				</use>
+			</dependencies>
+			<sourcefiles>
+				<includes name="${package.dir}/source/*.cpp" />
+			</sourcefiles>
+			<config>
+				<defines>
+					<do if="${Dll} and ${config-compiler} == vc">
+						EA_ASSERT_API=__declspec(dllexport)
+					</do>
+				</defines>
+			</config>
+			<visualstudio>
+				<excludedbuildfiles>
+					<includes name="${package.dir}/doc/**.*" />
+					<includes name="${package.dir}/scripts/**.*" />
+					<includes name="${package.dir}/*.build" />
+				</excludedbuildfiles>
+			</visualstudio>
+		</Library>
+	</runtime>
+
+	<optionset name="config-options-special" fromoptionset="config-options-program-c">
+		<option name="buildset.name" value="ProgramSpecial" />
+		<option name="windowsruntime" value="off" />
+	</optionset>
+	<task name="GenerateBuildOptionset" configsetname="config-options-special" />
+
+	<tests>
+		<Program name="EAAssertTest">
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					EABase
+				</use>
+				<auto>
+					EAMain
+					EAStdC
+					EASTL
+					EATest
+					EAThread
+					EAAssert/EAAssert
+				</auto>
+			</dependencies>
+
+			<sourcefiles>
+				<includes name="${package.dir}/test/TestEAAssert.cpp" />
+			</sourcefiles>
+		</Program>
+
+		<!--<Program name="EAAssertSpecialTest">
+			<copylocal value="true" />
+			<dependencies>
+				<use>
+					EABase
+					EAAssert/EAAssert
+				</use>
+				<build>
+					EAMain
+					EAStdC
+					EASTL
+					EATest
+					EAThread
+				</build>
+			</dependencies>
+
+			<sourcefiles>
+				<includes name="${package.dir}/test/TestEAAssertC.c" optionset="ProgramSpecial" />
+				<includes name="${package.dir}/test/CEntryPoint.cpp" />
+			</sourcefiles>
+		</Program>-->
+	</tests>
+</project>

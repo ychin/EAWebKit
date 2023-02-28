@@ -1,0 +1,31 @@
+<project>
+  <!-- TODO: Check if these warningsuppression exports are being used -->
+  <!-- expose DirtySDK warningsuppression -->
+  <do unless="@{PropertyExists('package.DirtySDK.warningsuppression')}">
+    <property name="package.DirtySDK.warningsuppression" value="" />
+
+    <!-- =================  Android/iPhone/Unix  =================== -->
+    <do if="${config-compiler} == 'gcc'">
+      <property name="package.DirtySDK.warningsuppression">
+        ${property.value}
+        -Wno-multichar          <!-- multi-character character literal -->
+      </property>
+    </do>
+  </do>
+  <!-- task AddDirtySDKNetworkManifest: bring in the NetworkManifest that are required for DirtySDK -->
+  <createtask name="AddDirtySDKNetworkManifest">
+    <parameters>
+      <option name="module" value="Required"/>
+      <!-- Need to pass in the group name as well.  That is pass in <group> or <group>.<module_name> for this variable. -->
+    </parameters>
+    <code>
+      <do if="${config-system} == 'capilano'">
+        <property name="${AddDirtySDKNetworkManifest.module}.networking-manifest-files">
+          ${property.value}
+          ${package.DirtySDK.networking-manifest-files}
+        </property>
+      </do>
+    </code>
+  </createtask>
+
+</project>

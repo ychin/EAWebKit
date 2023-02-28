@@ -1,0 +1,1242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\framework_tmp\CapilanoSDK-180705\XdkBuild.v141.props" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>capilano-vc-dev-debug</Configuration>
+    <Platform>Durango</Platform>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="capilano-vc-dev-debug|Durango">
+      <Configuration>capilano-vc-dev-debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="capilano-vc-dev-opt|Durango">
+      <Configuration>capilano-vc-dev-opt</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3785ECC6-FAD1-0282-174E-4BA55594CD7A}</ProjectGuid>
+    <Keyword>DurangoProj</Keyword>
+    <ProjectName>dirtysock</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <TargetFrameworkSDKToolsDirectory>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64</TargetFrameworkSDKToolsDirectory>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
+    <UniversalCRT_PropsPath>C:\packages\WindowsSDK\10.0.18362\installed\10\DesignTime\CommonConfiguration\Neutral\uCRT.props</UniversalCRT_PropsPath>
+    <UCRTContentRoot>C:\packages\WindowsSDK\10.0.18362\installed\10\</UCRTContentRoot>
+    <UniversalCRTSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir>
+    <UniversalCRTSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir_10>
+    <WindowsSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir>
+    <WindowsSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir_10>
+    <RCToolPath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64</RCToolPath>
+    <NETFXKitsDir>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</NETFXKitsDir>
+    <DotNetSdkRoot>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</DotNetSdkRoot>
+    <NETFXSDKDir>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</NETFXSDKDir>
+    <FrameworkSDKRoot>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</FrameworkSDKRoot>
+    <SDK40ToolsPath>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\</SDK40ToolsPath>
+    <DurangoInstalledOSName>era</DurangoInstalledOSName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>classic</DiagnosticsFormat>
+      <DisableSpecificWarnings>4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>-IGNORE:4264 </AdditionalOptions>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib/dirtysock.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-debug\lib" mkdir "capilano-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-debug\build\dirtysock" mkdir "capilano-vc-dev-debug\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <OutDir>capilano-vc-dev-debug\lib\</OutDir>
+    <IntDir>capilano-vc-dev-debug\build\dirtysock\vstmp\</IntDir>
+    <TargetName>dirtysock</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include;C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include\shared;C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include\um;C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include\winrt;C:\packages\CapilanoSDK\180705\installed\180705\xdk\ucrt\inc;C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\include</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>classic</DiagnosticsFormat>
+      <DisableSpecificWarnings>4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>-IGNORE:4264 </AdditionalOptions>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib/dirtysock.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "capilano-vc-dev-opt\lib" mkdir "capilano-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "capilano-vc-dev-opt\build\dirtysock" mkdir "capilano-vc-dev-opt\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <OutDir>capilano-vc-dev-opt\lib\</OutDir>
+    <IntDir>capilano-vc-dev-opt\build\dirtysock\vstmp\</IntDir>
+    <TargetName>dirtysock</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <LayoutDir>$(MSBuildProjectName)\$(PlatformName)\Layout\</LayoutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include;C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include\shared;C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include\um;C:\packages\CapilanoSDK\180705\installed\180705\xdk\Include\winrt;C:\packages\CapilanoSDK\180705\installed\180705\xdk\ucrt\inc;C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\include</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\coreallocator\1.04.05\coreallocator.vcxproj">
+      <Project>{84809069-50FF-302B-BA7A-19700854AE26}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\EABase\2.09.12\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtydefs.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtylang.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtyvers.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\platform.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commall.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commsrp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commudp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commudputil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptaes.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptarc4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptbn.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptchacha.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptcurve.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptdef.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptgcm.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\crypthash.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\crypthmac.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptmd5.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptmont.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptnist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptrand.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptrsa.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptsha1.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptsha2.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyaddr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtycert.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyerr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtylib.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtymem.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtynames.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtynet.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtysessionmanager.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtythread.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyuser.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\netconn.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\netconndefs.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\xboxone\dirtyauthxboxone.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\connapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamedist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamedistserv.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgameerr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamelink.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamepkt.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgameutil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtygif.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtygraph.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtyjpg.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtypng.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\privilegeapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\qosclient.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\qoscommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\userapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\userlistapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\weblog.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\xboxone\userapixboxone.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\xboxone\userlistapixboxone.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoadvt.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttp2.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttpmanager.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttpserv.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttputil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protomangle.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoname.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protossl.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protostream.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\prototunnel.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoupnp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protowebsocket.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\aws.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\base64.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\binary7.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\hpack.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\jsonformat.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\jsonparse.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\murmurhash3.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufread.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufwrite.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\utf8.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voip.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipblocklist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipcodec.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipdef.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipgroup.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipnarrate.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voiptranscribe.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voiptunnel.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\xml\xmlformat.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\xml\xmlparse.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commsrp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commudp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commudputil.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptaes.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptarc4.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptbn.c">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptchacha.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptcurve.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptgcm.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\crypthash.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\crypthmac.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptmd5.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptmont.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptnist.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrand.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandcommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandpriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrsa.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptsha1.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptsha2.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtycert.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtyerr.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtylib.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtylib.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">capilano-vc-dev-debug\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">capilano-vc-dev-opt\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtymem.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynames.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynet.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynetpriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtythread.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconn.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconncommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconncommon.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconnlocaluser.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconnlocaluser.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\pc\dirtylibwin.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\pc\dirtynetwin.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\xboxone\dirtyaddrxboxone.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\xboxone\dirtyauthxboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\xboxone\dirtyerrxboxone.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\xboxone\dirtyuserxboxone.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\xboxone\netconnxboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\connapi.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamedist.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamedistserv.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamelink.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgameutil.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtygif.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtygraph.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtyjpg.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtypng.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\qosclient.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\qoscommon.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\userapi.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\userapipriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\weblog.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\xboxone\privilegeapixboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\xboxone\userapixboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\xboxone\userlistapixboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\platform\plat-str.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\platform\plat-time.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoadvt.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttp2.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttpmanager.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttpserv.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttputil.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoname.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protossl.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protostream.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\prototunnel.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoupnp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protowebsocket.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\xboxone\protohttpxboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\xboxone\protomanglexboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\aws.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\base64.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\binary7.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\hpack.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\jsonformat.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\jsonparse.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\murmurhash3.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufcommon.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufread.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufwrite.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\utf8.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voip.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipblocklist.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcodec.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcommon.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconduit.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconduit.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconnection.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconnection.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipdvi.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipgroup.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipheadset.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipmixer.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipmixer.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippacket.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippcm.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voiptranscribe.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voiptunnel.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\xboxone\voipheadsetxboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\xboxone\voipnarratexboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\xboxone\voipxboxone.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">-bigobj /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_DURANGO;_ITERATOR_DEBUG_LEVEL=2;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_DEBUG;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">false</WinRTNoStdLib>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\ExtensionSDKs\Xbox.Game.Chat.2.Cpp.API\8.0\DesignTime\CommonConfiguration\Neutral\Include";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAAssert\1.05.11\include";"C:\packages\EAThread\1.33.00\include";"C:\packages\coreallocator\1.04.05\include";"C:\packages\EASTL\3.16.05\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include";"C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\EAWebKitSupportPackages\EAController\local_1.08.00\include\capilano";"C:\packages\EAUser\1.09.01\include";"C:\packages\EAUser\1.09.01\include\capilano"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">-bigobj -Zo -d2SSAOptimizer- /favor:AMD64  /Zf -w44254 -w44287 -w44296 -w44312</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">"C:\packages\CapilanoSDK\180705\installed\180705\xdk\lib\amd64";"C:\packages\CapilanoSDK\180705\installed\Durango.180705\v8.0\References\CommonConfiguration\Neutral";"C:\packages\CapilanoSDK\180705\installed\180705\xdk\VS2017\vc\platform\amd64"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">classic</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">4295; 4201; 4055; 4054; 4244; 4946; 4555; 4265; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">__WRL_NO_DEFAULT_LIB__;_CRT_SECURE_NO_DEPRECATE;_DURANGO;_ITERATOR_DEBUG_LEVEL=0;_TITLE;_UITHREADCTXT_SUPPORT=0;_UNICODE;_WINDOWS;_XBOX_ONE;EA_PLATFORM_CAPILANO;EA_PLATFORM_CAPILANO_XDK;EA_PLATFORM_XBOXONE;EA_PLATFORM_XBOXONE_XDK;EA_SLN_BUILD=1;EASTL_CORE_ALLOCATOR_ENABLED=1;EASTL_EASTDC_VSNPRINTF=1;NDEBUG;UNICODE;WIN32_LEAN_AND_MEAN;WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\XOne\DirtySDK\15.1.6.0.2\capilano-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">Level4</WarningLevel>
+      <WinRTNoStdLib Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">false</WinRTNoStdLib>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\xml\xmlformat.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\xml\xmlparse.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Xbox Services API, Version=8.0" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+  <Target Name="_InjectMakePriPath" BeforeTargets="_GetSdkToolPaths" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-debug|Durango' ">
+    <PropertyGroup>
+      <MakePriExeFullPath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64\makepri.exe</MakePriExeFullPath>
+    </PropertyGroup>
+  </Target>
+  <Target Name="_InjectMakePriPath" BeforeTargets="_GetSdkToolPaths" Condition=" '$(Configuration)|$(Platform)' == 'capilano-vc-dev-opt|Durango' ">
+    <PropertyGroup>
+      <MakePriExeFullPath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64\makepri.exe</MakePriExeFullPath>
+    </PropertyGroup>
+  </Target>
+</Project>

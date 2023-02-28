@@ -1,0 +1,22 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+  <publicdata packagename="EABase" >
+		<property name="package.EABase.includedirs">
+			${package.EABase.dir}/include/Common
+		</property>
+		<property name="package.EABase.includedirs.spu">
+			${package.EABase.dir}/include/Common
+		</property>
+    <runtime>
+      <module name="EABase">
+        <includedirs>
+          ${package.EABase.dir}/include/Common
+        </includedirs>
+      </module>
+    </runtime>
+		<tests>
+			<module name="EABaseTest"/>
+		</tests>
+  </publicdata>
+
+</project>

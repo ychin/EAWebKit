@@ -50,7 +50,7 @@
 //+EAWebKitChange
 //11/16/2015
 //Using EA_WEBKIT_CSS_GRAMMAR_START/EA_WEBKIT_CSS_GRAMMAR_END hooks to disable optimization of CSSGrammar.cpp to prevent crash on below platform.
-#if defined(EA_PLATFORM_CAPILANO) && !defined(EA_DEBUG)
+#if (defined(EA_PLATFORM_XBOXONE) || defined(EA_PLATFORM_XBSX)) && !defined(EA_DEBUG)
 #define EA_WEBKIT_CSS_GRAMMAR_START()   EA_OPTIMIZE_OFF()
 #define EA_WEBKIT_CSS_GRAMMAR_END()     EA_OPTIMIZE_ON()
 #else

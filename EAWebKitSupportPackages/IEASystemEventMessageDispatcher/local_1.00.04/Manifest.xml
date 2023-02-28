@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <manifestVersion>2</manifestVersion>
+  <contactName>EATech</contactName>
+  <contactEmail>EATechCoreTeam@ea.com</contactEmail>
+  <summary></summary>
+  <description></description>
+  <status>Official</status>
+  <statusComment></statusComment>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Core</owningTeam>
+  <tags>eatech</tags>
+  <sourceLocation>//EAOS/UTF/RL/UTFApp/IEASystemEventMessageDispatcher/1.00.04</sourceLocation>
+  <driftVersion>1.00.04</driftVersion>
+  <relationship>
+    <builds>
+      <build name="solution" supported="true" />
+      <build name="nant" supported="true" targets="build test-build" />
+      <build name="test" supported="true" targets="test-run-fast" />
+      <build name="xcode" supported="true" />
+    </builds>
+    <platforms>
+      <platform name="pc" build="Supported" test="Supported" configs="pc-vc-dev" />
+      <platform name="pc64" build="Supported" test="Supported" configs="pc64-vc-dev" />
+      <platform name="xenon" build="Supported" test="Supported" />
+      <platform name="ps3" build="NotSupported" test="NotSupported" />
+      <platform name="rev" build="NotSupported" test="NotSupported" />
+      <platform name="freebox" build="NotSupported" test="NotSupported" />
+      <platform name="unix" build="Supported" test="Supported" />
+      <platform name="unix64" build="Supported" test="Supported" />
+      <platform name="osx" build="NotSupported" test="NotSupported" />
+      <platform name="iphone" build="NotSupported" test="NotSupported" />
+      <platform name="iphonesim" build="NotSupported" test="NotSupported" />
+      <platform name="android" build="NotSupported" test="NotSupported" />
+      <platform name="marmalade" build="NotSupported" test="NotSupported" />
+      <platform name="palm" build="NotSupported" test="NotSupported" />
+      <platform name="playbook" build="NotSupported" test="NotSupported" />
+      <platform name="ctr" build="NotSupported" test="NotSupported" />
+      <platform name="psp2" build="NotSupported" test="NotSupported" />
+      <platform name="winrt" build="NotSupported" test="NotSupported" />
+      <platform name="winprt" build="NotSupported" test="NotSupported" />
+      <platform name="cafe" build="NotSupported" test="NotSupported" />
+      <platform name="stv" build="NotSupported" test="NotSupported" />
+      <platform name="capilano" build="Supported" test="Supported" />
+      <platform name="kettle" build="Supported" test="Supported" />
+    </platforms>
+  </relationship>
+  <automation>
+    <targets>
+      <target name="Solution" type="build" defaultSupported="true" defaultTarget="slngroupall visualstudio" />
+      <target name="Build" type="build" defaultSupported="true" defaultTarget="build test-build example-build" />
+      <target name="Test" type="test" defaultSupported="true" defaultTarget="test-run-fast" />
+    </targets>
+    <defaultConfigSupport>
+      <config config="pc" supported="true" />
+      <config config="pc64" supported="true" />
+      <config config="xenon" supported="true" />
+      <config config="ps3" supported="false" />
+      <config config="rev" supported="false" />
+      <config config="freebox" supported="false" />
+      <config config="unix" supported="true" />
+      <config config="unix64" supported="true" />
+      <config config="osx" supported="false" />
+      <config config="iphone" supported="false" />
+      <config config="iphonesim" supported="false" />
+      <config config="android" supported="false" />
+      <config config="marmalade" supported="false" />
+      <config config="palm" supported="false" />
+      <config config="playbook" supported="false" />
+      <config config="ctr" supported="false" />
+      <config config="psp2" supported="false" />
+      <config config="winrt" supported="false" />
+      <config config="winprt" supported="false" />
+      <config config="cafe" supported="false" />
+      <config config="stv" supported="false" />
+      <config config="capilano" supported="true" />
+      <config config="kettle" supported="true" />
+    </defaultConfigSupport>
+  </automation>
+  <versionName>1.00.04</versionName>
+</package>

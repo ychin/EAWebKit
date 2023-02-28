@@ -1,0 +1,20 @@
+<project>
+
+	<!-- EAMessage header files location. -->
+	<property name="package.EAMessage.includedirs">
+		${package.EAMessage.dir}/include
+		${package.EAMessage.dir}/extras
+	</property>
+
+	<!-- EAMessage libraries location. -->
+	<do if="@{PropertyExists('config')}">
+		<do if="@{PropertyExists('lib-prefix')}">
+			<do if="@{PropertyExists('lib-suffix')}">
+				<fileset name="package.EAMessage.libs">
+				<includes name="${package.EAMessage.builddir}/${config}/lib/${lib-prefix}EAMessage${lib-suffix}" />
+				</fileset>
+			</do>
+		</do>
+	</do>
+
+</project>

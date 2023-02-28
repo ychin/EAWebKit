@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
-#if defined(CS_UNDEFINED_STRING) || defined(EA_PLATFORM_KETTLE)
+#if defined(EA_PLATFORM_UNIX) || defined(EA_PLATFORM_SONY)
     #include <unistd.h>
 #elif defined(_MSC_VER)
     #include <io.h>
@@ -432,6 +432,11 @@ bool FileStream::Flush()
 {
     if(mnFileHandle != kFileHandleInvalid)
     {
+        #if defined(EA_PLATFORM_UNIX) 
+            // Linux: On kernels before 2.4, fsync on big files can be inefficient. 
+            //        An alternative might be to use the O_SYNC flag to open(2).
+            fsync(mnFileHandle);
+        #endif
     }
     return true;
 }

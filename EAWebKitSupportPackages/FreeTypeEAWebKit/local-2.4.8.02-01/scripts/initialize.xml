@@ -1,0 +1,7 @@
+﻿<project>
+	<task name="ScriptInit" PackageName="FreeTypeEAWebKit">
+		<IncludeDirs>
+			${package.FreeTypeEAWebKit.dir}/freetype-2.4.8/include
+		</IncludeDirs>
+	</task>
+</project>

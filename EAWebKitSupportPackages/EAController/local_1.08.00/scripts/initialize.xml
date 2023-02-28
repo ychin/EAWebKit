@@ -1,0 +1,60 @@
+<project xmlns="schemas/ea/framework3.xsd">
+
+	<property name="EAControllerBuildType" value="Library"/>
+	<property name="EAControllerBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+	<property name="EAControllerBuildType" value="WinRTCppLibrary" if="@{OptionSetExists('WinRTCppLibrary')}"/>
+	<property name="EAControllerBuildType" value="WinRTRuntimeComponent" if="@{OptionSetExists('WinRTCppLibrary')} and ${Dll??false}"/>
+	<property name="IEAControllerBuildType" value="Library"/>
+	<property name="IEAControllerBuildType" value="DynamicLibrary" if="${Dll??false}"/>
+
+	<!-- when the build type is set on the module's public data the libs will be determined automatically by framework -->
+	<do unless="@{StrCompareVersions(${nant.version}, '6.1.0.0')} gte 0">
+		<fileset name="package.EAController.libs">
+			<includes name="${package.EAController.builddir}/${config}/lib/${lib-prefix}EAController${lib-suffix}" />
+		</fileset>
+	</do>
+
+	<!-- Determines which platform dir to use based on our config. We default to null if the config isn't supported by the package. -->
+	<property name="config-folder-name" value="${config-system}"/>
+	<property name="config-folder-name" value="pc" if="${config-system} == pc or ${config-system} == 'pc64'"/>
+	<property name="config-folder-name" value="gdk" if="${gsdk.enabled??false}"/>
+	<property name="config-folder-name" value="sony" if="${config-system} == kettle"/>
+	<property name="config-folder-name" value="${config-os??unknown}" unless="@{DirectoryExists('${package.EAController.dir}/include/${config-folder-name}')}"/>
+	<property name="config-folder-name" value="null" unless="@{DirectoryExists('${package.EAController.dir}/include/${config-folder-name}')}"/>
+
+	<property name="package.EAController.includedirs">
+		${property.value}
+		${package.EAController.dir}/include
+		${package.EAController.dir}/include/${config-folder-name}
+	</property>
+
+	<property name="package.EAController.includedirs" if="${config-system} == kettle">
+		${property.value}
+		${package.EAController.dir}/include/kettle
+	</property>
+
+	<publicdata packagename="EAController">
+		<runtime>
+			<module name="IEAController" buildtype="${IEAControllerBuildType}">
+				<publicbuilddependencies>
+					EAAssert
+				</publicbuilddependencies>
+				<includedirs>
+					${package.EAController.dir}/include
+				</includedirs>
+			</module>
+			<module name="EAController" buildtype="${EAControllerBuildType}">
+				<includedirs>
+					${package.EAController.includedirs}
+				</includedirs>
+				<publicbuilddependencies>
+					EAController/IEAController
+				</publicbuilddependencies>
+			</module>
+		</runtime>
+		<tests>
+			<module name="EAControllerTest"/>
+		</tests>
+	</publicdata>
+
+</project>

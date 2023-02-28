@@ -249,6 +249,7 @@
 #ifndef U_GNUC_UTF16_STRING
 #define U_GNUC_UTF16_STRING 0
 #endif
+#if 1 || defined(U_CHECK_UTF16_STRING)
 #if (defined(__xlC__) && defined(__IBM_UTF_LITERAL) && U_SIZEOF_WCHAR_T != 2) \
     || (defined(__HP_aCC) && __HP_aCC >= 035000) \
     || (defined(__HP_cc) && __HP_cc >= 111106) \
@@ -261,6 +262,7 @@
 #elif U_SIZEOF_WCHAR_T == 2 \
     && (U_CHARSET_FAMILY == 0 || ((defined(OS390) || defined(OS400)) && defined(__UCS2__)))
 #define U_DECLARE_UTF16(string) L ## string
+#endif
 #endif
 
 /** @} */

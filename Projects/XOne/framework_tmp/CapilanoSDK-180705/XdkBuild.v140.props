@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Platform)' == 'Durango'">
+    <_PlatformFolder>C:\packages\CapilanoSDK\180705\MSBuild\Microsoft.cpp\v4.0\V140\Platforms\Durango\</_PlatformFolder>
+    <XdkEditionTarget>180705</XdkEditionTarget>
+    <XdkEditionRootVS2015>C:\packages\CapilanoSDK\180705\MSBuild\Microsoft.cpp\v4.0\V140\Platforms\Durango\</XdkEditionRootVS2015>
+    <XboxOneXDKLatest>C:\packages\CapilanoSDK\180705\installed\180705\</XboxOneXDKLatest>
+    <DurangoXDK>C:\packages\CapilanoSDK\180705\installed\</DurangoXDK>
+    <DurangoXdkTools>C:\packages\CapilanoSDK\180705\installed\bin\</DurangoXdkTools>
+    <DurangoXdkInstallPath>C:\packages\CapilanoSDK\180705\installed\</DurangoXdkInstallPath>
+    <TargetPlatformSdkPath>C:\packages\CapilanoSDK\180705\installed\Durango.$(XdkEditionTarget)\v8.0\</TargetPlatformSdkPath>
+    <SDKReferenceDirectoryRoot>C:\packages\CapilanoSDK\180705\installed\;$(LocalAppData)\Microsoft SDKs;$(MSBuildProgramFiles32)\Microsoft SDKs</SDKReferenceDirectoryRoot>
+  </PropertyGroup>
+</Project>

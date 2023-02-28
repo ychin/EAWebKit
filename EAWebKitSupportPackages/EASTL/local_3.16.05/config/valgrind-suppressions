@@ -1,0 +1,37 @@
+# This suppresses valgrind complaining about unitialized variables
+# when using va_list objects.
+
+{
+ SuppressionName
+ Memcheck:Cond
+ fun:_ZN2EA4StdC12SprintfLocal10WriteLong8ERKNS1_10FormatDataElPc
+ fun:_ZN2EA4StdC12SprintfLocal11VprintfCoreEPFiPKcmPvNS0_18WriteFunctionStateEES4_S3_P13__va_list_tag
+ fun:_ZN2EA4StdC9VsnprintfEPcmPKcP13__va_list_tag
+ fun:_Z10Vsnprintf8PcmPKcP13__va_list_tag
+ fun:_ZN5eastl9VsnprintfEPcmPKcP13__va_list_tag
+ fun:_ZN5eastl12basic_stringIcNS_9allocatorEE22append_sprintf_va_listEPKcP13__va_list_tag
+ fun:_ZN5eastl12basic_stringIcNS_9allocatorEEC1ENS2_11CtorSprintfEPKcz
+ fun:_Z13TestBitVectorv
+ fun:_ZN2EA8UnitTest12TestFunction3RunEv
+ fun:_ZN2EA8UnitTest9TestSuite3RunERNS1_10ResultInfoE
+ fun:_ZN2EA8UnitTest9TestSuite3RunEv
+ fun:_ZN2EA8UnitTest15TestApplication3RunEv
+}
+
+{
+ SuppressionName
+ Memcheck:Cond
+ fun:_ZN2EA4StdC12SprintfLocal10WriteLong8ERKNS1_10FormatDataElPc
+ fun:_ZN2EA4StdC12SprintfLocal11VprintfCoreEPFiPKcmPvNS0_18WriteFunctionStateEES4_S3_P13__va_list_tag
+ fun:_ZN2EA4StdC9VsnprintfEPcmPKcP13__va_list_tag
+ fun:_Z10Vsnprintf8PcmPKcP13__va_list_tag
+ fun:_ZN5eastl9VsnprintfEPcmPKcP13__va_list_tag
+ fun:_ZN5eastl12basic_stringIcNS_9allocatorEE22append_sprintf_va_listEPKcP13__va_list_tag
+ fun:_ZN5eastl12basic_stringIcNS_9allocatorEEC1ENS2_11CtorSprintfEPKcz
+ fun:_Z13TestBitVectorv
+ fun:_ZN2EA8UnitTest12TestFunction3RunEv
+ fun:_ZN2EA8UnitTest9TestSuite3RunERNS1_10ResultInfoE
+ fun:_ZN2EA8UnitTest9TestSuite3RunEv
+ fun:_ZN2EA8UnitTest15TestApplication3RunEv
+}
+

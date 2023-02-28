@@ -1,0 +1,598 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'Win32'">
+    <Configuration>pc-vc-dev-debug</Configuration>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="pc-vc-dev-debug|Win32">
+      <Configuration>pc-vc-dev-debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="pc-vc-dev-opt|Win32">
+      <Configuration>pc-vc-dev-opt</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3785ECC6-FAD1-0282-174E-4BA55594CD7A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>dirtysock</ProjectName>
+    <UseOfStl>c++_static</UseOfStl>
+    <TargetFrameworkSDKToolsDirectory>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64</TargetFrameworkSDKToolsDirectory>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <UniversalCRT_PropsPath>C:\packages\WindowsSDK\10.0.18362\installed\10\DesignTime\CommonConfiguration\Neutral\uCRT.props</UniversalCRT_PropsPath>
+    <UCRTContentRoot>C:\packages\WindowsSDK\10.0.18362\installed\10\</UCRTContentRoot>
+    <UniversalCRTSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir>
+    <UniversalCRTSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</UniversalCRTSdkDir_10>
+    <WindowsSdkDir>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir>
+    <WindowsSdkDir_10>C:\packages\WindowsSDK\10.0.18362\installed\10\</WindowsSdkDir_10>
+    <NETFXKitsDir>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</NETFXKitsDir>
+    <DotNetSdkRoot>C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\</DotNetSdkRoot>
+    <NETFXSDKDir>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</NETFXSDKDir>
+    <FrameworkSDKRoot>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\</FrameworkSDKRoot>
+    <SDK40ToolsPath>C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\</SDK40ToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>True</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseNativeEnvironment>true</UseNativeEnvironment>
+    <UseDebugLibraries>False</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-debug\lib/dirtysock.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-debug\lib" mkdir "pc-vc-dev-debug\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-debug\build\dirtysock" mkdir "pc-vc-dev-debug\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">
+    <OutDir>pc-vc-dev-debug\lib\</OutDir>
+    <IntDir>pc-vc-dev-debug\build\dirtysock\vstmp\</IntDir>
+    <TargetName>dirtysock</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ImportGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' " Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories>"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileOnly>TRUE</CompileOnly>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>column</DiagnosticsFormat>
+      <DisableSpecificWarnings>4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling>FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope>TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>FALSE</MinimalRebuild>
+      <MultiProcessorCompilation>TRUE</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber>8</ProcessorNumber>
+      <ProgramDataBaseFileName>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>FALSE</RuntimeTypeInfo>
+      <SDLCheck>FALSE</SDLCheck>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+      <TreatWarningAsError>FALSE</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Lib>
+      <OutputFile>C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-opt\lib/dirtysock.lib</OutputFile>
+      <SuppressStartupBanner>TRUE</SuppressStartupBanner>
+    </Lib>
+    <PreBuildEvent>
+      <Command>@if not exist "pc-vc-dev-opt\lib" mkdir "pc-vc-dev-opt\lib" &amp; SET ERRORLEVEL=0
+@if not exist "pc-vc-dev-opt\build\dirtysock" mkdir "pc-vc-dev-opt\build\dirtysock" &amp; SET ERRORLEVEL=0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">
+    <OutDir>pc-vc-dev-opt\lib\</OutDir>
+    <IntDir>pc-vc-dev-opt\build\dirtysock\vstmp\</IntDir>
+    <TargetName>dirtysock</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x64;C:\packages\WindowsSDK\10.0.18362\installed\10\bin\10.0.18362.0\x86;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools\x64;C:\packages\WindowsSDK\10.0.18362\installed\v10.0A\bin\NETFX 4.7 Tools;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.27.29110\atlmfc\include;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\ucrt;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\um;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\shared;C:\packages\WindowsSDK\10.0.18362\installed\10\Include\10.0.18362.0\winrt;C:\packages\WindowsSDK\10.0.18362\installed\NETFXSDK\4.7\Include\um</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\EABase\2.09.12\EABase.vcxproj">
+      <Project>{616312F7-3D52-8788-1611-B1F9DB83B8A7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>False</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>False</UseLibraryDependencyInputs>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtydefs.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtylang.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtyvers.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\platform.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commall.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commsrp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commudp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\comm\commudputil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptaes.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptarc4.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptbn.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptchacha.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptcurve.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptdef.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptgcm.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\crypthash.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\crypthmac.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptmd5.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptmont.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptnist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptrand.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptrsa.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptsha1.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\crypt\cryptsha2.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyaddr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtycert.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyerr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtylib.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtymem.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtynames.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtynet.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtysessionmanager.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtythread.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\dirtyuser.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\netconn.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\dirtysock\netconndefs.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\connapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamedist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamedistserv.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgameerr.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamelink.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgamepkt.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\game\netgameutil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtygif.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtygraph.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtyjpg.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\graph\dirtypng.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\privilegeapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\qosclient.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\qoscommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\userapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\userlistapi.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\misc\weblog.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoadvt.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttp2.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttpmanager.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttpserv.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protohttputil.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protomangle.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoname.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protossl.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protostream.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\prototunnel.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protoupnp.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\proto\protowebsocket.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\aws.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\base64.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\binary7.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\hpack.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\jsonformat.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\jsonparse.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\murmurhash3.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufread.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\protobufwrite.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\util\utf8.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voip.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipblocklist.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipcodec.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipdef.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipgroup.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voipnarrate.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voiptranscribe.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\voip\voiptunnel.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\xml\xmlformat.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\include\DirtySDK\xml\xmlparse.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commsrp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commudp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\comm\commudputil.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptaes.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptarc4.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptbn.c">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Level4</WarningLevel>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptchacha.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptcurve.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptgcm.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\crypthash.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\crypthmac.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptmd5.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptmont.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptnist.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrand.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandcommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandcommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrandpriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptrsa.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptsha1.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\crypt\cryptsha2.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtyaddr.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtycert.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtyerr.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtylib.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtylib.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">-bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Level4</WarningLevel>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">pc-vc-dev-debug\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Level4</WarningLevel>
+      <ObjectFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">pc-vc-dev-opt\build\dirtysock\dirtysock\dirtylib.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtymem.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynames.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynet.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtynetpriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\dirtythread.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">-bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Level4</WarningLevel>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconn.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconncommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconncommon.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\netconnlocaluser.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\pc\dirtyerrpc.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\pc\dirtylibwin.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\pc\dirtynetwin.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock\pc\netconnwin.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\connapi.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamedist.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamedistserv.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgamelink.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\game\netgameutil.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtygif.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtygraph.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtyjpg.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\graph\dirtypng.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\qosclient.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\qoscommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\userapipriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\misc\weblog.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\platform\plat-str.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\platform\plat-time.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoadvt.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttp2.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttpmanager.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttpserv.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protohttputil.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protomangle.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoname.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protossl.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protostream.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\prototunnel.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protoupnp.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\proto\protowebsocket.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\aws.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\base64.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\binary7.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\hpack.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\jsonformat.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\jsonparse.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\murmurhash3.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufcommon.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufread.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\protobufwrite.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\util\utf8.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voip.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipblocklist.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcodec.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcommon.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipcommon.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconduit.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconduit.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconnection.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipconnection.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipdvi.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipdvi.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipgroup.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipheadset.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipmixer.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voipmixer.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippacket.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippcm.c" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippcm.h" />
+    <ClInclude Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voippriv.h" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voiptranscribe.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\voiptunnel.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\pc\voipheadsetpc.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\pc\voipnarratepc.cpp">
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">-bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Disabled</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">_CRT_SECURE_NO_WARNINGS;_DEBUG;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=2;_WIN32_WINNT=0x0601;EA_DEBUG;EA_SLN_BUILD=1;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-debug\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-debug|Win32' ">Level4</WarningLevel>
+      <AdditionalIncludeDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\DirtySDK\15.1.6.0.2\include";"C:\packages\DirtySDK\15.1.6.0.2\source\crypt";"C:\packages\DirtySDK\15.1.6.0.2\source\dirtysock";"C:\packages\DirtySDK\15.1.6.0.2\source\misc";"C:\packages\DirtySDK\15.1.6.0.2\source\voip";"C:\packages\EABase\2.09.12\include\Common";"C:\packages\EAThread\1.33.00\include"</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">-Zo -d2SSAOptimizer- -bigobj  /FS /Zf -w44254 -w44265 -w44287 -w44296 -w44312 -w44555 -w44946</AdditionalOptions>
+      <AdditionalUsingDirectories Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">"C:\packages\WindowsSDK\10.0.18362\installed\ExtensionSDKs\Microsoft.VCLibs\14.0\References\CommonConfiguration\neutral"</AdditionalUsingDirectories>
+      <BasicRuntimeChecks Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</BasicRuntimeChecks>
+      <CompileAs Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Default</CompileAs>
+      <CompileAsWinRT Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">false</CompileAsWinRT>
+      <CompileOnly Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</CompileOnly>
+      <DebugInformationFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">column</DiagnosticsFormat>
+      <DisableSpecificWarnings Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">4996; 4295; 4201; 4055; 4054; 4244; 4242; 4100; 4127; 4251; 4275; 4324; 4350; 4464; 4482; 4577; 4711; 4746; 4986; 4987; 4819; </DisableSpecificWarnings>
+      <ExceptionHandling Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</ExceptionHandling>
+      <ForceConformanceInForLoopScope Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</ForceConformanceInForLoopScope>
+      <LanguageStandard Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">stdcpp17</LanguageStandard>
+      <MinimalRebuild Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</MinimalRebuild>
+      <MultiProcessorCompilation Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</MultiProcessorCompilation>
+      <Optimization Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_ITERATOR_DEBUG_LEVEL=0;_WIN32_WINNT=0x0601;EA_SLN_BUILD=1;NDEBUG;WIN32;WINVER=0x0601</PreprocessorDefinitions>
+      <ProcessorNumber Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">8</ProcessorNumber>
+      <ProgramDataBaseFileName Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">C:\EAHQ\ReleaseTest\EAOS\EAWebKit\RL\EAWebKit\16.4.1.0.2\Build\Win\DirtySDK\15.1.6.0.2\pc-vc-dev-opt\lib\dirtysock.pdb</ProgramDataBaseFileName>
+      <RemoveUnreferencedCodeData Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</RuntimeTypeInfo>
+      <SDLCheck Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</SDLCheck>
+      <SuppressStartupBanner Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">TRUE</SuppressStartupBanner>
+      <TreatWarningAsError Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">FALSE</TreatWarningAsError>
+      <WarningLevel Condition=" '$(Configuration)|$(Platform)' == 'pc-vc-dev-opt|Win32' ">Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\voip\pc\voippc.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\xml\xmlformat.c" />
+    <ClCompile Include="C:\packages\DirtySDK\15.1.6.0.2\source\xml\xmlparse.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.props" />
+  <Import Project="C:\packages\framework\8.02.01\data\FrameworkMsbuild.tasks" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

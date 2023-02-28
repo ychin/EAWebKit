@@ -1,0 +1,11 @@
+/*!
+    \Moduledef Graph Graph
+
+    \Description
+        The Graph modules provide routines for decoding encoded graphics images
+        to an unencoded displayable format.
+
+        <b>Overview</b>
+
+        Overview TBD
+*/

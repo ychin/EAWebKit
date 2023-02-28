@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Platform)' == 'ORBIS'" >
+    <_PlatformFolder>C:\packages\ProDG_VSI\7.00.0.5\installed\MSBuild\Microsoft.cpp\v4.0\V141\Platforms\ORBIS\</_PlatformFolder>
+    <VCTargetsPathLocalCache>C:\packages\ProDG_VSI\7.00.0.5\installed\MSBuild\Microsoft.cpp\v4.0\V141\</VCTargetsPathLocalCache>
+  </PropertyGroup>
+</Project>

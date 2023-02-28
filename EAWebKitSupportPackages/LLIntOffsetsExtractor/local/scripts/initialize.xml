@@ -1,0 +1,9 @@
+<project>
+
+    <property name="package.LLIntOffsetsExtractor.includedirs">
+    </property>
+
+  <fileset name="package.LLIntOffsetsExtractor.libs">
+  </fileset>
+ 
+</project>

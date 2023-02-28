@@ -104,9 +104,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/include/EAWebKitTextWrapper.h>
 #endif
 
+//TODO We do not using DIRTYSDK_IN_DLL on this branch. If we decide to use that functionality we have to update DirtySDK with PlatformSocketAPICallbacks
+#undef ENABLE_DIRTYSDK_IN_DLL
+
 #if ENABLE(DIRTYSDK_IN_DLL)
-#include "protossl.h"
-#include "platformsocketapi.h"
+#include <DirtySDK/proto/protossl.h>
 #include <EAWebKit/EAWebKitPlatformSocketAPI.h>
 
 EA_COMPILETIME_ASSERT(sizeof(EA::WebKit::PlatformSocketAPI) == sizeof(PlatformSocketAPICallbacks));
@@ -413,6 +415,14 @@ void EAWebKitLib::DestroyJavascriptValueArray(JavascriptValue *array)
     EAWEBKIT_THREAD_CHECK();
     EAWWBKIT_INIT_CHECK(); 
 	EA::WebKit::DestroyJavascriptValueArray(array);
+}
+
+void EAWebKitLib::TriggerGarbageCollectFromScript()
+{
+    SET_AUTOFPUPRECISION(EA::WebKit::kFPUPrecisionExtended);
+    EAWEBKIT_THREAD_CHECK();
+    EAWWBKIT_INIT_CHECK();
+    EA::WebKit::TriggerGarbageCollectFromScript();
 }
 
 void EAWebKitLib::ClearMemoryCache(MemoryCacheClearFlags flags)
@@ -766,6 +776,11 @@ void Shutdown()
 
 	EA::WebKit::GetThreadSystem()->Shutdown(); // Needed to free any thread related resources. Call at last since some timer stuff uses it to query main thread.
 	SetWebKitStatus(kWebKitStatusInactive);
+	//TODO This define should be removed once MS provide fix for https://forums.xboxlive.com/questions/99722/index.html
+#if defined(EA_PLATFORM_XBOX_GDK)
+	extern Allocator* spEAWebKitAllocator;
+	spEAWebKitAllocator = nullptr;
+#endif
 }
 
 void Destroy()
@@ -985,7 +1000,7 @@ void SetRAMCacheUsage(const RAMCacheInfo& ramCacheInfo)
 {
     ramCacheUserPref = ramCacheInfo;
 	WebCore::MemoryCache::singleton().setCapacities(0, ramCacheInfo.mMaxDeadBytes, ramCacheInfo.mTotalBytes);
-	WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds::duration((long) ramCacheInfo.mDeadDecodedDataDeletionInterval * 1000)); //Our API takes the value in seconds
+	WebCore::MemoryCache::singleton().setDeadDecodedDataDeletionInterval(std::chrono::milliseconds((long) ramCacheInfo.mDeadDecodedDataDeletionInterval * 1000)); //Our API takes the value in seconds
 }
 
 void GetRAMCacheUsage(RAMCacheUsageInfo& ramCacheUsageInfo)
@@ -1053,6 +1068,12 @@ JavascriptValue *CreateJavascriptValueArray(View *view, size_t count)
 void DestroyJavascriptValueArray(JavascriptValue *array)
 {
     delete[] array;
+}
+
+//The least impactful way to try free up some memory
+void TriggerGarbageCollectFromScript()
+{
+    WebCore::GCController::singleton().garbageCollectNowIfNotDoneRecently();
 }
 
 void ClearMemoryCache(MemoryCacheClearFlags flags)
@@ -1202,7 +1223,7 @@ void NetworkStateChanged(bool isOnline)
 void SetPlatformSocketAPI(const EA::WebKit::PlatformSocketAPI& platformSocketAPI)
 {
 #if ENABLE(DIRTYSDK_IN_DLL)  
-	PlatformSocketAPICallbacks* socketCallbacks = GetPlatformSocketAPICallbacksInstance();
+    PlatformSocketAPICallbacks* socketCallbacks = GetPlatformSocketAPICallbacksInstance();
 	if(socketCallbacks)
 	{
 		socketCallbacks->accept			=  platformSocketAPI.accept;
@@ -1276,7 +1297,7 @@ Parameters::Parameters()
     , mpUserAgent(NULL)          
     , mMaxTransportJobs(16)
     , mMaxParallelConnectionsPerHost(6)
-    , mHttpRequestResponseBufferSize(4096)
+    , mHttpRequestResponseBufferSize(32 * 1024) // 32 K
     , mPageTimeoutSeconds(30)
     , mHttpPipeliningEnabled(false)
     , mVerifySSLCert(true)

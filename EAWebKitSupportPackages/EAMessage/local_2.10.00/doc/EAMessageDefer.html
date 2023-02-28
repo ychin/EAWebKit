@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>EAMessageDefer</title>
+    <link type="text/css" rel="stylesheet" href="UTFDoc.css">
+    <meta name="author" content="Paul Pedriana">
+    <style type="text/css">
+<!--
+.style1 {color: #0033CC}
+-->
+    </style>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>EAMessageDefer</h1>
+<h2>Introduction</h2>
+<p>EAMessageExtra provides additional optional functionality on top of EAMessage related to delayed message delivery beyond the message posting functionality present in the EAMessage Server. Three classes are currently provided:</p>
+<blockquote>
+  <table border="1">
+    <tr>
+      <td><strong>Class</strong></td>
+      <td><strong>Description</strong></td>
+    </tr>
+    <tr valign="top">
+      <td>DeferredMessage</td>
+      <td> Implements a message that is sent after a given amount of time. This is like a posted message but the delivery doesn't just occur upon the next message management cycle but instead after a certain amount of time or events (e.g. vblanks).<br></td>
+    </tr>
+    <tr valign="top">
+      <td>ThreadSafeCallback</td>
+      <td> Implements a callback that is done via EA::Callback but the callback occurs in the main thread instead of the Callback thread. A primary use of this is to allow a system to receive callbacks in a thread-safe way because Callback may occur outside the main thread but the recipient wants the callback to occur in the main thread.</td>
+    </tr>
+    <tr valign="top">
+      <td>CallbackMessage</td>
+      <td> Implements a Callback (EA::Callback) that sends or posts a callback event to a given recipient instead of a calling a member function. A primary use of this is to allow a system to receive Callbacks via messaging instead of via a specific member function. This allows some systems to be written in a more generic way and have reduced dependencies, assuming those systems are already messaging-savvy.</td>
+    </tr>
+  </table>
+</blockquote>
+<h2>Interface</h2>
+<p>DeferredMessage:</p>
+<pre class="code-example"><span class="code-example-comment">/// DeferredMessage
+///
+/// Implements a message that is sent after a certain amount of time.
+/// This is like a posted message but the delivery doesn't just occur
+/// upon the next message management cycle but instead after a certain
+/// amount of time or events (e.g. vblanks).
+///
+/// Example usage:
+///    DeferredMessage dM;
+///    SomeMessage* pMessage = new SomeMessage;
+///    dm.MessagePost(1000, 0x12345678, pMessage, NULL, pServer);
+///
+</span>class DeferredMessage
+{
+public:
+<span class="code-example-comment">    /// MessagePost
+    ///
+    /// This function is guaranteed to succeed as long as a valid Server
+    /// is supplied or available. If successful, pMessageRC and pHandlerRC
+    /// (if non-NULL) will be AddRefd once each; the Release of each will 
+    /// occur upon delivery of the message.
+    ///
+    /// Currently this is a member function and not a static member function,
+    /// even though there is no member data. We want to reserve the right to 
+    /// have member data in the future.
+    ///
+</span>    bool MessagePost(uint32_t nTimeDeltaMS, MessageId id, IMessageRC* pMessageRC, 
+                       IHandlerRC* pHandlerRC = NULL, Server* pServer = NULL);
+};
+</pre>
+<p>ThreadSafeCallback:</p>
+<pre class="code-example"><span class="code-example-comment">/// ThreadSafeCallback
+///
+/// Implements a callback that is done via EA::Callback but the callback
+/// occurs in the main thread instead of the Callback thread. A primary use
+/// of this is to allow a system to receive callbacks in a thread-safe way
+/// because Callback may occur outside the main thread but the recipient
+/// wants the callback to occur in the main thread.
+///
+/// Since this class works by transferring information from one thread to
+/// another, the precision of this callback is necessarily lower than
+/// when using EA::Callback directly.
+///
+/// This class is a subclass of IHandlerRC because this class needs to be a
+/// message handler itself and because the asynchronous nature of this 
+/// functionality requires reference counting in order to work as desired. 
+///
+/// Example usage:
+///    void SomeCallbackFunction(void* pContext, uint32_t absTime, uint32_t deltaTime);
+///
+///    ThreadSafeCallback* pThreadSafeCallback = new ThreadSafeCallback;
+///    pThreadSafeCallback->AddRef();  // AddRef for our own ownership.
+///    pThreadSafeCallback->Start(1000, true, SomeCallbackFunction, NULL, pServer);
+///    ...
+///    pThreadSafeCallback->Release(); // Release when we are done with it.
+///
+</span>class ThreadSafeCallback : public IHandlerRC
+{
+public:
+    ThreadSafeCallback();
+    virtual ~ThreadSafeCallback();
+
+    bool Start(uint32_t nPeriodMS, bool bOneShot, EA::Callback::CallbackFunctionType pFunction, 
+                 void* pContext = NULL, Server* pServer = NULL);
+    bool Stop();
+
+    bool HandleMessage(MessageId messageId, void* pMessage);
+    int  AddRef();
+    int  Release();
+};
+</pre>
+<p>CallbackMessage:</p>
+<pre class="code-example"><span class="code-example-comment">/// CallbackMessage
+///
+/// Implements a Callback (EA::Callback) that sends or posts a callback event 
+/// to a given recipient instead of a calling a member function. A primary use
+/// of this is to allow a system to receive Callbacks via messaging instead of
+/// via a specific member function. This allows some systems to be written in
+/// a more generic way and have reduced dependencies, assuming those systems
+/// are already messaging-savvy.
+///
+/// If the delivery method is kDeliverySend, then the send occurs directly from
+/// a Callback and thus might not occur within the main thread. If the delivery
+/// method is kDeliveryPost, the deliver occurs via the processing of the server
+/// message queue, which usually happens in the main thread but is dependent on
+/// the use of the Server.
+///
+/// To consider:
+///    Allow for this CallbackMessage object to be refcounted by the Callback system.
+///
+/// Example usage:
+///    CallbackMessage callbackMessage;
+///    callbackMessage.Start(1000, false, kDeliveryPost, 0x12345678, NULL, pServer);
+///    ...
+///    callbackMessage.Stop();
+///
+</span>class CallbackMessage
+{
+public:
+    typedef MessageBasicRC<2> CallbackMessageData; 
+
+    CallbackMessage();
+   ~CallbackMessage();
+
+    bool Start(uint32_t nPeriodMS, bool bOneShot, Delivery delivery, MessageId id, 
+                 IHandlerRC* pHandlerRC = NULL, Server* pServer = NULL);
+    bool Stop();
+};
+</pre>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
+
+
+

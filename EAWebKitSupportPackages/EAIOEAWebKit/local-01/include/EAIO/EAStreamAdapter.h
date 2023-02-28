@@ -839,6 +839,10 @@ inline EA::IO::IStream& operator>>(EA::IO::IStream& s, bool&      val)      { EA
 inline EA::IO::IStream& operator>>(EA::IO::IStream& s, float&  val)         { EA::IO::ReadFloat (&s, val); return s; }
 inline EA::IO::IStream& operator>>(EA::IO::IStream& s, double& val)         { EA::IO::ReadDouble(&s, val); return s; }
 
+#ifdef __APPLE__
+    inline EA::IO::IStream& operator>>(EA::IO::IStream& s, uintptr_t& val)       { EA::IO::ReadUint32(&s, reinterpret_cast<uint32_t&>(val)); return s; }
+    inline EA::IO::IStream& operator<<(EA::IO::IStream& s, const uintptr_t& val)       { EA::IO::WriteUint32(&s, static_cast<uint32_t>(val)); return s; }
+#endif
 //@}
 
 

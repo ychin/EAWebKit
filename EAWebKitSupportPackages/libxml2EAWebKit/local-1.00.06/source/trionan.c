@@ -330,7 +330,7 @@ trio_nan(TRIO_NOARGS)
 
   if (result == 0.0) {
     
-#if defined(TRIO_COMPILER_SUPPORTS_C99) && !defined(CS_UNDEFINED_STRING) // Android doesn't necessarily support nan, despite supporting other C99 functionality. 
+#if defined(TRIO_COMPILER_SUPPORTS_C99) && !defined(__ANDROID__) // Android doesn't necessarily support nan, despite supporting other C99 functionality. 
     result = nan("");
 
 #elif defined(NAN) && defined(__STDC_IEC_559__)

@@ -1,4 +1,0 @@
-core/source/dirtysock/capilano/dirtylibcapilano.c
-core/source/dirtysock/capilano/dirtynetcapilano.c
-
-

@@ -170,6 +170,8 @@ namespace EA
 
             #if defined(EA_PLATFORM_WINDOWS)
                 kFileSystemDefault = kFileSystemFAT32  /// Used to refer to whatever the default least-common demoninator file system for the platform is.
+            #elif defined(EA_PLATFORM_UNIX) 
+                kFileSystemDefault = kFileSystemUnix   /// Used to refer to whatever the default least-common demoninator file system for the platform is.
             #else
                 kFileSystemDefault = kFileSystemFAT32  /// Used to refer to whatever the default least-common demoninator file system for the platform is.
             #endif
@@ -310,22 +312,38 @@ namespace EA
         const char8_t  kLineEndWindows8[3]  = { '\r', '\n', 0 };
         const char16_t kLineEndWindows16[3] = { '\r', '\n', 0 };
 
+        #if defined(EA_PLATFORM_UNIX)
+            #define kLineEndNative8  kLineEndUnix8
+            #define kLineEndNative16 kLineEndUnix16
+
+            #define EA_LINEEND_NATIVE_8      "\n"
+            #define EA_LINEEND_NATIVE_16    EA_CHAR16("\n")  // We assume the user is compiling with 16 bit wchar_t.
+        #else
             #define kLineEndNative8  kLineEndWindows8
             #define kLineEndNative16 kLineEndWindows16
 
             #define EA_LINEEND_NATIVE_8   "\r\n"
             #define EA_LINEEND_NATIVE_16 EA_CHAR16("\r\n")
+        #endif
 
 
         /// kFileSystemCaseSensitive
         ///
         /// Defines if the file system is case sensitive or case insensitive.
         ///
+        #if defined(EA_PLATFORM_UNIX) 
+            const bool kFileSystemCaseSensitive = true;
+
+            #ifndef EA_FILE_SYSTEM_CASE_SENSITIVE
+                #define EA_FILE_SYSTEM_CASE_SENSITIVE 1
+            #endif
+        #else
             const bool kFileSystemCaseSensitive = false;
 
             #ifndef EA_FILE_SYSTEM_CASE_SENSITIVE
                 #define EA_FILE_SYSTEM_CASE_SENSITIVE 0
             #endif
+        #endif
 
 
         // File path delimiters
@@ -394,7 +412,7 @@ namespace EA
             inline bool IsFilePathSeparator(int c)
                 { return ((c == (int)kFilePathSeparator8) || (c == (int)kFilePathSeparatorAlt8)) || (c == (int)kFilePathDriveSeparator8); }
 
-        #elif defined(EA_PLATFORM_PS4)
+        #elif defined(EA_PLATFORM_SONY)
             #define                EA_FILE_PATH_SEPARATOR_TYPE_UNIX       1
             #define                EA_FILE_PATH_SEPARATOR_8               '/'
             #define                EA_FILE_PATH_SEPARATOR_STRING_8        "/"
@@ -449,7 +467,7 @@ namespace EA
                 { return (c == (int)kFilePathSeparator8); }
 
 
-        #else // defined(CS_UNDEFINED_STRING) // Includes Linux, BSD, AIX, Solaris.
+        #else // defined(EA_PLATFORM_UNIX) // Includes Linux, BSD, AIX, Solaris.
             #define                EA_FILE_PATH_SEPARATOR_TYPE_UNIX       1
             #define                EA_FILE_PATH_SEPARATOR_8               '/'
             #define                EA_FILE_PATH_SEPARATOR_STRING_8        "/"

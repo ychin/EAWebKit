@@ -1,0 +1,53 @@
+<package>
+  <manifestVersion>2</manifestVersion>
+  <frameworkVersion>2</frameworkVersion>
+  <buildable>true</buildable>
+  <isSupported>true</isSupported>
+  <owningTeam>Frostbite Foundation</owningTeam>
+  <tags>eatech, core</tags>
+  <contactName>Frostbite Game Framework Foundation</contactName>
+  <contactEmail>Frostbite.Team.GameFramework.Foundation@ea.com</contactEmail>
+  <componentName>Game Framework - Foundation</componentName>
+  <summary>EAStdC</summary>
+  <description>
+		EAStdC implements a number of basic C standard library functions that 
+		are useful for game development. These provide functionality that is 
+		improved over the standard C library in terms of performance, portability,
+		completeness, or functionality.
+	</description>
+  <changes>See the <a href="http://packages.ea.com/_layouts/eapackageserver/entry.aspx/EAStdC-1.26.08/EAStdC/1.26.08/doc/Changes.html">changelog</a>.</changes>
+  <homePageUrl>http://easites.ea.com/EATech/Core/UTF/Pages/default.aspx</homePageUrl>
+  <status>Official</status>
+  <licenseDetails>
+	<license>EA Proprietary (Internal Use Only)</license>
+  </licenseDetails>
+  <sourceLocation>//packages/EAStdC/1.26.08/</sourceLocation>
+  <driftVersion>1.26.08</driftVersion>
+  <versionName>1.26.08</versionName>
+  <relationship>
+	<builds>
+	  <build name="solution" supported="true" />
+	  <build name="nant" supported="true" targets="build test-build example-build" />
+	  <build name="test" supported="true" targets="test-run-fast" />
+	  <build name="xcode" supported="true" />
+	</builds>
+	<platforms>
+	  <platform build="Supported" configs="pc-vc-dev pc-vc-dll-dev pc-vc-dll-tool-dev" name="pc" test="Supported" />
+	  <platform build="Supported" configs="pc64-vc-dev pc64-vc-dll-dev pc64-vc-dll-tool-dev" name="pc64" test="Supported" />
+	  <platform build="Supported" name="unix64" test="Supported" />
+	  <platform build="Supported" name="osx" test="Supported" />
+	  <platform build="Supported" name="iphone" test="Supported" />
+	  <platform build="Supported" name="iphonesim" test="NotSupported" />
+	  <platform build="Supported" defines="EAStdC.SwappableProcessPlatform=true" name="android" test="Supported" />
+	  <platform build="Supported" name="capilano" test="Supported" />
+	  <platform build="Supported" name="kettle" test="Supported" />
+	  <platform build="Supported" name="nx" test="Supported" />
+	  <platform build="Supported" name="balin" test="Supported" />
+	  <platform build="Supported" name="xb1gdk" test="Supported" />
+	  <platform build="Supported" name="pc64gdk" test="Supported" />
+	  <platform build="Supported" name="ps5" test="Supported" />
+	  <platform build="Supported" name="stadia" test="Supported" />
+	  <platform build="Supported" name="xbsx" test="Supported" />
+	</platforms>
+  </relationship>
+</package>

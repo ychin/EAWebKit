@@ -1,0 +1,7 @@
+source/dirtysock/dirtyaddr.c
+source/proto/protohttp.c
+source/proto/protossl.c
+source/proto/protomangle.c
+source/proto/protowebsocket.c
+source/voip/stub/voipcommonstub.c
+source/voip/stub/voipstub.c
